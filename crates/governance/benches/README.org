@@ -28,12 +28,17 @@ acceptance or Gateway throughput. Thirty samples use existing collection setting
 
 * Native conversion diagnostic
 
-=cargo bench -p weaver-governance --bench scheme_conversion --profile dev --features scheme-qualification --locked --offline=.
+=cargo bench -p weaver-governance --bench scheme_conversion --profile dev --features scheme-qualification --locked --offline --config 'profile.dev.package."*".opt-level=3'=.
 
 This additional target uses the real qualification graph and one naturally
 drained VM. Its explicit development profile preserves the prohibition on
 shipping the qualification application in a release image. It is a warm
 conversion diagnostic, not optimized production Gateway throughput.
+The command optimizes external dependencies, including both the SDK and its
+SIMD UTF-8 validator, while retaining the development-only qualification owner.
+An entirely unoptimized dependency build can dominate Unicode validation cost;
+keep that control separately and never compare its latency with release claims.
+The ordinary gateway benchmark and production build profiles are unchanged.
 
 Thirty samples compare the retired temporary-Scheme-bytevector conversion with
 the upstream direct owned-string encoder on identical retained roots, for ASCII

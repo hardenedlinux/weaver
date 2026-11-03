@@ -249,9 +249,22 @@ Unicode/NUL string, exercises original-binding refusal and recovery, and rejects
 a multi-byte field whose character length fits but whose UTF-8 bytes exceed the
 aggregate limit. Successful subsequent conversion on the same VM is required.
 The crate-owned Criterion target separately measures warm conversion and the
-full owned-source roundtrip. This is a data-preserving refinement of the existing
-SysML/Lean handoff premise; it adds no Policy transition or authority theorem.
-Existing Quint schedules and Lean final-use obligations remain necessary.
+full owned-source roundtrip. The existing SysML/Lean handoff still requires the
+native data-preservation refinement premise; finite PBT is not its universal
+proof. This change adds no Policy transition or authority theorem. Existing
+Quint schedules and Lean final-use obligations remain necessary.
+
+The first entirely unoptimized dependency control completed its native PBT and
+benchmark process before/through deletion of the old working directory. Its
+Criterion samples were recovered, but its raw console files were lost. The
+formal suite failed source-currentness after that deletion; interrupted Clippy
+is not a pass. Keep the recovered failure receipt and samples in ignored cache.
+That control showed substantial Unicode latency regression, not a performance
+win. The SDK uses a SIMD UTF-8 validator whose unoptimized Rust cost differs
+from the snapshot control's standard-library validator. Repeat the full
+comparison with optimized external dependencies on the fixed GHQ checkout;
+do not infer production throughput from either the unoptimized control or a
+qualification application's development-profile source roundtrip.
 
 The preceding SPEC upgrade passed maintained Lean/Policy/FFI and complete
 clean-source proof checks. Those results retain their original source scope.

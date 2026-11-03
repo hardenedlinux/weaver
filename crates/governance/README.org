@@ -27,9 +27,9 @@ The selected SDK's capacity must be reported separately from host core count.
 
 =cargo test -p weaver-governance --features scheme-qualification --locked --offline=.
 
-The existing Go process/file adapter is still an open production embedding owner.
-This crate does not silently substitute for that adapter or authorize an alternate
-runtime path. Benchmark boundaries live in =benches/README.org=.
+The server's tracked Rust owner constructs =SchemeCompiler= on its affine thread;
+Go requests source compilation over authenticated gRPC. Build-time compiler
+processes are not runtime IPC. Benchmark boundaries live in =benches/README.org=.
 
 =OwnedSource= proves candidate consistency only. Production-host content admission
 uses =SourceExpectation::capture= on the independently admitted original before
