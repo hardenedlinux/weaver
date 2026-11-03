@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 module LlmWalActivation {
   import LlmAccountCommit as A from "./LlmAccountCommit"
   type Receipt={head:A::Image,journal:List[A::Record],epoch:int,sourceGeneration:int}

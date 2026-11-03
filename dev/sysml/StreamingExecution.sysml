@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 package StreamingExecution {
     doc /* Finite logical messages, durable range consumption and private synchronous transport custody. */
     private import ScalarValues::*;

@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 package WeaverProject {
     doc /* Deterministic Engineering project authority. Named layout parts are
        repository-relative paths. The Go OpenSysML SDK gate checks the declared
@@ -295,6 +299,36 @@ package WeaverProject {
         part 'LICENSE' : File;
         part 'LICENSING.org' : File;
         part 'REUSE.toml' : File;
+        part 'Cargo.lock.license' : File;
+        part 'crates/governance/tests/unit/binding.txt.license' : File;
+        part 'dev/d2/package.json.license' : File;
+        part 'dev/d2/pnpm-lock.yaml.license' : File;
+        part 'dev/d2/tsconfig.json.license' : File;
+        part 'dev/proofs/cedar/lake-manifest.json.license' : File;
+        part 'dev/proofs/cedar/lean-toolchain.license' : File;
+        part 'dev/sysml/runtime-trace.json.license' : File;
+        part 'devenv.lock.license' : File;
+        part 'docs/50-59-research-program/58-streaming-execution/58.03-streaming-runtime.png.license' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.03-provider-rpc-core.png.license' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.21-verification-ownership.png.license' : File;
+        part 'docs/50-59-research-program/59-provider-rpc/59.51-zero-trust-contract-refinement.png.license' : File;
+        part 'docs/architecture/diagrams/00a-readme-overview.png.license' : File;
+        part 'docs/architecture/diagrams/01-system-boundaries-node-editor.png.license' : File;
+        part 'docs/architecture/diagrams/01-system-boundaries-sketchbook.png.license' : File;
+        part 'docs/architecture/diagrams/01-system-boundaries.png.license' : File;
+        part 'docs/architecture/diagrams/01-system-relationships.png.license' : File;
+        part 'docs/architecture/diagrams/12-execution-correspondence-node-editor.png.license' : File;
+        part 'docs/architecture/diagrams/12-execution-correspondence.png.license' : File;
+        part 'examples/local-owner/request.json.license' : File;
+        part 'examples/local-owner/task.json.license' : File;
+        part 'go/go.sum.license' : File;
+        part 'prod/policies/provider/profile.json.license' : File;
+        part 'prod/policies/provider/request-cases.json.license' : File;
+        part 'prod/policies/provider/schema.json.license' : File;
+        part 'prod/policies/review/named-forbid.json.license' : File;
+        part 'prod/policies/review/named-permit.json.license' : File;
+        part 'prod/policies/review/namespaced-enum-validated.json.license' : File;
+        part 'prod/policies/streaming/schema.json.license' : File;
         part 'LICENSES' : Directory;
         part 'LICENSES/LGPL-2.1-or-later.txt' : File;
         part 'LICENSES/Apache-2.0.txt' : File;

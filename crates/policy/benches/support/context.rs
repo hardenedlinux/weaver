@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 //! Matched same-process old JSON vs official literal Context construction.
 use crate::{
     ProviderCheck, fixtures, literal_context::ProviderContext, reference_context::JsonContext,

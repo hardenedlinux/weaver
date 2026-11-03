@@ -1,0 +1,107 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
+#+TITLE: 59.88 Mainline Delivery Audit and Next Gates
+#+LANGUAGE: en
+#+OPTIONS: toc:2
+
+* Active scope
+
+Continue the Rust, Go and Cedar runtime. Scheme optimization and reintegration
+remain deferred to its upstream owner. Keep dependency selections in the existing
+package manifests and locks; do not duplicate their resolved identities here.
+This audit orders remaining work and records limits of current evidence. It does
+not declare the complete Gateway or deployment profile production-qualified.
+
+The earlier [[file:59.87-spec-upgrade-and-delivery-plan.org][delivery plan]] contains
+historical dependency-alignment work. Its older Scheme-first ordering and remote
+PR status prose must not override this active runtime scope or package managers.
+
+* First: make governed publication explicit at the service boundary
+
+[[file:../../../crates/ledger/src/publication_review.rs][publication_review.rs]] already
+provides reviewed staging, captured-parent checking and schema-bound replay.
+However, absence of a review requirement currently permits ordinary publication.
+[[file:../../../crates/server/src/source_owner.rs][source_owner.rs]] calls the ordinary
+stage/publish operations. The maintained test
+=typed_publication_does_not_yet_require_delta_evidence= in
+[[file:../../../crates/ledger/tests/unit/provider.rs][provider.rs]] makes this gap explicit.
+
+Define which authenticated publication operations require upstream review, then
+route those operations through the existing requirement and replay mechanisms.
+Root-authorized bootstrap or contract changes need an explicit authority model;
+not every authorized policy change is globally monotone. A replayed candidate
+alone does not authenticate its producer or establish the required Delta/NoGain
+premises. Reuse SPEC contracts; do not replace them with a downstream DSL.
+
+Acceptance must cover missing, forged, stale and wrong-parent evidence; a valid
+reviewed publication; competing changes; a committed result whose response is
+lost; and recovery by the original operation identity. Final consumption must
+still check currentness, revocation and fencing. No commit stage sends bytes.
+
+* Second: deliver useful routing and routine execution without new authority
+
+[[file:../../../go/internal/routing/provider.go][provider.go]] preserves registered
+routing order and original profile/body commitments. The current
+[[file:../../../crates/execution/src/provider/sse.rs][SSE decoder]] handles bounded
+single-choice text completions. These mechanisms do not yet constitute complete
+capability routing, tool execution or a multi-attempt routine interpreter.
+
+Implement a bounded capability/catalog slice first: apply original hard
+constraints before cost, health or latency ranking. Rust must bind the selected
+provider, model, endpoint, account, request bytes and limits at final execution.
+A response or tool proposal is input to the next authorized step, not authority
+for that step. Reuse the original task, claim and shared budget/history domains.
+
+Fallback before possible transmission differs from retry after unknown or partial
+transmission. The latter needs attributable child-attempt accounting and an
+explicit continuation contract. New names, reconnects or providers cannot reset
+claims or recover unknown budget. Keep the existing no-blind-redispatch rule.
+
+* Third: measure runtime contention and complete operational evidence
+
+Measure shared-domain lock waits, WAL writer waits, final-send critical sections,
+conflict retries and tail latency under mixed independent and shared domains.
+Use the same source/image for paired measurements. Retain currentness, fencing,
+writer seal and unknown-budget constraints while moving work out of critical
+sections. A local optimization is not evidence of whole-Gateway throughput.
+
+Local telemetry counters are observations, not durable execution or settlement
+evidence. External export remains an explicit configuration and Policy decision.
+Kubernetes reconciliation and multi-node recovery need separate deployment
+contracts; single-owner Turso evidence is not a multi-node rollback proof.
+
+* Diagram quality is an open gate
+
+The complete maintained inventory produced 116 source-bound Library views using
+12 host lanes. The previous serial readability test exhausted its aggregate
+30-second deadline. Reusing browser pages across host-core-bounded workers
+completed the same full visual workload in about nine seconds without increasing
+the deadline or removing assertions, screenshots or cleanup.
+
+That complete check remains FAIL: 108 research views report small labels or
+crowding. None of the seven authoritative core projections appear in the failure
+list. The failure must not be hidden by selecting only core views. Regeneration
+success is not readability admission, and the refreshed research views are not
+visually qualified. The full logs and extracted findings remain under =.cache=.
+
+Improve declared Library layouts, hierarchy and profiles at their existing
+owners. Keep SysML/Lean identities and complete content; split dense explanations
+into readable views where needed. Do not patch generated SVGs, falsify source
+fingerprints, lower font checks or increase the existing visual watchdog.
+
+* Licensing and verification boundary
+
+Maintained first-party source, models and documents carry leading SPDX notices.
+Thirty adjacent =.license= companions preserve fixed-format data and binary
+bytes. Go fuzz directories use their explicit REUSE scope because the standard
+loader parses every sibling file as a seed. Existing third-party notices and
+immutable evidence snapshots remain intact. The project layout names the new
+production companions; the Go architecture gate enforces these boundaries.
+
+The final local checks include Rust ledger/execution/server tests, the ASP deny
+gate, Go race tests and the maintained Quint/Lean plan. Rendering and visual
+readability have separate outcomes as recorded above. Performance claims require
+runtime benchmarks when implementation changes justify them. Continue on the
+existing private PR; do not treat these scoped results as full product closure.

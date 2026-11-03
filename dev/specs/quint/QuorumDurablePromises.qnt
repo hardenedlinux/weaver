@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 // Conservative sticky-prefix voting profile. No implementation or liveness claim.
 module QuorumDurablePromises {
   type History = {size:int,rows:int->int}

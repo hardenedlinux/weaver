@@ -1,3 +1,7 @@
+-- SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+--
+-- SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 namespace Weaver.StreamingExecution
 
 /- Native refinement premises: authentic source and cost bounds; durable Turso FULL/WAL

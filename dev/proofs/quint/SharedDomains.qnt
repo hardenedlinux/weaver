@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 // Finite executable instance; arbitrary-family no-split/conservation is in Lean.
 // Native atomicity, authentic source identities and final transport custody are
 // refinement premises. An all-copy rollback is outside this state machine.

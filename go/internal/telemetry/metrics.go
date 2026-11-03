@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 // Package telemetry records fixed-cardinality, process-local observations only.
 // It accepts no payloads, labels, trace context, credentials or export callbacks.
 package telemetry

@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 //! Real native MVCC event histories; original claims survive lost observations.
 use super::fixtures::{POLICY, initialized, proposal};
 use proptest::{collection, prop_assert, prop_assert_eq, proptest, test_runner::Config};

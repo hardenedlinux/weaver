@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 import {createHash} from 'node:crypto';
 import {renderedViewFromJson} from '@openmbee/opensysml';
 import type {OpenSysMLCapture} from '@deterministic-engineering/render/opensysml';

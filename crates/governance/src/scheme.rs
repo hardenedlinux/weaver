@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 //! Scheme object conversion using the pinned Gerbil's GC-rooted APIs.
 //! No JSON text, unrooted object word, or VM borrow enters OwnedSource.
 use crate::{MAX_SOURCE_BYTES, OwnedSource, SourceData, SourceError};

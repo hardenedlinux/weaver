@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 //! Source-bound task, proposal and durable outcome records.
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};

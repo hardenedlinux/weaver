@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 //! Reviewed Gerbil ABI leaf: no raw dereference, arbitrary export or graph input.
 use gerbil_scheme::{
     GerbilRuntime, LinkedGerbilProgram, NativeError as GerbilError, RootedSchemeObject,

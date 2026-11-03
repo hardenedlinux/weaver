@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 //! Local Scheme-to-Rust Policy preflight. Success never grants execution rights.
 //! No callbacks, allocations returned to C, owner handles, or ledger mutations.
 #[allow(unsafe_code)]

@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 // Split persistence / observation / signing. Unsafe counterexample rules are not in step.
 module ProtectedSignerRelease {
   type Cell = {value:int,term:int,revision:int}

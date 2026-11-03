@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 module LlmPolicyContinuation {
   type Change={id:int,root:int,parent:int,tip:int,content:int,allowed:bool,claim:int,profile:int,budget:int,history:int}
   type View={generation:int,tip:int,fence:int,revision:int}

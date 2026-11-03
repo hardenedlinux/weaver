@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 //! Read bounded process configuration outside the async I/O executor.
 use crate::rpc_security::{GrpcConfig, GrpcListeners, RpcSecurity};
 use std::{collections::BTreeMap, io::Read};

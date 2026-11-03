@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 import {composeHeading,type FigureComposer} from '@deterministic-engineering/render';
 import {sequenceModel,textLines} from './sequence-model';
 

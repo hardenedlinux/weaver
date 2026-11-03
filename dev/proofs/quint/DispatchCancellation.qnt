@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 module DispatchCancellation {
   type Event={cancelled:bool,owner:int,revision:int,currentRevision:int}
   type Dispatch={phase:int,locked:bool,burned:bool,token:bool,tokenOwner:int,context:int,stopped:Set[int],revision:int,permitRevision:int,calls:int,held:int,events:List[Event]}

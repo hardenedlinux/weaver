@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 //! Model-based admission properties. Proptest owns generation and shrinking;
 //! model transitions never depend on whether the real ledger accepted a command.
 use super::stream_properties::{fixture, message};

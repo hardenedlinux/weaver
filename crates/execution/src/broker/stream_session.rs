@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 //! Broker-owned connections; each bounded range rejoins durable current authority.
 use crate::transport::stream_sink::{OwnedSink, StreamTlsConfig};
 use weaver_contracts::{Error, Result, WriteObservation};

@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 //! One tracked blocking owner for source-only Turso work; no cached authority decisions.
 use crate::runtime::{RuntimeOwner, ShutdownGuard};
 use std::{path::PathBuf, sync::Arc};

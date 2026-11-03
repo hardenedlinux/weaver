@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 module AuthorityAdmission {
   // Finite lane abstraction: native completion returns capacity; caller loss does not.
   type Lanes = {execution:Set[int], publication:Set[int], observation:Set[int], closing:bool, shared:bool}

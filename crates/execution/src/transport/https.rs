@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 //! Canonical HTTPS target binding and one bounded network attempt.
 use reqwest::{Url, blocking::Client, redirect::Policy};
 use std::{collections::BTreeMap, time::Duration};

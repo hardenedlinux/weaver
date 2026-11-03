@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 module TaskOrigin {
   type State={registered:bool,origin:int,family:int,epoch:int,receipt:bool,spent:bool,held:int,history:bool,calls:int,unsafe:bool,birth:bool}
   var s:State

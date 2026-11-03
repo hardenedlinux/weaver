@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 //! Deployment runtime construction; the binary adapter retains process exit handling.
 
 /// Run the deployment service with the default Tokio runtime and its normal drain.

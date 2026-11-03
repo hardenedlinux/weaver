@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 //! Deciding-store constraints; there is no budget release without evidence.
 /// Native owner boundary for `SCHEMA`.
 pub const SCHEMA: &str = r#"

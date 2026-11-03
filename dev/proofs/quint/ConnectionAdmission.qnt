@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 module ConnectionAdmission {
   type Connections = {live:Set[int],held:Set[int],handshakes:Set[int],peerClosed:Set[int],reserved:bool,closing:bool}
   var c:Connections

@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 //! Finite same-image ABBA: isolate header latency from real ledger hold counters.
 use super::{Provider, ProviderExecution, ProviderTransport, Sink, execute_provider, stores};
 use serde::Serialize;

@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 //! One actual durable batch: prepare burn, fresh final guard and queue callback.
 use criterion::{BatchSize, BenchmarkId, Criterion};
 use std::{collections::BTreeSet, hint::black_box};

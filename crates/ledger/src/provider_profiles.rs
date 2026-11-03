@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 //! One immutable profile identity; registration shares the original task transaction.
 use crate::persistence::WriteScope;
 use crate::store::db;

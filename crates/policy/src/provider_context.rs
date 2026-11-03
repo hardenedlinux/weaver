@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 //! Immutable Cedar literals plus freshly supplied effect coordinates.
 use crate::ProviderCheck;
 use cedar_policy::{Context, RestrictedExpression};

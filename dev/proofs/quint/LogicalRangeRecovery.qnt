@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 // Stable logical range identity; execution permits carry a separate current epoch.
 module LogicalRangeRecovery {
   import BrokerConsumptionQueue as Q from "./BrokerConsumptionQueue"

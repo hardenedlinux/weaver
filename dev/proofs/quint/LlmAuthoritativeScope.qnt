@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 // An admitted original-task fixture; the Lean product also projects source setup.
 module LlmAuthoritativeScope {
   type Record={root:int,domain:int,commitment:int,input:int,claim:int,stream:int,document:bool,tools:Set[int],maxArgs:int,maxCalls:int}

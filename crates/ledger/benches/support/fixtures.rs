@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 //! Family and stream exposure fixtures for ledger-owned benchmarks.
 use weaver_ledger::Ledger;
 /// Populate exact original plans outside measurement; only the selected final use is timed.

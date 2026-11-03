@@ -1,5 +1,10 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 import {test,expect} from 'bun:test';
 import {chromium} from 'playwright';
+import {cpus} from 'node:os';
 import {fileURLToPath} from 'node:url';
 import {readFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
@@ -16,13 +21,16 @@ test('all Library model SVGs retain legible fonts, vector icons and complete tex
  else expect(images.length).toBeGreaterThan(3);
  const browser=await chromium.launch();
  const failures:string[]=[];
+ let cursor=0;
  try{
-  for(const image of images){
+  const checks=await Promise.allSettled(Array.from({length:Math.min(cpus().length,images.length)},async()=>{
+   const page=await browser.newPage({viewport:{width:830,height:1000}});
+   try{
+    while(true){
+     const image=images[cursor++];if(!image)return;
    const name=image.source.split('/').at(-1)!.slice(0,-3);
    const body=await readFile(root+image.source.slice(0,-3)+'.svg','utf8');
    expect(createHash('sha256').update(body).digest('hex')).toBe(image.svgSHA256);
-   const page=await browser.newPage({viewport:{width:830,height:1000}});
-   try{
     const cache=root+'.cache/d2/images/'+image.source.slice(0,-3);
     const html=await readFile(cache+'.html','utf8');
     const exported:{htmlSHA256:string;inputSHA256:string}=JSON.parse(await readFile(cache+'.json','utf8'));
@@ -78,8 +86,11 @@ test('all Library model SVGs retain legible fonts, vector icons and complete tex
      const context=canvas.getContext('2d')!;context.drawImage(image,0,0,4,4);
      return [[0,0],[3,0],[0,3],[3,3]].every(([x,y])=>context.getImageData(x!,y!,1,1).data[3]===255);
     })).toBe(true);
+    }
    }finally{await page.close();}
-  }
+  }));
+  const rejected=checks.filter((check):check is PromiseRejectedResult=>check.status==='rejected');
+  if(rejected.length)throw new AggregateError(rejected.map(check=>check.reason),'Vector admission failed');
  }finally{await browser.close();}
  expect(failures).toEqual([]);
 },30000);

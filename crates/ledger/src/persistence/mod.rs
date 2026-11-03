@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 //! One physical engine, exported by MRR Data. Weaver retains its domain schema.
 //! Synchronous Gateway workers drive native futures with the standard executor;
 //! there is no second runtime, database provider, ORM or SQLite fallback.

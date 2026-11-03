@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 //! Borrow the embedding service's reactor; this library creates no worker pool.
 use std::future::Future;
 use tokio::{runtime::Handle, time::Instant};

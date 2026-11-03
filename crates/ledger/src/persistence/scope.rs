@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 //! Explicit commit and eager rollback of one native `Turso` write transaction.
 use super::{Session, driver};
 use futures_executor::block_on;

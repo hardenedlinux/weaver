@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 //! One terminal semantic compiler tracked by the existing service runtime.
 use crate::runtime::RuntimeOwner;
 use std::{num::NonZeroUsize, sync::Arc};

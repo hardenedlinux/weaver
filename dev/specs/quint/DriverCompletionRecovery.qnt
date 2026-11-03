@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 // Driver restart is separate from owner restart. Results are canonical and immutable.
 // Authenticated quiescence and external fence acknowledgments are input events.
 module DriverCompletionRecovery {

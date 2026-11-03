@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 //! Count actual UTF-8 data/key bytes without encoding an interop blob.
 use crate::{SourceData, SourceSelection};
 use weaver_contracts::{ProviderPlan, ProviderProfile, ProviderRoute, Publication, Task};

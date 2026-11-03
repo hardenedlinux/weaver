@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 module LlmCanonicalRegistry {
   type Origin={tenant:int,principal:int,issuer:int,operation:int}
   type Registration={origin:Origin,root:int,claim:int,profile:int,input:int,budget:int,history:int}

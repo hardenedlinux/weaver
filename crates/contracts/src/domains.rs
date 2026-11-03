@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 //! Source-owned identity and monotone domain-union commands, never send grants.
 use crate::{Error, MAX_CREDITS, Result, identifier};
 use serde::{Deserialize, Serialize};

@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 //! Owned semantic source data. No method publishes, consumes, sends or refunds.
 #![deny(unsafe_code)]
 extern crate self as weaver_governance;

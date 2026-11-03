@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 // The stable intent/journal and execution authority are not local snapshot caches.
 module LlmRegistryPublication {
   type Blob={tenant:int,commitment:int,vector:int,document:bool,tools:Set[int]}

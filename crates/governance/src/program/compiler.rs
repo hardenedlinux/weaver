@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 //! Fixed compiled Scheme application on the existing thread-affine Gerbil owner.
 use super::linked;
 use crate::{OwnedSource, SourceError, materialize_source, root_source};

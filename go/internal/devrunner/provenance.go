@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 package devrunner
 
 import (
@@ -35,8 +39,8 @@ func SourceInputs(root string) (map[string]string, error) {
 		result[filepath.ToSlash(relative)] = hex.EncodeToString(sum[:])
 		return nil
 	}
-	for _, path := range []string{"Project.sysml", "README.org", ".gitignore", "Cargo.toml", "Cargo.lock", "rust-toolchain.toml", "go/go.mod", "go/go.sum", "rustfmt.toml", "clippy.toml", "gerbil.pkg", "build.ss", "init.ss",
-		"devenv.nix", "devenv.lock", "devenv.yaml", ".envrc"} {
+	for _, path := range []string{"LICENSE", "LICENSING.org", "REUSE.toml", "LICENSES/LGPL-2.1-or-later.txt", "LICENSES/Apache-2.0.txt", "Project.sysml", "README.org", ".gitignore", "Cargo.toml", "Cargo.lock", "Cargo.lock.license", "rust-toolchain.toml", "go/go.mod", "go/go.sum", "rustfmt.toml", "clippy.toml", "gerbil.pkg", "build.ss", "init.ss",
+		"devenv.nix", "devenv.lock", "devenv.lock.license", "devenv.yaml", ".envrc"} {
 		if err := add(filepath.Join(root, path)); err != nil {
 			return nil, err
 		}
@@ -59,6 +63,9 @@ func SourceInputs(root string) (map[string]string, error) {
 			if entry.Type()&os.ModeSymlink != 0 {
 				return fmt.Errorf("verification source alias is unsupported: %s", path)
 			}
+			if directory == "go" && strings.Contains(filepath.ToSlash(path), "/testdata/fuzz/") {
+				return add(path)
+			}
 			if entry.Name() == "lean-toolchain" || (directory == "dev/d2" && entry.Name() == "pnpm-lock.yaml") {
 				return add(path)
 			}
@@ -67,7 +74,7 @@ func SourceInputs(root string) (map[string]string, error) {
 				if directory == "dev/d2" {
 					return add(path)
 				}
-			case ".go", ".rs", ".h", ".ss", ".pkg", ".toml", ".json", ".yaml", ".yml", ".proto", ".sysml", ".cedar", ".lean", ".qnt", ".org", ".d2":
+			case ".license", ".go", ".rs", ".h", ".ss", ".pkg", ".toml", ".json", ".yaml", ".yml", ".proto", ".sysml", ".cedar", ".lean", ".qnt", ".org", ".d2":
 				return add(path)
 			case ".svg":
 				if directory == "dev/d2" || strings.Contains(filepath.ToSlash(path), "/diagrams/assets/") {

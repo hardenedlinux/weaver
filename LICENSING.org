@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 #+title: Weaver Licensing
 #+language: en
 
@@ -18,10 +22,18 @@ The complete license texts are retained verbatim:
 
 [[file:REUSE.toml][REUSE.toml]] associates SPDX copyright and license identifiers
 with Weaver-authored code, configuration, tests and design sources. Its closest
-precedence preserves individual file notices. Scheme source headers carry the
-same identifiers. The Cargo workspace supplies the expression to every Rust
-member; the renderer package declares the same expression. Go source is covered
-by the repository notice and SPDX annotations.
+precedence preserves individual file notices. Maintained first-party files carry
+SPDX notices in their own comment syntax. Formats that cannot carry comments use
+adjacent =.license= companions without changing data, dependency pins or images.
+Go fuzz corpus directories use the explicit =go/**/testdata/fuzz/**= REUSE
+annotation: their standard loader treats every sibling file as a seed and rejects
+license companions. The original corpus bytes remain unchanged.
+The Cargo workspace and renderer package declare the same dual-license choice.
+
+The Go development gate checks leading notices across maintained source, model,
+document and generated files. Protobuf inherits the proto notice. The existing
+SysML mapping and upstream Library export owners preserve D2 and SVG notices;
+there is no separate license postprocessor or rendering engine.
 
 * Retained third-party and historical material
 

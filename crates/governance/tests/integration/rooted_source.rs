@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 //! Deliberately malformed native values; ordinary construction uses production API.
 use gerbil_scheme::{GerbilRuntime, IdentifierKind, RootedSchemeObject as Object, TableEquality};
 use weaver_governance::{OwnedSource, SourceData, root_source};

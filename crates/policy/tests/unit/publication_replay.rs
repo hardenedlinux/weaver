@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 use cedar_poo_runtime::{ValidatedManifest, render_policy_source};
 use proptest::{prop_assert, proptest};
 #[path = "../support/publication_revision.rs"]

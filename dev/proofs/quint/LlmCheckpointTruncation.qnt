@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 module LlmCheckpointTruncation {
   import LlmWalActivation as W from "./LlmWalActivation"
   // Structural types match the imported account records; all financial actions stay imported.

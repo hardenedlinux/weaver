@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 module LlmExecutionReconciliation {
   import LlmExecutorOffer as X from "./LlmExecutorOffer"
   type Key={root:int,claim:int,profile:int,budget:int,history:int,slot:int,lo:int,hi:int}

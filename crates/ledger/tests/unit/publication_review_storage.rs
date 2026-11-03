@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 use crate::Ledger;
 use std::sync::{Arc, Barrier};
 use weaver_contracts::{Publication, PublicationOutcome, PublicationReview};

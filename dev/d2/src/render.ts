@@ -1,6 +1,10 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 import {cpus} from 'node:os';
 import {fileURLToPath} from 'node:url';
-import {mkdir,writeFile,access} from 'node:fs/promises';
+import {mkdir,writeFile,access,readFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {parseArgs} from 'node:util';
 import path from 'node:path';
@@ -14,6 +18,12 @@ import {themes} from '../themes';
 import {composeSequence} from './sequence';
 
 const root=fileURLToPath(new URL('../../../',import.meta.url));
+const licensing=await readFile(path.join(root,'LICENSE'),'utf8');
+const tags=['SPDX-FileCopyrightText:','SPDX-License-Identifier:'].map(tag=>{
+ const line=licensing.split('\n').find(line=>line.startsWith(tag+' '));
+ if(!line||line.includes('--'))throw new Error('Invalid repository SPDX notice: '+tag);return line;
+}).join('\n');
+const svgNotice='<!--\n'+tags+'\nSPDX-FileComment: Weaver-authored diagram; embedded third-party fonts and marks retain their own terms.\n-->\n';
 const {values}=parseArgs({args:process.argv.slice(2),options:{view:{type:'string',multiple:true}}});
 const catalog=collectCatalog(root,values.view);
 const selected=catalog.views.filter(view=>!values.view||values.view.includes(view.source));
@@ -34,7 +44,9 @@ try{
     if(input.layout!=='model-view'&&!(input.layout==='sequence-view'&&input.view.kind==='sequence'))throw new Error('Unmigrated declaration: '+input.layout);
     if(input.modelSource&&!Object.hasOwn(catalog.modelCapture?.mapped??{},view.source))throw new Error('Missing authoritative mapped source');
     const result=await exportFigure(composeFigure(input,input.layout==='sequence-view'?composeSequence:composeModelView),browser);
-    const svg=result.svg[0];if(!svg)throw new Error('Library exported no standalone SVG');
+    const exportedSVG=result.svg[0];if(!exportedSVG)throw new Error('Library exported no standalone SVG');
+    const declaration=exportedSVG.startsWith('<?xml')?exportedSVG.indexOf('?>')+2:0;
+    const svg=exportedSVG.slice(0,declaration)+svgNotice+exportedSVG.slice(declaration);
     const stem=path.join(root,view.source.slice(0,-3)),cache=path.join(root,'.cache/d2/images',view.source.slice(0,-3));
     await mkdir(path.dirname(cache),{recursive:true});
     await writeFile(stem+'.svg',svg);await writeFile(cache+'.png',result.png);await writeFile(cache+'.html',result.html);await writeFile(cache+'.json',JSON.stringify(result.receipt,null,2));

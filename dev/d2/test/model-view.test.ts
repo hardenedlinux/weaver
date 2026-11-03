@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 import {test,expect} from 'bun:test';
 import {fileURLToPath} from 'node:url';
 import {compileFigureSource,composeFigure,composeModelView} from '@deterministic-engineering/render';

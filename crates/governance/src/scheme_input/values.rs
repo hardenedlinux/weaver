@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 //! Gerbil constructors with cumulative traversal bounds; every intermediate is rooted.
 use crate::{MAX_SOURCE_BYTES, SourceError};
 use gerbil_scheme::{

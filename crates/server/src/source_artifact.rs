@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 //! Concrete protobuf projection of bound source data, never a new execution permit.
 use crate::pb;
 use weaver_contracts::{ProviderPlan, ProviderProfile, ProviderRoute, Publication, Task};

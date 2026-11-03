@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 //! Native callback/observation uncertainty retains the original claim and hold.
 use super::{POLICY, SCHEMA, fixture};
 use proptest::{prop_assert, prop_assert_eq, proptest, test_runner::Config};

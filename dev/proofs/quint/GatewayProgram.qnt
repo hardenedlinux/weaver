@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 // Local Scheme program lifecycle. Rust authenticates the installed graph and
 // binds the original; neither a closure nor a local result is a send permit.
 module GatewayProgram {

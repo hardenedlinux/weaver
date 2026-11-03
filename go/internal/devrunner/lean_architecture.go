@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 package devrunner
 
 import (
@@ -34,11 +38,18 @@ func exportLeanArchitecture(ctx context.Context, root string) (Result, error) {
 }
 
 func publishArchitecture(ctx context.Context, root string) (string, error) {
-	imported, err := exportLeanArchitecture(ctx, root)
+	results, err := currentLeanResults(root)
 	if err != nil {
 		return "", err
 	}
-	results, err := currentLeanResults(root)
+	// A source-current policy receipt already includes the locked environment.
+	// Reuse that owner once; declaration conflicts remain an error downstream.
+	for _, result := range results {
+		if result.Name == leanArchitectureStage().Name && result.Status == "PASS" && result.Lean != nil && result.Lean.Environment != nil {
+			return publishModelViewsWithEvidence(ctx, root, results)
+		}
+	}
+	imported, err := exportLeanArchitecture(ctx, root)
 	if err != nil {
 		return "", err
 	}

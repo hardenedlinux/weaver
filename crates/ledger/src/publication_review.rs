@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 //! Local deciding-store review admission. The native caller is the trusted review host.
 //! Independent registry recovery, producer authentication and Delta validity are premises.
 #[cfg(test)]

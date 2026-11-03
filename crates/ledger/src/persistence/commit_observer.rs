@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 //! Connection-local test instrumentation around the real native commit.
 //! The normal server does not select this feature or install an observer.
 /// Native transaction cut selected by an explicit test host.

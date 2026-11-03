@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 //! One transaction binds original publication identity, authority/schema and immutable outcome.
 use crate::persistence::WriteScope;
 use crate::{

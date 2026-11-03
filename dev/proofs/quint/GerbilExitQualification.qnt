@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 module GerbilExitQualification {
   // Entry 0 is gerbil test; entry 1 is a diagnostic invocation. Even the same
   // cases and cleanup through another entry do not qualify the package tool.

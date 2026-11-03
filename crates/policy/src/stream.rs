@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 //! Distinct Cedar actions for message admission, recovery and final range writes.
 use weaver_contracts::{Error, MessageBinding, Result, StreamContract, Task};
 

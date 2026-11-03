@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 use std::path::Path;
 #[test]
 fn native_stage_arguments_preserve_data_and_reject_invalid_paths() {

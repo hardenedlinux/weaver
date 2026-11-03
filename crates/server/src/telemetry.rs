@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 //! Transport projection only. Statistics never become source or execution facts.
 use crate::pb;
 use weaver_telemetry::{Metrics, Signal};

@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 //! Error-free Cedar evaluation over authoritative task and wire facts.
 use cedar_policy::{Authorizer, Context, Decision, Entities, EntityUid, Request};
 use weaver_contracts::{Error, Proposal, Result, Task};

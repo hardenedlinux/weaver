@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 //! Persistent administrative key floor. Whole-store rollback is outside this profile.
 #[cfg(test)]
 #[path = "../tests/unit/source_authority_storage.rs"]

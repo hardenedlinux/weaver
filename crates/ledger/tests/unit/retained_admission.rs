@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 //! Retained admission/exposure profile tests over the existing Floor owner.
 use super::{Floor, SCOPE, cut};
 use std::{collections::BTreeSet, path::Path};

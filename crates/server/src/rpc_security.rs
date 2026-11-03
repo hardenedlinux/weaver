@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 //! Process-owned RPC identity contracts, shared without service/configuration cycles.
 use crate::ServerConfig;
 use tonic::transport::ServerTlsConfig;

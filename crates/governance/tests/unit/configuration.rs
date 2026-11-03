@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 use crate::{ProducerCatalog, source_fixture};
 use proptest::{arbitrary::any, prop_assert_eq, proptest};
 use serde_json::json;

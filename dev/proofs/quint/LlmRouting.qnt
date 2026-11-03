@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 // Product-core baseline: filter hard constraints, rank eligible LLM bindings,
 // recheck at final admission. Extra post-dispatch attempts are not enabled.
 module LlmRouting {
