@@ -75,6 +75,9 @@ func Plan(goBinary string) []Stage {
 		{"profile-registry-quint-safety", "quint", []string{"run", "dev/proofs/quint/ProviderProfile.qnt", "--main", "ProviderProfile", "--invariant", "safe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
 		{"provider-quint-tests", "quint", []string{"test", "dev/proofs/quint/ProviderRpc.qnt", "--main", "ProviderRpc", "--seed", "293"}},
 		{"provider-quint-safety", "quint", []string{"run", "dev/proofs/quint/ProviderRpc.qnt", "--main", "ProviderRpc", "--invariant", "safe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
+		{"provider-write-fence-tests", "quint", []string{"test", "dev/proofs/quint/ProviderRequestFence.qnt", "--main", "ProviderRequestFence", "--seed", "293"}},
+		{"provider-write-fence-safety", "quint", []string{"run", "dev/proofs/quint/ProviderRequestFence.qnt", "--main", "ProviderRequestFence", "--invariant", "safe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
+
 		{"provider-lean", "elan", []string{"run", proofToolchain, "lean", "--json", "dev/proofs/lean/ProviderRpc.lean"}},
 		{"dispatch-cancellation-tests", "quint", []string{"test", "dev/proofs/quint/DispatchCancellation.qnt", "--main", "DispatchCancellation", "--seed", "293"}},
 		{"dispatch-cancellation-safety", "quint", []string{"run", "dev/proofs/quint/DispatchCancellation.qnt", "--main", "DispatchCancellation", "--invariant", "safe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
@@ -192,6 +195,7 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 			{"execution-contention-pair", goBinary, []string{"-C", "go", "test", "-count=1", "-tags=integration", "./dev", "-run", "^TestContentionPairs$", "-v"}},
 			{"execution-provider-integration", goBinary, []string{"-C", "go", "test", "-count=1", "-race", "-tags=integration", "./dev", "-run", "^TestProvider", "-v"}},
 			{"published-pipeline-benchmark", goBinary, []string{"-C", "go", "test", "-tags=integration", "./dev", "-run", "^$", "-bench", "^BenchmarkGatewayPublishedPipeline$", "-benchtime=1x", "-count=3", "-benchmem"}},
+			{"execution-header-wait-pair", goBinary, []string{"-C", "go", "test", "-tags=integration", "./dev", "-run", "^$", "-bench", "^BenchmarkGatewayHeaderWaitPair$", "-benchtime=1x", "-count=1", "-benchmem"}},
 			{"execution-streaming-pair", goBinary, []string{"-C", "go", "test", "-tags=integration", "./dev", "-run", "^$", "-bench", "^BenchmarkGatewayStreamingPair$", "-benchtime=1x", "-count=1", "-benchmem"}},
 		}, nil
 	case "bench-runtime":

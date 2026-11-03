@@ -85,7 +85,7 @@ func TestSourceAdmissionBenchmarksRetainEverySizeAndRepetition(t *testing.T) {
 
 func TestPublishedPipelineKeepsSchemeOutsideExecutionQualification(t *testing.T) {
 	stages, err := Stages("bench-execution", "go")
-	if err != nil || len(stages) != 11 {
+	if err != nil || len(stages) != 12 {
 		t.Fatal("execution qualification", err)
 	}
 	for _, stage := range stages {
@@ -142,7 +142,17 @@ func TestStreamingPairRequiresCompleteOrderedBlocks(t *testing.T) {
 			if err := os.WriteFile(path, []byte(header+strings.Join(input, "\n")), 0600); err != nil {
 				t.Fatal(err)
 			}
+			headerPath := filepath.Join(t.TempDir(), "header-pair.log")
+			headerInput := strings.NewReplacer("BenchmarkGatewayStreamingPair", "BenchmarkGatewayHeaderWaitPair", "-single-", "-immediate-", "-batch-", "-delayed-").Replace(header + strings.Join(input, "\n"))
+			if err := os.WriteFile(headerPath, []byte(headerInput), 0600); err != nil {
+				t.Fatal(err)
+			}
+			headerRows, headerErr := readProviderPairBenchmarks(headerPath, 12, "BenchmarkGatewayHeaderWaitPair", "immediate", "delayed")
+			if (headerErr == nil) != (kind == "complete") || (headerErr == nil && len(headerRows) != 24) {
+				t.Fatal("header pair admission", headerErr)
+			}
 			rows, err := readStreamingPairBenchmarks(path, 12)
+
 			if (err == nil) != (kind == "complete") {
 				t.Fatal("pair admission", err)
 			}

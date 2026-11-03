@@ -916,4 +916,42 @@ theorem prepared_bytes_cannot_replace_affine_token
 
 #print axioms prepared_bytes_cannot_bypass_currentness
 #print axioms prepared_bytes_cannot_replace_affine_token
+/- A prospective native transport receipt must certify BOTH local drain and
+absence of every future application-write capability, including SDK tasks.
+This is a host premise; the current reqwest backend exports no such receipt. -/
+namespace RequestWriteFence
+structure State where
+  tail : Bool
+  writable : Bool
+  eof : Bool
+  responseHead : Bool
+  deriving DecidableEq
+
+def Sealed (s : State) : Prop := s.tail = false ∧ s.writable = false
+
+def CanWrite (s : State) : Prop := s.writable = true
+
+theorem seal_excludes_future_application_write (sealed : Sealed s) : ¬ CanWrite s := by
+  simp [CanWrite, sealed.2]
+
+theorem eof_and_response_head_do_not_certify_seal :
+    let s : State := ⟨true, true, true, true⟩
+    s.eof = true ∧ s.responseHead = true ∧ ¬ Sealed s := by simp [Sealed]
+
+theorem local_drain_without_writer_retirement_is_insufficient :
+    let s : State := ⟨false, true, true, false⟩
+    s.tail = false ∧ ¬ Sealed s := by simp [Sealed]
+
+/-- Sealing the request does not authorize response rows. Compose with the
+existing current-context/affine guard, never substitute a transport observation. -/
+theorem sealed_request_cannot_bypass_response_currentness
+    {Key Context : Type} {b : Flow.Batch Key Context} {s : Flow.Pipe Key Context}
+    (transport : State) (_sealed : Sealed transport) (changed : b.context ≠ s.context) :
+    ¬ Flow.CanEmit s b := stale_context_cannot_emit changed
+
+#print axioms seal_excludes_future_application_write
+#print axioms eof_and_response_head_do_not_certify_seal
+#print axioms local_drain_without_writer_retirement_is_insufficient
+#print axioms sealed_request_cannot_bypass_response_currentness
+end RequestWriteFence
 end Weaver.ProviderRpc

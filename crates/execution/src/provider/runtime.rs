@@ -210,7 +210,7 @@ fn open_guarded<O: ProviderOutput>(
         if output.stopped() {
             return Err(Error::Conflict("cancelled before provider invocation"));
         }
-        request.send()
+        request.wait_for_response_headers()
     })??;
     super::request::validate(response)
 }

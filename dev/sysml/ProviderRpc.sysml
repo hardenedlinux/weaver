@@ -151,7 +151,11 @@ package ProviderRpc {
     part def RustGrpcOwner { port proposal : ~PlanPort; port forwarded : PlanPort; }
     /* Client/request construction is pure preparation before dispatch locks.
        DNS, connect, TLS, request bytes and header wait remain within the final
-       guarded request; metrics never authorize any of those effects. */
+       guarded request; metrics never authorize any of those effects.
+       Body EOF and early headers cannot certify local drain or retirement of
+       all application writers. A prospective early unlock requires an affine
+       native seal receipt; the current SDK exposes none. Local drain cannot
+       refund unknown budget or bypass fresh response-row Cedar/fence guards. */
     part def RustProviderBroker { port proposal : ~PlanPort; port response : EventPort; port authority : ~PublicationPort; }
     part def RustCedarRelease { port prepared : ~FramePort; port authorized : FramePort; }
     part def ProtobufOrArrowEncoder {

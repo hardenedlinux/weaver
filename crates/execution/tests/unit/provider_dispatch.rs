@@ -26,6 +26,9 @@ struct Endpoint {
 }
 impl Endpoint {
     fn new() -> Self {
+        Self::with_header_delay(Duration::ZERO)
+    }
+    fn with_header_delay(delay: Duration) -> Self {
         let _ = rustls::crypto::ring::default_provider().install_default();
         let listener = TcpListener::bind("127.0.0.1:0").expect("listener");
         listener.set_nonblocking(true).expect("nonblocking");
@@ -71,6 +74,7 @@ impl Endpoint {
                         let mut stream = rustls::StreamOwned::new(connection, socket);
                         let mut bytes = [0; 4096];
                         assert!(stream.read(&mut bytes).expect("request") > 0);
+                        thread::sleep(delay);
                         stream.write_all(b"HTTP/1.1 200 OK\r\nContent-Type: text/event-stream\r\nContent-Length: 14\r\nConnection: close\r\n\r\ndata: [DONE]\n\n").expect("response");
                         stream.flush().expect("flush");
                     }
@@ -289,7 +293,7 @@ proptest::proptest! {
         proptest::prop_assert_eq!(ledger.transaction_timings().transaction_hold.attempts,before.transaction_hold.attempts);
         if revoked {ledger.publish(Some(0),"forbid(principal,action,resource);",2).expect("new fence");}
         if discarded {drop(request);} else {
-            let result=ledger.dispatch_provider(&permit,||request.send());
+            let result=ledger.dispatch_provider(&permit,||request.wait_for_response_headers());
             if revoked {proptest::prop_assert!(result.is_err());} else {let response=result.expect("guard").expect("actual HTTPS");proptest::prop_assert_eq!(response.status(),200);}
         }
         proptest::prop_assert_eq!(endpoint.calls.load(Ordering::SeqCst),usize::from(!revoked&&!discarded));
@@ -297,4 +301,43 @@ proptest::proptest! {
         proptest::prop_assert!(ledger.consume_provider("f","infer",&eligible).is_err());
         ledger.close().expect("natural cleanup");
     }
+}
+
+#[test]
+fn response_header_wait_remains_in_native_request_and_transaction_timings() {
+    let delay = Duration::from_millis(30);
+    let endpoint = Endpoint::with_header_delay(delay);
+    let directory = tempfile::tempdir().expect("directory");
+    let mut ledger = Ledger::open(directory.path().join("ledger.db")).expect("ledger");
+    ledger
+        .publish_typed(None, "permit(principal,action,resource);", SCHEMA, 1)
+        .expect("policy");
+    let (task, plan) = fixtures::task_plan(16, &endpoint.address);
+    ledger.register_task(&task).expect("task");
+    ledger.enqueue_provider(&plan).expect("queue");
+    let permit = ledger
+        .consume_provider("f", "infer", &BTreeSet::from(["primary".into()]))
+        .expect("consume");
+    let transport = ProviderTransport::new(
+        BTreeMap::from([("primary".into(), "test-key".into())]),
+        Some(endpoint.root.as_bytes()),
+    )
+    .expect("transport");
+    let output = Cancellation {
+        stopped: Arc::new(AtomicBool::new(false)),
+        checkpoint: Mutex::new(None),
+    };
+    let before = ledger.transaction_timings();
+    let response = open_guarded(&mut ledger, &permit, &transport, &output).expect("headers");
+    let phase = ledger.transaction_timings().since(before);
+    assert_eq!(phase.provider_request.attempts, 1);
+    assert!(u128::from(phase.provider_request.nanos) >= delay.as_nanos());
+    assert!(phase.transaction_hold.nanos >= phase.provider_request.nanos);
+    assert_eq!(ledger.held("f").expect("held"), 4);
+    assert_eq!(endpoint.calls.load(Ordering::SeqCst), 1);
+    eprintln!(
+        "header wait native timings: request_ns={} transaction_hold_ns={} commit_ns={}",
+        phase.provider_request.nanos, phase.transaction_hold.nanos, phase.commit.nanos
+    );
+    drop(response);
 }

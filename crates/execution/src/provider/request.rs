@@ -10,7 +10,9 @@ impl PreparedRequest {
     pub(super) fn new(client: Client, request: Request) -> Self {
         Self { client, request }
     }
-    pub(super) fn send(self) -> Result<Response> {
+    /// Returns on response headers, not on a request-write completion receipt.
+    /// The SDK owns its IO driver; body exhaustion is not a sealed writer.
+    pub(super) fn wait_for_response_headers(self) -> Result<Response> {
         self.client
             .execute(self.request)
             .map_err(|_| Error::Conflict("provider outcome unknown"))

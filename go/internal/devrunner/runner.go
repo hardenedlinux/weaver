@@ -294,6 +294,11 @@ func runStageObserved(ctx context.Context, root, directory string, environment [
 		result.Contention, err = readContentionEvidence(filepath.Join(directory, result.Log))
 		result.Details = "Five lock profiles, six complete ABBA blocks each, one optimized immutable benchmark image; intervals overlap."
 	}
+	if stage.Name == "execution-header-wait-pair" && err == nil && closeErr == nil {
+		result.PipelineBenchmarks, err = readProviderPairBenchmarks(filepath.Join(directory, result.Log), runtime.NumCPU(), "BenchmarkGatewayHeaderWaitPair", "immediate", "delayed")
+		result.Details = "Six complete same-image ABBA blocks; fully consumed HTTPS request, immediate versus 30ms delayed headers. Sensitivity control, not an early-unlock speedup."
+	}
+
 	if stage.Name == "execution-streaming-pair" && err == nil && closeErr == nil {
 		result.PipelineBenchmarks, err = readStreamingPairBenchmarks(filepath.Join(directory, result.Log), runtime.NumCPU())
 		result.Details = "Six complete same-image ABBA blocks, Arrow rows=1 versus rows=32; not a before/after implementation speedup."

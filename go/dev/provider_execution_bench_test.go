@@ -12,7 +12,9 @@ import (
 	"github.com/HardenedLinux/weaver/go/internal/config"
 	"github.com/HardenedLinux/weaver/go/internal/controlplane"
 	"github.com/HardenedLinux/weaver/go/internal/gatewayclient"
+	"io"
 	"net"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
@@ -65,11 +67,14 @@ func benchmarkPublishedExecution(b *testing.B, prepare func(*testing.B, *fixture
 	benchmarkPublishedExecutionProfile(b, prepare, activate, pb.Encoding_PROTOBUF, 1)
 }
 func benchmarkPublishedExecutionProfile(b *testing.B, prepare func(*testing.B, *fixture, config.Bundle), activate func(context.Context, *fixture, config.Bundle) (*controlplane.Gateway, error), encoding pb.Encoding, rows uint32) {
+	benchmarkPublishedExecutionHandler(b, prepare, activate, encoding, rows, completeSSE)
+}
+func benchmarkPublishedExecutionHandler(b *testing.B, prepare func(*testing.B, *fixture, config.Bundle), activate func(context.Context, *fixture, config.Bundle) (*controlplane.Gateway, error), encoding pb.Encoding, rows uint32, handler http.HandlerFunc) {
 	var activation, sending time.Duration
 	b.ReportAllocs()
 	b.StopTimer()
 	for range b.N {
-		f := newFixture(b, completeSSE, false)
+		f := newFixture(b, handler, false)
 		bundle := controlBundle(b, f)
 		prepare(b, f, bundle)
 		ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
@@ -144,4 +149,34 @@ func benchmarkPublishedExecutionProfile(b *testing.B, prepare func(*testing.B, *
 	}
 	b.ReportMetric(float64(activation.Nanoseconds())/float64(b.N), "activation-ns/op")
 	b.ReportMetric(float64(sending.Nanoseconds())/float64(b.N), "send-ns/op")
+}
+
+// Same immutable optimized service image, six fresh-store ABBA blocks. This is
+// sensitivity to provider header latency, not an enabled early-unlock candidate.
+func BenchmarkGatewayHeaderWaitPair(b *testing.B) {
+	for block := 0; block < 6; block++ {
+		for index, delayed := range []bool{false, true, true, false} {
+			name := "immediate"
+			if delayed {
+				name = "delayed"
+			}
+			b.Run(fmt.Sprintf("%02d-%s", block*4+index, name), func(b *testing.B) {
+				prepare := func(*testing.B, *fixture, config.Bundle) {}
+				activate := func(ctx context.Context, f *fixture, bundle config.Bundle) (*controlplane.Gateway, error) {
+					return controlplane.Bootstrap(ctx, f.admin, f.client, bundle)
+				}
+				handler := func(w http.ResponseWriter, r *http.Request) {
+					if _, err := io.Copy(io.Discard, r.Body); err != nil {
+						b.Error(err)
+						return
+					}
+					if delayed {
+						time.Sleep(30 * time.Millisecond)
+					}
+					completeSSE(w, r)
+				}
+				benchmarkPublishedExecutionHandler(b, prepare, activate, pb.Encoding_PROTOBUF, 1, handler)
+			})
+		}
+	}
 }

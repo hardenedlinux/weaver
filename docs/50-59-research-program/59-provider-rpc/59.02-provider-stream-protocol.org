@@ -104,3 +104,12 @@ does not reparse or rehash the complete request for every token. No permission
 decision is cached. The Turso deciding lock remains held across initial request
 invocation through response headers and across final bounded queue admission.
 This serial reference profile is not a qualified high-concurrency shard design.
+
+* Request admission is distinct from writer quiescence
+
+The current blocking SDK returns response headers inside the invocation guard.
+Neither headers nor body-producer EOF certify that every request writer is sealed.
+No early unlock is enabled. Buffered accepted bytes may drain; revocation prevents
+new admission and stale response release, not remote recall. Unknown outcomes
+retain the original burn and reservation. See [[file:59.87-spec-upgrade-and-delivery-plan.org][Request-write completion and response-header wait]] for the prospective
+native seal contract, executable counterexamples and qualification boundaries.

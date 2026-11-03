@@ -99,6 +99,10 @@ var sourceAdmissionBenchmarks = []string{
 
 // Reject missing, repeated, or reordered arms rather than selecting favorable samples.
 func readStreamingPairBenchmarks(path string, cpus int) ([]PipelineBenchmark, error) {
+	return readProviderPairBenchmarks(path, cpus, "BenchmarkGatewayStreamingPair", "single", "batch")
+}
+
+func readProviderPairBenchmarks(path string, cpus int, benchmark, first, second string) ([]PipelineBenchmark, error) {
 	content, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
@@ -124,11 +128,11 @@ func readStreamingPairBenchmarks(path string, cpus int) ([]PipelineBenchmark, er
 
 	names := make([]string, 24)
 	for i := range names {
-		arm := "single"
+		arm := first
 		if i%4 == 1 || i%4 == 2 {
-			arm = "batch"
+			arm = second
 		}
-		names[i] = fmt.Sprintf("BenchmarkGatewayStreamingPair/%02d-%s", i, arm)
+		names[i] = fmt.Sprintf("%s/%02d-%s", benchmark, i, arm)
 	}
 	rows, err := readPipelineSamples(path, cpus, 1, names...)
 	if err != nil {
