@@ -342,6 +342,7 @@ func TestProviderSlowConsumerEnqueueBeforeCommitCrashCannotReplayPendingRange(t 
 	f.client.Connection.Close()
 	f.admin.Connection.Close()
 	<-finished
+	assertNoFaultWorkerUnwind(t, f)
 	f.start(t)
 	receipt := inspect(t, f)
 	if receipt.Events != fault.first+fault.rows || receipt.Held != 4 || receipt.State == "complete" {

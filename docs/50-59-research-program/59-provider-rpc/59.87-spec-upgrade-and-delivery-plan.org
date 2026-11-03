@@ -1137,6 +1137,11 @@ and complete through the same instrumented path, preserving its original hold.
 Retrying the original plan, and adopting a newer
 authority after the late-worker cases, must not replay it. Actual kill/wait
 evidence is required for both crash cuts; ordinary result Drop is insufficient.
+All fault trials reject a Rust worker panic in the captured server log before
+acceptance. A killed process can otherwise conceal a prior worker unwind and
+transaction rollback. The existing queue-crash window retains its three-second
+bound with sleep rather than park_timeout, whose permitted early return on an
+unpark token invalidated the intended pause. No native deadline is extended.
 
 The native Proptest additionally verifies callback failure skips the final native
 commit entirely, retains =1= and the original hold, and cannot invoke again under

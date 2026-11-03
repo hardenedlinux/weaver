@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"testing/quick"
 	"time"
@@ -109,6 +110,19 @@ func resumeCommit(t *testing.T, event commitCut, command byte) {
 	event.socket.Close()
 }
 
+// Kill/wait alone is insufficient: a worker can unwind its transaction while
+// the server stays alive, and a later kill would mask a Drop-based rollback.
+func assertNoFaultWorkerUnwind(t *testing.T, f *fixture) {
+	t.Helper()
+	data, err := os.ReadFile(filepath.Join(f.directory, "server.log"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if strings.Contains(string(data), "panicked at") {
+		t.Fatalf("worker unwound before crash/fault acceptance: %s", data)
+	}
+}
+
 // Every fault is reached after real TLS request seal. The commit cut surrounds
 // the actual native commit, not the client RPC reply. Crashes are subprocess
 // kills: no Rust Drop, unwind, or cleanup can manufacture the recovery witness.
@@ -191,6 +205,7 @@ func TestProviderSealedNativeCommitRecovery(t *testing.T) {
 						case <-ctx.Done():
 							t.Fatal("old RPC did not end", ctx.Err())
 						}
+						assertNoFaultWorkerUnwind(t, f)
 						expectedState, expectedEvents := "unknown", uint64(0)
 						if mode == "control" {
 							expectedState, expectedEvents = "complete", 5

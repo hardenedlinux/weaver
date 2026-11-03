@@ -73,7 +73,9 @@ pub(super) fn enqueued(first: u64, rows: usize) {
         observer.record("fault-window", 0, first, rows);
         // This bounded test-only pause exposes enqueue-before-commit. The Go
         // fault test must crash the process here, never turn a timeout into pass.
-        std::thread::park_timeout(Duration::from_secs(3));
+        // park_timeout may return immediately on a leftover unpark token from
+        // the async capacity wait. This window must survive until process kill.
+        std::thread::sleep(Duration::from_secs(3));
         panic!("enqueue/commit fault window was not consumed by the test");
     }
 }
