@@ -2,7 +2,8 @@
 (import :std/test
         (only-in :std/error Error? Error-message)
         (only-in :clan/poo/object .o .get .slot? object-slots-set!)
-        (only-in :clan/poo/mop TypeError?)
+        (only-in :clan/poo/mop TypeError? validate sexp<-)
+        (only-in ../scheme/gateway/contracts GatewayArtifact)
         (only-in :agentic-ai-lab/modules/governance/interface AgenticAILabGovernanceProfile. agentic-ai-lab-governance-source)
         (only-in :agentic-ai-lab/modules/loop-engine/control/governor make-loop-governor)
         (only-in :agentic-ai-lab/modules/loop-engine/control/strategy make-loop-strategy-plan)
@@ -17,6 +18,8 @@
         (only-in :clan/poo/testing/property/test check-property)
         ../scheme/gateway/func)
 (export gateway-source-test)
+
+(def (artifact-data value) (sexp<- GatewayArtifact (validate GatewayArtifact value)))
 
 (def commitment (make-string 64 #\a))
 (def source-governor
@@ -69,7 +72,7 @@
       (let ((program (make-gateway-program)))
         (check-equal? (refusal-message (lambda () (object-slots-set! program '()))) "sealed prototype")
         ((.get program install) (lambda (value) value))
-        (check-equal? (gateway-source-json ((.get program capture) bundle)) (gateway-source-json bundle))
+        (check-equal? (artifact-data ((.get program capture) bundle)) (artifact-data bundle))
         (check-equal? (refusal-message (lambda () (object-slots-set! program '()))) "sealed prototype")))
     (test-case "program installation and close follow an irreversible lifecycle"
       (def report
@@ -120,8 +123,8 @@
         ;; The installed Function contract still checks nested output fields.
         (check-exception ((.get program capture) bundle) TypeError?)
         (check-equal? calls 1)
-        (check-equal? (gateway-source-json ((.get program capture) bundle))
-                      (gateway-source-json bundle))
+        (check-equal? (artifact-data ((.get program capture) bundle))
+                      (artifact-data bundle))
         (check-equal? calls 2)))
     (test-case "program close during callback fences output without holding the lifecycle lock"
       (let ((program (make-gateway-program)))
@@ -264,7 +267,7 @@
             (capture-gateway-source
               (lambda () (deliver-gateway-source bundle) (error "source failed after emission")))))
         "source failed after emission")
-      (check-equal? (gateway-source-json (capture-gateway-source (lambda () (deliver-gateway-source bundle)))) (gateway-source-json bundle)))
+      (check-equal? (artifact-data (capture-gateway-source (lambda () (deliver-gateway-source bundle)))) (artifact-data bundle)))
     (test-case "caught invalid emission cannot be replaced inside the same capture"
       (check-equal?
         (refusal-message
@@ -304,17 +307,17 @@
         (lambda ()
           (when release-held? (mutex-unlock! release))
           (when worker (set! late (thread-join! worker)))))
-      (check-equal? (gateway-source-json image) (gateway-source-json bundle))
-      (check-equal? (gateway-source-json next) (gateway-source-json bundle))
+      (check-equal? (artifact-data image) (artifact-data bundle))
+      (check-equal? (artifact-data next) (artifact-data bundle))
       (check-equal? late "Gateway capture has ended"))
-    (test-case "SDK sorted JSON preserves source identity and significant order"
-      (def first (gateway-source-json bundle))
-      (for-each (lambda (_) (check-equal? (gateway-source-json bundle) first)) (iota 16))
+    (test-case "typed projection preserves source identity and significant order"
+      (def first (artifact-data bundle))
+      (for-each (lambda (_) (check-equal? (artifact-data bundle) first)) (iota 16))
       (check (equal? first
-                     (gateway-source-json (.o (:: @ bundle)
+                     (artifact-data (.o (:: @ bundle)
                        publication: (.o (:: @ source-publication) policy: "forbid(principal,action,resource);")))) => #f)
       (check (equal? first
-                     (gateway-source-json (.o (:: @ bundle)
+                     (artifact-data (.o (:: @ bundle)
                        plans: (list (.o (:: @ plan) routes: (reverse (.get plan routes))))))) => #f))
     (test-case "assessed compilation owns its image across all delegated callbacks"
       (def field-labels '(policy schema family endpoint nodes routes profile root policy-id asset-path))

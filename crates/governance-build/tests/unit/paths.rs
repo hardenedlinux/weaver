@@ -1,32 +1,40 @@
-use crate::staging_expression;
 use std::path::Path;
 #[test]
-fn staging_owns_static_output_and_quotes_paths_without_shell_execution() {
-    let expression = staging_expression(
-        Path::new("/tmp/a b/fixture.ss"),
-        Path::new("/tmp/lib\"quoted"),
-        Path::new("/tmp/stage"),
-        &crate::ProgramApplication::approved(
-            "operator/gateway/application",
-            Path::new("/tmp/approved/application.ss"),
-        )
-        .expect("application"),
+fn native_stage_arguments_preserve_data_and_reject_invalid_paths() {
+    let app = crate::ProgramApplication::approved(
+        "operator/application",
+        Path::new("/tmp/a \"quoted λ/application.ss"),
     )
-    .expect("paths");
-    assert!(expression.contains("output-dir: \"/tmp/lib\\\"quoted\""));
-    assert!(expression.contains("/tmp/a b/fixture.ss"));
-    assert!(expression.contains("invoke-gsc: #t"));
-    assert!(!expression.contains("compile-file"));
-    assert!(
-        staging_expression(
-            Path::new("bad\0path"),
-            Path::new("lib"),
-            Path::new("stage"),
-            &crate::ProgramApplication::approved(
-                "operator/gateway/application",
-                Path::new("/tmp/approved/application.ss")
+    .expect("application");
+    let request = crate::ProgramStageRequest::new(
+        Path::new("/tmp/package"),
+        Path::new("/tmp/prefix/lib"),
+        Path::new("/tmp/output"),
+        &app,
+    )
+    .expect("native arguments");
+    assert_eq!(
+        request.application_source,
+        "/tmp/a \"quoted λ/application.ss"
+    );
+    assert_eq!(request.library, "/tmp/prefix/lib");
+    for package in ["relative", "/tmp/bad\0path"] {
+        assert!(
+            crate::ProgramStageRequest::new(
+                Path::new(package),
+                Path::new("/tmp/prefix/lib"),
+                Path::new("/tmp/output"),
+                &app
             )
-            .expect("application")
+            .is_err()
+        );
+    }
+    assert!(
+        crate::ProgramStageRequest::new(
+            Path::new("/tmp/package"),
+            Path::new("/tmp/not-lib"),
+            Path::new("/tmp/output"),
+            &app
         )
         .is_err()
     );
@@ -61,15 +69,13 @@ fn application_names_cannot_inject_source_or_select_weaver_fixtures() {
         app.forbidden_modules()
             .contains(&crate::application::QUALIFICATION_APPLICATION)
     );
-    let text = staging_expression(
-        Path::new("entry.ss"),
-        Path::new("lib"),
-        Path::new("stage"),
+    let request = crate::ProgramStageRequest::new(
+        Path::new("/tmp/package"),
+        Path::new("/tmp/prefix/lib"),
+        Path::new("/tmp/stage"),
         &app,
     )
-    .expect("expression");
-    assert!(text.contains("/tmp/approved/application.ss"));
-    assert!(text.contains("expander-context-id (import-module"));
-    assert!(text.contains("approved application root mismatch"));
-    assert!(!text.contains("t/fixtures"));
+    .expect("native request");
+    assert_eq!(request.application_source, "/tmp/approved/application.ss");
+    assert_eq!(request.application_module, app.module());
 }

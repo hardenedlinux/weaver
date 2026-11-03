@@ -3,8 +3,8 @@
 
 * Workload
 
-Prepare the compiler expression for explicit package, isolated library and Cargo
-staging paths, including path quoting and input validation.
+Validate borrowed native SDK arguments for explicit package, isolated library
+and Cargo staging paths. Paths remain data; no Scheme expression is generated.
 
 * Measurement boundary
 

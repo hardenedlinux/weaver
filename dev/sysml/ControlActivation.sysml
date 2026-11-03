@@ -692,6 +692,12 @@ package ControlActivation {
            preserves siblings. Historical outcomes remain queryable but confer
            no current execution authority. Production RPC has no Delta artifact
            field yet: command commitment tests do not qualify review admission. */
+        doc /* The build-host SDK tooling VM invokes the root Scheme package
+           declaration and native program staging with typed arguments. Cargo
+           keeps its features separate from the external application VM.
+           Scheme-to-Rust transport uses rooted typed values, not exported JSON
+           or dynamically generated GXI scripts. Compilation evidence grants
+           no publication, consumption, budget release or final-send authority. */
         doc /* Scheme Cedar Policy values and cedar-language GovernanceSource assets project to one exact ordered Cedar policy set. Assets use explicit confined roots and bounded regular-file reads. Unsupported domain obligations reject. The publication carries the exact projected bytes; the Scheme source manifest is compilation evidence and not a runtime permit. */
         doc /* Reviewed no-gain publication additionally needs exact original
            parent/profile/source/schema/policy evidence bound at the final CAS.

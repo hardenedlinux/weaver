@@ -26,7 +26,7 @@ var rustBenchmarkCases = []string{
 	"governance_source_lane_roundtrip",
 	"governance_producer_catalog_roundtrip/1",
 	"governance_producer_catalog_roundtrip/64",
-	"governance-build_staging_expression",
+	"governance-build_stage_request",
 	"contracts_provider_commitment/128",
 	"contracts_provider_commitment/16384",
 	"contracts_provider_commitment/524288",

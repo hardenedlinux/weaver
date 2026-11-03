@@ -22,7 +22,13 @@ The production library forbids unsafe code. =scheme-vm= exposes only conversion;
 one approved linked program/export in its own documented ABI module, exercises
 the actual AA/Governor/Cedar composition and cleans the VM before reading owned
 results. It requires explicit =GERBIL_HOME=, =GERBIL_PATH=, =GERBIL_LOADPATH= and
-=WEAVER_CONTROL_SCHEME_COMPILER= for the approved isolated SDK/source prefix.
+=GERBIL_GXI= when overriding the SDK compiler discovery for the approved prefix.
+Cargo separates the build-host SDK tooling VM from the external application VM.
+The build host invokes the root package entry and native graph staging API;
+Weaver does not generate Scheme expressions or launch a dynamic GXI exporter.
+The build host compiles the Cargo-selected SDK package and Weaver libraries into
+Cargo-owned output. Existing Gerbil libraries are dependency inputs; older
+same-named SDK outputs cannot enter the final archive through that prefix.
 The selected SDK's capacity must be reported separately from host core count.
 
 =cargo test -p weaver-governance --features scheme-qualification --locked --offline=.

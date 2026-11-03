@@ -138,7 +138,7 @@ func (c *controlProcess) start(t testing.TB) {
 		t.Fatal("control phase log was truncated during startup")
 	}
 	for _, line := range strings.Split(string(data[previousLog.Size():]), "\n") {
-		if strings.HasPrefix(line, "weaver scheme phase=") || strings.Contains(line, "Scheme source process") || strings.Contains(line, "Scheme source artifact") || strings.Contains(line, "Control startup") {
+		if strings.HasPrefix(line, "weaver scheme phase=") || strings.Contains(line, "Control startup") {
 			t.Log(line)
 		}
 	}
@@ -351,6 +351,10 @@ func TestProviderControlCompleteStreamsShareBudgetAndRejectSDKRetry(t *testing.T
 }
 
 func exerciseControlSharedBudget(t *testing.T, source func(*testing.T, *fixture, config.Bundle) string) {
+	exerciseControlSharedBudgetPolicies(t, source, controlPolicySources{})
+}
+
+func exerciseControlSharedBudgetPolicies(t *testing.T, source func(*testing.T, *fixture, config.Bundle) string, policies controlPolicySources) {
 	t.Helper()
 	f := newFixture(t, completeSSE, false)
 	bundle := controlBundle(t, f)
@@ -359,7 +363,11 @@ func exerciseControlSharedBudget(t *testing.T, source func(*testing.T, *fixture,
 	if source != nil {
 		path = source(t, f, bundle)
 	}
+	if policies.configure != nil {
+		policies.configure(t, f, bundle)
+	}
 	c := newControlProcess(t, f, path)
+	c.useProducer(policies.producer)
 	c.start(t)
 	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
 	defer cancel()

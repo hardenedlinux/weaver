@@ -430,14 +430,17 @@ Scheme unit assertions belong to =t/gateway-contracts-test.ss=,
 =test-suite=, =test-case= and checks. They exercise concrete Record contracts,
 exact numeric projection, Governor selection and the real inert Cedar C ABI.
 The existing Gerbil toolchain =gxtest= API discovers these suites. Its returned result is
-checked explicitly; an error result or failure to exit naturally within fifteen
-seconds fails the stage.
+checked explicitly; an error result or failure to exit naturally within the 60-second package functional bound fails
+the stage. Runtime latency is measured independently; the historical 15-second
+controls remain failed observations.
 
-=go/dev/provider_control_scheme_integration_test.go= owns cross-language process,
+=go/dev/provider_program_deployment_test.go= owns cross-language process,
 mTLS gRPC, publication, revocation and restart observations. Its native Governor
 and Governance fixture lives in =t/fixtures/governed-control.ss=; Go supplies
 only inert test data. It is not a replacement Scheme unit-test framework.
-The Go development runner schedules both native suites and integration tests.
+Deep semantic cases live in =t/integration/governed-control-test.ss= under
+=:std/test=. The Go development runner schedules both standard package suites
+and the compiled-program gRPC integration.
 
 Per-run logs and linked build environments use system temporary storage and
 are removed after execution. A single latest structured result per mode records
@@ -463,8 +466,9 @@ go -C go run ./cmd/weaver-dev check-scheme
 go -C go build ./cmd/weaver-control
 #+end_src
 
-Select =WEAVER_CONTROL_SCHEME_COMPILER= as an absolute =gxi= path for build/test
-preparation only. The actual =weaver-control= executable selects exactly one of
+Use the SDK's =GERBIL_GXI= override only when compiler discovery needs an explicit
+selection. Weaver calls native package/staging APIs and exports typed FFI data.
+The actual =weaver-control= executable selects exactly one of
 =WEAVER_CONTROL_PRODUCER= (approved Rust producer name) and
 =WEAVER_CONTROL_CONFIG= (JSON/YAML data file), and uses =WEAVER_CONTROL_LISTEN=.
 It never starts a Scheme compiler or accepts a Scheme file as runtime code.

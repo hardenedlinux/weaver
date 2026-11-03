@@ -106,7 +106,8 @@ Verification responsibilities are declared once in
 The [[file:59.27-policy-evidence-architecture.org][architecture reuse map]] identifies the existing semantic and schedule owners.
 Projection witnesses remain =t/policy-projection-test.ss=,
 =t/governance-test.ss=, =t/gateway-source-test.ss= and
-=go/dev/provider_control_scheme_integration_test.go=, with named links in the
+=t/integration/governed-control-test.ss= and
+=go/dev/provider_program_deployment_test.go=, with named links in the
 SysML trace. Imported model cases run at their owner stages; composition stages
 select their local cases. Semantic bridge premises include faithful
 materialization and authenticated host facts; neither source shape nor bounded

@@ -66,21 +66,14 @@ are separate observations and cannot substitute for this source/host receipt.
 The outstanding work is a reproducible discovery/loading diagnosis that keeps
 the original deadline, rather than retrying until a passing sample appears.
 
-* Reproduction and evidence ownership
-Run =go -C go run ./cmd/weaver-dev -clean-source -scheme-source PATH
--scheme-poo PATH check-scheme= with the pinned source checkouts, an explicit
-installed =WEAVER_CONTROL_SCHEME_COMPILER= and a separate =CARGO_TARGET_DIR=.
-Prepare locked Go dependencies before measuring deadline-bound checks. Keep
-source preparation, build, discovery, execution and cleanup results separate.
+* Historical evidence ownership
+The retired source flags and compiler override are not current reproduction
+instructions. Current package operations use standard gerbil build/test and the
+Cargo-selected SDK's native package APIs; see
+[[file:59.87-spec-upgrade-and-delivery-plan.org][the current delivery and Runtime acceptance plan]].
+The original source identities and output digests belong to the ignored result
+receipt, not a duplicate package lock in this Org document.
 
-| Linked source | Commit |
-|---------------+--------|
-| Agentic AI Lab | 921e75f830a60c2ec42c384139846b05ba5d3317 |
-| Inherited Yuanxu/Core | 79a5526a2ecd06408201be87b4a028b167c8d8a0 |
-| Declared POO | 98fcce3abec760373cc7486a8b51d6bb97424658 |
-
-The linked source snapshot SHA-256 was
-=ee4c89ba67a648557e59fa29de3fbecc92f72b4a5e5193e76f7f3f55f38a1fd7=.
 The ignored fixed =latest-check-scheme.json= retains the stage errors, output
 commitments, source hashes and durations. The runner removed raw stage logs
 and its isolated Scheme prefix after finalization. No raw logs enter Git.

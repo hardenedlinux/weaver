@@ -9,11 +9,14 @@ import (
 	"strings"
 )
 
-// Match the existing unfiltered `gerbil test -g -v 5 t` entry. The SDK's
+// Match an unfiltered standard Gerbil test directory. The SDK's
 // collect-files selects direct -test.ss entries in this directory; no separate
 // module manifest or frozen case count is maintained here.
-func schemeTestModules(root string) ([]string, error) {
-	entries, err := os.ReadDir(filepath.Join(root, "t"))
+func schemeTestModules(root, directory string) ([]string, error) {
+	if !filepath.IsLocal(directory) {
+		return nil, errors.New("Scheme test directory must be local")
+	}
+	entries, err := os.ReadDir(filepath.Join(root, directory))
 	if err != nil {
 		return nil, err
 	}
@@ -29,7 +32,7 @@ func schemeTestModules(root string) ([]string, error) {
 		if !info.Mode().IsRegular() {
 			return nil, errors.New("Scheme test inventory requires regular source files")
 		}
-		modules = append(modules, "t/"+entry.Name())
+		modules = append(modules, filepath.ToSlash(filepath.Join(directory, entry.Name())))
 	}
 	if len(modules) == 0 {
 		return nil, errors.New("Scheme test inventory is empty")
@@ -44,8 +47,8 @@ type schemeTestFrame struct {
 // The SDK CLI may return zero even when its test main returns 42. Require the
 // actual source module inventory, balanced suite/case results and terminal OK.
 // The caller separately owns process exit, deadline and source-currentness.
-func validateSchemeResult(root, path string) error {
-	modules, err := schemeTestModules(root)
+func validateSchemeResult(root, directory, path string) error {
+	modules, err := schemeTestModules(root, directory)
 	if err != nil {
 		return err
 	}

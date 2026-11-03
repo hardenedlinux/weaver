@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"testing"
+	"time"
 )
 
 // Reuse an explicitly prepared standard package environment. This test owns
@@ -41,7 +42,7 @@ func TestGerbilPackageEntryNaturalExit(t *testing.T) {
 		Stable          bool              `json:"stable"`
 		Trials          []Result          `json:"trials"`
 		Inputs          map[string]string `json:"inputs"`
-	}{Entry: "gerbil test -g -v 5 t", CPUs: runtime.NumCPU(), DeadlineSeconds: 15, Inputs: before}
+	}{Entry: "gerbil test -g -v 5 t", CPUs: runtime.NumCPU(), DeadlineSeconds: int(schemePackageTestTimeout / time.Second), Inputs: before}
 	defer func() {
 		after, err := SourceInputs(root)
 		report.Stable = err == nil && maps.Equal(before, after)

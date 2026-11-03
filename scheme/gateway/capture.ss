@@ -1,13 +1,9 @@
 ;;; A call-scoped data sink; neither emission nor capture grants authority.
-(import (only-in :clan/poo/mop validate json<-)
-        (only-in :std/encoding/json json->string JSONWriteOptions)
+(import (only-in :clan/poo/mop validate)
         "./contracts.ss" (only-in "./snapshot.ss" copy-source-data))
-(export capture-gateway-source deliver-gateway-source gateway-source-json)
+(export capture-gateway-source deliver-gateway-source)
 
 (def source-sink (make-parameter #f))
-
-(def (gateway-source-json value)
-  (json->string (json<- GatewayArtifact (validate GatewayArtifact value)) (JSONWriteOptions sort-keys: #t)))
 
 (def (deliver-gateway-source value)
   (let ((sink (source-sink)))

@@ -66,7 +66,7 @@ func TestSchemePackageResultRejectsFalseZeroExit(t *testing.T) {
 			if err := os.WriteFile(path, []byte(tc.output), 0600); err != nil {
 				t.Fatal(err)
 			}
-			if err := validateSchemeResult(root, path); (err == nil) != tc.ok {
+			if err := validateSchemeResult(root, "t", path); (err == nil) != tc.ok {
 				t.Fatal("incorrect SDK result admission", err)
 			}
 		})
@@ -101,7 +101,7 @@ func TestSchemeTestInventoryCannotOmitSourceOrAcceptAliases(t *testing.T) {
 	if err := os.WriteFile(filepath.Join(root, "t/new-test.ss"), nil, 0600); err != nil {
 		t.Fatal(err)
 	}
-	if err := validateSchemeResult(root, path); err == nil {
+	if err := validateSchemeResult(root, "t", path); err == nil {
 		t.Fatal("a newly selected module was omitted")
 	}
 	if err := os.Remove(filepath.Join(root, "t/new-test.ss")); err != nil {
@@ -110,7 +110,7 @@ func TestSchemeTestInventoryCannotOmitSourceOrAcceptAliases(t *testing.T) {
 	if err := os.Symlink(path, filepath.Join(root, "t/alias-test.ss")); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := schemeTestModules(root); err == nil {
+	if _, err := schemeTestModules(root, "t"); err == nil {
 		t.Fatal("aliased source entered the qualification inventory")
 	}
 }
@@ -126,7 +126,7 @@ func TestSchemePackageResultRecordedSDKProtocol(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err := validateSchemeResult(root, path); err != nil {
+	if err := validateSchemeResult(root, "t", path); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -163,7 +163,7 @@ func FuzzSchemePackageResultProtocol(f *testing.F) {
 		if err := os.WriteFile(path, []byte(body), 0600); err != nil {
 			t.Fatal(err)
 		}
-		if err := validateSchemeResult(root, path); (err == nil) != (mode == 0) {
+		if err := validateSchemeResult(root, "t", path); (err == nil) != (mode == 0) {
 			t.Fatal("protocol completeness was not preserved", mode, err)
 		}
 	})
@@ -189,5 +189,33 @@ func TestSchemeUsesPackageTestEntry(t *testing.T) {
 	}
 	if !found {
 		t.Fatal("Scheme package tests missing")
+	}
+}
+
+func TestSchemePackageResultIntegrationCannotBorrowUnitReceipt(t *testing.T) {
+	root := schemeResultRoot(t)
+	directory := filepath.Join(root, "t/integration")
+	if err := os.Mkdir(directory, 0700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(directory, "library-test.ss"), nil, 0600); err != nil {
+		t.Fatal(err)
+	}
+	binary, err := os.Executable()
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, valid := range []bool{false, true} {
+		body := schemeTranscript(20)
+		if valid {
+			body = strings.ReplaceAll(body, "t/library-test.ss", "t/integration/library-test.ss")
+		}
+		result := runStage(context.Background(), root, t.TempDir(),
+			Environment(map[string]string{"WEAVER_TEST_TOOL": "success"}),
+			Stage{Name: "scheme-source-integration-tests", Binary: binary,
+				Args: []string{"-test.run=^TestToolProcess$", "--", body}})
+		if result.ExitCode == nil || *result.ExitCode != 0 || (result.Status == "PASS") != valid {
+			t.Fatal("integration accepted a different module inventory", valid, result)
+		}
 	}
 }

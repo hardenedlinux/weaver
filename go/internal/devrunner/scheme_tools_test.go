@@ -125,7 +125,7 @@ func TestSchemeVerificationUsesOnlyPublicPackageEntries(t *testing.T) {
 			entries[stage.Name] = args
 		}
 	}
-	if len(entries) != 2 || entries["scheme-module-build"] != "build -g" || entries["scheme-unit-tests"] != "test -g -v 5 t" {
+	if len(entries) != 3 || entries["scheme-source-integration-tests"] != "test -g -v 5 t/integration" || entries["scheme-module-build"] != "build -g" || entries["scheme-unit-tests"] != "test -g -v 5 t" {
 		t.Fatalf("unexpected Scheme package lifecycle: %v", entries)
 	}
 }

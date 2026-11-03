@@ -233,16 +233,49 @@ delegated callbacks. Closed Record validation, independently retained original
 binding and final current Policy/fence checks also have distinct obligations.
 They are not eliminated by using a typed FFI conversion.
 
-The build audit still identifies an explicit four-module SDK helper bootstrap
-in governance-build/stage.rs. It is build-time only. The pinned build-support
-crate exports archive/staging primitives but no package-helper bootstrap API;
-the runtime package APIs require an already initialized default tooling image,
-while Weaver embeds an external application image. Calling those APIs here is
-not a safe substitution for bootstrapping that image. This remains an upstream
-convergence item, not a runtime optimization or a reason to add another local
-module scanner/package manager. Keep official gerbil build/test acceptance and
-the compiler-owned application graph until an upstream bootstrap owner replaces
-the list. No dependency selection changes are needed for the direct encoder.
+The build-host SDK tooling image and the external application image have different
+roles. Cargo's build dependency feature context keeps them separate. Root build.rs
+contains only typed SDK method bindings; the existing governance-build library
+owns staging orchestration. The binding record preserves concrete Runtime/Error
+types without a runtime registry or a target-side tooling dependency. The build
+script calls the selected SDK's native package path, package entry and program
+staging APIs with borrowed strings and rooted import symbols. The root build.ss
+owns module declarations, forced current-source compilation for the application
+archive and exact application module identity checking. The SDK owns compiler
+helper declarations and compiler process supervision. The native host binds a
+Cargo-owned output prefix, retains dependency libraries as read-only inputs and
+invokes the selected SDK's standard package build before the Weaver package.
+A dependency prefix cannot supply an older same-named SDK runtime ABI to the
+final archive. No source-checkout cleanup is used. Weaver no longer maintains
+a four-module helper list or generates Scheme expressions for a GXI subprocess.
+The compiler manifest remains SDK-owned build evidence, never a runtime permit.
+
+The obsolete Go source-to-Scheme printer, dynamic GXI invocation and JSON artifact
+export are removed. Their semantic refusal cases move to the standard Scheme
+integration suite under t/integration; compiled producer RPC tests cover publication, shared budget, revoke,
+reply loss, restart and partial writes. JSON/YAML operator configuration is still
+a supported input. This does not reintroduce JSON as Scheme-to-Rust transport.
+Standard package unit and source integration stages each have a 60-second whole-
+suite functional bound. Runtime latency is qualified separately by native PBT
+and benchmarks; package discovery/loading/cleanup is not a send-path latency
+measurement. The historical 15-second controls remain FAIL, not repaired or
+reclassified by this acceptance change. Provider execution/startup deadlines,
+revocation, accounting and resource cleanup contracts are unchanged.
+
+The twenty semantic integration cases use the standard gerbil test t/integration
+entry; they formerly lived in the 11-minute Go/GXI integration stage. Both Scheme
+stages require their own exact module inventory, balanced results, terminal OK
+and natural successful exit. Fixed framework-source reads may share the upstream
+cache only within this inert test batch, bracketed by independent currentness
+checks. Policy assets remain fresh per case.
+
+The changed native build-host and migrated tests require fresh full acceptance;
+prior receipts describe their original source revisions only.
+
+Exact counters retain the SDK's canonical binary-integer carrier. Its Fixnum
+scalar is machine-representation bounded and is not a replacement for all valid
+Gateway counters. Weaver's unsigned width/range checks belong to its concrete
+record contract; floating-point or fixnum coercion would lose that guarantee.
 
 The native Proptest suite compares both SDK encoders against the original
 Unicode/NUL string, exercises original-binding refusal and recovery, and rejects
@@ -286,3 +319,36 @@ declare Scheme end-to-end acceptance or stable performance improvement.
 
 #+CAPTION: The imported Zero Trust contract constrains actual Gateway use.
 [[file:../../architecture/diagrams/00d-zero-trust-overview.svg]]
+
+* Native Runtime measurements
+
+Two complete runs each contain fourteen cases and thirty samples per case.
+External Rust dependencies use opt-level 3; the qualification application retains
+the required development profile. One affine VM is used per process. Values
+below are Criterion arithmetic mean estimates, with no outlier removal. These
+are warm owner-local costs, not production Gateway throughput or RSS results.
+The Unicode unit contains lambda, an emoji and U+0000; repetitions preserve the
+same original string in both encoders. Fixed case ordering still permits host
+and cache drift, so both complete runs are retained.
+
+| Input | Repetitions | Snapshot mean us (runs 1 / 2) | Direct mean us (runs 1 / 2) | Reduction percent (runs 1 / 2) |
+|-------+-------------+------------------------------+----------------------------+--------------------------------|
+| ascii | 64 | 1.021 / 1.003 | 0.572 / 0.549 | 44.0 / 45.3 |
+| ascii | 16384 | 30.935 / 29.755 | 15.853 / 15.603 | 48.8 / 47.6 |
+| ascii | 262144 | 403.733 / 389.985 | 241.351 / 240.338 | 40.2 / 38.4 |
+| unicode | 64 | 1.840 / 1.792 | 1.052 / 0.997 | 42.8 / 44.4 |
+| unicode | 16384 | 198.641 / 196.732 | 128.635 / 128.079 | 35.2 / 34.9 |
+| unicode | 262144 | 2981.230 / 2761.959 | 2045.524 / 2031.994 | 31.4 / 26.4 |
+
+The complete owned-source roundtrip measures 624.1 / 615.4 us. Actual AA capture,
+inert Cedar preflight and independent original binding measure 1.102 / 1.221 s.
+These source compilation/control operations exclude publication and final sends.
+There is no matched pre-change whole-AA or Gateway baseline, so neither result
+establishes an end-to-end speedup. The string pairs measure only the encoder
+replacement; they do not prove a lower VM heap ceiling.
+
+An earlier complete optimized run overlapped a queued Clippy build because
+Cargo releases its build lock before executing a benchmark. That whole run is
+retained as a contended control and is excluded from the table. The two reported
+runs had no concurrent Weaver build/test jobs; unrelated host work was not
+controlled. All baselines, samples and failures stay under ignored .cache.

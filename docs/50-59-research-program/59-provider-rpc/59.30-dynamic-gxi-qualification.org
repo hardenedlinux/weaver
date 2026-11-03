@@ -1,5 +1,12 @@
-#+title: 59.30 Ordinary Dynamic gxi: Local Cold-Process Qualification
+#+title: 59.30 Historical Dynamic Entry Controls (Retired)
 #+language: en
+
+* Status
+This is a historical failed/diagnostic cohort, not a current runner or acceptance
+procedure. The dynamic GXI experiments and their flags have been retired. Their
+failures are not repaired by native SDK acceptance or by changing package test
+budgets. Current native Runtime and standard package requirements are maintained
+in [[file:59.87-spec-upgrade-and-delivery-plan.org][the delivery plan]].
 
 * Contract and scope
 This work qualifies the ordinary installed =gxi= entry on the local twelve-CPU
@@ -131,32 +138,13 @@ The bounded diagnostic failure extract is
 failure remains explicit. The final report must distinguish this diagnostic
 record from a committed, stable-source timing PASS.
 
-* Reproduction
-Use the existing host/compiler environment and unchanged source pins. Let the
-runner use the machine's available twelve CPUs; do not set a smaller parallel
-budget. Build time is separate from each child's fixed runtime deadline.
+* Historical reproduction boundary
+The former custom source checkout flags, compiler environment variable and
+paired-image Go runner are no longer supported. Do not reconstruct those paths.
+Use the root package declaration and standard gerbil build/test entrypoints for
+current acceptance; retained historical receipts keep their original scope.
 
-#+begin_src text
-go -C go test -count=1 -timeout=30m -tags=schemeintegration \
-  ./internal/devrunner -run '^TestDynamicSchemeColdStartPairs$' -v -args \
-  -scheme-source /absolute/pinned/agentic-ai-lab \
-  -scheme-poo /absolute/inherited/pinned/gerbil-poo \
-  -scheme-require-committed
-
-go -C go run ./cmd/weaver-dev -clean-source \
-  -scheme-source /absolute/pinned/agentic-ai-lab \
-  -scheme-poo /absolute/inherited/pinned/gerbil-poo check-scheme
-#+end_src
-
-Set =WEAVER_CONTROL_SCHEME_COMPILER= to the ordinary absolute =gxi= entry.
-The thirty-minute Go envelope permits source compilation and the complete
-matrix; it does not replace or widen any fifteen-second child limit. Optional
-=-scheme-profile-phases= produces diagnostic sampling, never a timing PASS.
-An explicit =-scheme-prepared-environment= supports isolated diagnosis; the caller
-owns that prefix and must remove it. Default preparation always cleans its
-owned prefix and checks the pinned dependency sources.
-
-* Remaining evidence boundary
+* Historical remaining evidence boundary
 The repair is not qualified by an AOT executable, a success marker, a remote
 workflow, or a quiet-host-only pass. Local source-qualified cold-image pairs,
 natural cleanup accounting and the full Scheme/Rust/Go integration path are

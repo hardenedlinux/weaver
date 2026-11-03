@@ -1,11 +1,10 @@
 //! Approved Gerbil paths, compiler graph staging and native archive composition.
-use crate::stage::{prepare_gerbil_modules, staging_expression};
+use crate::ProgramStageRequest;
 use gerbil_scheme_aot_build::{
     NativeHeaderInput, ProgramArchiveContract, ProgramArchiveObservation, ProgramArchiveObserver,
     ProgramArchiveRequest, build_program_archive_with_contract, discover_gambit_gsc_from_env,
-    gerbil_command, run_native_process,
 };
-use std::{env, ffi::OsStr, path::PathBuf};
+use std::{env, path::PathBuf};
 struct Progress;
 impl ProgramArchiveObserver for Progress {
     fn observe(&self, event: ProgramArchiveObservation<'_>) {
@@ -17,7 +16,6 @@ impl ProgramArchiveObserver for Progress {
 }
 struct BuildPaths {
     root: PathBuf,
-    source: PathBuf,
     out: PathBuf,
     stage: PathBuf,
     library: PathBuf,
@@ -54,8 +52,14 @@ impl BuildPaths {
             )
             .expect("approved application module")
         };
-        let source = root.join("scheme/gateway/compiled.ss");
-        println!("cargo:rerun-if-changed={}", source.display());
+        for source in [
+            root.join("build.ss"),
+            root.join("init.ss"),
+            root.join("scheme"),
+            application.source().to_path_buf(),
+        ] {
+            println!("cargo:rerun-if-changed={}", source.display());
+        }
         let out = PathBuf::from(env::var_os("OUT_DIR").expect("Cargo output"));
         let stage = out.join("program");
         std::fs::create_dir_all(&stage).expect("program staging");
@@ -63,25 +67,11 @@ impl BuildPaths {
             PathBuf::from(env::var_os("GERBIL_PATH").expect("isolated Gerbil prefix")).join("lib");
         Self {
             root,
-            source,
             out,
             stage,
             library,
             application,
         }
-    }
-    fn stage(&self, compiler: &OsStr) {
-        let expression =
-            staging_expression(&self.source, &self.library, &self.stage, &self.application)
-                .expect("compiler paths");
-        run_native_process(
-            gerbil_command(compiler)
-                .args(["-e", &expression])
-                .current_dir(&self.root),
-            "governance compiler-owned program",
-            true,
-        )
-        .expect("program staging");
     }
     fn archive(&self) {
         let gsc = discover_gambit_gsc_from_env().expect("paired Gambit compiler");
@@ -119,7 +109,7 @@ impl BuildPaths {
     }
 }
 /// Stage an explicit application and emit native linker directives from the Gerbil.
-pub fn build_program() {
+pub fn build_program(stage: impl FnOnce(ProgramStageRequest<'_>)) {
     for name in [
         "GERBIL_HOME",
         "GERBIL_PATH",
@@ -127,7 +117,9 @@ pub fn build_program() {
         "PKG_CONFIG_PATH",
         "PKG_CONFIG_LIBDIR",
         "PKG_CONFIG_SYSROOT_DIR",
-        "WEAVER_CONTROL_SCHEME_COMPILER",
+        "GERBIL_GXI",
+        "GERBIL_GXC",
+        "GERBIL_GSC",
         "WEAVER_GOVERNANCE_APPLICATION",
         "WEAVER_GOVERNANCE_APPLICATION_SOURCE",
     ] {
@@ -136,9 +128,15 @@ pub fn build_program() {
     if env::var_os("CARGO_FEATURE_SCHEME_PROGRAM").is_none() {
         return;
     }
-    let compiler = env::var_os("WEAVER_CONTROL_SCHEME_COMPILER").expect("explicit Scheme compiler");
     let paths = BuildPaths::from_env();
-    prepare_gerbil_modules(&compiler, &paths.library);
-    paths.stage(&compiler);
+    stage(
+        ProgramStageRequest::new(
+            &paths.root,
+            &paths.library,
+            &paths.stage,
+            &paths.application,
+        )
+        .expect("native staging arguments"),
+    );
     paths.archive();
 }

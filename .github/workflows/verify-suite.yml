@@ -43,7 +43,7 @@ jobs:
         run: go -C go run ./cmd/weaver-dev -clean-source bootstrap-proofs
       - name: Prepare published Scheme SDK
         if: inputs.suite == 'check-scheme'
-        uses: tao3k/gerbil-scheme-rust/.github/actions/setup-gerbil@ff50ec4c7c87772b8c4d66279af3cade7fc72958
+        uses: tao3k/gerbil-scheme-rust/.github/actions/setup-gerbil@838af1ab4e6c0c8177fed176efba448c694012b5
         with:
           release-root: ${{ runner.temp }}/gerbil-sdk
       - name: Install declared Scheme dependencies
@@ -57,7 +57,7 @@ jobs:
       - name: Verify Scheme modules, Cedar FFI and streaming recovery
         if: inputs.suite == 'check-scheme'
         env:
-          WEAVER_CONTROL_SCHEME_COMPILER: ${{ env.GERBIL_PREFIX }}/bin/gxi
+          GERBIL_GXI: ${{ env.GERBIL_PREFIX }}/bin/gxi
           GERBIL_PATH: ${{ runner.temp }}/weaver-gerbil
         run: go -C go run ./cmd/weaver-dev -clean-source check-scheme
       - name: Publish latest structured result

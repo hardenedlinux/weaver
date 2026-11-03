@@ -18,6 +18,8 @@ import (
 	pb "github.com/HardenedLinux/weaver/go/api/gateway/v1"
 	v1 "github.com/HardenedLinux/weaver/go/api/v1"
 	"github.com/HardenedLinux/weaver/go/internal/config"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -57,6 +59,28 @@ func configuredCatalogPath(t testing.TB, f *fixture, bundle config.Bundle) strin
 
 func TestProviderControlCompiledProgramRevocationAndRestart(t *testing.T) {
 	exerciseControlPolicies(t, "json", nil, compiledControlSources(false))
+}
+
+func TestProviderControlCompiledProgramSharedBudgetRejectsConcurrentSendAndSDKRetry(t *testing.T) {
+	exerciseControlSharedBudgetPolicies(t, nil, compiledControlSources(false))
+}
+
+func TestProviderControlCompiledPreflightCannotAuthorize(t *testing.T) {
+	f := newFixture(t, completeSSE, false)
+	bundle := controlBundle(t, f)
+	bundle.Publication.Policy = "forbid(principal,action,resource);"
+	policy := compiledControlSources(false)
+	policy.configure(t, f, bundle)
+	c := newControlProcess(t, f, writeControlBundle(t, f, bundle, "json"))
+	c.useProducer(policy.producer)
+	c.start(t)
+	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
+	defer cancel()
+	_, err := c.client.Execute(ctx, bundle.Plans[0], pb.Encoding_PROTOBUF, 1,
+		func(*pb.Event) error { t.Error("inert preflight authorized an effect"); return nil })
+	if status.Code(err) != codes.FailedPrecondition || f.primary.Load() != 0 || f.backup.Load() != 0 {
+		t.Fatal("compiled Scheme/Cedar preflight bypassed final Policy", err)
+	}
 }
 
 func TestProviderControlCompiledAssetsRevocationAndRestart(t *testing.T) {

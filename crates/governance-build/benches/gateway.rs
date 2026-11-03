@@ -6,10 +6,10 @@ fn staging(c: &mut Criterion) {
         Path::new("/tmp/approved/application.ss"),
     )
     .expect("application");
-    c.bench_function("governance-build/staging_expression", |b| {
+    c.bench_function("governance-build/stage_request", |b| {
         b.iter(|| {
-            weaver_governance_build::staging_expression(
-                black_box(Path::new("/tmp/package/scheme/gateway/compiled.ss")),
+            weaver_governance_build::ProgramStageRequest::new(
+                black_box(Path::new("/tmp/package")),
                 Path::new("/tmp/prefix/lib"),
                 Path::new("/tmp/cargo-out/program"),
                 &application,

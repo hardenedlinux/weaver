@@ -225,12 +225,23 @@ func runStageCapture(ctx context.Context, root, directory string, environment []
 	return runStageObserved(ctx, root, directory, environment, stage, streamSchemeOutput, nil)
 }
 
+// Package functionality has a whole-suite budget; native Runtime is measured separately.
+const schemePackageTestTimeout = time.Minute
+
 func runStageObserved(ctx context.Context, root, directory string, environment []string, stage Stage, streamSchemeOutput bool, onStart func(int)) Result {
-	if stage.Name == "scheme-unit-tests" {
+	tests := ""
+	switch stage.Name {
+	case "scheme-unit-tests":
+		tests = "t"
+	case "scheme-source-integration-tests":
+		tests = "t/integration"
+	}
+	if tests != "" {
 		var cancel context.CancelFunc
-		ctx, cancel = context.WithTimeout(ctx, 15*time.Second)
+		ctx, cancel = context.WithTimeout(ctx, schemePackageTestTimeout)
 		defer cancel()
 	}
+
 	result := Result{Name: stage.Name, Status: "FAIL", Binary: stage.Binary, Args: stage.Args, Log: stage.Name + ".log"}
 	started := time.Now()
 	log, err := os.OpenFile(filepath.Join(directory, result.Log), os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0600)
@@ -247,7 +258,7 @@ func runStageObserved(ctx context.Context, root, directory string, environment [
 	cmd.Env = environment
 	var output io.Writer = log
 	var observation *schemeOutput
-	if stage.Name == "scheme-unit-tests" && streamSchemeOutput {
+	if tests != "" && streamSchemeOutput {
 		observation = &schemeOutput{destination: log, started: started}
 		output = observation
 	}
@@ -290,8 +301,8 @@ func runStageObserved(ctx context.Context, root, directory string, environment [
 			result.BenchmarkSummary = string(data)
 		}
 	}
-	if stage.Name == "scheme-unit-tests" && err == nil {
-		err = validateSchemeResult(root, filepath.Join(directory, result.Log))
+	if tests != "" && err == nil {
+		err = validateSchemeResult(root, tests, filepath.Join(directory, result.Log))
 		if ctx.Err() != nil {
 			err = errors.Join(err, ctx.Err())
 		}

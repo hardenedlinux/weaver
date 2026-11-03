@@ -136,7 +136,7 @@ func TestCargoWorkspaceAndDevelopmentGates(t *testing.T) {
 	if len(metadata.Members) != len(layers) {
 		t.Fatal("unmapped native workspace members")
 	}
-	inherited := regexp.MustCompile(`^[A-Za-z0-9_-]+(?:\.workspace\s*=\s*true|\s*=\s*\{\s*workspace\s*=\s*true,\s*optional\s*=\s*true\s*\})\s*$`)
+	inherited := regexp.MustCompile(`^[A-Za-z0-9_-]+(?:\.workspace\s*=\s*true|\s*=\s*\{\s*workspace\s*=\s*true,\s*optional\s*=\s*true(?:,\s*features\s*=\s*\["[A-Za-z0-9_/-]+"(?:,\s*"[A-Za-z0-9_/-]+")*\])?\s*\})\s*$`)
 	aspPin := regexp.MustCompile(`[?&]rev=[a-f0-9]{40}(?:$|&)`)
 	for _, id := range metadata.Members {
 		p := packages[id]

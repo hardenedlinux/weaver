@@ -8,11 +8,17 @@
         (only-in :hardenedlinux/weaver/scheme/governance/capture governance-profile-snapshot)
         (only-in :hardenedlinux/weaver/scheme/policy/types PolicyProjection)
         (only-in :hardenedlinux/weaver/scheme/policy/func validate-policy-projection!)
-        (only-in "./capture.ss" deliver-gateway-source gateway-source-json)
+        (only-in "./capture.ss" deliver-gateway-source)
         (only-in "./snapshot.ss" copy-source-data)
         (only-in "./program.ss" make-gateway-program)
         "./contracts.ss")
-(export compile-gateway emit-gateway emit-governed-gateway capture-governed-gateway gateway-source-json make-gateway-program governor-open-nodes)
+(export compile-gateway emit-gateway emit-governed-gateway capture-governed-gateway make-gateway-program governor-open-nodes)
+
+;;; Private canonical text for the upstream assessment context and mutation guard.
+;;; It is neither an exported artifact nor the Scheme-to-Rust transport.
+(def (source-assessment-text value)
+  (json->string (json<- GatewayArtifact (validate GatewayArtifact value))
+               (JSONWriteOptions sort-keys: #t)))
 
 ;;; Only project upstream symbolic node names to the gateway's wire identifiers.
 ;;; Governor owns selection; Governance assessment cannot replace its result.
@@ -66,7 +72,7 @@
           (.o governance: (.get original governance) tasks: retained-tasks
               plans: retained-plans publication: retained-publication))))
     (def publication-image (.get bundle publication))
-    (def source-text (gateway-source-json bundle))
+    (def source-text (source-assessment-text bundle))
     (def projection ((.get policy project) profile (string-copy (.get publication-image policy)) (string-copy asset-root)))
     (def (projection-json value)
       (json->string (json<- PolicyProjection value) (JSONWriteOptions sort-keys: #t)))
@@ -88,8 +94,8 @@
         (error "Governance Policy inputs changed during assessment"))
       (require-profile-current!)
       ;; All delegated callbacks finish before the final caller/image comparison.
-      (unless (and (equal? source-text (gateway-source-json bundle))
-                   (equal? source-text (gateway-source-json original))
+      (unless (and (equal? source-text (source-assessment-text bundle))
+                   (equal? source-text (source-assessment-text original))
                    (equal? asset-root (if (.slot? context 'source_root) (.get context source_root) "")))
         (error "Governance source changed during assessment"))
       bundle)))
