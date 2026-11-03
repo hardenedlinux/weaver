@@ -1,3 +1,7 @@
+;;; SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+;;;
+;;; SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 ;;; Exact POO records for the shared wire contract. Go and Rust revalidate it.
 (import (only-in :clan/poo/object .cc)
         (only-in :clan/poo/mop MonomorphicObject)

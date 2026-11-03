@@ -1,3 +1,7 @@
+;;; SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+;;;
+;;; SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 ;;; Scheme owns source contract assertions; Go only schedules this standard suite.
 (import :std/test
         (only-in :clan/poo/object .o .get)

@@ -1,3 +1,7 @@
+;;; SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+;;;
+;;; SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 ;;; Compose admitted module capabilities into the existing typed wire artifact.
 (import (only-in :clan/poo/object .get .o .slot?)
         (only-in :clan/poo/mop validate json<-)

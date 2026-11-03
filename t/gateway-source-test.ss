@@ -1,3 +1,7 @@
+;;; SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+;;;
+;;; SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 ;;; Source compilation checks stay in the native Scheme test suite.
 (import :std/test
         (only-in :std/error Error? Error-message)

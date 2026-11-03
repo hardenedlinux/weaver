@@ -1,3 +1,7 @@
+;;; SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+;;;
+;;; SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 ;;; Actual AA semantic failures belong to the standard Scheme suite.
 (import :std/test
         (only-in :std/source this-source-file)

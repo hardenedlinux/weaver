@@ -292,6 +292,12 @@ package WeaverProject {
         part '.gitignore' : File;
         part 'Cargo.toml' : File;
         part 'Cargo.lock' : File;
+        part 'LICENSE' : File;
+        part 'LICENSING.org' : File;
+        part 'REUSE.toml' : File;
+        part 'LICENSES' : Directory;
+        part 'LICENSES/LGPL-2.1-or-later.txt' : File;
+        part 'LICENSES/Apache-2.0.txt' : File;
         part 'rust-toolchain.toml' : File;
         part 'go.work' : Absent;
         part 'go.work.sum' : Absent;

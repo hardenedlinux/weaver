@@ -1,3 +1,7 @@
+;;; SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+;;;
+;;; SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 ;;; Scheme data projection only: no JSON text and no procedure/object word escapes.
 (import (only-in :clan/poo/object .all-slots .ref object<-alist))
 (export copy-source-data source-data->scheme-value scheme-value->source-data)

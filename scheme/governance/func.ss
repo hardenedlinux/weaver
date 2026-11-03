@@ -1,3 +1,7 @@
+;;; SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+;;;
+;;; SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 ;;; Reuse Agentic AI Lab's actual Profile and assessment protocols.
 (import (only-in :agentic-ai-lab/modules/governance/funs agentic-ai-lab-governance-evaluate)
         (only-in :agentic-ai-lab/modules/governance/types agentic-ai-lab-governance-assessment?)

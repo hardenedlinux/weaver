@@ -1,3 +1,7 @@
+;;; SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+;;;
+;;; SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+
 ;;; Scheme-to-Rust Cedar C ABI preflight. Final publication repeats validation.
 (import :std/ffi (only-in "./source-bytes.ss" cedar-source-utf8))
 (export validate-source-policy!)
