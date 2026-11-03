@@ -207,6 +207,52 @@ redispatch an ambiguous attempt or refund unknown exposure.
 
 * Current qualification and next decision
 
+** Scheme reuse and runtime conversion review
+
+Agentic AI Lab continues to own Governor selection, Governance assessment and
+typed Cedar policy values. Weaver projects Gateway-specific tasks, plans and
+source-assets through those public protocols; it does not implement a second
+Governor, assessment engine or Cedar parser. Its deferred Cedar module uses
+POO's module-action. Yuanxu owns module admission. SDK strong roots, collection
+snapshots, identifier/integer codecs and owner-affine exports own the FFI
+mechanism. Weaver's remaining serde visitor supplies the closed Gateway record
+schema and cumulative shape/byte bounds, rather than a general Scheme codec.
+
+The runtime review removes one redundant carrier: ordinary string fields now
+use the SDK's direct owned Rust UTF-8 conversion, as identifier-map keys already
+did. A temporary Scheme bytevector, its root and the following bulk copy are
+unnecessary for this ownership contract. Keep the character-count early refusal
+and charge actual UTF-8 bytes after encoding. The SDK may reserve up to four
+bytes per character; the logical byte bound is not an allocator/RSS ceiling.
+Do not weaken the aggregate limit or mistake character length for byte length.
+
+Canonical JSON comparisons in Scheme are callback-mutation guards for retained
+profile/source images, not the Scheme/Rust transport. Removing them without an
+upstream immutable-image contract would permit coherent replacement during
+delegated callbacks. Closed Record validation, independently retained original
+binding and final current Policy/fence checks also have distinct obligations.
+They are not eliminated by using a typed FFI conversion.
+
+The build audit still identifies an explicit four-module SDK helper bootstrap
+in governance-build/stage.rs. It is build-time only. The pinned build-support
+crate exports archive/staging primitives but no package-helper bootstrap API;
+the runtime package APIs require an already initialized default tooling image,
+while Weaver embeds an external application image. Calling those APIs here is
+not a safe substitution for bootstrapping that image. This remains an upstream
+convergence item, not a runtime optimization or a reason to add another local
+module scanner/package manager. Keep official gerbil build/test acceptance and
+the compiler-owned application graph until an upstream bootstrap owner replaces
+the list. No dependency selection changes are needed for the direct encoder.
+
+The native Proptest suite compares both SDK encoders against the original
+Unicode/NUL string, exercises original-binding refusal and recovery, and rejects
+a multi-byte field whose character length fits but whose UTF-8 bytes exceed the
+aggregate limit. Successful subsequent conversion on the same VM is required.
+The crate-owned Criterion target separately measures warm conversion and the
+full owned-source roundtrip. This is a data-preserving refinement of the existing
+SysML/Lean handoff premise; it adds no Policy transition or authority theorem.
+Existing Quint schedules and Lean final-use obligations remain necessary.
+
 The preceding SPEC upgrade passed maintained Lean/Policy/FFI and complete
 clean-source proof checks. Those results retain their original source scope.
 After the SDK ownership correction, the complete Go race suite, Rust build

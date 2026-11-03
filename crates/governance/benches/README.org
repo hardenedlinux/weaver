@@ -25,3 +25,23 @@ acceptance or Gateway throughput. Thirty samples use existing collection setting
 * Entrypoints
 
 =cargo bench -p weaver-governance --bench gateway --locked --offline=.
+
+* Native conversion diagnostic
+
+=cargo bench -p weaver-governance --bench scheme_conversion --profile dev --features scheme-qualification --locked --offline=.
+
+This additional target uses the real qualification graph and one naturally
+drained VM. Its explicit development profile preserves the prohibition on
+shipping the qualification application in a release image. It is a warm
+conversion diagnostic, not optimized production Gateway throughput.
+
+Thirty samples compare the retired temporary-Scheme-bytevector conversion with
+the upstream direct owned-string encoder on identical retained roots, for ASCII
+and Unicode/NUL at three sizes. Both paths validate UTF-8. Each pair runs in the
+same owner and process; fixed ordering still permits drift, so repeat the whole
+target before attributing small differences. Source roundtrip includes bounded
+construction, materialization, validation and original binding. Neither this
+case nor the string comparison publishes Policy, authorizes bytes or releases
+budget. VM startup and root construction are outside string timings; original
+capture remains inside the source roundtrip. This target is separate from the
+ordinary cross-package benchmark inventory and does not qualify that inventory.

@@ -181,15 +181,15 @@ impl<'de> de::Deserializer<'de> for Native<'_, '_> {
                 if scheme_result(text.len().into_result())? > self.limits.bytes {
                     return Err(SourceError::Bound);
                 }
-                let bytes = scheme_result(text.to_utf8_bytes().into_result())?;
-                let length = scheme_result(bytes.len().into_result())?;
+                // The SDK encodes directly into owned Rust storage. Do not
+                // allocate a temporary rooted Scheme bytevector and copy it.
+                // Character count is only an early bound; charge UTF-8 bytes.
+                let text = scheme_result(text.to_string().into_result())?;
                 self.limits.bytes = self
                     .limits
                     .bytes
-                    .checked_sub(length)
+                    .checked_sub(text.len())
                     .ok_or(SourceError::Bound)?;
-                let text = String::from_utf8(scheme_result(bytes.to_vec().into_result())?)
-                    .map_err(|_| SourceError::Contract)?;
                 visitor.visit_string(text)
             }
             ObjectKind::Nil => visitor.visit_unit(),

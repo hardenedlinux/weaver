@@ -31,6 +31,23 @@ fn actual_aa_capture_materializes_owned_data_before_vm_cleanup() {
     });
     runner
         .run(
+            &proptest::collection::vec(proptest::char::any(), 0..2048),
+            |chars| {
+                let input = format!("\0λ🙂{}", chars.into_iter().collect::<String>());
+                let text = runtime.string_from_utf8(&input).expect("string root");
+                let direct = text.to_string().into_result().expect("SDK direct UTF-8");
+                let snapshot = text.to_utf8_bytes().into_result().expect("snapshot");
+                prop_assert_eq!(
+                    direct.as_bytes(),
+                    snapshot.to_vec().into_result().expect("bulk copy")
+                );
+                prop_assert_eq!(direct, input);
+                Ok(())
+            },
+        )
+        .expect("direct encoding preserves full Unicode and embedded NUL");
+    runner
+        .run(
             &(
                 0u64..=weaver_contracts::MAX_CREDITS,
                 proptest::option::of(0u64..=weaver_contracts::MAX_CREDITS),
@@ -106,6 +123,12 @@ fn actual_aa_capture_materializes_owned_data_before_vm_cleanup() {
         .expect("false");
     assert!(materialize_source(boolean).is_err());
     let data = fixture::source();
+    assert!(matches!(
+        materialize_source(rooted_source::publication(&runtime, &data, 8)),
+        Err(weaver_governance::SourceError::Bound)
+    ));
+    // The same owner must still accept legitimate input after byte-bound refusal.
+    assert!(materialize_source(rooted_source::source(&runtime, &data)).is_ok());
     for fault in 0..8 {
         assert!(
             materialize_source(rooted_source::publication(&runtime, &data, fault)).is_err(),

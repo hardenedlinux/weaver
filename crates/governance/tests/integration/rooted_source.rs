@@ -24,6 +24,13 @@ pub fn corrupt<'r>(vm: &'r GerbilRuntime, root: &Object<'r>, fault: u8) -> Objec
             .copy_identifier_names(&mut name)
             .expect("symbol");
         let name = name.get(0).expect("name").1;
+        if name == "policy" && fault == 8 {
+            // Character count fits, UTF-8 bytes exceed the cumulative limit.
+            value = text(
+                vm,
+                &"🙂".repeat(weaver_governance::MAX_SOURCE_BYTES / 4 + 1),
+            );
+        }
         if name == "fence" {
             value = match fault {
                 0 => vm

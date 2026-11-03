@@ -91,6 +91,11 @@ package ControlActivation {
            OwnedSource, using fallible bounded constructors rather than a test
            fixture or encoded blob. Scheme object roundtrips preserve all concrete fields,
            exact bounded integers, UTF-8/NUL data and optional revision presence.
+           Scheme string materialization delegates encoding directly to the SDK's
+           owned Rust string conversion. Character count is only an early bound;
+           cumulative UTF-8 byte charging remains mandatory after encoding.
+           Conversion preserves data, not authority: original binding and current
+           publication/consumption checks remain independent of allocation strategy.
            An aggregate-size refusal leaves the same VM available; no original
            claim, reservation, history or source outcome is consumed or released. */
         doc /* Compilation stays on an existing tracked blocking owner with a
