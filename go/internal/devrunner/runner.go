@@ -25,6 +25,7 @@ type Stage struct {
 	Args         []string
 }
 type Result struct {
+	Contention         *ContentionEvidence `json:"contention,omitempty"`
 	Name               string              `json:"name"`
 	Status             string              `json:"status"`
 	Binary             string              `json:"binary"`
@@ -289,6 +290,10 @@ func runStageObserved(ctx context.Context, root, directory string, environment [
 		result.PipelineBenchmarks, err = readPipelineBenchmarks(filepath.Join(directory, result.Log), runtime.NumCPU(), "BenchmarkGatewayPublishedPipeline/registered")
 		result.Details = "Real Go/Cedar/Rust path; Scheme preparation excluded, not a latency qualification."
 	}
+	if stage.Name == "execution-contention-pair" && err == nil && closeErr == nil {
+		result.Contention, err = readContentionEvidence(filepath.Join(directory, result.Log))
+		result.Details = "Five lock profiles, six complete ABBA blocks each, one optimized immutable benchmark image; intervals overlap."
+	}
 	if stage.Name == "execution-streaming-pair" && err == nil && closeErr == nil {
 		result.PipelineBenchmarks, err = readStreamingPairBenchmarks(filepath.Join(directory, result.Log), runtime.NumCPU())
 		result.Details = "Six complete same-image ABBA blocks, Arrow rows=1 versus rows=32; not a before/after implementation speedup."
@@ -300,8 +305,14 @@ func runStageObserved(ctx context.Context, root, directory string, environment [
 	if stage.Name == "grpc-benchmark" && err == nil && closeErr == nil {
 		result.GoBenchmarks, err = readGoBenchmarks(filepath.Join(directory, result.Log), runtime.NumCPU())
 	}
-	if (stage.Name == "storage-final-benchmark" || stage.Name == "telemetry-benchmark" || stage.Name == "execution-policy-benchmark" || stage.Name == "execution-ledger-benchmark") && err == nil && closeErr == nil {
+	if (stage.Name == "storage-final-benchmark" || stage.Name == "telemetry-benchmark" || stage.Name == "execution-policy-benchmark" || stage.Name == "execution-ledger-benchmark" || stage.Name == "execution-provider-benchmark" || stage.Name == "execution-encoding-benchmark") && err == nil && closeErr == nil {
 		cases := storageBenchmarkCases
+		if stage.Name == "execution-encoding-benchmark" {
+			cases = []string{"server_encoding_guard_hold/inside", "server_encoding_guard_hold/outside"}
+		}
+		if stage.Name == "execution-provider-benchmark" {
+			cases = []string{"execution_https_guarded_sse_three_events"}
+		}
 		if stage.Name == "execution-ledger-benchmark" {
 			cases = []string{"ledger_provider_release/1", "ledger_provider_release/8", "ledger_provider_release/32"}
 		}

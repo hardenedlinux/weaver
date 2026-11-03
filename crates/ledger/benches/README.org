@@ -108,3 +108,17 @@ streaming blocks. The latter use one captured optimized server image and the sam
 five events, comparing Arrow rows=1 with rows=32. Store/PKI setup is outside timing.
 The batching comparison is not a before/after implementation speedup. Historical
 debug-image observations must not be mixed with release-image measurements.
+
+* Lock-contention observations
+
+The existing =gateway= target also supports a finite =--weaver-contention=
+experiment through the Go-owned =TestContentionPairs= qualification. Five real
+WAL/MVCC profiles each retain six complete ABBA blocks. Go resolves the optimized
+Cargo artifact, captures one read-only image and admits all 120 typed records.
+Per-session observations separate owner-gate acquisition, domain lookup and
+stripe acquisition, native begin, holding, commit/rollback and actual effect
+callbacks. Intervals overlap; begin includes setup as well as writer contention.
+The bounded ten-millisecond callback is a test control, not a production network
+latency. Holds and current guards remain real. No observation is a no-execution,
+settlement or recovery certificate. Normal thirty-sample Criterion cases retain
+their standard entrypoint and unchanged semantics.

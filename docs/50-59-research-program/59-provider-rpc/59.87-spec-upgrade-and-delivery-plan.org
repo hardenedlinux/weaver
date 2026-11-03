@@ -802,3 +802,153 @@ The SysML responsibility and Lean premises drive the existing core views:
 [[file:../../architecture/diagrams/00d-zero-trust-overview.svg]]
 [[file:59.77-mrr-turso-storage.svg]]
 Diagram content remains core design, without timing tables or release metadata.
+
+* Lock acquisition, final-effect holding and inert preparation
+
+** Measured intervals and limits
+
+The deciding session now owns fixed-cardinality transaction statistics, with
+saturating attempt and nanosecond counters. No labels contain task, principal,
+route, credential or payload data. They are session-local observations, reset on
+replacement, not an authorization input, ledger receipt, no-execution witness or
+settlement decision. Neither zero attempts nor a short duration can release an
+unknown budget. Reading statistics obtains no execution capability.
+
+| Interval | Actual measurement boundary | Interpretation |
+|----------+-----------------------------+----------------|
+| owner_gate_wait | MVCC publication read/write gate acquisition | Includes scheduling and actual gate contention |
+| domain_keys | Authoritative origin/budget/history lock-key lookup | Metadata/read cost, not mutex waiting |
+| domain_wait | Acquisition of sorted unique conflict stripes | Includes safe false contention from existing stripes |
+| transaction_begin | Native Turso transaction constructor | WAL writer acquisition plus begin work; not pure WAL waiting |
+| owner_gate_hold | Acquired owner gate through actual unlock | Overlaps domain lookup/wait and transaction work |
+| domain_hold | Acquired conflict stripes through unlock | Includes native begin, final checks, callback and cleanup |
+| transaction_hold | Successful begin through commit/rollback processing | Excludes earlier lock acquisition; includes final effects |
+| commit / rollback | Explicit native commit / explicit scope rollback | Attempts include failure; not proof of outcome |
+| provider_request | Actual guarded request callback | DNS/connect/TLS/request bytes and response-header wait |
+| provider_queue | Actual guarded queue callback | Queue insertion of already encoded data |
+
+Overlapping intervals must not be added into a critical-path latency. Native
+begin failure is recorded as an acquisition attempt; hold statistics cover
+constructed scopes, not every partial pre-begin lock acquisition. Failed-commit
+cleanup remains inside transaction holding; its fallback rollback is not a
+separate successful-rollback certificate. Callback timing is unwind-safe. The
+fixed counters perform no IO, allocation, external callbacks or shared metric
+lock; measured state never controls Cedar, claim, budget or fencing branches.
+
+** Work moved and work retained
+
+| Work | Placement | Safety condition |
+|------+-----------+------------------|
+| Local HTTPS client and request construction | Before dispatch scopes | Selected immutable plan/route; no provider DNS, connection or request IO |
+| Response status/header validation | After guarded request returns and scope commits | Invalid responses leave the consumed request unknown; no retry/fallback |
+| Arrow/Protobuf frame construction | After durable release preparation, before final guard | Owned bounded frame; frozen original sequence, route, model and encoding |
+| Capacity reservation | Outside deciding scope, as before | Cancellation/deadline observed; a slot grants no permission |
+| Current Policy/profile/domain/claim checks | Inside each final deciding scope | Fresh after all waits/preparation |
+| Actual provider request and header wait | Inside final invocation scope | Original durable dispatch burn, fresh Cedar/currentness and cancellation |
+| Queue insertion | Inside final release scope | Every row authorized again; affine interval consumed once |
+| Shared-domain retention and unknown budget | Authoritative deciding store | No split budget/history roots or metrics-based refunds |
+
+The execution owner now assigns the inert sequence coordinate from the existing
+non-cloneable release token and asks its output adapter to prepare an owned
+frame. Preparation is a data-only associated function: it receives no output
+owner, sender or reserved queue slot. The private adapter constructs bytes only. A later
+=release_provider= rechecks current authority and each row, verifies its original
+plan/format/session and interval, and invokes the sole queue insertion. Encoding
+failure, cancellation, owner replacement, revocation or a lost queue observation
+leaves the original pending/unknown interval and held budget intact. No prepare
+method is a recovery grant, and scalar sequence observation cannot clone a token.
+Preparation remains bounded by existing event/byte limits and execution admission;
+no unbounded encoder queue or additional runtime is introduced.
+
+Moving DNS, TLS or request bytes out of the final guard is deliberately excluded.
+Doing so would introduce observable provider IO before its final authorization
+and would require a different transport/fencing contract. Moving mutable-domain
+validation or an Allow decision across a wait is also excluded. Exact-source
+parser prewarming could only be considered with an independent fresh source join;
+no decision cache or such additional mechanism is introduced here.
+
+** Same-image lock experiment
+
+The existing optimized ledger Cargo benchmark target supplies a finite
+=--weaver-contention= experiment. Go resolves its executable from Cargo JSON,
+captures it with the existing read-only image publisher, and validates one image
+digest plus every observation. No production execution or control-plane IPC
+uses that benchmark command. Normal Criterion package cases remain unchanged.
+
+Five profiles each run six complete ABBA blocks, yielding 120 observations:
+WAL independent families, MVCC disjoint domains, shared budget, shared history
+and concurrent publication. A is an uncontended second operation after the first
+finishes; B starts the second while the first is in its actual guarded callback.
+The first callback requests a bounded ten-millisecond hold in both arms. Recorded
+durations are actual elapsed time, including oversleep/scheduling; the requested
+hold is neither an observed latency nor a production network model. Every arm
+uses the same original plans, holds and normal final guards. Source publication
+has no external request callback. Original holds are checked after both workers
+join and every store closes naturally.
+
+Initial store/schema opening, publication and consumption fixture provisioning
+are outside the lock experiment's observation marks. The complete Go/Rust
+pipeline still includes its actual per-operation ledger opens and receipt
+inspection. Those costs cannot be inferred by summing this fixture's intervals.
+
+The disjoint fixture uses different existing conflict stripes; shared-budget
+and shared-history fixtures retain their real common authoritative root. The
+publication fixture measures its exclusive gate against the existing final-use
+read gate. WAL begin time contains native writer contention and setup work; its
+paired uncontended arm separates a baseline without pretending to expose an
+engine-internal queue timestamp. No measured result permits weaker shared-domain
+serialization, fewer currentness checks or repeated external execution.
+
+The server package additionally owns a same-image placement control with the
+actual Arrow encoder and deciding release transaction. Both arms produce the
+same 32-row, 4096-byte-per-row bytes and retain the same hold; the reference arm
+encodes inside its guarded callback, the current arm encodes before it. All
+thirty Criterion samples per arm report only transaction-hold nanoseconds through
+guard/commit processing, excluding acquisition and out-of-scope preparation.
+They are sequential Criterion cases subject to host drift, not a balanced
+whole-application old/new speedup. The synthetic bounded payload is an encoder
+stress case, not an assertion about LLM token output. A separate actual HTTPS
+execution package case remains a thirty-sample whole native pipeline measure.
+
+The Go reader requires all profile/block/arm coordinates in order, optimized
+observations, one captured image and the expected completed scope/effect counts.
+It rejects absent, duplicated, reordered, debug or contradictory records. Its
+64-case QuickCheck property corrupts observations and requires rejection.
+Qualified results belong to a clean-source sequential run; early measurements
+overlapping builds/tests remain exploratory evidence under ignored
+=.cache/lock-runtime/=. Metrics include no production-traffic attribution or
+proof of arbitrary-host latency.
+
+** Proof, properties and actual execution
+
+The new 16-case Rust Proptest property builds actual HTTPS requests and checks
+that preparation emits no provider connection, retains the original hold, and
+cannot survive a source revocation or recreate a consumed request. Another
+32-case property uses the real Arrow encoder and output queue with batches from
+one through 32 rows. It verifies no frame is inserted during encoding, then
+races the encoded frame against revocation, cancellation, a replacement ledger
+session and a lost queue observation. An inserted frame followed by failed
+observation retains uncertainty rather than refunding its budget.
+
+Lean composes the existing Flow.CanEmit requirement with inert encoded bytes:
+=prepared_bytes_cannot_bypass_currentness= rejects a changed context, and
+=prepared_bytes_cannot_replace_affine_token= rejects a spent token. The latter
+uses standard propositional extensionality; no new trust axiom or native-code
+proof is claimed. Encoding fidelity, private output ownership and the actual
+lock/transport boundary remain native premises tested by the real implementation.
+Quint adds request/frame preparation stutters, publication/restart refusal
+schedules and a prepared-bytes-as-permit counterexample.
+
+Run the Go-owned =check-policy= and =bench-execution= gates, complete Go race and
+strict backend/ASP checks on one committed source. Execution qualification now
+also requires the complete contention image/observation record. Existing real
+provider tests still cover concurrent consumption, current Policy/domain facts,
+revocation, lost replies, restart, SDK retries, partial requests and backpressure.
+Existing release-image streaming ABBA cases remain the whole-path batching
+comparison, not an old/new preparation-placement speedup. No Scheme source,
+package pin, runtime timeout, transport retry or cleanup contract is changed.
+
+The authoritative provider flow is updated before generating core D2/SVG views:
+[[file:../../architecture/diagrams/00c-gateway-runtime.svg]]
+[[file:../../architecture/diagrams/00d-zero-trust-overview.svg]]
+[[file:59.77-mrr-turso-storage.svg]]

@@ -6,6 +6,15 @@ use weaver_server::{
     encoding::{Frame, encode_frame},
     pb,
 };
+#[cfg(feature = "arrow")]
+#[path = "support/guarded_encoding.rs"]
+mod guarded_encoding;
+fn guarded_encoding(c: &mut Criterion) {
+    #[cfg(feature = "arrow")]
+    guarded_encoding::benchmarks(c);
+    #[cfg(not(feature = "arrow"))]
+    let _ = c;
+}
 fn frame_encoding(c: &mut Criterion) {
     let mut group = c.benchmark_group("server/response_encoding");
     for rows in [1, 32] {
@@ -76,5 +85,5 @@ fn source_identity(c: &mut Criterion) {
         })
     });
 }
-criterion_group! {name=benches;config=Criterion::default().sample_size(30).warm_up_time(Duration::from_secs(1)).measurement_time(Duration::from_secs(2));targets=frame_encoding,source_identity}
+criterion_group! {name=benches;config=Criterion::default().sample_size(30).warm_up_time(Duration::from_secs(1)).measurement_time(Duration::from_secs(2));targets=guarded_encoding,frame_encoding,source_identity}
 criterion_main!(benches);

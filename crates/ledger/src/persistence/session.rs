@@ -15,6 +15,7 @@ pub struct Session {
     pub(super) connection: driver::Connection,
     pub(super) owner: Arc<super::owner::Owner>,
     pub(super) poisoned: AtomicBool,
+    pub(super) timings: super::TransactionTimings,
 }
 impl Session {
     /// Open through MRR Data and read back the required durability settings.
@@ -52,7 +53,12 @@ impl Session {
             connection,
             owner,
             poisoned: AtomicBool::new(false),
+            timings: super::TransactionTimings::default(),
         })
+    }
+    /// Read-only session statistics; not a currentness or completion observation.
+    pub fn timings(&self) -> super::TransactionTimings {
+        self.timings
     }
     /// Initialize this live MVCC owner's ledger once; this never caches authorization.
     pub(crate) fn initialize_ledger(&mut self) -> driver::Result<()> {

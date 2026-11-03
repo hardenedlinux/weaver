@@ -92,6 +92,8 @@ var rustBenchmarkCases = []string{
 	"ledger_profile_task_replay/1",
 	"ledger_profile_task_replay/256",
 	"execution_https_guarded_sse_three_events",
+	"server_encoding_guard_hold/inside",
+	"server_encoding_guard_hold/outside",
 	"server_response_encoding/protobuf_frames/1",
 	"server_response_encoding/protobuf_frames/32",
 	"server_response_encoding/arrow_batch/1",

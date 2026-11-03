@@ -107,6 +107,7 @@ struct Cancellation {
 }
 impl ProviderOutput for Cancellation {
     type Slot = ();
+    type PreparedFrame = ();
     fn stopped(&self) -> bool {
         let stopped = self.stopped.load(Ordering::SeqCst);
         if let Some(entered) = self.checkpoint.lock().expect("checkpoint").take() {
@@ -117,13 +118,10 @@ impl ProviderOutput for Cancellation {
     fn reserve(&mut self) -> Result<()> {
         panic!("no response release expected")
     }
-    fn emit(
-        &mut self,
-        _slot: (),
-        _route: &ProviderRoute,
-        _model: &str,
-        _events: &[ProviderEvent],
-    ) -> Result<()> {
+    fn prepare(_: &ProviderRoute, _: &str, _: &[ProviderEvent], _: &str) -> Result<()> {
+        panic!("no response preparation expected")
+    }
+    fn emit(&mut self, _: (), _: ()) -> Result<()> {
         panic!("no response release expected")
     }
 }
@@ -269,4 +267,34 @@ fn uncancelled_control_reaches_real_https_transport_once() {
     .expect("transport");
     assert!(open_guarded(&mut ledger, &permit, &transport, &output).is_ok());
     assert_eq!(endpoint.calls.load(Ordering::SeqCst), 1);
+}
+
+proptest::proptest! {
+    #![proptest_config(proptest::test_runner::Config::with_cases(16))]
+    #[test]
+    fn prepared_http_request_is_inert_and_cannot_outlive_revocation(revoked in proptest::bool::ANY, discarded in proptest::bool::ANY) {
+        let endpoint=Endpoint::new();
+        let directory=tempfile::tempdir().expect("store");
+        let mut ledger=Ledger::open(directory.path().join("request.db")).expect("ledger");
+        ledger.publish_typed(None,"permit(principal,action,resource);",SCHEMA,1).expect("source");
+        let (task,plan)=fixtures::task_plan(16,&endpoint.address);
+        ledger.register_task(&task).expect("original task");
+        ledger.enqueue_provider(&plan).expect("reservation");
+        let eligible=BTreeSet::from(["primary".into()]);
+        let permit=ledger.consume_provider("f","infer",&eligible).expect("consume");
+        let transport=ProviderTransport::new(BTreeMap::from([("primary".into(),"test-key".into())]),Some(endpoint.root.as_bytes())).expect("transport");
+        let before=ledger.transaction_timings();
+        let request=transport.prepare(permit.plan(),permit.route()).expect("pure request");
+        proptest::prop_assert_eq!(endpoint.calls.load(Ordering::SeqCst),0);
+        proptest::prop_assert_eq!(ledger.transaction_timings().transaction_hold.attempts,before.transaction_hold.attempts);
+        if revoked {ledger.publish(Some(0),"forbid(principal,action,resource);",2).expect("new fence");}
+        if discarded {drop(request);} else {
+            let result=ledger.dispatch_provider(&permit,||request.send());
+            if revoked {proptest::prop_assert!(result.is_err());} else {let response=result.expect("guard").expect("actual HTTPS");proptest::prop_assert_eq!(response.status(),200);}
+        }
+        proptest::prop_assert_eq!(endpoint.calls.load(Ordering::SeqCst),usize::from(!revoked&&!discarded));
+        proptest::prop_assert_eq!(ledger.held("f").expect("held"),4);
+        proptest::prop_assert!(ledger.consume_provider("f","infer",&eligible).is_err());
+        ledger.close().expect("natural cleanup");
+    }
 }

@@ -22,6 +22,10 @@ pub struct Dispatch {
 }
 
 impl Ledger {
+    /// Statistical intervals only; no execution, settlement or recovery authority.
+    pub fn transaction_timings(&self) -> crate::persistence::TransactionTimings {
+        self.connection.timings()
+    }
     /// Explicit resource completion; errors cannot count as successful native drain.
     pub fn close(self) -> Result<()> {
         self.connection.close().map_err(db)

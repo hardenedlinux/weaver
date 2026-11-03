@@ -5,6 +5,7 @@ use std::{
     ops::Deref,
     sync::atomic::{AtomicBool, Ordering},
     sync::{MutexGuard, RwLockReadGuard, RwLockWriteGuard},
+    time::Instant,
 };
 
 /// Exclusive native transaction; final guarded callbacks keep this scope alive.
@@ -12,6 +13,10 @@ pub struct WriteScope<'a> {
     connection: &'a driver::Connection,
     native: Option<driver::transaction::Transaction<'a>>,
     poisoned: &'a AtomicBool,
+    timings: &'a mut super::TransactionTimings,
+    entered: Instant,
+    owner_entered: Option<Instant>,
+    domains_entered: Option<Instant>,
     _exclusive: Option<RwLockWriteGuard<'a, ()>>,
     _shared: Option<RwLockReadGuard<'a, ()>>,
     _domains: Vec<MutexGuard<'a, ()>>,
@@ -32,55 +37,83 @@ fn start<'a>(session: &'a mut Session, family: Option<&str>) -> driver::Result<W
     let exclusive = if parallel || !concurrent {
         None
     } else {
-        Some(session.owner.gate.write().map_err(super::owner::error)?)
+        Some(
+            super::timing::measure(&mut session.timings.owner_gate_wait, || {
+                session.owner.gate.write()
+            })
+            .map_err(super::owner::error)?,
+        )
     };
     let shared = if parallel {
-        Some(session.owner.gate.read().map_err(super::owner::error)?)
+        Some(
+            super::timing::measure(&mut session.timings.owner_gate_wait, || {
+                session.owner.gate.read()
+            })
+            .map_err(super::owner::error)?,
+        )
     } else {
         None
     };
+    let owner_entered = (exclusive.is_some() || shared.is_some()).then(Instant::now);
     let domains = if parallel {
-        let keys = crate::domains::lock_keys(&session.connection, family.unwrap_or_default())?;
+        let keys = super::timing::measure(&mut session.timings.domain_keys, || {
+            crate::domains::lock_keys(&session.connection, family.unwrap_or_default())
+        })?;
         let mut stripes: Vec<usize> = keys.iter().map(|key| super::owner::stripe(key)).collect();
         stripes.sort_unstable();
         stripes.dedup();
-        stripes
-            .into_iter()
-            .map(|index| {
-                session.owner.families[index]
-                    .lock()
-                    .map_err(super::owner::error)
-            })
-            .collect::<driver::Result<Vec<_>>>()?
+        super::timing::measure(&mut session.timings.domain_wait, || {
+            stripes
+                .into_iter()
+                .map(|index| {
+                    session.owner.families[index]
+                        .lock()
+                        .map_err(super::owner::error)
+                })
+                .collect::<driver::Result<Vec<_>>>()
+        })?
     } else {
         Vec::new()
     };
+    let domains_entered = parallel.then(Instant::now);
     // The mutable Session borrow provides exclusive custody for the whole scope.
-    let native = block_on(driver::transaction::Transaction::new_unchecked(
-        &session.connection,
-        if parallel {
-            driver::transaction::TransactionBehavior::Concurrent
-        } else {
-            driver::transaction::TransactionBehavior::Immediate
-        },
-    ))?;
+    let native = super::timing::measure(&mut session.timings.transaction_begin, || {
+        block_on(driver::transaction::Transaction::new_unchecked(
+            &session.connection,
+            if parallel {
+                driver::transaction::TransactionBehavior::Concurrent
+            } else {
+                driver::transaction::TransactionBehavior::Immediate
+            },
+        ))
+    })?;
     Ok(WriteScope {
         connection: &session.connection,
         native: Some(native),
         poisoned: &session.poisoned,
+        timings: &mut session.timings,
+        entered: Instant::now(),
+        owner_entered,
+        domains_entered,
         _exclusive: exclusive,
         _shared: shared,
         _domains: domains,
     })
 }
 impl WriteScope<'_> {
+    pub(crate) fn request_effect<T>(&mut self, run: impl FnOnce() -> T) -> T {
+        super::timing::measure(&mut self.timings.provider_request, run)
+    }
+    pub(crate) fn queue_effect<T>(&mut self, run: impl FnOnce() -> T) -> T {
+        super::timing::measure(&mut self.timings.provider_queue, run)
+    }
     /// Commit once; any failed result poisons this session against new writes.
     pub fn commit(mut self) -> driver::Result<()> {
         let native = self
             .native
             .take()
             .ok_or_else(|| driver::Error::Misuse("transaction already ended".into()))?;
-        match block_on(native.commit()) {
+        match super::timing::measure(&mut self.timings.commit, || block_on(native.commit())) {
             Ok(()) => Ok(()),
             Err(error) => {
                 self.poisoned.store(true, Ordering::Release);
@@ -104,7 +137,9 @@ impl Deref for WriteScope<'_> {
 impl Drop for WriteScope<'_> {
     fn drop(&mut self) {
         if let Some(native) = self.native.take() {
-            if block_on(native.rollback()).is_err() {
+            if super::timing::measure(&mut self.timings.rollback, || block_on(native.rollback()))
+                .is_err()
+            {
                 self.poisoned.store(true, Ordering::Release);
                 let _ = release_failed_transaction(self.connection);
             }
@@ -113,6 +148,16 @@ impl Drop for WriteScope<'_> {
             // transaction. Its deferred rollback must not strand the writer.
             self.poisoned.store(true, Ordering::Release);
             let _ = release_failed_transaction(self.connection);
+        }
+        self.timings.transaction_hold.record(self.entered.elapsed());
+        self._domains.clear();
+        if let Some(entered) = self.domains_entered {
+            self.timings.domain_hold.record(entered.elapsed());
+        }
+        drop(self._shared.take());
+        drop(self._exclusive.take());
+        if let Some(entered) = self.owner_entered {
+            self.timings.owner_gate_hold.record(entered.elapsed());
         }
     }
 }

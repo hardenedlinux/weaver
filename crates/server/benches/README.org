@@ -26,3 +26,21 @@ Regression warnings remain evidence even when the benchmark process succeeds;
 these measurements do not establish a production latency or throughput target.
 
 See [[file:../../../docs/50-59-research-program/59-provider-rpc/59.05-benchmarks.org][the workspace benchmark contract]] for the complete matrix and interpretation rules.
+
+* Preparation placement and deciding holding
+
+=server/encoding_guard_hold/{inside,outside}= uses the same optimized benchmark
+image, exact 32-row/4096-byte-per-row Arrow payload, original ledger fixture and
+fresh per-row Cedar guard in both arms. The reference arm encodes inside the
+queue callback; the current-placement arm owns the encoded frame before entry.
+Both assert byte-identical frames and retain the same original held budget.
+This is an adversarial bounded encoder workload, not a measured LLM token stream.
+
+Criterion iter_custom reports the session's observed transaction-hold duration
+for the single final release, including guard/commit handling. It excludes lock
+acquisition, preparation outside that scope, fixture creation and teardown. The
+reported unit is therefore guarded holding nanoseconds, not whole-operation
+elapsed latency. All thirty samples per arm are retained. The arms run as normal
+Criterion cases in one image; host drift can affect differences, and this is not
+a balanced end-to-end old/new application experiment. The separate six-block
+ABBA lock experiment measures contention sensitivity.

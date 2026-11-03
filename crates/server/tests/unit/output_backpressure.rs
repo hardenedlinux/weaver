@@ -16,7 +16,6 @@ use std::{
 };
 use tokio::sync::mpsc;
 use tokio_util::sync::CancellationToken;
-use weaver_contracts::ProviderEvent;
 use weaver_execution::ProviderOutput;
 use weaver_ledger::Ledger;
 type FrameMessage = Result<pb::ProviderFrame, tonic::Status>;
@@ -62,17 +61,16 @@ pub(super) async fn observe<F: Future>(future: F) -> F::Output {
     })
     .await
 }
-pub(super) fn enqueued(events: &[ProviderEvent]) {
+pub(super) fn enqueued(first: u64, rows: usize) {
     let Some(observer) = OBSERVER.get() else {
         return;
     };
-    let first = events.first().expect("nonempty guarded batch").sequence;
-    observer.record("enqueued", 0, first, events.len());
+    observer.record("enqueued", 0, first, rows);
     if observer.pause
         && observer.waited.load(Ordering::SeqCst)
         && !observer.paused.swap(true, Ordering::SeqCst)
     {
-        observer.record("fault-window", 0, first, events.len());
+        observer.record("fault-window", 0, first, rows);
         // This bounded test-only pause exposes enqueue-before-commit. The Go
         // fault test must crash the process here, never turn a timeout into pass.
         std::thread::park_timeout(Duration::from_secs(3));
@@ -129,7 +127,6 @@ fn full_output() -> (Output, QueueReceiver, QueueSender) {
             cancelled: CancellationToken::new(),
             shutdown: CancellationToken::new(),
             runtime: tokio::runtime::Handle::current(),
-            arrow: true,
         },
         receiver,
         sender,
@@ -240,4 +237,46 @@ async fn cancellation_interrupts_actual_capacity_wait_without_refund() {
     cancelled.cancel();
     assert!(task.await.expect("worker").is_err());
     assert_eq!(ledger.held("f").expect("hold"), 4);
+}
+
+#[cfg(feature = "arrow")]
+proptest::proptest! {
+    #![proptest_config(proptest::test_runner::Config::with_cases(32))]
+    #[test]
+    fn pure_prepared_frames_do_not_authorize_queue_or_recover_unknown_budget(rows in 1usize..33, fault in 0u8..5) {
+        let runtime=tokio::runtime::Runtime::new().expect("test runtime");
+        let _entered=runtime.enter();
+        let directory=tempfile::tempdir().expect("store");
+        let path=directory.path().join("prepared.db");
+        let (mut ledger,permit)=prepared_ledger(&path);
+        let (mut output,mut receiver,_sender)=full_output();
+        receiver.try_recv().expect("first fixture frame").expect("frame");
+        receiver.try_recv().expect("second fixture frame").expect("frame");
+        let slot=output.reserve().expect("capacity outside writer");
+        let release=ledger.prepare_provider_release(&permit,"source-events","arrow",rows as u64).expect("durable burn");
+        let first=release.first_sequence();
+        let events=(0..rows).map(|offset|weaver_contracts::ProviderEvent {sequence:first+offset as u64,kind:weaver_contracts::ProviderEventKind::Delta,text:format!("row-{offset}"),tokens:0}).collect::<Vec<_>>();
+        let before=ledger.transaction_timings();
+        let frame=Output::prepare(permit.route(),&permit.plan().model,&events,"arrow").expect("pure encoding");
+        proptest::prop_assert!(receiver.try_recv().is_err(),"preparation inserted a frame");
+        proptest::prop_assert_eq!(ledger.transaction_timings().transaction_hold.attempts,before.transaction_hold.attempts);
+        match fault {
+            1 => {ledger.publish(Some(0),"forbid(principal,action,resource);",2).expect("new fence after encoding");},
+            2 => output.cancelled.cancel(),
+            _ => {}
+        }
+        let send=move |_:u64| {
+            output.emit(slot,frame)?;
+            if fault==4 {Err(weaver_contracts::Error::Conflict("queue outcome unknown"))}else{Ok(())}
+        };
+        let result=if fault==3 {
+            let mut recovered=Ledger::open(&path).expect("replacement session");
+            recovered.release_provider(&permit,release,"arrow",send)
+        }else{ledger.release_provider(&permit,release,"arrow",send)};
+        proptest::prop_assert_eq!(result.is_ok(),fault==0);
+        proptest::prop_assert_eq!(receiver.try_recv().is_ok(),fault==0||fault==4);
+        proptest::prop_assert_eq!(ledger.held("f").expect("original hold"),4);
+        if fault!=0 {proptest::prop_assert!(ledger.prepare_provider_release(&permit,"retry","arrow",1).is_err(),"unknown prepared interval reconstructed");}
+        ledger.close().expect("natural store drain");
+    }
 }

@@ -48,7 +48,11 @@ impl ProviderTransport {
     fn eligible(&self) -> BTreeSet<String> {
         self.inner.credentials.keys().cloned().collect()
     }
-    fn open(&self, plan: &ProviderPlan, route: &ProviderRoute) -> Result<Response> {
+    fn prepare(
+        &self,
+        plan: &ProviderPlan,
+        route: &ProviderRoute,
+    ) -> Result<super::request::PreparedRequest> {
         crate::HttpsTransport::validate_endpoint(&route.endpoint)?;
         let client = self
             .inner
@@ -77,41 +81,36 @@ impl ProviderTransport {
             .credentials
             .get(&route.target)
             .ok_or(Error::Denied)?;
-        let response = client
+        let request = client
             .post(&route.endpoint)
             .bearer_auth(secret)
             .header("Content-Type", "application/json")
             .header("Accept", "text/event-stream")
             .body(plan.body.clone())
-            .send()
-            .map_err(|_| Error::Conflict("provider outcome unknown"))?;
-        if response.status() != 200
-            || response
-                .headers()
-                .get("content-type")
-                .and_then(|v| v.to_str().ok())
-                .is_none_or(|v| v.split(';').next().map(str::trim) != Some("text/event-stream"))
-        {
-            return Err(Error::Conflict(
-                "provider did not return an admitted SSE stream",
-            ));
-        }
-        Ok(response)
+            .build()
+            .map_err(|_| Error::Invalid("provider request construction"))?;
+        Ok(super::request::PreparedRequest::new(
+            client.clone(),
+            request,
+        ))
     }
 }
 /// Starts at most one source-bound request. The callback receives bounded batches only
 /// under a fresh Cedar release guard; its error leaves the release and budget unknown.
 pub trait ProviderOutput {
     type Slot;
+    type PreparedFrame;
     fn stopped(&self) -> bool;
     fn reserve(&mut self) -> Result<Self::Slot>;
-    fn emit(
-        &mut self,
-        slot: Self::Slot,
+    /// Pure bounded encoding. It cannot insert a frame or grant send authority.
+    fn prepare(
         route: &ProviderRoute,
         model: &str,
         events: &[ProviderEvent],
-    ) -> Result<()>;
+        format: &str,
+    ) -> Result<Self::PreparedFrame>;
+    /// Only this callback may publish the already prepared frame.
+    fn emit(&mut self, slot: Self::Slot, frame: Self::PreparedFrame) -> Result<()>;
 }
 /// Named execution inputs keep route authority distinct from output queue custody.
 pub struct ProviderExecution<'a> {
@@ -176,14 +175,16 @@ fn execute_stream<O: ProviderOutput>(
             if output.stopped() {
                 return Err(Error::Conflict("provider release cancelled"));
             }
-            ledger.release_provider(&permit, release, format, |first| {
-                if output.stopped() {
-                    return Err(Error::Conflict("provider release cancelled"));
+            let first = release.first_sequence();
+            for (offset, event) in batch.iter_mut().enumerate() {
+                event.sequence = first + offset as u64;
+            }
+            let frame = O::prepare(permit.route(), &plan.model, &batch, format)?;
+            ledger.release_provider(&permit, release, format, |actual| {
+                if actual != first || output.stopped() {
+                    return Err(Error::Conflict("provider release cancelled or rebound"));
                 }
-                for (offset, event) in batch.iter_mut().enumerate() {
-                    event.sequence = first + offset as u64;
-                }
-                output.emit(slot, permit.route(), &plan.model, &batch)
+                output.emit(slot, frame)
             })?;
             batch.clear();
         }
@@ -203,12 +204,15 @@ fn open_guarded<O: ProviderOutput>(
     if output.stopped() {
         return Err(Error::Conflict("cancelled after provider consumption"));
     }
-    ledger.dispatch_provider(permit, || {
+    // Request construction and local client initialization perform no provider IO.
+    let request = transport.prepare(permit.plan(), permit.route())?;
+    let response = ledger.dispatch_provider(permit, || {
         if output.stopped() {
             return Err(Error::Conflict("cancelled before provider invocation"));
         }
-        transport.open(permit.plan(), permit.route())
-    })?
+        request.send()
+    })??;
+    super::request::validate(response)
 }
 
 #[cfg(test)]

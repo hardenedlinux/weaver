@@ -13,9 +13,10 @@ import (
 )
 
 type cargoTarget struct {
-	Name string
-	Kind string
-	Test bool
+	Optimized bool
+	Name      string
+	Kind      string
+	Test      bool
 }
 
 func readCargoExecutable(input io.Reader, target cargoTarget) (string, error) {
@@ -30,7 +31,9 @@ func readCargoExecutable(input io.Reader, target cargoTarget) (string, error) {
 				Kind []string `json:"kind"`
 			} `json:"target"`
 			Profile struct {
-				Test bool `json:"test"`
+				Test            bool   `json:"test"`
+				OptLevel        string `json:"opt_level"`
+				DebugAssertions *bool  `json:"debug_assertions"`
 			} `json:"profile"`
 		}
 		if err := decoder.Decode(&artifact); err == io.EOF {
@@ -41,6 +44,12 @@ func readCargoExecutable(input io.Reader, target cargoTarget) (string, error) {
 		if artifact.Reason != "compiler-artifact" || artifact.Target.Name != target.Name ||
 			!slices.Contains(artifact.Target.Kind, target.Kind) || artifact.Profile.Test != target.Test || artifact.Executable == nil {
 			continue
+		}
+		if target.Optimized {
+			valid := artifact.Profile.OptLevel == "1" || artifact.Profile.OptLevel == "2" || artifact.Profile.OptLevel == "3" || artifact.Profile.OptLevel == "s" || artifact.Profile.OptLevel == "z"
+			if !valid || artifact.Profile.DebugAssertions == nil || *artifact.Profile.DebugAssertions {
+				return "", errors.New("Cargo benchmark artifact is not optimized without debug assertions")
+			}
 		}
 		if executable != "" || *artifact.Executable == "" {
 			return "", errors.New("ambiguous or empty Cargo executable")
@@ -147,6 +156,23 @@ func TestProviderBenchmarkUsesOptimizedRustImage(t *testing.T) {
 			if !slices.Contains(args, required) {
 				t.Fatal("lost source/artifact boundary", args)
 			}
+		}
+	}
+}
+
+func TestCargoOptimizedArtifactRequiresActualProfile(t *testing.T) {
+	const record = `{"reason":"compiler-artifact","target":{"name":"gateway","kind":["bench"]},"profile":{"test":true,"opt_level":"3","debug_assertions":false},"executable":"/reported/gateway"}`
+	for _, tc := range []struct {
+		text  string
+		valid bool
+	}{
+		{record, true}, {strings.Replace(record, `"opt_level":"3"`, `"opt_level":"0"`, 1), false},
+		{strings.Replace(record, `"debug_assertions":false`, `"debug_assertions":true`, 1), false},
+		{strings.Replace(record, `,"debug_assertions":false`, "", 1), false},
+	} {
+		_, err := readCargoExecutable(strings.NewReader(tc.text), cargoTarget{Name: "gateway", Kind: "bench", Test: true, Optimized: true})
+		if (err == nil) != tc.valid {
+			t.Fatal("optimized profile admission", err)
 		}
 	}
 }

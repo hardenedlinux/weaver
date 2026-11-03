@@ -554,7 +554,6 @@ impl pb::gateway_server::Gateway for Gateway {
             cancelled: cancelled.clone(),
             shutdown: CancellationToken::new(),
             runtime: tokio::runtime::Handle::current(),
-            arrow,
         };
         let config = self.config.clone();
         let transport = self.transport.clone();

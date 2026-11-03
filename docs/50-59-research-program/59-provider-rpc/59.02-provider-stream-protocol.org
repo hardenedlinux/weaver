@@ -27,11 +27,13 @@ silently implemented by rewriting the body.
 | Queued recovery | Reauthorize only the same source commitment under a current revision/fence, preserving its hold |
 | Consumption | Select an eligible permitted route and mark the original operation unknown |
 | Dispatch burn | Persist the unique dispatch burn before the possible request callback |
+| Request preparation | Build the local HTTP client and immutable request without DNS, connect or provider IO; no send permission |
 | Final invocation | Recheck current Cedar, original binding, selected route and native owner under the deciding lock, then recheck the original output cancellation context immediately before invoking private HTTPS once |
 | Response read | Incrementally decode a bounded SSE stream outside the deciding write lock so publication can proceed |
 | Output capacity | Reserve an outbound queue slot before taking the deciding write lock; timeout/cancellation retains unknown execution |
 | Release burn | Persist the exact batch digest, logical sequence interval and unknown release before possible enqueue; the private affine token also binds the immutable original plan commitment, prepared encoding and ledger session |
-| Final release | Recheck current authority for every row, encode immutable data and consume the reserved slot under the deciding lock |
+| Frame preparation | Encode immutable sequence-bound bytes after the release burn and outside the writer/domain locks; no queue insertion |
+| Final release | Recheck current authority for every row and consume the reserved slot under the deciding lock; prepared bytes grant no permission |
 | Release commit | Record that the bounded queue admission returned; this is not proof of peer receipt |
 | Completion | Require a valid provider finish and DONE, committed releases and current authority; retain the original hold |
 

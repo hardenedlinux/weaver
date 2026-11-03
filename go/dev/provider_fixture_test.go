@@ -56,7 +56,7 @@ func TestMain(m *testing.M) {
 	cmd := exec.Command("cargo", providerCargoBuildArgs(providerRuntimeFeatures, benchmark)...)
 	cmd.Dir = repo
 	cmd.Stderr = os.Stderr
-	executable, err := buildCargoExecutable(cmd, cargoTarget{Name: "weaver-server", Kind: "bin"})
+	executable, err := buildCargoExecutable(cmd, cargoTarget{Name: "weaver-server", Kind: "bin", Optimized: benchmark != ""})
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)

@@ -894,4 +894,26 @@ theorem transaction_local_batch_cannot_skip_a_denied_row
 
 #print axioms transaction_local_projection_preserves_each_row
 #print axioms transaction_local_batch_cannot_skip_a_denied_row
+/- Encoded bytes are an inert result of a pure host function. The native
+   fidelity premise binds them to the original batch; currentness and the affine
+   release token are still required at insertion, after preparation has ended. -/
+theorem prepared_bytes_cannot_bypass_currentness
+    {Key Context Bytes : Type} {b : Flow.Batch Key Context} {s : Flow.Pipe Key Context}
+    (encode : Flow.Batch Key Context → Bytes) (bytes : Bytes)
+    (changed : b.context ≠ s.context) :
+    ¬ (bytes = encode b ∧ Flow.CanEmit s b) := by
+  intro accepted
+  exact stale_context_cannot_emit changed accepted.2
+
+theorem prepared_bytes_cannot_replace_affine_token
+    {Key Context Bytes : Type} {b : Flow.Batch Key Context} {s : Flow.Pipe Key Context}
+    (encode : Flow.Batch Key Context → Bytes) (bytes : Bytes)
+    (spent : s.token = false) :
+    ¬ (bytes = encode b ∧ Flow.CanEmit s b) := by
+  intro accepted
+  have live := accepted.2.2.2.1
+  simp [spent] at live
+
+#print axioms prepared_bytes_cannot_bypass_currentness
+#print axioms prepared_bytes_cannot_replace_affine_token
 end Weaver.ProviderRpc

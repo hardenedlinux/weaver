@@ -1,5 +1,7 @@
-use criterion::{BatchSize, BenchmarkId, Criterion, criterion_group, criterion_main};
+use criterion::{BatchSize, BenchmarkId, Criterion, criterion_group};
 use std::{collections::BTreeSet, hint::black_box, time::Duration};
+#[path = "support/contention.rs"]
+mod contention;
 #[path = "support/fixtures.rs"]
 mod exposure;
 #[path = "../../contracts/benches/support/fixtures.rs"]
@@ -557,4 +559,11 @@ fn source_authority(c: &mut Criterion) {
     });
 }
 criterion_group! {name=benches;config=Criterion::default().sample_size(30).warm_up_time(Duration::from_secs(1)).measurement_time(Duration::from_secs(2));targets=provider_release::benchmarks,origins::benchmarks,concurrent_admission,durable_operations,shared_exposure,original_reservation_bytes,stream_manifest_guard,range_tail_guard,publication_operations,profile_registration,reviewed_publication,replay_checked_publication,source_authority}
-criterion_main!(benches);
+fn main() {
+    if std::env::args().any(|arg| arg == "--weaver-contention") {
+        contention::run();
+    } else {
+        benches();
+        Criterion::default().configure_from_args().final_summary();
+    }
+}

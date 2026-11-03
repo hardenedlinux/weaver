@@ -85,7 +85,7 @@ func TestSourceAdmissionBenchmarksRetainEverySizeAndRepetition(t *testing.T) {
 
 func TestPublishedPipelineKeepsSchemeOutsideExecutionQualification(t *testing.T) {
 	stages, err := Stages("bench-execution", "go")
-	if err != nil || len(stages) != 8 {
+	if err != nil || len(stages) != 11 {
 		t.Fatal("execution qualification", err)
 	}
 	for _, stage := range stages {

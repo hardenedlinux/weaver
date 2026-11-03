@@ -35,6 +35,12 @@ pub struct ProviderRelease {
     plan_digest: String,
     format: String,
 }
+impl ProviderRelease {
+    /// Inert sequence metadata for pure frame encoding, never send permission.
+    pub fn first_sequence(&self) -> u64 {
+        self.sequence
+    }
+}
 impl Ledger {
     pub fn enqueue_provider(&mut self, plan: &ProviderPlan) -> Result<ProviderReceipt> {
         let digest = plan.digest()?;
@@ -156,11 +162,11 @@ impl Ledger {
             return Err(Error::Conflict("provider dispatch already burned"));
         }
         tx.commit().map_err(db)?;
-        let tx = crate::persistence::begin_family(&mut self.connection, &permit.plan.family)
+        let mut tx = crate::persistence::begin_family(&mut self.connection, &permit.plan.family)
             .map_err(db)?;
         guard_live(&tx, permit, "invokeProvider", 0, "protobuf")?;
         active(&tx, permit)?;
-        let result = send();
+        let result = tx.request_effect(send);
         tx.commit().map_err(db)?;
         Ok(result)
     }
@@ -237,7 +243,7 @@ impl Ledger {
         if release.plan_digest != permit.digest || release.format != format {
             return Err(Error::Conflict("foreign provider release binding"));
         }
-        let tx = crate::persistence::begin_family(&mut self.connection, &permit.plan.family)
+        let mut tx = crate::persistence::begin_family(&mut self.connection, &permit.plan.family)
             .map_err(db)?;
         active(&tx, permit)?;
         guard_live_range(
@@ -251,7 +257,7 @@ impl Ledger {
         if digest.as_deref() != Some(&release.digest) {
             return Err(Error::Conflict("provider release binding"));
         }
-        let output = send(release.sequence)?;
+        let output = tx.queue_effect(|| send(release.sequence))?;
         crate::persistence::exec(&tx, "UPDATE provider_releases SET state='released' WHERE family=?1 AND node=?2 AND sequence=?3", crate::persistence::params![(permit.plan.family).to_owned(),(permit.plan.node).to_owned(),(release.sequence as i64).to_owned()]).map_err(db)?;
         tx.commit().map_err(db)?;
         Ok(output)

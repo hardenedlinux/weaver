@@ -24,14 +24,18 @@ struct Sink {
 }
 impl ProviderOutput for Sink {
     type Slot = ();
+    type PreparedFrame = usize;
     fn stopped(&self) -> bool {
         false
     }
     fn reserve(&mut self) -> Result<()> {
         Ok(())
     }
-    fn emit(&mut self, _: (), _: &ProviderRoute, _: &str, events: &[ProviderEvent]) -> Result<()> {
-        self.events += events.len();
+    fn prepare(_: &ProviderRoute, _: &str, events: &[ProviderEvent], _: &str) -> Result<usize> {
+        Ok(events.len())
+    }
+    fn emit(&mut self, _: (), count: usize) -> Result<()> {
+        self.events += count;
         Ok(())
     }
 }

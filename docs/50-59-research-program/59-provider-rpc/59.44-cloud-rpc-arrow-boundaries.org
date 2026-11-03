@@ -67,13 +67,16 @@ Both effects remain tied to the original task, profile, shared budget/history,
 selected route and current execution owner.
 
 The actual path is [[file:../../../crates/execution/src/provider/runtime.rs][execute_stream]] → =output.reserve= →
-[[file:../../../crates/ledger/src/provider.rs][prepare_provider_release]] → fresh =release_provider= guard →
-[[file:../../../crates/server/src/grpc_output.rs][encode and enqueue]]. Capacity waits happen outside the deciding SQL lock.
+[[file:../../../crates/ledger/src/provider.rs][prepare_provider_release]] → data-only =Output::prepare= → fresh =release_provider= guard →
+[[file:../../../crates/server/src/grpc_output.rs][Output::emit queue insertion]]. Capacity waits and encoding happen outside the deciding SQL lock.
 The existing one-second queue reservation deadline is retained. Preparation
 persists an unknown interval and advances its frontier before final queue use.
 Final use rechecks all rows, plan commitment, encoding and live ledger session.
-Current encoding occurs inside that final guard; moving expensive encoding
-outside it would require immutable owned artifacts and another fresh join.
+Encoding now constructs an immutable owned artifact outside that final guard,
+after its durable interval burn. Sequence metadata alone is inert. The final
+join is still fresh and checks every row, original plan/encoding/session and
+current authority before the sole queue insertion. Preparation failure or a
+state cut preserves the unknown interval and its original held budget.
 
 | Stage | What it establishes | What it does not establish |
 |-------+---------------------+----------------------------|

@@ -13,9 +13,16 @@ pub(crate) struct Output {
     pub cancelled: CancellationToken,
     pub shutdown: CancellationToken,
     pub runtime: tokio::runtime::Handle,
-    pub arrow: bool,
+}
+pub(crate) struct PreparedFrame {
+    frame: pb::ProviderFrame,
+    #[cfg(all(test, unix))]
+    first: u64,
+    #[cfg(all(test, unix))]
+    rows: usize,
 }
 impl ProviderOutput for Output {
+    type PreparedFrame = PreparedFrame;
     type Slot = mpsc::OwnedPermit<std::result::Result<pb::ProviderFrame, tonic::Status>>;
     fn stopped(&self) -> bool {
         self.cancelled.is_cancelled() || self.shutdown.is_cancelled() || self.sender.is_closed()
@@ -49,31 +56,39 @@ impl ProviderOutput for Output {
                     .record(weaver_telemetry::Signal::QueueWaitFailed)
             })
     }
-    fn emit(
-        &mut self,
-        slot: Self::Slot,
+    fn prepare(
         route: &ProviderRoute,
         model: &str,
         events: &[ProviderEvent],
-    ) -> Result<()> {
-        if self.stopped() {
-            return Err(Error::Conflict("RPC cancelled before release"));
-        }
+        format: &str,
+    ) -> Result<PreparedFrame> {
         let frame = encode_frame(Frame {
             target: &route.target,
             model,
             events,
-            encoding: if self.arrow {
-                pb::Encoding::ArrowIpc
-            } else {
-                pb::Encoding::Protobuf
+            encoding: match format {
+                "arrow" => pb::Encoding::ArrowIpc,
+                "protobuf" => pb::Encoding::Protobuf,
+                _ => return Err(Error::Invalid("response encoding")),
             },
         })?;
-        slot.send(Ok(frame));
+        Ok(PreparedFrame {
+            frame,
+            #[cfg(all(test, unix))]
+            first: events[0].sequence,
+            #[cfg(all(test, unix))]
+            rows: events.len(),
+        })
+    }
+    fn emit(&mut self, slot: Self::Slot, prepared: PreparedFrame) -> Result<()> {
+        if self.stopped() {
+            return Err(Error::Conflict("RPC cancelled before release"));
+        }
+        slot.send(Ok(prepared.frame));
         self.telemetry
             .record(weaver_telemetry::Signal::ResponseFramesQueued);
         #[cfg(all(test, unix))]
-        backpressure_tests::enqueued(events);
+        backpressure_tests::enqueued(prepared.first, prepared.rows);
         Ok(())
     }
 }

@@ -184,9 +184,12 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 		return []Stage{
 			{"execution-benchmark-target", goBinary, []string{"-C", "go", "test", "-count=1", "-tags=integration", "./internal/devrunner", "-run", "^TestCargoBenchmarkTargetFollowsCargoConfiguration$", "-v"}},
 			{"execution-policy-tests", "cargo", []string{"test", "-p", "weaver-policy", "--locked", "--offline"}},
-			{"execution-ledger-tests", "cargo", []string{"test", "-p", "weaver-ledger", "--locked", "--offline"}},
+			{"execution-backend-tests", "cargo", []string{"test", "-p", "weaver-ledger", "-p", "weaver-execution", "-p", "weaver-server", "--features", "weaver-server/arrow", "--locked", "--offline"}},
 			{"execution-policy-benchmark", "cargo", []string{"bench", "-p", "weaver-policy", "--bench", "gateway", "--locked", "--offline", "--", "policy/context_", "--noplot"}},
 			{"execution-ledger-benchmark", "cargo", []string{"bench", "-p", "weaver-ledger", "--bench", "gateway", "--locked", "--offline", "--", "ledger/provider_release/", "--noplot"}},
+			{"execution-provider-benchmark", "cargo", []string{"bench", "-p", "weaver-execution", "--bench", "gateway", "--locked", "--offline", "--", "execution/https_guarded_sse_three_events", "--noplot"}},
+			{"execution-encoding-benchmark", "cargo", []string{"bench", "-p", "weaver-server", "--features", "arrow", "--bench", "gateway", "--locked", "--offline", "--", "server/encoding_guard_hold", "--noplot"}},
+			{"execution-contention-pair", goBinary, []string{"-C", "go", "test", "-count=1", "-tags=integration", "./dev", "-run", "^TestContentionPairs$", "-v"}},
 			{"execution-provider-integration", goBinary, []string{"-C", "go", "test", "-count=1", "-race", "-tags=integration", "./dev", "-run", "^TestProvider", "-v"}},
 			{"published-pipeline-benchmark", goBinary, []string{"-C", "go", "test", "-tags=integration", "./dev", "-run", "^$", "-bench", "^BenchmarkGatewayPublishedPipeline$", "-benchtime=1x", "-count=3", "-benchmem"}},
 			{"execution-streaming-pair", goBinary, []string{"-C", "go", "test", "-tags=integration", "./dev", "-run", "^$", "-bench", "^BenchmarkGatewayStreamingPair$", "-benchtime=1x", "-count=1", "-benchmem"}},

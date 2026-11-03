@@ -149,19 +149,25 @@ package ProviderRpc {
         port received : ~FramePort;
     }
     part def RustGrpcOwner { port proposal : ~PlanPort; port forwarded : PlanPort; }
+    /* Client/request construction is pure preparation before dispatch locks.
+       DNS, connect, TLS, request bytes and header wait remain within the final
+       guarded request; metrics never authorize any of those effects. */
     part def RustProviderBroker { port proposal : ~PlanPort; port response : EventPort; port authority : ~PublicationPort; }
-    part def RustCedarRelease { port response : ~EventPort; port encoded : FramePort; }
+    part def RustCedarRelease { port prepared : ~FramePort; port authorized : FramePort; }
     part def ProtobufOrArrowEncoder {
-        doc /* Pure owned encoding. Current Rust encoding runs inside the release
-           guard; moving it outside requires immutable frozen bytes and a fresh
-           final join. Encoder output is never itself an execution capability. */
-        port encoded : ~FramePort;
+        doc /* Pure bounded owned encoding runs after the durable interval burn
+           and outside the final writer/domain guard. Sequence, route, model and
+           encoding are frozen. A new final join checks current authority for
+           every row before the sole queue insertion. No encoded frame or scalar
+           sequence observation is an execution capability. */
+        port response : ~EventPort;
         port frames : FramePort;
     }
     part def RustBoundedOutput {
         doc /* Existing private gRPC output queue, not another transport process.
            Reserve capacity before release preparation; the same deciding guard
-           spans final row checks, encoding and queue insertion. Queue admission
+           spans fresh final row checks and queue insertion of immutable prepared
+           bytes. Encoding allocates outside this scope. Queue admission
            is the response-release LP; provider-request socket admission remains
            the distinct LP in WeaverExecution. Observe cancellation immediately
            before enqueue, then retain uncertainty if receiver loss/commit failure
@@ -184,9 +190,9 @@ package ProviderRpc {
         connect publication.published to sourceStore.command;
         connect sourceStore.decided to broker.authority;
         connect rpc.forwarded to broker.proposal;
-        connect broker.response to guard.response;
-        connect guard.encoded to encoding.encoded;
-        connect encoding.frames to output.frames;
+        connect broker.response to encoding.response;
+        connect encoding.frames to guard.prepared;
+        connect guard.authorized to output.frames;
         connect output.stream to control.received;
         attribute maximumRoutes : Integer = 8;
         attribute maximumRequestBytes : Integer = 1048576;

@@ -106,6 +106,9 @@ module ProviderRpc {
   // clear its pending interval or transfer its affine release continuation.
   action reconnect=s'=s
   action capacityWait=all {s.frames==2,not(s.slot),s'=s}
+  // Client/request and encoded-frame preparation do not change authority.
+  action prepareRequest=s'=s
+  action encodePreparedFrame=s'=s
   action observeEOF=s'=s
   action badPeer=s'=s.with("caller",2)
   action wrongCredential=s'=s.with("credential",false)
@@ -122,7 +125,7 @@ module ProviderRpc {
   action unsafeCreditAsAuthority=s'=appendFrame(s,s.next,1,s.encoding).with("next",s.next+1)
   action unsafeReplayPrepared=s'=appendFrame(s,s.preparedFirst,s.preparedRows,s.preparedEncoding)
   action unsafeRefund=s'=s.with("held",0)
-  action step={nondet nonce=Set(0,1,2).oneOf() any {observeCurrentProposal,proposeCaps(32,0),proposeCaps(0,4096),proposeCaps(32,5000),proposeCaps(0,0),proposeCaps(-1,0),selectEncoding(0),selectEncoding(1),admit(nonce),replay,consume(0),consume(1),burn,invoke,batch(1,0),batch(1,1),batch(2,1),reserveSlot,dropSlot,prepareBatch(1,0),prepareBatch(2,1),emitPrepared(0),emitPrepared(1),commitRelease,deliver,discardQueued,publish,restorePolicy,advanceDomainCut,reauthorize,cancel,crash,reconnect,capacityWait,observeEOF,badPeer,wrongCredential,complete,restrictRows}}
+  action step={nondet nonce=Set(0,1,2).oneOf() any {observeCurrentProposal,proposeCaps(32,0),proposeCaps(0,4096),proposeCaps(32,5000),proposeCaps(0,0),proposeCaps(-1,0),selectEncoding(0),selectEncoding(1),admit(nonce),replay,consume(0),consume(1),burn,invoke,batch(1,0),batch(1,1),batch(2,1),reserveSlot,dropSlot,prepareBatch(1,0),prepareBatch(2,1),emitPrepared(0),emitPrepared(1),commitRelease,deliver,discardQueued,publish,restorePolicy,advanceDomainCut,reauthorize,cancel,crash,reconnect,capacityWait,prepareRequest,encodePreparedFrame,observeEOF,badPeer,wrongCredential,complete,restrictRows}}
   action spent=init.then(admit(0)).then(consume(0)).then(burn).then(invoke)
   run defaultRpcCredentialRequiredTest=init.then(wrongCredential).then(admit(0).fail())
   run sameSubjectDifferentKeyRejectedTest=init.then(badPeer).then(admit(1).fail())
@@ -218,4 +221,12 @@ module ProviderRpc {
     .then(crash).then(reconnect).expect(safe and s.pending and s.held==4).then(emitPrepared(1).fail())
   run cachedBatchSnapshotAfterPublicationCounterexampleTest=arrowSpent.then(reserveSlot).then(prepareBatch(2,1))
     .then(publish).then(unsafeReplayPrepared).expect(not(safe))
+  run preparedRequestCannotBypassPublicationTest=init.then(admit(0)).then(consume(0)).then(prepareRequest)
+    .then(publish).expect(safe and s.held==4).then(burn.fail())
+  run encodingOutsideWriterRequiresFreshJoinTest=arrowSpent.then(reserveSlot).then(prepareBatch(2,1))
+    .then(encodePreparedFrame).then(publish).expect(safe and s.pending and s.held==4).then(emitPrepared(1).fail())
+  run discardedPreparedFrameRetainsUnknownBudgetTest=arrowSpent.then(reserveSlot).then(prepareBatch(2,1))
+    .then(encodePreparedFrame).then(crash).then(reconnect).expect(safe and s.pending and s.held==4).then(emitPrepared(1).fail())
+  run preparedBytesAsPermitCounterexampleTest=arrowSpent.then(reserveSlot).then(prepareBatch(2,1))
+    .then(encodePreparedFrame).then(publish).then(unsafeReplayPrepared).expect(not(safe))
 }
