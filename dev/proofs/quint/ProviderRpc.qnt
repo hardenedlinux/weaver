@@ -208,4 +208,14 @@ module ProviderRpc {
   run restoredAllowCannotRestoreOldLiteralContextTest=spent.then(publish).then(restorePolicy).expect(safe and s.held==4).then(batch(1,0).fail())
   run literalContextRejoinsHistoryAfterQueueWaitTest=arrowSpent.then(reserveSlot).then(prepareBatch(2,1)).then(advanceDomainCut).expect(safe and s.held==4).then(emitPrepared(1).fail())
   run staleLiteralContextCounterexampleTest=spent.then(advanceDomainCut).then(unsafeStaleRelease).expect(not(safe))
+  // One stable deciding image serves all rows. Prepare and final emission are
+  // distinct actions: no image survives a publication/domain cut between them.
+  run sameTransactionBatchChecksInteriorRowTest=arrowSpent.then(restrictRows).then(reserveSlot)
+    .expect(safe and s.held==4).then(prepareBatch(2,1).fail())
+  run batchSnapshotDoesNotCrossPublicationTest=arrowSpent.then(reserveSlot).then(prepareBatch(2,1))
+    .then(publish).expect(safe and s.pending and s.held==4).then(emitPrepared(1).fail())
+  run batchSnapshotDoesNotCrossOwnerRestartTest=arrowSpent.then(reserveSlot).then(prepareBatch(2,1))
+    .then(crash).then(reconnect).expect(safe and s.pending and s.held==4).then(emitPrepared(1).fail())
+  run cachedBatchSnapshotAfterPublicationCounterexampleTest=arrowSpent.then(reserveSlot).then(prepareBatch(2,1))
+    .then(publish).then(unsafeReplayPrepared).expect(not(safe))
 }

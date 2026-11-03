@@ -10,6 +10,8 @@ mod mvcc;
 mod origins;
 #[path = "../../policy/benches/support/fixtures.rs"]
 mod policy_fixture;
+#[path = "support/provider_release.rs"]
+mod provider_release;
 #[path = "../../policy/tests/support/publication_replay.rs"]
 mod replay_fixture;
 #[path = "../../policy/tests/support/publication_revision.rs"]
@@ -554,5 +556,5 @@ fn source_authority(c: &mut Criterion) {
         )
     });
 }
-criterion_group! {name=benches;config=Criterion::default().sample_size(30).warm_up_time(Duration::from_secs(1)).measurement_time(Duration::from_secs(2));targets=origins::benchmarks,concurrent_admission,durable_operations,shared_exposure,original_reservation_bytes,stream_manifest_guard,range_tail_guard,publication_operations,profile_registration,reviewed_publication,replay_checked_publication,source_authority}
+criterion_group! {name=benches;config=Criterion::default().sample_size(30).warm_up_time(Duration::from_secs(1)).measurement_time(Duration::from_secs(2));targets=provider_release::benchmarks,origins::benchmarks,concurrent_admission,durable_operations,shared_exposure,original_reservation_bytes,stream_manifest_guard,range_tail_guard,publication_operations,profile_registration,reviewed_publication,replay_checked_publication,source_authority}
 criterion_main!(benches);

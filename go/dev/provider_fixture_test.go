@@ -14,6 +14,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"encoding/pem"
+	"flag"
 	"fmt"
 	"math/big"
 	"net"
@@ -41,12 +42,18 @@ var serverBinary string
 var controlBinary string
 
 func TestMain(m *testing.M) {
+	flag.Parse()
+	benchmark := flag.Lookup("test.bench").Value.String()
+	profile := "dev"
+	if benchmark != "" {
+		profile = "release"
+	}
 	_, source, _, ok := runtime.Caller(0)
 	if !ok {
 		os.Exit(1)
 	}
 	repo := filepath.Clean(filepath.Join(filepath.Dir(source), "../.."))
-	cmd := exec.Command("cargo", "build", "-p", "weaver-server", "--bin", "weaver-server", "--features", providerRuntimeFeatures, "--locked", "--offline", "--message-format=json-render-diagnostics")
+	cmd := exec.Command("cargo", providerCargoBuildArgs(providerRuntimeFeatures, benchmark)...)
 	cmd.Dir = repo
 	cmd.Stderr = os.Stderr
 	executable, err := buildCargoExecutable(cmd, cargoTarget{Name: "weaver-server", Kind: "bin"})
@@ -66,7 +73,7 @@ func TestMain(m *testing.M) {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
-	fmt.Fprintln(os.Stderr, "test-owned provider image sha256="+digest)
+	fmt.Fprintf(os.Stderr, "test-owned provider image sha256=%s profile=%s\n", digest, profile)
 	controlBinary = filepath.Join(directory, "weaver-control")
 	controlBuild := exec.Command(filepath.Join(runtime.GOROOT(), "bin/go"), "-C", "go", "build", "-race", "-o", controlBinary, "./cmd/weaver-control")
 	controlBuild.Dir, controlBuild.Stdout, controlBuild.Stderr = repo, os.Stderr, os.Stderr

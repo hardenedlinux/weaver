@@ -1,5 +1,5 @@
 use proptest::{prop_assert, prop_assert_eq, proptest, test_runner::Config};
-use std::collections::BTreeSet;
+use std::{cell::Cell, collections::BTreeSet};
 use weaver_contracts::{ProviderPlan, ProviderRoute, Task, body_digest};
 use weaver_ledger::{Ledger, ProviderDispatch, ProviderRelease};
 #[path = "commit_floor.rs"]
@@ -885,5 +885,61 @@ proptest! {
         prop_assert!(ledger.enqueue_provider(&second).is_err());
         prop_assert!(ledger.provider_receipt("f","second").expect("observe").is_none());
         prop_assert_eq!(ledger.held("f").expect("unrepaired projection"),0);
+    }
+}
+
+proptest! {
+    #![proptest_config(Config::with_cases(48))]
+    #[test]
+    fn transaction_local_batch_reads_preserve_every_row_and_unknown_exposure(
+        length in 1u64..33, denied in 0u64..32, fault in 0u8..7, mvcc in proptest::bool::ANY
+    ) {
+        let temp = tempfile::tempdir().expect("batch directory");
+        let path = temp.path().join("batch.db");
+        let storage = weaver_ledger::persistence::Session::open_with_journal(&path,
+            if mvcc {weaver_ledger::persistence::Journal::Mvcc} else {weaver_ledger::persistence::Journal::Wal}).expect("journal");
+        let (mut ledger, mut plan) = fixture(&path);
+        let restricted = format!("{POLICY} forbid(principal, action == Weaver::Action::\"emitProvider\", resource) when {{ context.sequence == {} }};",denied % length);
+        ledger.publish_typed(Some(0),if fault==1 {&restricted} else {POLICY},SCHEMA,1).expect("source contract");
+        plan.revision=1;
+        ledger.enqueue_provider(&plan).expect("reservation");
+        let eligible=BTreeSet::from(["primary".into()]);
+        let permit=ledger.consume_provider("f","infer",&eligible).expect("consume");
+        ledger.dispatch_provider(&permit,||()).expect("request burn");
+        let prepared=ledger.prepare_provider_release(&permit,"bounded-batch","arrow",length);
+        if fault==1 {
+            prop_assert!(prepared.is_err(),"an interior denied row admitted the batch");
+        } else {
+            let release=prepared.expect("original release burn");
+            match fault {
+                2 => {weaver_ledger::persistence::exec(&storage,"UPDATE authority SET policy=?1",[restricted.as_str()]).expect("fault: changed source without version advance");},
+                3 => {ledger.publish_typed(Some(1),POLICY,SCHEMA,2).expect("new fence after preparation");},
+                4 => {weaver_ledger::persistence::exec(&storage,"DELETE FROM execution_claims WHERE family='f'",()).expect("fault: missing original claim");},
+                5 => {weaver_ledger::persistence::exec(&storage,"DELETE FROM domain_history",()).expect("fault: missing history");},
+                _ => {}
+            }
+            let calls=Cell::new(0);
+            let result=ledger.release_provider(&permit,release,"arrow",|first|{
+                calls.set(calls.get()+1);
+                assert_eq!(first,0,"original batch interval");
+                if fault==6 {Err(weaver_contracts::Error::Conflict("lost queue observation"))}else{Ok(())}
+            });
+            prop_assert_eq!(result.is_ok(),fault==0);
+            prop_assert_eq!(calls.get(),if fault==0||fault==6 {1} else {0});
+            if fault!=0 {
+                prop_assert!(ledger.prepare_provider_release(&permit,"replacement","arrow",1).is_err(),"unknown release reconstructed");
+            }
+        }
+        prop_assert_eq!(ledger.held("f").expect("retained hold"),4);
+        prop_assert!(ledger.consume_provider("f","infer",&eligible).is_err(),"consumed request reconstructed");
+        drop(ledger);
+        storage.close().expect("natural storage drain");
+        let recovery=weaver_ledger::persistence::Session::open_with_journal(&path,
+            if mvcc {weaver_ledger::persistence::Journal::Mvcc} else {weaver_ledger::persistence::Journal::Wal}).expect("same explicit recovery profile");
+        let mut recovered=Ledger::open(&path).expect("fresh worker");
+        prop_assert_eq!(recovered.held("f").expect("durable hold"),4);
+        prop_assert!(recovered.consume_provider("f","infer",&eligible).is_err(),"restart reconstructed send");
+        recovered.close().expect("recovery drain");
+        recovery.close().expect("recovery owner drain");
     }
 }

@@ -656,3 +656,149 @@ configuration. It does not infer root/target. The first complete execution run
 remains FAIL because the old collector selected the wrong directory, even though
 its actual integration and published-stream samples passed. Corrected collection
 must admit all fresh cases and samples again; partial success cannot replace it.
+
+* Transaction-local Runtime convergence and measurement boundary
+
+** Ownership and deciding-image lifetime
+
+Scheme reader/bootstrap and prepared-scope work remains with its upstream owner.
+This delivery changes Rust/Go execution and the Cedar deciding projection only.
+Package declarations and dependency locks remain the package managers' concern;
+no dependency update or downstream Scheme bootstrap is part of this change.
+
+Consumption also retains the inert typed binding produced by the selected-route
+Cedar guard instead of rereading/redecoding the same task and rebinding it in
+that transaction. Only immutable plan/subject literals survive; the allow result,
+Policy text and mutable domain image do not. Dispatch and response use still
+read and evaluate current authority independently.
+
+The provider active guard previously reached the complete domain-retention
+check through both =require_stamp= and =require_exposure=. Both calls verified
+the same complete claim, budget and history projection in one transaction, with
+no intervening write. It now reads and compares the canonical stamp, checks the
+original consumed run and reservation, and performs the complete shared-retention
+check once through =require_exposure=. No sibling family, reservation, original
+task or history member is omitted. This does not replace the retained manifest
+with an aggregate balance or a caller-selected lock key.
+
+Both prepare and final release previously reloaded authority, publication,
+profile registry and domain facts for each row. Each now reads their common
+image once inside its own deciding transaction and executes Cedar separately
+for every actual sequence and encoding. An interior denied row rejects the
+whole batch before its callback. The local image cannot escape the function:
+no SQL mutation, capacity wait or external callback occurs inside the decision
+loop. Prepare and final release still acquire distinct transactions and read
+independent current images. Dispatch still burns durably before its separately
+guarded sole external request. Final queue insertion still follows durable
+release preparation, with unknown exposure retained after an indeterminate
+callback or completion commit.
+
+The native stability premise is explicit. WAL uses its deciding writer; MVCC
+uses owner custody, the global publication gate and sorted origin/shared-budget/
+history conflict locks. A source mutation or domain union cannot interleave
+inside that protected image. This is a local logical execution boundary, not
+physical isolation. Cancellation remains independently checked at the callback.
+No currentness result crosses a wait, transaction boundary, new fence or restart.
+
+** What the latency observations establish
+
+Temporary diagnostic timers around the actual Rust execution phases and native
+Turso commit were removed before delivery. Their original source copies and
+complete transcripts are retained under ignored =.cache/runtime-phases/=. On
+the diagnostic debug image, individual prepare/release phases were roughly
+16--24 ms while many native commit calls were roughly 0.2--0.4 ms. These
+observations reject the explanation that all measured phase time is fsync; they
+do not provide a complete query-level CPU attribution or a production percentile.
+The duplicated full-retention call and repeated per-row state loads were then
+identified directly in the deciding source. No synchronous durability setting
+was weakened to improve the numbers.
+
+A separate measurement defect was found: the Go integration fixture built the
+Rust server in the default debug profile even for benchmarks. Standard Go
+benchmark selection now requests an optimized Cargo release artifact; ordinary
+integration tests retain debug assertions. Cargo JSON still determines the
+executable path, and the existing read-only image capture retains its digest.
+Paired evidence requires exactly one captured release-image identity. Historical
+debug numbers remain historical diagnostics and cannot be compared with release
+numbers as a claimed implementation speedup. Build, process startup, PKI and
+frontend channel preparation remain outside timed activation/send intervals.
+
+The ordinary published pipeline retains three fresh whole-path samples. A new
+same-image experiment runs six complete ABBA blocks: Arrow with one row per
+release versus Arrow with a maximum of 32 rows per release. Every arm uses five
+identical logical events, JSON admission, authenticated publication, Go Routing,
+real Rust/Turso guards, local HTTPS provider IO and durable receipt inspection.
+Each arm asserts two text events, five events total, one primary request, no
+fallback, the original hold and rejection of a repeated SDK execution. Fresh
+stores/PKI are provisioned outside timing; arms share one immutable server image.
+The evidence reader rejects absent/reordered/repeated arms, wrong CPU/iteration
+coordinates, debug images and multiple/missing image identities.
+
+This experiment measures bounded coalescing under the same implementation. It
+does not compare old and new Rust implementations or establish production tail
+latency. The local provider immediately supplies all five events; batching a
+slow upstream may increase time to first event. No batching default, flush timer,
+reconnect, retry or external-send permission is changed. With five events the
+single-row path uses five prepare/release pairs; the coalesced path uses one.
+The durable request burn, fresh final guard and completion still remain.
+
+The Rust package additionally owns =ledger/provider_release/{1,8,32}= Criterion
+cases. Each times actual preparation and release with per-row Cedar checks,
+not external IO; original task admission/dispatch are outside timing. All thirty
+samples per case are required. These cases distinguish native authorization/
+transaction cost from Go forwarding and HTTPS stream latency.
+
+** Concurrency limits retained deliberately
+
+MRR Data/Turso remains the only execution storage boundary. Disjoint MVCC
+domains may overlap; shared original claims, budget roots and history roots
+serialize. The existing 64 lock stripes can create false contention but cannot
+create independent spending domains. WAL's writer and global authority changes
+still serialize, and the final guarded request includes provider connection/
+header latency. No claim is made that those remaining waits have disappeared.
+The bounded source worker also intentionally orders authority publication; this
+change adds neither parallel source publication nor automatic transaction retry.
+Future contention work must measure those waits and preserve their shared-domain
+linearization instead of splitting shared constraints for throughput.
+
+** Executable correspondence and acceptance
+
+The added 48-case Rust Proptest property uses actual WAL and MVCC stores, row
+counts from one through 32, arbitrary denied interior rows, source changes after
+preparation, new fences, lost claims/history, failed queue observations and a
+fresh recovered worker. It checks callback cardinality, original hold retention
+and refusal to reconstruct consumed requests. Raw same-version Policy mutation
+and missing rows are explicit host/storage fault injections, not supported source
+publication operations. Recovery reopens the same explicit journal profile; an
+initial test failure that attempted an implicit MVCC-to-WAL open remains failure
+evidence, and production implicit conversion remains refused.
+
+Lean =transaction_local_projection_preserves_each_row= proves equivalence to
+per-row reads for any finite batch under the stated stable deciding-image
+premise. =transaction_local_batch_cannot_skip_a_denied_row= excludes a batch
+containing any denied row. These laws add no axioms and do not prove native
+locking or driver durability. Existing =stale_context_cannot_emit= still rejects
+an old image at a later effect. Quint adds interior-row, publication-cut and
+restart refusal schedules and an unsafe cached-image counterexample. Its finite
+exploration is complementary evidence, not an arbitrary-state deployment proof.
+
+Use the Go-owned =check-policy= and =bench-execution= gates on the committed
+source, complete Go race tests, ledger/backend tests and strict ASP/Clippy.
+=bench-execution= requires the four context-construction cases, three durable
+release cases, real fault integration, three published-path samples and all 24
+ordered release-image streaming samples. Preserve every failed or contaminated
+exploratory run separately; a diagnostic run overlapping builds/tests does not
+qualify an isolated latency result. A concurrent exploratory integration run
+failed the unchanged three-second cold-start limit in
+=TestProviderCompetingCapsCannotReachDispatch= while the optimized server was
+being built. Its exact-image failure transcript remains retained. Contention
+is a candidate explanation, not a proved runtime defect or a repaired deadline;
+the final full integration suite must pass sequentially under the original
+startup, cleanup and execution limits. No deadline, cleanup or dependency pin is
+relaxed. CI conclusions are outside this delivery.
+
+The SysML responsibility and Lean premises drive the existing core views:
+[[file:../../architecture/diagrams/00c-gateway-runtime.svg]]
+[[file:../../architecture/diagrams/00d-zero-trust-overview.svg]]
+[[file:59.77-mrr-turso-storage.svg]]
+Diagram content remains core design, without timing tables or release metadata.

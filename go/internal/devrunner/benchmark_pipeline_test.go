@@ -85,7 +85,7 @@ func TestSourceAdmissionBenchmarksRetainEverySizeAndRepetition(t *testing.T) {
 
 func TestPublishedPipelineKeepsSchemeOutsideExecutionQualification(t *testing.T) {
 	stages, err := Stages("bench-execution", "go")
-	if err != nil || len(stages) != 5 {
+	if err != nil || len(stages) != 8 {
 		t.Fatal("execution qualification", err)
 	}
 	for _, stage := range stages {
@@ -104,5 +104,51 @@ func TestPublishedPipelineKeepsSchemeOutsideExecutionQualification(t *testing.T)
 	rows, err := readPipelineBenchmarks(path, 12, "BenchmarkGatewayPublishedPipeline/registered")
 	if err != nil || len(rows) != 3 {
 		t.Fatal("published measurements lost", err)
+	}
+}
+
+func TestStreamingPairRequiresCompleteOrderedBlocks(t *testing.T) {
+	var lines []string
+	for i := 0; i < 24; i++ {
+		arm := "single"
+		if i%4 == 1 || i%4 == 2 {
+			arm = "batch"
+		}
+		lines = append(lines, fmt.Sprintf("BenchmarkGatewayStreamingPair/%02d-%s-12 1 1000 ns/op 800 activation-ns/op 190 send-ns/op 100 B/op 2 allocs/op", i, arm))
+	}
+	for _, kind := range []string{"complete", "missing", "repeated", "reordered", "wrong CPU", "missing image", "debug image", "multiple images"} {
+		t.Run(kind, func(t *testing.T) {
+			input := append([]string(nil), lines...)
+			switch kind {
+			case "missing":
+				input = input[1:]
+			case "repeated":
+				input[1] = input[0]
+			case "reordered":
+				input[0], input[1] = input[1], input[0]
+			case "wrong CPU":
+				input[0] = strings.Replace(input[0], "-12 1", "-1 1", 1)
+			}
+			header := "test-owned provider image sha256=" + strings.Repeat("a", 64) + " profile=release\n"
+			switch kind {
+			case "missing image":
+				header = ""
+			case "debug image":
+				header = strings.Replace(header, "release", "dev", 1)
+			case "multiple images":
+				header += header
+			}
+			path := filepath.Join(t.TempDir(), "pair.log")
+			if err := os.WriteFile(path, []byte(header+strings.Join(input, "\n")), 0600); err != nil {
+				t.Fatal(err)
+			}
+			rows, err := readStreamingPairBenchmarks(path, 12)
+			if (err == nil) != (kind == "complete") {
+				t.Fatal("pair admission", err)
+			}
+			if err == nil && len(rows) != 24 {
+				t.Fatal("lost pair samples")
+			}
+		})
 	}
 }

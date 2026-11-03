@@ -125,3 +125,28 @@ func FuzzCargoExecutablePreservesReportedPath(f *testing.F) {
 		}
 	})
 }
+
+// Standard Go benchmark selection also selects an optimized provider image.
+// Ordinary integration tests keep their default debug assertions. Artifact
+// paths still come from Cargo JSON, never a guessed target/profile directory.
+func providerCargoBuildArgs(features, benchmark string) []string {
+	args := []string{"build", "-p", "weaver-server", "--bin", "weaver-server", "--features", features, "--locked", "--offline", "--message-format=json-render-diagnostics"}
+	if benchmark != "" {
+		args = append(args, "--release")
+	}
+	return args
+}
+
+func TestProviderBenchmarkUsesOptimizedRustImage(t *testing.T) {
+	for _, benchmark := range []string{"", "^BenchmarkGatewayStreamingPair$", "."} {
+		args := providerCargoBuildArgs("arrow", benchmark)
+		if slices.Contains(args, "--release") != (benchmark != "") {
+			t.Fatal("incorrect runtime measurement profile", args)
+		}
+		for _, required := range []string{"--locked", "--offline", "--message-format=json-render-diagnostics"} {
+			if !slices.Contains(args, required) {
+				t.Fatal("lost source/artifact boundary", args)
+			}
+		}
+	}
+}

@@ -91,3 +91,20 @@ against the original message cursor. Setup is outside timing; the callback is
 local, with no network IO. All cases use the same MRR Data / Turso driver and
 unchanged thirty-sample protocol. These results do not establish a speedup
 over the retired engine or concurrent throughput.
+
+* Transaction-local provider batches
+
+=ledger/provider_release/{1,8,32}= times actual MRR Data/Turso preparation
+and final release, including a separate fresh deciding scope and per-row Cedar
+evaluation at both boundaries. Each scope reads one common authority/profile/
+domain image. The consumed request and original reservation are prepared outside
+timing; the timed callback is local and does not measure network IO or Arrow
+encoding. These are native stage costs, not a whole-Gateway latency claim.
+Every case retains thirty samples and the original held budget.
+
+=go -C go run ./cmd/weaver-dev bench-execution= also checks the actual provider
+fault suite, three complete published-source samples and six ordered ABBA
+streaming blocks. The latter use one captured optimized server image and the same
+five events, comparing Arrow rows=1 with rows=32. Store/PKI setup is outside timing.
+The batching comparison is not a before/after implementation speedup. Historical
+debug-image observations must not be mixed with release-image measurements.

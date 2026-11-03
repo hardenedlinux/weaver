@@ -2,6 +2,7 @@ package devrunner
 
 import (
 	"bufio"
+	"encoding/hex"
 	"fmt"
 	"os"
 	"strconv"
@@ -21,6 +22,10 @@ type PipelineBenchmark struct {
 }
 
 func readPipelineBenchmarks(path string, cpus int, expected ...string) ([]PipelineBenchmark, error) {
+	return readPipelineSamples(path, cpus, 3, expected...)
+}
+
+func readPipelineSamples(path string, cpus, repetitions int, expected ...string) ([]PipelineBenchmark, error) {
 	file, err := os.Open(path)
 	if err != nil {
 		return nil, err
@@ -76,8 +81,8 @@ func readPipelineBenchmarks(path string, cpus int, expected ...string) ([]Pipeli
 		return nil, err
 	}
 	for name, count := range counts {
-		if count != 3 {
-			return nil, fmt.Errorf("pipeline %s has %d samples, expected three", name, count)
+		if count != repetitions {
+			return nil, fmt.Errorf("pipeline %s has %d samples, expected %d", name, count, repetitions)
 		}
 	}
 	return rows, nil
@@ -90,4 +95,49 @@ var sourceAdmissionBenchmarks = []string{
 	"BenchmarkCompiledSourceAdmission/bootstrap/128",
 	"BenchmarkCompiledSourceAdmission/bootstrap/16384",
 	"BenchmarkCompiledSourceAdmission/bootstrap/524288",
+}
+
+// Reject missing, repeated, or reordered arms rather than selecting favorable samples.
+func readStreamingPairBenchmarks(path string, cpus int) ([]PipelineBenchmark, error) {
+	content, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	images := 0
+	for _, line := range strings.Split(string(content), "\n") {
+		if !strings.HasPrefix(line, "test-owned provider image ") {
+			continue
+		}
+		fields := strings.Fields(line)
+		if len(fields) != 5 || !strings.HasPrefix(fields[3], "sha256=") || fields[4] != "profile=release" {
+			return nil, fmt.Errorf("paired benchmark requires an optimized captured image")
+		}
+		hash, err := hex.DecodeString(strings.TrimPrefix(fields[3], "sha256="))
+		if err != nil || len(hash) != 32 {
+			return nil, fmt.Errorf("invalid paired image digest")
+		}
+		images++
+	}
+	if images != 1 {
+		return nil, fmt.Errorf("paired benchmark requires exactly one captured image, got %d", images)
+	}
+
+	names := make([]string, 24)
+	for i := range names {
+		arm := "single"
+		if i%4 == 1 || i%4 == 2 {
+			arm = "batch"
+		}
+		names[i] = fmt.Sprintf("BenchmarkGatewayStreamingPair/%02d-%s", i, arm)
+	}
+	rows, err := readPipelineSamples(path, cpus, 1, names...)
+	if err != nil {
+		return nil, err
+	}
+	for i, row := range rows {
+		if row.Name != names[i] {
+			return nil, fmt.Errorf("streaming pair order changed at %d", i)
+		}
+	}
+	return rows, nil
 }

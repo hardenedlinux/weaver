@@ -25,6 +25,12 @@ package ProviderRpc {
            rejection above Cedar signed range; missing domains remain missing.
            Current Policy text, owner fence and domain checks are still read
            under the deciding transaction and evaluated on every use.
+           Within one deciding transaction, Rust checks complete shared exposure
+           once and reads the common Policy/profile/domain image once for a
+           bounded batch. Every actual row sequence still receives Cedar
+           evaluation before any queue callback. No read image crosses a write,
+           capacity wait, transaction boundary, publication cut or owner restart.
+           The prepare burn and final release remain distinct durable scopes.
            Go config/publication/Routing and Rust final sends can be qualified
            without Scheme preparation; this does not qualify a new Scheme
            dependency or alter its source-currentness contract. */

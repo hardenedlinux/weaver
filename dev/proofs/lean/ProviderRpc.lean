@@ -865,4 +865,33 @@ theorem stale_context_cannot_emit {Key Context : Type} {b : Flow.Batch Key Conte
 
 #print axioms equivalent_context_preserves_emission
 #print axioms stale_context_cannot_emit
+/- Native premise: all reads belong to one locked deciding transaction and
+   no write, wait or external callback intervenes. Context includes Policy,
+   profile, fence and shared-domain facts. This premise expires at transaction
+   end; it says nothing about a prepared token surviving a later state cut. -/
+theorem transaction_local_projection_preserves_each_row
+    {Context : Type} (image : Context) (reads : Nat → Context)
+    (approve : Context → Nat → Prop) (encoding : Encoding) (first rows : Nat)
+    (stable : ∀ offset, offset < rows → reads offset = image) :
+    RowsAuthorized encoding (approve image) first rows ↔
+      ∀ offset, offset < rows → approve (reads offset) (first + offset) := by
+  constructor
+  · intro accepted offset within
+    rw [stable offset within]
+    exact accepted offset within
+  · intro accepted offset within
+    have allowed := accepted offset within
+    rw [stable offset within] at allowed
+    exact allowed
+
+theorem transaction_local_batch_cannot_skip_a_denied_row
+    {Context : Type} (image : Context) (approve : Context → Nat → Prop)
+    (encoding : Encoding) (first rows offset : Nat)
+    (within : offset < rows) (denied : ¬ approve image (first + offset)) :
+    ¬ RowsAuthorized encoding (approve image) first rows := by
+  intro accepted
+  exact denied (accepted offset within)
+
+#print axioms transaction_local_projection_preserves_each_row
+#print axioms transaction_local_batch_cannot_skip_a_denied_row
 end Weaver.ProviderRpc
