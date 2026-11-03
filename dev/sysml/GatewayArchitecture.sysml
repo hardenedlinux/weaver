@@ -42,7 +42,7 @@ package WeaverGatewayArchitecture {
     }
     part def RustExecution {
         attribute displayName : String = "Rust / governed execution";
-        attribute responsibility : String = "Cedar + claim + shared budget\nWrite + flush + writer seal\nFresh checks on every release";
+        attribute responsibility : String = "Cedar + claim + shared budget\nSealed writer + observed commit\nFresh checks on every release";
         attribute glyph : String = "rust";
         attribute visualRole : String = "execution";
         port proposal : ~WorkPort;

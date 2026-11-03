@@ -4,6 +4,8 @@
 mod catalog;
 mod owner;
 pub(crate) use catalog::engine_metadata;
+#[cfg(any(test, feature = "commit-observer"))]
+pub mod commit_observer;
 mod query;
 mod scope;
 mod session;

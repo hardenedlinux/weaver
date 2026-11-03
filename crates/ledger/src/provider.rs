@@ -147,27 +147,14 @@ impl Ledger {
         send: impl FnOnce() -> T,
     ) -> Result<T> {
         self.check_provider_session(permit)?;
-        let tx = crate::persistence::begin_family(&mut self.connection, &permit.plan.family)
-            .map_err(db)?;
-        guard_live(&tx, permit, "invokeProvider", 0, "protobuf")?;
-        active(&tx, permit)?;
-        // Persist a separate affine dispatch burn: borrowing a handle cannot repeat this callback.
-        let burn = crate::persistence::exec(
-            &tx,
-            "UPDATE provider_runs SET dispatched=1 WHERE family=?1 AND node=?2 AND dispatched=0",
-            crate::persistence::params![permit.plan.family.to_owned(), permit.plan.node.to_owned()],
-        )
-        .map_err(db)?;
-        if burn != 1 {
-            return Err(Error::Conflict("provider dispatch already burned"));
-        }
-        tx.commit().map_err(db)?;
+        burn_dispatch(&mut self.connection, permit)?;
         let mut tx = crate::persistence::begin_family(&mut self.connection, &permit.plan.family)
             .map_err(db)?;
         guard_live(&tx, permit, "invokeProvider", 0, "protobuf")?;
         active(&tx, permit)?;
         let result = tx.request_effect(send);
-        tx.commit().map_err(db)?;
+        record_dispatch_callback(&tx, permit)?;
+        tx.commit_provider().map_err(db)?;
         Ok(result)
     }
     pub fn prepare_provider_release(
@@ -293,6 +280,41 @@ impl Ledger {
         }
     }
 }
+fn burn_dispatch(
+    session: &mut crate::persistence::Session,
+    permit: &ProviderDispatch,
+) -> Result<()> {
+    let tx = crate::persistence::begin_family(session, &permit.plan.family).map_err(db)?;
+    guard_live(&tx, permit, "invokeProvider", 0, "protobuf")?;
+    active(&tx, permit)?;
+    // Persist a separate affine dispatch burn: borrowing a handle cannot repeat this callback.
+    let burn = crate::persistence::exec(
+        &tx,
+        "UPDATE provider_runs SET dispatched=1 WHERE family=?1 AND node=?2 AND dispatched=0",
+        crate::persistence::params![permit.plan.family.to_owned(), permit.plan.node.to_owned()],
+    )
+    .map_err(db)?;
+    if burn != 1 {
+        return Err(Error::Conflict("provider dispatch already burned"));
+    }
+    tx.commit().map_err(db)?;
+    Ok(())
+}
+fn record_dispatch_callback(tx: &WriteScope<'_>, permit: &ProviderDispatch) -> Result<()> {
+    // 2 records the guarded callback transaction, NOT remote execution,
+    // a successful callback, writer seal, known usage, or refund authority.
+    // Both 1 and 2 permanently retain the original affine dispatch burn.
+    let recorded = crate::persistence::exec(
+        tx,
+        "UPDATE provider_runs SET dispatched=2 WHERE family=?1 AND node=?2 AND dispatched=1",
+        crate::persistence::params![permit.plan.family.to_owned(), permit.plan.node.to_owned()],
+    )
+    .map_err(db)?;
+    if recorded != 1 {
+        return Err(Error::Conflict("provider dispatch record changed"));
+    }
+    Ok(())
+}
 fn active(tx: &WriteScope<'_>, p: &ProviderDispatch) -> Result<()> {
     // stamp reads the canonical roots in this deciding transaction. The full
     // shared-claim/exposure/history check is performed once by require_exposure
@@ -317,7 +339,7 @@ fn require_exposure(tx: &WriteScope<'_>, plan: &ProviderPlan, digest: &str) -> R
 fn started(tx: &WriteScope<'_>, p: &ProviderDispatch) -> Result<()> {
     let burned: bool = crate::persistence::one(
         tx,
-        "SELECT dispatched FROM provider_runs WHERE family=?1 AND node=?2",
+        "SELECT dispatched<>0 FROM provider_runs WHERE family=?1 AND node=?2",
         crate::persistence::params![p.plan.family.to_owned(), p.plan.node.to_owned()],
         |r| r.get(0),
     )

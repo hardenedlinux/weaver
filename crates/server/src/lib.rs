@@ -11,6 +11,9 @@ mod grpc;
 mod grpc_config;
 mod grpc_output;
 pub mod pb;
+#[cfg(all(test, unix))]
+#[path = "../tests/unit/provider_commit.rs"]
+mod provider_commit_tests;
 mod rpc_security;
 mod runtime;
 mod shutdown;

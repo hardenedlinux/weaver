@@ -153,10 +153,15 @@ package ProviderRpc {
        TLS and exactly one fixed-length HTTP request. WriteSeal observes accepted
        plaintext plus successful TLS flush, then permanently rejects every new
        application write. The affine owned driver is never spawned or cloned.
-       Only after the ledger commit succeeds may it read headers/body outside
+       The deciding transaction records callback completion in the original burn,
+       without certifying remote execution or known usage. Only after its native
+       commit is observed may it read headers/body outside
        the guard. Early headers and body EOF cannot forge that seal. A failed
        write, flush or commit drops the driver and retains original unknown
-       exposure. Current Cedar/profile/shared-domain/fence guards still decide
+       exposure. Applied commit with lost acknowledgment poisons the old session;
+       restart retains the burn but cannot restore the affine socket. A late
+       acknowledgment after new authority commits grants reading only, never
+       release. Current Cedar/profile/shared-domain/fence guards still decide
        each response release. The service supplies the reactor explicitly. */
     part def RustProviderBroker { port proposal : ~PlanPort; port response : EventPort; port authority : ~PublicationPort; }
     part def RustCedarRelease { port prepared : ~FramePort; port authorized : FramePort; }

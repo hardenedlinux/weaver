@@ -627,9 +627,9 @@ fn final_release_keeps_current_guard_and_unknown_commit_in_one_transaction() {
             let state: String = weaver_ledger::persistence::one(&inspection, "SELECT state FROM provider_releases WHERE family='f' AND node='infer'", (), |row| row.get(0))
                 .expect("read already committed unknown range");
             assert_eq!(state, "unknown");
-            let dispatched: bool = weaver_ledger::persistence::one(&inspection, "SELECT dispatched FROM provider_runs WHERE family='f' AND node='infer'", (), |row| row.get(0))
+            let dispatched: i64 = weaver_ledger::persistence::one(&inspection, "SELECT dispatched FROM provider_runs WHERE family='f' AND node='infer'", (), |row| row.get(0))
                 .expect("read already committed burn");
-            assert!(dispatched);
+            assert_eq!(dispatched, 2, "guarded callback transaction is already durable");
             let (held, reserved, state): (i64, i64, String) = weaver_ledger::persistence::one(&inspection, "SELECT t.held,r.reserved,r.state FROM provider_runs r JOIN tasks t ON t.family=r.family WHERE r.family='f' AND r.node='infer'", (), |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?))).expect("durable consumed root and original reservation");
             assert_eq!((held, reserved, state.as_str()), (4, 4, "unknown"));
             let claim: String = weaver_ledger::persistence::one(&inspection, "SELECT kind FROM execution_claims WHERE family='f' AND node='infer'", (), |row| row.get(0)).expect("canonical original claim");

@@ -20,6 +20,8 @@ pub struct WriteScope<'a> {
     _exclusive: Option<RwLockWriteGuard<'a, ()>>,
     _shared: Option<RwLockReadGuard<'a, ()>>,
     _domains: Vec<MutexGuard<'a, ()>>,
+    #[cfg(any(test, feature = "commit-observer"))]
+    observer: Option<std::sync::Arc<dyn super::commit_observer::Observer>>,
 }
 /// Acquire an immediate write transaction with exclusive Rust session custody.
 pub fn begin(session: &mut Session) -> driver::Result<WriteScope<'_>> {
@@ -98,9 +100,47 @@ fn start<'a>(session: &'a mut Session, family: Option<&str>) -> driver::Result<W
         _exclusive: exclusive,
         _shared: shared,
         _domains: domains,
+        #[cfg(any(test, feature = "commit-observer"))]
+        observer: session.commit_observer.clone(),
     })
 }
 impl WriteScope<'_> {
+    pub(crate) fn commit_provider(self) -> driver::Result<()> {
+        #[cfg(any(test, feature = "commit-observer"))]
+        {
+            use super::commit_observer::{Cut, Decision};
+            let observer = self.observer.clone();
+            let poisoned = self.poisoned;
+            if let Some(observer) = &observer
+                && observer.observe(Cut::BeforeCommit) != Decision::Continue
+            {
+                let mut scope = self;
+                poisoned.store(true, Ordering::Release);
+                let native = scope
+                    .native
+                    .take()
+                    .ok_or_else(|| driver::Error::Misuse("transaction ended".into()))?;
+                block_on(native.rollback())?;
+                return Err(driver::Error::Misuse(
+                    "injected native rollback before provider commit".into(),
+                ));
+            }
+            // commit consumes the scope and releases every owner/domain lock BEFORE
+            // the acknowledgment observation. A new fence may commit during this gap.
+            self.commit()?;
+            if let Some(observer) = observer
+                && observer.observe(Cut::AfterCommit) != Decision::Continue
+            {
+                poisoned.store(true, Ordering::Release);
+                return Err(driver::Error::Misuse(
+                    "native provider commit applied; acknowledgment unavailable".into(),
+                ));
+            }
+            Ok(())
+        }
+        #[cfg(not(any(test, feature = "commit-observer")))]
+        self.commit()
+    }
     pub(crate) fn request_effect<T>(&mut self, run: impl FnOnce() -> T) -> T {
         super::timing::measure(&mut self.timings.provider_request, run)
     }

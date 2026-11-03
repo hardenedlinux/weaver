@@ -1,5 +1,47 @@
 use crate::persistence::{self, Session};
 
+struct CommitFault {
+    after: bool,
+}
+impl persistence::commit_observer::Observer for CommitFault {
+    fn observe(
+        &self,
+        cut: persistence::commit_observer::Cut,
+    ) -> persistence::commit_observer::Decision {
+        use persistence::commit_observer::{Cut, Decision};
+        match (self.after, cut) {
+            (false, Cut::BeforeCommit) => Decision::Rollback,
+            (true, Cut::AfterCommit) => Decision::LoseAcknowledgment,
+            _ => Decision::Continue,
+        }
+    }
+}
+proptest::proptest! {
+    #![proptest_config(proptest::test_runner::Config::with_cases(16))]
+    #[test]
+    fn native_applied_commit_without_ack_poison_is_not_reusable(after in proptest::bool::ANY, mvcc in proptest::bool::ANY, held in 1i64..1000) {
+        let directory = tempfile::tempdir().expect("store");
+        let path = directory.path().join("fault.db");
+        let journal=if mvcc {persistence::Journal::Mvcc}else{persistence::Journal::Wal};
+        let mut session=Session::open_with_journal(&path,journal).expect("native session");
+        persistence::script(&session,"CREATE TABLE exposure(id INTEGER PRIMARY KEY, marker INTEGER, held INTEGER);").expect("schema");
+        persistence::exec(&session,"INSERT INTO exposure VALUES(1,1,?1)",[held]).expect("original reservation");
+        session.commit_observer=Some(std::sync::Arc::new(CommitFault { after }));
+        let tx=persistence::begin(&mut session).expect("writer");
+        persistence::exec(&tx,"UPDATE exposure SET marker=2 WHERE id=1",()).expect("stage callback observation");
+        proptest::prop_assert!(tx.commit_provider().is_err());
+        proptest::prop_assert!(session.is_autocommit().expect("native transaction ended"));
+        proptest::prop_assert!(session.require_quiescent().is_err(),"autocommit is not acknowledgment");
+        proptest::prop_assert!(persistence::begin(&mut session).is_err(),"old worker reused poisoned custody");
+        drop(session);
+        let recovered=Session::open_with_journal(&path,journal).expect("recovered native owner");
+        let (marker,retained):(i64,i64)=persistence::one(&recovered,"SELECT marker,held FROM exposure WHERE id=1",(),|r|Ok((r.get(0)?,r.get(1)?))).expect("actual persisted values");
+        proptest::prop_assert_eq!(marker,if after {2}else{1});
+        proptest::prop_assert_eq!(retained,held);
+        recovered.close().expect("fresh recovery drains");
+    }
+}
+
 // Native transaction tests intentionally omit task admission. Their deciding lock
 // identities still come from persisted roots, never from caller-selected stripes.
 fn roots(session: &mut Session) {

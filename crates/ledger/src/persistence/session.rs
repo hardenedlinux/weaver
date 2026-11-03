@@ -16,6 +16,8 @@ pub struct Session {
     pub(super) owner: Arc<super::owner::Owner>,
     pub(super) poisoned: AtomicBool,
     pub(super) timings: super::TransactionTimings,
+    #[cfg(any(test, feature = "commit-observer"))]
+    pub(super) commit_observer: Option<Arc<dyn super::commit_observer::Observer>>,
 }
 impl Session {
     /// Open through MRR Data and read back the required durability settings.
@@ -54,6 +56,8 @@ impl Session {
             owner,
             poisoned: AtomicBool::new(false),
             timings: super::TransactionTimings::default(),
+            #[cfg(any(test, feature = "commit-observer"))]
+            commit_observer: None,
         })
     }
     /// Read-only session statistics; not a currentness or completion observation.

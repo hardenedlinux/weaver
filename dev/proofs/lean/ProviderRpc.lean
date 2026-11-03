@@ -982,5 +982,61 @@ theorem receipt_cannot_replace_current_response_guard
 #print axioms header_wait_requires_sealed_writer
 #print axioms unobserved_commit_cannot_activate_response
 #print axioms receipt_cannot_replace_current_response_guard
+
+/-- Host refinement premises: actual native commit is durable within the supported
+single-host FULL profile; acknowledgment is a separate local observation. Neither
+marker is remote execution, known usage, or refund evidence. Recovery never
+reconstructs the affine socket or rebinds a worker to a new session. -/
+structure CommitCustody where
+  applied : Bool
+  observed : Bool
+  poisoned : Bool
+  socketLive : Bool
+  worker : Nat
+  owner : Nat
+
+def CanActivate (c : CommitCustody) (r : WriteReceipt) : Prop :=
+  ValidReceipt r ∧ c.applied = true ∧ c.observed = true ∧
+  c.poisoned = false ∧ c.socketLive = true ∧ c.worker = c.owner
+
+theorem applied_commit_without_ack_does_not_activate
+    (c : CommitCustody) (lost : c.observed = false) : ¬ CanActivate c r := by
+  intro ready
+  simp [CanActivate, lost] at ready
+
+theorem poisoned_commit_session_cannot_activate
+    (c : CommitCustody) (poisoned : c.poisoned = true) : ¬ CanActivate c r := by
+  intro ready
+  simp [CanActivate, poisoned] at ready
+
+theorem recovered_marker_cannot_restore_socket
+    (c : CommitCustody) (dead : c.socketLive = false) : ¬ CanActivate c r := by
+  intro ready
+  simp [CanActivate, dead] at ready
+
+theorem old_worker_cannot_adopt_replacement_custody
+    (c : CommitCustody) (changed : c.worker ≠ c.owner) : ¬ CanActivate c r := by
+  intro ready
+  exact changed ready.2.2.2.2.2
+
+/-- Late successful commit observation permits only reading. Final response
+authority is still the existing Cedar/currentness/fence/affine release join. -/
+theorem late_commit_ack_cannot_bypass_new_fence
+    {Key Context : Type} {b : Flow.Batch Key Context} {s : Flow.Pipe Key Context}
+    (_active : CanActivate c r) (changed : b.context ≠ s.context) :
+    ¬ Flow.CanEmit s b := stale_context_cannot_emit changed
+
+/-- A local seal and a committed outcome are compatible with completely unknown
+remote usage. There is no logical implication from either to refund permission. -/
+theorem applied_commit_can_remain_unacknowledged :
+    ∃ c : CommitCustody, c.applied = true ∧ c.observed = false ∧ c.poisoned = true := by
+  exact ⟨⟨true, false, true, false, 0, 1⟩, rfl, rfl, rfl⟩
+
+#print axioms applied_commit_without_ack_does_not_activate
+#print axioms poisoned_commit_session_cannot_activate
+#print axioms recovered_marker_cannot_restore_socket
+#print axioms old_worker_cannot_adopt_replacement_custody
+#print axioms late_commit_ack_cannot_bypass_new_fence
+#print axioms applied_commit_can_remain_unacknowledged
 end RequestWriteFence
 end Weaver.ProviderRpc

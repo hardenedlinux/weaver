@@ -563,6 +563,8 @@ impl pb::gateway_server::Gateway for Gateway {
                 output.shutdown = shutdown;
                 let result = (|| {
                     let mut ledger = Ledger::open(&config.database)?;
+                    #[cfg(all(test, unix))]
+                    crate::provider_commit_tests::attach(&mut ledger);
                     ledger.require_principal(&config.principal, &plan.family)?;
                     weaver_execution::execute_provider(
                         &mut ledger,

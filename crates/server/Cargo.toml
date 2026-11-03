@@ -31,6 +31,7 @@ governance-qualification = ["scheme-program", "weaver-governance/scheme-qualific
 [build-dependencies]
 tonic-prost-build.workspace = true
 [dev-dependencies]
+weaver-ledger = { workspace = true, features = ["commit-observer"] }
 rcgen.workspace = true
 asp-rust.workspace = true
 criterion.workspace = true

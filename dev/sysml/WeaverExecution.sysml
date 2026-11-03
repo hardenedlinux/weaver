@@ -452,6 +452,9 @@ package WeaverExecution {
            write and TLS flush; WriteSeal then retires every application writer.
            The sole owned HTTP driver reads headers only after commit, outside
            this gate. Dropping it on commit loss cannot leave a background writer.
+           The original dispatched row records guarded callback completion, not
+           remote execution. A lost native acknowledgment poisons old custody;
+           recovery retains the burn and unknown hold without recreating IO.
            Response queue insertion rejoins the current independent row guard. */
         port consumed : ~ConsumedPort;
         port wire : WirePort;
