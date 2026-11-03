@@ -220,12 +220,15 @@ package WeaverExecution {
         attribute leanFields : String = "scope,policyRevision,ownerEpoch,historyRevision,factFloor";
         attribute securityName : String = "Go / Source publication";
         attribute securityResponsibility : String = "Carry the original context\nPublish over authenticated gRPC\nUnknown replies stay unresolved";
-        attribute responsibility : String = "Cloud and protocol integration\nPublish authenticated proposals\nChoose eligible providers";
+        attribute responsibility : String = "Cloud + protocol integration\nOne owned source image\nAuthenticated publication + routing";
         attribute glyph : String = "go";
         attribute visualRole : String = "selection";
         doc /* BootstrapProducer receives the server's typed CompileSource
            artifact over authenticated gRPC and reobserves source authority.
-           Its typed independent copy does not JSON-roundtrip the source. Source
+           Its bounded typed projection freezes and validates one owned image, then
+           shares the private publication implementation with file configuration.
+           It neither JSON-roundtrips nor repeats normalization across these
+           internal functions. No borrowed protobuf container escapes. Source
            staging, task registration and publication still use existing CAS;
            response admission is not permission for a later send. RunFromEnv
            selects exactly one approved producer or JSON/YAML data file; Scheme

@@ -10,9 +10,8 @@ import (
 // FreezeBundle takes an independent validated copy for private control-plane
 // ownership. JSON/YAML remain ingress formats, not an internal cloning protocol.
 func FreezeBundle(input Bundle) (Bundle, error) {
-	if err := input.Validate(); err != nil {
-		return Bundle{}, err
-	}
+	// Copy only bounded input, then validate the independent image once.
+	// Callers must keep input stable during this synchronous copy.
 	if !sourceTextBound(input) {
 		return Bundle{}, errors.New("typed source text bound")
 	}
@@ -54,10 +53,12 @@ func FreezeBundle(input Bundle) (Bundle, error) {
 func sourceTextBound(input Bundle) bool {
 	remaining := 8 << 20
 	add := func(value string) bool {
-		if len(value) > remaining {
+		if len(value) >= remaining {
 			return false
 		}
-		remaining -= len(value)
+		// Charge one structural slot too; empty strings cannot create an
+		// unbounded cloning workload at zero text cost.
+		remaining -= len(value) + 1
 		return true
 	}
 	strings := func(values []string) bool {

@@ -829,4 +829,31 @@ theorem request_observation_keeps_original (owned : a.Owned) (run : ProposalCall
   exact congrArg observe (captured.trans (call_run_preserves_original run))
 
 #print axioms request_observation_keeps_original
+
+/-- Pure local admission of an already independently copied image. This models
+neither a source-currentness read nor an authority/budget/final-send decision. -/
+def admitImage (valid : Command → Bool) (image : Command) : Option Command :=
+  if valid image then some image else none
+
+/-- Repeating this pure normalization on the same owned image adds no evidence.
+Native copy fidelity, bounded traversal and purity remain host premises. -/
+theorem local_admission_idempotent (valid : Command → Bool) (image : Command) :
+    (admitImage valid image).bind (admitImage valid) = admitImage valid image := by
+  cases h : valid image <;> simp [admitImage, h]
+
+/-- Eliminating duplicate local normalization retains the original command and
+its durable decision. The publication Run and snapshot ownership hypotheses are
+still required; local admission cannot manufacture either hypothesis. -/
+theorem single_admission_and_publication_recovery [DecidableEq Key]
+    (valid : Command → Bool) (admitted : admitImage valid a.captured = some image)
+    (owned : a.Owned) (calls : ProposalCallRun a b) (run : Run s t)
+    (original : s.records id = some decision) :
+    image = a.original ∧ b.Owned ∧ t.records id = some decision := by
+  have copied : a.captured = image := by
+    cases h : valid a.captured <;> simp [admitImage, h] at admitted
+    exact admitted
+  exact ⟨copied.symm.trans owned.1, frozen_call_and_publication_recovery owned calls run original⟩
+
+#print axioms local_admission_idempotent
+#print axioms single_admission_and_publication_recovery
 end Weaver.PublicationRecovery

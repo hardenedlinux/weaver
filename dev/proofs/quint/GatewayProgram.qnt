@@ -1,11 +1,11 @@
 // Local Scheme program lifecycle. Rust authenticates the installed graph and
 // binds the original; neither a closure nor a local result is a send permit.
 module GatewayProgram {
-  type State={phase:int,selected:int,original:int,inFlight:int,busy:bool,slot:bool,joined:bool,deliveries:List[bool],hold:int,sends:int,graphMember:bool,rootMatches:bool,catalogBound:bool,runtimeActive:bool}
+  type State={phase:int,selected:int,original:int,inFlight:int,busy:bool,slot:bool,joined:bool,deliveries:List[bool],hold:int,sends:int,graphMember:bool,rootMatches:bool,catalogBound:bool,runtimeActive:bool,caller:int,image:int,validated:bool}
   var p:State
-  pure val initial={phase:0,selected:0,original:0,inFlight:0,busy:false,slot:false,joined:false,deliveries:List(),hold:6,sends:0,graphMember:false,rootMatches:false,catalogBound:false,runtimeActive:false}
+  pure val initial={phase:0,selected:0,original:0,inFlight:0,busy:false,slot:false,joined:false,deliveries:List(),hold:6,sends:0,graphMember:false,rootMatches:false,catalogBound:false,runtimeActive:false,caller:0,image:0,validated:false}
   action init=p'=initial
-  def safe=(p.busy==p.slot) and (p.busy==(p.inFlight>0)) and
+  def safe=(p.validated implies p.image==p.original) and (p.busy==p.slot) and (p.busy==(p.inFlight>0)) and
     (p.phase==1 implies (p.selected>0 and p.selected==p.original)) and
     (p.phase==2 implies p.selected==0) and
     (p.joined implies (p.phase==2 and not(p.busy))) and
@@ -17,7 +17,7 @@ module GatewayProgram {
   action matchRoot=all {p.graphMember,p'=p.with("rootMatches",true)}
   action bindCatalog=all {p.phase==1,p.graphMember,p.rootMatches,not(p.catalogBound),p'=p.with("catalogBound",true)}
   action activateRuntime=all {p.phase==1,p.graphMember,p.rootMatches,p.catalogBound,p'=p.with("runtimeActive",true)}
-  action install(id)=all {p.phase==0,id>0,p'=p.with("phase",1).with("selected",id).with("original",id)}
+  action install(id)=all {p.phase==0,id>0,p'=p.with("phase",1).with("selected",id).with("original",id).with("caller",id)}
   // Existing Function normalization rejects invalid arguments before entry.
   action rejectArgument=p'=p
   action rejectInstall=all {p.phase!=0,p'=p}
@@ -30,7 +30,10 @@ module GatewayProgram {
     p'=p.with("busy",false).with("slot",false).with("inFlight",0).with("deliveries",delivered)}
   action failReturn=all {p.busy,p'=p.with("busy",false).with("slot",false).with("inFlight",0)}
   action join=all {p.phase==2,not(p.busy),p'=p.with("joined",true)}
-  action step=any {observeGraphMember,matchRoot,bindCatalog,activateRuntime,install(1),install(2),rejectArgument,rejectInstall,installationFailure,begin,close,reenter,finish,failReturn,join}
+  action freezeImage=all {p.phase==1,not(p.validated),p'=p.with("image",p.caller)}
+  action validateImage=all {p.image>0,p.image==p.original,p'=p.with("validated",true)}
+  action callerChange=p'=p.with("caller",2)
+  action step=any {freezeImage,validateImage,callerChange,observeGraphMember,matchRoot,bindCatalog,activateRuntime,install(1),install(2),rejectArgument,rejectInstall,installationFailure,begin,close,reenter,finish,failReturn,join}
   run graphMembershipDoesNotInitializeProducerTest=init.then(observeGraphMember).then(activateRuntime.fail())
   run readyWithoutCatalogCannotServeProducerTest=init.then(observeGraphMember).then(install(1)).then(activateRuntime.fail())
   run initializedCatalogCanActivateWithoutSpendingTest=init.then(observeGraphMember).then(matchRoot).then(install(1)).then(bindCatalog).then(activateRuntime).expect(safe and p.hold==6 and p.sends==0)
@@ -60,4 +63,11 @@ module GatewayProgram {
   run prematureCleanupCounterexampleTest=ready.then(close).then(unsafeJoin).expect(not(safe))
   run lateDeliveryCounterexampleTest=ready.then(close).then(unsafeLateDelivery).expect(not(safe))
   run duplicateReplacementCounterexampleTest=init.then(install(1)).then(unsafeReplacement).expect(not(safe))
+  run ownedImageSurvivesCallerMutationTest=init.then(install(1)).then(freezeImage).then(validateImage).then(callerChange).expect(safe and p.image==1 and p.hold==6 and p.sends==0)
+  run changedImageCannotBeAdmittedTest=init.then(install(1)).then(callerChange).then(freezeImage).then(validateImage.fail())
+  run repeatedPureAdmissionIsInertTest=init.then(install(1)).then(freezeImage).then(validateImage).then(validateImage).expect(safe and p.hold==6 and p.sends==0)
+  action unsafeBorrowedImage=p'=p.with("image",p.caller)
+  action unsafeAdmissionAsSend=p'=p.with("sends",p.sends+1)
+  run borrowedImageAfterAdmissionCounterexampleTest=init.then(install(1)).then(freezeImage).then(validateImage).then(callerChange).then(unsafeBorrowedImage).expect(not(safe))
+  run localAdmissionAsSendCounterexampleTest=init.then(install(1)).then(freezeImage).then(validateImage).then(unsafeAdmissionAsSend).expect(not(safe))
 }

@@ -35,6 +35,12 @@ func Bootstrap(ctx context.Context, source, owner *gatewayclient.Client, bundle 
 	if err != nil {
 		return nil, err
 	}
+	return bootstrapFrozen(ctx, source, owner, frozen)
+}
+
+// Both callers own a fully validated independent image. Keep this private:
+// it removes repeated local projection, never a source or final-use CAS.
+func bootstrapFrozen(ctx context.Context, source, owner *gatewayclient.Client, frozen config.Bundle) (*Gateway, error) {
 	receipt, err := source.InspectPublication(ctx, frozen.Publication)
 	if err == nil && receipt.GetOutcome() == pb.PublicationOutcome_REJECTED {
 		return nil, gatewayclient.ErrPublicationRejected

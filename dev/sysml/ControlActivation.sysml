@@ -14,6 +14,19 @@ package ControlActivation {
            Startup errors/cancellation close and naturally drain the same owner. */
     }
     requirement def SpecificSourceContracts {
+        doc /* Go admits one bounded independently owned source image.
+           Protobuf projection borrows only until FreezeBundle copies all
+           mutable containers; the owned image receives one complete pure
+           semantic validation. Native producer and file configuration join
+           the same private publication implementation after ownership admission.
+           Repeated normalization on that image supplies no new evidence.
+           Stable caller memory and native copy fidelity remain host premises.
+           Scheme assessment, source-authority reobservation, stage/register/
+           final publication CAS and Rust current-use checks remain separate.
+           No cached approval replaces claim, budget, history or fence.
+           Runtime evidence separates source activation and actual streaming;
+           builds and fixture startup are excluded, and replay is never a fresh
+           execution. */
         doc /* Agentic AI Lab owns Governor objects, selection algorithms and
            Governance Profile/threat assessment protocols. Configured upstream
            modules compose through their existing library interfaces. Weaver's

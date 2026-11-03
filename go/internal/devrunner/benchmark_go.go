@@ -20,13 +20,20 @@ type GoBenchmark struct {
 	AllocsPerOp      uint64  `json:"allocsPerOp"`
 }
 
-func readGoBenchmarks(path string, cpus int) ([]GoBenchmark, error) {
+func readGoBenchmarks(path string, cpus int, expected ...string) ([]GoBenchmark, error) {
 	file, err := os.Open(path)
 	if err != nil {
 		return nil, err
 	}
 	defer file.Close()
-	counts := map[string]int{"BenchmarkGatewayInspect": 0, "BenchmarkGatewayInspectReconnect": 0, "BenchmarkGatewayAuthorityPublish": 0}
+	names := []string{"BenchmarkGatewayInspect", "BenchmarkGatewayInspectReconnect", "BenchmarkGatewayAuthorityPublish"}
+	if len(expected) > 0 {
+		names = expected
+	}
+	counts := make(map[string]int, len(names))
+	for _, name := range names {
+		counts[name] = 0
+	}
 	var rows []GoBenchmark
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {

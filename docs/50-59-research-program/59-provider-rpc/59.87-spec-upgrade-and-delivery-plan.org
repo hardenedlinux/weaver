@@ -352,3 +352,219 @@ Cargo releases its build lock before executing a benchmark. That whole run is
 retained as a contended control and is excluded from the table. The two reported
 runs had no concurrent Weaver build/test jobs; unrelated host work was not
 controlled. All baselines, samples and failures stay under ignored .cache.
+
+* Whole-chain Runtime audit
+
+The maintained whole-chain benchmark is =go run ./cmd/weaver-dev bench-runtime=
+from =go/=. It uses the normal FFI metadata preparation, native compiled Scheme
+application, actual authenticated source RPCs, Go publication/Routing, MRR Data
+Turso and Rust's final HTTPS stream. Inline Policy and confined source-assets
+are separate cases. Each has three fresh one-iteration samples. A consumed
+operation is never recycled to improve throughput; replay is exercised outside
+the timer and must produce neither another frame nor another provider call.
+
+| Boundary | Current work and disposition | Owner |
+|----------+------------------------------+-------|
+| Scheme module admission | Reuse Yuanxu discovery, scoped capabilities and currentness; do not cache success across delegated callbacks | Agentic AI Lab / inherited Yuanxu |
+| Governance capture | Preserve original Profile, context, Policy/source assets and post-callback mutation checks; JSON here is private upstream assessment text | Agentic AI Lab protocol; Weaver task projection |
+| Cedar preflight | Validate complete named documents and ordered aggregate; retain final publication validation | Cedar / SPEC and Weaver C ABI |
+| Rooted FFI | SDK owns VM, strong roots and native conversion; Rust retains original equality and exact counter bounds | gerbil-scheme-rust / Weaver record contract |
+| Go source admission | Replace three semantic validations and repeated container cloning with one bounded independent copy followed by one complete validation | Existing config.FreezeBundle |
+| Source publication | Keep source-authority reobservation, original outcome lookup, stage, task registration and final CAS | Go orchestration / Rust durable authority |
+| Final stream | Revalidate the original plan, current Policy, shared domains and fence after waits; consume and dispatch through existing Turso owner | Rust / MRR Data |
+
+=compiledBundle= constructs a temporary typed view, rejects unknown protobuf
+fields and malformed nested messages, then delegates ownership and validation to
+=FreezeBundle=. Its maps, slices and parent pointer cannot escape the synchronous
+copy. Both externally supplied file configuration and native producer output
+reach the same private publication implementation after ownership admission.
+There is no public skip-validation flag or external trusted-result token.
+Caller memory must stay stable during copying; concurrent mutation is not made
+safe by a later comparison. Go strings are immutable; byte bodies become owned
+strings. The resource bound also charges structural string slots, so empty
+entries cannot create a zero-byte unbounded cloning workload.
+
+The removed checks repeated pure local normalization of the same immutable
+image. This does not merge the Scheme assessment and Rust original-binding
+check, cache authorization, skip publication validation, combine independent
+storage decisions, or weaken late revocation. Source observation is knowledge;
+only current authoritative CAS and final-use admission constrain external bytes.
+
+** Measurement and evidence boundaries
+
+The =activation-ns/op= interval includes native Scheme capture/Cedar preflight,
+original binding, typed gRPC conversion, Go admission and durable publication.
+The =send-ns/op= interval includes the Go Routing/forwarding path, Rust admission,
+consumption and local HTTPS SSE completion. =ns/op= is their timed combined
+interval, including small timer bookkeeping; it is not an uninterrupted remote
+provider request latency. Both processes and the VM are initialized before the
+timer; frontend TLS setup, fixture PKI, compilation and cleanup are excluded.
+Go allocations do not describe the Rust heap or Scheme VM. Natural cleanup is
+still required. Local provider response time is a test boundary, not an SLA.
+
+The separate =BenchmarkCompiledSourceAdmission= splits typed projection from
+complete local Go Bootstrap. Its Bootstrap uses the existing inert RPC recorder
+to attribute local validation/copy/digest costs; it is explicitly not network,
+FFI or durable-store evidence. The full pipeline benchmark uses real services.
+Three samples and an uncontrolled shared host do not establish tail percentiles
+or a statistically qualified whole-Gateway speedup. All samples and failed
+preparation attempts remain under ignored =.cache/runtime-pipeline/=.
+
+For attribution only, the qualification application can enable the upstream
+=call-with-module-source-operation-measurement= API. It emits fixed operation
+keys, call counts and scalar timings after capture; it does not install a read
+observer or cache a source verdict. Instrumented runs are separate controls and
+are excluded from ordinary pipeline comparisons. Nested operation intervals
+must not be summed as independent costs; VM accounting is not process RSS.
+
+** Further upstream convergence
+
+Yuanxu must remain the owner of scoped module preparation, metadata replay and
+currentness. A downstream cache of loaded views or source approval would hide
+mutation at callback boundaries. Use its existing operation accounting before
+proposing a producer-owned preparation API; measure complete capture and retain
+all fresh-read/currentness checks. No such approval cache is added here.
+
+Repeated schema preparation across complete Cedar documents is another candidate
+for an upstream invocation-scoped prepared validator. A qualified API would bind
+the exact schema and full immutable document, preserve named IDs, reject duplicate
+JSON fields, and report all strict validation errors. A preflight artifact must
+never stand in for current publication or send authorization. Weaver does not
+add a parallel validator registry or broaden the existing policy compilation
+cache. Profile/context semantic snapshot protocols are also candidates for AA
+ownership; their mutation/refusal tests must precede moving the implementation.
+
+** Properties and counterexamples
+
+Go fuzzing compares single-copy admission with the existing semantic validator
+under generated family, selected-node, request, route, Policy, parent and resource
+mutations. The existing protobuf ownership property changes caller containers
+after capture and checks that the admitted image remains independent. Unknown
+fields still refuse. Real compiled-provider controls retain revoke, shared-budget
+concurrency, reply loss, restart and partial request coverage.
+
+=GatewayProgram.qnt= now separates caller data, copied image and local validation.
+It checks caller mutation after copy, rejection of changed originals and inert
+repeated admission. Explicit unsafe transitions demonstrate the borrowed-image
+and local-validation-as-send counterexamples. This finite abstraction is not a
+proof of Go memory copying or general deployed concurrency.
+
+=PublicationRecovery.lean= adds =local_admission_idempotent= and
+=single_admission_and_publication_recovery=. Pure local admission is idempotent;
+the composition reuses the existing snapshot and immutable-outcome laws.
+Native copy fidelity, pure validation, caller stability and the actual publication
+Run remain premises. It cannot derive a send permit from a successful local
+normalization or prove a latency improvement.
+
+#+CAPTION: Source ownership and final execution remain distinct core responsibilities.
+[[file:../../architecture/diagrams/00a-readme-overview.svg]]
+
+** Source attribution control
+
+The independent measured inline/assets control completed naturally with no
+provider call before publication and exactly one final provider call per case.
+It reports the following upstream source accounting:
+
+| Upstream metric | Inline | Assets |
+|-----------------+--------+--------|
+| reader-bootstrap wall seconds | 1.927 | 2.597 |
+| candidate-read wall seconds | 2.947 | 5.683 |
+| source-read calls | 3146 | 3146 |
+| source-read cumulative characters | 25897961 | 25897961 |
+| metadata-replay calls | 144 | 144 |
+| reader-current calls | 40 | 40 |
+| source role parses | 15 | 15 |
+
+These are nested intervals and cumulative reads, not distinct source bytes.
+They do not justify attributing the entire activation interval to disk IO.
+The source reader's bootstrap and repeated capability preparation deserve
+upstream attention beyond string conversion. Reusing a prepared scope must retain
+its exact generation, fresh admission before and after delegated effects, and
+terminal refusal on stale source. An unguarded downstream view cache would be
+unsafe. Moving initialization outside a timed interval is not a latency fix.
+
+The signed Gambit VM account was negative for some measured operations and was
+explicitly marked accounting-invalid by the upstream API. No allocation, heap
+ceiling or RSS result is derived from those values. Standard Go allocation rows
+cover the Go test/control process, including its in-process frontend and local
+provider fixture; they exclude the child Rust process and Scheme VM.
+
+The selected SPEC already provides the public finite =SchemaPreparation= plan
+for its manifest replay APIs; =PreparedSchema= and its validator acquisition are
+private implementation details. Weaver's bare-document C ABI preflight cannot
+reach through those private fields. Reuse the existing public replay mechanism
+where applicable; a public producer-owned extension for invocation-scoped
+bare-document validation is the remaining API boundary, not a reason to build a
+second downstream schema cache or copy SPEC internals.
+
+One ordinary current pipeline round failed at the existing source RPC timeout;
+the whole receipt remains FAIL. Its partial successful rows are not an accepted
+comparison set. Host load was observed around 40 on twelve logical CPUs. That
+observation alone neither establishes the cause nor permits a larger deadline.
+An earlier native link attempt failed with an Apple linker Bus error before any
+benchmark row; it also remains failed preparation evidence. Later successful
+runs do not erase either original failure.
+
+** Local complete-entry measurements
+
+The complete local Bootstrap comparison uses the original three Go source files
+through standard Go overlay, with the same benchmark, current Scheme/Rust
+producer and unchanged dependency declarations. Each size retains three complete
+measurements. These are medians, not tail latency or a remote-service result.
+
+| Message repetitions | Original Bootstrap us/op | Single-image Bootstrap us/op | Original / current Go B/op | Original / current allocs/op |
+|---------------------+--------------------------+------------------------------+-----------------------------+------------------------------|
+| 128 | 54.678 | 34.950 | 41950 / 21642 | 754 / 370 |
+| 16384 | 1139.796 | 589.919 | 864770 / 308068 | 787 / 381 |
+| 524288 | 33101.893 | 13691.036 | 25877390 / 8988491 | 847 / 401 |
+
+Measured Go allocation volume falls approximately 48--65 percent at this complete
+local entry. Ordered timing samples on an uncontrolled shared host are not a
+causal whole-Gateway speedup claim. The isolated projection gets slightly more
+expensive: it now delegates to the shared bounded ownership operation instead
+of maintaining its own copier. Projection medians rise from 14.428 / 396.907 /
+11879.618 us to 18.856 / 434.610 / 12371.441 us. That tradeoff is retained, not
+hidden by reporting only the complete-entry improvement.
+
+The full pipeline result records every inline/assets sample separately with
+activation, send, total interval, Go allocation counts, actual logical CPU count
+and one fresh operation per sample. It also admits all eighteen local benchmark
+rows, requiring every size and repetition. Missing or malformed rows fail the
+verification even if the process exits successfully. Earlier partial results do
+not satisfy this inventory.
+
+** Fixed-image whole-chain control
+
+The first alternating original/current/current/original experiment completed all
+24 functional samples, but rebuilt a different native service image in each
+round. It is retained and rejected as an exact-image causal timing comparison.
+The controlled repeat freezes one already source-qualified real Rust/Scheme
+service image and verifies identical image bytes in all four rounds. Temporary
+Go overlays select that same image in the test fixture and select the original
+three Go Runtime files in the original arm. Neither overlay nor a new image
+selection path is added to maintained production or test code. Normal acceptance
+still builds the native application from current source; the frozen control
+cannot qualify a newer source cut.
+
+All 24 fixed-image samples passed the actual publication, final-send, retained
+reservation and no-redispatch assertions. Each arm has six fresh samples per
+path. These medians are in milliseconds; source activation is a lifecycle cost,
+not a cost paid for every token or SSE frame.
+
+| Path | Original activation | Current activation | Original send | Current send | Original combined | Current combined |
+|------+---------------------+--------------------+---------------+--------------+-------------------+------------------|
+| Inline | 2716.411 | 2791.462 | 276.372 | 289.054 | 2995.572 | 3080.829 |
+| Assets | 2722.986 | 2827.288 | 279.685 | 286.387 | 3002.949 | 3113.679 |
+
+The current combined medians are approximately 2.8 and 3.7 percent higher in
+this control. No whole-chain latency improvement or statistical non-regression
+qualification is claimed. Six samples, shared-host scheduling and a cold first
+provider connection do not justify tail percentiles or assigning that difference
+solely to either the code or host noise. Retain the local allocation reduction
+as its own result; do not promote it into an end-to-end latency win. Upstream
+reader/bootstrap and capability preparation remain the larger measured target.
+
+The maintained =bench-runtime= gate verifies source currentness, functional
+behavior, units and complete sample inventory. A PASS is not performance
+admission against a throughput, percentile or non-regression threshold. The
+existing higher performance-qualification contract remains separate.

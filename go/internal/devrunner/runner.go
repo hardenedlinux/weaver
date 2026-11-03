@@ -25,24 +25,25 @@ type Stage struct {
 	Args         []string
 }
 type Result struct {
-	Name             string        `json:"name"`
-	Status           string        `json:"status"`
-	Binary           string        `json:"binary"`
-	ResolvedBinary   string        `json:"resolvedBinary,omitempty"`
-	Args             []string      `json:"args"`
-	Log              string        `json:"log"`
-	OutputSHA256     string        `json:"outputSha256,omitempty"`
-	FailureTail      string        `json:"failureTail,omitempty"`
-	Details          string        `json:"details,omitempty"`
-	ExitCode         *int          `json:"exitCode,omitempty"`
-	Error            string        `json:"error,omitempty"`
-	Duration         string        `json:"duration"`
-	SchemeTiming     *SchemeTiming `json:"schemeTiming,omitempty"`
-	UserCPU          string        `json:"userCpu,omitempty"`
-	SystemCPU        string        `json:"systemCpu,omitempty"`
-	GoBenchmarks     []GoBenchmark `json:"goBenchmarks,omitempty"`
-	BenchmarkSummary string        `json:"benchmarkSummary,omitempty"`
-	Lean             *LeanEvidence `json:"lean,omitempty"`
+	Name               string              `json:"name"`
+	Status             string              `json:"status"`
+	Binary             string              `json:"binary"`
+	ResolvedBinary     string              `json:"resolvedBinary,omitempty"`
+	Args               []string            `json:"args"`
+	Log                string              `json:"log"`
+	OutputSHA256       string              `json:"outputSha256,omitempty"`
+	FailureTail        string              `json:"failureTail,omitempty"`
+	Details            string              `json:"details,omitempty"`
+	ExitCode           *int                `json:"exitCode,omitempty"`
+	Error              string              `json:"error,omitempty"`
+	Duration           string              `json:"duration"`
+	SchemeTiming       *SchemeTiming       `json:"schemeTiming,omitempty"`
+	UserCPU            string              `json:"userCpu,omitempty"`
+	SystemCPU          string              `json:"systemCpu,omitempty"`
+	GoBenchmarks       []GoBenchmark       `json:"goBenchmarks,omitempty"`
+	PipelineBenchmarks []PipelineBenchmark `json:"pipelineBenchmarks,omitempty"`
+	BenchmarkSummary   string              `json:"benchmarkSummary,omitempty"`
+	Lean               *LeanEvidence       `json:"lean,omitempty"`
 }
 type Receipt struct {
 	Revision           string            `json:"revision,omitempty"`
@@ -140,7 +141,7 @@ func Run(ctx context.Context, config Config, output io.Writer) (report string, r
 		return directory, err
 	}
 	failed := false
-	if mode == "check-scheme" {
+	if mode == "check-scheme" || mode == "bench-runtime" {
 		// These are Weaver's FFI link inputs and host resource policy, not
 		// a Scheme package installer or SDK discovery layer.
 		metadata := filepath.Join(directory, "pkgconfig")
@@ -280,6 +281,13 @@ func runStageObserved(ctx context.Context, root, directory string, environment [
 		var proofErr error
 		result.Lean, proofErr = readLeanEvidence(root, source, filepath.Join(directory, result.Log))
 		err = errors.Join(err, proofErr)
+	}
+	if stage.Name == "runtime-projection-benchmark" && err == nil && closeErr == nil {
+		result.GoBenchmarks, err = readGoBenchmarks(filepath.Join(directory, result.Log), runtime.NumCPU(), sourceAdmissionBenchmarks...)
+	}
+	if stage.Name == "runtime-pipeline-benchmark" && err == nil && closeErr == nil {
+		result.PipelineBenchmarks, err = readPipelineBenchmarks(filepath.Join(directory, result.Log), runtime.NumCPU())
+		result.Details = "Complete functional pipeline samples; no end-to-end speedup or non-regression qualification."
 	}
 	if stage.Name == "grpc-benchmark" && err == nil && closeErr == nil {
 		result.GoBenchmarks, err = readGoBenchmarks(filepath.Join(directory, result.Log), runtime.NumCPU())

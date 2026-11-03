@@ -1,0 +1,84 @@
+package devrunner
+
+import (
+	"fmt"
+	"os"
+	"path/filepath"
+	"strings"
+	"testing"
+)
+
+func TestPipelineBenchmarkRequiresBothPathsAndEveryStage(t *testing.T) {
+	var log strings.Builder
+	for _, name := range []string{"inline", "assets"} {
+		for range 3 {
+			fmt.Fprintf(&log, "BenchmarkGatewayCompiledPipeline/%s-12 1 1000 ns/op 800 activation-ns/op 190 send-ns/op 100 B/op 2 allocs/op\n", name)
+		}
+	}
+	valid := log.String()
+	for _, tc := range []struct {
+		name, text string
+		ok         bool
+	}{
+		{"complete", valid, true},
+		{"missing sample", strings.SplitN(valid, "\n", 2)[1], false},
+		{"missing phase", strings.Replace(valid, "800 activation-ns/op ", "", 1), false},
+		{"wrong CPU", strings.Replace(valid, "-12 ", "-1 ", 1), false},
+		{"replay calibration", strings.Replace(valid, "-12 1 ", "-12 20 ", 1), false},
+		{"bad total", strings.Replace(valid, "1000 ns/op", "100 ns/op", 1), false},
+		{"duplicate phase", strings.Replace(valid, "send-ns/op", "activation-ns/op", 1), false},
+		{"nonfinite", strings.Replace(valid, "800 activation", "NaN activation", 1), false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			path := filepath.Join(t.TempDir(), "bench.log")
+			if err := os.WriteFile(path, []byte(tc.text), 0600); err != nil {
+				t.Fatal(err)
+			}
+			rows, err := readPipelineBenchmarks(path, 12)
+			if (err == nil) != tc.ok {
+				t.Fatal("measurement admission", err)
+			}
+			if tc.ok && len(rows) != 6 {
+				t.Fatal("lost pipeline sample")
+			}
+		})
+	}
+}
+func TestRuntimeBenchmarkUsesRealNativePipeline(t *testing.T) {
+	stages, err := Stages("bench-runtime", "go")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(stages) != 6 || stages[0].Name != "scheme-policy-library" || stages[1].Name != "scheme-policy-pkg-config" || stages[5].Name != "runtime-pipeline-benchmark" {
+		t.Fatal("runtime benchmark preparation/order", stages)
+	}
+	args := strings.Join(stages[5].Args, " ")
+	for _, required := range []string{"-tags=integration,schemeintegration", "^BenchmarkGatewayCompiledPipeline$", "-benchtime=1x", "-count=3"} {
+		if !strings.Contains(args, required) {
+			t.Fatal("runtime workload changed", required)
+		}
+	}
+}
+
+func TestSourceAdmissionBenchmarksRetainEverySizeAndRepetition(t *testing.T) {
+	var output strings.Builder
+	for _, name := range sourceAdmissionBenchmarks {
+		for range 3 {
+			fmt.Fprintf(&output, "%s-12 10 1000 ns/op 100 B/op 2 allocs/op\n", name)
+		}
+	}
+	path := filepath.Join(t.TempDir(), "admission.log")
+	if err := os.WriteFile(path, []byte(output.String()), 0600); err != nil {
+		t.Fatal(err)
+	}
+	rows, err := readGoBenchmarks(path, 12, sourceAdmissionBenchmarks...)
+	if err != nil || len(rows) != 18 {
+		t.Fatal("local admission measurements lost", err)
+	}
+	if err := os.WriteFile(path, []byte(strings.SplitN(output.String(), "\n", 2)[1]), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := readGoBenchmarks(path, 12, sourceAdmissionBenchmarks...); err == nil {
+		t.Fatal("missing local admission sample accepted")
+	}
+}

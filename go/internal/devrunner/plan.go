@@ -180,6 +180,15 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 			{"scheme-rooted-sdk-integration", "cargo", []string{"test", "-p", "weaver-governance", "-p", "weaver-governance-build", "-p", "weaver-server", "--features", "weaver-governance/scheme-qualification,weaver-server/governance-qualification", "--locked", "--offline"}},
 			{"scheme-grpc-stream-integration", goBinary, []string{"-C", "go", "test", "-count=1", "-race", "-tags=integration,schemeintegration", "./dev", "-run", "^TestProviderControl", "-v"}},
 		}, nil
+	case "bench-runtime":
+		return []Stage{
+			{"scheme-policy-library", "cargo", []string{"build", "-p", "weaver-policy-ffi", "--locked", "--offline"}},
+			{"scheme-policy-pkg-config", "cargo", []string{"run", "-p", "weaver-policy-ffi", "--example", "policy_pkg_config", "--locked", "--offline"}},
+			{"runtime-source-admission-pbt", goBinary, []string{"-C", "go", "test", "./internal/config", "-run", "^$", "-fuzz", "^FuzzFrozenAdmissionPreservesValidation$", "-fuzztime=3s"}},
+			{"runtime-source-ownership-pbt", goBinary, []string{"-C", "go", "test", "./internal/controlplane", "-run", "^$", "-fuzz", "^FuzzCompiledSourceOwnershipAndBinding$", "-fuzztime=3s"}},
+			{"runtime-projection-benchmark", goBinary, []string{"-C", "go", "test", "./internal/controlplane", "-run", "^$", "-bench", "^BenchmarkCompiledSourceAdmission$", "-benchtime=200ms", "-count=3", "-benchmem"}},
+			{"runtime-pipeline-benchmark", goBinary, []string{"-C", "go", "test", "-tags=integration,schemeintegration", "./dev", "-run", "^$", "-bench", "^BenchmarkGatewayCompiledPipeline$", "-benchtime=1x", "-count=3", "-benchmem"}},
+		}, nil
 	case "bench":
 		return []Stage{
 			{"project-architecture", goBinary, []string{"-C", "go", "test", "-count=1", "./dev", "-run", "^Test(ProjectArchitecture|SysMLSDKAndRequirementTrace|CargoWorkspaceAndDevelopmentGates|SchemeModuleOwnership|CIWorkflows)", "-v"}},

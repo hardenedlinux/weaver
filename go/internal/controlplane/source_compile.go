@@ -8,8 +8,6 @@ import (
 	"github.com/HardenedLinux/weaver/go/internal/config"
 	"github.com/HardenedLinux/weaver/go/internal/gatewayclient"
 	"google.golang.org/protobuf/proto"
-	"maps"
-	"slices"
 	"unicode/utf8"
 )
 
@@ -27,7 +25,7 @@ func BootstrapProducer(ctx context.Context, source, owner *gatewayclient.Client,
 	if err != nil {
 		return nil, err
 	}
-	return Bootstrap(ctx, source, owner, bundle)
+	return bootstrapFrozen(ctx, source, owner, bundle)
 }
 
 // Decode concrete protobuf fields directly. No interop JSON/YAML roundtrip and
@@ -42,15 +40,15 @@ func compiledBundle(input *pb.SourceArtifact) (config.Bundle, error) {
 	if unknownFields(input) || unknownFields(g) || unknownFields(p) {
 		return zero, errors.New("unsupported compiled source field")
 	}
-	bundle := config.Bundle{Governance: config.Governance{Schema: g.Schema, Family: g.Family, OpenNodes: slices.Clone(g.OpenNodes)},
+	bundle := config.Bundle{Governance: config.Governance{Schema: g.Schema, Family: g.Family, OpenNodes: g.OpenNodes},
 		Publication: v1.Publication{OperationID: p.OperationId, ExpectedRevision: cloneRevision(p.ExpectedRevision), Fence: p.Fence, Policy: p.Policy, Schema: p.Schema}}
 	for _, t := range input.Tasks {
 		if t == nil || unknownFields(t) {
 			return zero, errors.New("compiled task missing")
 		}
-		task := v1.Task{Family: t.Family, Principal: t.Principal, Profile: t.Profile, Nodes: slices.Clone(t.Nodes), Targets: slices.Clone(t.Targets),
-			Models: slices.Clone(t.Models), Endpoints: maps.Clone(t.Endpoints), BodyDigests: maps.Clone(t.BodyDigests),
-			NodeCostBounds: maps.Clone(t.NodeCostBounds), StreamContracts: maps.Clone(t.StreamContracts), Budget: t.Budget}
+		task := v1.Task{Family: t.Family, Principal: t.Principal, Profile: t.Profile, Nodes: t.Nodes, Targets: t.Targets,
+			Models: t.Models, Endpoints: t.Endpoints, BodyDigests: t.BodyDigests,
+			NodeCostBounds: t.NodeCostBounds, StreamContracts: t.StreamContracts, Budget: t.Budget}
 		if profile := t.ProviderProfile; profile != nil {
 			if unknownFields(profile) {
 				return zero, errors.New("unsupported compiled profile field")
@@ -74,10 +72,7 @@ func compiledBundle(input *pb.SourceArtifact) (config.Bundle, error) {
 		}
 		bundle.Plans = append(bundle.Plans, plan)
 	}
-	if err := bundle.Validate(); err != nil {
-		return zero, err
-	}
-	return bundle, nil
+	return config.FreezeBundle(bundle)
 }
 func unknownFields(message proto.Message) bool { return len(message.ProtoReflect().GetUnknown()) != 0 }
 func cloneRevision(value *uint64) *uint64 {
