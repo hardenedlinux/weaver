@@ -952,3 +952,34 @@ The authoritative provider flow is updated before generating core D2/SVG views:
 [[file:../../architecture/diagrams/00c-gateway-runtime.svg]]
 [[file:../../architecture/diagrams/00d-zero-trust-overview.svg]]
 [[file:59.77-mrr-turso-storage.svg]]
+
+** Initial connection budget: retained failure and bounded correction
+
+The first complete execution qualification for the lock/preparation change
+retained a FAIL in =TestProviderCompetingCapsCannotReachDispatch=. The child
+entered main about 2.58 seconds after launch and bound its listeners about
+2.5 milliseconds later; the original three-second startup context expired.
+The same complete provider suite subsequently passed without source changes,
+so this is not evidence of a fixed OS launch delay or a consistently slow
+request path. Both failure and full-suite reproduction remain under ignored
+=.cache/lock-runtime/=. Native process launch latency is still a host concern.
+
+A separate deterministic Go/gRPC control isolates backoff amplification: a
+transport refuses its first bounded attempts, with native retry delay longer
+than the caller budget. Plain native state waiting expires; readiness observing
+the final portion of the same budget connects without any application RPC.
+The eight-case QuickCheck property varies the number of refused attempts and
+requires that the control fail, the candidate connect, and the actual gRPC
+stats handler observe zero RPCs. Existing stalled-TLS, deadline and cancellation
+tests remain unchanged. This control establishes the backoff mechanism, not
+the cause of an arbitrary host's pre-main scheduling delay.
+
+The existing Dial entry now uses native connection state changes. Before the
+final budget window it retains native exponential/jitter waiting; within that
+window it wakes transient-failure backoff at the existing base interval. An
+unready endpoint still fails at the original deadline. Caller cancellation
+closes the connection. No timer/observer survives readiness, and native
+long-outage reconnect behavior after Ready remains unchanged. No application
+RPC is issued/retried, no peer identity or TLS check is relaxed, and readiness
+creates neither a grant nor a new claim or budget. The OS launch delay is not
+hidden by a warm-up process or an extended startup gate.

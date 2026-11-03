@@ -229,4 +229,6 @@ module ProviderRpc {
     .then(encodePreparedFrame).then(crash).then(reconnect).expect(safe and s.pending and s.held==4).then(emitPrepared(1).fail())
   run preparedBytesAsPermitCounterexampleTest=arrowSpent.then(reserveSlot).then(prepareBatch(2,1))
     .then(encodePreparedFrame).then(publish).then(unsafeReplayPrepared).expect(not(safe))
+  run initialTransportReadyCannotAdmitApplicationTest=init.then(observe).then(observe).expect(s.stage==0 and s.calls==0 and s.held==0 and safe)
+  run connectionBudgetDoesNotResetSpentRootTest=spent.then(observe).then(reconnect).expect(safe and s.calls==1 and s.held==4 and s.burned)
 }
