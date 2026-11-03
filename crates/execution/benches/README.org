@@ -13,7 +13,7 @@ Source admission, durable burns, cold TLS connection, bounded parsing and releas
 * Entrypoints
 
 Run this package with =cargo bench -p weaver-execution --all-features --bench gateway --locked --offline -- --noplot=.
-Run the complete measured matrix with =go run ./go/cmd/weaver-dev bench=.
+Run the complete measured matrix with =go -C go run ./cmd/weaver-dev bench=.
 Criterion is inherited from the workspace as a development dependency.
 Each case uses thirty samples, one second of warm-up and two seconds of requested measurement.
 Compilation or a smoke invocation alone is not a measured baseline.
@@ -24,3 +24,21 @@ Regression warnings remain evidence even when the benchmark process succeeds;
 these measurements do not establish a production latency or throughput target.
 
 See [[file:../../../docs/50-59-research-program/59-provider-rpc/59.05-benchmarks.org][the workspace benchmark contract]] for the complete matrix and interpretation rules.
+
+* Request seal and response-header separation
+
+=go -C go test -count=1 -tags=integration ./dev -run '^TestHeaderSealPairs$' -v=
+uses the same package-owned benchmark executable in its finite header-seal mode.
+Go captures and independently verifies one optimized immutable image. Six complete
+ABBA blocks vary only the peer's header delay after reading the full request.
+Each row records whole-call wall time and existing ledger callback/transaction
+hold counters, plus original held budget, three events and exactly one invocation.
+A replay must fail without another network call. Missing or corrupted observations
+fail the existing unified =bench-execution= entry; no sample is selected away.
+
+The HTTP driver is owned and unspawned; the host supplies its reactor explicitly.
+The standalone fixture owns its reactor and joins its TLS endpoint before natural
+runtime cleanup. This command/argument is a test entry, not a gateway IPC protocol.
+The old Criterion real-HTTPS benchmark and real Go end-to-end ABBA controls remain
+independent measurements. Overlapping phase counters cannot be summed into wall
+time or interpreted as a no-execution/settlement receipt.

@@ -13,6 +13,7 @@ func TestProviderMVCCExecutionBoundary(t *testing.T) {
 	}{
 		{"duplicates", TestProviderConcurrentRPCDuplicatesInvokeOnce},
 		{"header-wait", TestProviderHeaderWaitAuthorityBoundary},
+		{"early-headers", TestProviderEarlyHeadersAndPartialBody},
 		{"revocation", TestProviderRevocationDuringSSEStopsNextRelease},
 		{"partial-restart", TestProviderPartialRequestAndRestartRetainUnknownClaim},
 		{"reply-loss", TestProviderPublicationLostReplyRestartAndHistoricalDecision},

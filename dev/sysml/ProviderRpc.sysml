@@ -149,13 +149,15 @@ package ProviderRpc {
         port received : ~FramePort;
     }
     part def RustGrpcOwner { port proposal : ~PlanPort; port forwarded : PlanPort; }
-    /* Client/request construction is pure preparation before dispatch locks.
-       DNS, connect, TLS, request bytes and header wait remain within the final
-       guarded request; metrics never authorize any of those effects.
-       Body EOF and early headers cannot certify local drain or retirement of
-       all application writers. A prospective early unlock requires an affine
-       native seal receipt; the current SDK exposes none. Local drain cannot
-       refund unknown budget or bypass fresh response-row Cedar/fence guards. */
+    /* Request construction is inert. The fresh deciding scope owns connect,
+       TLS and exactly one fixed-length HTTP request. WriteSeal observes accepted
+       plaintext plus successful TLS flush, then permanently rejects every new
+       application write. The affine owned driver is never spawned or cloned.
+       Only after the ledger commit succeeds may it read headers/body outside
+       the guard. Early headers and body EOF cannot forge that seal. A failed
+       write, flush or commit drops the driver and retains original unknown
+       exposure. Current Cedar/profile/shared-domain/fence guards still decide
+       each response release. The service supplies the reactor explicitly. */
     part def RustProviderBroker { port proposal : ~PlanPort; port response : EventPort; port authority : ~PublicationPort; }
     part def RustCedarRelease { port prepared : ~FramePort; port authorized : FramePort; }
     part def ProtobufOrArrowEncoder {

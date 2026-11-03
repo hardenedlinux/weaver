@@ -755,7 +755,7 @@ domains may overlap; shared original claims, budget roots and history roots
 serialize. The existing 64 lock stripes can create false contention but cannot
 create independent spending domains. WAL's writer and global authority changes
 still serialize, and the final guarded request includes provider connection/
-header latency. No claim is made that those remaining waits have disappeared.
+header latency in whole-call wall time. Header waiting now runs outside the deciding scope after the sealed request commit; the remaining write/flush costs have not disappeared.
 The bounded source worker also intentionally orders authority publication; this
 change adds neither parallel source publication nor automatic transaction retry.
 Future contention work must measure those waits and preserve their shared-domain
@@ -824,7 +824,7 @@ unknown budget. Reading statistics obtains no execution capability.
 | domain_hold | Acquired conflict stripes through unlock | Includes native begin, final checks, callback and cleanup |
 | transaction_hold | Successful begin through commit/rollback processing | Excludes earlier lock acquisition; includes final effects |
 | commit / rollback | Explicit native commit / explicit scope rollback | Attempts include failure; not proof of outcome |
-| provider_request | Actual guarded request callback | DNS/connect/TLS/request bytes and response-header wait |
+| provider_request | Actual guarded request callback | DNS/connect/TLS/fixed request bytes, TLS flush and writer seal |
 | provider_queue | Actual guarded queue callback | Queue insertion of already encoded data |
 
 Overlapping intervals must not be added into a critical-path latency. Native
@@ -844,7 +844,7 @@ lock; measured state never controls Cedar, claim, budget or fencing branches.
 | Arrow/Protobuf frame construction | After durable release preparation, before final guard | Owned bounded frame; frozen original sequence, route, model and encoding |
 | Capacity reservation | Outside deciding scope, as before | Cancellation/deadline observed; a slot grants no permission |
 | Current Policy/profile/domain/claim checks | Inside each final deciding scope | Fresh after all waits/preparation |
-| Actual provider request and header wait | Inside final invocation scope | Original durable dispatch burn, fresh Cedar/currentness and cancellation |
+| Actual request write, TLS flush and writer seal | Inside final invocation scope | Original durable dispatch burn, fresh Cedar/currentness and cancellation |
 | Queue insertion | Inside final release scope | Every row authorized again; affine interval consumed once |
 | Shared-domain retention and unknown budget | Authoritative deciding store | No split budget/history roots or metrics-based refunds |
 
@@ -986,106 +986,123 @@ hidden by a warm-up process or an extended startup gate.
 
 * Request-write completion and response-header wait
 
-** Decision and actual guarantee
+** Implemented protocol
 
-The current provider transport keeps =Client::execute= inside the final invocation
-scope. It returns a response head, not a request-write completion certificate.
-The private Rust method is named =wait_for_response_headers= to expose that
-boundary. This review does not enable early unlock, change dependency pins, or
-add Scheme to the runtime qualification.
+Provider execution reuses Hyper's HTTP/1 framing/parser, Tokio's TCP reactor and
+Tokio-Rustls. No second HTTP parser, SDK retry loop or proxy/redirect fallback is
+introduced. The provider path uses those already locked ecosystem components
+directly because a blocking response-returning SDK cannot export the required
+write/flush fence. Other execution adapters retain their own established APIs.
 
-A successful provider call is admitted under the original durable dispatch burn
-and a fresh Cedar/currentness/fence join. The current guarantee concerns admission
-of that one immutable request, not recall of accepted TCP/TLS bytes. Buffered bytes
-may drain after the scope ends. An early final response also does not prove that
-the SDK has retired every application writer. Do not claim per-byte revocation,
-remote non-execution, or a quiescent writer from the existing callback return.
+| Step | Owner and deciding boundary |
+|------+-----------------------------|
+| Prepare | Rust freezes exact origin-form URI, Host, bearer credential, JSON body, content length and close semantics without network IO |
+| Consume and burn | Existing MRR Data/Turso ledger retains the original dispatch opportunity and shared reservation before the possible effect |
+| Rejoin | Existing final scope checks current Cedar, original claim/profile, shared budget/history, worker session and fence |
+| Write | Private Hyper connection sends that single fixed Full body; WriteSeal monitors actual accepted plaintext, not body-producer EOF |
+| Flush and seal | Successful TLS flush after the entire fixed body transitions the IO owner out of Writing; every later application write fails before inner IO |
+| Commit | The sealed result remains local while the deciding scope commits; failed/ambiguous commit drops it, preserving unknown exposure |
+| Read | Only the successful caller enables read polling and awaits response headers/body outside the deciding scope |
+| Release | Existing fresh per-row currentness/fence checks and affine interval guard decide bounded queue insertion; a seal never grants response authority |
 
-** Why SDK observations are insufficient
+=PreparedRequest=, =WriteSeal=, =SealedRequest= and the response driver are private,
+non-cloneable execution objects. The only shared phase signal is private to that
+one owned connection; callers cannot set it or extract a socket/sender. The HTTP
+driver is not spawned. Its request future and connection move into the sealed
+result and then the read owner. Errors, cancellation before header read and
+commit loss drop those objects and their TLS/TCP stream; there is no detached
+writer to join, reschedule or recover with an old handle.
 
-The pinned blocking SDK submits work to its internal IO driver and waits for a
-response. Its public API exposes no affine local-drain/driver-retirement receipt.
-A producer reaching EOF proves that it supplied its body; it does not prove that
-HTTP/TLS queues drained. The HTTP/1 driver interleaves read, write and flush;
-response-head availability is not a public write-completion contract. Connector
-logging and elapsed time are diagnostic observations, never release authority.
+The library borrows an explicit Tokio handle supplied by the embedding service.
+It creates no fallback reactor or worker pool. Standalone tests/benchmarks own
+and naturally drop an explicit fixture runtime. Production retains its existing
+tracked blocking service owner, backpressure, cancellation and shutdown drain.
+No runtime dependency version/revision was upgraded; only direct workspace edges
+to already locked HTTP/TLS components were added.
 
-The implementation therefore cannot safely replace this scope with an unlocked
-background SDK task, a body-reader EOF callback, or a Boolean called =written=.
-This is a missing transport capability, not a reason to copy Governance logic,
-cache authorization, or add another settlement ledger.
+Explicit CA bundles retain every configured root without appending platform roots.
+The default verifier uses platform trust and verifies the actual endpoint/SNI;
+there is no insecure verifier or test-root fallback in production.
 
-** Conditions for a future early-unlock transport
+** Early response, partial write and recovery boundaries
 
-| Boundary | Required evidence and limitation |
-|----------+----------------------------------|
-| Immutable invocation | Exact admitted endpoint, headers, payload, credential and length; one durable burn; no automatic retry, redirect, fallback or replay |
-| Local request drain | Entire admitted application request accepted by the owned transport; HTTP body EOF alone is insufficient; TLS pending application ciphertext must be included |
-| Writer retirement | Affine receipt from the actual IO owner after sealing every application writer/task/handle; no retained SDK task can append a tail |
-| Failed or ambiguous seal | Cancel and join/drop all writable tasks before scope release; if retirement cannot be established, quarantine that owner; keep the burn and unknown hold |
-| Successful seal | Commit the deciding scope before waiting for headers outside it; commit loss still forbids replay and refund |
-| Response consumption | Every bounded release rejoins current Cedar Policy, original claim/profile, shared budget/history and fence after queue waits; a seal authorizes no response row |
-| Recovery | Recover original intent and spent state; reconnect/new owner must not redispatch the original request; an old worker must not obtain a fresh write capability |
+WriteSeal gates HTTP response reads until seal and successful deciding commit.
+A provider may send early headers, but they cannot finish the guarded operation
+or certify a shorter body. If it continues reading, the complete fixed request
+can finish and subsequent fresh response checks proceed normally. If it stops
+reading/closes or a write/flush fails, the absolute request deadline bounds the
+operation; the result remains unknown, with no retry/fallback or refund.
 
-Local write completion does not prove provider receipt, provider execution,
-provider idempotency, final usage or safe budget release. Kernel/network bytes
-already accepted cannot be recalled by Policy publication. If the desired contract
-is “no later byte visible remotely after revocation”, an ordinary HTTP provider
-cannot supply that contract. The supported contract must name its admission LP
-and separately specify future application-write retirement.
+The outgoing monitor recognizes only the bounded CRLF delimiter and exact body
+length. Hyper owns header syntax, Content-Length framing, response status,
+chunking and trailers. Headers beyond the outgoing bound fail closed before the
+offending write; response parsing is bounded by Hyper and the existing SSE
+limits. Successful flush is defined at the local TLS/TCP boundary, never as
+remote receipt, remote execution or authenticated final usage. TLS control
+records may still be produced while reading/closing; HTTP/application writes
+are permanently rejected. Already accepted kernel/network bytes are not recalled.
 
-** Authority and concurrency ordering
+A Policy/history/fence publication may commit while response headers are delayed.
+Its effective point is authoritative commit, not Go RPC initiation. Once committed,
+the old response context cannot pass any fresh row release, even if Policy remains
+Allow with a newer fence. The stale driver can only read or close. A new worker,
+updated Authority, reconnect or lost completion reply cannot replay the original
+spent request. Completion/status/EOF alone never frees unknown budget.
 
-A publication request is pending while the deciding scope is held; revocation is
-effective at its authoritative commit, not when a Go caller starts its RPC. Once
-it commits, fresh response release must reject the old context even if the
-provider sent headers earlier. The same rule applies when Policy remains Allow
-but its fence/currentness generation changes. Response-body reading and pure
-frame encoding already run outside the invocation scope; final queue insertion
-retains its separate fresh row guard.
+The existing three-second connect/TLS bound and ten-second absolute request bound
+remain. Header/body waiting shares that same absolute deadline; removing a lock
+must not restart a timeout. Server runtime loss is an unavailable/unknown outcome,
+not permission to fall back to a new runtime or redispatch.
 
-WAL serializes writers, so a slow provider header can delay unrelated publication
-there. MVCC allows disjoint family work under the existing sorted domain locks,
-but shared original claim/budget/history constraints and authority publication
-must retain their synchronization. These constraints must not be split just to
-make the header benchmark faster. Session replacement cannot refresh a spent
-permit or release an unknown reservation.
+** Formal refinement and executable evidence
 
-** Executable correspondence and limits
+=ProviderRequestFence.qnt= models local drain, seal, durable commit/acknowledgment,
+unlock, response-head arrival and current authority separately. Fourteen explicit
+cases include EOF/header/drain-only counterexamples, missing commit confirmation,
+Policy change before headers, stale row release, replay and unknown-budget refund.
+Safe schedules require seal and observed commit before header-read activation.
+A lost commit acknowledgment leaves the original burn and reservation retained.
 
-=ProviderRequestFence.qnt= distinguishes body EOF, early response head, local
-drain, native writer seal and unlock. It includes counterexamples for EOF-based,
-header-based and drain-without-retirement unlock, stale response release, refund
-and replay. Its safe actions require a seal before unlock and retain the original
-burn/hold through lost observations. The seal action is an explicit prospective
-host premise; it is not mapped to a capability of the current SDK.
+=ProviderRpc.lean / RequestWriteFence= gives constructive insufficient-evidence
+witnesses and composes the valid write receipt plus observed commit with the
+existing current-context Flow guard. It proves no new application-write capability
+from that receipt and rejects old response context independently of sealing.
+Native fidelity of Hyper/Tokio-Rustls, exact immutable request binding, durability,
+exclusive socket custody and correct IO-owner drops remain explicit refinement
+premises. This is not a proof of the HTTP/TLS implementation, per-packet recall,
+remote exactly-once execution, settlement or liveness under provider failure.
 
-=ProviderRpc.lean / RequestWriteFence= proves that a sealed writer cannot perform
-another application write, gives constructive witnesses that EOF/head and local
-drain alone do not imply sealing, and composes sealing with the existing response
-currentness theorem. This does not prove reqwest/Hyper/TLS implementation fidelity,
-crash durability, remote execution, or availability. Those remain native obligations.
+The execution crate uses Proptest for fragmented accepted writes, flush-pending
+schedules, late application writes, partial failures and readable early responses.
+The real Go QuickCheck properties use mTLS/gRPC, Cedar publication, MRR/Turso and
+HTTPS: publication must commit while headers remain blocked; old rows stay denied;
+partial/early headers retain exposure; restarting and adopting a newer fence
+cannot reopen the original operation. Both WAL and explicit MVCC profiles reuse
+the full provider fault suite, including publication/reply loss and queue failures.
 
-=TestProviderHeaderWaitAuthorityBoundary= uses real mTLS gRPC, Cedar publication,
-Turso and HTTPS. A provider reads the entire request, withholds response headers,
-and then separately gates the response body. Eight generated encoding/cut/delay
-cases check publication ordering, zero stale response rows, retained unknown
-budget and no redispatch after restart. The existing MVCC fault suite runs the
-same property. The bounded observation interval is not a scheduler proof; the
-formal ordering and real response/recovery assertions provide complementary evidence.
+** Same-image measurement
 
-=BenchmarkGatewayHeaderWaitPair= runs six complete ABBA blocks using one captured,
-immutable optimized Rust image and fresh stores. Both arms fully read the request
-and return identical five-event SSE; the delayed arm waits 30 ms before headers.
-It reports activation and end-to-end send time separately. This is a sensitivity
-experiment identifying residual header latency, not an implemented early-unlock
-speedup, lock-time percentile, or proof that host noise disappeared. The existing
-native transaction counters remain the owner of lock/commit/callback durations.
+The execution package's own finite =benches/support/header_seal.rs= experiment
+runs six complete ABBA blocks with one endpoint/certificate/runtime and fresh
+stores. The immediate/delayed arms return identical three-event SSE; the peer
+fully reads the request and delays only response headers by thirty milliseconds.
+Every row records actual ledger request-callback/transaction/commit timings and
+whole-call wall time separately. Held budget, events, one primary call and failed
+replay remain asserted. Go freezes one optimized image and rejects missing,
+reordered, wrong-core, debug, malformed or exposure-invalid evidence. Its negative
+QuickCheck property corrupts evidence; missing duration is never treated as zero.
 
-Core transport boundary view:
+The existing real Go published-path and twenty-four-sample header/streaming ABBA
+experiments remain separate measurements. The expected result is header latency
+appearing in wall time without an equivalent request-callback hold increase;
+acceptance validates observations, not a fabricated latency threshold. Preserve
+all blocks and host noise. This does not establish production tail latency or
+whole-application before/after improvement.
 
-[[file:59.44-cloud-rpc-arrow-boundaries.svg]]
-
-Gateway runtime view:
+Core runtime view:
 
 [[file:../../architecture/diagrams/00c-gateway-runtime.svg]]
+
+Zero Trust ownership view:
+
+[[file:../../architecture/diagrams/00d-zero-trust-overview.svg]]

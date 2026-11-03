@@ -25,8 +25,12 @@ async fn aliased_or_empty_source_identity_is_rejected_before_serving() {
             source_peer_sha256: [3; 32],
             admin_sha256: [4; 32],
         },
-        provider: weaver_execution::ProviderTransport::new(Default::default(), None)
-            .expect("configuration"),
+        provider: weaver_execution::ProviderTransport::new(
+            Default::default(),
+            None,
+            tokio::runtime::Handle::current(),
+        )
+        .expect("configuration"),
     };
     assert!(validate_listeners(&listeners, &settings).is_ok());
     settings.security.source_peer_sha256 = [2; 32];

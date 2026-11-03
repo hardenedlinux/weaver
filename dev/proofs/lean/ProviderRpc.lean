@@ -918,7 +918,7 @@ theorem prepared_bytes_cannot_replace_affine_token
 #print axioms prepared_bytes_cannot_replace_affine_token
 /- A prospective native transport receipt must certify BOTH local drain and
 absence of every future application-write capability, including SDK tasks.
-This is a host premise; the current reqwest backend exports no such receipt. -/
+The Rust WriteSeal owner supplies this receipt only after accepted fixed-length\napplication bytes and successful TLS flush, with every subsequent write rejected.\nHTTP/TLS library fidelity and durable commit observation remain host premises. -/
 namespace RequestWriteFence
 structure State where
   tail : Bool
@@ -953,5 +953,34 @@ theorem sealed_request_cannot_bypass_response_currentness
 #print axioms eof_and_response_head_do_not_certify_seal
 #print axioms local_drain_without_writer_retirement_is_insufficient
 #print axioms sealed_request_cannot_bypass_response_currentness
+/-- Physical receipt is private to the IO owner. Local drain never proves remote
+receipt, no-execution, or a refund. The exact request identity is retained by the
+existing immutable admission and affine dispatch rather than reconstructed here. -/
+structure WriteReceipt where
+  accepted : Nat
+  expected : Nat
+  flushed : Bool
+  writer : State
+
+def ValidReceipt (r : WriteReceipt) : Prop :=
+  r.accepted = r.expected ∧ r.flushed = true ∧ Sealed r.writer
+
+def CanWaitHeaders (r : WriteReceipt) (commitObserved : Bool) : Prop :=
+  ValidReceipt r ∧ commitObserved = true
+
+theorem header_wait_requires_sealed_writer (ready : CanWaitHeaders r observed) :
+    ¬ CanWrite r.writer := seal_excludes_future_application_write ready.1.2.2
+
+theorem unobserved_commit_cannot_activate_response : ¬ CanWaitHeaders r false := by
+  simp [CanWaitHeaders]
+
+theorem receipt_cannot_replace_current_response_guard
+    {Key Context : Type} {b : Flow.Batch Key Context} {s : Flow.Pipe Key Context}
+    (_ready : CanWaitHeaders r observed) (changed : b.context ≠ s.context) :
+    ¬ Flow.CanEmit s b := stale_context_cannot_emit changed
+
+#print axioms header_wait_requires_sealed_writer
+#print axioms unobserved_commit_cannot_activate_response
+#print axioms receipt_cannot_replace_current_response_guard
 end RequestWriteFence
 end Weaver.ProviderRpc

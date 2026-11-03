@@ -55,7 +55,11 @@ fn load_transport() -> Result<ProviderTransport> {
         .ok()
         .map(read_path)
         .transpose()?;
-    ProviderTransport::new(credentials, root.as_deref())
+    ProviderTransport::new(
+        credentials,
+        root.as_deref(),
+        tokio::runtime::Handle::current(),
+    )
 }
 struct ListenAddresses {
     operation: std::net::SocketAddr,

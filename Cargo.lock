@@ -5523,15 +5523,23 @@ name = "weaver-execution"
 version = "0.1.0"
 dependencies = [
  "asp-rust",
+ "bytes",
  "criterion",
+ "futures-executor",
+ "http-body-util",
+ "hyper",
+ "hyper-util",
  "proptest",
  "rcgen",
  "reqwest",
  "rustls",
+ "rustls-platform-verifier",
  "serde",
  "serde_json",
  "socket2",
  "tempfile",
+ "tokio",
+ "tokio-rustls",
  "weaver-contracts",
  "weaver-ledger",
 ]

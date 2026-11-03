@@ -13,11 +13,15 @@ use std::{
 };
 use weaver_contracts::{ProviderEvent, ProviderRoute, Result};
 use weaver_ledger::Ledger;
+#[path = "../support/runtime.rs"]
+mod fixture_runtime;
 #[path = "../../../contracts/benches/support/fixtures.rs"]
 mod fixtures;
 const SCHEMA: &str = include_str!("../../../../prod/policies/provider/schema.json");
 
 struct Endpoint {
+    runtime: tokio::runtime::Runtime,
+    peer_closed: Arc<AtomicBool>,
     address: String,
     root: String,
     calls: Arc<AtomicUsize>,
@@ -29,6 +33,9 @@ impl Endpoint {
         Self::with_header_delay(Duration::ZERO)
     }
     fn with_header_delay(delay: Duration) -> Self {
+        Self::with_read_mode(delay, false)
+    }
+    fn with_read_mode(delay: Duration, wait_for_close: bool) -> Self {
         let _ = rustls::crypto::ring::default_provider().install_default();
         let listener = TcpListener::bind("127.0.0.1:0").expect("listener");
         listener.set_nonblocking(true).expect("nonblocking");
@@ -53,6 +60,8 @@ impl Endpoint {
         let calls = Arc::new(AtomicUsize::new(0));
         let stop = Arc::new(AtomicBool::new(false));
         let seen = calls.clone();
+        let peer_closed = Arc::new(AtomicBool::new(false));
+        let observed_close = peer_closed.clone();
         let closing = stop.clone();
         let worker = thread::spawn(move || {
             let start = Instant::now();
@@ -74,7 +83,31 @@ impl Endpoint {
                         let mut stream = rustls::StreamOwned::new(connection, socket);
                         let mut bytes = [0; 4096];
                         assert!(stream.read(&mut bytes).expect("request") > 0);
+                        if wait_for_close {
+                            loop {
+                                match stream.read(&mut bytes) {
+                                    Ok(0) => {
+                                        observed_close.store(true, Ordering::SeqCst);
+                                        break;
+                                    }
+                                    Ok(_) => {}
+                                    Err(error) => {
+                                        observed_close.store(
+                                            matches!(
+                                                error.kind(),
+                                                std::io::ErrorKind::UnexpectedEof
+                                                    | std::io::ErrorKind::ConnectionReset
+                                            ),
+                                            Ordering::SeqCst,
+                                        );
+                                        break;
+                                    }
+                                }
+                            }
+                            continue;
+                        }
                         thread::sleep(delay);
+
                         stream.write_all(b"HTTP/1.1 200 OK\r\nContent-Type: text/event-stream\r\nContent-Length: 14\r\nConnection: close\r\n\r\ndata: [DONE]\n\n").expect("response");
                         stream.flush().expect("flush");
                     }
@@ -86,6 +119,8 @@ impl Endpoint {
             }
         });
         Self {
+            runtime: fixture_runtime::fixture_runtime(),
+            peer_closed,
             address,
             root,
             calls,
@@ -203,6 +238,7 @@ fn cancellation_during_sql_wait_blocks_transport_and_keeps_spent_claim() {
     let transport = ProviderTransport::new(
         BTreeMap::from([("primary".into(), "test-key".into())]),
         Some(endpoint.root.as_bytes()),
+        endpoint.runtime.handle().clone(),
     )
     .expect("transport");
     let sending = thread::spawn(move || {
@@ -229,6 +265,7 @@ fn cancellation_during_sql_wait_blocks_transport_and_keeps_spent_claim() {
     let transport = ProviderTransport::new(
         BTreeMap::from([("primary".into(), "test-key".into())]),
         Some(endpoint.root.as_bytes()),
+        endpoint.runtime.handle().clone(),
     )
     .expect("transport");
     assert!(
@@ -267,6 +304,7 @@ fn uncancelled_control_reaches_real_https_transport_once() {
     let transport = ProviderTransport::new(
         BTreeMap::from([("primary".into(), "test-key".into())]),
         Some(endpoint.root.as_bytes()),
+        endpoint.runtime.handle().clone(),
     )
     .expect("transport");
     assert!(open_guarded(&mut ledger, &permit, &transport, &output).is_ok());
@@ -286,15 +324,15 @@ proptest::proptest! {
         ledger.enqueue_provider(&plan).expect("reservation");
         let eligible=BTreeSet::from(["primary".into()]);
         let permit=ledger.consume_provider("f","infer",&eligible).expect("consume");
-        let transport=ProviderTransport::new(BTreeMap::from([("primary".into(),"test-key".into())]),Some(endpoint.root.as_bytes())).expect("transport");
+        let transport=ProviderTransport::new(BTreeMap::from([("primary".into(),"test-key".into())]),Some(endpoint.root.as_bytes()),endpoint.runtime.handle().clone()).expect("transport");
         let before=ledger.transaction_timings();
         let request=transport.prepare(permit.plan(),permit.route()).expect("pure request");
         proptest::prop_assert_eq!(endpoint.calls.load(Ordering::SeqCst),0);
         proptest::prop_assert_eq!(ledger.transaction_timings().transaction_hold.attempts,before.transaction_hold.attempts);
         if revoked {ledger.publish(Some(0),"forbid(principal,action,resource);",2).expect("new fence");}
         if discarded {drop(request);} else {
-            let result=ledger.dispatch_provider(&permit,||request.wait_for_response_headers());
-            if revoked {proptest::prop_assert!(result.is_err());} else {let response=result.expect("guard").expect("actual HTTPS");proptest::prop_assert_eq!(response.status(),200);}
+            let result=ledger.dispatch_provider(&permit,||request.write_and_seal());
+            if revoked {proptest::prop_assert!(result.is_err());} else {let sealed=result.expect("guard").expect("actual HTTPS seal");sealed.wait_for_response_headers().expect("headers");}
         }
         proptest::prop_assert_eq!(endpoint.calls.load(Ordering::SeqCst),usize::from(!revoked&&!discarded));
         proptest::prop_assert_eq!(ledger.held("f").expect("held"),4);
@@ -304,7 +342,7 @@ proptest::proptest! {
 }
 
 #[test]
-fn response_header_wait_remains_in_native_request_and_transaction_timings() {
+fn response_header_wait_is_outside_request_and_transaction_timings() {
     let delay = Duration::from_millis(30);
     let endpoint = Endpoint::with_header_delay(delay);
     let directory = tempfile::tempdir().expect("directory");
@@ -321,6 +359,7 @@ fn response_header_wait_remains_in_native_request_and_transaction_timings() {
     let transport = ProviderTransport::new(
         BTreeMap::from([("primary".into(), "test-key".into())]),
         Some(endpoint.root.as_bytes()),
+        endpoint.runtime.handle().clone(),
     )
     .expect("transport");
     let output = Cancellation {
@@ -331,7 +370,8 @@ fn response_header_wait_remains_in_native_request_and_transaction_timings() {
     let response = open_guarded(&mut ledger, &permit, &transport, &output).expect("headers");
     let phase = ledger.transaction_timings().since(before);
     assert_eq!(phase.provider_request.attempts, 1);
-    assert!(u128::from(phase.provider_request.nanos) >= delay.as_nanos());
+    // Scope timings stop at seal, before any header read. The paired native
+    // benchmark measures this boundary separately from whole-call wall time.
     assert!(phase.transaction_hold.nanos >= phase.provider_request.nanos);
     assert_eq!(ledger.held("f").expect("held"), 4);
     assert_eq!(endpoint.calls.load(Ordering::SeqCst), 1);
@@ -340,4 +380,93 @@ fn response_header_wait_remains_in_native_request_and_transaction_timings() {
         phase.provider_request.nanos, phase.transaction_hold.nanos, phase.commit.nanos
     );
     drop(response);
+}
+
+#[test]
+fn dropped_sealed_result_closes_sole_driver_without_header_read_or_refund() {
+    let endpoint = Endpoint::with_read_mode(Duration::ZERO, true);
+    let directory = tempfile::tempdir().expect("directory");
+    let path = directory.path().join("ledger.db");
+    let mut ledger = Ledger::open(&path).expect("ledger");
+    ledger
+        .publish_typed(None, "permit(principal,action,resource);", SCHEMA, 1)
+        .expect("policy");
+    let (task, plan) = fixtures::task_plan(16, &endpoint.address);
+    ledger.register_task(&task).expect("task");
+    ledger.enqueue_provider(&plan).expect("queue");
+    let permit = ledger
+        .consume_provider("f", "infer", &BTreeSet::from(["primary".into()]))
+        .expect("consume");
+    let transport = ProviderTransport::new(
+        BTreeMap::from([("primary".into(), "test-key".into())]),
+        Some(endpoint.root.as_bytes()),
+        endpoint.runtime.handle().clone(),
+    )
+    .expect("transport");
+    let request = transport
+        .prepare(permit.plan(), permit.route())
+        .expect("inert request");
+    let sealed = ledger
+        .dispatch_provider(&permit, || request.write_and_seal())
+        .expect("guard commit")
+        .expect("seal");
+    // This is the same ownership drop used if the deciding commit fails or its
+    // sealed result is lost. It is not an injected native storage-commit fault.
+    drop(sealed);
+    let deadline = Instant::now() + Duration::from_secs(1);
+    while !endpoint.peer_closed.load(Ordering::SeqCst) && Instant::now() < deadline {
+        thread::sleep(Duration::from_millis(1));
+    }
+    assert!(
+        endpoint.peer_closed.load(Ordering::SeqCst),
+        "detached HTTP driver retained the socket"
+    );
+    drop(ledger);
+    let mut recovered = Ledger::open(path).expect("recover");
+    assert!(
+        recovered
+            .dispatch_provider(&permit, || panic!("old worker invoked"))
+            .is_err()
+    );
+    assert_eq!(
+        recovered
+            .provider_receipt("f", "infer")
+            .expect("lookup")
+            .expect("receipt")
+            .held,
+        4
+    );
+    assert_eq!(endpoint.calls.load(Ordering::SeqCst), 1);
+}
+
+#[test]
+fn configured_ca_bundle_preserves_later_approved_root() {
+    let endpoint = Endpoint::new();
+    let unrelated =
+        rcgen::generate_simple_self_signed(vec!["unrelated.invalid".into()]).expect("unrelated CA");
+    let bundle = format!("{}{}", unrelated.cert.pem(), endpoint.root);
+    let directory = tempfile::tempdir().expect("directory");
+    let mut ledger = Ledger::open(directory.path().join("ledger.db")).expect("ledger");
+    ledger
+        .publish_typed(None, "permit(principal,action,resource);", SCHEMA, 1)
+        .expect("policy");
+    let (task, plan) = fixtures::task_plan(16, &endpoint.address);
+    ledger.register_task(&task).expect("task");
+    ledger.enqueue_provider(&plan).expect("queue");
+    let permit = ledger
+        .consume_provider("f", "infer", &BTreeSet::from(["primary".into()]))
+        .expect("consume");
+    let transport = ProviderTransport::new(
+        BTreeMap::from([("primary".into(), "test-key".into())]),
+        Some(bundle.as_bytes()),
+        endpoint.runtime.handle().clone(),
+    )
+    .expect("bundle");
+    let output = Cancellation {
+        stopped: Arc::new(AtomicBool::new(false)),
+        checkpoint: Mutex::new(None),
+    };
+    assert!(open_guarded(&mut ledger, &permit, &transport, &output).is_ok());
+    assert_eq!(endpoint.calls.load(Ordering::SeqCst), 1);
+    assert_eq!(ledger.held("f").expect("held"), 4);
 }

@@ -195,6 +195,7 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 			{"execution-contention-pair", goBinary, []string{"-C", "go", "test", "-count=1", "-tags=integration", "./dev", "-run", "^TestContentionPairs$", "-v"}},
 			{"execution-provider-integration", goBinary, []string{"-C", "go", "test", "-count=1", "-race", "-tags=integration", "./dev", "-run", "^TestProvider", "-v"}},
 			{"published-pipeline-benchmark", goBinary, []string{"-C", "go", "test", "-tags=integration", "./dev", "-run", "^$", "-bench", "^BenchmarkGatewayPublishedPipeline$", "-benchtime=1x", "-count=3", "-benchmem"}},
+			{"execution-header-seal-pair", goBinary, []string{"-C", "go", "test", "-count=1", "-tags=integration", "./dev", "-run", "^TestHeaderSealPairs$", "-v"}},
 			{"execution-header-wait-pair", goBinary, []string{"-C", "go", "test", "-tags=integration", "./dev", "-run", "^$", "-bench", "^BenchmarkGatewayHeaderWaitPair$", "-benchtime=1x", "-count=1", "-benchmem"}},
 			{"execution-streaming-pair", goBinary, []string{"-C", "go", "test", "-tags=integration", "./dev", "-run", "^$", "-bench", "^BenchmarkGatewayStreamingPair$", "-benchtime=1x", "-count=1", "-benchmem"}},
 		}, nil

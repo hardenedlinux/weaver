@@ -448,9 +448,11 @@ package WeaverExecution {
            bounded synchronous transport operation while holding the same gate
            that serializes every floor mutation. Neither queue admission nor a
            committed log entry sends. Do not release the gate then invoke IO.
-           Existing blocking provider dispatch holds its deciding transaction
-           through request/response headers; shortening that window needs a new
-           transport refinement and measurements, not a change of proof labels. */
+           Provider dispatch holds its deciding transaction through fixed-body
+           write and TLS flush; WriteSeal then retires every application writer.
+           The sole owned HTTP driver reads headers only after commit, outside
+           this gate. Dropping it on commit loss cannot leave a background writer.
+           Response queue insertion rejoins the current independent row guard. */
         port consumed : ~ConsumedPort;
         port wire : WirePort;
     }
@@ -460,10 +462,13 @@ package WeaverExecution {
         attribute securityName : String = "Rust / Stream continuity";
         attribute securityResponsibility : String = "Retain original spent prefix\nReassess each new governed use\nRecovery cannot mint permission";
         attribute displayName : String = "Bounded HTTPS executor";
-        attribute responsibility : String = "Send exact authorized bytes\nDisable implicit SDK retries\nReport partial or unknown writes";
+        attribute responsibility : String = "Provider write + flush + seal\nNo implicit retry or fallback\nRetain partial / unknown exposure";
         attribute glyph : String = "capture";
         attribute visualRole : String = "execution";
-        doc /* Exact committed target and body, no inherited proxy, redirect or automatic retry. */
+        doc /* Exact committed target and body, no inherited proxy, redirect or automatic retry.
+           Streaming providers use the sealed Hyper/TLS owner and await headers
+           outside their deciding scope. The separate generic request adapter
+           retains its established conservative response-returning guard. */
         port wire : ~WirePort;
         port provider : WirePort;
     }

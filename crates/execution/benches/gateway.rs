@@ -1,4 +1,4 @@
-use criterion::{BatchSize, Criterion, criterion_group, criterion_main};
+use criterion::{BatchSize, Criterion, criterion_group};
 use std::{
     collections::BTreeMap,
     hint::black_box,
@@ -6,7 +6,7 @@ use std::{
     net::{TcpListener, TcpStream},
     sync::{
         Arc,
-        atomic::{AtomicBool, Ordering},
+        atomic::{AtomicBool, AtomicU64, AtomicUsize, Ordering},
     },
     thread,
     time::Duration,
@@ -39,11 +39,16 @@ impl ProviderOutput for Sink {
         Ok(())
     }
 }
+#[path = "../tests/support/runtime.rs"]
+mod fixture_runtime;
 struct Provider {
+    runtime: tokio::runtime::Runtime,
     address: std::net::SocketAddr,
     endpoint: String,
     pem: String,
     stopped: Arc<AtomicBool>,
+    delay: Arc<AtomicU64>,
+    calls: Arc<AtomicUsize>,
     worker: Option<thread::JoinHandle<()>>,
 }
 impl Provider {
@@ -66,6 +71,10 @@ impl Provider {
         let address = listener.local_addr().expect("fixture address");
         let stopped = Arc::new(AtomicBool::new(false));
         let closing = stopped.clone();
+        let delay = Arc::new(AtomicU64::new(0));
+        let calls = Arc::new(AtomicUsize::new(0));
+        let header_delay = delay.clone();
+        let observed_calls = calls.clone();
         let worker = thread::spawn(move || {
             loop {
                 let (socket, _) = listener.accept().expect("fixture accept");
@@ -82,6 +91,8 @@ impl Provider {
                     rustls::ServerConnection::new(config.clone()).expect("fixture TLS connection");
                 let mut stream = rustls::StreamOwned::new(connection, socket);
                 read_request(&mut stream);
+                observed_calls.fetch_add(1, Ordering::SeqCst);
+                thread::sleep(Duration::from_millis(header_delay.load(Ordering::SeqCst)));
                 let body = concat!(
                     "data: {\"id\":\"s\",\"object\":\"chat.completion.chunk\",\"model\":\"model-a\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"governed\"},\"finish_reason\":null}]}\n\n",
                     "data: {\"id\":\"s\",\"object\":\"chat.completion.chunk\",\"model\":\"model-a\",\"choices\":[{\"index\":0,\"delta\":{},\"finish_reason\":\"stop\"}]}\n\n",
@@ -92,10 +103,13 @@ impl Provider {
             }
         });
         Self {
+            runtime: fixture_runtime::fixture_runtime(),
             address,
             endpoint: format!("https://localhost:{}/v1/chat/completions", address.port()),
             pem,
             stopped,
+            delay,
+            calls,
             worker: Some(worker),
         }
     }
@@ -136,6 +150,7 @@ fn guarded_provider(c: &mut Criterion) {
     let transport = ProviderTransport::new(
         BTreeMap::from([("primary".into(), "benchmark-key".into())]),
         Some(provider.pem.as_bytes()),
+        provider.runtime.handle().clone(),
     )
     .expect("transport");
     c.bench_function("execution/https_guarded_sse_three_events", |b| {
@@ -163,4 +178,13 @@ fn guarded_provider(c: &mut Criterion) {
     });
 }
 criterion_group! {name=benches;config=Criterion::default().sample_size(30).warm_up_time(Duration::from_secs(1)).measurement_time(Duration::from_secs(2));targets=guarded_provider}
-criterion_main!(benches);
+#[path = "support/header_seal.rs"]
+mod header_seal;
+fn main() {
+    if std::env::args().any(|arg| arg == "--weaver-header-seal") {
+        header_seal::run();
+        return;
+    }
+    benches();
+    Criterion::default().configure_from_args().final_summary();
+}

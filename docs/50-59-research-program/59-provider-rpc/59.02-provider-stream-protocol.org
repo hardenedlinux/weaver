@@ -102,14 +102,18 @@ Immutable task/plan facts and their hashes are bound once at consumption. Each
 release reads current authority and evaluates Cedar over small cached facts; it
 does not reparse or rehash the complete request for every token. No permission
 decision is cached. The Turso deciding lock remains held across initial request
-invocation through response headers and across final bounded queue admission.
+invocation through request write, TLS flush and writer seal, and across final bounded queue admission.
 This serial reference profile is not a qualified high-concurrency shard design.
 
-* Request admission is distinct from writer quiescence
+* Request admission, writer seal and response use
 
-The current blocking SDK returns response headers inside the invocation guard.
-Neither headers nor body-producer EOF certify that every request writer is sealed.
-No early unlock is enabled. Buffered accepted bytes may drain; revocation prevents
-new admission and stale response release, not remote recall. Unknown outcomes
-retain the original burn and reservation. See [[file:59.87-spec-upgrade-and-delivery-plan.org][Request-write completion and response-header wait]] for the prospective
-native seal contract, executable counterexamples and qualification boundaries.
+The deciding scope writes one exact request, flushes TLS and receives the affine
+private =SealedRequest=. It permanently rejects later application writes and
+owns the unspawned HTTP driver. Only after scope commit succeeds may the driver
+read headers outside the guard. Body EOF and early response headers cannot create
+this receipt. Write/flush/commit ambiguity drops the driver and retains the
+original burn and reservation. Local drain cannot recall accepted TCP/TLS bytes,
+prove remote non-execution or refund money. Fresh Cedar/profile/shared-domain/
+fence guards still decide every response release. See
+[[file:59.87-spec-upgrade-and-delivery-plan.org][Request-write completion and response-header wait]] for native mappings,
+formal premises and qualification evidence.

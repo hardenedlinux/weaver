@@ -132,8 +132,12 @@ async fn actual_scheme_vm_is_owner_local_and_cleanup_precedes_shared_drain() {
             source_peer_sha256: Sha256::digest(&pki.source.der).into(),
             admin_sha256: Sha256::digest(b"source-token").into(),
         },
-        provider: weaver_execution::ProviderTransport::new(Default::default(), None)
-            .expect("no provider credentials"),
+        provider: weaver_execution::ProviderTransport::new(
+            Default::default(),
+            None,
+            tokio::runtime::Handle::current(),
+        )
+        .expect("no provider credentials"),
     };
     let (stop, stopped) = oneshot::channel();
     let serving = runtime.clone();

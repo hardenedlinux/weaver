@@ -25,6 +25,7 @@ type Stage struct {
 	Args         []string
 }
 type Result struct {
+	HeaderSeal         *HeaderSealEvidence `json:"headerSeal,omitempty"`
 	Contention         *ContentionEvidence `json:"contention,omitempty"`
 	Name               string              `json:"name"`
 	Status             string              `json:"status"`
@@ -294,6 +295,16 @@ func runStageObserved(ctx context.Context, root, directory string, environment [
 		result.Contention, err = readContentionEvidence(filepath.Join(directory, result.Log))
 		result.Details = "Five lock profiles, six complete ABBA blocks each, one optimized immutable benchmark image; intervals overlap."
 	}
+	if stage.Name == "execution-header-seal-pair" && err == nil && closeErr == nil {
+		var file *os.File
+		file, err = os.Open(filepath.Join(directory, result.Log))
+		if err == nil {
+			result.HeaderSeal, err = ReadHeaderSealEvidence(file, runtime.NumCPU())
+			err = errors.Join(err, file.Close())
+		}
+		result.Details = "Six complete optimized same-image ABBA blocks; actual HTTPS request sealing, callback/transaction hold and wall measured separately. No latency threshold or speedup is inferred from acceptance."
+	}
+
 	if stage.Name == "execution-header-wait-pair" && err == nil && closeErr == nil {
 		result.PipelineBenchmarks, err = readProviderPairBenchmarks(filepath.Join(directory, result.Log), runtime.NumCPU(), "BenchmarkGatewayHeaderWaitPair", "immediate", "delayed")
 		result.Details = "Six complete same-image ABBA blocks; fully consumed HTTPS request, immediate versus 30ms delayed headers. Sensitivity control, not an early-unlock speedup."

@@ -35,6 +35,12 @@ cedar-policy = { version = "=4.12.0", default-features = false }
 cedar-poo-runtime = { git = "https://github.com/HardenedLinux/cedar-poo-spec", rev = "b12c4a0dd7b8cd535e64840095ab54fa9e15a14a" }
 mrr-data-backend = { git = "https://github.com/tao3k/mrr-data", rev = "daa6487820f798f0583713de8d03110aeac5d1fd", default-features = false, features = ["turso"] }
 futures-executor = "0.3"
+bytes = "=1.12.1"
+hyper = { version = "=1.11.1", default-features = false, features = ["client", "http1"] }
+hyper-util = { version = "=0.1.20", default-features = false, features = ["tokio"] }
+http-body-util = "=0.1.5"
+tokio-rustls = { version = "=0.26.5", default-features = false, features = ["ring", "tls12"] }
+rustls-platform-verifier = "=0.7.0"
 reqwest = { version = "0.13.5", default-features = false, features = ["blocking", "rustls"] }
 proptest = "1.11"
 tempfile = "3.27"

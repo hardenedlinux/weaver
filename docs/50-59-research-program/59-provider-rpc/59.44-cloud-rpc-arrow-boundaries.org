@@ -307,3 +307,12 @@ Remaining work includes codec/runtime heap and arbitrary metadata qualification,
 and fairness limits, deployed cloud/protocol adapter reconnect tests, concrete
 floor/account/history projection and authoritative Session result recovery.
 Production code and dependency pins remain unchanged. CI is nonblocking.
+
+* Provider request write seal
+
+The Rust invocation guard ends after exact fixed request bytes, successful TLS
+flush and permanent application-writer seal, followed by the deciding commit.
+The private unspawned HTTP driver then waits for headers/body outside that guard.
+No Go adapter or caller receives its write handle. Each response release still
+rejoins original authority and current Cedar/profile/domain/fence state. A local
+seal cannot authorize a replay, prove no-execution or release unknown exposure.

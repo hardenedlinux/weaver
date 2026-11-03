@@ -1,13 +1,8 @@
 //! Guarded provider invocation; no retry, redirect, reconnect or automatic route fallback.
 use super::sse;
-use reqwest::{
-    blocking::{Client, Response},
-    redirect::Policy,
-};
 use std::{
     collections::{BTreeMap, BTreeSet},
-    sync::{Arc, OnceLock},
-    time::Duration,
+    sync::Arc,
 };
 use weaver_contracts::{Error, ProviderEvent, ProviderPlan, ProviderRoute, Result};
 use weaver_ledger::{Ledger, ProviderDispatch};
@@ -19,11 +14,17 @@ pub struct ProviderTransport {
 }
 struct Settings {
     credentials: BTreeMap<String, String>,
-    root: Option<reqwest::Certificate>,
-    client: OnceLock<std::result::Result<Client, String>>,
+    tls: Arc<rustls::ClientConfig>,
+    runtime: Arc<super::io_runtime::IoRuntime>,
 }
 impl ProviderTransport {
-    pub fn new(credentials: BTreeMap<String, String>, root_pem: Option<&[u8]>) -> Result<Self> {
+    /// Blocking execution borrows the embedding owner's live reactor. The host
+    /// must drain its tracked requests before shutting that reactor down.
+    pub fn new(
+        credentials: BTreeMap<String, String>,
+        root_pem: Option<&[u8]>,
+        reactor: tokio::runtime::Handle,
+    ) -> Result<Self> {
         for (target, secret) in &credentials {
             weaver_contracts::identifier(target)?;
             if secret.is_empty()
@@ -33,15 +34,35 @@ impl ProviderTransport {
                 return Err(Error::Invalid("provider credential"));
             }
         }
-        let root = root_pem
-            .map(reqwest::Certificate::from_pem)
-            .transpose()
-            .map_err(|_| Error::Invalid("provider trust root"))?;
+        use rustls::pki_types::pem::PemObject;
+        use rustls_platform_verifier::BuilderVerifierExt;
+        let builder = rustls::ClientConfig::builder_with_provider(Arc::new(
+            rustls::crypto::ring::default_provider(),
+        ))
+        .with_safe_default_protocol_versions()
+        .map_err(|_| Error::Invalid("provider TLS protocols"))?;
+        let tls = if let Some(pem) = root_pem {
+            let mut roots = rustls::RootCertStore::empty();
+            for certificate in rustls::pki_types::CertificateDer::pem_slice_iter(pem) {
+                roots
+                    .add(certificate.map_err(|_| Error::Invalid("provider trust root"))?)
+                    .map_err(|_| Error::Invalid("provider trust root"))?;
+            }
+            if roots.is_empty() {
+                return Err(Error::Invalid("provider trust root"));
+            }
+            builder.with_root_certificates(roots).with_no_client_auth()
+        } else {
+            builder
+                .with_platform_verifier()
+                .map_err(|_| Error::Invalid("provider platform trust"))?
+                .with_no_client_auth()
+        };
         Ok(Self {
             inner: Arc::new(Settings {
                 credentials,
-                root,
-                client: OnceLock::new(),
+                tls: Arc::new(tls),
+                runtime: Arc::new(super::io_runtime::IoRuntime { handle: reactor }),
             }),
         })
     }
@@ -54,45 +75,19 @@ impl ProviderTransport {
         route: &ProviderRoute,
     ) -> Result<super::request::PreparedRequest> {
         crate::HttpsTransport::validate_endpoint(&route.endpoint)?;
-        let client = self
-            .inner
-            .client
-            .get_or_init(|| {
-                let mut builder = Client::builder()
-                    .https_only(true)
-                    .http1_only()
-                    .no_proxy()
-                    .redirect(Policy::none())
-                    .retry(reqwest::retry::never())
-                    .connect_timeout(Duration::from_secs(3))
-                    .timeout(Duration::from_secs(10))
-                    .pool_max_idle_per_host(0);
-                if let Some(root) = &self.inner.root {
-                    builder = builder.tls_certs_only([root.clone()]);
-                }
-                builder
-                    .build()
-                    .map_err(|_| "provider client unavailable".into())
-            })
-            .as_ref()
-            .map_err(|_| Error::Invalid("provider client"))?;
+        let runtime = self.inner.runtime.clone();
         let secret = self
             .inner
             .credentials
             .get(&route.target)
             .ok_or(Error::Denied)?;
-        let request = client
-            .post(&route.endpoint)
-            .bearer_auth(secret)
-            .header("Content-Type", "application/json")
-            .header("Accept", "text/event-stream")
-            .body(plan.body.clone())
-            .build()
-            .map_err(|_| Error::Invalid("provider request construction"))?;
-        Ok(super::request::PreparedRequest::new(
-            client.clone(),
-            request,
-        ))
+        super::request::PreparedRequest::new(
+            &route.endpoint,
+            secret,
+            &plan.body,
+            self.inner.tls.clone(),
+            runtime,
+        )
     }
 }
 /// Starts at most one source-bound request. The callback receives bounded batches only
@@ -200,19 +195,22 @@ fn open_guarded<O: ProviderOutput>(
     permit: &ProviderDispatch,
     transport: &ProviderTransport,
     output: &O,
-) -> Result<Response> {
+) -> Result<super::response::Response> {
     if output.stopped() {
         return Err(Error::Conflict("cancelled after provider consumption"));
     }
     // Request construction and local client initialization perform no provider IO.
     let request = transport.prepare(permit.plan(), permit.route())?;
-    let response = ledger.dispatch_provider(permit, || {
+    let sealed = ledger.dispatch_provider(permit, || {
         if output.stopped() {
             return Err(Error::Conflict("cancelled before provider invocation"));
         }
-        request.wait_for_response_headers()
+        request.write_and_seal()
     })??;
-    super::request::validate(response)
+    if output.stopped() {
+        return Err(Error::Conflict("cancelled after provider seal"));
+    }
+    sealed.wait_for_response_headers()
 }
 
 #[cfg(test)]
