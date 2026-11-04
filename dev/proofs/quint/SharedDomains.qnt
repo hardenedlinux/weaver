@@ -33,6 +33,7 @@ module SharedDomains {
   action replyLoss=s'=s
   action restart=s'=s.with("owner",s.owner+1).with("active",Set())
   action alias= s'=s // aliases resolve to the original; never another claim slot
+  action unsafeMutationDuringSend=s'=s.with("epoch",s.epoch+1)
   action unsafeSplit=s'=s.with("root",s.root.set(1,1))
   action unsafeHistoryReset=s'=s.with("history",Set())
   action unsafeStaleUse(f:int):bool=s'=s.with("active",s.active.union(Set(f)))
@@ -48,6 +49,15 @@ module SharedDomains {
   run migrationBlocksOldPermitTest=accepted.then(migrate).expect(safety and s.held.get(0)==3).then(finalGuard(0).fail())
   run migrationWaitsForActualUseTest=accepted.then(finalGuard(0)).then(migrate.fail())
   run migrationAfterActualUseTest=accepted.then(finalGuard(0)).then(send(0)).then(migrate).expect(safety)
+  run concurrentMutationCASAfterSendTest=accepted.then(finalGuard(0))
+    .then(send(0)).then(migrate).then(revoke)
+    .then(replyLoss).then(restart).then(replay)
+    .expect(safety and s.calls.get(0)==1 and s.held.get(0)==3 and s.history.contains(0))
+    .then(finalGuard(0).fail())
+  run revocationWaitsForActualUseTest=accepted.then(finalGuard(0)).then(revoke.fail())
+  run staleMigrationCASAfterWinnerTest=accepted.then(finalGuard(0)).then(send(0)).then(migrate).then(migrate.fail())
+  run stalePolicyCASAfterWinnerTest=accepted.then(finalGuard(0)).then(send(0)).then(revoke).then(revoke.fail())
+  run mutationOvertakesWriterCounterexampleTest=accepted.then(finalGuard(0)).then(unsafeMutationDuringSend).expect(not(safety))
   run overCapacityUnionKeepsOriginalDecisionTest=init.then(reserve(0)).then(reserve(1)).then(reserve(2)).then(rejectMigration).then(replyLoss).then(restart).then(replay).expect(safety and not(s.merged) and exposure(0)==6 and exposure(2)==3).then(migrate.fail())
   run oldWorkerAfterRestartTest=accepted.then(restart).then(finalGuard(0).fail())
   run lostReplyRecoveryTest=accepted.then(migrate).then(replyLoss).then(restart).then(replay).expect(safety and s.receipt and s.spent.contains(0)).then(consume(0).fail())

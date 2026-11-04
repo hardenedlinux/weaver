@@ -58,6 +58,41 @@ parallelism. Canonical identity resolution selects locks before the MVCC
 snapshot under the owner gate. Disjoint domains retain their existing parallel
 path; the change adds no global final-send lock.
 
+* Concurrent mutation at the request commit boundary
+
+For MVCC, publication and domain migration acquire the exclusive owner gate.
+The final request scope retains its shared owner guard through the native commit
+or rollback. A publication parent or domain epoch conflict is a durable CAS
+rejection after acquiring the gate. It is distinct from a native MVCC write
+conflict. After native commit drops the guard, a mutation may decide while the
+old worker is still waiting for acknowledgment. The already-sent request stays
+spent and unknown on an unconfirmed result.
+
+The Go fault test holds the Rust worker after the real TLS request has been
+written. A Rust source-worker event confirms mutation entry. Migration races
+both native cuts. Before commit, complete TLS request receipt triggers the
+mutation while the send guard is still held; it stays pending until rollback.
+After commit, the migration or Policy CAS decides while the old worker waits
+for an acknowledgment that is then discarded. A second command using the
+original parent or epochs receives a durable stale CAS rejection. The source
+lane's ResourceExhausted response is backpressure, not a durable CAS decision.
+Both processes restart, recover the original success and rejection receipts,
+and verify one provider invocation, zero released response frames, no replay
+and unchanged exposure.
+
+The native Policy test separately overlaps publication with the live Rust
+final-send callback on independent Turso sessions. The callback returns an
+uncertain effect, then the old parent and recovered worker cannot reopen the
+original dispatch. The Go pre-commit Policy experiment reached its three-second
+observer timeout before RPC arrival and is not counted as transport evidence
+for that cut.
+
+The migration ABBA benchmark uses one immutable observed server executable
+and fresh MVCC stores. It measures time from first mutation submission until
+both decisions resolve. The pre-commit arm includes a deliberate 30 ms hold.
+This measures sensitivity to contention at the two fault cuts.
+
+
 * Formal correspondence
 
 =DomainMigrationComposition.final_use_on_committed_union= composes the actual
@@ -68,6 +103,9 @@ capacity conservation, retention of every original history member, fencing of
 both old epochs and refinement of the original profile.
 =pre_union_epoch_cannot_match_actual= derives that neither old epoch can match
 the actual committed union view under that projection premise.
+=stale_parent_or_epoch_cannot_match= composes exact view equality with the
+changed authority version or committed union epoch. Quint checks both
+mutations against an active sender and rejects an unsafe epoch advance.
 
 The admitted-union inequality and equality between the runtime domain projection
 and that actual union are explicit Host refinement obligations. This is not a

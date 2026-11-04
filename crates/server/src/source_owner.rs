@@ -472,6 +472,8 @@ fn process(
                 reply,
                 slot,
             } => {
+                #[cfg(all(test, unix))]
+                crate::provider_commit_tests::mutation_started(&change.operation_id);
                 let result = ledger
                     .with_authenticated_source(&caller, |l| l.migrate_execution_domains(&change));
                 answer(ledger, reply, result, slot)?;
@@ -515,6 +517,8 @@ fn process(
                 reply,
                 slot,
             } => {
+                #[cfg(all(test, unix))]
+                crate::provider_commit_tests::mutation_started(&change.operation_id);
                 let result =
                     ledger.with_authenticated_source(&caller, |l| l.publish_authority(&change));
                 answer(ledger, reply, result, slot)?;

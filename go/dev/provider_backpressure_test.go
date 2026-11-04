@@ -38,7 +38,7 @@ var observedBuild struct {
 	err    error
 }
 
-func observedServer(t *testing.T) string {
+func observedServer(t testing.TB) string {
 	t.Helper()
 	observedBuild.Do(func() {
 		cmd := exec.Command("cargo", "test", "-p", "weaver-server", "--lib", "--features", "arrow", "--locked", "--offline", "--no-run", "--message-format=json")

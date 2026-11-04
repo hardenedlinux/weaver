@@ -643,7 +643,7 @@ package WeaverArchitectureReaderViews {
     }
     part def migration_old :> ReaderNode {
         attribute displayName : String = "Old worker";
-        attribute responsibility : String = "Check fence and Policy";
+        attribute responsibility : String = "Reject stale execution";
         attribute glyph : String = "unknown";
     }
     part migrationBoundary {

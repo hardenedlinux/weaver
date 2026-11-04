@@ -83,6 +83,20 @@ fn durable_marker() -> i64 {
     )
     .expect("persisted dispatch marker")
 }
+pub(crate) fn mutation_started(operation: &str) {
+    if operation == "racing-a"
+        && let Some(observer) = OBSERVER.get()
+    {
+        let mut socket = UnixStream::connect(&observer.path).expect("private mutation observer");
+        socket
+            .set_write_timeout(Some(Duration::from_secs(3)))
+            .expect("bounded observation");
+        socket
+            .write_all(b"Mutation 0\n")
+            .expect("source worker entered");
+    }
+}
+
 pub(crate) fn attach(ledger: &mut Ledger) {
     if let Some(observer) = OBSERVER.get() {
         ledger.observe_provider_commit(observer.clone());

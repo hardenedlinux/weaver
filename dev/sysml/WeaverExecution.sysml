@@ -91,6 +91,10 @@ package WeaverExecution {
     }
     requirement def CurrentFinalGuard {
         doc /* Serialize the final policy/history revision and fence check with actual send. */
+        doc /* Authority publication and domain migration take the exclusive owner
+           gate. A live final-send scope excludes these mutations through commit
+           or rollback. After commit, acknowledgment can overlap a new CAS.
+           A rejected parent or epoch cannot rebase an original command. */
     }
     requirement def UnknownRetainsHold {
         doc /* Crashes, lost replies and partial writes cannot prove no execution or refund capacity. */

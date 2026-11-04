@@ -110,4 +110,23 @@ theorem pre_union_epoch_cannot_match_actual
 
 #print axioms pre_union_epoch_cannot_match_actual
 
+/-- An exact old view cannot be reused after a changed authority version.
+A projected committed union also rejects either old domain epoch. -/
+theorem stale_parent_or_epoch_cannot_match
+    (use : Gateway.ZeroTrust.FinalUse proposal)
+    (before : GatewayHeadCAS.State) (head : GatewayHeadCAS.Head)
+    (domain : GatewayHeadCAS.State → SharedDomains.Domain)
+    (left right : SharedDomains.Domain)
+    (changed : before.version ≠ use.actual.version ∨
+      domain use.actual = SharedDomains.union left right)
+    (old : permitEpoch = left.epoch ∨ permitEpoch = right.epoch) :
+    ¬ (GatewayHeadCAS.view before head = GatewayHeadCAS.view use.actual head ∧
+      (domain use.actual).epoch = permitEpoch) := by
+  rintro ⟨sameView, sameEpoch⟩
+  rcases changed with version | union
+  · exact version (congrArg GatewayHeadCAS.View.version sameView)
+  · exact pre_union_epoch_cannot_match_actual use domain left right union old sameEpoch
+
+#print axioms stale_parent_or_epoch_cannot_match
+
 end Weaver.DomainMigrationComposition

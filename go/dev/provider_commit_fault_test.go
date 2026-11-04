@@ -34,7 +34,7 @@ type commitController struct {
 	events chan commitCut
 }
 
-func observeCommit(t *testing.T) *commitController {
+func observeCommit(t testing.TB) *commitController {
 	t.Helper()
 	directory, err := os.MkdirTemp("/tmp", "weaver-commit-")
 	if err != nil {
@@ -70,7 +70,7 @@ func observeCommit(t *testing.T) *commitController {
 				socket.Close()
 				return
 			}
-			if event.phase == "Boot" {
+			if event.phase == "Boot" || event.phase == "Mutation" {
 				socket.Close()
 			}
 			select {
@@ -92,7 +92,7 @@ func observeCommit(t *testing.T) *commitController {
 	})
 	return o
 }
-func (o *commitController) await(t *testing.T, ctx context.Context, phase string, marker int) commitCut {
+func (o *commitController) await(t testing.TB, ctx context.Context, phase string, marker int) commitCut {
 	t.Helper()
 	select {
 	case event := <-o.events:
@@ -106,7 +106,7 @@ func (o *commitController) await(t *testing.T, ctx context.Context, phase string
 		return commitCut{}
 	}
 }
-func resumeCommit(t *testing.T, event commitCut, command byte) {
+func resumeCommit(t testing.TB, event commitCut, command byte) {
 	t.Helper()
 	if _, err := event.socket.Write([]byte{command}); err != nil {
 		t.Fatal(err)
@@ -116,7 +116,7 @@ func resumeCommit(t *testing.T, event commitCut, command byte) {
 
 // Kill/wait alone is insufficient: a worker can unwind its transaction while
 // the server stays alive, and a later kill would mask a Drop-based rollback.
-func assertNoFaultWorkerUnwind(t *testing.T, f *fixture) {
+func assertNoFaultWorkerUnwind(t testing.TB, f *fixture) {
 	t.Helper()
 	data, err := os.ReadFile(filepath.Join(f.directory, "server.log"))
 	if err != nil {
