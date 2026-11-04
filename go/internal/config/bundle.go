@@ -17,11 +17,12 @@ import (
 
 // Bundle is trusted source configuration, not authority supplied by an agent.
 type Bundle struct {
-	Routing     []routing.Selection `json:"routing,omitempty"`
-	Governance  Governance          `json:"governance"`
-	Tasks       []v1.Task           `json:"tasks"`
-	Plans       []v1.ProviderPlan   `json:"plans"`
-	Publication v1.Publication      `json:"publication"`
+	SelectOnRequest bool                `json:"select_on_request,omitempty"`
+	Routing         []routing.Selection `json:"routing,omitempty"`
+	Governance      Governance          `json:"governance"`
+	Tasks           []v1.Task           `json:"tasks"`
+	Plans           []v1.ProviderPlan   `json:"plans"`
+	Publication     v1.Publication      `json:"publication"`
 }
 
 // Governance is the native governor's selected handoff, not a runtime permit.

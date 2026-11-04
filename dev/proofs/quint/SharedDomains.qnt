@@ -24,6 +24,10 @@ module SharedDomains {
   run secondKeyCannotSpendUnknownUserQuotaTest=init.expect(
     quotaAllowed(0,0,0,4) and not(quotaAllowed(0,4,4,4)))
   run perKeyOnlyCounterexampleTest=init.expect(0+4<=4 and not(quotaAllowed(0,4,4,4)))
+  pure def routeAllowed(bound:int, selected:int, rate:int, authoritative:int, spent:bool):bool=
+    not(spent) and (bound==0 or bound==selected) and rate==authoritative
+  run staleQuoteRejectsFirstSelectionTest=init.expect(not(routeAllowed(0,1,1,2,false)))
+  run unknownCannotSelectAnotherModelTest=init.expect(not(routeAllowed(1,2,2,2,true)))
   action init=s'=initial
   action reserve(f:int):bool=all{not(s.claims.contains(f)),s.active==Set(),exposure(s.root.get(f))+3<=6,
     s'=s.with("claims",s.claims.union(Set(f))).with("history",s.history.union(Set(f))).with("held",s.held.set(f,3))}

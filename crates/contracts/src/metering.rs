@@ -24,6 +24,18 @@ pub struct MeteringDeployment {
     pub tenants: BTreeMap<String, MeteringTenant>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub quotas: Option<crate::QuotaDeployment>,
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    pub provider_quotes: BTreeMap<String, ProviderQuote>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ProviderQuote {
+    pub version: String,
+    pub tenant: String,
+    pub formula_digest: String,
+    pub procurement_rates: [u64; 4],
+    pub token_bounds: [u64; 4],
 }
 
 fn digest(value: &str, len: usize) -> bool {
@@ -60,6 +72,26 @@ impl MeteringDeployment {
         }
         if let Some(quotas) = &self.quotas {
             quotas.validate(self)?;
+        }
+        if !self.provider_quotes.is_empty() && self.quotas.is_none() {
+            return Err(Error::Invalid("provider quotes require quota scopes"));
+        }
+        for (plan, quote) in &self.provider_quotes {
+            identifier(&quote.version)?;
+            let tenant = self
+                .tenants
+                .get(&quote.tenant)
+                .ok_or(Error::Invalid("quote tenant"))?;
+            if !digest(plan, 64)
+                || quote.formula_digest != tenant.formula_digest()?
+                || quote
+                    .procurement_rates
+                    .iter()
+                    .chain(&quote.token_bounds)
+                    .any(|n| *n > MAX_CREDITS)
+            {
+                return Err(Error::Invalid("provider rate quote"));
+            }
         }
         Ok(())
     }

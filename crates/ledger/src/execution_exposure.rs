@@ -111,6 +111,7 @@ pub(crate) fn provider(tx: &WriteScope<'_>, plan: &ProviderPlan, digest: &str) -
     require(matches)?;
     if let Some(config) = crate::metering::deployment(tx)? {
         crate::provider_quota::require(tx, &config, &plan.family, &plan.node)?;
+        crate::metering::require_quote(tx, &config, plan, digest)?;
     }
     require_family(tx, &plan.family)
 }

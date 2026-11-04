@@ -47,6 +47,25 @@ func FreezeBundle(input Bundle) (Bundle, error) {
 		copy.Routes = slices.Clone(p.Routes)
 		result.Plans[index] = copy
 	}
+	if result.SelectOnRequest {
+		if len(input.Tasks) != 1 || len(input.Routing) != 1 || len(input.Tasks[0].Nodes) != 1 {
+			return Bundle{}, errors.New("request routing requires one original task and node")
+		}
+		choice := input.Routing[0]
+		choice.Required = slices.Clone(choice.Required)
+		choice.AllowedModules = slices.Clone(choice.AllowedModules)
+		choice.Candidates = slices.Clone(choice.Candidates)
+		for i := range choice.Candidates {
+			candidate := &choice.Candidates[i]
+			candidate.Capabilities = slices.Clone(candidate.Capabilities)
+			candidate.Plan.Routes = slices.Clone(candidate.Plan.Routes)
+		}
+		result.Routing = []routing.Selection{choice}
+		if _, err := result.MaterializeRequest(); err != nil {
+			return Bundle{}, err
+		}
+		return result, nil
+	}
 	if err := result.chooseRoutes(); err != nil {
 		return Bundle{}, err
 	}
@@ -186,4 +205,11 @@ func (b *Bundle) chooseRoutes() error {
 	}
 	b.Routing = nil
 	return nil
+}
+
+// MaterializeRequest selects from the privately frozen source for the first
+// admission. Rust still decides whether the original task can be registered.
+func (b Bundle) MaterializeRequest() (Bundle, error) {
+	b.SelectOnRequest = false
+	return FreezeBundle(b)
 }

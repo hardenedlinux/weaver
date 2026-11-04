@@ -13,7 +13,9 @@ pub use domains::{
 };
 mod metering;
 mod model;
-pub use metering::{MeteringApplication, MeteringDeployment, MeteringReceipt, MeteringTenant};
+pub use metering::{
+    MeteringApplication, MeteringDeployment, MeteringReceipt, MeteringTenant, ProviderQuote,
+};
 mod provider;
 mod provider_profile;
 mod quotas;

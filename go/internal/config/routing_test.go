@@ -14,7 +14,7 @@ import (
 )
 
 func TestRoutingMaterializesOneOriginalPlan(t *testing.T) {
-	err := quick.Check(func(reverse, cheapCapable, cheapFast bool) bool {
+	err := quick.Check(func(reverse, cheapCapable, cheapFast, onRequest bool) bool {
 		bundle := sourceFixture(t)
 		cheap, expensive := bundle.Plans[0], bundle.Plans[0]
 		expensive.Model = "premium"
@@ -40,7 +40,15 @@ func TestRoutingMaterializesOneOriginalPlan(t *testing.T) {
 		bundle.Routing = []routing.Selection{{Node: "infer", AllowedModules: []string{"basic", "premium"},
 			Required: []string{"structured"}, MaxLatencyMillis: 100, MaxProcurementCost: 20,
 			UserTokenRates: [4]uint64{100_000}, Candidates: options}}
+		bundle.SelectOnRequest = onRequest
 		frozen, err := FreezeBundle(bundle)
+		if err == nil && onRequest {
+			if len(frozen.Plans) != 0 || len(frozen.Tasks[0].StreamContracts) != 0 {
+				return false
+			}
+			options[0].Plan.Routes[0].Endpoint = "https://invalid.test"
+			frozen, err = frozen.MaterializeRequest()
+		}
 		if err != nil || len(frozen.Plans) != 1 {
 			t.Logf("routing: %v", err)
 			return false

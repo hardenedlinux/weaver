@@ -22,11 +22,14 @@ import (
 
 type Gateway struct {
 	pb.UnimplementedGatewayServer
-	metrics    telemetry.Metrics
-	owner      *gatewayclient.Client
-	tasks      map[string]v1.Task
-	operations map[[2]string]bool
-	view       v1.View
+	metrics     telemetry.Metrics
+	owner       *gatewayclient.Client
+	tasks       map[string]v1.Task
+	operations  map[[2]string]bool
+	view        v1.View
+	source      *gatewayclient.Client
+	deferred    *config.Bundle
+	publication *pb.PublicationKey
 }
 
 // Bootstrap has no execution API calls. Unknown publication outcomes never activate ingress.
@@ -63,6 +66,9 @@ func bootstrapFrozen(ctx context.Context, source, owner *gatewayclient.Client, f
 		return nil, err
 	}
 	for _, task := range frozen.Tasks {
+		if frozen.SelectOnRequest {
+			break
+		}
 		if _, err = source.RPC.RegisterPublishedTask(source.Context(ctx), &pb.RegisterPublishedTaskRequest{Task: gatewayclient.Task(task), Publication: &pb.PublicationKey{OperationId: frozen.Publication.OperationID, Digest: digest}}); err != nil {
 			return nil, err
 		}
@@ -82,6 +88,12 @@ func bootstrapFrozen(ctx context.Context, source, owner *gatewayclient.Client, f
 	}
 	for _, plan := range frozen.Plans {
 		g.operations[[2]string{plan.Family, plan.Node}] = true
+	}
+	if frozen.SelectOnRequest {
+		g.source = source
+		g.deferred = &frozen
+		g.publication = &pb.PublicationKey{OperationId: frozen.Publication.OperationID, Digest: digest}
+		g.operations[[2]string{frozen.Tasks[0].Family, frozen.Routing[0].Node}] = true
 	}
 	return g, nil
 }
@@ -110,9 +122,9 @@ func (g *Gateway) ExecuteProvider(in *pb.ProviderRequest, out pb.Gateway_Execute
 		routes = append(routes, v1.ProviderRoute{Target: r.Target, Endpoint: r.Endpoint})
 	}
 	proposal := v1.ProviderPlan{Family: p.Family, Node: p.Node, Profile: p.Profile, ProfileCommitment: p.ProfileCommitment, Model: p.Model, Body: string(p.Body), Routes: routes, Ceiling: p.Ceiling}
-	compiled, err := routing.CompileProvider(g.tasks[p.Family], proposal, g.view)
+	compiled, err := g.compileProvider(out.Context(), proposal)
 	if err != nil {
-		return status.Error(codes.PermissionDenied, "source contract rejected")
+		return err
 	}
 	ctx, cancel := context.WithCancel(out.Context())
 	defer cancel()
@@ -149,4 +161,29 @@ func (g *Gateway) Inspect(ctx context.Context, key *pb.OperationKey) (*pb.Provid
 		return nil, status.Error(codes.PermissionDenied, "unregistered operation")
 	}
 	return g.owner.RPC.Inspect(g.owner.Context(ctx), key)
+}
+
+func (g *Gateway) compileProvider(ctx context.Context, proposal v1.ProviderPlan) (v1.ProviderPlan, error) {
+	if g.deferred == nil {
+		plan, err := routing.CompileProvider(g.tasks[proposal.Family], proposal, g.view)
+		if err != nil {
+			return plan, status.Error(codes.PermissionDenied, "source contract rejected")
+		}
+		return plan, nil
+	}
+	if proposal.Body != "" || proposal.Model != "" || proposal.Profile != "" ||
+		proposal.ProfileCommitment != "" || len(proposal.Routes) != 0 || proposal.Ceiling != 0 {
+		return v1.ProviderPlan{}, status.Error(codes.InvalidArgument, "request routing accepts only the original operation key")
+	}
+	selected, err := g.deferred.MaterializeRequest()
+	if err != nil {
+		return v1.ProviderPlan{}, status.Error(codes.FailedPrecondition, "source routing rejected")
+	}
+	_, err = g.source.RPC.RegisterPublishedTask(g.source.Context(ctx), &pb.RegisterPublishedTaskRequest{
+		Task: gatewayclient.Task(selected.Tasks[0]), Publication: g.publication,
+	})
+	if err != nil {
+		return v1.ProviderPlan{}, err
+	}
+	return selected.Plans[0], nil
 }

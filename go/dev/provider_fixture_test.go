@@ -178,7 +178,7 @@ func providerProfile() *v1.ProviderProfile {
 func fixtureWithBinary(t testing.TB, handler http.HandlerFunc, large bool, binary string) *fixture {
 	return fixtureWithInvocation(t, handler, large, binary, nil, nil)
 }
-func fixtureWithInvocation(t testing.TB, handler http.HandlerFunc, large bool, binary string, arguments, extraEnvironment []string) *fixture {
+func fixtureWithInvocation(t testing.TB, handler http.HandlerFunc, large bool, binary string, arguments, extraEnvironment []string, withPlan ...func(v1.ProviderPlan) string) *fixture {
 	t.Helper()
 	f := &fixture{directory: t.TempDir(), pki: pki(t), binary: binary, arguments: append([]string(nil), arguments...)}
 	certificate, err := tls.X509KeyPair(f.pki.serverPEM, f.pki.serverKey)
@@ -268,6 +268,9 @@ func fixtureWithInvocation(t testing.TB, handler http.HandlerFunc, large bool, b
 	}
 	f.env = append(f.env, "WEAVER_REVIEW_AUTHORITY="+string(reviewConfig))
 	f.env = append(f.env, extraEnvironment...)
+	for _, env := range withPlan {
+		f.env = append(f.env, env(f.plan))
+	}
 	f.start(t)
 	t.Cleanup(func() { f.stop(t) })
 	policy, err := os.ReadFile(filepath.Join(root(t), "prod/policies/provider/provider.cedar"))

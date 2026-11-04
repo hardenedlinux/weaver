@@ -168,3 +168,25 @@ theorem sealed_birth_cannot_be_replaced (original : Nat) (proposed : Option Nat)
 #print axioms first_birth_seal_cannot_broaden
 #print axioms sealed_birth_cannot_be_replaced
 end Weaver.TaskOrigin
+
+namespace Weaver.RequestRouting
+
+structure Selection where
+  plan : Nat
+  rate : Nat
+  deriving DecidableEq
+
+def recover (bound : Option Selection) (proposal : Selection) : Option Selection :=
+  bound.or (some proposal)
+
+theorem concurrent_proposal_keeps_plan_and_rate (original alternate : Selection) :
+    recover (some original) alternate = some original := rfl
+
+theorem stale_quote_cannot_authorize (original proposed : Selection)
+    (stale : proposed.rate ≠ original.rate) : proposed ≠ original := by
+  intro h
+  exact stale (congrArg Selection.rate h)
+
+#print axioms concurrent_proposal_keeps_plan_and_rate
+#print axioms stale_quote_cannot_authorize
+end Weaver.RequestRouting

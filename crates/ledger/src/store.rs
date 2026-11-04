@@ -118,6 +118,7 @@ pub(crate) fn register_task_in(
     domains: Option<&weaver_contracts::DomainBinding>,
 ) -> Result<()> {
     task.validate()?;
+    crate::metering::require_task_quotes(tx, task)?;
     let record = serde_json::to_string(task)?;
     crate::domains::bind(tx, task, domains)?;
     if let Some(profile) = &task.provider_profile {

@@ -51,7 +51,12 @@ pub(crate) fn compatible(
         .is_none_or(|scope| scopes.all(|member| member == scope)))
 }
 
-pub(crate) fn bind(tx: &WriteScope<'_>, family: &str, node: &str, ceiling: u64) -> Result<()> {
+pub(crate) fn bind(
+    tx: &WriteScope<'_>,
+    plan: &weaver_contracts::ProviderPlan,
+    digest: &str,
+) -> Result<()> {
+    let (family, node, ceiling) = (plan.family.as_str(), plan.node.as_str(), plan.ceiling);
     let Some(config) = deployment(tx)? else {
         return Ok(());
     };
@@ -62,6 +67,28 @@ pub(crate) fn bind(tx: &WriteScope<'_>, family: &str, node: &str, ceiling: u64) 
         |row| row.get(0),
     )
     .map_err(db)?;
+    if let Some(quote) = quote_digest(&config, plan, digest, &principal)? {
+        let profile: String = persistence::one(
+            tx,
+            "SELECT record FROM provider_profiles WHERE id=?1",
+            [plan.profile.as_str()],
+            |row| row.get(0),
+        )
+        .map_err(db)?;
+        let profile: weaver_contracts::ProviderProfile =
+            weaver_contracts::decode(profile.as_bytes())?;
+        if profile.request_facts(&plan.body)?.output_token_limit
+            > config.provider_quotes[digest].token_bounds[3]
+        {
+            return Err(Error::Denied);
+        }
+        persistence::exec(
+            tx,
+            "INSERT INTO provider_rate_bindings VALUES(?1,?2,?3)",
+            [family, node, &quote],
+        )
+        .map_err(db)?;
+    }
     crate::provider_quota::reserve(tx, &config, family, node, &principal, ceiling)?;
     if let Some(tenant) = config.tenant_for(&principal) {
         persistence::exec(
@@ -256,4 +283,76 @@ impl Ledger {
         tx.commit().map_err(db)?;
         Ok(result)
     }
+}
+
+fn quote_digest(
+    config: &MeteringDeployment,
+    plan: &weaver_contracts::ProviderPlan,
+    digest: &str,
+    principal: &str,
+) -> Result<Option<String>> {
+    if config.provider_quotes.is_empty() {
+        return Ok(None);
+    }
+    let quote = config.provider_quotes.get(digest).ok_or(Error::Denied)?;
+    let tenant = config.tenant_for(principal).ok_or(Error::Denied)?;
+    if quote.tenant != tenant || config.tenants[tenant].charge(quote.token_bounds)? > plan.ceiling {
+        return Err(Error::Denied);
+    }
+    Ok(Some(weaver_contracts::body_digest(&serde_json::to_string(
+        &("weaver.provider-rate-quote.v1", digest, quote),
+    )?)))
+}
+
+pub(crate) fn require_quote(
+    tx: &WriteScope<'_>,
+    config: &MeteringDeployment,
+    plan: &weaver_contracts::ProviderPlan,
+    digest: &str,
+) -> Result<()> {
+    if config.provider_quotes.is_empty() {
+        return Ok(());
+    }
+    let principal: String = persistence::one(
+        tx,
+        "SELECT json_extract(record,'$.principal') FROM tasks WHERE family=?1",
+        [plan.family.as_str()],
+        |row| row.get(0),
+    )
+    .map_err(db)?;
+    let expected = quote_digest(config, plan, digest, &principal)?;
+    let retained: Option<String> = persistence::maybe(
+        tx,
+        "SELECT quote_digest FROM provider_rate_bindings WHERE family=?1 AND node=?2",
+        [plan.family.as_str(), plan.node.as_str()],
+        |row| row.get(0),
+    )
+    .map_err(db)?;
+    if expected != retained {
+        return Err(Error::Conflict("provider rate binding changed"));
+    }
+    Ok(())
+}
+
+pub(crate) fn require_task_quotes(
+    tx: &WriteScope<'_>,
+    task: &weaver_contracts::Task,
+) -> Result<()> {
+    let Some(config) = deployment(tx)? else {
+        return Ok(());
+    };
+    if config.provider_quotes.is_empty() || task.stream_contracts.is_empty() {
+        return Ok(());
+    }
+    let tenant = config.tenant_for(&task.principal).ok_or(Error::Denied)?;
+    for digest in task.stream_contracts.values() {
+        if config
+            .provider_quotes
+            .get(digest)
+            .is_none_or(|quote| quote.tenant != tenant)
+        {
+            return Err(Error::Denied);
+        }
+    }
+    Ok(())
 }

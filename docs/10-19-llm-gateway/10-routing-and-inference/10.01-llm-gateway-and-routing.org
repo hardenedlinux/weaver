@@ -351,3 +351,31 @@ view starts with that same routing component and follows the reviewed Policy,
 final execution guard, provider request and bound response stream.
 
 [[file:10.05-route-execution.svg]]
+
+* First-request model selection and rate authority
+
+The optional =select_on_request= source profile accepts a single original
+task and operation. Go activates the reviewed Policy before admitting
+requests. The caller supplies the operation key. Go derives the concrete
+model and provider body from the privately owned source candidates and
+registers the selected original through the source authority. Registration
+and execution are separate transactions. Losing the registration response
+allows exact registration replay. A competing concrete selection for the
+same original fails the immutable task comparison.
+
+A deployment may enable =provider_quotes= together with the three quota
+scopes. Its immutable metering configuration indexes each quote by concrete
+plan digest and binds the tenant, procurement rates, billing formula digest,
+token bounds and version. Registration requires an eligible tenant quote.
+Turso checks the authoritative billing bound and records the quote digest in
+the same transaction as the original reservation and its three quota
+projections. Final consumption checks the retained rate binding alongside
+current Policy, the original claim and the quota projections.
+
+Go ranks candidate estimates from trusted source configuration. The Rust
+quote is the authority for billing admission. Comparing every candidate
+against a live authority catalog would require a separate catalog read
+contract. The current profile uses predeclared tasks and candidate bodies.
+It does not accept caller-authored capability claims or arbitrary new task
+registration. Once the original is bound, the selected model is immutable.
+Unknown execution retains the original reservation.
