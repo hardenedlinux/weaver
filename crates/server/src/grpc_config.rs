@@ -67,12 +67,32 @@ fn load_transport() -> Result<ProviderTransport> {
         .ok()
         .map(read_path)
         .transpose()?;
+    #[cfg(test)]
+    if let Ok(peer) = std::env::var("WEAVER_TEST_WIF_PEER") {
+        if !credentials.is_empty() {
+            return Err(Error::Invalid("WIF test credentials"));
+        }
+        return ProviderTransport::with_wif_loopback(
+            federation,
+            root.as_deref().ok_or(Error::Invalid("WIF test root"))?,
+            tokio::runtime::Handle::current(),
+            peer.parse()
+                .map_err(|_| Error::Invalid("WIF test address"))?,
+        );
+    }
     ProviderTransport::with_anthropic_wif(
         credentials,
         federation,
         root.as_deref(),
         tokio::runtime::Handle::current(),
     )
+}
+
+#[cfg(test)]
+#[tokio::test(flavor = "multi_thread")]
+#[ignore = "started as a child by the Go WIF fixture"]
+async fn serve_wif_gateway() {
+    run_from_env().await.expect("WIF test gateway");
 }
 struct ListenAddresses {
     operation: std::net::SocketAddr,

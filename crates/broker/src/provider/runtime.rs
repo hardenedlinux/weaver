@@ -24,6 +24,8 @@ struct Settings {
     exchange_client: Option<reqwest::Client>,
     tls: Arc<rustls::ClientConfig>,
     runtime: Arc<super::io_runtime::IoRuntime>,
+    #[cfg(feature = "test-loopback")]
+    loopback: Option<std::net::SocketAddr>,
 }
 impl ProviderTransport {
     /// Blocking execution borrows the embedding owner's live reactor. The host
@@ -41,6 +43,44 @@ impl ProviderTransport {
         wif: BTreeMap<String, wif::AnthropicWifConfig>,
         root_pem: Option<&[u8]>,
         reactor: tokio::runtime::Handle,
+    ) -> Result<Self> {
+        Self::build(
+            credentials,
+            wif,
+            root_pem,
+            reactor,
+            #[cfg(feature = "test-loopback")]
+            None,
+        )
+    }
+
+    /// Bind the canonical Anthropic authority to one test-only loopback peer.
+    #[cfg(feature = "test-loopback")]
+    #[doc(hidden)]
+    pub fn with_wif_loopback(
+        wif: BTreeMap<String, wif::AnthropicWifConfig>,
+        root_pem: &[u8],
+        reactor: tokio::runtime::Handle,
+        loopback: std::net::SocketAddr,
+    ) -> Result<Self> {
+        if !loopback.ip().is_loopback() || loopback.port() == 0 || wif.is_empty() {
+            return Err(Error::Invalid("WIF test peer"));
+        }
+        Self::build(
+            BTreeMap::new(),
+            wif,
+            Some(root_pem),
+            reactor,
+            Some(loopback),
+        )
+    }
+
+    fn build(
+        credentials: BTreeMap<String, String>,
+        wif: BTreeMap<String, wif::AnthropicWifConfig>,
+        root_pem: Option<&[u8]>,
+        reactor: tokio::runtime::Handle,
+        #[cfg(feature = "test-loopback")] loopback: Option<std::net::SocketAddr>,
     ) -> Result<Self> {
         if credentials.len().saturating_add(wif.len()) > 8 {
             return Err(Error::Invalid("provider credential bound"));
@@ -91,13 +131,20 @@ impl ProviderTransport {
             None
         } else {
             let _reactor = reactor.enter();
+            let client = reqwest::Client::builder()
+                .https_only(true)
+                .no_proxy()
+                .redirect(reqwest::redirect::Policy::none())
+                .retry(reqwest::retry::never())
+                .tls_backend_preconfigured(tls.clone());
+            #[cfg(feature = "test-loopback")]
+            let client = if let Some(peer) = loopback {
+                client.resolve("api.anthropic.com", peer)
+            } else {
+                client
+            };
             Some(
-                reqwest::Client::builder()
-                    .https_only(true)
-                    .no_proxy()
-                    .redirect(reqwest::redirect::Policy::none())
-                    .retry(reqwest::retry::never())
-                    .tls_backend_preconfigured(tls.clone())
+                client
                     .build()
                     .map_err(|_| Error::Invalid("WIF HTTPS client"))?,
             )
@@ -109,6 +156,8 @@ impl ProviderTransport {
                 exchange_client,
                 tls: Arc::new(tls),
                 runtime: Arc::new(super::io_runtime::IoRuntime { handle: reactor }),
+                #[cfg(feature = "test-loopback")]
+                loopback,
             }),
         })
     }
@@ -146,7 +195,7 @@ impl ProviderTransport {
                 .ok_or(Error::Denied)?
                 .as_str(),
         };
-        super::request::PreparedRequest::new(
+        let request = super::request::PreparedRequest::new(
             &route.endpoint,
             secret,
             protocol,
@@ -154,7 +203,10 @@ impl ProviderTransport {
             &plan.body,
             self.inner.tls.clone(),
             runtime,
-        )
+        )?;
+        #[cfg(feature = "test-loopback")]
+        let request = request.with_loopback(token.and(self.inner.loopback));
+        Ok(request)
     }
 }
 /// Starts at most one source-bound request. The callback receives bounded batches only

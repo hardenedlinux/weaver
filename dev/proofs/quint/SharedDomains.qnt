@@ -58,6 +58,14 @@ module SharedDomains {
   run refreshAfter401CannotReopenTest=init.expect(not(wifMayWrite(true,true,true,true)))
   run refreshAndLateUsageCannotSettleTest=init.expect(
     not(wifMayWrite(true,true,true,true)) and observedRelease(false,true,true,false)==0)
+  pure def wifReplayCalls(spent:bool, fresh:bool, calls:int):int=
+    if (wifMayWrite(true,fresh,true,spent)) calls+1 else calls
+  run coldCacheRestartPreserves401AndExpiryTest=init.expect(
+    Set(false,true).forall(fresh =>
+      wifReplayCalls(true,fresh,1)==1 and wifReplayCalls(true,fresh,0)==0
+      and observedRelease(false,true,true,false)==0))
+  run cacheKeyAsOriginalCounterexampleTest=init.expect(
+    wifReplayCalls(false,true,1)==2)
   action init=s'=initial
   action reserve(f:int):bool=all{not(s.claims.contains(f)),s.active==Set(),exposure(s.root.get(f))+3<=6,
     s'=s.with("claims",s.claims.union(Set(f))).with("history",s.history.union(Set(f))).with("held",s.held.set(f,3))}

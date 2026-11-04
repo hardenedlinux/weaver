@@ -310,7 +310,28 @@ theorem refresh_and_unknown_usage_keep_hold (binding current cedar : Bool) (usag
   exact ⟨refreshed_token_cannot_reopen_consumed_send binding current cedar,
     Weaver.AnthropicUsage.interrupted_usage_is_not_terminal true usage⟩
 
+structure Original where
+  spent : Bool
+  calls : Nat
+  held : Nat
+  deriving DecidableEq
+
+-- Rotation and process restart rebuild cache state. Recovery reads the original.
+def recover (original : Original) (_cachedGeneration : Option Nat) : Original := original
+
+def replay (original : Original) (fresh : Bool) : Original :=
+  if mayWrite true fresh true original.spent then
+    { original with spent := true, calls := original.calls + 1 }
+  else original
+
+theorem restart_preserves_401_or_expiry (held generation : Nat) (sent fresh : Bool) :
+    let original : Original := ⟨true, if sent then 1 else 0, held⟩
+    replay (recover original (some generation)) fresh = original ∧
+    replay (recover original none) fresh = original := by
+  simp [recover, replay, mayWrite]
+
 #print axioms expired_token_cannot_write
 #print axioms refreshed_token_cannot_reopen_consumed_send
 #print axioms refresh_and_unknown_usage_keep_hold
+#print axioms restart_preserves_401_or_expiry
 end Weaver.Wif

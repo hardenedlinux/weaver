@@ -30,6 +30,8 @@ pub(super) struct PreparedRequest {
     expires: Option<Instant>,
     tls: Arc<rustls::ClientConfig>,
     runtime: Arc<IoRuntime>,
+    #[cfg(feature = "test-loopback")]
+    loopback: Option<std::net::SocketAddr>,
 }
 impl PreparedRequest {
     pub(super) fn new(
@@ -89,7 +91,14 @@ impl PreparedRequest {
             expires,
             tls,
             runtime,
+            #[cfg(feature = "test-loopback")]
+            loopback: None,
         })
+    }
+    #[cfg(feature = "test-loopback")]
+    pub(super) fn with_loopback(mut self, address: Option<std::net::SocketAddr>) -> Self {
+        self.loopback = address;
+        self
     }
     pub(super) fn write_and_seal(self) -> Result<SealedRequest> {
         require_fresh(self.expires)?;
@@ -99,6 +108,13 @@ impl PreparedRequest {
             let name = rustls::pki_types::ServerName::try_from(self.host.clone())
                 .map_err(|_| Error::Invalid("provider TLS name"))?;
             let stream = timeout(Duration::from_secs(3), async {
+                #[cfg(feature = "test-loopback")]
+                let tcp = if let Some(peer) = self.loopback {
+                    TcpStream::connect(peer).await?
+                } else {
+                    TcpStream::connect((self.host.as_str(), self.port)).await?
+                };
+                #[cfg(not(feature = "test-loopback"))]
                 let tcp = TcpStream::connect((self.host.as_str(), self.port)).await?;
                 tcp.set_nodelay(true)?;
                 TlsConnector::from(self.tls).connect(name, tcp).await

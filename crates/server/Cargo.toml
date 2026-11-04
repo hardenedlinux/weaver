@@ -36,6 +36,7 @@ governance-qualification = ["scheme-program", "weaver-governance/scheme-qualific
 [build-dependencies]
 tonic-prost-build.workspace = true
 [dev-dependencies]
+weaver-broker = { workspace = true, features = ["test-loopback"] }
 ring.workspace = true
 weaver-ledger = { workspace = true, features = ["commit-observer"] }
 rcgen.workspace = true

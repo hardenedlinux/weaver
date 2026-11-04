@@ -100,7 +100,7 @@ type testPKI struct {
 	source                                              tls.Certificate
 }
 
-func pki(t testing.TB) *testPKI {
+func pki(t testing.TB, providerNames ...string) *testPKI {
 	t.Helper()
 	key, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 	if err != nil {
@@ -122,6 +122,7 @@ func pki(t testing.TB) *testPKI {
 			t.Fatal(err)
 		}
 		cert := &x509.Certificate{SerialNumber: big.NewInt(serial), Subject: pkix.Name{CommonName: "shared-kubernetes-identity"}, DNSNames: []string{"localhost"}, IPAddresses: []net.IP{net.IPv4(127, 0, 0, 1)}, NotBefore: ca.NotBefore, NotAfter: ca.NotAfter, KeyUsage: x509.KeyUsageDigitalSignature, ExtKeyUsage: []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth}}
+		cert.DNSNames = append(cert.DNSNames, providerNames...)
 		if client {
 			cert.ExtKeyUsage = []x509.ExtKeyUsage{x509.ExtKeyUsageClientAuth}
 		}
@@ -166,6 +167,7 @@ type fixture struct {
 	exited                            chan error
 	client, admin                     *gatewayclient.Client
 	plan                              v1.ProviderPlan
+	plans                             []v1.ProviderPlan
 	primary, backup, denied           atomic.Int64
 	policy, schema                    string
 }
@@ -183,13 +185,22 @@ func fixtureWithInvocation(t testing.TB, handler http.HandlerFunc, large bool, b
 	return fixtureWithProfileInvocation(t, handler, large, binary, arguments, extraEnvironment, providerProfile(), withPlan...)
 }
 func fixtureWithProfileInvocation(t testing.TB, handler http.HandlerFunc, large bool, binary string, arguments, extraEnvironment []string, profile *v1.ProviderProfile, withPlan ...func(v1.ProviderPlan) string) *fixture {
+	return providerFixture(t, handler, large, binary, arguments, extraEnvironment, profile, nil, withPlan...)
+}
+
+func providerFixture(t testing.TB, handler http.HandlerFunc, large bool, binary string, arguments, extraEnvironment []string, profile *v1.ProviderProfile, wif *wifPeer, withPlan ...func(v1.ProviderPlan) string) *fixture {
 	anthropic := profile.Protocol == v1.AnthropicMessagesSSE
 	path := "/v1/chat/completions"
 	if anthropic {
 		path = "/v1/messages"
 	}
 	t.Helper()
-	f := &fixture{directory: t.TempDir(), pki: pki(t), binary: binary, arguments: append([]string(nil), arguments...)}
+	f := &fixture{directory: t.TempDir(), binary: binary, arguments: append([]string(nil), arguments...)}
+	if wif != nil {
+		f.pki = pki(t, "api.anthropic.com")
+	} else {
+		f.pki = pki(t)
+	}
 	certificate, err := tls.X509KeyPair(f.pki.serverPEM, f.pki.serverKey)
 	if err != nil {
 		t.Fatal(err)
@@ -209,14 +220,18 @@ func fixtureWithProfileInvocation(t testing.TB, handler http.HandlerFunc, large 
 		t.Cleanup(server.Close)
 		return server.URL + path
 	}
-	primary := upstream(&f.primary, handler)
-	backup := upstream(&f.backup, completeSSE)
-	denied := upstream(&f.denied, completeSSE)
+	var routes []v1.ProviderRoute
+	if wif != nil {
+		extraEnvironment = append(extraEnvironment, wif.start(t, f.directory, certificate)...)
+		routes = []v1.ProviderRoute{{Target: "primary", Endpoint: "https://api.anthropic.com/v1/messages"}}
+	} else {
+		routes = []v1.ProviderRoute{{Target: "missing", Endpoint: "https://missing.invalid" + path}, {Target: "denied", Endpoint: upstream(&f.denied, completeSSE)}, {Target: "primary", Endpoint: upstream(&f.primary, handler)}, {Target: "backup", Endpoint: upstream(&f.backup, completeSSE)}}
+	}
 	body := `{"model":"model-a","stream":true,"messages":[{"role":"user","content":"hello"}],"max_completion_tokens":32}`
 	if anthropic {
 		body = strings.Replace(body, "max_completion_tokens", "max_tokens", 1)
 	}
-	f.plan = v1.ProviderPlan{Family: "f", Node: "infer", Profile: "p", Model: "model-a", Body: body, Ceiling: 4, Revision: 0, Fence: 1, Routes: []v1.ProviderRoute{{Target: "missing", Endpoint: "https://missing.invalid" + path}, {Target: "denied", Endpoint: denied}, {Target: "primary", Endpoint: primary}, {Target: "backup", Endpoint: backup}}}
+	f.plan = v1.ProviderPlan{Family: "f", Node: "infer", Profile: "p", Model: "model-a", Body: body, Ceiling: 4, Revision: 0, Fence: 1, Routes: routes}
 	// Keep large requests inside the same fixed native request limit.
 	if large {
 		var request map[string]any
@@ -238,10 +253,33 @@ func fixtureWithProfileInvocation(t testing.TB, handler http.HandlerFunc, large 
 		targets = append(targets, route.Target)
 	}
 	task := v1.Task{ProviderProfile: profile, Family: "f", Principal: "alice", Profile: "p", Nodes: []string{"infer"}, Targets: targets, Endpoints: endpoints, BodyDigests: map[string]string{"infer": hex.EncodeToString(sum[:])}, NodeCostBounds: map[string]uint64{"infer": 4}, StreamContracts: map[string]string{"infer": digest}, Models: []string{"model-a"}, Budget: 8}
+	if wif != nil {
+		for i := 1; i < wif.operations; i++ {
+			plan := f.plan
+			plan.Node = fmt.Sprintf("infer-%d", i)
+			digest, err := plan.Digest()
+			if err != nil {
+				t.Fatal(err)
+			}
+			task.Nodes = append(task.Nodes, plan.Node)
+			task.BodyDigests[plan.Node] = task.BodyDigests[f.plan.Node]
+			task.NodeCostBounds[plan.Node] = plan.Ceiling
+			task.StreamContracts[plan.Node] = digest
+			task.Budget += plan.Ceiling
+			f.plans = append(f.plans, plan)
+		}
+	}
 	f.plan, err = routing.CompileProvider(task, f.plan, v1.View{Revision: 0, Fence: 1})
 	if err != nil {
 		t.Fatal(err)
 	}
+	for i, plan := range f.plans {
+		f.plans[i], err = routing.CompileProvider(task, plan, v1.View{Revision: 0, Fence: 1})
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+	f.plans = append([]v1.ProviderPlan{f.plan}, f.plans...)
 	listener, err := net.Listen("tcp4", "127.0.0.1:0")
 	if err != nil {
 		t.Fatal(err)
@@ -292,6 +330,13 @@ func fixtureWithProfileInvocation(t testing.TB, handler http.HandlerFunc, large 
 		t.Fatal(err)
 	}
 	f.policy = strings.ReplaceAll(string(policy), v1.ChatTextSSE, profile.Protocol)
+	if wif != nil {
+		nodes, err := json.Marshal(task.Nodes)
+		if err != nil {
+			t.Fatal(err)
+		}
+		f.policy = strings.Replace(f.policy, `context.node == "infer"`, string(nodes)+".contains(context.node)", 1)
+	}
 	schema, err := os.ReadFile(filepath.Join(root(t), "prod/policies/provider/schema.json"))
 	if err != nil {
 		t.Fatal(err)

@@ -10,6 +10,7 @@ license.workspace = true
 [features]
 default = ["llm-provider"]
 llm-provider = []
+test-loopback = []
 [dependencies]
 weaver-contracts.workspace = true
 weaver-ledger.workspace = true

@@ -642,11 +642,33 @@ values and token-bearing headers out of all receipts.
 Production qualification requires receipts from the official service and
 the deciding ledger.
 
-The local Snake Oil exchange fixture creates its own TLS root and temporary
-assertion file. Its DNS override is confined to the Rust test client. The
-fixture checks cold exchange, a shared refresh after assertion rotation,
-exchange rejection and insufficient token lifetime. The separate Go
-integration fixture drives an inference 401 through gRPC, the Rust broker
-and Turso, then checks that restart preserves the original hold and the
-single upstream attempt. The Lean and Quint checks join the no-reopen
-condition with the requirement for terminal settlement evidence.
+*** Snake Oil integration and timing
+
+The Go integration test drives the Rust gateway over mTLS gRPC. The broker
+uses the canonical Anthropic authority, SNI and paths. The Rust test
+executable maps both HTTPS connections to one loopback socket under a
+temporary test CA. That mapping is unavailable to the production server's
+environment loader. The synthetic peer requires the registered workspace,
+account and rule, grants only =workspace:inference=, and accepts Messages
+only with a current bearer issued by its exchange endpoint.
+
+After the first token expires, the test replaces the assertion atomically
+and runs four distinct originals against the same target cache. It observes
+the four durable holds while the exchange is paused, then requires one
+refresh and one Messages request per original. An inference 401 and a
+near-expiry exchange are exercised separately. Restart leaves the 401 at
+one request and the near-expiry original at zero. Both holds remain
+unknown, including after a fresh credential successfully serves a new
+operation. Lean and Quint keep credential generation and cache state
+outside the identity of a consumed original.
+
+=BenchmarkAnthropicWifSnakeOilPair= reuses one digest-identified optimized
+test image across fresh stores and rotates the order of the three arms.
+Each arm primes one operation before measuring the same four concurrent
+originals. The cold arm restarts the process with the same ledger and an
+empty cache. The refresh arm starts inside the refresh window with a
+rotated assertion, and the warm arm has a reusable credential. Each
+sample checks exchange and Messages counts and reports both per-stream
+and wave latency. Measurements start at
+Go invocation and include gRPC, broker, loopback TLS and the Turso receipt.
+They exclude process startup, task registration and cache priming.
