@@ -635,7 +635,7 @@ impl pb::gateway_server::Gateway for Gateway {
                     #[cfg(all(test, unix))]
                     crate::provider_commit_tests::attach(&mut ledger);
                     ledger.require_principal(&config.principal, &plan.family)?;
-                    weaver_execution::execute_provider(
+                    weaver_execution::execute_catalog_provider(
                         &mut ledger,
                         weaver_execution::ProviderExecution {
                             plan: &plan,
@@ -644,6 +644,7 @@ impl pb::gateway_server::Gateway for Gateway {
                             batch_rows: request.batch_rows as usize,
                         },
                         &mut output,
+                        &request.catalog_version,
                     )
                 })();
                 output.telemetry.record(if result.is_ok() {
@@ -874,6 +875,44 @@ impl pb::gateway_server::Gateway for Gateway {
                 "publication decision not observed; absence is not abort",
             ))?;
         Ok(Response::new(publication_receipt(receipt)))
+    }
+    async fn inspect_provider_catalog(
+        &self,
+        request: Request<pb::Empty>,
+    ) -> std::result::Result<Response<pb::ProviderCatalogSnapshot>, Status> {
+        let caller = self.source_identity(&request)?;
+        let snapshot = self.ingress.source()?.provider_catalog(caller).await?;
+        let Some((version, catalog)) = snapshot else {
+            return Ok(Response::new(pb::ProviderCatalogSnapshot::default()));
+        };
+        let record = catalog
+            .record()
+            .map_err(|_| Status::internal("provider catalog serialization"))?;
+        Ok(Response::new(pb::ProviderCatalogSnapshot {
+            version,
+            record,
+        }))
+    }
+    async fn publish_provider_catalog(
+        &self,
+        request: Request<pb::ProviderCatalogChange>,
+    ) -> std::result::Result<Response<pb::ProviderCatalogSnapshot>, Status> {
+        let caller = self.source_identity(&request)?;
+        let record = request.into_inner().record;
+        if record.len() > 262144 {
+            return Err(Status::invalid_argument("provider catalog byte bound"));
+        }
+        let catalog = weaver_contracts::decode(&record)
+            .map_err(|_| Status::invalid_argument("provider catalog record"))?;
+        let version = self
+            .ingress
+            .source()?
+            .publish_catalog(caller, catalog)
+            .await?;
+        Ok(Response::new(pb::ProviderCatalogSnapshot {
+            version,
+            record,
+        }))
     }
     async fn inspect_source_authority(
         &self,

@@ -55,11 +55,30 @@ pub(crate) fn bind(
     tx: &WriteScope<'_>,
     plan: &weaver_contracts::ProviderPlan,
     digest: &str,
+    catalog_version: &str,
 ) -> Result<()> {
     let (family, node, ceiling) = (plan.family.as_str(), plan.node.as_str(), plan.ceiling);
-    let Some(config) = deployment(tx)? else {
-        return Ok(());
+    let current = crate::provider_catalog::current(tx)?;
+    if current.as_ref().map_or("", |(version, _)| version.as_str()) != catalog_version {
+        return Err(Error::Conflict("stale provider catalog"));
+    }
+    let Some(mut config) = deployment(tx)? else {
+        return if catalog_version.is_empty() {
+            Ok(())
+        } else {
+            Err(Error::Denied)
+        };
     };
+    if let Some((version, catalog)) = current {
+        let entry = catalog.entries.get(digest).ok_or(Error::Denied)?;
+        config.provider_quotes = [(digest.to_owned(), entry.quote.clone())].into();
+        persistence::exec(
+            tx,
+            "INSERT INTO provider_catalog_reservations VALUES(?1,?2,?3)",
+            [family, node, version.as_str()],
+        )
+        .map_err(db)?;
+    }
     let principal: String = persistence::one(
         tx,
         "SELECT json_extract(record,'$.principal') FROM tasks WHERE family=?1",
@@ -67,7 +86,7 @@ pub(crate) fn bind(
         |row| row.get(0),
     )
     .map_err(db)?;
-    if let Some(quote) = quote_digest(&config, plan, digest, &principal)? {
+    if let Some(quote) = quote_digest(&config, plan, digest, &principal, catalog_version)? {
         let profile: String = persistence::one(
             tx,
             "SELECT record FROM provider_profiles WHERE id=?1",
@@ -290,6 +309,7 @@ fn quote_digest(
     plan: &weaver_contracts::ProviderPlan,
     digest: &str,
     principal: &str,
+    version: &str,
 ) -> Result<Option<String>> {
     if config.provider_quotes.is_empty() {
         return Ok(None);
@@ -299,9 +319,12 @@ fn quote_digest(
     if quote.tenant != tenant || config.tenants[tenant].charge(quote.token_bounds)? > plan.ceiling {
         return Err(Error::Denied);
     }
-    Ok(Some(weaver_contracts::body_digest(&serde_json::to_string(
-        &("weaver.provider-rate-quote.v1", digest, quote),
-    )?)))
+    let encoded = if version.is_empty() {
+        serde_json::to_string(&("weaver.provider-rate-quote.v1", digest, quote))?
+    } else {
+        serde_json::to_string(&("weaver.provider-rate-quote.v2", version, digest, quote))?
+    };
+    Ok(Some(weaver_contracts::body_digest(&encoded)))
 }
 
 pub(crate) fn require_quote(
@@ -310,9 +333,24 @@ pub(crate) fn require_quote(
     plan: &weaver_contracts::ProviderPlan,
     digest: &str,
 ) -> Result<()> {
-    if config.provider_quotes.is_empty() {
-        return Ok(());
-    }
+    let version: Option<String> = persistence::maybe(
+        tx,
+        "SELECT catalog FROM provider_catalog_reservations WHERE family=?1 AND node=?2",
+        [plan.family.as_str(), plan.node.as_str()],
+        |row| row.get(0),
+    )
+    .map_err(db)?;
+    let historical;
+    let config = if let Some(version) = &version {
+        let catalog = crate::provider_catalog::historical(tx, version)?;
+        let entry = catalog.entries.get(digest).ok_or(Error::Denied)?;
+        let mut snapshot = config.clone();
+        snapshot.provider_quotes = [(digest.to_owned(), entry.quote.clone())].into();
+        historical = snapshot;
+        &historical
+    } else {
+        config
+    };
     let principal: String = persistence::one(
         tx,
         "SELECT json_extract(record,'$.principal') FROM tasks WHERE family=?1",
@@ -320,7 +358,13 @@ pub(crate) fn require_quote(
         |row| row.get(0),
     )
     .map_err(db)?;
-    let expected = quote_digest(config, plan, digest, &principal)?;
+    let expected = quote_digest(
+        config,
+        plan,
+        digest,
+        &principal,
+        version.as_deref().unwrap_or_default(),
+    )?;
     let retained: Option<String> = persistence::maybe(
         tx,
         "SELECT quote_digest FROM provider_rate_bindings WHERE family=?1 AND node=?2",
@@ -341,7 +385,23 @@ pub(crate) fn require_task_quotes(
     let Some(config) = deployment(tx)? else {
         return Ok(());
     };
-    if config.provider_quotes.is_empty() || task.stream_contracts.is_empty() {
+    if task.stream_contracts.is_empty() {
+        return Ok(());
+    }
+    if let Some((_, catalog)) = crate::provider_catalog::current(tx)? {
+        let tenant = config.tenant_for(&task.principal).ok_or(Error::Denied)?;
+        for digest in task.stream_contracts.values() {
+            if catalog
+                .entries
+                .get(digest)
+                .is_none_or(|entry| entry.quote.tenant != tenant)
+            {
+                return Err(Error::Denied);
+            }
+        }
+        return Ok(());
+    }
+    if config.provider_quotes.is_empty() {
         return Ok(());
     }
     let tenant = config.tenant_for(&task.principal).ok_or(Error::Denied)?;

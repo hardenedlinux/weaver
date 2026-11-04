@@ -125,6 +125,15 @@ pub fn execute_provider<O: ProviderOutput>(
     request: ProviderExecution<'_>,
     output: &mut O,
 ) -> Result<()> {
+    execute_catalog_provider(ledger, request, output, "")
+}
+
+pub fn execute_catalog_provider<O: ProviderOutput>(
+    ledger: &mut Ledger,
+    request: ProviderExecution<'_>,
+    output: &mut O,
+    catalog: &str,
+) -> Result<()> {
     execute_stream(
         ledger,
         request.plan,
@@ -132,6 +141,7 @@ pub fn execute_provider<O: ProviderOutput>(
         request.format,
         request.batch_rows,
         output,
+        catalog,
     )
 }
 fn execute_stream<O: ProviderOutput>(
@@ -141,6 +151,7 @@ fn execute_stream<O: ProviderOutput>(
     format: &str,
     batch_rows: usize,
     output: &mut O,
+    catalog: &str,
 ) -> Result<()> {
     if !(1..=32).contains(&batch_rows)
         || !matches!(format, "protobuf" | "arrow")
@@ -151,7 +162,7 @@ fn execute_stream<O: ProviderOutput>(
     for route in &plan.routes {
         crate::HttpsTransport::validate_endpoint(&route.endpoint)?;
     }
-    ledger.enqueue_provider(plan)?;
+    ledger.enqueue_catalog_provider(plan, catalog)?;
     if output.stopped() {
         return Err(Error::Conflict("cancelled before provider consumption"));
     }

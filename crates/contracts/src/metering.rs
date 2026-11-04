@@ -77,21 +77,11 @@ impl MeteringDeployment {
             return Err(Error::Invalid("provider quotes require quota scopes"));
         }
         for (plan, quote) in &self.provider_quotes {
-            identifier(&quote.version)?;
             let tenant = self
                 .tenants
                 .get(&quote.tenant)
                 .ok_or(Error::Invalid("quote tenant"))?;
-            if !digest(plan, 64)
-                || quote.formula_digest != tenant.formula_digest()?
-                || quote
-                    .procurement_rates
-                    .iter()
-                    .chain(&quote.token_bounds)
-                    .any(|n| *n > MAX_CREDITS)
-            {
-                return Err(Error::Invalid("provider rate quote"));
-            }
+            quote.validate(plan, tenant)?;
         }
         Ok(())
     }
@@ -217,4 +207,21 @@ pub struct MeteringApplication {
     pub application: String,
     pub charged: u64,
     pub released: u64,
+}
+
+impl ProviderQuote {
+    pub(crate) fn validate(&self, plan: &str, tenant: &MeteringTenant) -> Result<()> {
+        identifier(&self.version)?;
+        if !digest(plan, 64)
+            || self.formula_digest != tenant.formula_digest()?
+            || self
+                .procurement_rates
+                .iter()
+                .chain(&self.token_bounds)
+                .any(|n| *n > MAX_CREDITS)
+        {
+            return Err(Error::Invalid("provider rate quote"));
+        }
+        Ok(())
+    }
 }

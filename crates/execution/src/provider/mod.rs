@@ -9,7 +9,10 @@ mod response;
 mod runtime;
 mod sse;
 mod write_seal;
-pub use runtime::{ProviderExecution, ProviderOutput, ProviderTransport, execute_provider};
+pub use runtime::{
+    ProviderExecution, ProviderOutput, ProviderTransport, execute_catalog_provider,
+    execute_provider,
+};
 
 #[cfg(test)]
 #[path = "../../tests/unit/runtime.rs"]

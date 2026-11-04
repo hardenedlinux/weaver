@@ -48,6 +48,14 @@ impl ProviderRelease {
 }
 impl Ledger {
     pub fn enqueue_provider(&mut self, plan: &ProviderPlan) -> Result<ProviderReceipt> {
+        self.enqueue_catalog_provider(plan, "")
+    }
+
+    pub fn enqueue_catalog_provider(
+        &mut self,
+        plan: &ProviderPlan,
+        catalog: &str,
+    ) -> Result<ProviderReceipt> {
         let digest = plan.digest()?;
         let tx =
             crate::persistence::begin_family(&mut self.connection, &plan.family).map_err(db)?;
@@ -87,7 +95,7 @@ impl Ledger {
                 return Err(Error::Conflict("shared provider budget exhausted"));
             }
             crate::persistence::exec(&tx, "INSERT INTO provider_runs(family,node,digest,plan,reserved,state) VALUES(?1,?2,?3,?4,?5,'queued')", crate::persistence::params![(plan.family).to_owned(),(plan.node).to_owned(),(digest).to_owned(),(serde_json::to_string(plan)?).to_owned(),(plan.ceiling as i64).to_owned()]).map_err(db)?;
-            crate::metering::bind(&tx, plan, &digest)?;
+            crate::metering::bind(&tx, plan, &digest, catalog)?;
         } else {
             crate::persistence::exec(
                 &tx,

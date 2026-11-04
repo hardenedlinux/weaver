@@ -217,12 +217,12 @@ package WeaverViews {
         attribute visualBands : String = "[[\"ingress\",\"routine\",\"catalog\"],[\"routing\"]]";
         attribute mappedFile : String = "docs/10-19-llm-gateway/10-routing-and-inference/10.02-llm-routing.d2";
         attribute displayTitle : String = "Choose an eligible model";
-        attribute displaySubtitle : String = "Match the task to a model before the first send.";
+        attribute displaySubtitle : String = "Match the task against the current model directory.";
         attribute displayEyebrow : String = "WEAVER / ROUTING";
         attribute readerQuestion : String = "What can constrain a route proposal?";
         attribute designAudience : String = "Gateway developers and operators";
         attribute designMedium : String = "GitHub at 830 CSS pixels";
-        attribute designMessage : String = "Match the task to a model before the first send.";
+        attribute designMessage : String = "Match the task against the current model directory.";
         attribute designFocus : String = "routing";
         attribute captionContext : String = "journey";
         attribute visualThemes : String = "sketchbook,ocean,compact,reading";
@@ -244,7 +244,7 @@ package WeaverViews {
         attribute visualBands : String = "[[\"routing\",\"publication\"],[\"execution\",\"providers\",\"stream\"]]";
         attribute mappedFile : String = "docs/10-19-llm-gateway/10-routing-and-inference/10.05-route-execution.d2";
         attribute displayTitle : String = "Use the selected route";
-        attribute displaySubtitle : String = "Rust checks the original claim, rate binding and current Policy.";
+        attribute displaySubtitle : String = "Rust checks the directory version, original claim and current Policy.";
         attribute displayEyebrow : String = "WEAVER / ROUTING";
         attribute readerQuestion : String = "What can authorize actual provider use?";
         attribute designAudience : String = "Gateway developers and operators";

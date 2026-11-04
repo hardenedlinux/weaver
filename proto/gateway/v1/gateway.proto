@@ -30,6 +30,8 @@ service Gateway {
   // Preparation only. Actual ingress/source state selects an installed original;
   // request labels cannot supply authority, replacement source or module paths.
   rpc CompileSource(ProducerRequest) returns (CompiledSource);
+  rpc InspectProviderCatalog(Empty) returns (ProviderCatalogSnapshot);
+  rpc PublishProviderCatalog(ProviderCatalogChange) returns (ProviderCatalogSnapshot);
   // Statistical process-local counters only; never durable execution evidence.
   rpc InspectTelemetry(Empty) returns (TelemetrySnapshot);
 }
@@ -59,7 +61,9 @@ message ProviderPlan {
   string profile_commitment = 10;
 }
 enum Encoding { PROTOBUF = 0; ARROW_IPC = 1; }
-message ProviderRequest { ProviderPlan plan = 1; Encoding encoding = 2; uint32 batch_rows = 3; }
+message ProviderRequest { ProviderPlan plan = 1; Encoding encoding = 2; uint32 batch_rows = 3; string catalog_version = 4; }
+message ProviderCatalogSnapshot { string version = 1; bytes record = 2; }
+message ProviderCatalogChange { bytes record = 1; }
 message Event { uint64 sequence = 1; string kind = 2; string text = 3; uint64 tokens = 4; }
 message ArrowBatch { bytes ipc = 1; uint64 first_sequence = 2; uint32 rows = 3; }
 message ProviderFrame { string target = 1; string model = 2; oneof payload { Event event = 3; ArrowBatch arrow = 4; } }

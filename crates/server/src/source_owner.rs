@@ -27,6 +27,15 @@ struct Envelope {
     command: Command,
 }
 enum Command {
+    ReadCatalog {
+        reply: oneshot::Sender<Result<Option<(String, weaver_contracts::ProviderCatalog)>>>,
+        slot: OwnedSemaphorePermit,
+    },
+    PublishCatalog {
+        catalog: weaver_contracts::ProviderCatalog,
+        reply: oneshot::Sender<Result<String>>,
+        slot: OwnedSemaphorePermit,
+    },
     ApplyMetering {
         evidence: Box<weaver_contracts::MeteringReceipt>,
         reply: oneshot::Sender<Result<weaver_contracts::MeteringApplication>>,
@@ -370,6 +379,25 @@ impl SourceOwner {
         })
         .await
     }
+    pub(crate) async fn provider_catalog(
+        &self,
+        caller: SourceIdentity,
+    ) -> std::result::Result<Option<(String, weaver_contracts::ProviderCatalog)>, Status> {
+        self.submit(caller, |reply, slot| Command::ReadCatalog { reply, slot })
+            .await
+    }
+    pub(crate) async fn publish_catalog(
+        &self,
+        caller: SourceIdentity,
+        catalog: weaver_contracts::ProviderCatalog,
+    ) -> std::result::Result<String, Status> {
+        self.submit(caller, |reply, slot| Command::PublishCatalog {
+            catalog,
+            reply,
+            slot,
+        })
+        .await
+    }
     pub(crate) async fn authority(
         &self,
         caller: SourceIdentity,
@@ -453,6 +481,21 @@ fn process(
         ledger.require_quiescent()?;
         let Envelope { caller, command } = command;
         match command {
+            Command::ReadCatalog { reply, slot } => {
+                let result =
+                    ledger.with_authenticated_source(&caller, |ledger| ledger.provider_catalog());
+                answer(ledger, reply, result, slot)?;
+            }
+            Command::PublishCatalog {
+                catalog,
+                reply,
+                slot,
+            } => {
+                let result = ledger.with_authenticated_source(&caller, |ledger| {
+                    ledger.publish_provider_catalog(&catalog)
+                });
+                answer(ledger, reply, result, slot)?;
+            }
             Command::ApplyMetering {
                 evidence,
                 reply,

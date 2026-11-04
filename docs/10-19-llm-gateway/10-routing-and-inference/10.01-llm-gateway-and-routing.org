@@ -379,3 +379,32 @@ contract. The current profile uses predeclared tasks and candidate bodies.
 It does not accept caller-authored capability claims or arbitrary new task
 registration. Once the original is bound, the selected model is immutable.
 Unknown execution retains the original reservation.
+
+* Runtime model catalog and rate publication
+
+The authenticated source publishes a bounded catalog snapshot by supplying its
+exact parent digest. Turso appends the snapshot in the same deciding owner
+domain used for provider admission. A competing parent fails, and repeating a
+committed proposal returns its historical digest without restoring it as head.
+An empty snapshot withdraws all new admissions while retaining history.
+
+Go reads the live catalog over the source gRPC channel. It joins deployment
+candidate bodies by concrete plan digest and takes model capabilities, latency,
+procurement rates and token bounds from the catalog. Source requirements and
+tenant module policy still constrain candidate selection. The selected plan
+and the observed catalog digest travel together to Rust. In the deciding
+reservation transaction Rust compares the digest to the current head, checks
+tenant, billing bound and current Policy, then retains the historical
+catalog reference and three quota projections. A catalog change before this
+commit can reject admission even if immutable task registration succeeded.
+
+An existing reservation retains its concrete plan, catalog reference,
+billing formula and ceiling. Catalog withdrawal affects new reservations.
+Cedar publication and fencing still decide whether an existing queued
+reservation can dispatch. Unknown execution preserves its hold across restart
+and cannot reopen the original logical operation.
+
+This profile publishes procurement rates and catalog metadata at runtime.
+The customer tariff remains deployment-bound and each catalog entry must
+match that tariff. Concrete request bodies and original tasks remain source
+owned. Model publication does not authorize new request content.

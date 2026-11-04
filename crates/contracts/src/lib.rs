@@ -17,6 +17,8 @@ pub use metering::{
     MeteringApplication, MeteringDeployment, MeteringReceipt, MeteringTenant, ProviderQuote,
 };
 mod provider;
+mod provider_catalog;
+pub use provider_catalog::{CatalogEntry, ProviderCatalog};
 mod provider_profile;
 mod quotas;
 pub use provider_profile::{CHAT_TEXT_SSE, ProviderProfile, ProviderRequestFacts};

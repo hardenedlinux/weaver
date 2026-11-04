@@ -42,6 +42,8 @@ const (
 	Gateway_InspectSourceAuthority_FullMethodName    = "/weaver.gateway.v1.Gateway/InspectSourceAuthority"
 	Gateway_RotateSourceAuthority_FullMethodName     = "/weaver.gateway.v1.Gateway/RotateSourceAuthority"
 	Gateway_CompileSource_FullMethodName             = "/weaver.gateway.v1.Gateway/CompileSource"
+	Gateway_InspectProviderCatalog_FullMethodName    = "/weaver.gateway.v1.Gateway/InspectProviderCatalog"
+	Gateway_PublishProviderCatalog_FullMethodName    = "/weaver.gateway.v1.Gateway/PublishProviderCatalog"
 	Gateway_InspectTelemetry_FullMethodName          = "/weaver.gateway.v1.Gateway/InspectTelemetry"
 )
 
@@ -73,6 +75,8 @@ type GatewayClient interface {
 	// Preparation only. Actual ingress/source state selects an installed original;
 	// request labels cannot supply authority, replacement source or module paths.
 	CompileSource(ctx context.Context, in *ProducerRequest, opts ...grpc.CallOption) (*CompiledSource, error)
+	InspectProviderCatalog(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ProviderCatalogSnapshot, error)
+	PublishProviderCatalog(ctx context.Context, in *ProviderCatalogChange, opts ...grpc.CallOption) (*ProviderCatalogSnapshot, error)
 	// Statistical process-local counters only; never durable execution evidence.
 	InspectTelemetry(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*TelemetrySnapshot, error)
 }
@@ -298,6 +302,26 @@ func (c *gatewayClient) CompileSource(ctx context.Context, in *ProducerRequest, 
 	return out, nil
 }
 
+func (c *gatewayClient) InspectProviderCatalog(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ProviderCatalogSnapshot, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ProviderCatalogSnapshot)
+	err := c.cc.Invoke(ctx, Gateway_InspectProviderCatalog_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *gatewayClient) PublishProviderCatalog(ctx context.Context, in *ProviderCatalogChange, opts ...grpc.CallOption) (*ProviderCatalogSnapshot, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ProviderCatalogSnapshot)
+	err := c.cc.Invoke(ctx, Gateway_PublishProviderCatalog_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *gatewayClient) InspectTelemetry(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*TelemetrySnapshot, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(TelemetrySnapshot)
@@ -336,6 +360,8 @@ type GatewayServer interface {
 	// Preparation only. Actual ingress/source state selects an installed original;
 	// request labels cannot supply authority, replacement source or module paths.
 	CompileSource(context.Context, *ProducerRequest) (*CompiledSource, error)
+	InspectProviderCatalog(context.Context, *Empty) (*ProviderCatalogSnapshot, error)
+	PublishProviderCatalog(context.Context, *ProviderCatalogChange) (*ProviderCatalogSnapshot, error)
 	// Statistical process-local counters only; never durable execution evidence.
 	InspectTelemetry(context.Context, *Empty) (*TelemetrySnapshot, error)
 	mustEmbedUnimplementedGatewayServer()
@@ -401,6 +427,12 @@ func (UnimplementedGatewayServer) RotateSourceAuthority(context.Context, *Source
 }
 func (UnimplementedGatewayServer) CompileSource(context.Context, *ProducerRequest) (*CompiledSource, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CompileSource not implemented")
+}
+func (UnimplementedGatewayServer) InspectProviderCatalog(context.Context, *Empty) (*ProviderCatalogSnapshot, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method InspectProviderCatalog not implemented")
+}
+func (UnimplementedGatewayServer) PublishProviderCatalog(context.Context, *ProviderCatalogChange) (*ProviderCatalogSnapshot, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PublishProviderCatalog not implemented")
 }
 func (UnimplementedGatewayServer) InspectTelemetry(context.Context, *Empty) (*TelemetrySnapshot, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method InspectTelemetry not implemented")
@@ -763,6 +795,42 @@ func _Gateway_CompileSource_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Gateway_InspectProviderCatalog_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GatewayServer).InspectProviderCatalog(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Gateway_InspectProviderCatalog_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GatewayServer).InspectProviderCatalog(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Gateway_PublishProviderCatalog_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ProviderCatalogChange)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GatewayServer).PublishProviderCatalog(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Gateway_PublishProviderCatalog_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GatewayServer).PublishProviderCatalog(ctx, req.(*ProviderCatalogChange))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Gateway_InspectTelemetry_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Empty)
 	if err := dec(in); err != nil {
@@ -859,6 +927,14 @@ var Gateway_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CompileSource",
 			Handler:    _Gateway_CompileSource_Handler,
+		},
+		{
+			MethodName: "InspectProviderCatalog",
+			Handler:    _Gateway_InspectProviderCatalog_Handler,
+		},
+		{
+			MethodName: "PublishProviderCatalog",
+			Handler:    _Gateway_PublishProviderCatalog_Handler,
 		},
 		{
 			MethodName: "InspectTelemetry",

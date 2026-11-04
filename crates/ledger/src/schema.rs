@@ -110,6 +110,11 @@ CREATE TABLE IF NOT EXISTS metering_deployment (
 CREATE TABLE IF NOT EXISTS metering_reservations (
  family TEXT NOT NULL, node TEXT NOT NULL, tenant TEXT NOT NULL, formula_digest TEXT NOT NULL, authority_digest TEXT NOT NULL,
  PRIMARY KEY(family,node), FOREIGN KEY(family,node) REFERENCES provider_runs(family,node));
+CREATE TABLE IF NOT EXISTS provider_catalog_publications (
+ revision INTEGER PRIMARY KEY, digest TEXT NOT NULL UNIQUE, record TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS provider_catalog_reservations (
+ family TEXT NOT NULL, node TEXT NOT NULL, catalog TEXT NOT NULL REFERENCES provider_catalog_publications(digest),
+ PRIMARY KEY(family,node), FOREIGN KEY(family,node) REFERENCES provider_runs(family,node));
 CREATE TABLE IF NOT EXISTS provider_rate_bindings (
  family TEXT NOT NULL, node TEXT NOT NULL, quote_digest TEXT NOT NULL,
  PRIMARY KEY(family,node), FOREIGN KEY(family,node) REFERENCES provider_runs(family,node));

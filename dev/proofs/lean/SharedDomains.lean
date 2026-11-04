@@ -190,3 +190,19 @@ theorem stale_quote_cannot_authorize (original proposed : Selection)
 #print axioms concurrent_proposal_keeps_plan_and_rate
 #print axioms stale_quote_cannot_authorize
 end Weaver.RequestRouting
+
+namespace Weaver.CatalogPublication
+
+def reserve (head offered : Nat) (prior : Option Nat) : Option Nat :=
+  prior.or (if head = offered then some offered else none)
+
+theorem stale_offer_cannot_create (head offered : Nat) (stale : head ≠ offered) :
+    reserve head offered none = none := by
+  simp [reserve, stale]
+
+theorem new_head_preserves_old_reservation (newHead offered retained : Nat) :
+    reserve newHead offered (some retained) = some retained := rfl
+
+#print axioms stale_offer_cannot_create
+#print axioms new_head_preserves_old_reservation
+end Weaver.CatalogPublication

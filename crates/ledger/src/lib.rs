@@ -15,6 +15,7 @@ mod execution_exposure;
 mod exposure_manifest;
 mod metering;
 mod provider;
+mod provider_catalog;
 mod provider_profiles;
 mod provider_quota;
 mod publication;

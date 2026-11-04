@@ -122,13 +122,13 @@ func (g *Gateway) ExecuteProvider(in *pb.ProviderRequest, out pb.Gateway_Execute
 		routes = append(routes, v1.ProviderRoute{Target: r.Target, Endpoint: r.Endpoint})
 	}
 	proposal := v1.ProviderPlan{Family: p.Family, Node: p.Node, Profile: p.Profile, ProfileCommitment: p.ProfileCommitment, Model: p.Model, Body: string(p.Body), Routes: routes, Ceiling: p.Ceiling}
-	compiled, err := g.compileProvider(out.Context(), proposal)
+	compiled, catalog, err := g.compileProvider(out.Context(), proposal)
 	if err != nil {
 		return err
 	}
 	ctx, cancel := context.WithCancel(out.Context())
 	defer cancel()
-	upstream, err := g.owner.RPC.ExecuteProvider(g.owner.Context(ctx), &pb.ProviderRequest{Plan: gatewayclient.Plan(compiled), Encoding: in.Encoding, BatchRows: in.BatchRows})
+	upstream, err := g.owner.RPC.ExecuteProvider(g.owner.Context(ctx), &pb.ProviderRequest{Plan: gatewayclient.Plan(compiled), CatalogVersion: catalog, Encoding: in.Encoding, BatchRows: in.BatchRows})
 	if err != nil {
 		return err
 	}
@@ -163,27 +163,27 @@ func (g *Gateway) Inspect(ctx context.Context, key *pb.OperationKey) (*pb.Provid
 	return g.owner.RPC.Inspect(g.owner.Context(ctx), key)
 }
 
-func (g *Gateway) compileProvider(ctx context.Context, proposal v1.ProviderPlan) (v1.ProviderPlan, error) {
+func (g *Gateway) compileProvider(ctx context.Context, proposal v1.ProviderPlan) (v1.ProviderPlan, string, error) {
 	if g.deferred == nil {
 		plan, err := routing.CompileProvider(g.tasks[proposal.Family], proposal, g.view)
 		if err != nil {
-			return plan, status.Error(codes.PermissionDenied, "source contract rejected")
+			return plan, "", status.Error(codes.PermissionDenied, "source contract rejected")
 		}
-		return plan, nil
+		return plan, "", nil
 	}
 	if proposal.Body != "" || proposal.Model != "" || proposal.Profile != "" ||
 		proposal.ProfileCommitment != "" || len(proposal.Routes) != 0 || proposal.Ceiling != 0 {
-		return v1.ProviderPlan{}, status.Error(codes.InvalidArgument, "request routing accepts only the original operation key")
+		return v1.ProviderPlan{}, "", status.Error(codes.InvalidArgument, "request routing accepts only the original operation key")
 	}
-	selected, err := g.deferred.MaterializeRequest()
+	selected, catalog, err := g.materializeProvider(ctx)
 	if err != nil {
-		return v1.ProviderPlan{}, status.Error(codes.FailedPrecondition, "source routing rejected")
+		return v1.ProviderPlan{}, "", status.Error(codes.FailedPrecondition, "source routing rejected")
 	}
 	_, err = g.source.RPC.RegisterPublishedTask(g.source.Context(ctx), &pb.RegisterPublishedTaskRequest{
 		Task: gatewayclient.Task(selected.Tasks[0]), Publication: g.publication,
 	})
 	if err != nil {
-		return v1.ProviderPlan{}, err
+		return v1.ProviderPlan{}, "", err
 	}
-	return selected.Plans[0], nil
+	return selected.Plans[0], catalog, nil
 }

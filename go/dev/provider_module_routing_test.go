@@ -20,12 +20,24 @@ import (
 	v1 "github.com/HardenedLinux/weaver/go/api/v1"
 
 	pb "github.com/HardenedLinux/weaver/go/api/gateway/v1"
+	"github.com/HardenedLinux/weaver/go/internal/gatewayclient"
 	"github.com/HardenedLinux/weaver/go/internal/routing"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
+type lostCatalogReply struct{ pb.GatewayClient }
+
+func (c lostCatalogReply) PublishProviderCatalog(ctx context.Context, req *pb.ProviderCatalogChange, opts ...grpc.CallOption) (*pb.ProviderCatalogSnapshot, error) {
+	if _, err := c.GatewayClient.PublishProviderCatalog(ctx, req, opts...); err != nil {
+		return nil, err
+	}
+	return nil, status.Error(codes.Unavailable, "catalog reply lost after committed RPC")
+}
+
 func TestProviderModuleSelectionBindsOriginal(t *testing.T) {
+	t.Setenv("WEAVER_STORAGE_JOURNAL", "mvcc")
 	f := fixtureWithInvocation(t, completeSSE, false, serverBinary, nil, nil, func(plan v1.ProviderPlan) string {
 		digest, err := plan.Digest()
 		if err != nil {
@@ -75,6 +87,62 @@ func TestProviderModuleSelectionBindsOriginal(t *testing.T) {
 	t.Cleanup(func() { control.stop(t) })
 	ctx, cancel := context.WithTimeout(t.Context(), 12*time.Second)
 	defer cancel()
+	source := f.admin
+	formula := sha256.Sum256([]byte(`["weaver.metering.linear-ceil-per-million.v1",[0,0,0,100000]]`))
+	entry := func(rate uint64) map[string]any {
+		return map[string]any{
+			"module": "premium", "capabilities": []string{"quality"}, "latency_millis": 40,
+			"user_rates": [4]uint64{0, 0, 0, 100000},
+			"quote": map[string]any{"version": "tariff", "tenant": "tenant", "formula_digest": hex.EncodeToString(formula[:]),
+				"procurement_rates": [4]uint64{rate}, "token_bounds": [4]uint64{64, 0, 0, 32}},
+		}
+	}
+	originalDigest, _ := f.plan.Digest()
+	chosenDigest, _ := qualified.Digest()
+	change := func(parent string, rate uint64) *pb.ProviderCatalogChange {
+		record, err := json.Marshal(map[string]any{"parent": parent, "entries": map[string]any{
+			originalDigest: entry(rate), chosenDigest: entry(rate),
+		}})
+		if err != nil {
+			t.Fatal(err)
+		}
+		return &pb.ProviderCatalogChange{Record: record}
+	}
+	publish := func(change *pb.ProviderCatalogChange) (*pb.ProviderCatalogSnapshot, error) {
+		return source.RPC.PublishProviderCatalog(source.Context(ctx), change)
+	}
+	initial := change("", 1000000)
+	firstCatalog, err := publish(initial)
+	if err != nil {
+		t.Fatal(err)
+	}
+	second := change(firstCatalog.Version, 500000)
+	lost := lostCatalogReply{source.RPC}
+	if _, err := lost.PublishProviderCatalog(source.Context(ctx), second); status.Code(err) != codes.Unavailable {
+		t.Fatalf("catalog reply loss: %v", err)
+	}
+	current, err := publish(second)
+	if err != nil || current.GetVersion() == firstCatalog.Version {
+		t.Fatalf("catalog update: %v", err)
+	}
+	historical, err := publish(initial)
+	if err != nil || historical.GetVersion() != firstCatalog.Version {
+		t.Fatalf("catalog replay: %v", err)
+	}
+	if _, err := publish(change(firstCatalog.Version, 800000)); err == nil {
+		t.Fatal("stale parent published")
+	}
+	stale := f.plan
+	stale.Revision, stale.Fence = qualified.Revision, qualified.Fence
+	stream, err := f.client.RPC.ExecuteProvider(f.client.Context(ctx), &pb.ProviderRequest{
+		Plan: gatewayclient.Plan(stale), Encoding: pb.Encoding_PROTOBUF, BatchRows: 1, CatalogVersion: firstCatalog.Version,
+	})
+	if err == nil {
+		_, err = stream.Recv()
+	}
+	if status.Code(err) != codes.FailedPrecondition || f.primary.Load() != 0 {
+		t.Fatalf("stale quote admitted: %v", err)
+	}
 	if _, err := control.client.Execute(ctx, cheap, pb.Encoding_PROTOBUF, 1, func(*pb.Event) error { return nil }); status.Code(err) != codes.InvalidArgument || f.primary.Load() != 0 {
 		t.Fatalf("unselected model reached provider: %v", err)
 	}
@@ -106,9 +174,17 @@ func TestProviderModuleSelectionBindsOriginal(t *testing.T) {
 			done <- execute(ctx, true)
 		}()
 	}
-	first, second := <-done, <-done
-	if (first != nil && second != nil) || f.primary.Load() != 1 {
-		t.Fatalf("expected a single provider dispatch: %v %v, calls=%d", first, second, f.primary.Load())
+	first, other := <-done, <-done
+	if (first != nil && other != nil) || f.primary.Load() != 1 {
+		t.Fatalf("expected a single provider dispatch: %v %v, calls=%d", first, other, f.primary.Load())
+	}
+	withdrawal, err := json.Marshal(map[string]any{"parent": current.Version, "entries": map[string]any{}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	withdrawn, err := publish(&pb.ProviderCatalogChange{Record: withdrawal})
+	if err != nil {
+		t.Fatal(err)
 	}
 	control.stop(t)
 	f.stop(t)
@@ -118,6 +194,14 @@ func TestProviderModuleSelectionBindsOriginal(t *testing.T) {
 	defer stop()
 	if err := execute(retry, false); status.Code(err) != codes.FailedPrecondition {
 		t.Fatalf("restart must report a consumed original: %v", err)
+	}
+	recovered, err := f.admin.RPC.InspectProviderCatalog(f.admin.Context(retry), &pb.Empty{})
+	if err != nil || recovered.GetVersion() != withdrawn.Version {
+		t.Fatalf("catalog head recovery: %v", err)
+	}
+	original, err := control.client.RPC.Inspect(control.client.Context(retry), &pb.OperationKey{Family: qualified.Family, Node: qualified.Node})
+	if err != nil || original.GetReserved() != 4 || original.GetHeld() != 4 || original.GetDigest() != chosenDigest {
+		t.Fatalf("original reservation changed: %v %v", original, err)
 	}
 	if f.primary.Load() != 1 {
 		t.Fatal("restart reopened original provider dispatch")
