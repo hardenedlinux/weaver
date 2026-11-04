@@ -93,4 +93,21 @@ theorem final_use_on_committed_union
 
 #print axioms final_use_on_committed_union
 
+/-- On the same actual view, neither pre-union epoch can qualify the use.
+Recovery of an old result does not change the supplied actual projection. -/
+theorem pre_union_epoch_cannot_match_actual
+    (use : Gateway.ZeroTrust.FinalUse proposal)
+    (domain : GatewayHeadCAS.State → SharedDomains.Domain)
+    (left right : SharedDomains.Domain)
+    (same : domain use.actual = SharedDomains.union left right)
+    {permitEpoch : Nat}
+    (old : permitEpoch = left.epoch ∨ permitEpoch = right.epoch) :
+    (domain use.actual).epoch ≠ permitEpoch := by
+  obtain ⟨fromLeft, fromRight⟩ := SharedDomains.union_fences_both_old_permits left right
+  rcases old with old | old
+  · simpa only [same, old] using fromLeft
+  · simpa only [same, old] using fromRight
+
+#print axioms pre_union_epoch_cannot_match_actual
+
 end Weaver.DomainMigrationComposition

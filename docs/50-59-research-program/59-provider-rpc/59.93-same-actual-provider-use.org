@@ -17,7 +17,9 @@ execution call. An unknown outcome does not activate its ingress.
 
 Rust provider admission and consumption retain the original logical claim,
 reservation and history in the MRR Data/Turso transaction. Consumption changes
-the run to unknown before returning the private, session-bound dispatch handle.
+exactly one queued run to unknown before returning the private, session-bound
+dispatch handle. The handle carries the domain stamp of the same transaction
+view Cedar evaluated for the selected route.
 A second durable dispatch burn precedes the guarded transport callback.
 Neither commit phase initiates an external request.
 
@@ -64,6 +66,8 @@ domain run and existing =SharedDomains= union laws. The union projection is of
 the exact =use.actual= view. It proves the strengthened required framework,
 capacity conservation, retention of every original history member, fencing of
 both old epochs and refinement of the original profile.
+=pre_union_epoch_cannot_match_actual= derives that neither old epoch can match
+the actual committed union view under that projection premise.
 
 The admitted-union inequality and equality between the runtime domain projection
 and that actual union are explicit Host refinement obligations. This is not a
@@ -83,7 +87,7 @@ and unknown-refund counterexamples remain outside the normal transition set.
 
 The Rust proptest framework runs 64 generated combinations over real Turso MVCC:
 request dispatch, prepared response release and completion, with optional union,
-revocation and worker restart. Positive controls execute only when current.
+revocation and worker restart. Revocation is generated on either side of the union. Positive controls execute only when current.
 Stale combinations must deny the callback; original task/origin identity,
 8 retained credits and both original history entries must survive. Exact
 migration replay returns the original receipt and command substitution fails.
@@ -97,6 +101,14 @@ executor must reject the tail; after Rust process restart, the source recovers
 the exact receipt and the old logical invocation cannot send again. The Go
 control process stays live across the owner restart, exercising its stale local
 routing/publication image against the recovered final owner.
+
+The combined Go-control schedules publish a Cedar forbid before and after the
+union. Both restart Go and Rust with the original Go configuration after the
+old stream is denied. Exact migration replay returns the committed receipt.
+Replay of the original request and first use of its unused sibling both fail.
+Provider request counts and the retained budget and history are checked across
+these denials. Quint mirrors both schedules and includes a negative transition
+that ignores the revocation.
 
 Positive Lean acceptance imports all existing model roots and audits transitive
 axioms, including the new composition theorem. The original 1,000-sample,
@@ -116,3 +128,4 @@ view. Build details and acceptance evidence stay in this document.
 
 [[file:59.51-zero-trust-contract-refinement.svg]]
 [[file:../../architecture/diagrams/00d-zero-trust-overview.svg]]
+[[file:../../architecture/diagrams/19-finite-domains-and-migration.svg]]

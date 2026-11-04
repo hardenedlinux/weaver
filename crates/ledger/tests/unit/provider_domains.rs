@@ -17,7 +17,8 @@ proptest! {
     #[test]
     fn same_actual_domains_fence_original_provider_capability(
         phase in 0u8..3, restart in proptest::bool::ANY,
-        revoke in proptest::bool::ANY, migrate in proptest::bool::ANY
+        revoke in proptest::bool::ANY, migrate in proptest::bool::ANY,
+        revoke_first in proptest::bool::ANY
     ) {
         let directory = tempfile::tempdir().expect("directory");
         let path = directory.path().join("same-view.db");
@@ -48,10 +49,14 @@ proptest! {
             history_from: "f".into(), history_to: "peer".into(),
             budget_from_epoch: 1, budget_to_epoch: 1, history_from_epoch: 1, history_to_epoch: 1,
         };
+        if revoke && revoke_first {
+            ledger.publish_typed(Some(0), "forbid(principal,action,resource);", SCHEMA, 2)
+                .expect("authoritative revocation before migration");
+        }
         let receipt = if migrate {
             Some(ledger.migrate_execution_domains(&migration).expect("durable union"))
         } else { None };
-        if revoke {
+        if revoke && !revoke_first {
             ledger.publish_typed(Some(0), "forbid(principal,action,resource);", SCHEMA, 2)
                 .expect("authoritative revocation");
         }

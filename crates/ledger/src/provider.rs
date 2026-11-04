@@ -10,7 +10,8 @@ use crate::{
 };
 use std::collections::BTreeSet;
 use weaver_contracts::{
-    Error, ProviderPlan, ProviderReceipt, ProviderRoute, ProviderState, Result, Task,
+    DomainStamp, DomainView, Error, ProviderPlan, ProviderReceipt, ProviderRoute, ProviderState,
+    Result, Task,
 };
 
 /// Affine deciding-owner custody for one selected original provider invocation.
@@ -120,12 +121,13 @@ impl Ledger {
         let plan: ProviderPlan = serde_json::from_str(
             &record.ok_or(Error::Conflict("provider not queued or already consumed"))?,
         )?;
-        let (route, binding) = any_authorized(&tx, &plan, "invokeProvider", Some(eligible))?;
+        let (route, binding, domains) =
+            any_authorized(&tx, &plan, "invokeProvider", Some(eligible))?;
         let digest = plan.digest()?;
         require_exposure(&tx, &plan, &digest)?;
-        crate::persistence::exec(
+        let consumed = crate::persistence::exec(
             &tx,
-            "UPDATE provider_runs SET state='unknown',target=?1 WHERE family=?2 AND node=?3",
+            "UPDATE provider_runs SET state='unknown',target=?1 WHERE family=?2 AND node=?3 AND state='queued'",
             crate::persistence::params![
                 (route.target).to_owned(),
                 (family).to_owned(),
@@ -133,7 +135,9 @@ impl Ledger {
             ],
         )
         .map_err(db)?;
-        let domains = crate::domains::stamp(&tx, family)?;
+        if consumed != 1 {
+            return Err(Error::Conflict("provider consumption lost queued row"));
+        }
         tx.commit().map_err(db)?;
         Ok(ProviderDispatch {
             plan,
@@ -370,12 +374,20 @@ fn any_authorized(
     p: &ProviderPlan,
     action: &'static str,
     eligible: Option<&BTreeSet<String>>,
-) -> Result<(ProviderRoute, weaver_policy::BoundProviderPolicy)> {
+) -> Result<(
+    ProviderRoute,
+    weaver_policy::BoundProviderPolicy,
+    DomainStamp,
+)> {
+    let domains = crate::domains::view(tx, &p.family)?;
+    if domains.canonical_family != p.family {
+        return Err(Error::Conflict("family alias is not an executable origin"));
+    }
     for route in &p.routes {
         if eligible.is_none_or(|set| set.contains(&route.target))
-            && let Ok(binding) = guard(tx, p, route, action, 0, "protobuf")
+            && let Ok(binding) = guard(tx, p, route, action, &domains)
         {
-            return Ok((route.clone(), binding));
+            return Ok((route.clone(), binding, domains.stamp));
         }
     }
     Err(Error::Denied)
@@ -385,8 +397,7 @@ fn guard(
     p: &ProviderPlan,
     r: &ProviderRoute,
     action: &'static str,
-    sequence: u64,
-    format: &str,
+    domains: &DomainView,
 ) -> Result<weaver_policy::BoundProviderPolicy> {
     crate::publication_barrier::require_resolved(tx)?;
     crate::task_publication::require(tx, &p.family)?;
@@ -414,9 +425,9 @@ fn guard(
         &source,
         weaver_policy::ProviderCheck {
             action,
-            sequence,
-            format,
-            domains: Some(&crate::domains::view(tx, &p.family)?),
+            sequence: 0,
+            format: "protobuf",
+            domains: Some(domains),
         },
     )?;
     Ok(binding)

@@ -47,6 +47,10 @@ package WeaverExecution {
            resolved root locks. New family, route, nonce and restored worker do
            not authorize independent accounting. Genuine origin identity is a
            source-admission premise; coherent rollback needs an independent floor. */
+        doc /* Revocation before or after a committed union still governs actual
+           use. A recovered migration receipt or historical Go publication
+           cannot restore the old Policy, root epoch or execution owner.
+           Refused work does not consume another claim or release unknown budget. */
     }
     requirement def OriginalTaskBinding {
         doc /* Preserve family, declared node, profile, endpoint and exact wire body commitment. */
@@ -77,6 +81,8 @@ package WeaverExecution {
     }
     requirement def ConsumeBeforeSend {
         doc /* Persist irreversible unknown consumption before any possible external bytes. */
+        doc /* Bind the dispatch permit to the domain stamp used by Cedar in the
+           deciding transaction. The queued-to-unknown CAS must affect one row. */
         doc /* Final stream use joins the exact durable range sequence, offset,
            length and unwritten unknown state to the owned permit, message cursor
            and next sequence. An inconsistent receipt denies the writer and

@@ -9,7 +9,7 @@ vars: { d2-config: { data: { figure: |json
   "design": {
     "audience": "Gateway design and runtime reviewers",
     "medium": "GitHub at 830 CSS pixels",
-    "message": "Migration preserves outstanding holds and history before fencing old owners.",
+    "message": "Migration keeps original holds and history. Final use checks current Policy.",
     "questionRefs": [
       "q1"
     ],
@@ -132,14 +132,14 @@ vars: { d2-config: { data: { figure: |json
   "modelSource": {
     "ref": "sdkCapture",
     "view": "WeaverArchitectureReaderViews::migration",
-    "modelHash": "ce385f561ec08305552317e22f90a73884c40b6789376bb883cb086c8f074732",
+    "modelHash": "bb535d526f0ca267b75910707442f8da3d791f719c1b8a9b5d8918af85bd364b",
     "portProjection": "owner",
     "labels": {
       "n0": "Original domain\nClaims and held budget",
       "n1": "Durable history\nKeep all observations",
       "n2": "Authorized migration\nCommit current lineage",
-      "n3": "Current domain\nOriginal obligations retained",
-      "n4": "Old worker\nReject old fence"
+      "n3": "Current domain\nOriginal holds and history",
+      "n4": "Old worker\nCheck fence and Policy"
     }
   }
 }

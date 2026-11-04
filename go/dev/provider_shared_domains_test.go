@@ -18,6 +18,7 @@ import (
 	"time"
 
 	pb "github.com/HardenedLinux/weaver/go/api/gateway/v1"
+	"github.com/HardenedLinux/weaver/go/internal/config"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -173,11 +174,20 @@ func (c *domainMigrationReplyLoss) MigrateExecutionDomains(ctx context.Context, 
 func TestProviderDomainMigrationFencesStreamingReleaseAndRecoversLostReply(t *testing.T) {
 	for _, control := range []bool{false, true} {
 		t.Run(map[bool]string{false: "rust-owner", true: "go-control"}[control], func(t *testing.T) {
-			providerDomainMigrationRecovery(t, control)
+			providerDomainMigrationRecovery(t, control, "")
 		})
 	}
 }
-func providerDomainMigrationRecovery(t *testing.T, useControl bool) {
+
+func TestProviderSameViewRevocationAroundLostMigrationReply(t *testing.T) {
+	for _, order := range []string{"before-union", "after-union"} {
+		t.Run(order, func(t *testing.T) {
+			providerDomainMigrationRecovery(t, true, order)
+		})
+	}
+}
+
+func providerDomainMigrationRecovery(t *testing.T, useControl bool, revokeOrder string) {
 	t.Setenv("WEAVER_STORAGE_JOURNAL", "mvcc")
 	proceed := make(chan struct{})
 	var once sync.Once
@@ -192,9 +202,11 @@ func providerDomainMigrationRecovery(t *testing.T, useControl bool) {
 	}, false)
 	plan, client := f.plan, f.client
 	from, to := "left", "right"
+	var control *controlProcess
+	var bundle config.Bundle
 	if useControl {
-		bundle := controlBundle(t, f)
-		control := newControlProcess(t, f, writeControlBundle(t, f, bundle, "json"))
+		bundle = controlBundle(t, f)
+		control = newControlProcess(t, f, writeControlBundle(t, f, bundle, "json"))
 		control.start(t)
 		t.Cleanup(func() { control.stop(t) })
 		plan, client = bundle.Plans[0], control.client
@@ -223,11 +235,29 @@ func providerDomainMigrationRecovery(t *testing.T, useControl bool) {
 	case <-ctx.Done():
 		t.Fatal("authorized prefix missing")
 	}
+	revoke := func() {
+		t.Helper()
+		parent := bundle.View().Revision
+		publication := bundle.Publication
+		publication.OperationID = "revoke-same-view"
+		publication.ExpectedRevision = &parent
+		publication.Fence++
+		publication.Policy = "forbid(principal,action,resource);"
+		if _, err := f.admin.Publish(ctx, publication); err != nil {
+			t.Fatalf("authoritative revocation: %v", err)
+		}
+	}
+	if revokeOrder == "before-union" {
+		revoke()
+	}
 	command := &pb.DomainMigration{OperationId: "union-original-domains", BudgetFrom: from, BudgetTo: to, HistoryFrom: from, HistoryTo: to, BudgetFromEpoch: 1, BudgetToEpoch: 1, HistoryFromEpoch: 1, HistoryToEpoch: 1}
 	loss := &domainMigrationReplyLoss{GatewayClient: f.admin.RPC}
 	receipt, err := loss.MigrateExecutionDomains(f.admin.Context(ctx), command)
 	if status.Code(err) != codes.Unavailable || receipt != nil || !loss.committed.GetCommitted() {
 		t.Fatalf("real committed migration reply was not lost: %v %v", receipt, err)
+	}
+	if revokeOrder == "after-union" {
+		revoke()
 	}
 	// An actual committed result is unavailable to the caller. The old live
 	// worker must reject its prepared response; recovery must not rebase the CAS.
@@ -238,8 +268,15 @@ func providerDomainMigrationRecovery(t *testing.T, useControl bool) {
 	if text != "prefix" {
 		t.Fatalf("stale release: %q", text)
 	}
+	if revokeOrder != "" {
+		control.stop(t)
+	}
 	f.stop(t)
 	f.start(t)
+	if revokeOrder != "" {
+		control.start(t)
+		client = control.client
+	}
 	recovered, err := f.admin.RPC.MigrateExecutionDomains(f.admin.Context(ctx), command)
 	if err != nil || !proto.Equal(loss.committed, recovered) {
 		t.Fatalf("lost-reply recovery changed outcome: %v %v", recovered, err)
@@ -251,7 +288,16 @@ func providerDomainMigrationRecovery(t *testing.T, useControl bool) {
 	if _, err = client.Execute(ctx, plan, pb.Encoding_PROTOBUF, 1, func(*pb.Event) error { return nil }); err == nil {
 		t.Fatal("migration replayed consumed invocation")
 	}
-	if f.primary.Load() != 1 {
+	if revokeOrder != "" {
+		if _, err = client.Execute(ctx, bundle.Plans[1], pb.Encoding_PROTOBUF, 1, func(*pb.Event) error { t.Error("post-restart output"); return nil }); status.Code(err) != codes.FailedPrecondition {
+			t.Fatalf("historical Go publication did not reject unused node: %v", err)
+		}
+		after, err := f.admin.RPC.InspectExecutionDomains(f.admin.Context(ctx), &pb.OperationKey{Family: from})
+		if err != nil || !proto.Equal(view, after) {
+			t.Fatalf("denied work changed original exposure: before=%v after=%v err=%v", view, after, err)
+		}
+	}
+	if f.primary.Load() != 1 || f.backup.Load() != 0 {
 		t.Fatal("migration duplicated send")
 	}
 }

@@ -181,6 +181,7 @@ func TestSPECProofClosureResearchModels(t *testing.T) {
 		"Weaver.DomainMigrationComposition.overbooked_actual_view_cannot_supply_final_run": false,
 		"Weaver.DomainMigrationComposition.head_cas_preserves_original_obligations":        false,
 		"Weaver.DomainMigrationComposition.final_use_on_committed_union":                   false,
+		"Weaver.DomainMigrationComposition.pre_union_epoch_cannot_match_actual":            false,
 	}
 	for _, declaration := range result.Lean.Declarations {
 		if _, exists := required[declaration.Name]; exists {

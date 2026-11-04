@@ -638,12 +638,12 @@ package WeaverArchitectureReaderViews {
     }
     part def migration_current :> ReaderNode {
         attribute displayName : String = "Current domain";
-        attribute responsibility : String = "Original obligations retained";
+        attribute responsibility : String = "Original holds and history";
         attribute glyph : String = "publication";
     }
     part def migration_old :> ReaderNode {
         attribute displayName : String = "Old worker";
-        attribute responsibility : String = "Reject old fence";
+        attribute responsibility : String = "Check fence and Policy";
         attribute glyph : String = "unknown";
     }
     part migrationBoundary {
@@ -660,12 +660,12 @@ package WeaverArchitectureReaderViews {
     view migration {
         attribute mappedFile : String = "docs/architecture/diagrams/19-finite-domains-and-migration.d2";
         attribute displayTitle : String = "Retain the original domain lineage";
-        attribute displaySubtitle : String = "Migration preserves outstanding holds and history before fencing old owners.";
+        attribute displaySubtitle : String = "Migration keeps original holds and history. Final use checks current Policy.";
         attribute displayEyebrow : String = "WEAVER / SCOPED READER VIEW";
         attribute readerQuestion : String = "What survives a domain migration?";
         attribute designAudience : String = "Gateway design and runtime reviewers";
         attribute designMedium : String = "GitHub at 830 CSS pixels";
-        attribute designMessage : String = "Migration preserves outstanding holds and history before fencing old owners.";
+        attribute designMessage : String = "Migration keeps original holds and history. Final use checks current Policy.";
         attribute designFocus : String = "p_migration";
         attribute visualThemes : String = "sketchbook,field-notes,compact,reading";
         attribute visualOptions : String = "{\"elk.algorithm\":\"layered\",\"elk.direction\":\"DOWN\",\"elk.edgeRouting\":\"ORTHOGONAL\",\"elk.spacing.nodeNode\":\"16\",\"elk.layered.spacing.nodeNodeBetweenLayers\":\"27\"}";
