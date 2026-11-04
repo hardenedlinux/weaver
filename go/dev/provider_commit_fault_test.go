@@ -70,7 +70,8 @@ func observeCommit(t testing.TB) *commitController {
 				socket.Close()
 				return
 			}
-			if event.phase == "Boot" || event.phase == "Mutation" {
+			switch event.phase {
+			case "Boot", "Mutation", "Stage", "Publish":
 				socket.Close()
 			}
 			select {

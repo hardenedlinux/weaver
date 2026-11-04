@@ -11,9 +11,11 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"math/rand"
 	"net/http"
 	"path/filepath"
 	"testing"
+	"testing/quick"
 	"time"
 
 	pb "github.com/HardenedLinux/weaver/go/api/gateway/v1"
@@ -24,11 +26,33 @@ import (
 func TestProviderMutationCASOverlapsFinalSend(t *testing.T) {
 	t.Setenv("WEAVER_STORAGE_JOURNAL", "mvcc")
 	for _, schedule := range []struct{ mutation, cut string }{
-		{"policy", "after"}, {"migration", "before"}, {"migration", "after"},
+		{"policy", "before"}, {"policy", "after"}, {"stale-policy", "before"},
+		{"migration", "before"}, {"migration", "after"},
 	} {
 		t.Run(schedule.mutation+"/"+schedule.cut, func(t *testing.T) {
-			providerMutationRace(t, observedServer(t), schedule.mutation, schedule.cut, true)
+			providerMutationRace(t, observedServer(t), schedule.mutation, schedule.cut, pb.Encoding_PROTOBUF, true)
 		})
+	}
+}
+
+func TestProviderPolicyPrecommitFaultProperty(t *testing.T) {
+	t.Setenv("WEAVER_STORAGE_JOURNAL", "mvcc")
+	image := observedServer(t)
+	check := func(selector uint8) bool {
+		mutation := "policy"
+		if selector&1 != 0 {
+			mutation = "stale-policy"
+		}
+		encoding := pb.Encoding_PROTOBUF
+		if selector&2 != 0 {
+			encoding = pb.Encoding_ARROW_IPC
+		}
+		t.Logf("generated Policy fault selector=%d (%s/%s)", selector, mutation, encoding)
+		providerMutationRace(t, image, mutation, "before", encoding, true)
+		return true
+	}
+	if err := quick.Check(check, &quick.Config{MaxCount: 4, Rand: rand.New(rand.NewSource(293))}); err != nil {
+		t.Fatal(err)
 	}
 }
 
@@ -42,16 +66,18 @@ func BenchmarkProviderMutationCASPair(b *testing.B) {
 		b.Fatal(err)
 	}
 	b.Logf("paired observed image sha256=%s", digest)
-	for i, cut := range []string{"after", "before", "before", "after"} {
-		b.Run(fmt.Sprintf("%d-%s", i, cut), func(b *testing.B) {
-			b.StopTimer()
-			var elapsed time.Duration
-			for range b.N {
-				elapsed += providerMutationRace(b, image, "migration", cut, false)
-			}
-			b.ReportMetric(float64(elapsed.Nanoseconds())/float64(b.N), "mutation-ns/op")
-			b.ReportMetric(0, "ns/op")
-		})
+	for _, mutation := range []string{"policy", "migration"} {
+		for i, cut := range []string{"after", "before", "before", "after"} {
+			b.Run(fmt.Sprintf("%s/%d-%s", mutation, i, cut), func(b *testing.B) {
+				b.StopTimer()
+				var elapsed time.Duration
+				for range b.N {
+					elapsed += providerMutationRace(b, image, mutation, cut, pb.Encoding_PROTOBUF, false)
+				}
+				b.ReportMetric(float64(elapsed.Nanoseconds())/float64(b.N), "mutation-ns/op")
+				b.ReportMetric(0, "ns/op")
+			})
+		}
 	}
 }
 
@@ -61,7 +87,7 @@ type mutationResult struct {
 	recover   func(context.Context) error
 }
 
-func providerMutationRace(t testing.TB, image, mutation, cut string, restart bool) time.Duration {
+func providerMutationRace(t testing.TB, image, mutation, cut string, encoding pb.Encoding, restart bool) time.Duration {
 	t.Helper()
 	controller := observeCommit(t)
 	bodyRead := make(chan struct{}, 1)
@@ -106,7 +132,14 @@ func providerMutationRace(t testing.TB, image, mutation, cut string, restart boo
 		publication.OperationID, publication.ExpectedRevision = id, &parent
 		publication.Fence++
 		publication.Policy = "forbid(principal,action,resource);"
-		receipt, err := f.admin.RPC.PublishAuthority(f.admin.Context(ctx), gatewayclient.Publication(publication))
+		rpc := f.admin.RPC
+		if mutation == "stale-policy" && id == "racing-a" {
+			// A stale parent may be rejected without review. Bypass only the test
+			// decorator so that this exact final RPC reaches the held send scope.
+			parent--
+			rpc = rpc.(*fixtureReviewer).GatewayClient
+		}
+		receipt, err := rpc.PublishAuthority(f.admin.Context(ctx), gatewayclient.Publication(publication))
 		if err == nil && receipt.GetOutcome() != pb.PublicationOutcome_COMMITTED && receipt.GetOutcome() != pb.PublicationOutcome_REJECTED {
 			err = errors.New("missing durable publication decision")
 		}
@@ -121,7 +154,7 @@ func providerMutationRace(t testing.TB, image, mutation, cut string, restart boo
 	results := make(chan mutationResult, 1)
 	done := make(chan error, 1)
 	go func() {
-		_, err := control.client.Execute(ctx, bundle.Plans[0], pb.Encoding_PROTOBUF, 1, func(*pb.Event) error {
+		_, err := control.client.Execute(ctx, bundle.Plans[0], encoding, 1, func(*pb.Event) error {
 			t.Error("unconfirmed dispatch emitted a frame")
 			return nil
 		})
@@ -130,6 +163,13 @@ func providerMutationRace(t testing.TB, image, mutation, cut string, restart boo
 	phase, marker, decision := "BeforeCommit", 1, byte('r')
 	if cut == "after" {
 		phase, marker, decision = "AfterCommit", 2, 'l'
+	}
+	arrival := "Mutation"
+	switch mutation {
+	case "policy":
+		arrival = "Stage"
+	case "stale-policy":
+		arrival = "Publish"
 	}
 	var event commitCut
 	var start time.Time
@@ -152,7 +192,7 @@ func providerMutationRace(t testing.TB, image, mutation, cut string, restart boo
 				case observed.phase == phase && observed.marker == marker:
 					event = observed
 					defer event.socket.Close()
-				case observed.phase == "Mutation" && observed.marker == 0:
+				case observed.phase == arrival && observed.marker == 0:
 				default:
 					t.Fatalf("unexpected race observation: %+v", observed)
 				}
@@ -167,10 +207,12 @@ func providerMutationRace(t testing.TB, image, mutation, cut string, restart boo
 		event = controller.await(t, ctx, phase, marker)
 		defer event.socket.Close()
 		launch()
-		controller.await(t, ctx, "Mutation", 0)
+		controller.await(t, ctx, arrival, 0)
 	}
 	if cut == "before" {
 		select {
+		case unexpected := <-controller.events:
+			t.Fatalf("source advanced during live send scope: %s", unexpected.phase)
 		case outcome := <-results:
 			assertNoFaultWorkerUnwind(t, f)
 			t.Fatalf("mutation completed inside live send scope after %s: committed=%v err=%v", time.Since(start), outcome.committed, outcome.err)
@@ -178,20 +220,27 @@ func providerMutationRace(t testing.TB, image, mutation, cut string, restart boo
 		}
 		resumeCommit(t, event, decision)
 	}
-	var winner mutationResult
+	var first mutationResult
 	select {
-	case winner = <-results:
+	case first = <-results:
 	case <-ctx.Done():
 		t.Fatal("admitted source mutation did not resolve", ctx.Err())
 	}
-	// The other operation retains its original parent or epochs.
-	loser := mutate("racing-b")
+	// Reviewed publication must progress from staging to the actual final
+	// CAS. In the before arm this event must follow release of the send scope.
+	if mutation == "policy" {
+		controller.await(t, ctx, "Publish", 0)
+	}
+	// The other operation uses the same parent or epochs for the positive race.
+	// The negative stale-policy arm instead follows its rejection with a
+	// reviewed publication from the current parent.
+	second := mutate("racing-b")
 	elapsed := time.Since(start)
 	if cut == "after" {
 		resumeCommit(t, event, decision)
 	}
-	if winner.err != nil || !winner.committed || loser.err != nil || loser.committed {
-		t.Fatalf("expected one durable winner and one stale rejection: winner=%v/%v loser=%v/%v", winner.committed, winner.err, loser.committed, loser.err)
+	if first.err != nil || second.err != nil || first.committed != (mutation != "stale-policy") || second.committed != (mutation == "stale-policy") {
+		t.Fatalf("expected one durable first and one stale rejection: first=%v/%v second=%v/%v", first.committed, first.err, second.committed, second.err)
 	}
 	if err := <-done; err == nil {
 		t.Fatal("unconfirmed native result succeeded")
@@ -211,12 +260,12 @@ func providerMutationRace(t testing.TB, image, mutation, cut string, restart boo
 		controller.await(t, ctx, "Boot", marker)
 		control.start(t)
 	}
-	for _, outcome := range []mutationResult{winner, loser} {
+	for _, outcome := range []mutationResult{first, second} {
 		if err := outcome.recover(ctx); err != nil {
 			t.Fatal(err)
 		}
 	}
-	if _, err := control.client.Execute(ctx, bundle.Plans[0], pb.Encoding_PROTOBUF, 1, func(*pb.Event) error {
+	if _, err := control.client.Execute(ctx, bundle.Plans[0], encoding, 1, func(*pb.Event) error {
 		t.Error("replay emitted a frame")
 		return nil
 	}); err == nil {

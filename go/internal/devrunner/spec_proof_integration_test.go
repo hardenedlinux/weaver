@@ -183,6 +183,7 @@ func TestSPECProofClosureResearchModels(t *testing.T) {
 		"Weaver.DomainMigrationComposition.final_use_on_committed_union":                   false,
 		"Weaver.DomainMigrationComposition.pre_union_epoch_cannot_match_actual":            false,
 		"Weaver.DomainMigrationComposition.stale_parent_or_epoch_cannot_match":             false,
+		"Weaver.DomainMigrationComposition.staged_policy_excludes_actual_effect":           false,
 	}
 	for _, declaration := range result.Lean.Declarations {
 		if _, exists := required[declaration.Name]; exists {

@@ -94,6 +94,8 @@ package WeaverExecution {
         doc /* Authority publication and domain migration take the exclusive owner
            gate. A live final-send scope excludes these mutations through commit
            or rollback. After commit, acknowledgment can overlap a new CAS.
+           Reviewed staging also takes the exclusive gate. Its durable pending
+           barrier excludes a fresh final-use guard until a decision clears it.
            A rejected parent or epoch cannot rebase an original command. */
     }
     requirement def UnknownRetainsHold {

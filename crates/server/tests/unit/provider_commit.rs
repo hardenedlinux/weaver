@@ -83,7 +83,7 @@ fn durable_marker() -> i64 {
     )
     .expect("persisted dispatch marker")
 }
-pub(crate) fn mutation_started(operation: &str) {
+pub(crate) fn mutation_started(operation: &str, phase: &str) {
     if operation == "racing-a"
         && let Some(observer) = OBSERVER.get()
     {
@@ -92,7 +92,7 @@ pub(crate) fn mutation_started(operation: &str) {
             .set_write_timeout(Some(Duration::from_secs(3)))
             .expect("bounded observation");
         socket
-            .write_all(b"Mutation 0\n")
+            .write_all(format!("{phase} 0\n").as_bytes())
             .expect("source worker entered");
     }
 }

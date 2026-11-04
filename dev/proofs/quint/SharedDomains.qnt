@@ -8,15 +8,15 @@
 module SharedDomains {
   val families=Set(0,1,2)
   type State={root:int->int,hroot:int->int,held:int->int,claims:Set[int],history:Set[int],spent:Set[int],
-    epoch:int,permit:int->int,calls:int->int,owner:int,permitOwner:int->int,active:Set[int],merged:bool,receipt:bool,revoked:bool}
+    epoch:int,permit:int->int,calls:int->int,owner:int,permitOwner:int->int,active:Set[int],merged:bool,receipt:bool,revoked:bool,policyPending:bool}
   var s:State
   val initial={root:Map(0->0,1->0,2->2),hroot:Map(0->0,1->0,2->2),held:Map(0->0,1->0,2->0),claims:Set(),history:Set(),spent:Set(),
-    epoch:1,permit:Map(0->0,1->0,2->0),calls:Map(0->0,1->0,2->0),owner:1,permitOwner:Map(0->0,1->0,2->0),active:Set(),merged:false,receipt:false,revoked:false}
+    epoch:1,permit:Map(0->0,1->0,2->0),calls:Map(0->0,1->0,2->0),owner:1,permitOwner:Map(0->0,1->0,2->0),active:Set(),merged:false,receipt:false,revoked:false,policyPending:false}
   def exposure(d:int):int=families.filter(f=>s.root.get(f)==d).fold(0,(n,f)=>n+s.held.get(f))
   val safety= s.root.get(0)==s.root.get(1) and s.hroot.get(0)==s.hroot.get(1) and
     families.forall(f=>s.calls.get(f)<=1 and (s.spent.contains(f) implies s.claims.contains(f)) and
       (s.claims.contains(f) implies s.held.get(f)==3 and s.history.contains(f)) and exposure(s.root.get(f))<=6) and
-    (s.revoked implies s.active==Set()) and
+    ((s.revoked or s.policyPending) implies s.active==Set()) and
     s.active.forall(f=>s.permit.get(f)==s.epoch and s.permitOwner.get(f)==s.owner and
       s.active.forall(g=>f==g or (s.root.get(f)!=s.root.get(g) and s.hroot.get(f)!=s.hroot.get(g))))
   action init=s'=initial
@@ -24,7 +24,7 @@ module SharedDomains {
     s'=s.with("claims",s.claims.union(Set(f))).with("history",s.history.union(Set(f))).with("held",s.held.set(f,3))}
   action consume(f:int):bool=all{s.claims.contains(f),not(s.spent.contains(f)),s.active==Set(),
     s'=s.with("spent",s.spent.union(Set(f))).with("permit",s.permit.set(f,s.epoch)).with("permitOwner",s.permitOwner.set(f,s.owner))}
-  action finalGuard(f:int):bool=all{not(s.revoked),s.spent.contains(f),s.permit.get(f)==s.epoch,s.permitOwner.get(f)==s.owner,s.calls.get(f)==0,
+  action finalGuard(f:int):bool=all{not(s.revoked),not(s.policyPending),s.spent.contains(f),s.permit.get(f)==s.epoch,s.permitOwner.get(f)==s.owner,s.calls.get(f)==0,
     s.active.forall(g=>f!=g and s.root.get(f)!=s.root.get(g) and s.hroot.get(f)!=s.hroot.get(g)),s'=s.with("active",s.active.union(Set(f)))}
   action send(f:int):bool=all{s.active.contains(f),s.calls.get(f)==0,s'=s.with("calls",s.calls.set(f,1)).with("active",s.active.exclude(Set(f)))}
   action migrate=all{not(s.receipt),s.active==Set(),exposure(0)+exposure(2)<=6,s'=s.with("root",Map(0->2,1->2,2->2)).with("hroot",Map(0->2,1->2,2->2)).with("epoch",s.epoch+1).with("merged",true).with("receipt",true)}
@@ -40,7 +40,16 @@ module SharedDomains {
   action unsafeRefund(f:int):bool=s'=s.with("held",s.held.set(f,0))
   action accepted=init.then(reserve(0)).then(consume(0))
   action revoke=all{s.active==Set(),not(s.revoked),s'=s.with("revoked",true)}
-  action step={nondet f=families.oneOf() any{reserve(f),consume(f),finalGuard(f),send(f),migrate,rejectMigration,replay,replyLoss,restart,alias,revoke}}
+  action stagePolicy=all{s.active==Set(),not(s.policyPending),not(s.revoked),s'=s.with("policyPending",true)}
+  action finalizePolicy=all{s.policyPending,s.active==Set(),s'=s.with("policyPending",false).with("revoked",true)}
+  action unsafeStageOverWriter=s'=s.with("policyPending",true)
+  action step={nondet f=families.oneOf() any{reserve(f),consume(f),finalGuard(f),send(f),migrate,rejectMigration,replay,replyLoss,restart,alias,revoke,stagePolicy,finalizePolicy}}
+  run reviewedStagingWaitsForWriterTest=accepted.then(finalGuard(0)).then(stagePolicy.fail())
+  run stagedPublicationRetainsUnknownAfterRestartTest=accepted.then(finalGuard(0)).then(send(0)).then(stagePolicy)
+    .then(replyLoss).then(restart).expect(safety and s.policyPending and s.held.get(0)==3 and s.history.contains(0))
+    .then(finalizePolicy).then(finalGuard(0).fail())
+  run stagedPublicationBlocksFreshFinalUseTest=accepted.then(stagePolicy).then(finalGuard(0).fail())
+  run stagingOvertakesWriterCounterexampleTest=accepted.then(finalGuard(0)).then(unsafeStageOverWriter).expect(not(safety))
   run revocationBeforeUnionRecoveryTest=accepted.then(revoke).then(migrate).then(replyLoss).then(restart).then(replay).expect(safety and s.revoked and s.held.get(0)==3).then(finalGuard(0).fail())
   run revocationAfterUnionRecoveryTest=accepted.then(migrate).then(replyLoss).then(revoke).then(restart).then(replay).expect(safety and s.revoked and s.history.contains(0)).then(finalGuard(0).fail())
   run ignoreRevocationCounterexampleTest=accepted.then(revoke).then(unsafeStaleUse(0)).expect(not(safety))

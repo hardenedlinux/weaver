@@ -5,6 +5,7 @@
 import CedarPooSpec.Gateway.ZeroTrust
 import GatewayHeadCAS
 import SharedDomains
+import PublicationRecovery
 
 /-! Strengthen the existing SPEC final-use framework with the existing finite
 domain execution model on the SAME deciding view. No duplicate state machine,
@@ -128,5 +129,20 @@ theorem stale_parent_or_epoch_cannot_match
   · exact pre_union_epoch_cannot_match_actual use domain left right union old sameEpoch
 
 #print axioms stale_parent_or_epoch_cannot_match
+
+/-- Staging preserves an unresolved barrier on the actual publication image.
+The transport guard must require readiness of that same image. -/
+theorem staged_policy_excludes_actual_effect {Key : Type} [DecidableEq Key]
+    (prior : PublicationRecovery.State Key) (id : Key) (q : Nat × Nat × Nat)
+    (actual : PublicationRecovery.State Key)
+    (bound : actual = {prior with pending := PublicationRecovery.write prior.pending id q})
+    (effectRequiresReady : allowed → PublicationRecovery.Ready actual) :
+    ¬ allowed := by
+  subst actual
+  intro effect
+  exact PublicationRecovery.staged_intent_blocks_effect_readiness (s := prior) id q
+    (effectRequiresReady effect)
+
+#print axioms staged_policy_excludes_actual_effect
 
 end Weaver.DomainMigrationComposition

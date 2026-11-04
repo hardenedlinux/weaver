@@ -340,7 +340,7 @@ package WeaverArchitectureReaderViews {
     }
     part def policyExecution_guard :> ReaderNode {
         attribute displayName : String = "Rust actual-use guard";
-        attribute responsibility : String = "Join permission and custody";
+        attribute responsibility : String = "Require resolved Policy";
         attribute glyph : String = "authorization";
     }
     part def policyExecution_writer :> ReaderNode {
