@@ -276,16 +276,30 @@ impl Ledger {
     }
 
     pub fn apply_metering(&mut self, evidence: &MeteringReceipt) -> Result<MeteringApplication> {
+        self.apply_metering_from(evidence, None)
+    }
+
+    pub fn apply_metering_from(
+        &mut self,
+        evidence: &MeteringReceipt,
+        caller: Option<&weaver_contracts::SourceIdentity>,
+    ) -> Result<MeteringApplication> {
         evidence.validate()?;
         // Origins are immutable. Reject absent or aliased families before taking
         // the family scope; the deciding transaction still verifies the full join.
-        let original_family = crate::domains::view(&self.connection, &evidence.family)?;
-        if original_family.canonical_family != evidence.family {
-            return Err(Error::Denied);
-        }
+        require_meter_family(&self.connection, &evidence.family)?;
         let tx = persistence::begin_family(&mut self.connection, &evidence.family).map_err(db)?;
         crate::source_authority::require(&tx, self.source.as_ref())?;
         let config = deployment(&tx)?.ok_or(Error::Denied)?;
+        if let Some(caller) = caller {
+            crate::metering_credentials::require(
+                &tx,
+                &config,
+                caller,
+                &evidence.tenant,
+                &evidence.issuer,
+            )?;
+        }
         let result = original(&tx, &config, evidence)?;
         let released = result.released;
         crate::domains::require(&tx, &evidence.family)?;
@@ -528,9 +542,25 @@ fn terminal_usage(
 }
 
 impl Ledger {
-    pub fn inspect_terminal_usage(&self, family: &str, node: &str) -> Result<MeteringReceipt> {
-        crate::source_authority::require(&self.connection, self.source.as_ref())?;
-        let config = deployment(&self.connection)?.ok_or(Error::Denied)?;
-        terminal_usage(&self.connection, &config, family, node)?.ok_or(Error::Denied)
+    pub fn inspect_terminal_usage(
+        &mut self,
+        caller: &weaver_contracts::SourceIdentity,
+        family: &str,
+        node: &str,
+    ) -> Result<MeteringReceipt> {
+        require_meter_family(&self.connection, family)?;
+        let tx = persistence::begin_family(&mut self.connection, family).map_err(db)?;
+        let config = deployment(&tx)?.ok_or(Error::Denied)?;
+        let record = terminal_usage(&tx, &config, family, node)?.ok_or(Error::Denied)?;
+        crate::metering_credentials::require(&tx, &config, caller, &record.tenant, &record.issuer)?;
+        Ok(record)
+    }
+}
+
+fn require_meter_family(connection: &driver::Connection, family: &str) -> Result<()> {
+    match crate::domains::view(connection, family) {
+        Ok(view) if view.canonical_family == family => Ok(()),
+        Ok(_) | Err(Error::Conflict(_)) => Err(Error::Denied),
+        Err(error) => Err(error),
     }
 }

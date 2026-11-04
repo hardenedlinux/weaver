@@ -10,6 +10,8 @@ import (
 	"context"
 	"crypto/ed25519"
 	"crypto/rand"
+	"crypto/sha256"
+	"crypto/tls"
 	"crypto/x509"
 	"encoding/hex"
 	"encoding/json"
@@ -24,12 +26,14 @@ import (
 	"slices"
 	"strings"
 	"testing"
+	"testing/quick"
 	"time"
 
 	pb "github.com/HardenedLinux/weaver/go/api/gateway/v1"
 	v1 "github.com/HardenedLinux/weaver/go/api/v1"
 	"github.com/HardenedLinux/weaver/go/internal/gatewayclient"
 	"github.com/HardenedLinux/weaver/go/internal/metering"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
@@ -49,17 +53,21 @@ func TestProviderTerminalUsageIndependentIssuer(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
+			otherKey, _, err := ed25519.GenerateKey(rand.Reader)
+			if err != nil {
+				t.Fatal(err)
+			}
 			config, err := json.Marshal(map[string]any{
 				"audience": "terminal-meter", "require_terminal_usage": true,
 				"quotas": map[string]any{
 					"families": map[string]string{"f": "key"},
 					"keys":     map[string]any{"key": map[string]any{"principal": "alice", "limit": 4}},
-					"users":    map[string]uint64{"alice": 4}, "tenants": map[string]uint64{"tenant": 4},
+					"users":    map[string]uint64{"alice": 4}, "tenants": map[string]uint64{"tenant": 4, "other": 4},
 				},
-				"tenants": map[string]any{"tenant": map[string]any{
-					"issuer": "meter", "public_key": hex.EncodeToString(pub), "principals": []string{"alice"},
-					"rates": [4]uint64{1_000_000, 0, 0, 1_000_000},
-				}},
+				"tenants": map[string]any{
+					"tenant": map[string]any{"issuer": "meter", "public_key": hex.EncodeToString(pub), "principals": []string{"alice"}, "rates": [4]uint64{1_000_000, 0, 0, 1_000_000}},
+					"other":  map[string]any{"issuer": "other-meter", "public_key": hex.EncodeToString(otherKey), "principals": []string{"bob"}, "rates": [4]uint64{1_000_000}},
+				},
 			})
 			if err != nil {
 				t.Fatal(err)
@@ -75,6 +83,30 @@ func TestProviderTerminalUsageIndependentIssuer(t *testing.T) {
 			}, false, serverBinary, nil, []string{"WEAVER_METERING=" + string(config)})
 			ctx, cancel := context.WithTimeout(t.Context(), 12*time.Second)
 			defer cancel()
+			rotate := func(tenant, issuer string, expected uint64, cert tls.Certificate, token string) *pb.MeterCredentialRotation {
+				hash := sha256.Sum256([]byte(token))
+				return &pb.MeterCredentialRotation{Tenant: tenant, Issuer: issuer, ExpectedEpoch: expected, Certificate: cert.Certificate[0], CredentialSha256: hex.EncodeToString(hash[:])}
+			}
+			publishMeter := func(r *pb.MeterCredentialRotation) (uint64, error) {
+				out, err := f.admin.RPC.RotateMeterCredential(f.admin.Context(ctx), r)
+				return out.GetEpoch(), err
+			}
+			dialMeter := func(cert tls.Certificate, token string) *gatewayclient.Client {
+				t.Helper()
+				client, err := gatewayclient.Dial(ctx, f.sourceAddress, token, &tls.Config{RootCAs: f.pki.root, Certificates: []tls.Certificate{cert}, ServerName: "localhost"})
+				if err != nil {
+					t.Fatal(err)
+				}
+				t.Cleanup(func() { client.Connection.Close() })
+				return client
+			}
+			cert := secondaryClient(t, f.pki)
+			const token = "independent-meter-token"
+			first := rotate("tenant", "meter", 0, cert, token)
+			if epoch, err := publishMeter(first); err != nil || epoch != 1 {
+				t.Fatalf("enrollment: %d %v", epoch, err)
+			}
+			meter := dialMeter(cert, token)
 			operation := &pb.OperationKey{Family: f.plan.Family, Node: f.plan.Node}
 			digest, err := f.plan.Digest()
 			if err != nil {
@@ -119,7 +151,7 @@ func TestProviderTerminalUsageIndependentIssuer(t *testing.T) {
 			if !complete {
 				f.stop(t)
 				f.start(t)
-				if _, err := f.admin.RPC.InspectTerminalUsage(f.admin.Context(ctx), operation); status.Code(err) != codes.PermissionDenied {
+				if _, err := meter.RPC.InspectTerminalUsage(meter.Context(ctx), operation); status.Code(err) != codes.PermissionDenied {
 					t.Fatalf("late nonterminal usage became signable: %v", err)
 				}
 				r := inspect(t, f)
@@ -130,7 +162,7 @@ func TestProviderTerminalUsageIndependentIssuer(t *testing.T) {
 				if err != nil {
 					t.Fatal(err)
 				}
-				if _, err := f.admin.RPC.ApplyMetering(f.admin.Context(ctx), &pb.MeteringReceipt{
+				if _, err := meter.RPC.ApplyMetering(meter.Context(ctx), &pb.MeteringReceipt{
 					Audience: late.Audience, Tenant: late.Tenant, Issuer: late.Issuer, Application: late.Application, Family: late.Family, Node: late.Node,
 					Origin: late.Origin, PlanDigest: late.PlanDigest, Target: late.Target, FormulaDigest: late.FormulaDigest,
 					TerminalDigest: late.TerminalDigest, Tokens: late.Tokens[:], Signature: signature,
@@ -142,18 +174,70 @@ func TestProviderTerminalUsageIndependentIssuer(t *testing.T) {
 				}
 				return
 			}
-			observed, err := f.admin.RPC.InspectTerminalUsage(f.admin.Context(ctx), operation)
+			observed, err := meter.RPC.InspectTerminalUsage(meter.Context(ctx), operation)
 			if err != nil || !slices.Equal(observed.GetTokens(), []uint64{1, 2, 0, 1}) || observed.GetFormulaDigest() != oldFormula {
 				t.Fatalf("normalized evidence: %v %v", observed, err)
 			}
+			if _, err := f.admin.RPC.InspectTerminalUsage(f.admin.Context(ctx), operation); status.Code(err) != codes.PermissionDenied {
+				t.Fatalf("source read: %v", err)
+			}
+			if _, err := meter.RPC.InspectSourceAuthority(meter.Context(ctx), &pb.Empty{}); status.Code(err) != codes.Unauthenticated {
+				t.Fatalf("meter source authority: %v", err)
+			}
+			otherCert := secondaryClient(t, f.pki)
+			if _, err := publishMeter(rotate("other", "other-meter", 0, otherCert, "other-meter-token")); err != nil {
+				t.Fatal(err)
+			}
+			other := dialMeter(otherCert, "other-meter-token")
+			if err := quick.Check(func(onWrongTenant bool, wrongNode uint8) bool {
+				request := proto.Clone(operation).(*pb.OperationKey)
+				client := other
+				if !onWrongTenant {
+					client = meter
+					request.Node = fmt.Sprintf("wrong-%d", wrongNode)
+				}
+				_, err := client.RPC.InspectTerminalUsage(client.Context(ctx), request)
+				return status.Code(err) == codes.PermissionDenied
+			}, &quick.Config{MaxCount: 12}); err != nil {
+				t.Fatal(err)
+			}
 			issuer := metering.Issuer{Audience: "terminal-meter", Tenant: "tenant", ID: "meter", Key: key}
-			loss := &meteringReplyLoss{GatewayClient: f.admin.RPC}
-			if _, err := issuer.Settle(f.admin.Context(ctx), loss, operation); status.Code(err) != codes.Unavailable {
+			loss := &meteringReplyLoss{GatewayClient: meter.RPC}
+			if _, err := issuer.Settle(meter.Context(ctx), loss, operation); status.Code(err) != codes.Unavailable {
 				t.Fatalf("settlement reply loss: %v", err)
+			}
+			if _, err := other.RPC.ApplyMetering(other.Context(ctx), loss.signed); status.Code(err) != codes.PermissionDenied {
+				t.Fatalf("cross-tenant signed replay: %v", err)
+			}
+			if _, err := f.admin.RPC.ApplyMetering(f.admin.Context(ctx), loss.signed); status.Code(err) != codes.PermissionDenied {
+				t.Fatalf("source signed replay: %v", err)
+			}
+			next := secondaryClient(t, f.pki)
+			const nextToken = "independent-meter-next-token"
+			rotation := rotate("tenant", "meter", 1, next, nextToken)
+			lost := lostMeterRotation{GatewayClient: f.admin.RPC}
+			if _, err := lost.RotateMeterCredential(f.admin.Context(ctx), rotation); status.Code(err) != codes.Unavailable {
+				t.Fatalf("rotation loss: %v", err)
+			}
+			if epoch, err := publishMeter(rotation); err != nil || epoch != 2 {
+				t.Fatalf("rotation recovery: %d %v", epoch, err)
+			}
+			if epoch, err := publishMeter(first); err != nil || epoch != 1 {
+				t.Fatalf("historical replay: %d %v", epoch, err)
+			}
+			if _, err := issuer.Settle(meter.Context(ctx), meter.RPC, operation); status.Code(err) != codes.PermissionDenied {
+				t.Fatalf("retired meter used before restart: %v", err)
 			}
 			f.stop(t)
 			f.start(t)
-			certKey, err := x509.MarshalPKCS8PrivateKey(f.pki.source.PrivateKey)
+			retired := dialMeter(cert, token)
+			if _, err := retired.RPC.InspectTerminalUsage(retired.Context(ctx), operation); status.Code(err) != codes.PermissionDenied {
+				t.Fatalf("retired meter used after restart: %v", err)
+			}
+			if _, err := retired.RPC.ApplyMetering(retired.Context(ctx), loss.signed); status.Code(err) != codes.PermissionDenied {
+				t.Fatalf("retired meter signed replay: %v", err)
+			}
+			certKey, err := x509.MarshalPKCS8PrivateKey(next.PrivateKey)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -166,12 +250,12 @@ func TestProviderTerminalUsageIndependentIssuer(t *testing.T) {
 				return path
 			}
 			settings := []string{
-				"WEAVER_METER_TLS_CERT=" + write("cert", pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: f.pki.source.Certificate[0]})),
+				"WEAVER_METER_TLS_CERT=" + write("cert", pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: next.Certificate[0]})),
 				"WEAVER_METER_TLS_KEY=" + write("key", pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes: certKey})),
 				"WEAVER_METER_TLS_CA=" + write("ca", f.pki.ca),
 				"WEAVER_METER_SIGNING_SEED=" + write("seed", []byte(hex.EncodeToString(key.Seed()))),
 				"WEAVER_METER_AUDIENCE=terminal-meter", "WEAVER_METER_TENANT=tenant", "WEAVER_METER_ISSUER=meter",
-				"WEAVER_METER_SOURCE_ADDR=" + f.sourceAddress, "WEAVER_METER_SOURCE_TOKEN=" + f.admin.Token,
+				"WEAVER_METER_SOURCE_ADDR=" + f.sourceAddress, "WEAVER_METER_TOKEN=" + nextToken,
 				"WEAVER_METER_TLS_SERVER_NAME=localhost",
 			}
 			for range 2 {
@@ -191,4 +275,13 @@ func TestProviderTerminalUsageIndependentIssuer(t *testing.T) {
 			}
 		})
 	}
+}
+
+type lostMeterRotation struct{ pb.GatewayClient }
+
+func (c lostMeterRotation) RotateMeterCredential(ctx context.Context, r *pb.MeterCredentialRotation, options ...grpc.CallOption) (*pb.MeterCredentialEpoch, error) {
+	if _, err := c.GatewayClient.RotateMeterCredential(ctx, r, options...); err != nil {
+		return nil, err
+	}
+	return nil, status.Error(codes.Unavailable, "meter rotation response lost")
 }

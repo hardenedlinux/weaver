@@ -25,6 +25,7 @@ const _ = grpc.SupportPackageIsVersion8
 const (
 	Gateway_ExecuteProvider_FullMethodName           = "/weaver.gateway.v1.Gateway/ExecuteProvider"
 	Gateway_Inspect_FullMethodName                   = "/weaver.gateway.v1.Gateway/Inspect"
+	Gateway_RotateMeterCredential_FullMethodName     = "/weaver.gateway.v1.Gateway/RotateMeterCredential"
 	Gateway_InspectTerminalUsage_FullMethodName      = "/weaver.gateway.v1.Gateway/InspectTerminalUsage"
 	Gateway_ApplyMetering_FullMethodName             = "/weaver.gateway.v1.Gateway/ApplyMetering"
 	Gateway_RegisterTask_FullMethodName              = "/weaver.gateway.v1.Gateway/RegisterTask"
@@ -54,6 +55,7 @@ const (
 type GatewayClient interface {
 	ExecuteProvider(ctx context.Context, in *ProviderRequest, opts ...grpc.CallOption) (Gateway_ExecuteProviderClient, error)
 	Inspect(ctx context.Context, in *OperationKey, opts ...grpc.CallOption) (*ProviderReceipt, error)
+	RotateMeterCredential(ctx context.Context, in *MeterCredentialRotation, opts ...grpc.CallOption) (*MeterCredentialEpoch, error)
 	InspectTerminalUsage(ctx context.Context, in *OperationKey, opts ...grpc.CallOption) (*MeteringReceipt, error)
 	ApplyMetering(ctx context.Context, in *MeteringReceipt, opts ...grpc.CallOption) (*MeteringApplication, error)
 	RegisterTask(ctx context.Context, in *RegisterTaskRequest, opts ...grpc.CallOption) (*Empty, error)
@@ -128,6 +130,16 @@ func (c *gatewayClient) Inspect(ctx context.Context, in *OperationKey, opts ...g
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ProviderReceipt)
 	err := c.cc.Invoke(ctx, Gateway_Inspect_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *gatewayClient) RotateMeterCredential(ctx context.Context, in *MeterCredentialRotation, opts ...grpc.CallOption) (*MeterCredentialEpoch, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MeterCredentialEpoch)
+	err := c.cc.Invoke(ctx, Gateway_RotateMeterCredential_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -350,6 +362,7 @@ func (c *gatewayClient) InspectTelemetry(ctx context.Context, in *Empty, opts ..
 type GatewayServer interface {
 	ExecuteProvider(*ProviderRequest, Gateway_ExecuteProviderServer) error
 	Inspect(context.Context, *OperationKey) (*ProviderReceipt, error)
+	RotateMeterCredential(context.Context, *MeterCredentialRotation) (*MeterCredentialEpoch, error)
 	InspectTerminalUsage(context.Context, *OperationKey) (*MeteringReceipt, error)
 	ApplyMetering(context.Context, *MeteringReceipt) (*MeteringApplication, error)
 	RegisterTask(context.Context, *RegisterTaskRequest) (*Empty, error)
@@ -389,6 +402,9 @@ func (UnimplementedGatewayServer) ExecuteProvider(*ProviderRequest, Gateway_Exec
 }
 func (UnimplementedGatewayServer) Inspect(context.Context, *OperationKey) (*ProviderReceipt, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Inspect not implemented")
+}
+func (UnimplementedGatewayServer) RotateMeterCredential(context.Context, *MeterCredentialRotation) (*MeterCredentialEpoch, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RotateMeterCredential not implemented")
 }
 func (UnimplementedGatewayServer) InspectTerminalUsage(context.Context, *OperationKey) (*MeteringReceipt, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method InspectTerminalUsage not implemented")
@@ -501,6 +517,24 @@ func _Gateway_Inspect_Handler(srv interface{}, ctx context.Context, dec func(int
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(GatewayServer).Inspect(ctx, req.(*OperationKey))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Gateway_RotateMeterCredential_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MeterCredentialRotation)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GatewayServer).RotateMeterCredential(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Gateway_RotateMeterCredential_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GatewayServer).RotateMeterCredential(ctx, req.(*MeterCredentialRotation))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -893,6 +927,10 @@ var Gateway_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Inspect",
 			Handler:    _Gateway_Inspect_Handler,
+		},
+		{
+			MethodName: "RotateMeterCredential",
+			Handler:    _Gateway_RotateMeterCredential_Handler,
 		},
 		{
 			MethodName: "InspectTerminalUsage",

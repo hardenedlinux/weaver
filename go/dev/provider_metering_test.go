@@ -264,6 +264,7 @@ func checkProviderMetering(t *testing.T, charged uint64, completed bool) {
 type meteringReplyLoss struct {
 	pb.GatewayClient
 	committed *pb.MeteringApplication
+	signed    *pb.MeteringReceipt
 }
 
 func (c *meteringReplyLoss) ApplyMetering(ctx context.Context, req *pb.MeteringReceipt, options ...grpc.CallOption) (*pb.MeteringApplication, error) {
@@ -272,5 +273,6 @@ func (c *meteringReplyLoss) ApplyMetering(ctx context.Context, req *pb.MeteringR
 		return nil, err
 	}
 	c.committed = outcome
+	c.signed = proto.Clone(req).(*pb.MeteringReceipt)
 	return nil, status.Error(codes.Unavailable, "injected loss after real metering commit")
 }

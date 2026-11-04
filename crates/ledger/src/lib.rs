@@ -14,6 +14,7 @@ mod domains;
 mod execution_exposure;
 mod exposure_manifest;
 mod metering;
+mod metering_credentials;
 mod provider;
 mod provider_catalog;
 mod provider_profiles;

@@ -241,3 +241,20 @@ theorem issuer_replay_cannot_release_twice (terminal observed matched : Bool)
 #print axioms late_observation_cannot_release
 #print axioms issuer_replay_cannot_release_twice
 end Weaver.TerminalUsage
+
+namespace Weaver.MeterCredential
+
+def permits (current presented tenant requested issuer claimed : Nat) : Prop :=
+  current = presented ∧ tenant = requested ∧ issuer = claimed
+
+theorem retired_epoch_cannot_settle (current retired tenant requested issuer claimed : Nat)
+    (revoked : current ≠ retired) : ¬ permits current retired tenant requested issuer claimed :=
+  fun evidence => revoked evidence.1
+
+theorem other_tenant_cannot_read (epoch tenant other issuer : Nat)
+    (different : tenant ≠ other) : ¬ permits epoch epoch tenant other issuer issuer :=
+  fun evidence => different evidence.2.1
+
+#print axioms retired_epoch_cannot_settle
+#print axioms other_tenant_cannot_read
+end Weaver.MeterCredential

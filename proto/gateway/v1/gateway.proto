@@ -8,6 +8,7 @@ option go_package = "github.com/HardenedLinux/weaver/go/api/gateway/v1;gatewayv1
 service Gateway {
   rpc ExecuteProvider(ProviderRequest) returns (stream ProviderFrame);
   rpc Inspect(OperationKey) returns (ProviderReceipt);
+  rpc RotateMeterCredential(MeterCredentialRotation) returns (MeterCredentialEpoch);
   rpc InspectTerminalUsage(OperationKey) returns (MeteringReceipt);
   rpc ApplyMetering(MeteringReceipt) returns (MeteringApplication);
   rpc RegisterTask(RegisterTaskRequest) returns (Empty);
@@ -108,6 +109,11 @@ message DeltaReview { PublicationReview review = 1; string audience = 2; uint64 
 message PublicationReviewContext { PublicationKey publication = 1; AuthorityParent parent = 2; ReviewAuthority reviewer = 3; SourceAuthorityView source = 4; }
 message ReviewRegistrationReceipt { PublicationKey publication = 1; string review_digest = 2; }
 
+message MeterCredentialRotation {
+ string tenant = 1; string issuer = 2; uint64 expected_epoch = 3;
+ bytes certificate = 4; string credential_sha256 = 5;
+}
+message MeterCredentialEpoch { uint64 epoch = 1; }
 message MeteringReceipt {
   string audience = 1;
   string tenant = 2;

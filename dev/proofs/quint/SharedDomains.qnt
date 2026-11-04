@@ -40,6 +40,10 @@ module SharedDomains {
     if (terminal and observed and matching and not(applied)) 2 else 0
   run lateProviderObservationCannotSettleTest=init.expect(observedRelease(false,true,true,false)==0)
   run restartedIssuerReplayCannotReleaseAgainTest=init.expect(observedRelease(true,true,true,false)==2 and observedRelease(true,true,true,true)==0)
+  pure def meterAllows(currentEpoch:int, presented:int, tenant:int, requested:int, issuer:int, claimed:int):bool=
+    currentEpoch==presented and tenant==requested and issuer==claimed
+  run crossTenantMeterRefusedTest=init.expect(not(meterAllows(1,1,1,2,1,1)))
+  run rotatedMeterRefusedAfterReplayTest=init.expect(not(meterAllows(2,1,1,1,1,1)) and meterAllows(2,2,1,1,1,1))
   action init=s'=initial
   action reserve(f:int):bool=all{not(s.claims.contains(f)),s.active==Set(),exposure(s.root.get(f))+3<=6,
     s'=s.with("claims",s.claims.union(Set(f))).with("history",s.history.union(Set(f))).with("held",s.held.set(f,3))}

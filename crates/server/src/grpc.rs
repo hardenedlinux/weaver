@@ -221,6 +221,42 @@ fn validate_listeners(
     }
     Ok(())
 }
+// Tonic interceptors cannot see the HTTP path. Classify the exact wire
+// methods before the interceptor strips it, using a server-local extension.
+#[derive(Clone)]
+struct MeterPaths<S>(S);
+
+#[derive(Clone)]
+struct MeterMethod;
+
+impl<S: tonic::server::NamedService> tonic::server::NamedService for MeterPaths<S> {
+    const NAME: &'static str = S::NAME;
+}
+
+impl<S, B> tonic::codegen::Service<tonic::codegen::http::Request<B>> for MeterPaths<S>
+where
+    S: tonic::codegen::Service<tonic::codegen::http::Request<B>>,
+{
+    type Response = S::Response;
+    type Error = S::Error;
+    type Future = S::Future;
+
+    fn poll_ready(&mut self, cx: &mut Context<'_>) -> Poll<std::result::Result<(), Self::Error>> {
+        self.0.poll_ready(cx)
+    }
+
+    fn call(&mut self, mut request: tonic::codegen::http::Request<B>) -> Self::Future {
+        if matches!(
+            request.uri().path(),
+            "/weaver.gateway.v1.Gateway/InspectTerminalUsage"
+                | "/weaver.gateway.v1.Gateway/ApplyMetering"
+        ) {
+            request.extensions_mut().insert(MeterMethod);
+        }
+        self.0.call(request)
+    }
+}
+
 async fn serve_listener(
     listener: TcpListener,
     gateway: Gateway,
@@ -238,7 +274,11 @@ async fn serve_listener(
     let service = tonic::service::interceptor::InterceptedService::new(
         service,
         move |request: Request<()>| {
-            authenticated.authenticate(&request, authenticated.ingress.role())?;
+            if request.extensions().get::<MeterMethod>().is_some() {
+                authenticated.meter_identity(&request)?;
+            } else {
+                authenticated.authenticate(&request, authenticated.ingress.role())?;
+            }
             Ok(request)
         },
     );
@@ -251,7 +291,7 @@ async fn serve_listener(
         .initial_connection_window_size(1048576)
         .tls_config(tls.timeout(std::time::Duration::from_secs(3)))
         .map_err(|_| Error::Invalid("gRPC TLS configuration"))?
-        .add_service(service)
+        .add_service(MeterPaths(service))
         .serve_with_incoming_shutdown(
             connections::Incoming::new(listener, std::sync::Arc::new(Semaphore::new(capacity))),
             async move {
@@ -262,6 +302,35 @@ async fn serve_listener(
     result.map_err(|_| Error::Conflict("gRPC server failed"))
 }
 impl Gateway {
+    fn bearer_hash<T>(request: &Request<T>) -> std::result::Result<[u8; 32], Status> {
+        let metadata = request.metadata();
+        if metadata.get_all("authorization").iter().count() != 1 {
+            return Err(Status::unauthenticated("credential required"));
+        }
+        let token = metadata
+            .get("authorization")
+            .and_then(|v| v.to_str().ok())
+            .and_then(|v| v.strip_prefix("Bearer "))
+            .filter(|v| !v.is_empty() && v.len() <= 256)
+            .ok_or(Status::unauthenticated("credential required"))?;
+        let actual: [u8; 32] = Sha256::digest(token.as_bytes()).into();
+        Ok(actual)
+    }
+    fn meter_identity<T>(
+        &self,
+        request: &Request<T>,
+    ) -> std::result::Result<weaver_contracts::SourceIdentity, Status> {
+        if self.runtime.closing() || self.ingress.role() != RpcRole::Source {
+            return Err(Status::permission_denied("meter ingress required"));
+        }
+        let certificate=request.extensions().get::<tonic::transport::server::TlsConnectInfo<tonic::transport::server::TcpConnectInfo>>()
+            .and_then(|tls|tls.peer_certs()).and_then(|chain|chain.first().cloned())
+            .ok_or(Status::unauthenticated("meter certificate required"))?;
+        crate::source_identity::certificate_identity(
+            certificate.as_ref(),
+            hex::encode(Self::bearer_hash(request)?),
+        )
+    }
     fn source_identity<T>(
         &self,
         request: &Request<T>,
@@ -331,17 +400,7 @@ impl Gateway {
         if peer.is_none_or(|digest| !bool::from(digest.as_slice().ct_eq(&self.peer))) {
             return Err(Status::unauthenticated("workload certificate rejected"));
         }
-        let metadata = request.metadata();
-        if metadata.get_all("authorization").iter().count() != 1 {
-            return Err(Status::unauthenticated("credential required"));
-        }
-        let token = metadata
-            .get("authorization")
-            .and_then(|v| v.to_str().ok())
-            .and_then(|v| v.strip_prefix("Bearer "))
-            .filter(|v| !v.is_empty() && v.len() <= 256)
-            .ok_or(Status::unauthenticated("credential required"))?;
-        let actual: [u8; 32] = Sha256::digest(token.as_bytes()).into();
+        let actual = Self::bearer_hash(request)?;
         if !bool::from(actual.ct_eq(&self.credential)) {
             return Err(Status::unauthenticated("credential rejected"));
         }
@@ -466,11 +525,35 @@ impl pb::gateway_server::Gateway for Gateway {
             .await?;
         Ok(Response::new(domain_view(view)))
     }
+    async fn rotate_meter_credential(
+        &self,
+        request: Request<pb::MeterCredentialRotation>,
+    ) -> std::result::Result<Response<pb::MeterCredentialEpoch>, Status> {
+        let caller = self.source_identity(&request)?;
+        let r = request.into_inner();
+        let next =
+            crate::source_identity::certificate_identity(&r.certificate, r.credential_sha256)?;
+        if next.certificate_sha256 == hex::encode(self.peer)
+            || next.certificate_sha256 == hex::encode(self.operation_peer)
+            || next.credential_sha256 == hex::encode(self.credential)
+            || next.credential_sha256 == hex::encode(self.config.token_sha256)
+        {
+            return Err(Status::permission_denied(
+                "meter credential aliases another role",
+            ));
+        }
+        let epoch = self
+            .ingress
+            .source()?
+            .rotate_meter(caller, r.tenant, r.issuer, r.expected_epoch, next)
+            .await?;
+        Ok(Response::new(pb::MeterCredentialEpoch { epoch }))
+    }
     async fn inspect_terminal_usage(
         &self,
         request: Request<pb::OperationKey>,
     ) -> std::result::Result<Response<pb::MeteringReceipt>, Status> {
-        let caller = self.source_identity(&request)?;
+        let caller = self.meter_identity(&request)?;
         let key = request.into_inner();
         let r = self
             .ingress
@@ -497,7 +580,7 @@ impl pb::gateway_server::Gateway for Gateway {
         &self,
         request: Request<pb::MeteringReceipt>,
     ) -> std::result::Result<Response<pb::MeteringApplication>, Status> {
-        let caller = self.source_identity(&request)?;
+        let caller = self.meter_identity(&request)?;
         if !self.metering_enabled {
             return Err(Status::failed_precondition(
                 "metering deployment unavailable",

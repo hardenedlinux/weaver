@@ -63,7 +63,7 @@ func run() error {
 		ID: os.Getenv("WEAVER_METER_ISSUER"), Key: ed25519.NewKeyFromSeed(seed)}
 	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
 	defer cancel()
-	client, err := gatewayclient.Dial(ctx, os.Getenv("WEAVER_METER_SOURCE_ADDR"), os.Getenv("WEAVER_METER_SOURCE_TOKEN"),
+	client, err := gatewayclient.Dial(ctx, os.Getenv("WEAVER_METER_SOURCE_ADDR"), os.Getenv("WEAVER_METER_TOKEN"),
 		&tls.Config{Certificates: []tls.Certificate{cert}, RootCAs: roots, ServerName: os.Getenv("WEAVER_METER_TLS_SERVER_NAME")})
 	if err != nil {
 		return err

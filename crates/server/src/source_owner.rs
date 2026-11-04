@@ -27,6 +27,15 @@ struct Envelope {
     command: Command,
 }
 enum Command {
+    RotateMeter {
+        tenant: String,
+        issuer: String,
+        expected: u64,
+        next: SourceIdentity,
+        reply: oneshot::Sender<Result<u64>>,
+        slot: OwnedSemaphorePermit,
+    },
+
     TerminalUsage {
         family: String,
         node: String,
@@ -204,6 +213,24 @@ impl SourceOwner {
     ) -> std::result::Result<weaver_contracts::DomainMigrationReceipt, Status> {
         self.submit(caller, |reply, slot| Command::Migrate {
             change,
+            reply,
+            slot,
+        })
+        .await
+    }
+    pub(crate) async fn rotate_meter(
+        &self,
+        caller: SourceIdentity,
+        tenant: String,
+        issuer: String,
+        expected: u64,
+        next: SourceIdentity,
+    ) -> std::result::Result<u64, Status> {
+        self.submit(caller, |reply, slot| Command::RotateMeter {
+            tenant,
+            issuer,
+            expected,
+            next,
             reply,
             slot,
         })
@@ -502,15 +529,26 @@ fn process(
         ledger.require_quiescent()?;
         let Envelope { caller, command } = command;
         match command {
+            Command::RotateMeter {
+                tenant,
+                issuer,
+                expected,
+                next,
+                reply,
+                slot,
+            } => {
+                let result = ledger.with_authenticated_source(&caller, |ledger| {
+                    ledger.rotate_meter_credential(&tenant, &issuer, expected, &next)
+                });
+                answer(ledger, reply, result, slot)?;
+            }
             Command::TerminalUsage {
                 family,
                 node,
                 reply,
                 slot,
             } => {
-                let result = ledger.with_authenticated_source(&caller, |ledger| {
-                    ledger.inspect_terminal_usage(&family, &node)
-                });
+                let result = ledger.inspect_terminal_usage(&caller, &family, &node);
                 answer(ledger, reply, result, slot)?;
             }
             Command::ReadCatalog { reply, slot } => {
@@ -533,8 +571,7 @@ fn process(
                 reply,
                 slot,
             } => {
-                let result =
-                    ledger.with_authenticated_source(&caller, |l| l.apply_metering(&evidence));
+                let result = ledger.apply_metering_from(&evidence, Some(&caller));
                 answer(ledger, reply, result, slot)?;
             }
             Command::Original {

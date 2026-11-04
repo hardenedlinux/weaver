@@ -441,12 +441,21 @@ The independent =weaver-meter FAMILY NODE= job reads the unsigned record
 over source mTLS, checks its configured audience, tenant and issuer, then
 signs it with its own Ed25519 seed. The seed is supplied through
 =WEAVER_METER_SIGNING_SEED= as a file containing hexadecimal seed bytes.
-The job uses =WEAVER_METER_SOURCE_ADDR=, =WEAVER_METER_SOURCE_TOKEN=,
+The job uses =WEAVER_METER_SOURCE_ADDR=, =WEAVER_METER_TOKEN=,
 =WEAVER_METER_TLS_CERT=, =WEAVER_METER_TLS_KEY=, =WEAVER_METER_TLS_CA=,
 =WEAVER_METER_TLS_SERVER_NAME=, =WEAVER_METER_AUDIENCE=,
 =WEAVER_METER_TENANT= and =WEAVER_METER_ISSUER=. It can be restarted with
-the same operation and key after a lost response. The current RPC uses the
-source transport role and the separately provisioned metering signing key.
+the same operation and key after a lost response. The meter uses its own mTLS certificate and bearer on the source listener.
+Only terminal evidence inspection and signed settlement recognize that role.
+The source authority enrolls or rotates the tenant's meter with
+=RotateMeterCredential=, starting with expected epoch zero. Turso compares
+the live credential and configured issuer in the same scope as evidence
+read or application. Historical rotation replay returns its original epoch.
+The current epoch remains authoritative after restart. Transport rotation
+does not change the issuer signing key or the reservation's formula.
+Existing external-evidence tenants without a meter enrollment retain
+their legacy source transport. Strict terminal-evidence deployments require
+independent enrollment.
 
 When =require_terminal_usage= is enabled in the metering deployment,
 settlement requires exact normalized counts, observation digest and
@@ -458,3 +467,20 @@ settlement always requires its exact binding. Missing terminal execution
 never releases a reservation. The gateway authenticates provider transport
 and validates the usage shape. The provider's usage report is the source
 of the measured token counts.
+
+
+* Optional LiteLLM provider compatibility
+
+LiteLLM is a candidate external OpenAI-compatible provider adapter. Go may
+list a qualified deployment as one model module. Rust must bind the exact
+endpoint and model before dispatch. A deployment that performs its own
+retries, fallback, caching or model substitution can change the number or
+identity of effects behind that endpoint. Qualification must demonstrate a
+single authorized upstream call and stable usage semantics under connection
+loss and stream interruption. Keep the route disabled until those conditions
+are verified. LiteLLM spend logs remain observations. Weaver's Cedar policy,
+quota reservations, fencing and independent signed settlement own the
+deciding path.
+
+See [[https://docs.litellm.ai/docs/proxy/architecture][LiteLLM request architecture]]
+and [[https://docs.litellm.ai/docs/routing][LiteLLM Router behavior]].

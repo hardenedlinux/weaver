@@ -62,7 +62,7 @@ impl Ledger {
             return Ok(receipt);
         }
         authority::require(&tx, Some(caller))?;
-        let used:bool=crate::persistence::one(&tx, "SELECT EXISTS(SELECT 1 FROM source_keys WHERE public_key_sha256=?1 OR certificate_sha256=?2)", crate::persistence::params![(command.next.public_key_sha256).to_owned(),(command.next.certificate_sha256).to_owned()], |r|r.get(0)).map_err(db)?;
+        let used:bool=crate::persistence::one(&tx, "SELECT EXISTS(SELECT 1 FROM source_keys WHERE public_key_sha256=?1 OR certificate_sha256=?2) OR EXISTS(SELECT 1 FROM metering_credentials WHERE public_key=?1 OR certificate=?2 OR credential=?3)", crate::persistence::params![(command.next.public_key_sha256).to_owned(),(command.next.certificate_sha256).to_owned(),(command.next.credential_sha256).to_owned()], |r|r.get(0)).map_err(db)?;
         let (outcome, after) =
             if command.expected_epoch == current.epoch && current.epoch < MAX_CREDITS && !used {
                 let next = SourceAuthority {

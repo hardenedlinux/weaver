@@ -118,6 +118,9 @@ CREATE TABLE IF NOT EXISTS provider_catalog_reservations (
 CREATE TABLE IF NOT EXISTS provider_rate_bindings (
  family TEXT NOT NULL, node TEXT NOT NULL, quote_digest TEXT NOT NULL,
  PRIMARY KEY(family,node), FOREIGN KEY(family,node) REFERENCES provider_runs(family,node));
+CREATE TABLE IF NOT EXISTS metering_credentials (
+ tenant TEXT NOT NULL, epoch INTEGER NOT NULL, certificate TEXT NOT NULL UNIQUE,
+ public_key TEXT NOT NULL UNIQUE, credential TEXT NOT NULL UNIQUE, record TEXT NOT NULL, PRIMARY KEY(tenant,epoch));
 CREATE TABLE IF NOT EXISTS provider_terminal_usage (
  family TEXT NOT NULL, node TEXT NOT NULL, tokens TEXT NOT NULL,
  PRIMARY KEY(family,node), FOREIGN KEY(family,node) REFERENCES provider_runs(family,node));
