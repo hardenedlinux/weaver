@@ -70,6 +70,10 @@ func SourceInputs(root string) (map[string]string, error) {
 				return add(path)
 			}
 			switch filepath.Ext(path) {
+			case ".patch":
+				if directory == "dev/d2" {
+					return add(path)
+				}
 			case ".ts", ".tsx", ".css", ".html":
 				if directory == "dev/d2" {
 					return add(path)

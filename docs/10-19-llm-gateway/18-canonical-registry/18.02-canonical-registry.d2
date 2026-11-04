@@ -3,339 +3,148 @@
 # SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 ...@../../../dev/d2/themes/data
-# Core design only; source identities and proof receipts remain in Org.
-title: WEAVER / AUTHORITATIVE CANONICAL ORIGIN / CROSS-PROTOCOL RECOVERY {
-  class: title
-  near: top-center
-}
-protocols: GO / ADMITTED PROTOCOL LIFECYCLE {
-  top: 0
-  left: 0
-  width: 350
-  height: 690
-  label.near: top-center
-  style.font-size: 17
-  style.fill: "#f7faf9"
-  style.stroke: "#9bb6ad"
-  mcp: MCP request and reconnect\nAdmitted peer / profile / incarnation\nNo family from transport identifiers {
-    top: 90
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: cloud
-  }
-  a2a: A2A task and context locators\nAuthenticate original continuity\nNew task is not a fresh claim {
-    top: 295
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: cloud
-  }
-  acp: Client ACP session resume\nResolve original source operation\nSession history is not authority {
-    top: 500
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: cloud
-  }
-  goBrand: "" {
-    shape: image
-    icon: ../../architecture/diagrams/assets/go.svg
-    top: 247
-    left: 24
-    width: 42
-    height: 22
-  }
-  kubernetesBrand: "" {
-    shape: image
-    icon: ../../architecture/diagrams/assets/kubernetes.svg
-    top: 247
-    left: 82
-    width: 28
-    height: 28
-  }
-}
-registry: RUST / CANONICAL REGISTRY {
-  top: 0
-  left: 440
-  width: 350
-  height: 690
-  label.near: top-center
-  style.font-size: 17
-  style.fill: "#f8fafb"
-  style.stroke: "#9bb6ad"
-  origin: Write-once source origin\nScheme / ASP provenance / exact intent\nOriginal claim / profile / domains {
-    top: 90
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: semantic
-  }
-  alias: Authoritative namespaced aliases\nPrincipal / peer / profile / wire key\nExact committed target / no rebind {
-    top: 295
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: policy
-  }
-  query: Exact durable identity lookup\nLost reply returns original record\nNo lookup-or-create on resume {
-    top: 500
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: runtime
-  }
-}
-recovery: RUST / QUALIFIED IDENTITY RECOVERY {
-  top: 0
-  left: 880
-  width: 350
-  height: 690
-  label.near: top-center
-  style.font-size: 17
-  style.fill: "#f7faf9"
-  style.stroke: "#9bb6ad"
-  projection: Recover identity projections\nExact registered rows and aliases\nNever assign source ledger state {
-    top: 90
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: semantic
-  }
-  join: Complete current resolution image\nRegistry revision / source authority cut\nLookup is data / not a send grant {
-    top: 295
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: runtime
-  }
-  fence: Non-rollback identity owner fence\nRestart closes access and retires receipts\nLate confirmation is not currentness {
-    top: 500
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: policy
-  }
-}
-broker: RUST / ORIGINAL ACTUAL-EFFECT GATE {
-  top: 0
-  left: 1320
-  width: 350
-  height: 690
-  label.near: top-center
-  style.font-size: 17
-  style.fill: "#f8fafb"
-  style.stroke: "#9bb6ad"
-  cas: Current identity and source CAS\nActual child / payload / route / Policy\nNew alias invalidates old receipt {
-    top: 90
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: runtime
-  }
-  claim: Original claim and pending intent\nSame profile / family winner / history\nFresh resolution cannot reset spent-state {
-    top: 295
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: policy
-  }
-  hold: Original account and usage hold\nUnknown work remains spent and held\nNew protocol is not a funding domain {
-    top: 500
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: semantic
-  }
-  rustBrand: "" {
-    shape: image
-    icon: ../../architecture/diagrams/assets/rust.svg
-    top: 40
-    left: 156
-    width: 34
-    height: 34
-  }
-}
-quint: QUINT\nReconnect / new task / resume / reply loss\nAlias collision / stale owner / ledger rollback {
-  top: 810
-  left: 220
-  width: 610
-  height: 100
-  class: policy
-}
-lean: LEAN\nImmutable origin / alias keys / pending intent\nCurrent identity / original source obligations {
-  top: 810
-  left: 960
-  width: 610
-  height: 100
-  class: semantic
-}
-protocols.mcp -> registry.alias
-protocols.a2a -> registry.alias
-protocols.acp -> registry.query
-registry.origin -> registry.alias
-registry.alias -> registry.query
-registry.query -> recovery.projection
-recovery.projection -> recovery.join
-recovery.fence -> recovery.join { style.stroke-dash: 4 }
-recovery.join -> broker.cas
-broker.claim -> broker.cas { style.stroke-dash: 4 }
-broker.claim -> broker.hold
-
-# Project-owned presentation question; not an issued governance Question.
+# Generated by Go from SysML and Lean references. Edit source contracts, not D2 semantic copy.
 vars: { d2-config: { data: { figure: |json
 {
-  "title": "02 canonical registry",
+  "design": {
+    "audience": "Gateway reviewers",
+    "medium": "GitHub at 830 CSS pixels",
+    "message": "Reconnects look up the same origin before any new progress.",
+    "questionRefs": [
+      "q1"
+    ],
+    "requiredSubjects": [
+      "n0",
+      "n1",
+      "n2",
+      "n3",
+      "n4",
+      "n5"
+    ],
+    "requiredRelations": [],
+    "focalSubjects": [
+      "n2"
+    ]
+  },
+  "icons": [
+    "engineering",
+    "weaver",
+    "components"
+  ],
+  "title": "Resolve aliases to one original task",
   "purpose": "architecture",
   "kind": "data",
   "language": "en",
-  "width": 1600,
-  "primary": "main",
+  "width": 980,
+  "primary": "q1",
   "questions": [
     {
-      "ref": "main",
-      "text": "Which records and binding relationships govern 02 canonical registry?",
+      "ref": "q1",
+      "text": "What does a resumed protocol identifier resolve to?",
       "focusRefs": [
-        "catalog",
         "model"
+      ],
+      "subjectRefs": [
+        "n2"
       ]
     }
   ],
   "references": {
-    "catalog": "docs/architecture/08-diagram-catalog.org",
-    "model": "Project.sysml"
+    "model": "dev/sysml/AuthorityReaderViews.sysml",
+    "model0": "Project.sysml",
+    "model1": "dev/sysml/AdmissionReaderViews.sysml",
+    "model10": "dev/sysml/FloorReaderViews.sysml",
+    "model11": "dev/sysml/GatewayArchitecture.sysml",
+    "model12": "dev/sysml/PolicyEvidenceDesign.sysml",
+    "model13": "dev/sysml/ProviderRpc.sysml",
+    "model14": "dev/sysml/ReaderDesigns.sysml",
+    "model15": "dev/sysml/ResearchReaderViews.sysml",
+    "model16": "dev/sysml/StoragePersistence.sysml",
+    "model17": "dev/sysml/StreamingExecution.sysml",
+    "model18": "dev/sysml/WeaverExecution.sysml",
+    "model19": "dev/sysml/ZeroTrustRefinement.sysml",
+    "model2": "dev/sysml/ArchitectureReaderViews.sysml",
+    "model3": "dev/sysml/ArchitectureViews.sysml",
+    "model4": "dev/sysml/AssuranceReaderViews.sysml",
+    "model5": "dev/sysml/AttemptReaderViews.sysml",
+    "model6": "dev/sysml/AuthorityReaderViews.sysml",
+    "model7": "dev/sysml/ControlActivation.sysml",
+    "model8": "dev/sysml/CorrespondenceReaderView.sysml",
+    "model9": "dev/sysml/ExecutionReaderViews.sysml",
+    "proof0": "dev/proofs/lean/StreamingExecution.lean",
+    "sdkCapture": "dev/sysml/captures/WeaverAuthorityReaderViews-canonical.json"
   },
-  "copy": {
-    "takeaway": "The declared source relationships define this view; presentation does not grant execution authority."
-  },
+  "copy": {},
   "basis": {
     "captureRef": "docs/10-19-llm-gateway/18-canonical-registry/18.02-canonical-registry.d2#design-view",
     "modelRefs": [
-      "Project.sysml"
+      "Project.sysml",
+      "dev/sysml/AdmissionReaderViews.sysml",
+      "dev/sysml/ArchitectureReaderViews.sysml",
+      "dev/sysml/ArchitectureViews.sysml",
+      "dev/sysml/AssuranceReaderViews.sysml",
+      "dev/sysml/AttemptReaderViews.sysml",
+      "dev/sysml/AuthorityReaderViews.sysml",
+      "dev/sysml/ControlActivation.sysml",
+      "dev/sysml/CorrespondenceReaderView.sysml",
+      "dev/sysml/ExecutionReaderViews.sysml",
+      "dev/sysml/FloorReaderViews.sysml",
+      "dev/sysml/GatewayArchitecture.sysml",
+      "dev/sysml/PolicyEvidenceDesign.sysml",
+      "dev/sysml/ProviderRpc.sysml",
+      "dev/sysml/ReaderDesigns.sysml",
+      "dev/sysml/ResearchReaderViews.sysml",
+      "dev/sysml/StoragePersistence.sysml",
+      "dev/sysml/StreamingExecution.sysml",
+      "dev/sysml/WeaverExecution.sysml",
+      "dev/sysml/ZeroTrustRefinement.sysml"
     ],
-    "obligationRefs": [],
+    "obligationRefs": [
+      "proof0"
+    ],
     "evidenceRefs": []
   },
   "themes": [
     "sketchbook",
-    "blueprint",
+    "ocean",
+    "compact",
     "reading"
   ],
   "layout": "model-view",
   "variants": [],
   "presentation": {
-    "graph": {
-      "id": "weaver-source-view",
-      "children": [
-        {
-          "id": "title"
-        },
-        {
-          "id": "protocols",
-          "children": [
-            {
-              "id": "protocols.mcp"
-            },
-            {
-              "id": "protocols.a2a"
-            },
-            {
-              "id": "protocols.acp"
-            },
-            {
-              "id": "protocols.goBrand"
-            },
-            {
-              "id": "protocols.kubernetesBrand"
-            }
-          ]
-        },
-        {
-          "id": "registry",
-          "children": [
-            {
-              "id": "registry.origin"
-            },
-            {
-              "id": "registry.alias"
-            },
-            {
-              "id": "registry.query"
-            }
-          ]
-        },
-        {
-          "id": "recovery",
-          "children": [
-            {
-              "id": "recovery.projection"
-            },
-            {
-              "id": "recovery.join"
-            },
-            {
-              "id": "recovery.fence"
-            }
-          ]
-        },
-        {
-          "id": "broker",
-          "children": [
-            {
-              "id": "broker.cas"
-            },
-            {
-              "id": "broker.claim"
-            },
-            {
-              "id": "broker.hold"
-            },
-            {
-              "id": "broker.rustBrand"
-            }
-          ]
-        },
-        {
-          "id": "quint"
-        },
-        {
-          "id": "lean"
-        }
-      ],
-      "layoutOptions": {
-        "elk.algorithm": "layered",
-        "elk.direction": "DOWN",
-        "elk.edgeRouting": "ORTHOGONAL"
-      }
-    },
     "options": {
       "elk.algorithm": "layered",
       "elk.direction": "DOWN",
-      "elk.edgeRouting": "ORTHOGONAL"
+      "elk.edgeRouting": "ORTHOGONAL",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "27",
+      "elk.spacing.nodeNode": "16"
     },
     "icons": {
-      "protocols.goBrand": "go",
-      "protocols.kubernetesBrand": "kubernetes",
-      "broker.rustBrand": "rust"
+      "n0": "message",
+      "n1": "routing",
+      "n2": "claim",
+      "n3": "recovery",
+      "n4": "authorization",
+      "n5": "unknown"
     },
-    "roles": {}
+    "roles": {},
+    "edgeLabels": true
   },
-  "icons": [
-    "engineering",
-    "weaver"
-  ]
+  "modelSource": {
+    "ref": "sdkCapture",
+    "view": "WeaverAuthorityReaderViews::canonical",
+    "modelHash": "ce385f561ec08305552317e22f90a73884c40b6789376bb883cb086c8f074732",
+    "portProjection": "owner",
+    "labels": {
+      "n0": "Protocol identity\nMCP, A2A or ACP",
+      "n1": "Namespaced aliasBinding\nBind to canonical origin",
+      "n2": "Original origin\nKeep claim and domains",
+      "n3": "Qualified lookup\nJoin projection and fence",
+      "n4": "Final consume\nCheck current scope",
+      "n5": "Unknown outcome\nKeep the original hold"
+    }
+  }
 }
 |
 } } }

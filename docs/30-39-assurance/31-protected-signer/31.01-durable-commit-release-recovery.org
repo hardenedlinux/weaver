@@ -8,6 +8,12 @@
 #+property: STATUS conditional-model-checked-native-signer-qualification-pending
 #+options: toc:3
 
+* Reader view
+
+A current signing session must match the exact protected commit.
+
+[[file:31.02-protected-signer.svg]]
+
 * Decision and relation to the previous model
 
 A protected signer must not release a signature merely because a coordinator

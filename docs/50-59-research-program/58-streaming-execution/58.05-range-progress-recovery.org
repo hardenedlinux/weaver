@@ -16,6 +16,12 @@ Zero Trust framework or discharge the independent Host trust premises.
 
 [[file:58.05-range-progress-recovery.svg]]
 
+The companion admission view follows the original message from authentication
+through consumption and guarded writing. The recovery view follows the
+transport observation into the same ledger and retained exposure.
+
+[[file:../../architecture/diagrams/15-stream-message-authorization.svg]]
+
 | Durable tail | Required message projection | New range or reconnect |
 |--------------+-----------------------------+------------------------|
 | No range | Queued, zero cursor and sequence | Eligible for current authorization |

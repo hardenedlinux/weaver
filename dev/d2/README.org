@@ -22,6 +22,14 @@ SVG identity rewriter, caption-partition engine or model-name binding adapter.
 Unsupported notation must refuse; a renderer failure must never choose an
 alternate implementation.
 
+The illustrated overview is a consumer composition of public Library headings,
+vector surfaces and connection routing. Its reading groups and narrative come
+from the source Design. Component =glyph= declarations select canonical functional
+symbols; contextual pictures are separate from both function and brand marks.
+The [[file:../../docs/architecture/diagrams/assets/icon-sources.org][asset vocabulary]] records each meaning and attribution. Rendering uses captured
+local SVG assets and never downloads an icon during export. An unknown functional
+glyph or a missing declared asset fails instead of substituting a decorative mark.
+
 * Git dependency
 
 The rendering development dependency selects the upstream Git repository,
@@ -29,6 +37,12 @@ exact commit and =packages/render= directory in =package.json=.
 =pnpm-lock.yaml= records that resolution and transitive integrity values.
 There is no local archive prerequisite, floating main dependency or second
 Bun dependency lock. pnpm installs; Bun executes TypeScript.
+
+The pnpm lock also records the upstream candidate patch applied to that
+package. Its compiler batch shares one SDK initialization across an ordered
+source set and returns results after the owned process closes. The workspace
+patch is checked into Weaver and participates in the source receipt. A frozen
+installation requires no local upstream checkout.
 
 #+begin_src text
 pnpm --dir dev/d2 install --frozen-lockfile --ignore-scripts

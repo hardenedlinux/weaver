@@ -4,13 +4,16 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  '@deterministic-engineering/render@1.0.0': b9b28730d47b78eb5b877ee3dbc6086157617a6bb3f6e3c528564738dad2e3ec
+
 importers:
 
   .:
     devDependencies:
       '@deterministic-engineering/render':
         specifier: git+ssh://git@github.com/hardenedlinux/deterministic-engineering.git#1b950df63a542c478bea3127fc9bd4472c07cbd9&path:/packages/render
-        version: https://codeload.github.com/hardenedlinux/deterministic-engineering/tar.gz/1b950df63a542c478bea3127fc9bd4472c07cbd9#path:/packages/render(@openmbee/opensysml@0.11.0)(playwright@1.64.1)(typescript@7.0.2)
+        version: https://codeload.github.com/hardenedlinux/deterministic-engineering/tar.gz/1b950df63a542c478bea3127fc9bd4472c07cbd9#path:/packages/render(patch_hash=b9b28730d47b78eb5b877ee3dbc6086157617a6bb3f6e3c528564738dad2e3ec)(@openmbee/opensysml@0.11.0)(playwright@1.64.1)(typescript@7.0.2)
       '@openmbee/opensysml':
         specifier: 0.11.0
         version: 0.11.0
@@ -571,7 +574,7 @@ snapshots:
     dependencies:
       '@bufbuild/protobuf': 2.14.0
 
-  '@deterministic-engineering/render@https://codeload.github.com/hardenedlinux/deterministic-engineering/tar.gz/1b950df63a542c478bea3127fc9bd4472c07cbd9#path:/packages/render(@openmbee/opensysml@0.11.0)(playwright@1.64.1)(typescript@7.0.2)':
+  '@deterministic-engineering/render@https://codeload.github.com/hardenedlinux/deterministic-engineering/tar.gz/1b950df63a542c478bea3127fc9bd4472c07cbd9#path:/packages/render(patch_hash=b9b28730d47b78eb5b877ee3dbc6086157617a6bb3f6e3c528564738dad2e3ec)(@openmbee/opensysml@0.11.0)(playwright@1.64.1)(typescript@7.0.2)':
     dependencies:
       '@fontsource/inter': 5.3.0
       '@fontsource/kalam': 5.3.0

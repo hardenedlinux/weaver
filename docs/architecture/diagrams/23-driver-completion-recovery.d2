@@ -3,347 +3,145 @@
 # SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 ...@../../../dev/d2/themes/flow
-# Core ownership only. Versions and check receipts belong in Org.
-title: ORIGINAL DRIVER / DURABLE COMPLETION / CONSERVATIVE RECOVERY {
-  class: title
-  near: top-center
-}
-semantics: SEMANTICS AND CLOUD LIFECYCLE {
-  top: 0
-  left: 0
-  width: 340
-  height: 660
-  label.near: top-center
-  style.font-size: 17
-  style.fill: "#f7faf9"
-  style.stroke: "#9bb6ad"
-  scheme: Scheme / original intent\nClaim and account meaning\nTrusted terminal evidence {
-    top: 90
-    left: 25
-    width: 290
-    height: 120
-    class: semantic
-  }
-  cedar: Cedar / Code as Policy\nActual effect and state binding\nNew range needs current allow {
-    top: 280
-    left: 25
-    width: 290
-    height: 120
-    class: policy
-  }
-  goBrand: "" {
-    shape: image
-    icon: assets/go.svg
-    top: 430
-    left: 25
-    width: 46
-    height: 22
-  }
-  kubeBrand: "" {
-    shape: image
-    icon: assets/kubernetes.svg
-    top: 427
-    left: 85
-    width: 28
-    height: 28
-  }
-  adapter: Go / agent and Kubernetes lifecycle\nRetry original status queries\nReconcile retained obligations {
-    top: 470
-    left: 25
-    width: 290
-    height: 120
-    label.near: center-center
-    class: cloud
-  }
-}
-authority: RUST / AUTHORITATIVE OWNER {
-  top: 0
-  left: 460
-  width: 360
-  height: 660
-  label.near: top-center
-  style.font-size: 17
-  style.fill: "#f8f9fc"
-  style.stroke: "#a3abc0"
-  brand: "" {
-    shape: image
-    icon: assets/rust.svg
-    top: 48
-    left: 25
-    width: 28
-    height: 28
-  }
-  original: Original claim / sealed manifest\nCanonical range and driver binding\nShared history and escrow {
-    top: 90
-    left: 25
-    width: 310
-    height: 120
-    class: ledger
-  }
-  finish: Durable completion transaction\nExact quiescence and full frontier\nCommit result with original slot close {
-    top: 280
-    left: 25
-    width: 310
-    height: 120
-    class: ledger
-  }
-  recovery: Anchored complete recovery\nImmutable original result or unknown\nStatus never creates a capability {
-    top: 470
-    left: 25
-    width: 310
-    height: 120
-    class: ledger
-  }
-}
-transport: RUST / QUALIFIED DRIVER {
-  top: 0
-  left: 940
-  width: 370
-  height: 660
-  label.near: top-center
-  style.font-size: 17
-  style.fill: "#faf9fd"
-  style.stroke: "#b0a7c8"
-  brand: "" {
-    shape: image
-    icon: assets/rust.svg
-    top: 48
-    left: 25
-    width: 28
-    height: 28
-  }
-  tail: One original affine range tail\nConsume prefix before API handoff\nFull frontier retains stream slot {
-    top: 90
-    left: 25
-    width: 320
-    height: 120
-    class: runtime
-  }
-  quiet: Ordered handoff / relinquishment\nAll writers and aliases covered\nSDK callback alone is insufficient {
-    top: 280
-    left: 25
-    width: 320
-    height: 120
-    class: runtime
-  }
-  restart: Driver continuity lost\nPreserve original obligations\nOld or new process cannot adopt tail {
-    top: 470
-    left: 25
-    width: 320
-    height: 120
-    class: unknown
-  }
-}
-closure: RECOVERY / ACCOUNTING {
-  top: 0
-  left: 1430
-  width: 360
-  height: 660
-  label.near: top-left
-  style.font-size: 17
-  style.fill: "#f8fafb"
-  style.stroke: "#a3b4c0"
-  gate: Next range / actual writer gate\nCurrent Policy and history\nOriginal stream exclusion {
-    top: 90
-    left: 25
-    width: 310
-    height: 120
-    class: runtime
-  }
-  isolate: External writer fence acknowledgment\nUncertain exposure retained\nCanonical stream quarantined {
-    top: 280
-    left: 25
-    width: 310
-    height: 120
-    class: unknown
-  }
-  usage: No future work plus final usage\nOriginal message settlement\nUnknown retains full escrow {
-    top: 470
-    left: 25
-    width: 310
-    height: 120
-    class: ledger
-  }
-}
-quint: QUINT\nLost replies / late receipts / old driver schedules {
-  top: 780
-  left: 290
-  width: 540
-  height: 100
-  class: policy
-}
-lean: LEAN\nCanonical completion / affine tails / shared escrow composition {
-  top: 780
-  left: 1000
-  width: 600
-  height: 100
-  class: semantic
-}
-semantics.scheme -> semantics.cedar
-semantics.cedar -> authority.original: admitted original effect
-semantics.adapter -> authority.recovery: same-operation status
-authority.original -> transport.tail: bounded delegation
-transport.tail -> transport.quiet: full frontier
-transport.quiet -> authority.finish: trusted relinquishment
-authority.finish -> closure.gate: exact original slot closed
-authority.recovery -> authority.finish: committed result only
-transport.restart -> authority.recovery: retain pending state
-transport.restart -> closure.isolate: unresolved continuity
-closure.isolate -> closure.usage: original isolation evidence
-authority.finish -> closure.usage: terminal evidence only
-quint -> authority.recovery: explore races {
-  style.stroke-dash: 5
-}
-lean -> transport.tail: preserve original binding {
-  style.stroke-dash: 5
-}
-
-# Project-owned presentation question; not an issued governance Question.
+# Generated by Go from SysML and Lean references. Edit source contracts, not D2 semantic copy.
 vars: { d2-config: { data: { figure: |json
 {
-  "title": "driver completion recovery",
+  "design": {
+    "audience": "Gateway design and runtime reviewers",
+    "medium": "GitHub at 830 CSS pixels",
+    "message": "A late receipt only describes the range it is bound to.",
+    "questionRefs": [
+      "q1"
+    ],
+    "requiredSubjects": [
+      "n0",
+      "n1",
+      "n2",
+      "n3",
+      "n4"
+    ],
+    "requiredRelations": [],
+    "focalSubjects": [
+      "n3"
+    ]
+  },
+  "icons": [
+    "engineering",
+    "weaver",
+    "components"
+  ],
+  "title": "Recover original completion evidence",
   "purpose": "workflow",
   "kind": "flow",
   "language": "en",
-  "width": 1600,
-  "primary": "main",
+  "width": 980,
+  "primary": "q1",
   "questions": [
     {
-      "ref": "main",
-      "text": "Which progression and failure boundaries govern driver completion recovery?",
+      "ref": "q1",
+      "text": "When may recovery advance beyond a partially written range?",
       "focusRefs": [
-        "catalog",
         "model"
+      ],
+      "subjectRefs": [
+        "n3"
       ]
     }
   ],
   "references": {
-    "catalog": "docs/architecture/08-diagram-catalog.org",
-    "model": "Project.sysml"
+    "model": "dev/sysml/ArchitectureReaderViews.sysml",
+    "model0": "Project.sysml",
+    "model1": "dev/sysml/AdmissionReaderViews.sysml",
+    "model10": "dev/sysml/FloorReaderViews.sysml",
+    "model11": "dev/sysml/GatewayArchitecture.sysml",
+    "model12": "dev/sysml/PolicyEvidenceDesign.sysml",
+    "model13": "dev/sysml/ProviderRpc.sysml",
+    "model14": "dev/sysml/ReaderDesigns.sysml",
+    "model15": "dev/sysml/ResearchReaderViews.sysml",
+    "model16": "dev/sysml/StoragePersistence.sysml",
+    "model17": "dev/sysml/StreamingExecution.sysml",
+    "model18": "dev/sysml/WeaverExecution.sysml",
+    "model19": "dev/sysml/ZeroTrustRefinement.sysml",
+    "model2": "dev/sysml/ArchitectureReaderViews.sysml",
+    "model3": "dev/sysml/ArchitectureViews.sysml",
+    "model4": "dev/sysml/AssuranceReaderViews.sysml",
+    "model5": "dev/sysml/AttemptReaderViews.sysml",
+    "model6": "dev/sysml/AuthorityReaderViews.sysml",
+    "model7": "dev/sysml/ControlActivation.sysml",
+    "model8": "dev/sysml/CorrespondenceReaderView.sysml",
+    "model9": "dev/sysml/ExecutionReaderViews.sysml",
+    "proof0": "dev/proofs/lean/StreamingExecution.lean",
+    "sdkCapture": "dev/sysml/captures/WeaverArchitectureReaderViews-driverCompletion.json"
   },
-  "copy": {
-    "takeaway": "The declared source relationships define this view; presentation does not grant execution authority."
-  },
+  "copy": {},
   "basis": {
     "captureRef": "docs/architecture/diagrams/23-driver-completion-recovery.d2#design-view",
     "modelRefs": [
-      "Project.sysml"
+      "Project.sysml",
+      "dev/sysml/AdmissionReaderViews.sysml",
+      "dev/sysml/ArchitectureReaderViews.sysml",
+      "dev/sysml/ArchitectureViews.sysml",
+      "dev/sysml/AssuranceReaderViews.sysml",
+      "dev/sysml/AttemptReaderViews.sysml",
+      "dev/sysml/AuthorityReaderViews.sysml",
+      "dev/sysml/ControlActivation.sysml",
+      "dev/sysml/CorrespondenceReaderView.sysml",
+      "dev/sysml/ExecutionReaderViews.sysml",
+      "dev/sysml/FloorReaderViews.sysml",
+      "dev/sysml/GatewayArchitecture.sysml",
+      "dev/sysml/PolicyEvidenceDesign.sysml",
+      "dev/sysml/ProviderRpc.sysml",
+      "dev/sysml/ReaderDesigns.sysml",
+      "dev/sysml/ResearchReaderViews.sysml",
+      "dev/sysml/StoragePersistence.sysml",
+      "dev/sysml/StreamingExecution.sysml",
+      "dev/sysml/WeaverExecution.sysml",
+      "dev/sysml/ZeroTrustRefinement.sysml"
     ],
-    "obligationRefs": [],
+    "obligationRefs": [
+      "proof0"
+    ],
     "evidenceRefs": []
   },
   "themes": [
     "sketchbook",
-    "blueprint",
+    "field-notes",
+    "compact",
     "reading"
   ],
   "layout": "model-view",
   "variants": [],
   "presentation": {
-    "graph": {
-      "id": "weaver-source-view",
-      "children": [
-        {
-          "id": "title"
-        },
-        {
-          "id": "semantics",
-          "children": [
-            {
-              "id": "semantics.scheme"
-            },
-            {
-              "id": "semantics.cedar"
-            },
-            {
-              "id": "semantics.goBrand"
-            },
-            {
-              "id": "semantics.kubeBrand"
-            },
-            {
-              "id": "semantics.adapter"
-            }
-          ]
-        },
-        {
-          "id": "authority",
-          "children": [
-            {
-              "id": "authority.brand"
-            },
-            {
-              "id": "authority.original"
-            },
-            {
-              "id": "authority.finish"
-            },
-            {
-              "id": "authority.recovery"
-            }
-          ]
-        },
-        {
-          "id": "transport",
-          "children": [
-            {
-              "id": "transport.brand"
-            },
-            {
-              "id": "transport.tail"
-            },
-            {
-              "id": "transport.quiet"
-            },
-            {
-              "id": "transport.restart"
-            }
-          ]
-        },
-        {
-          "id": "closure",
-          "children": [
-            {
-              "id": "closure.gate"
-            },
-            {
-              "id": "closure.isolate"
-            },
-            {
-              "id": "closure.usage"
-            }
-          ]
-        },
-        {
-          "id": "quint"
-        },
-        {
-          "id": "lean"
-        }
-      ],
-      "layoutOptions": {
-        "elk.algorithm": "layered",
-        "elk.direction": "DOWN",
-        "elk.edgeRouting": "ORTHOGONAL"
-      }
-    },
     "options": {
       "elk.algorithm": "layered",
       "elk.direction": "DOWN",
-      "elk.edgeRouting": "ORTHOGONAL"
+      "elk.edgeRouting": "ORTHOGONAL",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "27",
+      "elk.spacing.nodeNode": "16"
     },
     "icons": {
-      "semantics.goBrand": "go",
-      "semantics.kubeBrand": "kubernetes",
-      "authority.brand": "rust",
-      "transport.brand": "rust"
+      "n0": "writer",
+      "n1": "ledger",
+      "n2": "history",
+      "n3": "recovery",
+      "n4": "unknown"
     },
-    "roles": {}
+    "roles": {},
+    "edgeLabels": true
   },
-  "icons": [
-    "engineering",
-    "weaver"
-  ]
+  "modelSource": {
+    "ref": "sdkCapture",
+    "view": "WeaverArchitectureReaderViews::driverCompletion",
+    "modelHash": "ce385f561ec08305552317e22f90a73884c40b6789376bb883cb086c8f074732",
+    "portProjection": "owner",
+    "labels": {
+      "n0": "Original driver\nOwn the range writer",
+      "n1": "Durable progress\nExact known prefix",
+      "n2": "Completion evidence\nBind driver and range",
+      "n3": "Recovery decision\nJoin current custody",
+      "n4": "Unknown suffix\nKeep budget and stop"
+    }
+  }
 }
 |
 } } }

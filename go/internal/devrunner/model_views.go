@@ -29,6 +29,7 @@ type ModelViewCapture struct {
 	ProofReferences []ProofReference                   `json:"proofReferences,omitempty"`
 	ProofSources    map[string]string                  `json:"proofSources,omitempty"`
 	LeanContracts   map[string]LeanContract            `json:"leanContracts,omitempty"`
+	ReaderDesigns   map[string]ReaderDesign            `json:"readerDesigns,omitempty"`
 }
 
 // MarshalJSON uses the official SDK's lower-camel-case transport field names.
@@ -55,7 +56,8 @@ func (capture ModelViewCapture) MarshalJSON() ([]byte, error) {
 		ProofReferences []ProofReference             `json:"proofReferences,omitempty"`
 		ProofSources    map[string]string            `json:"proofSources,omitempty"`
 		LeanContracts   map[string]LeanContract      `json:"leanContracts,omitempty"`
-	}{capture.ModelHash, capture.Sources, views, capture.Descriptions, capture.Mapped, capture.ProofReferences, capture.ProofSources, capture.LeanContracts})
+		ReaderDesigns   map[string]ReaderDesign      `json:"readerDesigns,omitempty"`
+	}{capture.ModelHash, capture.Sources, views, capture.Descriptions, capture.Mapped, capture.ProofReferences, capture.ProofSources, capture.LeanContracts, capture.ReaderDesigns})
 }
 
 func sdkJSONFields(raw json.RawMessage) (json.RawMessage, error) {
@@ -149,6 +151,10 @@ func CaptureModelViews(ctx context.Context, root string) (*ModelViewCapture, err
 		return nil, fmt.Errorf("SysML model invalid: %v", model.Errors())
 	}
 	capture.ModelHash = model.Hash
+	capture.ReaderDesigns, err = captureReaderDesigns(ctx, client, model)
+	if err != nil {
+		return nil, err
+	}
 	views, err := client.Query(ctx, model, opensysml.Query{Where: opensysml.Equals("@type", "ViewUsage")})
 	if err != nil {
 		return nil, err

@@ -2,6 +2,9 @@
 //
 // SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
+import {componentAssetPaths} from './components';
+import {weaverIconNames} from './assets';
+
 import { createHash } from 'node:crypto';
 import { readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
@@ -43,11 +46,12 @@ export function collectCatalog(root: string, selection?: readonly string[]): Sou
   }
   const modelCapture=expected?readModelCapture(rawCapture!,expected,{...fs,...documents},selection):undefined;
   for(const[view,capture]of Object.entries(capturedViews(modelCapture)))documents['dev/sysml/captures/'+view.replaceAll('::','-')+'.json']=JSON.stringify(capture);
-  for (const name of ['go', 'rust', 'kubernetes']) {
+  for (const name of weaverIconNames) {
     const source = `docs/architecture/diagrams/assets/${name}.svg`;
     fs[source] = readFileSync(path.join(root, source), 'utf8');
 
   }
+  for(const source of componentAssetPaths)fs[source]=readFileSync(path.join(root,source),'utf8');
   views.sort((a, b) => a.source.localeCompare(b.source));
   return { views, fs, documents,modelCapture };
 }

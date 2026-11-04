@@ -7,13 +7,15 @@ import {fileURLToPath} from 'node:url';
 import {compileFigureSource,composeFigure,composeModelView} from '@deterministic-engineering/render';
 import {collectCatalog} from '../src/source/catalog';
 import {capturedViews} from '../src/source/models';
+import {componentIcons} from '../src/source/components';
+import {weaverIcons} from '../src/source/assets';
 import {iconPacks} from '@deterministic-engineering/render/icons';
 import {themes} from '../themes';
 const catalog=collectCatalog(fileURLToPath(new URL('../../../',import.meta.url)));
 const source='docs/architecture/diagrams/00a-readme-overview.d2';
 const sources={...catalog.fs,...catalog.documents};
 const views=capturedViews(catalog.modelCapture);
-const resources={themeLayers:themes,sysmlViews:views,iconPacks:{...iconPacks,weaver:Object.fromEntries(['go','rust','kubernetes'].map(name=>[name,{svg:catalog.fs['docs/architecture/diagrams/assets/'+name+'.svg']!,label:name}]))}};
+const resources={themeLayers:themes,sysmlViews:views,iconPacks:{...iconPacks,weaver:weaverIcons(catalog.fs),components:componentIcons(catalog.fs)}};
 const input=await compileFigureSource(sources,source,resources);
 const sdkCapture=views['WeaverViews::architecture']!;
 

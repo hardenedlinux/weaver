@@ -6,6 +6,12 @@
 #+language: en
 #+options: toc:3
 
+* Reader view
+
+The transaction creates one durable slot for the original operation.
+
+[[file:21.02-join-enqueue.svg]]
+
 * Gap and chosen decision point
 
 Checking a source/account join and later invoking an SDK leaves a race: a new

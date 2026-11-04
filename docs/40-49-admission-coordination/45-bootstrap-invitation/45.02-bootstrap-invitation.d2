@@ -3,340 +3,142 @@
 # SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 ...@../../../dev/d2/themes/flow
-# Core design only; source identities and proof receipts remain in Org.
-title: WEAVER / BOOTSTRAP INVITATION / BOUND ISSUANCE {
-  class: title
-  near: top-center
-}
-protocols: GO / CLOUD NATIVE IDENTITY {
-  top: 0
-  left: 0
-  width: 350
-  height: 690
-  label.near: top-center
-  style.font-size: 17
-  style.fill: "#f7faf9"
-  style.stroke: "#9bb6ad"
-  mcp: Shared workload is eligibility only\nProducer assigns the canonical launch\nFreeze the beneficiary key and session {
-    top: 90
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: cloud
-  }
-  a2a: Forwarded bearer grants no identity\nProve the assigned key and channel\nNo future incarnation login {
-    top: 295
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: cloud
-  }
-  acp: Recover the original invitation result\nLost reply returns the same ticket\nNo new launch or deadline renewal {
-    top: 500
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: cloud
-  }
-  goBrand: "" {
-    shape: image
-    icon: ../../architecture/diagrams/assets/go.svg
-    top: 247
-    left: 24
-    width: 42
-    height: 22
-  }
-  kubernetesBrand: "" {
-    shape: image
-    icon: ../../architecture/diagrams/assets/kubernetes.svg
-    top: 247
-    left: 82
-    width: 28
-    height: 28
-  }
-}
-registry: SCHEME / ORIGINAL CONTRACT {
-  top: 0
-  left: 440
-  width: 350
-  height: 690
-  label.near: top-center
-  style.font-size: 17
-  style.fill: "#f8fafb"
-  style.stroke: "#9bb6ad"
-  origin: Original semantic commitment\nCanonical claim / profile / history\nReservation and retained tail {
-    top: 90
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: semantic
-  }
-  alias: Cedar Code as Policy\nAuthentic current source facts\nBind the exact original operation {
-    top: 295
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: policy
-  }
-  query: Preserve original recovery duties\nUnknown usage retains its hold\nProjection applies no money {
-    top: 500
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: runtime
-  }
-}
-recovery: RUST / INVITATION AUTHORITY {
-  top: 0
-  left: 880
-  width: 350
-  height: 690
-  label.near: top-center
-  style.font-size: 17
-  style.fill: "#f7faf9"
-  style.stroke: "#9bb6ad"
-  projection: Publish immutable invitation binding\nCanonical launch / key / transcript\nShared workload is eligibility only {
-    top: 90
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: semantic
-  }
-  join: One consume and pending issue commit\nExact key / source parent / epoch\nNo activation or external send {
-    top: 295
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: runtime
-  }
-  fence: Recover the exact consumed outcome\nQualify the complete authority prefix\nHistorical replies grant no freshness {
-    top: 500
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: policy
-  }
-}
-broker: RUST / DETERMINING CAS {
-  top: 0
-  left: 1320
-  width: 350
-  height: 690
-  label.near: top-center
-  style.font-size: 17
-  style.fill: "#f8fafb"
-  style.stroke: "#9bb6ad"
-  cas: Compare ticket / proof / epoch / parent\nRequire current recovery authorization\nOne determining activation CAS {
-    top: 90
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: runtime
-  }
-  alias: Activate grant and custody together\nRecord the original issuance outcome\nReject stale keys and repeated activation {
-    top: 295
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: policy
-  }
-  hold: Keep unknown reservation intact\nNo refund from a missing projection\nFinal sending has its own gates {
-    top: 500
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: semantic
-  }
-  rustBrand: "" {
-    shape: image
-    icon: ../../architecture/diagrams/assets/rust.svg
-    top: 40
-    left: 156
-    width: 34
-    height: 34
-  }
-}
-quint: QUINT\nCredential forwarding / split commits / lost replies\nConcurrent consumption / restart / old workers {
-  top: 810
-  left: 220
-  width: 610
-  height: 100
-  class: policy
-}
-lean: LEAN\nProducer provenance / one consumption / frozen key\nActual issuance and original budget composition {
-  top: 810
-  left: 960
-  width: 610
-  height: 100
-  class: semantic
-}
-protocols.mcp -> registry.origin
-protocols.a2a -> registry.alias
-protocols.acp -> registry.query
-registry.origin -> recovery.projection
-registry.alias -> recovery.join
-registry.query -> recovery.fence { style.stroke-dash: 4 }
-recovery.projection -> recovery.join
-recovery.join -> recovery.fence
-recovery.fence -> broker.cas
-broker.cas -> broker.alias
-broker.alias -> broker.hold
-broker.hold -> broker.cas: Read current prefix { style.stroke-dash: 4 }
-
-# Project-owned presentation question; not an issued governance Question.
+# Generated by Go from SysML and Lean references. Edit source contracts, not D2 semantic copy.
 vars: { d2-config: { data: { figure: |json
 {
-  "title": "02 bootstrap invitation",
+  "design": {
+    "audience": "Gateway runtime reviewers",
+    "medium": "GitHub at 830 CSS pixels",
+    "message": "The authoritative producer freezes the beneficiary before delivery.",
+    "questionRefs": [
+      "q1"
+    ],
+    "requiredSubjects": [
+      "n0",
+      "n1",
+      "n2",
+      "n3"
+    ],
+    "requiredRelations": [],
+    "focalSubjects": [
+      "n2"
+    ]
+  },
+  "icons": [
+    "engineering",
+    "weaver",
+    "components"
+  ],
+  "title": "Consume a key-bound invitation",
   "purpose": "workflow",
   "kind": "flow",
   "language": "en",
-  "width": 1600,
-  "primary": "main",
+  "width": 980,
+  "primary": "q1",
   "questions": [
     {
-      "ref": "main",
-      "text": "Which progression and failure boundaries govern 02 bootstrap invitation?",
+      "ref": "q1",
+      "text": "What prevents a forwarded invitation from enrolling another key?",
       "focusRefs": [
-        "catalog",
         "model"
+      ],
+      "subjectRefs": [
+        "n2"
       ]
     }
   ],
   "references": {
-    "catalog": "docs/architecture/08-diagram-catalog.org",
-    "model": "Project.sysml"
+    "model": "dev/sysml/AdmissionReaderViews.sysml",
+    "model0": "Project.sysml",
+    "model1": "dev/sysml/AdmissionReaderViews.sysml",
+    "model10": "dev/sysml/FloorReaderViews.sysml",
+    "model11": "dev/sysml/GatewayArchitecture.sysml",
+    "model12": "dev/sysml/PolicyEvidenceDesign.sysml",
+    "model13": "dev/sysml/ProviderRpc.sysml",
+    "model14": "dev/sysml/ReaderDesigns.sysml",
+    "model15": "dev/sysml/ResearchReaderViews.sysml",
+    "model16": "dev/sysml/StoragePersistence.sysml",
+    "model17": "dev/sysml/StreamingExecution.sysml",
+    "model18": "dev/sysml/WeaverExecution.sysml",
+    "model19": "dev/sysml/ZeroTrustRefinement.sysml",
+    "model2": "dev/sysml/ArchitectureReaderViews.sysml",
+    "model3": "dev/sysml/ArchitectureViews.sysml",
+    "model4": "dev/sysml/AssuranceReaderViews.sysml",
+    "model5": "dev/sysml/AttemptReaderViews.sysml",
+    "model6": "dev/sysml/AuthorityReaderViews.sysml",
+    "model7": "dev/sysml/ControlActivation.sysml",
+    "model8": "dev/sysml/CorrespondenceReaderView.sysml",
+    "model9": "dev/sysml/ExecutionReaderViews.sysml",
+    "proof0": "dev/proofs/lean/StreamingExecution.lean",
+    "sdkCapture": "dev/sysml/captures/WeaverAdmissionReaderViews-bootstrapInvitation.json"
   },
-  "copy": {
-    "takeaway": "The declared source relationships define this view; presentation does not grant execution authority."
-  },
+  "copy": {},
   "basis": {
     "captureRef": "docs/40-49-admission-coordination/45-bootstrap-invitation/45.02-bootstrap-invitation.d2#design-view",
     "modelRefs": [
-      "Project.sysml"
+      "Project.sysml",
+      "dev/sysml/AdmissionReaderViews.sysml",
+      "dev/sysml/ArchitectureReaderViews.sysml",
+      "dev/sysml/ArchitectureViews.sysml",
+      "dev/sysml/AssuranceReaderViews.sysml",
+      "dev/sysml/AttemptReaderViews.sysml",
+      "dev/sysml/AuthorityReaderViews.sysml",
+      "dev/sysml/ControlActivation.sysml",
+      "dev/sysml/CorrespondenceReaderView.sysml",
+      "dev/sysml/ExecutionReaderViews.sysml",
+      "dev/sysml/FloorReaderViews.sysml",
+      "dev/sysml/GatewayArchitecture.sysml",
+      "dev/sysml/PolicyEvidenceDesign.sysml",
+      "dev/sysml/ProviderRpc.sysml",
+      "dev/sysml/ReaderDesigns.sysml",
+      "dev/sysml/ResearchReaderViews.sysml",
+      "dev/sysml/StoragePersistence.sysml",
+      "dev/sysml/StreamingExecution.sysml",
+      "dev/sysml/WeaverExecution.sysml",
+      "dev/sysml/ZeroTrustRefinement.sysml"
     ],
-    "obligationRefs": [],
+    "obligationRefs": [
+      "proof0"
+    ],
     "evidenceRefs": []
   },
   "themes": [
     "sketchbook",
     "blueprint",
+    "compact",
     "reading"
   ],
   "layout": "model-view",
   "variants": [],
   "presentation": {
-    "graph": {
-      "id": "weaver-source-view",
-      "children": [
-        {
-          "id": "title"
-        },
-        {
-          "id": "protocols",
-          "children": [
-            {
-              "id": "protocols.mcp"
-            },
-            {
-              "id": "protocols.a2a"
-            },
-            {
-              "id": "protocols.acp"
-            },
-            {
-              "id": "protocols.goBrand"
-            },
-            {
-              "id": "protocols.kubernetesBrand"
-            }
-          ]
-        },
-        {
-          "id": "registry",
-          "children": [
-            {
-              "id": "registry.origin"
-            },
-            {
-              "id": "registry.alias"
-            },
-            {
-              "id": "registry.query"
-            }
-          ]
-        },
-        {
-          "id": "recovery",
-          "children": [
-            {
-              "id": "recovery.projection"
-            },
-            {
-              "id": "recovery.join"
-            },
-            {
-              "id": "recovery.fence"
-            }
-          ]
-        },
-        {
-          "id": "broker",
-          "children": [
-            {
-              "id": "broker.cas"
-            },
-            {
-              "id": "broker.alias"
-            },
-            {
-              "id": "broker.hold"
-            },
-            {
-              "id": "broker.rustBrand"
-            }
-          ]
-        },
-        {
-          "id": "quint"
-        },
-        {
-          "id": "lean"
-        }
-      ],
-      "layoutOptions": {
-        "elk.algorithm": "layered",
-        "elk.direction": "DOWN",
-        "elk.edgeRouting": "ORTHOGONAL"
-      }
-    },
     "options": {
       "elk.algorithm": "layered",
       "elk.direction": "DOWN",
-      "elk.edgeRouting": "ORTHOGONAL"
+      "elk.edgeRouting": "ORTHOGONAL",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "27",
+      "elk.spacing.nodeNode": "16"
     },
     "icons": {
-      "protocols.goBrand": "go",
-      "protocols.kubernetesBrand": "kubernetes",
-      "broker.rustBrand": "rust"
+      "n0": "authentication",
+      "n1": "claim",
+      "n2": "ledger",
+      "n3": "publication"
     },
-    "roles": {}
+    "roles": {},
+    "edgeLabels": true
   },
-  "icons": [
-    "engineering",
-    "weaver"
-  ]
+  "modelSource": {
+    "ref": "sdkCapture",
+    "view": "WeaverAdmissionReaderViews::bootstrapInvitation",
+    "modelHash": "ce385f561ec08305552317e22f90a73884c40b6789376bb883cb086c8f074732",
+    "portProjection": "owner",
+    "labels": {
+      "n0": "Beneficiary assignment\nCommit the public key",
+      "n1": "Exact invitation\nBind original launch",
+      "n2": "One authority event\nConsume and issue once",
+      "n3": "Pending issuance\nActivate at a later CAS"
+    }
+  }
 }
 |
 } } }

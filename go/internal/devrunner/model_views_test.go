@@ -27,7 +27,7 @@ func TestModelViewsUseActualSDK(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if capture.ModelHash == "" || len(capture.Views) != 8 {
+	if capture.ModelHash == "" || len(capture.Views) != 80 {
 		t.Fatalf("missing native model views: %+v", capture)
 	}
 	for name, view := range capture.Views {
@@ -39,6 +39,35 @@ func TestModelViewsUseActualSDK(t *testing.T) {
 	for _, name := range []string{"architecture", "zeroTrust", "execution", "assurance", "gateway", "contractRefinement", "rangeRecovery", "storage"} {
 		if _, ok := capture.Views["WeaverViews::"+name]; !ok {
 			t.Fatalf("missing declared view: %s", name)
+		}
+	}
+	// Function is a source-model declaration, not an implementation-language
+	// logo or a guess made by the renderer from the English caption.
+	for view, expected := range map[string]map[string]string{
+		"gateway":         {"ingress": "agent", "routine": "routine", "catalog": "catalog", "routing": "routing", "publication": "publication", "execution": "authorization", "providers": "provider", "stream": "stream"},
+		"architecture":    {"semanticPublisher": "routine", "controlAdapter": "routing", "policy": "policy", "ledger": "ledger", "broker": "authorization", "executor": "writer", "provider": "provider", "telemetry": "telemetry"},
+		"zeroTrust":       {"semanticPublisher": "routine", "controlAdapter": "publication", "policy": "policy", "ledger": "ledger", "broker": "authorization", "executor": "stream"},
+		"rangeRecovery":   {"ledger": "ledger", "transport": "writer", "retained": "unknown"},
+		"streamAdmission": {"adapter": "message", "server": "authentication", "ledger": "ledger", "guard": "authorization", "transport": "writer"},
+		"routeSelection":  {"ingress": "agent", "routine": "routine", "catalog": "catalog", "routing": "routing"},
+		"routeExecution":  {"routing": "routing", "publication": "publication", "execution": "authorization", "providers": "provider", "stream": "stream"},
+	} {
+		description := capture.Descriptions["WeaverViews::"+view]
+		if description == nil {
+			t.Fatalf("missing role descriptions for %s", view)
+		}
+		seen := map[string]bool{}
+		for _, caption := range description.Captions {
+			parts := strings.Split(caption.Name, "::")
+			name := parts[len(parts)-1]
+			want, ok := expected[name]
+			if !ok || caption.Icon != want {
+				t.Fatalf("%s/%s: component icon %q, expected %q", view, name, caption.Icon, want)
+			}
+			seen[name] = true
+		}
+		if len(seen) != len(expected) {
+			t.Fatalf("%s omitted component meanings: %v", view, seen)
 		}
 	}
 	security := capture.Views["WeaverViews::contractRefinement"]

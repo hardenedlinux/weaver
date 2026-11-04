@@ -6,6 +6,12 @@
 #+language: en
 #+options: toc:3
 
+* Reader view
+
+Preparation carries the original binding. The deciding transaction compares it again.
+
+[[file:15.02-recovery-cas.svg]]
+
 * Finding and core decision
 
 A sequence of authenticated current reads is not an atomic authorization to

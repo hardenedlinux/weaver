@@ -6,10 +6,11 @@ import {test,expect} from 'bun:test';
 import {chromium} from 'playwright';
 import {cpus} from 'node:os';
 import {fileURLToPath} from 'node:url';
-import {readFile} from 'node:fs/promises';
+import {readFile,writeFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 const root=fileURLToPath(new URL('../../../',import.meta.url));
 const hash=(value:string)=>createHash('sha256').update(value).digest('hex');
+const traceTiming=process.env.WEAVER_VECTOR_TIMING==='1';
 test('all Library model SVGs retain legible fonts, vector icons and complete text at GitHub width',async()=>{
  const receipt:{status:string;report:{selection?:string[];modelCaptureSHA256:string;images:{source:string;layout:string;sourceSHA256:string;svgSHA256:string}[]}}=JSON.parse(await readFile(root+'.cache/d2/latest-render.json','utf8'));
  const modelDigest=process.env.WEAVER_DIAGRAM_MODEL_SHA256;
@@ -26,8 +27,16 @@ test('all Library model SVGs retain legible fonts, vector icons and complete tex
   const checks=await Promise.allSettled(Array.from({length:Math.min(cpus().length,images.length)},async()=>{
    const page=await browser.newPage({viewport:{width:830,height:1000}});
    try{
+    const protocol=await page.context().newCDPSession(page);
     while(true){
      const image=images[cursor++];if(!image)return;
+   let checkpoint=performance.now();
+   const timed=(phase:string)=>{
+    if(!traceTiming)return;
+    const now=performance.now();
+    console.error(JSON.stringify({source:image.source,phase,milliseconds:Math.round(now-checkpoint)}));
+    checkpoint=now;
+   };
    const name=image.source.split('/').at(-1)!.slice(0,-3);
    const body=await readFile(root+image.source.slice(0,-3)+'.svg','utf8');
    expect(createHash('sha256').update(body).digest('hex')).toBe(image.svgSHA256);
@@ -45,6 +54,7 @@ test('all Library model SVGs retain legible fonts, vector icons and complete tex
     const provenance:{inputSHA256:string;sourceSHA256:Record<string,string>}=JSON.parse(metadata);
     expect(provenance.inputSHA256).toBe(exported.inputSHA256);
     expect(provenance.sourceSHA256[image.source]).toBe(image.sourceSHA256);
+    timed('provenance');
     await page.setContent('<style>body{margin:0;background:#0d1117}body>svg{width:830px;height:auto}</style>'+body);
     await page.evaluate(()=>document.fonts.ready);
     const issues=await page.evaluate(()=>{
@@ -86,8 +96,18 @@ test('all Library model SVGs retain legible fonts, vector icons and complete tex
      return problems;
     });
     failures.push(...issues.map(issue=>image.source+': '+issue));
+    timed('layout');
     expect(body).not.toContain('<foreignObject');expect(body).toContain('data-scene-node=');
-    await page.screenshot({path:root+'.cache/d2/'+name+'-830.png',fullPage:true});
+    const figure=await page.locator('body>svg').boundingBox();
+    if(!figure||Math.abs(figure.width-830)>0.1)throw new Error('Unexpected standalone SVG viewport');
+    // The source checks above admit the complete figure. Capture its entire
+    // painted extent with Chromium's lossless, speed-optimized PNG encoder.
+    const {data}=await protocol.send('Page.captureScreenshot',{
+     format:'png',captureBeyondViewport:true,optimizeForSpeed:true,
+     clip:{x:figure.x,y:figure.y,width:figure.width,height:Math.ceil(figure.height),scale:1},
+    });
+    await writeFile(root+'.cache/d2/'+name+'-830.png',Buffer.from(data,'base64'));
+    timed('screenshot');
     // Decode the exported SVG through the real image decoder. An off-DOM
     // Image avoids a second page layout/paint while preserving image and pixel
     // checks; the complete standalone SVG screenshot above is unchanged.
@@ -98,6 +118,7 @@ test('all Library model SVGs retain legible fonts, vector icons and complete tex
      return {valid:image.naturalWidth>0,opaque:[[0,0],[3,0],[0,3],[3,3]].every(([x,y])=>context.getImageData(x!,y!,1,1).data[3]===255)};
     },'data:image/svg+xml;base64,'+Buffer.from(body).toString('base64'));
     expect(decoded.valid).toBe(true);expect(decoded.opaque).toBe(true);
+    timed('decode');
     }
    }finally{await page.close();}
   }));

@@ -9,14 +9,17 @@ import {createHash} from 'node:crypto';
 import {parseArgs} from 'node:util';
 import path from 'node:path';
 import {chromium} from 'playwright';
-import {compileFigureSource,composeFigure,selectFigureVariant} from '@deterministic-engineering/render';
+import {compileFigureSource,composeFigure,composeModelView,selectFigureVariant} from '@deterministic-engineering/render';
+import {componentIcons} from './source/components';
+import {weaverIcons} from './source/assets';
 import {iconPacks} from "@deterministic-engineering/render/icons";
 import {exportFigure} from '@deterministic-engineering/render/export';
 import {collectCatalog} from './source/catalog';
 import {capturedViews} from './source/models';
 import {themes} from '../themes';
 import {composeSequence} from './sequence';
-import {readingFigure,composeReadingView} from './reading';
+import {composeObjects} from './objects';
+import {applyReaderDesign} from './source/design';
 
 const root=fileURLToPath(new URL('../../../',import.meta.url));
 const licensing=await readFile(path.join(root,'LICENSE'),'utf8');
@@ -33,7 +36,7 @@ const hash=(bytes:string|Uint8Array)=>createHash('sha256').update(bytes).digest(
 const count=Math.min(cpus().length,selected.length);
 const images:{source:string;theme:string;layout:string;sourceSHA256:string;svgSHA256:string;pngSHA256:string;nodes:number;edges:number;libraryInputSHA256:string}[]=[];
 const errors:string[]=[];
-const resources={themeLayers:themes,sysmlViews:capturedViews(catalog.modelCapture),iconPacks:{...iconPacks,weaver:Object.fromEntries(['go','rust','kubernetes'].map(name=>[name,{svg:catalog.fs['docs/architecture/diagrams/assets/'+name+'.svg']!,label:name}]))}};
+const resources={themeLayers:themes,sysmlViews:capturedViews(catalog.modelCapture),iconPacks:{...iconPacks,weaver:weaverIcons(catalog.fs),components:componentIcons(catalog.fs)}};
 const browser=await chromium.launch();
 let cursor=0,cancelled=false;
 const stop=()=>{cancelled=true;};process.on('SIGINT',stop);process.on('SIGTERM',stop);
@@ -41,10 +44,14 @@ try{
  await Promise.all(Array.from({length:count},async()=>{
   while(!cancelled){const view=selected[cursor++];if(!view)return;
    try{
-    const input=readingFigure(await compileFigureSource({...catalog.fs,...catalog.documents},view.source,resources,{layout:'elk'}));
+    // The compiler supplies semantic observations. Library ELK lays out the export.
+    const input=applyReaderDesign(await compileFigureSource({...catalog.fs,...catalog.documents},view.source,resources,{layout:'dagre'}),catalog.modelCapture?.readerDesigns?.[view.kind]);
     if(input.layout!=='model-view'&&!(input.layout==='sequence-view'&&input.view.kind==='sequence'))throw new Error('Unmigrated declaration: '+input.layout);
     if(input.modelSource&&!Object.hasOwn(catalog.modelCapture?.mapped??{},view.source))throw new Error('Missing authoritative mapped source');
-    const result=await exportFigure(composeFigure(input,input.layout==='sequence-view'?composeSequence:composeReadingView),browser);
+    const notation=(input.presentation as {notation?:string}|undefined)?.notation;
+    if(notation&&notation!=='objects'&&notation!=='model')throw new Error('Unknown declared notation: '+notation);
+    const composer=input.layout==='sequence-view'?composeSequence:notation==='objects'?composeObjects:composeModelView;
+    const result=await exportFigure(composeFigure(input,composer),browser);
     const exportedSVG=result.svg[0];if(!exportedSVG)throw new Error('Library exported no standalone SVG');
     const declaration=exportedSVG.startsWith('<?xml')?exportedSVG.indexOf('?>')+2:0;
     const svg=exportedSVG.slice(0,declaration)+svgNotice+exportedSVG.slice(declaration);
@@ -53,7 +60,7 @@ try{
     await writeFile(stem+'.svg',svg);await writeFile(cache+'.png',result.png);await writeFile(cache+'.html',result.html);await writeFile(cache+'.json',JSON.stringify(result.receipt,null,2));
     if(await access(stem+'.png').then(()=>true,()=>false))await writeFile(stem+'.png',result.png);
     for(const variant of input.variants??[]){
-     const exported=await exportFigure(composeFigure(readingFigure(selectFigureVariant(input,variant.name)),composeReadingView),browser);
+     const exported=await exportFigure(composeFigure(selectFigureVariant(input,variant.name),composeModelView),browser);
      await writeFile(stem+'-'+variant.name+'.png',exported.png);await writeFile(cache+'-'+variant.name+'.html',exported.html);
     }
     images.push({source:view.source,theme:view.kind,layout:input.layout,sourceSHA256:view.sha256,svgSHA256:hash(svg),pngSHA256:hash(result.png),nodes:input.model?.subjects.length??0,edges:input.model?.relations.length??0,libraryInputSHA256:result.receipt.inputSHA256});

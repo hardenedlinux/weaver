@@ -159,6 +159,9 @@ package WeaverExecution {
            final custody. An inert candidate cannot invoke this action. */
     }
     part def SchemeSemanticPublisher {
+        attribute overviewName : String = "Task contract";
+        attribute overviewSummary : String = "Original scope";
+        attribute overviewGlyph : String = "task-contract";
         action deriveCandidate : DeriveSemanticCandidate;
         doc /* Normative semantic allocation: reuse Agentic AI Lab Governor to
            select admitted original scope and Governance to assess obligations,
@@ -189,7 +192,7 @@ package WeaverExecution {
         attribute securityResponsibility : String = "Task scope and required parents\nPublished selected profile\nConfiguration grants no send right";
         attribute displayName : String = "Scheme / Semantics";
         attribute responsibility : String = "Governor: eligible steps\nGovernance: profile assessment\nChecked Cedar projection";
-        attribute glyph : String = "library";
+        attribute glyph : String = "routine";
         attribute visualRole : String = "publication";
         doc /* Scheme is the programmable semantic owner of reusable routines,
            strategies, semantic profiles and task assignments through Agentic AI
@@ -212,6 +215,9 @@ package WeaverExecution {
         port effectObservations : ~PolicyEvidenceDesign::EffectObservationPort;
     }
     part def GoControlAdapter {
+        attribute overviewName : String = "Route proposal";
+        attribute overviewSummary : String = "Suggest a provider";
+        attribute overviewGlyph : String = "route-choice";
         action publishCandidate : OrchestrateSourcePublication;
         doc /* Preserve the semantic original through configuration normalization,
            protocol aliasing and authenticated publication. JSON/YAML populates
@@ -223,9 +229,10 @@ package WeaverExecution {
         attribute leanDeclaration : String = "CedarPooSpec.Gateway.Context";
         attribute leanFields : String = "scope,policyRevision,ownerEpoch,historyRevision,factFloor";
         attribute securityName : String = "Go / Source publication";
+        attribute securityGlyph : String = "publication";
         attribute securityResponsibility : String = "Carry the original context\nPublish over authenticated gRPC\nUnknown replies stay unresolved";
         attribute responsibility : String = "Cloud + protocol integration\nOne owned source image\nAuthenticated publication + routing";
-        attribute glyph : String = "go";
+        attribute glyph : String = "routing";
         attribute visualRole : String = "selection";
         doc /* BootstrapProducer receives the server's typed CompileSource
            artifact over authenticated gRPC and reobserves source authority.
@@ -351,6 +358,9 @@ package WeaverExecution {
            authorize transport. AWS AgentCore stays platform-specific. */
     }
     part def RustPolicy {
+        attribute overviewName : String = "Current checks";
+        attribute overviewSummary : String = "Cedar decides";
+        attribute overviewGlyph : String = "policy";
         doc /* Cedar/SPEC owns reusable authorization meaning and conditional
            preservation laws. Rust materializes authenticated actual context and
            evaluates the existing Cedar mechanism; it does not reimplement
@@ -363,7 +373,7 @@ package WeaverExecution {
         attribute securityResponsibility : String = "Exact effect, facts and schema\nCurrent Policy + profile checks\nError-free Allow is one premise";
         attribute displayName : String = "Cedar / Policy";
         attribute responsibility : String = "Evaluate the exact effect\nRequire error-free permission\nAllow is not a send handle";
-        attribute glyph : String = "decision";
+        attribute glyph : String = "policy";
         attribute visualRole : String = "policy";
         doc /* Evaluate Cedar against actual operation and authoritative deciding
            state; reject evaluation errors. Local CFFI preflight is inert. The
@@ -381,6 +391,9 @@ package WeaverExecution {
         enum mrrDataBackend;
     }
     part def RustLedger {
+        attribute overviewName : String = "Claim + budget";
+        attribute overviewSummary : String = "Record before sending";
+        attribute overviewGlyph : String = "budget-ledger";
         action commitOriginal : CommitOriginalAdmission;
         doc /* Implement the semantic original binding in the existing source
            deciding transaction, with exact-outcome recovery and current fencing.
@@ -394,7 +407,7 @@ package WeaverExecution {
         attribute securityResponsibility : String = "Original operation + grant\nCommit both ledgers with budget\nRenewed grants cannot replay work";
         attribute displayName : String = "Rust / Authority ledger";
         attribute responsibility : String = "MRR Data Backend / Turso\nClaim, budget and fence together\nPersist original consumption";
-        attribute glyph : String = "rust";
+        attribute glyph : String = "ledger";
         attribute visualRole : String = "semantic";
         attribute storageEngine : AdmissionStorageEngine = AdmissionStorageEngine::turso;
         attribute storageOwner : AdmissionStorageOwner = AdmissionStorageOwner::mrrDataBackend;
@@ -431,6 +444,9 @@ package WeaverExecution {
         port policyEvaluation : PolicyEvaluationPort;
     }
     part def RustFinalBroker {
+        attribute overviewName : String = "Final-use gate";
+        attribute overviewSummary : String = "Recheck actual use";
+        attribute overviewGlyph : String = "permission-check";
         action guardEffect : GuardFinalEffect;
         attribute leanDeclaration : String = "CedarPooSpec.Gateway.ZeroTrust.FinalUse";
         attribute leanFields : String = "sameView,authenticated,current,profileAuthority,committed,unknownRetained,notRevoked,mediated";
@@ -438,7 +454,7 @@ package WeaverExecution {
         attribute securityResponsibility : String = "Identity, profile and current view\nDurable consume + unknown holds\nFence every actual external effect";
         attribute displayName : String = "Rust / Final broker";
         attribute responsibility : String = "Own consumed opportunities\nGuard dispatch and each range\nUnknown exposure remains held";
-        attribute glyph : String = "capture";
+        attribute glyph : String = "authorization";
         attribute visualRole : String = "execution";
         doc /* Use the consuming ledger handle; serialize the final guard through the bounded transport call. */
         doc /* Target rollback-safe mode requires the sole transport owner and
@@ -464,13 +480,17 @@ package WeaverExecution {
         port wire : WirePort;
     }
     part def HttpsExecutor {
+        attribute overviewName : String = "Bounded write";
+        attribute overviewSummary : String = "Write + flush + seal";
+        attribute overviewGlyph : String = "bounded-write";
         attribute leanDeclaration : String = "CedarPooSpec.Gateway.ZeroTrust.CommittedPrefix";
         attribute leanFields : String = "tail,installed";
         attribute securityName : String = "Rust / Stream continuity";
+        attribute securityGlyph : String = "stream";
         attribute securityResponsibility : String = "Retain original spent prefix\nReassess each new governed use\nRecovery cannot mint permission";
         attribute displayName : String = "Bounded HTTPS executor";
         attribute responsibility : String = "Provider write + flush + seal\nNo implicit retry or fallback\nRetain partial / unknown exposure";
-        attribute glyph : String = "capture";
+        attribute glyph : String = "writer";
         attribute visualRole : String = "execution";
         doc /* Exact committed target and body, no inherited proxy, redirect or automatic retry.
            Streaming providers use the sealed Hyper/TLS owner and await headers
@@ -480,9 +500,12 @@ package WeaverExecution {
         port provider : WirePort;
     }
     part def LlmProviderEndpoint {
+        attribute overviewName : String = "LLM provider";
+        attribute overviewSummary : String = "Return a result";
+        attribute overviewGlyph : String = "model-provider";
         attribute displayName : String = "LLM / Tool endpoint";
         attribute responsibility : String = "Bound route and request\nExternal effects and responses\nNo inferred exactly-once\ndelivery";
-        attribute glyph : String = "model";
+        attribute glyph : String = "provider";
         attribute visualRole : String = "capture";
         doc /* External model provider boundary. Its response does not authorize
            further sends, settle usage or release unknown reservations. */
@@ -526,9 +549,12 @@ package WeaverExecution {
            hide the present bounded-call contention cost. */
     }
     part def TelemetryService {
+        attribute overviewName : String = "Local metrics";
+        attribute overviewSummary : String = "No execution rights";
+        attribute overviewGlyph : String = "telemetry";
         attribute displayName : String = "Telemetry";
         attribute responsibility : String = "Local counters\nAuthenticated reads\nNo execution rights";
-        attribute glyph : String = "evidence";
+        attribute glyph : String = "telemetry";
         attribute visualRole : String = "capture";
         doc /* Current Go source/startup producers emit fixed-label local slog
            metadata; native integration fixtures supply clocked phase records.
@@ -559,6 +585,8 @@ package WeaverExecution {
            and local-counter reset. No external exporter is currently enabled. */
     }
     part def DerivedEvidenceAdapter {
+        attribute overviewName : String = "Evidence";
+        attribute overviewSummary : String = "Bound observations";
         attribute displayName : String = "Derived evidence";
         attribute responsibility : String = "Provenance-bound candidates\nGoverned semantic observations\nDerivation is not authority";
         attribute glyph : String = "document";
@@ -600,19 +628,19 @@ package WeaverExecution {
         part provider : LlmProviderEndpoint;
         part telemetry : TelemetryService;
         part derivedEvidence : DerivedEvidenceAdapter[0..1];
-        connection semanticPublisher_sourceCandidates_to_controlAdapter_sourceCandidates connect semanticPublisher.sourceCandidates to controlAdapter.sourceCandidates;
+        connection proposeTask connect semanticPublisher.sourceCandidates to controlAdapter.sourceCandidates;
         connection controlAdapter_sourceCommands_to_ledger_sourceCommands connect controlAdapter.sourceCommands to ledger.sourceCommands;
         connection ledger_sourceOutcomes_to_controlAdapter_sourceOutcomes connect ledger.sourceOutcomes to controlAdapter.sourceOutcomes;
         connection controlAdapter_semanticObservations_to_semanticPublisher_sourceObservations connect controlAdapter.semanticObservations to semanticPublisher.sourceObservations;
         connection ledger_effectOutcomes_to_controlAdapter_effectObservations connect ledger.effectOutcomes to controlAdapter.effectObservations;
         connection controlAdapter_semanticEffectObservations_to_semanticPublisher_effectObservations connect controlAdapter.semanticEffectObservations to semanticPublisher.effectObservations;
         connection derivedEvidence_candidates_to_semanticPublisher_derivedFacts connect derivedEvidence.candidates to semanticPublisher.derivedFacts;
-        connection controlAdapter_proposals_to_ledger_proposals connect controlAdapter.proposals to ledger.proposals;
-        connection ledger_policyEvaluation_to_policy_evaluation connect ledger.policyEvaluation to policy.evaluation;
+        connection proposeEffect connect controlAdapter.proposals to ledger.proposals;
+        connection checkPolicy connect ledger.policyEvaluation to policy.evaluation;
         connection ledger_observations_to_controlAdapter_observations connect ledger.observations to controlAdapter.observations;
-        connection ledger_consumed_to_broker_consumed connect ledger.consumed to broker.consumed;
-        connection broker_wire_to_executor_wire connect broker.wire to executor.wire;
-        connection executor_provider_to_provider_request connect executor.provider to provider.request;
+        connection consumedClaim connect ledger.consumed to broker.consumed;
+        connection recheckUse connect broker.wire to executor.wire;
+        connection boundedWrite connect executor.provider to provider.request;
     }
     part targetDeployment : ExecutionAuthorityDeployment;
 }

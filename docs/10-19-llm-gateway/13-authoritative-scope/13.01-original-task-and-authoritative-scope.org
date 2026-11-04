@@ -6,6 +6,12 @@
 #+language: en
 #+options: toc:3
 
+* Reader view
+
+The adapter encodes a request inside the admitted child scope.
+
+[[file:13.02-authoritative-scope.svg]]
+
 * Decision and security boundary
 
 A scope supplied by an SDK, provider, Go adapter or client is data. Its internal

@@ -3,339 +3,142 @@
 # SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 ...@../../../dev/d2/themes/flow
-# Core trust, ownership and recovery only. Evidence belongs in Org.
-title: PROTECTED QUORUM PROMISES / COMPLETE PREFIX / ORIGINAL EXECUTION {
-  class: title
-  near: top-center
-}
-semantic: SEMANTICS / CLOUD LIFECYCLE {
-  top: 0
-  left: 0
-  width: 350
-  height: 690
-  label.near: top-center
-  style.font-size: 17
-  style.fill: "#f7faf9"
-  style.stroke: "#9bb6ad"
-  identity: Scheme / original identity\nClaim / budget / history / operation\nCedar constrains the actual effect {
-    top: 90
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: semantic
-  }
-  lifecycle: Go / cloud-native lifecycle\nDiscovery / learners / reconciliation\nReadiness requires qualified recovery {
-    top: 295
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: cloud
-  }
-  unknown: Unknown outcome stays booked\nResolve the same original receipt\nNo replay / regrant / timeout refund {
-    top: 500
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: unknown
-  }
-  goBrand: "" {
-    shape: image
-    icon: assets/go.svg
-    top: 247
-    left: 24
-    width: 42
-    height: 22
-  }
-  kubernetesBrand: "" {
-    shape: image
-    icon: assets/kubernetes.svg
-    top: 247
-    left: 82
-    width: 28
-    height: 28
-  }
-}
-witness: PROTECTED SIGNING OWNER {
-  top: 0
-  left: 440
-  width: 350
-  height: 690
-  label.near: top-center
-  style.font-size: 17
-  style.fill: "#f8f9fc"
-  style.stroke: "#a3abc0"
-  promise: Durable full-prefix promise\nPublish before releasing an ack\nExtend only / never forget a choice {
-    top: 90
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: ledger
-  }
-  signer: Exclusive mediated signer\nCurrent incarnation and eligibility\nRetired identities cannot sign again {
-    top: 295
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: ledger
-  }
-  restore: Restored replica is quarantined\nRecover the full deciding image\nUnknown protected history blocks {
-    top: 500
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: unknown
-  }
-}
-root: RUST / ROOT AND FINAL BROKER {
-  top: 0
-  left: 880
-  width: 350
-  height: 690
-  label.near: top-center
-  style.font-size: 17
-  style.fill: "#faf9fd"
-  style.stroke: "#b0a7c8"
-  joint: Serialized old / joint / new\nBoth quorums certify joint records\nCarry promises and original spent-state {
-    top: 90
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: runtime
-  }
-  barrier: Actual writer isolation\nCommit fence / fresh current read\nElection alone does not stop old IO {
-    top: 295
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: runtime
-  }
-  send: Final broker submission\nOriginal consumption and live Policy\nNo send capability from recovery {
-    top: 500
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: runtime
-  }
-  rustBrand: "" {
-    shape: image
-    icon: assets/rust.svg
-    top: 40
-    left: 156
-    width: 34
-    height: 34
-  }
-}
-obligation: ONE ORIGINAL OBLIGATION {
-  top: 0
-  left: 1320
-  width: 350
-  height: 690
-  label.near: top-center
-  style.font-size: 17
-  style.fill: "#f8fafb"
-  style.stroke: "#a3b4c0"
-  prefix: Complete authoritative prefix\nConfiguration and original operations\nNo empty root for a new roster {
-    top: 90
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: ledger
-  }
-  application: Original account application\nRetain consumption tombstones\nUnknown writes remain unresolved {
-    top: 295
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: ledger
-  }
-  receipt: Authentic original result\nSettle the same usage once\nLate receipts do not recreate permits {
-    top: 500
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: ledger
-  }
-}
-quint: QUINT\nRollback / shared-witness conflict / old signer and roster resurrection {
-  top: 810
-  left: 220
-  width: 610
-  height: 100
-  class: policy
-}
-lean: LEAN\nDurable witness growth / quorum bridges / original budget conservation {
-  top: 810
-  left: 960
-  width: 610
-  height: 100
-  class: semantic
-}
-semantic.identity -> witness.promise
-semantic.lifecycle -> witness.signer
-witness.promise -> root.joint: bound ack
-witness.signer -> witness.restore: restore
-witness.restore -> witness.promise: qualify
-root.joint -> obligation.prefix
-root.joint -> root.barrier
-root.barrier -> root.send
-root.barrier -> obligation.application
-root.send -> obligation.receipt
-obligation.application -> obligation.receipt
-
-# Project-owned presentation question; not an issued governance Question.
+# Generated by Go from SysML and Lean references. Edit source contracts, not D2 semantic copy.
 vars: { d2-config: { data: { figure: |json
 {
-  "title": "quorum durable promises",
+  "design": {
+    "audience": "Gateway design and runtime reviewers",
+    "medium": "GitHub at 830 CSS pixels",
+    "message": "A returning signer must honor its protected promise and current configuration.",
+    "questionRefs": [
+      "q1"
+    ],
+    "requiredSubjects": [
+      "n0",
+      "n1",
+      "n2",
+      "n3"
+    ],
+    "requiredRelations": [],
+    "focalSubjects": [
+      "n0"
+    ]
+  },
+  "icons": [
+    "engineering",
+    "weaver",
+    "components"
+  ],
+  "title": "Recover durable promises before voting",
   "purpose": "workflow",
   "kind": "flow",
   "language": "en",
-  "width": 1600,
-  "primary": "main",
+  "width": 980,
+  "primary": "q1",
   "questions": [
     {
-      "ref": "main",
-      "text": "Which progression and failure boundaries govern quorum durable promises?",
+      "ref": "q1",
+      "text": "What prevents a restored member from signing a conflicting prefix?",
       "focusRefs": [
-        "catalog",
         "model"
+      ],
+      "subjectRefs": [
+        "n0"
       ]
     }
   ],
   "references": {
-    "catalog": "docs/architecture/08-diagram-catalog.org",
-    "model": "Project.sysml"
+    "model": "dev/sysml/ArchitectureReaderViews.sysml",
+    "model0": "Project.sysml",
+    "model1": "dev/sysml/AdmissionReaderViews.sysml",
+    "model10": "dev/sysml/FloorReaderViews.sysml",
+    "model11": "dev/sysml/GatewayArchitecture.sysml",
+    "model12": "dev/sysml/PolicyEvidenceDesign.sysml",
+    "model13": "dev/sysml/ProviderRpc.sysml",
+    "model14": "dev/sysml/ReaderDesigns.sysml",
+    "model15": "dev/sysml/ResearchReaderViews.sysml",
+    "model16": "dev/sysml/StoragePersistence.sysml",
+    "model17": "dev/sysml/StreamingExecution.sysml",
+    "model18": "dev/sysml/WeaverExecution.sysml",
+    "model19": "dev/sysml/ZeroTrustRefinement.sysml",
+    "model2": "dev/sysml/ArchitectureReaderViews.sysml",
+    "model3": "dev/sysml/ArchitectureViews.sysml",
+    "model4": "dev/sysml/AssuranceReaderViews.sysml",
+    "model5": "dev/sysml/AttemptReaderViews.sysml",
+    "model6": "dev/sysml/AuthorityReaderViews.sysml",
+    "model7": "dev/sysml/ControlActivation.sysml",
+    "model8": "dev/sysml/CorrespondenceReaderView.sysml",
+    "model9": "dev/sysml/ExecutionReaderViews.sysml",
+    "proof0": "dev/proofs/lean/StreamingExecution.lean",
+    "sdkCapture": "dev/sysml/captures/WeaverArchitectureReaderViews-quorumPromises.json"
   },
-  "copy": {
-    "takeaway": "The declared source relationships define this view; presentation does not grant execution authority."
-  },
+  "copy": {},
   "basis": {
     "captureRef": "docs/architecture/diagrams/29-quorum-durable-promises.d2#design-view",
     "modelRefs": [
-      "Project.sysml"
+      "Project.sysml",
+      "dev/sysml/AdmissionReaderViews.sysml",
+      "dev/sysml/ArchitectureReaderViews.sysml",
+      "dev/sysml/ArchitectureViews.sysml",
+      "dev/sysml/AssuranceReaderViews.sysml",
+      "dev/sysml/AttemptReaderViews.sysml",
+      "dev/sysml/AuthorityReaderViews.sysml",
+      "dev/sysml/ControlActivation.sysml",
+      "dev/sysml/CorrespondenceReaderView.sysml",
+      "dev/sysml/ExecutionReaderViews.sysml",
+      "dev/sysml/FloorReaderViews.sysml",
+      "dev/sysml/GatewayArchitecture.sysml",
+      "dev/sysml/PolicyEvidenceDesign.sysml",
+      "dev/sysml/ProviderRpc.sysml",
+      "dev/sysml/ReaderDesigns.sysml",
+      "dev/sysml/ResearchReaderViews.sysml",
+      "dev/sysml/StoragePersistence.sysml",
+      "dev/sysml/StreamingExecution.sysml",
+      "dev/sysml/WeaverExecution.sysml",
+      "dev/sysml/ZeroTrustRefinement.sysml"
     ],
-    "obligationRefs": [],
+    "obligationRefs": [
+      "proof0"
+    ],
     "evidenceRefs": []
   },
   "themes": [
     "sketchbook",
-    "blueprint",
+    "field-notes",
+    "compact",
     "reading"
   ],
   "layout": "model-view",
   "variants": [],
   "presentation": {
-    "graph": {
-      "id": "weaver-source-view",
-      "children": [
-        {
-          "id": "title"
-        },
-        {
-          "id": "semantic",
-          "children": [
-            {
-              "id": "semantic.identity"
-            },
-            {
-              "id": "semantic.lifecycle"
-            },
-            {
-              "id": "semantic.unknown"
-            },
-            {
-              "id": "semantic.goBrand"
-            },
-            {
-              "id": "semantic.kubernetesBrand"
-            }
-          ]
-        },
-        {
-          "id": "witness",
-          "children": [
-            {
-              "id": "witness.promise"
-            },
-            {
-              "id": "witness.signer"
-            },
-            {
-              "id": "witness.restore"
-            }
-          ]
-        },
-        {
-          "id": "root",
-          "children": [
-            {
-              "id": "root.joint"
-            },
-            {
-              "id": "root.barrier"
-            },
-            {
-              "id": "root.send"
-            },
-            {
-              "id": "root.rustBrand"
-            }
-          ]
-        },
-        {
-          "id": "obligation",
-          "children": [
-            {
-              "id": "obligation.prefix"
-            },
-            {
-              "id": "obligation.application"
-            },
-            {
-              "id": "obligation.receipt"
-            }
-          ]
-        },
-        {
-          "id": "quint"
-        },
-        {
-          "id": "lean"
-        }
-      ],
-      "layoutOptions": {
-        "elk.algorithm": "layered",
-        "elk.direction": "DOWN",
-        "elk.edgeRouting": "ORTHOGONAL"
-      }
-    },
     "options": {
       "elk.algorithm": "layered",
       "elk.direction": "DOWN",
-      "elk.edgeRouting": "ORTHOGONAL"
+      "elk.edgeRouting": "ORTHOGONAL",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "27",
+      "elk.spacing.nodeNode": "16"
     },
     "icons": {
-      "semantic.goBrand": "go",
-      "semantic.kubernetesBrand": "kubernetes",
-      "root.rustBrand": "rust"
+      "n0": "ledger",
+      "n1": "recovery",
+      "n2": "authentication",
+      "n3": "authorization"
     },
-    "roles": {}
+    "roles": {},
+    "edgeLabels": true
   },
-  "icons": [
-    "engineering",
-    "weaver"
-  ]
+  "modelSource": {
+    "ref": "sdkCapture",
+    "view": "WeaverArchitectureReaderViews::quorumPromises",
+    "modelHash": "ce385f561ec08305552317e22f90a73884c40b6789376bb883cb086c8f074732",
+    "portProjection": "owner",
+    "labels": {
+      "n0": "Protected promise\nPersist before confirmation",
+      "n1": "Restored member\nRecover original prefix",
+      "n2": "Current quorum\nReject conflicting history",
+      "n3": "Current broker fence\nGuard one original consume"
+    }
+  }
 }
 |
 } } }

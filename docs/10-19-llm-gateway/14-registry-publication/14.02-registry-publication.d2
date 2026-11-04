@@ -3,340 +3,148 @@
 # SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 ...@../../../dev/d2/themes/data
-# Core design only; source identities and validation receipts remain in Org.
-title: WEAVER / ORIGINAL SEMANTIC BINDING / DURABLE RECOVERY {
-  class: title
-  near: top-center
-}
-profile: SCHEME AND GO / SOURCE CONTRACT {
-  top: 0
-  left: 0
-  width: 350
-  height: 690
-  label.near: top-center
-  style.font-size: 17
-  style.fill: "#f7faf9"
-  style.stroke: "#9bb6ad"
-  subject: Original task and claim\nCanonical operation / source vector\nScheme semantics / Go reconciliation {
-    top: 90
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: semantic
-  }
-  object: Immutable semantic profile\nExact namespace and commitment\nMode / tools / limits / input {
-    top: 295
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: semantic
-  }
-  receipt: Qualified source observations\nDurable data / no execution grant\nNo replacement from a cache miss {
-    top: 500
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: cloud
-  }
-  goBrand: "" {
-    shape: image
-    icon: ../../architecture/diagrams/assets/go.svg
-    top: 247
-    left: 24
-    width: 42
-    height: 22
-  }
-  kubernetesBrand: "" {
-    shape: image
-    icon: ../../architecture/diagrams/assets/kubernetes.svg
-    top: 247
-    left: 82
-    width: 28
-    height: 28
-  }
-}
-publication: RUST / PUBLICATION AUTHORITY {
-  top: 0
-  left: 440
-  width: 350
-  height: 690
-  label.near: top-center
-  style.font-size: 17
-  style.fill: "#f8fafb"
-  style.stroke: "#9bb6ad"
-  intent: Independent sticky binding intent\nOriginal claim and exact profile\nCAS before root publication {
-    top: 90
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: policy
-  }
-  journal: Exact original root decision\nStable operation / durable append\nLost reply queries the same decision {
-    top: 295
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: runtime
-  }
-  confirm: Independent prefix confirmation\nSame intent and committed root\nNo local-absence fallback {
-    top: 500
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: policy
-  }
-}
-recovery: RUST / CURRENT RECOVERY JOIN {
-  top: 0
-  left: 880
-  width: 350
-  height: 690
-  label.near: top-center
-  style.font-size: 17
-  style.fill: "#f7faf9"
-  style.stroke: "#9bb6ad"
-  ledger: Current execution ledger\nSpent-state / budget / history\nSnapshot cannot reset authority {
-    top: 90
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: runtime
-  }
-  fence: Current logical owner fence\nRestart retires old permissions\nLate receipt is attributable data {
-    top: 295
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: policy
-  }
-  join: Exact current activation image\nBinding / prefix / ledger / fence\nMissing profile keeps the gate closed {
-    top: 500
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: semantic
-  }
-}
-broker: RUST / FINAL EXECUTION GATE {
-  top: 0
-  left: 1320
-  width: 350
-  height: 690
-  label.near: top-center
-  style.font-size: 17
-  style.fill: "#f8fafb"
-  style.stroke: "#9bb6ad"
-  consume: Conditional consume and send gate\nCurrent owner and execution revision\nEach write invalidates old images {
-    top: 90
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: runtime
-  }
-  history: Original semantic and Policy gate\nOriginal domains / mode / tools\nGo adapter cannot enlarge authority {
-    top: 295
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: policy
-  }
-  hold: Original obligation settlement\nUnknown usage retains the hold\nNo replay from recovery or retry {
-    top: 500
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: semantic
-  }
-  rustBrand: "" {
-    shape: image
-    icon: ../../architecture/diagrams/assets/rust.svg
-    top: 40
-    left: 156
-    width: 34
-    height: 34
-  }
-}
-quint: QUINT\nLost replies / mixed snapshots / old workers\nProfile swap / replay / unknown refund {
-  top: 810
-  left: 220
-  width: 610
-  height: 100
-  class: policy
-}
-lean: LEAN\nSticky original binding / current execution\nSource-step projection / original obligations {
-  top: 810
-  left: 960
-  width: 610
-  height: 100
-  class: semantic
-}
-profile.subject -> publication.intent
-profile.object -> publication.intent { style.stroke-dash: 4 }
-publication.intent -> publication.journal
-publication.journal -> publication.confirm
-publication.confirm -> recovery.join
-profile.receipt -> publication.confirm { style.stroke-dash: 4 }
-recovery.ledger -> recovery.fence
-recovery.fence -> recovery.join
-recovery.ledger -> broker.consume { style.stroke-dash: 4 }
-recovery.join -> broker.consume
-broker.history -> broker.consume { style.stroke-dash: 4 }
-broker.history -> broker.hold
-
-# Project-owned presentation question; not an issued governance Question.
+# Generated by Go from SysML and Lean references. Edit source contracts, not D2 semantic copy.
 vars: { d2-config: { data: { figure: |json
 {
-  "title": "02 registry publication",
+  "design": {
+    "audience": "Gateway reviewers",
+    "medium": "GitHub at 830 CSS pixels",
+    "message": "A lost reply is recovered from the authoritative decision.",
+    "questionRefs": [
+      "q1"
+    ],
+    "requiredSubjects": [
+      "n0",
+      "n1",
+      "n2",
+      "n3",
+      "n4",
+      "n5"
+    ],
+    "requiredRelations": [],
+    "focalSubjects": [
+      "n4"
+    ]
+  },
+  "icons": [
+    "engineering",
+    "weaver",
+    "components"
+  ],
+  "title": "Publish an exact reviewed profile",
   "purpose": "architecture",
   "kind": "data",
   "language": "en",
-  "width": 1600,
-  "primary": "main",
+  "width": 980,
+  "primary": "q1",
   "questions": [
     {
-      "ref": "main",
-      "text": "Which records and binding relationships govern 02 registry publication?",
+      "ref": "q1",
+      "text": "When does a reviewed profile become usable?",
       "focusRefs": [
-        "catalog",
         "model"
+      ],
+      "subjectRefs": [
+        "n4"
       ]
     }
   ],
   "references": {
-    "catalog": "docs/architecture/08-diagram-catalog.org",
-    "model": "Project.sysml"
+    "model": "dev/sysml/AuthorityReaderViews.sysml",
+    "model0": "Project.sysml",
+    "model1": "dev/sysml/AdmissionReaderViews.sysml",
+    "model10": "dev/sysml/FloorReaderViews.sysml",
+    "model11": "dev/sysml/GatewayArchitecture.sysml",
+    "model12": "dev/sysml/PolicyEvidenceDesign.sysml",
+    "model13": "dev/sysml/ProviderRpc.sysml",
+    "model14": "dev/sysml/ReaderDesigns.sysml",
+    "model15": "dev/sysml/ResearchReaderViews.sysml",
+    "model16": "dev/sysml/StoragePersistence.sysml",
+    "model17": "dev/sysml/StreamingExecution.sysml",
+    "model18": "dev/sysml/WeaverExecution.sysml",
+    "model19": "dev/sysml/ZeroTrustRefinement.sysml",
+    "model2": "dev/sysml/ArchitectureReaderViews.sysml",
+    "model3": "dev/sysml/ArchitectureViews.sysml",
+    "model4": "dev/sysml/AssuranceReaderViews.sysml",
+    "model5": "dev/sysml/AttemptReaderViews.sysml",
+    "model6": "dev/sysml/AuthorityReaderViews.sysml",
+    "model7": "dev/sysml/ControlActivation.sysml",
+    "model8": "dev/sysml/CorrespondenceReaderView.sysml",
+    "model9": "dev/sysml/ExecutionReaderViews.sysml",
+    "proof0": "dev/proofs/lean/StreamingExecution.lean",
+    "sdkCapture": "dev/sysml/captures/WeaverAuthorityReaderViews-publication.json"
   },
-  "copy": {
-    "takeaway": "The declared source relationships define this view; presentation does not grant execution authority."
-  },
+  "copy": {},
   "basis": {
     "captureRef": "docs/10-19-llm-gateway/14-registry-publication/14.02-registry-publication.d2#design-view",
     "modelRefs": [
-      "Project.sysml"
+      "Project.sysml",
+      "dev/sysml/AdmissionReaderViews.sysml",
+      "dev/sysml/ArchitectureReaderViews.sysml",
+      "dev/sysml/ArchitectureViews.sysml",
+      "dev/sysml/AssuranceReaderViews.sysml",
+      "dev/sysml/AttemptReaderViews.sysml",
+      "dev/sysml/AuthorityReaderViews.sysml",
+      "dev/sysml/ControlActivation.sysml",
+      "dev/sysml/CorrespondenceReaderView.sysml",
+      "dev/sysml/ExecutionReaderViews.sysml",
+      "dev/sysml/FloorReaderViews.sysml",
+      "dev/sysml/GatewayArchitecture.sysml",
+      "dev/sysml/PolicyEvidenceDesign.sysml",
+      "dev/sysml/ProviderRpc.sysml",
+      "dev/sysml/ReaderDesigns.sysml",
+      "dev/sysml/ResearchReaderViews.sysml",
+      "dev/sysml/StoragePersistence.sysml",
+      "dev/sysml/StreamingExecution.sysml",
+      "dev/sysml/WeaverExecution.sysml",
+      "dev/sysml/ZeroTrustRefinement.sysml"
     ],
-    "obligationRefs": [],
+    "obligationRefs": [
+      "proof0"
+    ],
     "evidenceRefs": []
   },
   "themes": [
     "sketchbook",
-    "blueprint",
+    "ember",
+    "compact",
     "reading"
   ],
   "layout": "model-view",
   "variants": [],
   "presentation": {
-    "graph": {
-      "id": "weaver-source-view",
-      "children": [
-        {
-          "id": "title"
-        },
-        {
-          "id": "profile",
-          "children": [
-            {
-              "id": "profile.subject"
-            },
-            {
-              "id": "profile.object"
-            },
-            {
-              "id": "profile.receipt"
-            },
-            {
-              "id": "profile.goBrand"
-            },
-            {
-              "id": "profile.kubernetesBrand"
-            }
-          ]
-        },
-        {
-          "id": "publication",
-          "children": [
-            {
-              "id": "publication.intent"
-            },
-            {
-              "id": "publication.journal"
-            },
-            {
-              "id": "publication.confirm"
-            }
-          ]
-        },
-        {
-          "id": "recovery",
-          "children": [
-            {
-              "id": "recovery.ledger"
-            },
-            {
-              "id": "recovery.fence"
-            },
-            {
-              "id": "recovery.join"
-            }
-          ]
-        },
-        {
-          "id": "broker",
-          "children": [
-            {
-              "id": "broker.consume"
-            },
-            {
-              "id": "broker.history"
-            },
-            {
-              "id": "broker.hold"
-            },
-            {
-              "id": "broker.rustBrand"
-            }
-          ]
-        },
-        {
-          "id": "quint"
-        },
-        {
-          "id": "lean"
-        }
-      ],
-      "layoutOptions": {
-        "elk.algorithm": "layered",
-        "elk.direction": "DOWN",
-        "elk.edgeRouting": "ORTHOGONAL"
-      }
-    },
     "options": {
       "elk.algorithm": "layered",
       "elk.direction": "DOWN",
-      "elk.edgeRouting": "ORTHOGONAL"
+      "elk.edgeRouting": "ORTHOGONAL",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "27",
+      "elk.spacing.nodeNode": "16"
     },
     "icons": {
-      "profile.goBrand": "go",
-      "profile.kubernetesBrand": "kubernetes",
-      "broker.rustBrand": "rust"
+      "n0": "policy",
+      "n1": "claim",
+      "n2": "ledger",
+      "n3": "authorization",
+      "n4": "recovery",
+      "n5": "budget"
     },
-    "roles": {}
+    "roles": {},
+    "edgeLabels": true
   },
-  "icons": [
-    "engineering",
-    "weaver"
-  ]
+  "modelSource": {
+    "ref": "sdkCapture",
+    "view": "WeaverAuthorityReaderViews::publication",
+    "modelHash": "ce385f561ec08305552317e22f90a73884c40b6789376bb883cb086c8f074732",
+    "portProjection": "owner",
+    "labels": {
+      "n0": "Reviewed contract\nSubject, object and receipt",
+      "n1": "Publication intent\nKeep exact operation",
+      "n2": "Authority journal\nCommit original outcome",
+      "n3": "Current fence\nRead authoritative floor",
+      "n4": "Recovery joinedEvidence\nMatch decision and fence",
+      "n5": "Final consume\nKeep unresolved holds"
+    }
+  }
 }
 |
 } } }

@@ -3,340 +3,145 @@
 # SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 ...@../../../dev/d2/themes/data
-# Core design only; source identities and proof receipts remain in Org.
-title: WEAVER / DURABLE MANIFEST / SAFE WAL DELETION {
-  class: title
-  near: top-center
-}
-protocols: GO / RECOVERY CONTROL {
-  top: 0
-  left: 0
-  width: 350
-  height: 690
-  label.near: top-center
-  style.font-size: 17
-  style.fill: "#f7faf9"
-  style.stroke: "#9bb6ad"
-  mcp: Lost switch response\nQuery the same original cut\nRetain objects until readback {
-    top: 90
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: cloud
-  }
-  a2a: Original account observations\nClaim / profile / reservation lineage\nUnknown usage retains its hold {
-    top: 295
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: cloud
-  }
-  acp: Cloud native owner recovery\nOld descriptors carry no authority\nLate replies cannot select a root {
-    top: 500
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: cloud
-  }
-  goBrand: "" {
-    shape: image
-    icon: ../../architecture/diagrams/assets/go.svg
-    top: 247
-    left: 24
-    width: 42
-    height: 22
-  }
-  kubernetesBrand: "" {
-    shape: image
-    icon: ../../architecture/diagrams/assets/kubernetes.svg
-    top: 247
-    left: 82
-    width: 28
-    height: 28
-  }
-}
-registry: SCHEME / STORAGE CONTRACT {
-  top: 0
-  left: 440
-  width: 350
-  height: 690
-  label.near: top-center
-  style.font-size: 17
-  style.fill: "#f8fafb"
-  style.stroke: "#9bb6ad"
-  origin: Complete reconstruction contract\nApplications / reservations / holds\nOriginal claim and profile binding {
-    top: 90
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: semantic
-  }
-  alias: Cedar Code as Policy\nStage / switch / delete / recover\nCurrent parent / owner / coverage {
-    top: 295
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: policy
-  }
-  query: Checkpoint and ordered suffix\nCurrent financial head limits replay\nPending frames grant no refund {
-    top: 500
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: runtime
-  }
-}
-recovery: RUST / IMMUTABLE REPLACEMENT {
-  top: 0
-  left: 880
-  width: 350
-  height: 690
-  label.near: top-center
-  style.font-size: 17
-  style.fill: "#f7faf9"
-  style.stroke: "#9bb6ad"
-  projection: Capture an immutable cut\nExact checkpoint and suffix objects\nPreserve accepted pending work {
-    top: 90
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: semantic
-  }
-  join: Persist complete objects and manifest\nVerify retrievable exact contents\nShared suffix remains protected {
-    top: 295
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: runtime
-  }
-  fence: Durable current manifest CAS\nParent / generation / current owner\nKeep the original publication floor {
-    top: 500
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: policy
-  }
-}
-broker: RUST / DELETE AND RECOVER {
-  top: 0
-  left: 1320
-  width: 350
-  height: 690
-  label.near: top-center
-  style.font-size: 17
-  style.fill: "#f8fafb"
-  style.stroke: "#9bb6ad"
-  cas: Read back the current durable root\nVerify the entire object closure\nNo authority from a cached reply {
-    top: 90
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: runtime
-  }
-  alias: Serialize actual exact-object deletion\nRecheck current reachability and fence\nRepeat obsolete deletion safely {
-    top: 295
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: policy
-  }
-  hold: Recover the selected complete path\nCurrent publication and financial head\nMissing evidence keeps use closed {
-    top: 500
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: semantic
-  }
-  rustBrand: "" {
-    shape: image
-    icon: ../../architecture/diagrams/assets/rust.svg
-    top: 40
-    left: 156
-    width: 34
-    height: 34
-  }
-}
-quint: QUINT\nInterrupted switch / deletion / lost responses\nOld workers / root rollback / object substitution {
-  top: 810
-  left: 220
-  width: 610
-  height: 100
-  class: policy
-}
-lean: LEAN\nActual checkpoint / WAL / account composition\nComplete path retention / original unknown holds {
-  top: 810
-  left: 960
-  width: 610
-  height: 100
-  class: semantic
-}
-protocols.mcp -> registry.origin
-protocols.a2a -> registry.alias
-protocols.acp -> registry.query
-registry.origin -> recovery.projection
-registry.alias -> recovery.join
-registry.query -> recovery.fence { style.stroke-dash: 4 }
-recovery.projection -> recovery.join
-recovery.join -> recovery.fence
-recovery.fence -> broker.cas
-broker.cas -> broker.alias
-broker.alias -> broker.hold
-broker.hold -> broker.cas: Refresh root { style.stroke-dash: 4 }
-
-# Project-owned presentation question; not an issued governance Question.
+# Generated by Go from SysML and Lean references. Edit source contracts, not D2 semantic copy.
 vars: { d2-config: { data: { figure: |json
 {
-  "title": "02 manifest switch",
+  "design": {
+    "audience": "Gateway runtime reviewers",
+    "medium": "GitHub at 830 CSS pixels",
+    "message": "A successful local rename does not authorize deletion.",
+    "questionRefs": [
+      "q1"
+    ],
+    "requiredSubjects": [
+      "n0",
+      "n1",
+      "n2",
+      "n3",
+      "n4"
+    ],
+    "requiredRelations": [],
+    "focalSubjects": [
+      "n2"
+    ]
+  },
+  "icons": [
+    "engineering",
+    "weaver",
+    "components"
+  ],
+  "title": "Keep both paths until switch is known",
   "purpose": "architecture",
   "kind": "data",
   "language": "en",
-  "width": 1600,
-  "primary": "main",
+  "width": 980,
+  "primary": "q1",
   "questions": [
     {
-      "ref": "main",
-      "text": "Which records and binding relationships govern 02 manifest switch?",
+      "ref": "q1",
+      "text": "Which reconstruction path survives a lost switch reply?",
       "focusRefs": [
-        "catalog",
         "model"
+      ],
+      "subjectRefs": [
+        "n2"
       ]
     }
   ],
   "references": {
-    "catalog": "docs/architecture/08-diagram-catalog.org",
-    "model": "Project.sysml"
+    "model": "dev/sysml/ExecutionReaderViews.sysml",
+    "model0": "Project.sysml",
+    "model1": "dev/sysml/AdmissionReaderViews.sysml",
+    "model10": "dev/sysml/FloorReaderViews.sysml",
+    "model11": "dev/sysml/GatewayArchitecture.sysml",
+    "model12": "dev/sysml/PolicyEvidenceDesign.sysml",
+    "model13": "dev/sysml/ProviderRpc.sysml",
+    "model14": "dev/sysml/ReaderDesigns.sysml",
+    "model15": "dev/sysml/ResearchReaderViews.sysml",
+    "model16": "dev/sysml/StoragePersistence.sysml",
+    "model17": "dev/sysml/StreamingExecution.sysml",
+    "model18": "dev/sysml/WeaverExecution.sysml",
+    "model19": "dev/sysml/ZeroTrustRefinement.sysml",
+    "model2": "dev/sysml/ArchitectureReaderViews.sysml",
+    "model3": "dev/sysml/ArchitectureViews.sysml",
+    "model4": "dev/sysml/AssuranceReaderViews.sysml",
+    "model5": "dev/sysml/AttemptReaderViews.sysml",
+    "model6": "dev/sysml/AuthorityReaderViews.sysml",
+    "model7": "dev/sysml/ControlActivation.sysml",
+    "model8": "dev/sysml/CorrespondenceReaderView.sysml",
+    "model9": "dev/sysml/ExecutionReaderViews.sysml",
+    "proof0": "dev/proofs/lean/StreamingExecution.lean",
+    "sdkCapture": "dev/sysml/captures/WeaverExecutionReaderViews-manifestSwitch.json"
   },
-  "copy": {
-    "takeaway": "The declared source relationships define this view; presentation does not grant execution authority."
-  },
+  "copy": {},
   "basis": {
     "captureRef": "docs/20-29-execution-authority/27-manifest-switch/27.02-manifest-switch.d2#design-view",
     "modelRefs": [
-      "Project.sysml"
+      "Project.sysml",
+      "dev/sysml/AdmissionReaderViews.sysml",
+      "dev/sysml/ArchitectureReaderViews.sysml",
+      "dev/sysml/ArchitectureViews.sysml",
+      "dev/sysml/AssuranceReaderViews.sysml",
+      "dev/sysml/AttemptReaderViews.sysml",
+      "dev/sysml/AuthorityReaderViews.sysml",
+      "dev/sysml/ControlActivation.sysml",
+      "dev/sysml/CorrespondenceReaderView.sysml",
+      "dev/sysml/ExecutionReaderViews.sysml",
+      "dev/sysml/FloorReaderViews.sysml",
+      "dev/sysml/GatewayArchitecture.sysml",
+      "dev/sysml/PolicyEvidenceDesign.sysml",
+      "dev/sysml/ProviderRpc.sysml",
+      "dev/sysml/ReaderDesigns.sysml",
+      "dev/sysml/ResearchReaderViews.sysml",
+      "dev/sysml/StoragePersistence.sysml",
+      "dev/sysml/StreamingExecution.sysml",
+      "dev/sysml/WeaverExecution.sysml",
+      "dev/sysml/ZeroTrustRefinement.sysml"
     ],
-    "obligationRefs": [],
+    "obligationRefs": [
+      "proof0"
+    ],
     "evidenceRefs": []
   },
   "themes": [
     "sketchbook",
-    "blueprint",
+    "ember",
+    "compact",
     "reading"
   ],
   "layout": "model-view",
   "variants": [],
   "presentation": {
-    "graph": {
-      "id": "weaver-source-view",
-      "children": [
-        {
-          "id": "title"
-        },
-        {
-          "id": "protocols",
-          "children": [
-            {
-              "id": "protocols.mcp"
-            },
-            {
-              "id": "protocols.a2a"
-            },
-            {
-              "id": "protocols.acp"
-            },
-            {
-              "id": "protocols.goBrand"
-            },
-            {
-              "id": "protocols.kubernetesBrand"
-            }
-          ]
-        },
-        {
-          "id": "registry",
-          "children": [
-            {
-              "id": "registry.origin"
-            },
-            {
-              "id": "registry.alias"
-            },
-            {
-              "id": "registry.query"
-            }
-          ]
-        },
-        {
-          "id": "recovery",
-          "children": [
-            {
-              "id": "recovery.projection"
-            },
-            {
-              "id": "recovery.join"
-            },
-            {
-              "id": "recovery.fence"
-            }
-          ]
-        },
-        {
-          "id": "broker",
-          "children": [
-            {
-              "id": "broker.cas"
-            },
-            {
-              "id": "broker.alias"
-            },
-            {
-              "id": "broker.hold"
-            },
-            {
-              "id": "broker.rustBrand"
-            }
-          ]
-        },
-        {
-          "id": "quint"
-        },
-        {
-          "id": "lean"
-        }
-      ],
-      "layoutOptions": {
-        "elk.algorithm": "layered",
-        "elk.direction": "DOWN",
-        "elk.edgeRouting": "ORTHOGONAL"
-      }
-    },
     "options": {
       "elk.algorithm": "layered",
       "elk.direction": "DOWN",
-      "elk.edgeRouting": "ORTHOGONAL"
+      "elk.edgeRouting": "ORTHOGONAL",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "27",
+      "elk.spacing.nodeNode": "16"
     },
     "icons": {
-      "protocols.goBrand": "go",
-      "protocols.kubernetesBrand": "kubernetes",
-      "broker.rustBrand": "rust"
+      "n0": "history",
+      "n1": "ledger",
+      "n2": "publication",
+      "n3": "policy",
+      "n4": "unknown"
     },
-    "roles": {}
+    "roles": {},
+    "edgeLabels": true
   },
-  "icons": [
-    "engineering",
-    "weaver"
-  ]
+  "modelSource": {
+    "ref": "sdkCapture",
+    "view": "WeaverExecutionReaderViews::manifestSwitch",
+    "modelHash": "ce385f561ec08305552317e22f90a73884c40b6789376bb883cb086c8f074732",
+    "portProjection": "owner",
+    "labels": {
+      "n0": "Current manifest\nKeep complete old path",
+      "n1": "Candidate manifest\nExact checkpoint and suffix",
+      "n2": "Authoritative switch\nCompare original parent",
+      "n3": "Current readback\nVerify new path before prune",
+      "n4": "Unknown switch\nKeep both paths"
+    }
+  }
 }
 |
 } } }

@@ -3,340 +3,145 @@
 # SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 ...@../../../dev/d2/themes/flow
-# Core ownership and protocol. Check receipts stay in Org.
-title: PROTECTED COMMIT / MEDIATED KEY RELEASE / ORIGINAL EXECUTION {
-  class: title
-  near: top-center
-}
-semantic: SEMANTICS / CLOUD LIFECYCLE {
-  top: 0
-  left: 0
-  width: 350
-  height: 690
-  label.near: top-center
-  style.font-size: 17
-  style.fill: "#f7faf9"
-  style.stroke: "#9bb6ad"
-  identity: Scheme / canonical statement\nOriginal claim / budget / history\nCedar constrains the actual effect {
-    top: 90
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: semantic
-  }
-  lifecycle: Go / cloud-native orchestration\nDiscovery / reconcile / status lookup\nPod health grants no key authority {
-    top: 295
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: cloud
-  }
-  unknown: Unknown decision stays protected\nResolve the exact original request\nNo promise reset / replay / refund {
-    top: 500
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: unknown
-  }
-  goBrand: "" {
-    shape: image
-    icon: ../../architecture/diagrams/assets/go.svg
-    top: 247
-    left: 24
-    width: 42
-    height: 22
-  }
-  kubernetesBrand: "" {
-    shape: image
-    icon: ../../architecture/diagrams/assets/kubernetes.svg
-    top: 247
-    left: 82
-    width: 28
-    height: 28
-  }
-}
-transaction: PROTECTED PUBLICATION OWNER {
-  top: 0
-  left: 440
-  width: 350
-  height: 690
-  label.near: top-center
-  style.font-size: 17
-  style.fill: "#f8f9fc"
-  style.stroke: "#a3abc0"
-  stage: Immutable staged request\nExact body and expected predecessor\nStaging is not permission to sign {
-    top: 90
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: ledger
-  }
-  commit: Atomic protected publication\nCAS prefix promise and request row\nConcurrent conflicts cannot both win {
-    top: 295
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: ledger
-  }
-  resolve: Authentic commit observation\nLost response remains unknown\nKeep the original durable decision {
-    top: 500
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: unknown
-  }
-}
-signer: RUST / MEDIATED KEY BOUNDARY {
-  top: 0
-  left: 880
-  width: 350
-  height: 690
-  label.near: top-center
-  style.font-size: 17
-  style.fill: "#faf9fd"
-  style.stroke: "#b0a7c8"
-  emission: Release the exact covered statement\nNo generic signing handle escapes\nIdentical retries may repeat safely {
-    top: 90
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: runtime
-  }
-  gate: Live key-boundary gate\nCommitted row / current session\nEligible nonretired signer only {
-    top: 295
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: runtime
-  }
-  recovery: Restart begins in quarantine\nRevoke old mediated sessions\nQualify from current protected state {
-    top: 500
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: unknown
-  }
-  rustBrand: "" {
-    shape: image
-    icon: ../../architecture/diagrams/assets/rust.svg
-    top: 40
-    left: 156
-    width: 34
-    height: 34
-  }
-}
-outcome: ROOT / ORIGINAL FINAL EFFECT {
-  top: 0
-  left: 1320
-  width: 350
-  height: 690
-  label.near: top-center
-  style.font-size: 17
-  style.fill: "#f8fafb"
-  style.stroke: "#a3b4c0"
-  delivery: Original signature may arrive late\nDelivery cannot create a statement\nNo relabeling to a new context {
-    top: 90
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: ledger
-  }
-  root: Exact quorum certificate\nFull inherited data and control prefix\nSignature is not an execution permit {
-    top: 295
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: ledger
-  }
-  broker: Rust / final broker enforcement\nOriginal consumption and live Policy\nActual writer fence / original result {
-    top: 500
-    left: 20
-    width: 310
-    height: 120
-    label.near: center-center
-    class: runtime
-  }
-}
-quint: QUINT\nLost commits / concurrent requests / restart and old raw-key failures {
-  top: 810
-  left: 220
-  width: 610
-  height: 100
-  class: policy
-}
-lean: LEAN\nCommitted release / prefix agreement / original consumption and budget {
-  top: 810
-  left: 960
-  width: 610
-  height: 100
-  class: semantic
-}
-semantic.identity -> transaction.stage
-semantic.lifecycle -> transaction.stage
-semantic.unknown -> transaction.resolve
-transaction.stage -> transaction.commit
-transaction.commit -> transaction.resolve
-transaction.commit -> signer.gate
-transaction.resolve -> signer.gate
-signer.recovery -> signer.gate
-signer.gate -> signer.emission
-signer.emission -> outcome.delivery
-outcome.delivery -> outcome.root
-outcome.root -> outcome.broker
-
-# Project-owned presentation question; not an issued governance Question.
+# Generated by Go from SysML and Lean references. Edit source contracts, not D2 semantic copy.
 vars: { d2-config: { data: { figure: |json
 {
-  "title": "02 protected signer",
+  "design": {
+    "audience": "Assurance reviewers",
+    "medium": "GitHub at 830 CSS pixels",
+    "message": "A current signing session must match the exact protected commit.",
+    "questionRefs": [
+      "q1"
+    ],
+    "requiredSubjects": [
+      "n0",
+      "n1",
+      "n2",
+      "n3",
+      "n4"
+    ],
+    "requiredRelations": [],
+    "focalSubjects": [
+      "n3"
+    ]
+  },
+  "icons": [
+    "engineering",
+    "weaver",
+    "components"
+  ],
+  "title": "Commit the statement before release",
   "purpose": "workflow",
   "kind": "flow",
   "language": "en",
-  "width": 1600,
-  "primary": "main",
+  "width": 980,
+  "primary": "q1",
   "questions": [
     {
-      "ref": "main",
-      "text": "Which progression and failure boundaries govern 02 protected signer?",
+      "ref": "q1",
+      "text": "What authorizes release at the actual key boundary?",
       "focusRefs": [
-        "catalog",
         "model"
+      ],
+      "subjectRefs": [
+        "n3"
       ]
     }
   ],
   "references": {
-    "catalog": "docs/architecture/08-diagram-catalog.org",
-    "model": "Project.sysml"
+    "model": "dev/sysml/AssuranceReaderViews.sysml",
+    "model0": "Project.sysml",
+    "model1": "dev/sysml/AdmissionReaderViews.sysml",
+    "model10": "dev/sysml/FloorReaderViews.sysml",
+    "model11": "dev/sysml/GatewayArchitecture.sysml",
+    "model12": "dev/sysml/PolicyEvidenceDesign.sysml",
+    "model13": "dev/sysml/ProviderRpc.sysml",
+    "model14": "dev/sysml/ReaderDesigns.sysml",
+    "model15": "dev/sysml/ResearchReaderViews.sysml",
+    "model16": "dev/sysml/StoragePersistence.sysml",
+    "model17": "dev/sysml/StreamingExecution.sysml",
+    "model18": "dev/sysml/WeaverExecution.sysml",
+    "model19": "dev/sysml/ZeroTrustRefinement.sysml",
+    "model2": "dev/sysml/ArchitectureReaderViews.sysml",
+    "model3": "dev/sysml/ArchitectureViews.sysml",
+    "model4": "dev/sysml/AssuranceReaderViews.sysml",
+    "model5": "dev/sysml/AttemptReaderViews.sysml",
+    "model6": "dev/sysml/AuthorityReaderViews.sysml",
+    "model7": "dev/sysml/ControlActivation.sysml",
+    "model8": "dev/sysml/CorrespondenceReaderView.sysml",
+    "model9": "dev/sysml/ExecutionReaderViews.sysml",
+    "proof0": "dev/proofs/lean/StreamingExecution.lean",
+    "sdkCapture": "dev/sysml/captures/WeaverAssuranceReaderViews-signer.json"
   },
-  "copy": {
-    "takeaway": "The declared source relationships define this view; presentation does not grant execution authority."
-  },
+  "copy": {},
   "basis": {
     "captureRef": "docs/30-39-assurance/31-protected-signer/31.02-protected-signer.d2#design-view",
     "modelRefs": [
-      "Project.sysml"
+      "Project.sysml",
+      "dev/sysml/AdmissionReaderViews.sysml",
+      "dev/sysml/ArchitectureReaderViews.sysml",
+      "dev/sysml/ArchitectureViews.sysml",
+      "dev/sysml/AssuranceReaderViews.sysml",
+      "dev/sysml/AttemptReaderViews.sysml",
+      "dev/sysml/AuthorityReaderViews.sysml",
+      "dev/sysml/ControlActivation.sysml",
+      "dev/sysml/CorrespondenceReaderView.sysml",
+      "dev/sysml/ExecutionReaderViews.sysml",
+      "dev/sysml/FloorReaderViews.sysml",
+      "dev/sysml/GatewayArchitecture.sysml",
+      "dev/sysml/PolicyEvidenceDesign.sysml",
+      "dev/sysml/ProviderRpc.sysml",
+      "dev/sysml/ReaderDesigns.sysml",
+      "dev/sysml/ResearchReaderViews.sysml",
+      "dev/sysml/StoragePersistence.sysml",
+      "dev/sysml/StreamingExecution.sysml",
+      "dev/sysml/WeaverExecution.sysml",
+      "dev/sysml/ZeroTrustRefinement.sysml"
     ],
-    "obligationRefs": [],
+    "obligationRefs": [
+      "proof0"
+    ],
     "evidenceRefs": []
   },
   "themes": [
     "sketchbook",
-    "blueprint",
+    "ember",
+    "compact",
     "reading"
   ],
   "layout": "model-view",
   "variants": [],
   "presentation": {
-    "graph": {
-      "id": "weaver-source-view",
-      "children": [
-        {
-          "id": "title"
-        },
-        {
-          "id": "semantic",
-          "children": [
-            {
-              "id": "semantic.identity"
-            },
-            {
-              "id": "semantic.lifecycle"
-            },
-            {
-              "id": "semantic.unknown"
-            },
-            {
-              "id": "semantic.goBrand"
-            },
-            {
-              "id": "semantic.kubernetesBrand"
-            }
-          ]
-        },
-        {
-          "id": "transaction",
-          "children": [
-            {
-              "id": "transaction.stage"
-            },
-            {
-              "id": "transaction.commit"
-            },
-            {
-              "id": "transaction.resolve"
-            }
-          ]
-        },
-        {
-          "id": "signer",
-          "children": [
-            {
-              "id": "signer.emission"
-            },
-            {
-              "id": "signer.gate"
-            },
-            {
-              "id": "signer.recovery"
-            },
-            {
-              "id": "signer.rustBrand"
-            }
-          ]
-        },
-        {
-          "id": "outcome",
-          "children": [
-            {
-              "id": "outcome.delivery"
-            },
-            {
-              "id": "outcome.root"
-            },
-            {
-              "id": "outcome.broker"
-            }
-          ]
-        },
-        {
-          "id": "quint"
-        },
-        {
-          "id": "lean"
-        }
-      ],
-      "layoutOptions": {
-        "elk.algorithm": "layered",
-        "elk.direction": "DOWN",
-        "elk.edgeRouting": "ORTHOGONAL"
-      }
-    },
     "options": {
       "elk.algorithm": "layered",
       "elk.direction": "DOWN",
-      "elk.edgeRouting": "ORTHOGONAL"
+      "elk.edgeRouting": "ORTHOGONAL",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "27",
+      "elk.spacing.nodeNode": "16"
     },
     "icons": {
-      "semantic.goBrand": "go",
-      "semantic.kubernetesBrand": "kubernetes",
-      "signer.rustBrand": "rust"
+      "n0": "claim",
+      "n1": "ledger",
+      "n2": "authentication",
+      "n3": "authorization",
+      "n4": "recovery"
     },
-    "roles": {}
+    "roles": {},
+    "edgeLabels": true
   },
-  "icons": [
-    "engineering",
-    "weaver"
-  ]
+  "modelSource": {
+    "ref": "sdkCapture",
+    "view": "WeaverAssuranceReaderViews::signer",
+    "modelHash": "ce385f561ec08305552317e22f90a73884c40b6789376bb883cb086c8f074732",
+    "portProjection": "owner",
+    "labels": {
+      "n0": "Immutable request\nBind original statement",
+      "n1": "Protected prefix\nCommit row and promise",
+      "n2": "Current key session\nCheck live authority",
+      "n3": "Signature release\nJoin exact commit and key",
+      "n4": "Unknown reply\nResolve against the owner"
+    }
+  }
 }
 |
 } } }

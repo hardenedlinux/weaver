@@ -6,6 +6,12 @@
 #+language: en
 #+options: toc:3
 
+* Reader view
+
+Dequeue permits lookup. Current authority controls possible submission.
+
+[[file:22.02-executor-offer.svg]]
+
 * Decision and threat boundary
 
 A durable queue record authorizes lookup of the original operation. Dequeue does

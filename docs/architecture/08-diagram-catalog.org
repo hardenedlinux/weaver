@@ -155,6 +155,11 @@ actual effect. A test receipt is not a component of the target architecture.
 
 * Enterprise presentation conventions
 
+Reader views use explicit SysML questions, selected subjects and typed
+relationships. The full diagram gate measures the resulting standalone SVGs
+in Chromium at 830 CSS pixels. The individual Org contracts retain the
+proof premises and detailed failure branches.
+
 The visual references are D2/Terrastruct's [[https://terrastruct.com/examples/1/][architecture example library]] and
 [[https://d2lang.com/examples/tala/][official TALA gallery]]. The shared render Library supplies the engine and visual layers; this is not a claim
 to use a vendor-certified Enterprise template or a paid feature.
@@ -168,11 +173,15 @@ marks provide continuity without forcing every view into identical panels.
 Keep refusal/unknown outcomes recognizable by labels as well as colors.
 Coordinates have no protocol meaning.
 
-Use brand marks only to identify the actual technology in architecture headers.
-The Go wordmark replaces the rejected mascot treatment. Go, Rust and Kubernetes
-assets are bundled locally with [[file:diagrams/assets/icon-sources.org][sources and byte digests]]. Native D2 geometry,
-including ledger cylinders, identifies generic components. Do not mix flat
-illustration packs, mascots and oversized status icons into the same view.
+Use brand marks to identify the actual technology, functional symbols to identify
+responsibilities, and conceptual illustrations to explain an example. These are
+separate source declarations. Go identifies an implementation language; it does
+not identify LLM routing. The routing symbol shows a path choice, not a physical
+network router. Telemetry uses an activity symbol, not a model-catalog picture.
+Identity authentication and effect authorization use different symbols.
+Go, Rust and Kubernetes marks remain bundled locally with
+[[file:diagrams/assets/icon-sources.org][asset provenance and permitted uses]]. A mark does not establish a deployed component.
+An illustration of a gate is a permission metaphor, not physical isolation.
 Presentation ownership lives under [[file:../../dev/d2/README.org][dev/d2]], with distinct imported
 profiles in =dev/d2/themes=. The shared base only supplies typography and semantic
 status conventions; each view chooses its own profile and layout grammar.
@@ -425,8 +434,10 @@ the Library's measured scenes and vector export, independently of the older
 technical D2 SVG references. The overview uses the Library's hand-drawn engine;
 the Zero Trust view uses an execution corridor with explicit retry, stream and
 unknown-outcome constraints; the assurance view keeps Quint exploration, Lean
-proofs and concrete tests distinct. Native OpenSysML views supply the subjects
-and relationships. D2 supplies Questions, captions, semantic roles and theme choices.
+proofs and concrete tests distinct. OpenSysML views supply the subjects
+and relationships. For mapped views, SysML Design attributes also supply the
+reader Question, contextual captions, functional glyphs, reading groups and
+theme choices. Generated D2 transports these declarations to the Library.
 
 The three README figures share the Library's paper-and-handwriting visual
 language. Question markers, Answer glyphs and declared hand-drawn surfaces use
@@ -473,6 +484,10 @@ separate admission checks.
 ** 03-attempt-state.svg
 
 [[file:diagrams/03-attempt-state.svg]]
+
+** 03a-attempt-observation.svg
+
+[[file:diagrams/03a-attempt-observation.svg]]
 
 ** 04-consume-timeout.svg
 

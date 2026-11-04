@@ -31,6 +31,13 @@ unconditional recovery progress.
 [[file:34.02-floor-decision.d2][Core D2]] / [[file:34.02-floor-decision.svg][SVG]] show the design; [[file:34.03-validation-evidence.org][the receipt]] records versions and checks.
 [[file:../../../dev/proofs/quint/FloorIntentDecision.qnt][Quint]] and [[file:../../../dev/proofs/lean/FloorIntentDecision.lean][Lean]] are executable formal artifacts, not gateway code.
 
+The ordering view separates the two durable outcomes. The recovery view
+separates acknowledgment of the original commit from current release.
+
+[[file:34.02-floor-decision.svg]]
+
+[[file:34.04-floor-recovery.svg]]
+
 * Three separate linearization points
 
 | Point | Durable fact | What it does not imply |

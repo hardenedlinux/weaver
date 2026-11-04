@@ -6,6 +6,12 @@
 #+language: en
 #+startup: overview
 
+* Reader view
+
+Tenant policy selects issuers, purpose and stable subject mapping.
+
+[[file:48.02-subject-authority.svg]]
+
 * Finding and chosen authority boundary
 An independent subject must have a configured authoritative source. A shared
 Kubernetes service account, a caller-selected OIDC issuer, a forwarded bearer token

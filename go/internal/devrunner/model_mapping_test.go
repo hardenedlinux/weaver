@@ -70,7 +70,7 @@ func TestD2SemanticCopyCannotOverrideSDKProjection(t *testing.T) {
 	for source, body := range capture.Mapped {
 		baseline[source] = body
 	}
-	if len(baseline) != 6 {
+	if len(baseline) != 78 {
 		t.Fatalf("expected product and development projections, got %d", len(baseline))
 	}
 	for source, body := range baseline {

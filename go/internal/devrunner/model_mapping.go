@@ -13,14 +13,13 @@ import (
 	"regexp"
 	"slices"
 	"strings"
-
-	"github.com/Open-MBEE/OpenSysML/client/opensysml"
 )
 
 type mappedQuestion struct {
-	Ref       string   `json:"ref"`
-	Text      string   `json:"text"`
-	FocusRefs []string `json:"focusRefs"`
+	Ref         string   `json:"ref"`
+	Text        string   `json:"text"`
+	FocusRefs   []string `json:"focusRefs"`
+	SubjectRefs []string `json:"subjectRefs,omitempty"`
 }
 type mappedBasis struct {
 	CaptureRef     string   `json:"captureRef"`
@@ -29,11 +28,17 @@ type mappedBasis struct {
 	EvidenceRefs   []string `json:"evidenceRefs"`
 }
 type mappedPresentation struct {
-	Options    map[string]string `json:"options"`
-	Icons      map[string]string `json:"icons"`
-	Roles      map[string]string `json:"roles"`
-	EdgeLabels bool              `json:"edgeLabels"`
-	Graph      *mappedGraph      `json:"graph,omitempty"`
+	Illustrations       map[string]string `json:"illustrations,omitempty"`
+	ObjectRows          [][]string        `json:"objectRows,omitempty"`
+	BandTitles          []string          `json:"bandTitles,omitempty"`
+	BandIcons           []string          `json:"bandIcons,omitempty"`
+	ExampleIllustration string            `json:"exampleIllustration,omitempty"`
+	Notation            string            `json:"notation,omitempty"`
+	Options             map[string]string `json:"options"`
+	Icons               map[string]string `json:"icons"`
+	Roles               map[string]string `json:"roles"`
+	EdgeLabels          bool              `json:"edgeLabels"`
+	Graph               *mappedGraph      `json:"graph,omitempty"`
 }
 type mappedGraphNode struct {
 	ID            string            `json:"id"`
@@ -52,6 +57,7 @@ type mappedModelSource struct {
 	Labels         map[string]string `json:"labels"`
 }
 type mappedFigure struct {
+	Design       *mappedDesign      `json:"design,omitempty"`
 	Icons        []string           `json:"icons"`
 	Title        string             `json:"title"`
 	Purpose      string             `json:"purpose"`
@@ -168,27 +174,9 @@ func mapModelDeclarationsWithEvidence(root string, capture *ModelViewCapture, re
 			obligations = append(obligations, key)
 		}
 		presentation := mappedPresentation{Options: style.Presentation.Options}
-		// Public ELK data preferences, never downstream deletion/relabeling of
-		// native model subjects. Compound views retain the Library hierarchy.
-		if rendered := capture.Views[view]; rendered != nil && !slices.ContainsFunc(rendered.Nodes, func(node opensysml.RenderNode) bool { return node.Parent != "" }) {
-			options := maps.Clone(style.Presentation.Options)
-			if options == nil {
-				options = map[string]string{}
-			}
-			options["elk.partitioning.activate"] = "true"
-			options["elk.separateConnectedComponents"] = "false"
-			graph := &mappedGraph{ID: "read-model", LayoutOptions: options}
-			columns := description.Columns
-			if columns == 0 {
-				columns = 2
-			}
-			for index, node := range rendered.Nodes {
-				graph.Children = append(graph.Children, mappedGraphNode{ID: node.ID, LayoutOptions: map[string]string{"elk.partitioning.partition": fmt.Sprint(index / columns)}})
-			}
-			presentation.Graph = graph
-		}
 		labels := map[string]string{}
 		presentation.Icons, presentation.Roles = map[string]string{}, map[string]string{}
+		presentation.Illustrations = map[string]string{}
 		for _, caption := range description.Captions {
 			if caption.ID == "" || labels[caption.ID] != "" {
 				return fmt.Errorf("missing or duplicate SDK caption ID: %s", view)
@@ -208,13 +196,45 @@ func mapModelDeclarationsWithEvidence(root string, capture *ModelViewCapture, re
 			}
 			labels[caption.ID] = label
 			presentation.Icons[caption.ID] = caption.Icon
+			if caption.Illustration != "" {
+				presentation.Illustrations[caption.ID] = caption.Illustration
+			}
 			if caption.Role != "" {
 				presentation.Roles[caption.ID] = caption.Role
 			}
 		}
 		refs["sdkCapture"] = "dev/sysml/captures/" + strings.ReplaceAll(view, "::", "-") + ".json"
-		figure := mappedFigure{Icons: []string{"engineering", "weaver"}, Title: description.Heading, Purpose: "architecture", Kind: profile, Language: "en", Width: style.Width, Primary: "q1", Questions: []mappedQuestion{{Ref: "q1", Text: description.Question, FocusRefs: []string{"model"}}}, References: refs, Copy: map[string]string{}, Basis: mappedBasis{CaptureRef: description.File + "#design-view", ModelRefs: modelRefs, ObligationRefs: obligations, EvidenceRefs: []string{}}, Themes: style.Themes, Layout: "model-view", Variants: []json.RawMessage{}, Presentation: presentation}
+		figure := mappedFigure{Icons: []string{"engineering", "weaver", "components"}, Title: description.Heading, Purpose: "architecture", Kind: profile, Language: "en", Width: style.Width, Primary: "q1", Questions: []mappedQuestion{{Ref: "q1", Text: description.Question, FocusRefs: []string{"model"}}}, References: refs, Copy: map[string]string{}, Basis: mappedBasis{CaptureRef: description.File + "#design-view", ModelRefs: modelRefs, ObligationRefs: obligations, EvidenceRefs: []string{}}, Themes: style.Themes, Layout: "model-view", Variants: []json.RawMessage{}, Presentation: presentation}
+		switch profile {
+		case "routing", "flow", "state", "sequence":
+			figure.Purpose = "workflow"
+		}
 		figure.ModelSource = &mappedModelSource{Ref: "sdkCapture", View: view, ModelHash: capture.ModelHash, PortProjection: "owner", Labels: labels}
+		if description.Scene != nil {
+			design, err := bindSceneDesign(description, capture.Views[view])
+			if err != nil {
+				return err
+			}
+			figure.Design = design
+			figure.Width, figure.Themes = description.Scene.Width, description.Scene.Themes
+			figure.Presentation.Options = description.Scene.Options
+			figure.Presentation.Notation = description.Scene.Notation
+			figure.Presentation.BandTitles = description.Scene.BandTitles
+			figure.Presentation.BandIcons = description.Scene.BandIcons
+			figure.Presentation.ExampleIllustration = description.Scene.ExampleIllustration
+			figure.Presentation.EdgeLabels = true
+			figure.Presentation.Graph, err = bindSceneGraph(description, capture.Views[view])
+			if err != nil {
+				return err
+			}
+			if description.Scene.Notation == "objects" {
+				figure.Presentation.ObjectRows, err = bindObjectRows(description)
+				if err != nil {
+					return err
+				}
+			}
+			figure.Questions[0].SubjectRefs = design.FocalSubjects
+		}
 		encoded, err := json.MarshalIndent(figure, "", "  ")
 		if err != nil {
 			return err

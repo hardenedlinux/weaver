@@ -5,7 +5,7 @@
 import {beforeAll,describe,expect,test} from 'bun:test';
 import fc from 'fast-check';
 import {fileURLToPath} from 'node:url';
-import {compileFigureSource,type FigureInput} from '@deterministic-engineering/render';
+import {compileFigureSources,type FigureInput} from '@deterministic-engineering/render';
 import {sequenceModel} from '../src/sequence-model';
 import {composeSequence} from '../src/sequence';
 import {composeFigure} from '@deterministic-engineering/render';
@@ -17,8 +17,7 @@ const inputs:FigureInput[]=[];
 beforeAll(async()=>{
  const catalog=collectCatalog(fileURLToPath(new URL('../../../',import.meta.url)));
  const sources={...catalog.fs,...catalog.documents};
- const outcomes=await Promise.allSettled(names.map(name=>compileFigureSource(sources,`docs/architecture/diagrams/${name}.d2`,{themeLayers:themes},{layout:'elk'})));
- for(const outcome of outcomes){if(outcome.status==='rejected')throw outcome.reason;inputs.push(outcome.value);}
+ inputs.push(...await compileFigureSources(sources,names.map(name=>`docs/architecture/diagrams/${name}.d2`),{themeLayers:themes},{layout:'dagre'}));
 });
 
 describe('source-bound ordered sequence notation',()=>{

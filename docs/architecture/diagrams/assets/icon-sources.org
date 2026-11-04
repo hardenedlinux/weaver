@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
-#+title: Weaver Diagram Brand Asset Sources
+#+title: Weaver Diagram Asset Sources and Semantic Use
 #+language: en
 #+date: 2026-10-18
 #+options: toc:1
@@ -17,11 +17,62 @@ select Azure as a deployment. Marks remain with their respective owners;
 this documentation implies no project endorsement.
 
 Assets are local and bundled into generated SVGs for offline viewing.
-Generic responsibilities use native D2 shapes rather than mixed illustration
-styles. A logo does not establish installed or qualified implementation.
+Functional glyphs and teaching illustrations have separate meanings and owners.
+A logo does not establish installed or qualified implementation.
 See D2's [[https://d2lang.com/tour/icons/][icon documentation]] and [[https://go.dev/brand][Go brand guidance]].
 
 * Inventory
+
+** Functional components
+
+The captured functional vocabulary is declared in
+[[file:../../../../dev/d2/src/source/components.ts][components.ts]]. SVG bytes are kept in =components/= with their original
+Lucide notices and per-file SPDX sidecars. The upstream
+[[https://lucide.dev/license][Lucide license]] also identifies symbols derived from Feather.
+Rendering uses local assets and does not fetch icons from the network.
+
+| Responsibility | Canonical symbol | Reader interpretation |
+|----------------+------------------+-----------------------|
+| LLM routing | route | Choose an eligible provider; no permission to send |
+| Model catalog | book-open | Available model bindings and capabilities |
+| Durable ledger | database | Preserve consumption and retained exposure |
+| Policy | clipboard-check | Evaluate the actual request |
+| Authentication | fingerprint-pattern | Identify the actual caller |
+| Authorization | shield-check | Permit a specific effect under current constraints |
+| Claim | ticket-check | Retain the original operation identity |
+| Shared budget | coins | Reserve and settle shared capacity |
+| History | rotate-ccw-clock | Retain original observations |
+| Streaming | waves-horizontal | Continuing, bounded use |
+| Writer | send | Mediate actual outgoing bytes |
+| Telemetry | activity | Observe operation; confer no execution right |
+| Recovery | rotate-ccw | Reconcile original durable state |
+| Unknown outcome | circle-question-mark | Keep exposure unresolved |
+| Agent | bot | Submit a task-bound request |
+| Provider | brain | Serve a bound model request |
+| Routine | workflow | Describe required task semantics |
+| Publication | file-check | Publish reviewed Policy |
+| Message | message-square | Bind payload to identity |
+
+The LLM Router is not a physical network-router device. Its symbol describes
+selection among paths. Labels remain visible: a symbol alone cannot establish
+authorization, prove durability or explain all security premises.
+
+The source model declares the function using =glyph=. Contextual illustrations
+use a distinct attribute such as =overviewGlyph=. The renderer preserves both;
+it never guesses the function from an English caption. A control adapter can
+declare routing in the overview and publication in the security view using an
+explicit =securityGlyph=.
+
+** Explanatory illustrations
+
+Project-authored task, route-choice, budget, permission, writer, provider and
+unknown-outcome illustrations use the repository license. Their purpose is to
+explain an example, not replace canonical component symbols or attest a deployed
+service. The introductory example is an agent summarizing one report.
+
+[[file:../00a-readme-overview.svg]]
+
+** Technology marks
 
 | Asset | Identity | Source URL | SHA-256 of vendored bytes |
 |-------+----------+------------+---------------------------|

@@ -185,7 +185,7 @@ func TestSourceInputsIncludeDiagramThemesAndLocalBrandAssets(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, path := range []string{"dev/d2/themes/data.d2", "dev/d2/themes/sequence.d2", "docs/architecture/diagrams/assets/go.svg", "docs/architecture/diagrams/assets/rust.svg"} {
+	for _, path := range []string{"dev/d2/themes/data.d2", "dev/d2/themes/sequence.d2", "docs/architecture/diagrams/assets/go.svg", "docs/architecture/diagrams/assets/rust.svg", "dev/d2/pnpm-workspace.yaml", "dev/d2/patches/deterministic-engineering-render.patch"} {
 		if inputs[path] == "" {
 			t.Fatalf("design source missing from provenance: %s", path)
 		}

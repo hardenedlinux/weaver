@@ -6,6 +6,12 @@
 #+language: en
 #+startup: overview
 
+* Reader view
+
+The authoritative producer freezes the beneficiary before delivery.
+
+[[file:45.02-bootstrap-invitation.svg]]
+
 * Decision
 A shared Kubernetes workload identity establishes enrollment eligibility only.
 It does not establish a unique worker incarnation, beneficiary public key, or

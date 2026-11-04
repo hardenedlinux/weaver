@@ -172,11 +172,14 @@ Assign or validate client idempotency keys under authenticated tenant scope.
 
 * State machine
 
-#+caption: W03. Proposed attempt states and conservative recovery.
+#+caption: W03. Durable admission and the claim or abort race.
 [[file:diagrams/03-attempt-state.svg]]
 
-[[file:diagrams/03-attempt-state.d2][D2 source]]. Recovery has no transition
-from an unknown external outcome back to dispatch for the same attempt.
+#+caption: W03a. Observation and recovery after the original claim is spent.
+[[file:diagrams/03a-attempt-observation.svg]]
+
+The claim is the handoff between the views. Recovery has no transition from
+an unknown external outcome back to dispatch for the same attempt.
 
 #+begin_example
 Proposed -> Prepared -> ConsumePending -> SendCommitted -> DispatchClaimed

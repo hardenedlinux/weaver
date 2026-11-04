@@ -6,6 +6,12 @@
 #+language: en
 #+options: toc:3
 
+* Reader view
+
+A durable frame and accepted anchor are distinct from a committed balance.
+
+[[file:25.02-wal-activation.svg]]
+
 * Decision and refinement boundary
 
 A locally durable account WAL frame, a durably accepted anchor candidate and a

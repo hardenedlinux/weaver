@@ -6,6 +6,12 @@
 #+language: en
 #+startup: overview
 
+* Reader view
+
+Enrollment authority and possession of the new key must agree.
+
+[[file:46.02-beneficiary-registration.svg]]
+
 * Decision
 A new-key signature proves possession, not entitlement to register that key for
 an original task. Shared Kubernetes identity plus an arbitrary new key cannot

@@ -8,12 +8,26 @@ package WeaverViews {
     private import StandardViewDefinitions::*;
 
     view architecture {
+        attribute visualBands : String = "[[\"semanticPublisher\",\"controlAdapter\"],[\"policy\",\"ledger\",\"broker\"],[\"executor\",\"provider\",\"telemetry\"]]";
+        attribute visualBandTitles : String = "[\"Choose a provider within the original task\",\"Join permission, original claim and budget\",\"Control actual bytes and observe the result\"]";
+        attribute visualBandIcons : String = "[\"routing\",\"authorization\",\"writer\"]";
+        attribute exampleIllustration : String = "agent-request";
+        attribute visualNotation : String = "objects";
+        attribute captionContext : String = "overview";
+        attribute designAudience : String = "Gateway readers";
+        attribute designMedium : String = "GitHub README and linked English Org";
+        attribute designMessage : String = "An agent summarizes a report.\nOriginal scope and budget stay bound.";
+        attribute designFocus : String = "ledger,executor";
+        attribute visualThemes : String = "sketchbook,ocean,comfortable,reading";
+        attribute visualOptions : String = "{\"elk.algorithm\":\"layered\",\"elk.direction\":\"RIGHT\",\"elk.edgeRouting\":\"ORTHOGONAL\",\"elk.spacing.nodeNode\":\"44\",\"elk.layered.spacing.nodeNodeBetweenLayers\":\"64\",\"elk.layered.wrapping.strategy\":\"MULTI_EDGE\",\"elk.aspectRatio\":\"1.15\",\"elk.separateConnectedComponents\":\"false\"}";
+        attribute visualWidth : Integer = 1120;
+
         requirement specContract : WeaverZeroTrust::ZeroTrustContractRefinement;
         requirement executionContract : WeaverExecution::ConsumeBeforeSend;
         attribute mappedFile : String = "docs/architecture/diagrams/00a-readme-overview.d2";
-        attribute displayTitle : String = "Governed work. One execution boundary.";
+        attribute displayTitle : String = "One agent task. Every effect stays accountable.";
         attribute displaySubtitle : String = "Scheme defines meaning. Go coordinates. Rust controls actual effects.";
-        attribute readerQuestion : String = "Who owns each part of an agent request?";
+        attribute readerQuestion : String = "What happens when your agent asks an LLM for help?";
         attribute displayEyebrow : String = "WEAVER / AGENT GATEWAY";
         expose WeaverExecution::gateway::semanticPublisher;
         expose WeaverExecution::gateway::controlAdapter;
@@ -23,24 +37,25 @@ package WeaverViews {
         expose WeaverExecution::gateway::executor;
         expose WeaverExecution::gateway::provider;
         expose WeaverExecution::gateway::telemetry;
-        expose WeaverExecution::gateway::derivedEvidence;
-        expose WeaverExecution::gateway::semanticPublisher_sourceCandidates_to_controlAdapter_sourceCandidates;
-        expose WeaverExecution::gateway::controlAdapter_sourceCommands_to_ledger_sourceCommands;
-        expose WeaverExecution::gateway::ledger_sourceOutcomes_to_controlAdapter_sourceOutcomes;
-        expose WeaverExecution::gateway::controlAdapter_semanticObservations_to_semanticPublisher_sourceObservations;
-        expose WeaverExecution::gateway::ledger_effectOutcomes_to_controlAdapter_effectObservations;
-        expose WeaverExecution::gateway::controlAdapter_semanticEffectObservations_to_semanticPublisher_effectObservations;
-        expose WeaverExecution::gateway::derivedEvidence_candidates_to_semanticPublisher_derivedFacts;
-        expose WeaverExecution::gateway::controlAdapter_proposals_to_ledger_proposals;
-        expose WeaverExecution::gateway::ledger_policyEvaluation_to_policy_evaluation;
-        expose WeaverExecution::gateway::ledger_observations_to_controlAdapter_observations;
-        expose WeaverExecution::gateway::ledger_consumed_to_broker_consumed;
-        expose WeaverExecution::gateway::broker_wire_to_executor_wire;
-        expose WeaverExecution::gateway::executor_provider_to_provider_request;
+        expose WeaverExecution::gateway::proposeTask;
+        expose WeaverExecution::gateway::proposeEffect;
+        expose WeaverExecution::gateway::checkPolicy;
+        expose WeaverExecution::gateway::consumedClaim;
+        expose WeaverExecution::gateway::recheckUse;
+        expose WeaverExecution::gateway::boundedWrite;
         render asInterconnectionDiagram;
     }
 
     view contractRefinement {
+        attribute captionContext : String = "refinement";
+        attribute designAudience : String = "Security reviewers";
+        attribute designMedium : String = "GitHub README and linked English Org";
+        attribute designMessage : String = "Trace the SPEC requirements into the same actual-use view.";
+        attribute designFocus : String = "application,enforcement";
+        attribute visualThemes : String = "sketchbook,field-notes,comfortable,reading";
+        attribute visualOptions : String = "{\"elk.algorithm\":\"layered\",\"elk.direction\":\"DOWN\",\"elk.edgeRouting\":\"ORTHOGONAL\",\"elk.spacing.nodeNode\":\"20\",\"elk.layered.spacing.nodeNodeBetweenLayers\":\"34\"}";
+        attribute visualWidth : Integer = 980;
+
         requirement specContract : WeaverZeroTrust::ZeroTrustContractRefinement;
         requirement executionContract : WeaverExecution::ConsumeBeforeSend;
         attribute mappedFile : String = "docs/50-59-research-program/59-provider-rpc/59.51-zero-trust-contract-refinement.d2";
@@ -55,10 +70,10 @@ package WeaverViews {
         expose WeaverZeroTrust::refinement::parents;
         expose WeaverZeroTrust::refinement::application;
         expose WeaverZeroTrust::refinement::enforcement;
-        expose WeaverZeroTrust::refinement::core_requirements_to_usage_core;
-        expose WeaverZeroTrust::refinement::usage_requirements_to_application_usage;
-        expose WeaverZeroTrust::refinement::parents_requirements_to_application_parents;
-        expose WeaverZeroTrust::refinement::application_requirements_to_enforcement_requirements;
+        expose WeaverZeroTrust::refinement::coreRules;
+        expose WeaverZeroTrust::refinement::ongoingUse;
+        expose WeaverZeroTrust::refinement::parentScope;
+        expose WeaverZeroTrust::refinement::sameContext;
         render asInterconnectionDiagram;
     }
 
@@ -79,6 +94,15 @@ package WeaverViews {
     }
 
     view assurance {
+        attribute visualBands : String = "[[\"specification\",\"schedules\"],[\"semantics\",\"implementation\"]]";
+        attribute designAudience : String = "Contributors";
+        attribute designMedium : String = "GitHub README and linked English Org";
+        attribute designMessage : String = "Use distinct verification owners to answer distinct engineering questions.";
+        attribute designFocus : String = "semantics,implementation";
+        attribute visualThemes : String = "sketchbook,field-notes,comfortable,reading";
+        attribute visualOptions : String = "{\"elk.algorithm\":\"layered\",\"elk.direction\":\"RIGHT\",\"elk.edgeRouting\":\"ORTHOGONAL\",\"elk.spacing.nodeNode\":\"48\",\"elk.layered.spacing.nodeNodeBetweenLayers\":\"72\",\"elk.hierarchyHandling\":\"INCLUDE_CHILDREN\"}";
+        attribute visualWidth : Integer = 1120;
+
         requirement specContract : WeaverZeroTrust::ZeroTrustContractRefinement;
         requirement executionContract : WeaverExecution::ConsumeBeforeSend;
         attribute mappedFile : String = "docs/50-59-research-program/59-provider-rpc/59.21-verification-ownership.d2";
@@ -93,6 +117,15 @@ package WeaverViews {
         render asInterconnectionDiagram;
     }
     view zeroTrust {
+        attribute visualBands : String = "[[\"semanticPublisher\",\"controlAdapter\"],[\"policy\",\"ledger\"],[\"broker\",\"executor\"]]";
+        attribute designAudience : String = "Gateway operators";
+        attribute designMedium : String = "GitHub README and linked English Org";
+        attribute designMessage : String = "An authenticated proposal still needs current authorization at each actual effect.";
+        attribute designFocus : String = "policy,broker";
+        attribute visualThemes : String = "sketchbook,ember,comfortable,reading";
+        attribute visualOptions : String = "{\"elk.algorithm\":\"layered\",\"elk.direction\":\"DOWN\",\"elk.edgeRouting\":\"ORTHOGONAL\",\"elk.spacing.nodeNode\":\"48\",\"elk.layered.spacing.nodeNodeBetweenLayers\":\"72\",\"elk.hierarchyHandling\":\"INCLUDE_CHILDREN\"}";
+        attribute visualWidth : Integer = 1120;
+
         requirement specContract : WeaverZeroTrust::ZeroTrustContractRefinement;
         requirement executionContract : WeaverExecution::ConsumeBeforeSend;
         attribute mappedFile : String = "docs/architecture/diagrams/00d-zero-trust-overview.d2";
@@ -107,16 +140,24 @@ package WeaverViews {
         expose WeaverExecution::gateway::ledger;
         expose WeaverExecution::gateway::broker;
         expose WeaverExecution::gateway::executor;
-        expose WeaverExecution::gateway::semanticPublisher_sourceCandidates_to_controlAdapter_sourceCandidates;
+        expose WeaverExecution::gateway::proposeTask;
         expose WeaverExecution::gateway::controlAdapter_sourceCommands_to_ledger_sourceCommands;
-        expose WeaverExecution::gateway::ledger_policyEvaluation_to_policy_evaluation;
-        expose WeaverExecution::gateway::ledger_consumed_to_broker_consumed;
-        expose WeaverExecution::gateway::broker_wire_to_executor_wire;
+        expose WeaverExecution::gateway::checkPolicy;
+        expose WeaverExecution::gateway::consumedClaim;
+        expose WeaverExecution::gateway::recheckUse;
         render asInterconnectionDiagram;
     }
 
     view storage {
-        attribute layoutColumns:Integer=1;
+        attribute visualBands : String = "[[\"registry\",\"custody\"],[\"ledger\",\"driver\"],[\"transaction\",\"broker\"],[\"retained\",\"publication\"]]";
+        attribute designAudience : String = "Runtime engineers";
+        attribute designMedium : String = "GitHub README and linked English Org";
+        attribute designMessage : String = "Shared claims and unresolved exposure survive independent execution and recovery.";
+        attribute designFocus : String = "transaction,retained";
+        attribute visualThemes : String = "sketchbook,blueprint,comfortable,reading";
+        attribute visualOptions : String = "{\"elk.algorithm\":\"layered\",\"elk.direction\":\"DOWN\",\"elk.edgeRouting\":\"ORTHOGONAL\",\"elk.spacing.nodeNode\":\"48\",\"elk.layered.spacing.nodeNodeBetweenLayers\":\"72\",\"elk.hierarchyHandling\":\"INCLUDE_CHILDREN\"}";
+        attribute visualWidth : Integer = 1120;
+
         requirement atomicity:WeaverExecution::TursoAdmissionAtomicity;
         requirement custody:WeaverExecution::TursoMvccCustody;
         requirement domains:WeaverExecution::SharedDomainAuthority;
@@ -147,6 +188,15 @@ package WeaverViews {
     }
 
     view rangeRecovery {
+        attribute captionContext : String = "stream";
+        attribute designAudience : String = "Gateway operators";
+        attribute designMedium : String = "GitHub README and linked English Org";
+        attribute designMessage : String = "Follow a partial range into retained exposure without reopening its original claim.";
+        attribute designFocus : String = "ledger,retained";
+        attribute visualThemes : String = "sketchbook,field-notes,comfortable,reading";
+        attribute visualOptions : String = "{\"elk.algorithm\":\"layered\",\"elk.direction\":\"DOWN\",\"elk.edgeRouting\":\"ORTHOGONAL\",\"elk.spacing.nodeNode\":\"48\",\"elk.layered.spacing.nodeNodeBetweenLayers\":\"72\",\"elk.hierarchyHandling\":\"INCLUDE_CHILDREN\"}";
+        attribute visualWidth : Integer = 980;
+
         requirement progress : StreamingExecution::DurableRangeProgressJoin;
         requirement finalUse : StreamingExecution::RangeFinalGuard;
         attribute mappedFile : String = "docs/50-59-research-program/58-streaming-execution/58.05-range-progress-recovery.d2";
@@ -154,22 +204,108 @@ package WeaverViews {
         attribute displaySubtitle : String = "Durable consumption constrains message progress, custody and final bytes.";
         attribute readerQuestion : String = "What prevents a stale queued message from reopening a spent prefix?";
         attribute displayEyebrow : String = "WEAVER / STREAM RECOVERY";
-        expose StreamingExecution::streamingPath::adapter;
-        expose StreamingExecution::streamingPath::server;
         expose StreamingExecution::streamingPath::ledger;
-        expose StreamingExecution::streamingPath::guard;
         expose StreamingExecution::streamingPath::transport;
         expose StreamingExecution::streamingPath::retained;
-        expose StreamingExecution::streamingPath::propose;
-        expose StreamingExecution::streamingPath::admit;
-        expose StreamingExecution::streamingPath::consume;
-        expose StreamingExecution::streamingPath::writeRange;
         expose StreamingExecution::streamingPath::observe;
         expose StreamingExecution::streamingPath::retain;
         render asInterconnectionDiagram;
     }
 
+    view routeSelection {
+        attribute visualNotation : String = "objects";
+        attribute visualBands : String = "[[\"ingress\",\"routine\",\"catalog\"],[\"routing\"]]";
+        attribute mappedFile : String = "docs/10-19-llm-gateway/10-routing-and-inference/10.02-llm-routing.d2";
+        attribute displayTitle : String = "Choose an eligible model";
+        attribute displaySubtitle : String = "Original intent, required work and available bindings constrain the selection.";
+        attribute displayEyebrow : String = "WEAVER / ROUTING";
+        attribute readerQuestion : String = "What can constrain a route proposal?";
+        attribute designAudience : String = "Gateway developers and operators";
+        attribute designMedium : String = "GitHub at 830 CSS pixels";
+        attribute designMessage : String = "An agent requests a model for a report.\nThe route must fit the task and available models.";
+        attribute designFocus : String = "routing";
+        attribute captionContext : String = "journey";
+        attribute visualThemes : String = "sketchbook,ocean,compact,reading";
+        attribute visualOptions : String = "{\"elk.algorithm\":\"layered\",\"elk.direction\":\"DOWN\",\"elk.edgeRouting\":\"ORTHOGONAL\",\"elk.spacing.nodeNode\":\"18\",\"elk.layered.spacing.nodeNodeBetweenLayers\":\"32\"}";
+        attribute visualWidth : Integer = 980;
+        requirement finalUse : WeaverExecution::ConsumeBeforeSend;
+        expose WeaverGatewayArchitecture::gateway::ingress;
+        expose WeaverGatewayArchitecture::gateway::routine;
+        expose WeaverGatewayArchitecture::gateway::catalog;
+        expose WeaverGatewayArchitecture::gateway::routing;
+        expose WeaverGatewayArchitecture::gateway::input;
+        expose WeaverGatewayArchitecture::gateway::semantics;
+        expose WeaverGatewayArchitecture::gateway::catalogBindings;
+        render asInterconnectionDiagram;
+    }
+
+    view routeExecution {
+        attribute visualNotation : String = "objects";
+        attribute visualBands : String = "[[\"routing\",\"publication\"],[\"execution\",\"providers\",\"stream\"]]";
+        attribute mappedFile : String = "docs/10-19-llm-gateway/10-routing-and-inference/10.05-route-execution.d2";
+        attribute displayTitle : String = "Use the selected route";
+        attribute displaySubtitle : String = "A selected binding is rechecked with current Policy and the original claim.";
+        attribute displayEyebrow : String = "WEAVER / ROUTING";
+        attribute readerQuestion : String = "What can authorize actual provider use?";
+        attribute designAudience : String = "Gateway developers and operators";
+        attribute designMedium : String = "GitHub at 830 CSS pixels";
+        attribute designMessage : String = "The selected model may still be denied.\nRust joins current Policy with the original claim.";
+        attribute designFocus : String = "execution";
+        attribute captionContext : String = "journey";
+        attribute visualThemes : String = "sketchbook,ember,compact,reading";
+        attribute visualOptions : String = "{\"elk.algorithm\":\"layered\",\"elk.direction\":\"DOWN\",\"elk.edgeRouting\":\"ORTHOGONAL\",\"elk.spacing.nodeNode\":\"18\",\"elk.layered.spacing.nodeNodeBetweenLayers\":\"32\"}";
+        attribute visualWidth : Integer = 980;
+        requirement finalUse : WeaverExecution::ConsumeBeforeSend;
+        expose WeaverGatewayArchitecture::gateway::routing;
+        expose WeaverGatewayArchitecture::gateway::publication;
+        expose WeaverGatewayArchitecture::gateway::execution;
+        expose WeaverGatewayArchitecture::gateway::providers;
+        expose WeaverGatewayArchitecture::gateway::stream;
+        expose WeaverGatewayArchitecture::gateway::route;
+        expose WeaverGatewayArchitecture::gateway::reviewed_policy;
+        expose WeaverGatewayArchitecture::gateway::invoke;
+        expose WeaverGatewayArchitecture::gateway::streamResult;
+        render asInterconnectionDiagram;
+    }
+
+    view streamAdmission {
+        attribute mappedFile : String = "docs/architecture/diagrams/15-stream-message-authorization.d2";
+        attribute displayTitle : String = "Authorize one message range";
+        attribute displaySubtitle : String = "Authenticate the caller and join the original claim, hold and current owner.";
+        attribute displayEyebrow : String = "WEAVER / FLOW";
+        attribute readerQuestion : String = "What must be bound before a range can write?";
+        attribute designAudience : String = "Gateway developers and operators";
+        attribute designMedium : String = "GitHub at 830 CSS pixels";
+        attribute designMessage : String = "Authenticate the caller and join the original claim, hold and current owner.";
+        attribute designFocus : String = "guard";
+        attribute captionContext : String = "stream";
+        attribute visualThemes : String = "sketchbook,blueprint,compact,reading";
+        attribute visualOptions : String = "{\"elk.algorithm\":\"layered\",\"elk.direction\":\"DOWN\",\"elk.edgeRouting\":\"ORTHOGONAL\",\"elk.spacing.nodeNode\":\"18\",\"elk.layered.spacing.nodeNodeBetweenLayers\":\"32\"}";
+        attribute visualWidth : Integer = 980;
+        requirement finalUse : StreamingExecution::RangeFinalGuard;
+        expose StreamingExecution::streamingPath::adapter;
+        expose StreamingExecution::streamingPath::server;
+        expose StreamingExecution::streamingPath::ledger;
+        expose StreamingExecution::streamingPath::guard;
+        expose StreamingExecution::streamingPath::transport;
+        expose StreamingExecution::streamingPath::propose;
+        expose StreamingExecution::streamingPath::admit;
+        expose StreamingExecution::streamingPath::consume;
+        expose StreamingExecution::streamingPath::writeRange;
+        render asInterconnectionDiagram;
+    }
+
     view gateway {
+        attribute visualBands : String = "[[\"ingress\",\"routine\",\"catalog\"],[\"publication\",\"routing\"],[\"execution\",\"providers\",\"stream\"]]";
+        attribute captionContext : String = "journey";
+        attribute designAudience : String = "Application developers";
+        attribute designMedium : String = "GitHub README and linked English Org";
+        attribute designMessage : String = "Separate eligible model selection from authorized execution and streamed results.";
+        attribute designFocus : String = "routing,execution";
+        attribute visualThemes : String = "sketchbook,blueprint,comfortable,reading";
+        attribute visualOptions : String = "{\"elk.algorithm\":\"layered\",\"elk.direction\":\"DOWN\",\"elk.edgeRouting\":\"ORTHOGONAL\",\"elk.spacing.nodeNode\":\"48\",\"elk.layered.spacing.nodeNodeBetweenLayers\":\"72\",\"elk.hierarchyHandling\":\"INCLUDE_CHILDREN\"}";
+        attribute visualWidth : Integer = 1120;
+
         requirement specContract : WeaverZeroTrust::ZeroTrustContractRefinement;
         requirement executionContract : WeaverExecution::ConsumeBeforeSend;
         attribute mappedFile : String = "docs/architecture/diagrams/00c-gateway-runtime.d2";

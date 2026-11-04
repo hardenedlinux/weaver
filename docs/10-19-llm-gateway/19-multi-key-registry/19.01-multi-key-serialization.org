@@ -6,6 +6,12 @@
 #+language: en
 #+options: toc:3
 
+* Reader view
+
+An owner change must not turn a partial projection into authority.
+
+[[file:19.02-multi-key-registry.svg]]
+
 * Defect and design decision
 
 An origin-local insert followed by an alias insert and then a source CAS has

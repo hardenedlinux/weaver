@@ -26,9 +26,11 @@ package WeaverZeroTrust {
     }
 
     part def CoreContract {
+        attribute refinementName : String = "SPEC core";
+        attribute refinementSummary : String = "Identity and Policy\\nCurrent facts and revocation\\nConsume before effect";
         attribute displayName : String = "SPEC / Core contract";
         attribute responsibility : String = "Identity + authorization\nCurrent facts + not revoked\nConsumption + mediation\nUnknown exposure retained";
-        attribute glyph : String = "obligation";
+        attribute glyph : String = "policy";
         attribute visualRole : String = "publication";
         doc /* CedarPooSpec.ZeroTrust.Model and Continuous: authenticated,
            authorized, currentAtUse, consumptionCommitted, unknownRetained,
@@ -37,9 +39,11 @@ package WeaverZeroTrust {
         port requirements : RequirementPort;
     }
     part def UsageContract {
+        attribute refinementName : String = "Use over time";
+        attribute refinementSummary : String = "Check each new use\\nWitness obligations\\nClose and account";
         attribute displayName : String = "SPEC / Usage control";
         attribute responsibility : String = "Initial + ongoing checks\nConditions + witnessed obligations\nMutation of actual state\nRecovery is not authorization\nClose = terminal + accounted";
-        attribute glyph : String = "decision";
+        attribute glyph : String = "stream";
         attribute visualRole : String = "selection";
         doc /* CedarPooSpec.ZeroTrust.UsageControl: initial/ongoing authorization,
            conditions, witnessed obligation and mutation across actual states.
@@ -49,9 +53,11 @@ package WeaverZeroTrust {
         port requirements : RequirementPort;
     }
     part def ParentContract {
+        attribute refinementName : String = "Required parents";
+        attribute refinementSummary : String = "Keep the original scope\\nConjoin selected rules";
         attribute displayName : String = "SPEC / POO profiles";
         attribute responsibility : String = "Retain required parent\nConjoin selected projection\nStrengthen original scope";
-        attribute glyph : String = "selection";
+        attribute glyph : String = "claim";
         attribute visualRole : String = "semantic";
         doc /* CedarPooSpec.ZeroTrust.ProfileObject.composeSessions retains both
            independently required parent and selected object projections. A root
@@ -59,9 +65,11 @@ package WeaverZeroTrust {
         port requirements : RequirementPort;
     }
     part def ApplicationInterpretation {
+        attribute refinementName : String = "Weaver context";
+        attribute refinementSummary : String = "Bind task and profile\\nJoin budget and history\\nUse current reviewed Policy";
         attribute displayName : String = "Weaver / Interpretation";
         attribute responsibility : String = "Original task + profile\nShared budget + history\nCurrent facts + reviewed Policy\nHost materialization premises";
-        attribute glyph : String = "model";
+        attribute glyph : String = "history";
         attribute visualRole : String = "policy";
         doc /* CedarPooSpec.Gateway.ZeroTrust specializes the generic contracts.
            Weaver.ZeroTrustEnrichment applies existing SPEC laws to RuntimeView:
@@ -74,9 +82,11 @@ package WeaverZeroTrust {
         port requirements : RequirementPort;
     }
     part def FinalEnforcement {
+        attribute refinementName : String = "Actual-use guard";
+        attribute refinementSummary : String = "Consume and fence\\nMediate outgoing bytes\\nHold unknown exposure";
         attribute displayName : String = "Rust / Actual use";
         attribute responsibility : String = "Persist original consumption\nSame view: Policy + domain fence\nOriginal claim + shared exposure\nShared budget + append-only history\nMediate final external bytes\nUnknown writes keep their hold";
-        attribute glyph : String = "rust";
+        attribute glyph : String = "authorization";
         attribute visualRole : String = "execution";
         doc /* Existing Rust ledger/policy/broker/executor roles discharge the
            application interpretation at final use, under the deciding transaction:
@@ -96,9 +106,9 @@ package WeaverZeroTrust {
         part parents : ParentContract;
         part application : ApplicationInterpretation;
         part enforcement : FinalEnforcement;
-        connection core_requirements_to_usage_core connect core.requirements to usage.core;
-        connection usage_requirements_to_application_usage connect usage.requirements to application.usage;
-        connection parents_requirements_to_application_parents connect parents.requirements to application.parents;
-        connection application_requirements_to_enforcement_requirements connect application.requirements to enforcement.requirements;
+        connection coreRules connect core.requirements to usage.core;
+        connection ongoingUse connect usage.requirements to application.usage;
+        connection parentScope connect parents.requirements to application.parents;
+        connection sameContext connect application.requirements to enforcement.requirements;
     }
 }

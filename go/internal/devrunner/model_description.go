@@ -18,6 +18,7 @@ type ModelCaption struct {
 	Type            string   `json:"type"`
 	Label           string   `json:"label"`
 	Icon            string   `json:"icon"`
+	Illustration    string   `json:"illustration,omitempty"`
 	Role            string   `json:"role,omitempty"`
 	LeanDeclaration string   `json:"leanDeclaration,omitempty"`
 	LeanFields      []string `json:"leanFields,omitempty"`
@@ -36,7 +37,7 @@ type ModelDescription struct {
 	Source          string             `json:"source"`
 	Requirements    []ModelRequirement `json:"requirements"`
 	LeanEnvironment bool               `json:"leanEnvironment,omitempty"`
-	Columns         int                `json:"columns,omitempty"`
+	Scene           *ModelScene        `json:"scene,omitempty"`
 }
 
 func stringAttributes(symbol *opensysml.Symbol) map[string]string {
@@ -66,15 +67,9 @@ func describeModelView(ctx context.Context, client opensysml.Client, model *open
 		}
 	}
 	description := &ModelDescription{File: attributes["mappedFile"], Heading: attributes["displayTitle"], Subtitle: attributes["displaySubtitle"], Eyebrow: attributes["displayEyebrow"], Question: attributes["readerQuestion"]}
-	description.Columns = 2
-	for _, attribute := range symbol.Attributes {
-		if attribute.Name == "layoutColumns" {
-			value, ok := attribute.Value.(opensysml.Int)
-			if !ok || value < 1 || value > 4 {
-				return nil, fmt.Errorf("invalid typed layoutColumns on %s", name)
-			}
-			description.Columns = int(value)
-		}
+	description.Scene, err = describeScene(symbol, attributes)
+	if err != nil {
+		return nil, fmt.Errorf("view %s: %w", name, err)
 	}
 	description.LeanEnvironment = attributes["leanEnvironment"] == "required"
 	obligations, err := client.Query(ctx, model, opensysml.Query{Scope: []string{name}, Where: opensysml.Equals("@type", "RequirementUsage")})
@@ -124,15 +119,26 @@ func describeModelView(ctx context.Context, client opensysml.Client, model *open
 				return nil, fmt.Errorf("security view lacks architecture explanation: %s", id)
 			}
 			values["displayName"], values["responsibility"] = values["securityName"], values["securityResponsibility"]
+			if values["securityGlyph"] != "" {
+				values["glyph"] = values["securityGlyph"]
+			}
+		}
+		if description.Scene != nil && description.Scene.CaptionContext != "" {
+			prefix := description.Scene.CaptionContext
+			if values[prefix+"Name"] == "" || values[prefix+"Summary"] == "" {
+				return nil, fmt.Errorf("missing %s reader caption on %s", prefix, id)
+			}
+			values["displayName"], values["responsibility"] = values[prefix+"Name"], values[prefix+"Summary"]
+			values["illustration"] = values[prefix+"Glyph"]
 		}
 		if strings.TrimSpace(values["displayName"]) == "" || strings.TrimSpace(values["glyph"]) == "" {
 			return nil, fmt.Errorf("model subject lacks reader interpretation: %s", id)
 		}
-		label := values["displayName"]
+		label := strings.ReplaceAll(values["displayName"], "\\n", "\n")
 		if detail := values["responsibility"]; detail != "" {
-			label += "\n" + detail
+			label += "\n" + strings.ReplaceAll(detail, "\\n", "\n")
 		}
-		caption := ModelCaption{ID: node.ID, Name: node.Name, Type: node.Type, Label: label, Icon: values["glyph"], Role: values["visualRole"], LeanDeclaration: values["leanDeclaration"]}
+		caption := ModelCaption{ID: node.ID, Name: node.Name, Type: node.Type, Label: label, Icon: values["glyph"], Illustration: values["illustration"], Role: values["visualRole"], LeanDeclaration: values["leanDeclaration"]}
 		if description.LeanEnvironment {
 			for _, field := range strings.Split(values["leanFields"], ",") {
 				caption.LeanFields = append(caption.LeanFields, strings.TrimSpace(field))

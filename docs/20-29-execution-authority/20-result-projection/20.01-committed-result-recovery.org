@@ -6,6 +6,12 @@
 #+language: en
 #+options: toc:3
 
+* Reader view
+
+One decision feeds both stores. Replaying it never calls a provider.
+
+[[file:20.02-result-projection.svg]]
+
 * The missing result boundary
 
 Category 19 serializes canonical identity, original source consumption and shared

@@ -8,6 +8,12 @@
 #+property: STATUS conditional-queue-composition-checked-native-device-isolation-pending
 #+options: toc:3
 
+* Reader view
+
+Queue clearing cannot qualify a successor key epoch.
+
+[[file:32.02-key-boundary.svg]]
+
 * Decision and boundary
 
 Queued work is not permission to release a signature. Close the actual signing
