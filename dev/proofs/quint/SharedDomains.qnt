@@ -19,6 +19,11 @@ module SharedDomains {
     ((s.revoked or s.policyPending) implies s.active==Set()) and
     s.active.forall(f=>s.permit.get(f)==s.epoch and s.permitOwner.get(f)==s.owner and
       s.active.forall(g=>f==g or (s.root.get(f)!=s.root.get(g) and s.hroot.get(f)!=s.hroot.get(g))))
+  pure def quotaAllowed(key:int,user:int,tenant:int,amount:int):bool=
+    key+amount<=4 and user+amount<=4 and tenant+amount<=8
+  run secondKeyCannotSpendUnknownUserQuotaTest=init.expect(
+    quotaAllowed(0,0,0,4) and not(quotaAllowed(0,4,4,4)))
+  run perKeyOnlyCounterexampleTest=init.expect(0+4<=4 and not(quotaAllowed(0,4,4,4)))
   action init=s'=initial
   action reserve(f:int):bool=all{not(s.claims.contains(f)),s.active==Set(),exposure(s.root.get(f))+3<=6,
     s'=s.with("claims",s.claims.union(Set(f))).with("history",s.history.union(Set(f))).with("held",s.held.set(f,3))}

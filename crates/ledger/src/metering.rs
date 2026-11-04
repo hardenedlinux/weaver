@@ -51,7 +51,7 @@ pub(crate) fn compatible(
         .is_none_or(|scope| scopes.all(|member| member == scope)))
 }
 
-pub(crate) fn bind(tx: &WriteScope<'_>, family: &str, node: &str) -> Result<()> {
+pub(crate) fn bind(tx: &WriteScope<'_>, family: &str, node: &str, ceiling: u64) -> Result<()> {
     let Some(config) = deployment(tx)? else {
         return Ok(());
     };
@@ -62,6 +62,7 @@ pub(crate) fn bind(tx: &WriteScope<'_>, family: &str, node: &str) -> Result<()> 
         |row| row.get(0),
     )
     .map_err(db)?;
+    crate::provider_quota::reserve(tx, &config, family, node, &principal, ceiling)?;
     if let Some(tenant) = config.tenant_for(&principal) {
         persistence::exec(
             tx,
@@ -185,6 +186,7 @@ impl Ledger {
         let config = deployment(&tx)?.ok_or(Error::Denied)?;
         let released = original(&tx, &config, evidence)?;
         crate::domains::require(&tx, &evidence.family)?;
+        crate::provider_quota::require(&tx, &config, &evidence.family, &evidence.node)?;
         let body = serde_json::to_string(evidence)?;
         let existing: Option<String> = persistence::maybe(
             &tx,
@@ -248,6 +250,8 @@ impl Ledger {
         if task != 1 || budget != 1 {
             return Err(Error::Conflict("metering balance changed"));
         }
+        crate::provider_quota::release(&tx, &evidence.family, &evidence.node, released)?;
+        crate::provider_quota::require(&tx, &config, &evidence.family, &evidence.node)?;
         crate::domains::require(&tx, &evidence.family)?;
         tx.commit().map_err(db)?;
         Ok(result)

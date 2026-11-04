@@ -22,6 +22,8 @@ pub struct MeteringTenant {
 pub struct MeteringDeployment {
     pub audience: String,
     pub tenants: BTreeMap<String, MeteringTenant>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub quotas: Option<crate::QuotaDeployment>,
 }
 
 fn digest(value: &str, len: usize) -> bool {
@@ -55,6 +57,9 @@ impl MeteringDeployment {
                     return Err(Error::Invalid("ambiguous metering principal"));
                 }
             }
+        }
+        if let Some(quotas) = &self.quotas {
+            quotas.validate(self)?;
         }
         Ok(())
     }

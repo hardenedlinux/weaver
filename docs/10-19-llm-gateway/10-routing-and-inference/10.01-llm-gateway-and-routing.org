@@ -147,6 +147,90 @@ Catalog, policy/history or endpoint replacement invalidates an old hard view.
 Re-plan before admission. A metrics-only update may keep the existing plan usable;
 a ranking freshness bound, if required, is a separate scheduling constraint.
 
+* Tenant-scoped model selection and token economics
+
+A model module publishes candidate descriptors under stable identities. Each
+descriptor binds the provider, concrete model, model revision, endpoint,
+supported capabilities, context and output limits, locality, and procurement
+rate schedule. Tenant configuration selects the modules and the candidates
+eligible for each virtual model. A request may name a virtual model or an
+allowed concrete model. Neither identifier grants a provider credential,
+creates a new task identity, or chooses a different accounting scope.
+
+The authenticated API key resolves to a stable user within a tenant. A single
+original reservation joins the applicable key quota, user budget and tenant
+budget. Rotating a key preserves the user and tenant accounting identities.
+All amounts are denominated in explicit units. The provider procurement
+schedule estimates the operator's marginal cost by token category. The
+tenant's versioned formula prices normalized token counts in user credits.
+These inputs can differ. A model label or an internal provider rate never
+silently changes the tenant formula. The reservation pins the applicable
+formula and the estimate's source schedule.
+
+Go selects among candidates in this order:
+
+1. Resolve the original task, semantic profile and tenant-visible catalogue.
+   Filter by capabilities, region, input and output bounds, required response
+   mode, current Policy and history. Tool-capable, large-context and structured
+   output tasks each carry their own minimum requirements.
+2. Compute conservative token bounds for each remaining candidate. Evaluate
+   the user formula and the provider procurement schedule in their respective
+   units. Drop candidates whose upper bound exceeds an applicable quota,
+   budget, procurement cap or deadline. An unknown hard bound makes a
+   candidate ineligible under a hard-cap route.
+3. Rank eligible candidates by the tenant's declared strategy. A cost-first
+   strategy chooses the lowest estimated procurement cost among candidates
+   meeting the minimum quality and latency contract. A quality-first strategy
+   may choose a higher-cost candidate within the same limits. Use a stable
+   tie-break and record the catalogue, strategy and estimate identities.
+
+Rust rechecks the exact selected model, translated request, profile, current
+Policy and original accounting scopes before effect. Joint quota and budget
+reservation is one deciding operation. The same original settlement fans out
+to all applicable accounting dimensions. These projections represent one
+charge. Before consumption, a changed candidate requires fresh evaluation and
+an atomic amendment of the existing reservation, including any increased
+ceiling. After consumption or uncertain send, the same logical message cannot
+automatically escalate to another model. A later explicit attempt needs the
+original lineage, separate attempt authority and remaining shared exposure.
+
+** Implemented source activation and quota profile
+
+A JSON/YAML source bundle can declare a bounded =routing= candidate set for
+each open node. Each candidate supplies an already translated concrete plan,
+capability labels, latency and conservative token estimates. The tenant-owned
+module allowlist and required capabilities filter the set. Go computes the
+user-credit estimate and the procurement estimate with separate rates and
+selects the lowest eligible procurement cost with deterministic tie-breaking.
+Activation seals the selected body and stream contract before authority
+registration. A new request cannot substitute a different module, body,
+model or target set. Actual Cedar authorization still occurs in Rust.
+
+The optional =WEAVER_METERING.quotas= deployment extension binds original
+families to stable key IDs, key IDs to canonical principals, and principals
+to tenant scopes. The Rust store applies the original ceiling to three
+counters in the provider admission transaction. Each counter CAS joins its
+retained reservation projection. Known signed settlement releases only the
+unused remainder from the same three scopes; unknown execution retains the
+original amount. Model substitution or a new key cannot reopen the original
+plan. Different original families with the same user or tenant still compete
+for the same counters.
+
+This first profile uses deployment-bound key IDs under the existing
+authenticated control ingress. Public tenant API-key authentication, live
+catalogue recomputation, route amendment and cross-model retries remain
+separate delivery gates. The candidate's pricing bounds and labels are source
+inputs. The exact settlement formula is pinned independently by Rust's
+metering deployment. A source estimate does not grant a larger ceiling or
+establish actual provider usage. Existing immutable deployments require an
+explicit configuration migration before enabling the new quota scopes.
+
+Go property tests check cost ordering, capability and latency exclusion and
+a single sealed concrete plan. Real TLS integration checks two keys sharing
+one user's quota, concurrent admission, model substitution, an unknown stream
+and restart. The Lean and Quint controls state the shared-capacity property
+under the authentic scope and deciding-transaction premises.
+
 * Inference execution, streams and response ownership
 
 Rust owns the default inference data plane: request normalization, routing tables,

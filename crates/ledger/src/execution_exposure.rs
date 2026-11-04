@@ -109,6 +109,9 @@ pub(crate) fn message(tx: &WriteScope<'_>, binding: &MessageBinding) -> Result<(
 pub(crate) fn provider(tx: &WriteScope<'_>, plan: &ProviderPlan, digest: &str) -> Result<()> {
     let matches: bool = crate::persistence::one(tx, "SELECT EXISTS(SELECT 1 FROM provider_runs WHERE family=?1 AND node=?2 AND reserved=?3 AND digest=?4)", crate::persistence::params![(plan.family).to_owned(),(plan.node).to_owned(),(plan.ceiling as i64).to_owned(),(digest).to_owned()], |row| row.get(0)).map_err(db)?;
     require(matches)?;
+    if let Some(config) = crate::metering::deployment(tx)? {
+        crate::provider_quota::require(tx, &config, &plan.family, &plan.node)?;
+    }
     require_family(tx, &plan.family)
 }
 

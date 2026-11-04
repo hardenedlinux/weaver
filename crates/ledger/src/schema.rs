@@ -115,4 +115,12 @@ CREATE TABLE IF NOT EXISTS metering_applications (
  receipt TEXT NOT NULL, released INTEGER NOT NULL CHECK(released>=0),
  PRIMARY KEY(tenant,application), UNIQUE(family,node),
  FOREIGN KEY(family,node) REFERENCES metering_reservations(family,node));
+CREATE TABLE IF NOT EXISTS provider_quota_totals (
+ kind TEXT NOT NULL, scope TEXT NOT NULL, held INTEGER NOT NULL CHECK(held>=0),
+ PRIMARY KEY(kind,scope));
+CREATE TABLE IF NOT EXISTS provider_quota_reservations (
+ family TEXT NOT NULL, node TEXT NOT NULL, kind TEXT NOT NULL, scope TEXT NOT NULL,
+ PRIMARY KEY(family,node,kind), FOREIGN KEY(family,node) REFERENCES provider_runs(family,node),
+ FOREIGN KEY(kind,scope) REFERENCES provider_quota_totals(kind,scope));
+CREATE INDEX IF NOT EXISTS provider_quota_members ON provider_quota_reservations(kind,scope);
 "#;

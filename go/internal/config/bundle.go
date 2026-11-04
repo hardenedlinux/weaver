@@ -17,10 +17,11 @@ import (
 
 // Bundle is trusted source configuration, not authority supplied by an agent.
 type Bundle struct {
-	Governance  Governance        `json:"governance"`
-	Tasks       []v1.Task         `json:"tasks"`
-	Plans       []v1.ProviderPlan `json:"plans"`
-	Publication v1.Publication    `json:"publication"`
+	Routing     []routing.Selection `json:"routing,omitempty"`
+	Governance  Governance          `json:"governance"`
+	Tasks       []v1.Task           `json:"tasks"`
+	Plans       []v1.ProviderPlan   `json:"plans"`
+	Publication v1.Publication      `json:"publication"`
 }
 
 // Governance is the native governor's selected handoff, not a runtime permit.
@@ -60,10 +61,7 @@ func DecodeBundle(data []byte, format ProfileFormat) (Bundle, error) {
 	if err != nil {
 		return zero, err
 	}
-	if err = bundle.Validate(); err != nil {
-		return zero, err
-	}
-	return bundle, nil
+	return FreezeBundle(bundle)
 }
 
 func (b Bundle) Validate() error {

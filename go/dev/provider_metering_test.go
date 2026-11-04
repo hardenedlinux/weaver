@@ -59,7 +59,17 @@ func checkProviderMetering(t *testing.T, charged uint64, completed bool) {
 		keys[id] = private
 		tenants[id] = tenant{id + "-meter", hex.EncodeToString(public), []string{principal}, rates}
 	}
-	config, err := json.Marshal(map[string]any{"audience": "metering-test", "tenants": tenants})
+	config, err := json.Marshal(map[string]any{"audience": "metering-test", "tenants": tenants,
+		"quotas": map[string]any{
+			"families": map[string]string{"f": "alpha-key", "other-tenant": "beta-key"},
+			"keys": map[string]any{
+				"alpha-key": map[string]any{"principal": "alice", "limit": 4},
+				"beta-key":  map[string]any{"principal": "bob", "limit": 4},
+			},
+			"users":   map[string]uint64{"alice": 4, "bob": 4},
+			"tenants": map[string]uint64{"alpha": 4, "beta": 4},
+		},
+	})
 	if err != nil {
 		t.Fatal(err)
 	}

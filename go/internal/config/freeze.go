@@ -5,8 +5,11 @@
 package config
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"errors"
 	v1 "github.com/HardenedLinux/weaver/go/api/v1"
+	"github.com/HardenedLinux/weaver/go/internal/routing"
 	"maps"
 	"slices"
 )
@@ -43,6 +46,9 @@ func FreezeBundle(input Bundle) (Bundle, error) {
 		copy := p
 		copy.Routes = slices.Clone(p.Routes)
 		result.Plans[index] = copy
+	}
+	if err := result.chooseRoutes(); err != nil {
+		return Bundle{}, err
 	}
 	if err := result.Validate(); err != nil {
 		return Bundle{}, err
@@ -116,6 +122,26 @@ func sourceTextBound(input Bundle) bool {
 			}
 		}
 	}
+	if len(input.Routing) > 64 {
+		return false
+	}
+	for _, choice := range input.Routing {
+		if len(choice.Candidates) > 8 || !add(choice.Node) || !strings(choice.Required) || !strings(choice.AllowedModules) {
+			return false
+		}
+		for _, candidate := range choice.Candidates {
+			p := candidate.Plan
+			if !add(candidate.Module) || !strings(candidate.Capabilities) ||
+				!strings([]string{p.Family, p.Node, p.Profile, p.ProfileCommitment, p.Model, p.Body}) {
+				return false
+			}
+			for _, route := range p.Routes {
+				if !add(route.Target) || !add(route.Endpoint) {
+					return false
+				}
+			}
+		}
+	}
 	for _, p := range input.Plans {
 		if !strings([]string{p.Family, p.Node, p.Profile, p.ProfileCommitment, p.Model, p.Body}) {
 			return false
@@ -127,4 +153,37 @@ func sourceTextBound(input Bundle) bool {
 		}
 	}
 	return true
+}
+
+func (b *Bundle) chooseRoutes() error {
+	if len(b.Routing) == 0 {
+		return nil
+	}
+	if len(b.Tasks) != 1 || len(b.Plans) != 0 {
+		return errors.New("routing source must declare one unmaterialized task")
+	}
+	task := &b.Tasks[0]
+	if len(task.BodyDigests) != 0 || len(task.StreamContracts) != 0 {
+		return errors.New("routing cannot replace original task commitments")
+	}
+	task.BodyDigests, task.StreamContracts = map[string]string{}, map[string]string{}
+	for _, selection := range b.Routing {
+		plan, err := routing.Select(*task, selection)
+		if err != nil {
+			return err
+		}
+		body := sha256.Sum256([]byte(plan.Body))
+		digest, err := plan.Digest()
+		if err != nil {
+			return err
+		}
+		task.BodyDigests[plan.Node], task.StreamContracts[plan.Node] = hex.EncodeToString(body[:]), digest
+		compiled, err := routing.CompileProvider(*task, plan, b.View())
+		if err != nil {
+			return err
+		}
+		b.Plans = append(b.Plans, compiled)
+	}
+	b.Routing = nil
+	return nil
 }

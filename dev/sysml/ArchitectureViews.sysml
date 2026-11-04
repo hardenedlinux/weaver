@@ -217,12 +217,12 @@ package WeaverViews {
         attribute visualBands : String = "[[\"ingress\",\"routine\",\"catalog\"],[\"routing\"]]";
         attribute mappedFile : String = "docs/10-19-llm-gateway/10-routing-and-inference/10.02-llm-routing.d2";
         attribute displayTitle : String = "Choose an eligible model";
-        attribute displaySubtitle : String = "Original intent, required work and available bindings constrain the selection.";
+        attribute displaySubtitle : String = "Filter model capabilities before comparing token cost and latency.";
         attribute displayEyebrow : String = "WEAVER / ROUTING";
         attribute readerQuestion : String = "What can constrain a route proposal?";
         attribute designAudience : String = "Gateway developers and operators";
         attribute designMedium : String = "GitHub at 830 CSS pixels";
-        attribute designMessage : String = "An agent requests a model for a report.\nThe route must fit the task and available models.";
+        attribute designMessage : String = "Filter model capabilities before comparing token cost and latency.";
         attribute designFocus : String = "routing";
         attribute captionContext : String = "journey";
         attribute visualThemes : String = "sketchbook,ocean,compact,reading";
