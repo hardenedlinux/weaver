@@ -206,3 +206,22 @@ theorem new_head_preserves_old_reservation (newHead offered retained : Nat) :
 #print axioms stale_offer_cannot_create
 #print axioms new_head_preserves_old_reservation
 end Weaver.CatalogPublication
+
+namespace Weaver.RetainedTariff
+
+def settle (retained offered charge ceiling : Nat) (terminal applied : Bool) : Nat :=
+  if terminal && !applied && retained == offered && charge ≤ ceiling then ceiling - charge else 0
+
+theorem stale_formula_releases_nothing (original offered charge ceiling : Nat)
+    (different : original ≠ offered) :
+    settle original offered charge ceiling true false = 0 := by
+  simp [settle, different]
+
+theorem unknown_or_duplicate_releases_nothing (original offered charge ceiling : Nat) :
+    settle original offered charge ceiling false false = 0 ∧
+    settle original offered charge ceiling true true = 0 := by
+  simp [settle]
+
+#print axioms stale_formula_releases_nothing
+#print axioms unknown_or_duplicate_releases_nothing
+end Weaver.RetainedTariff

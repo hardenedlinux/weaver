@@ -404,7 +404,19 @@ Cedar publication and fencing still decide whether an existing queued
 reservation can dispatch. Unknown execution preserves its hold across restart
 and cannot reopen the original logical operation.
 
-This profile publishes procurement rates and catalog metadata at runtime.
-The customer tariff remains deployment-bound and each catalog entry must
-match that tariff. Concrete request bodies and original tasks remain source
-owned. Model publication does not authorize new request content.
+The source publishes provider procurement rates and customer Token rates
+as separate fields in the same catalog snapshot. Procurement rates rank
+candidates. Customer rates determine the metering formula digest and the
+reservation affordability check. All entries for a tenant in one snapshot
+must agree on customer rates. The meter issuer, public key, audience and
+quota scopes remain deployment-bound. Concrete request bodies and original
+tasks remain source owned.
+
+Settlement reads the historical catalog reference retained by the original
+reservation. It verifies the signed formula digest and charges with that
+formula after joining terminal execution, tenant, original task and target.
+A new catalog may change either rate independently. Exact application replay
+returns the same charge and release, and a competing application ID cannot
+settle the same reservation. A reservation with unknown execution releases
+nothing. Reservations created before catalog publication still use their
+deployment formula.

@@ -88,12 +88,19 @@ func TestProviderModuleSelectionBindsOriginal(t *testing.T) {
 	ctx, cancel := context.WithTimeout(t.Context(), 12*time.Second)
 	defer cancel()
 	source := f.admin
-	formula := sha256.Sum256([]byte(`["weaver.metering.linear-ceil-per-million.v1",[0,0,0,100000]]`))
 	entry := func(rate uint64) map[string]any {
+		userRates := [4]uint64{0, 0, 0, 100000}
+		if rate == 500000 {
+			userRates[3] = 120000
+		}
+		formula, err := v1.MeteringFormulaDigest(userRates)
+		if err != nil {
+			t.Fatal(err)
+		}
 		return map[string]any{
 			"module": "premium", "capabilities": []string{"quality"}, "latency_millis": 40,
-			"user_rates": [4]uint64{0, 0, 0, 100000},
-			"quote": map[string]any{"version": "tariff", "tenant": "tenant", "formula_digest": hex.EncodeToString(formula[:]),
+			"user_rates": userRates,
+			"quote": map[string]any{"version": "purchase", "tenant": "tenant", "formula_digest": formula,
 				"procurement_rates": [4]uint64{rate}, "token_bounds": [4]uint64{64, 0, 0, 32}},
 		}
 	}

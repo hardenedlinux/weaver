@@ -71,7 +71,7 @@ pub(crate) fn bind(
     };
     if let Some((version, catalog)) = current {
         let entry = catalog.entries.get(digest).ok_or(Error::Denied)?;
-        config.provider_quotes = [(digest.to_owned(), entry.quote.clone())].into();
+        apply_catalog_entry(&mut config, digest, entry)?;
         persistence::exec(
             tx,
             "INSERT INTO provider_catalog_reservations VALUES(?1,?2,?3)",
@@ -126,11 +126,55 @@ pub(crate) fn bind(
     Ok(())
 }
 
+fn apply_catalog_entry(
+    config: &mut MeteringDeployment,
+    digest: &str,
+    entry: &weaver_contracts::CatalogEntry,
+) -> Result<()> {
+    let tenant = config
+        .tenants
+        .get_mut(&entry.quote.tenant)
+        .ok_or(Error::Denied)?;
+    tenant.rates = entry.user_rates;
+    if tenant.formula_digest()? != entry.quote.formula_digest {
+        return Err(Error::Conflict("retained formula digest mismatch"));
+    }
+    config.provider_quotes = [(digest.to_owned(), entry.quote.clone())].into();
+    Ok(())
+}
+
+fn retained_catalog(tx: &WriteScope<'_>, family: &str, node: &str) -> Result<Option<String>> {
+    persistence::maybe(
+        tx,
+        "SELECT catalog FROM provider_catalog_reservations WHERE family=?1 AND node=?2",
+        [family, node],
+        |row| row.get(0),
+    )
+    .map_err(db)
+}
+
 fn original(
     tx: &WriteScope<'_>,
     config: &MeteringDeployment,
     receipt: &MeteringReceipt,
-) -> Result<u64> {
+) -> Result<MeteringApplication> {
+    let snapshot;
+    let config = if let Some(version) = retained_catalog(tx, &receipt.family, &receipt.node)? {
+        let catalog = crate::provider_catalog::historical(tx, &version)?;
+        let entry = catalog
+            .entries
+            .get(&receipt.plan_digest)
+            .ok_or(Error::Denied)?;
+        if entry.quote.tenant != receipt.tenant {
+            return Err(Error::Denied);
+        }
+        let mut original = config.clone();
+        apply_catalog_entry(&mut original, &receipt.plan_digest, entry)?;
+        snapshot = original;
+        &snapshot
+    } else {
+        config
+    };
     let ceiling = persistence::maybe(
         tx,
         "SELECT r.reserved FROM provider_runs r
@@ -157,7 +201,11 @@ fn original(
     if charged > ceiling {
         return Err(Error::Denied);
     }
-    Ok(ceiling - charged)
+    Ok(MeteringApplication {
+        application: receipt.application.clone(),
+        charged,
+        released: ceiling - charged,
+    })
 }
 
 pub(crate) fn applied_release(tx: &WriteScope<'_>, family: &str) -> Result<u64> {
@@ -178,7 +226,7 @@ pub(crate) fn applied_release(tx: &WriteScope<'_>, family: &str) -> Result<u64> 
                 &evidence.application,
                 &evidence.node,
             ) != (family, &tenant, &application, &node)
-                || original(tx, &config, &evidence)? != released
+                || original(tx, &config, &evidence)?.released != released
             {
                 return Err(Error::Conflict("invalid metering projection"));
             }
@@ -230,7 +278,8 @@ impl Ledger {
         let tx = persistence::begin_family(&mut self.connection, &evidence.family).map_err(db)?;
         crate::source_authority::require(&tx, self.source.as_ref())?;
         let config = deployment(&tx)?.ok_or(Error::Denied)?;
-        let released = original(&tx, &config, evidence)?;
+        let result = original(&tx, &config, evidence)?;
+        let released = result.released;
         crate::domains::require(&tx, &evidence.family)?;
         crate::provider_quota::require(&tx, &config, &evidence.family, &evidence.node)?;
         let body = serde_json::to_string(evidence)?;
@@ -241,11 +290,6 @@ impl Ledger {
             |row| row.get(0),
         )
         .map_err(db)?;
-        let result = MeteringApplication {
-            application: evidence.application.clone(),
-            charged: config.tenants[&evidence.tenant].charge(evidence.tokens)?,
-            released,
-        };
         if let Some(existing) = existing {
             return if existing == body {
                 Ok(result)
@@ -333,19 +377,13 @@ pub(crate) fn require_quote(
     plan: &weaver_contracts::ProviderPlan,
     digest: &str,
 ) -> Result<()> {
-    let version: Option<String> = persistence::maybe(
-        tx,
-        "SELECT catalog FROM provider_catalog_reservations WHERE family=?1 AND node=?2",
-        [plan.family.as_str(), plan.node.as_str()],
-        |row| row.get(0),
-    )
-    .map_err(db)?;
+    let version = retained_catalog(tx, &plan.family, &plan.node)?;
     let historical;
     let config = if let Some(version) = &version {
         let catalog = crate::provider_catalog::historical(tx, version)?;
         let entry = catalog.entries.get(digest).ok_or(Error::Denied)?;
         let mut snapshot = config.clone();
-        snapshot.provider_quotes = [(digest.to_owned(), entry.quote.clone())].into();
+        apply_catalog_entry(&mut snapshot, digest, entry)?;
         historical = snapshot;
         &historical
     } else {

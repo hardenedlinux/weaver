@@ -12,6 +12,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"encoding/json"
+	"io"
 	"net/http"
 	"strings"
 	"testing"
@@ -83,7 +84,56 @@ func checkProviderMetering(t *testing.T, charged uint64, completed bool) {
 	f := fixtureWithInvocation(t, handler, false, serverBinary, nil, []string{"WEAVER_METERING=" + string(config)})
 	ctx, cancel := context.WithTimeout(t.Context(), 12*time.Second)
 	defer cancel()
-	_, err = f.client.Execute(ctx, f.plan, pb.Encoding_PROTOBUF, 1, func(*pb.Event) error { return nil })
+	oldRates := [4]uint64{1_000_000}
+	newRates := [4]uint64{2_000_000}
+	other := f.plan
+	other.Family = "other-tenant"
+	digest, err := f.plan.Digest()
+	if err != nil {
+		t.Fatal(err)
+	}
+	otherDigest, err := other.Digest()
+	if err != nil {
+		t.Fatal(err)
+	}
+	publish := func(parent string, tariff [4]uint64) string {
+		t.Helper()
+		entry := func(tenant string, values [4]uint64) map[string]any {
+			digest, err := v1.MeteringFormulaDigest(values)
+			if err != nil {
+				t.Fatal(err)
+			}
+			return map[string]any{
+				"module": "standard", "capabilities": []string{}, "latency_millis": 10, "user_rates": values,
+				"quote": map[string]any{"version": "purchase", "tenant": tenant, "formula_digest": digest,
+					"procurement_rates": [4]uint64{500_000}, "token_bounds": [4]uint64{1, 0, 0, 32}},
+			}
+		}
+		record, err := json.Marshal(map[string]any{"parent": parent, "entries": map[string]any{
+			digest: entry("alpha", tariff), otherDigest: entry("beta", oldRates),
+		}})
+		if err != nil {
+			t.Fatal(err)
+		}
+		snapshot, err := f.admin.RPC.PublishProviderCatalog(f.admin.Context(ctx), &pb.ProviderCatalogChange{Record: record})
+		if err != nil {
+			t.Fatal(err)
+		}
+		return snapshot.Version
+	}
+	oldVersion := publish("", oldRates)
+	stream, err := f.client.RPC.ExecuteProvider(f.client.Context(ctx), &pb.ProviderRequest{
+		Plan: gatewayclient.Plan(f.plan), Encoding: pb.Encoding_PROTOBUF, BatchRows: 1, CatalogVersion: oldVersion,
+	})
+	if err == nil {
+		for err == nil {
+			_, err = stream.Recv()
+		}
+		if err == io.EOF {
+			err = nil
+		}
+	}
+	publish(oldVersion, newRates)
 	if (err == nil) != completed {
 		t.Fatalf("unexpected provider outcome: %v", err)
 	}
@@ -99,7 +149,7 @@ func checkProviderMetering(t *testing.T, charged uint64, completed bool) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	formula, err := v1.MeteringFormulaDigest(rates)
+	formula, err := v1.MeteringFormulaDigest(oldRates)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -128,8 +178,6 @@ func checkProviderMetering(t *testing.T, charged uint64, completed bool) {
 	apply := func(u v1.TerminalUsage) (*pb.MeteringApplication, error) {
 		return f.admin.RPC.ApplyMetering(f.admin.Context(ctx), wire(u))
 	}
-	other := f.plan
-	other.Family = "other-tenant"
 	task := profileTask(t, other, *providerProfile())
 	task.Principal = "bob"
 	if _, err := f.admin.RPC.RegisterTask(f.admin.Context(ctx), &pb.RegisterTaskRequest{Task: gatewayclient.Task(task)}); err != nil {
@@ -143,7 +191,17 @@ func checkProviderMetering(t *testing.T, charged uint64, completed bool) {
 	if err != nil || migration.GetCommitted() {
 		t.Fatalf("cross-tenant domain union: %v %v", migration, err)
 	}
+	wrongFormula := evidence
+	wrongFormula.FormulaDigest, err = v1.MeteringFormulaDigest(newRates)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := apply(wrongFormula); status.Code(err) != codes.PermissionDenied {
+		t.Fatalf("current formula applied to old reservation: %v", err)
+	}
 	if !completed {
+		f.stop(t)
+		f.start(t)
 		if _, err := apply(evidence); status.Code(err) != codes.PermissionDenied || inspect(t, f).GetHeld() != 4 {
 			t.Fatalf("signed but unresolved usage released exposure: %v", err)
 		}
@@ -175,8 +233,27 @@ func checkProviderMetering(t *testing.T, charged uint64, completed bool) {
 	}
 	duplicate := evidence
 	duplicate.Application = "replacement"
-	if _, err := apply(duplicate); status.Code(err) != codes.FailedPrecondition {
-		t.Fatalf("replacement application id admitted: %v", err)
+	checkReplay := func() error {
+		value, err := apply(evidence)
+		if err == nil && !proto.Equal(value, first) {
+			return status.Error(codes.Internal, "replay repriced original")
+		}
+		return err
+	}
+	replay := make(chan error, 1)
+	go func() { replay <- checkReplay() }()
+	_, duplicateErr := apply(duplicate)
+	replayErr := <-replay
+	// The source owner has one command slot. Reconcile a contender rejected
+	// at ingress after the in-flight command reaches its durable outcome.
+	if status.Code(replayErr) == codes.ResourceExhausted {
+		replayErr = checkReplay()
+	}
+	if status.Code(duplicateErr) == codes.ResourceExhausted {
+		_, duplicateErr = apply(duplicate)
+	}
+	if replayErr != nil || status.Code(duplicateErr) != codes.FailedPrecondition {
+		t.Fatalf("concurrent replay and replacement: %v %v", replayErr, duplicateErr)
 	}
 	after, err := f.admin.RPC.InspectExecutionDomains(f.admin.Context(ctx), &pb.OperationKey{Family: f.plan.Family})
 	if err != nil || after.GetHeld() != charged || after.GetHistoryCount() != 1 || f.primary.Load() != 1 {

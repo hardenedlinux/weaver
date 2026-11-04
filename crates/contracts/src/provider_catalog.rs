@@ -40,6 +40,7 @@ impl ProviderCatalog {
         if deployment.quotas.is_none() || self.entries.len() > 256 {
             return Err(Error::Invalid("provider catalog bounds or quota scopes"));
         }
+        let mut tariffs = BTreeMap::new();
         for (plan, entry) in &self.entries {
             identifier(&entry.module)?;
             if entry.capabilities.len() > 32
@@ -55,10 +56,15 @@ impl ProviderCatalog {
                 .tenants
                 .get(&entry.quote.tenant)
                 .ok_or(Error::Denied)?;
-            if tenant.rates != entry.user_rates {
-                return Err(Error::Denied);
+            if tariffs
+                .insert(&entry.quote.tenant, entry.user_rates)
+                .is_some_and(|prior| prior != entry.user_rates)
+            {
+                return Err(Error::Invalid("mixed tenant formulas in catalog"));
             }
-            entry.quote.validate(plan, tenant)?;
+            let mut tenant = tenant.clone();
+            tenant.rates = entry.user_rates;
+            entry.quote.validate(plan, &tenant)?;
             tenant.charge(entry.quote.token_bounds)?;
         }
         Ok(())
