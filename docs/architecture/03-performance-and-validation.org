@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
 #
-# SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 #+title: Weaver High-Performance Paths and Validation Plan
 #+language: en
@@ -22,7 +22,7 @@ proofs, exact-head CI, and deployed behavior are distinct evidence classes.
 
 The selected ordering and recovery behavior are in
 [[file:05-authorization-execution-protocol.org][Authorization-to-execution coordination]]. The Go cloud-integration scope and
-its independent validation needs are in [[file:06-go-cloud-native-role.org][Go's cloud-native and Agent Gateway role]].
+its independent validation needs are in [[file:06-go-control-plane-role.org][Go's cloud-native and Agent Gateway role]].
 
 The [[file:04-zero-trust-and-review.org][Zero Trust baseline]] is a required input to every architecture experiment.
 Hold mediation coverage, credential isolation, internal RPC authorization,

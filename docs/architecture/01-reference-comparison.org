@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
 #
-# SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 #+title: Weaver Reference Comparison and Evidence Register
 #+language: en
@@ -388,7 +388,7 @@ qualification was performed by this documentation review.
 The resulting concrete ordering and safe-orphan treatment are in
 [[file:05-authorization-execution-protocol.org][Authorization-to-execution coordination]]. The upstream Go source investigation
 and its distinct cloud-integration role are in
-[[file:06-go-cloud-native-role.org][Go's cloud-native and Agent Gateway role]].
+[[file:06-go-control-plane-role.org][Go's cloud-native and Agent Gateway role]].
 
 ** Source-admission, ledger and stale-worker refinement
 

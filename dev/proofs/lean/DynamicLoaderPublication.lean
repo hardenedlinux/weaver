@@ -1,6 +1,6 @@
 -- SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
 --
--- SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+-- SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 import GerbilExitQualification
 namespace Weaver.DynamicLoaderPublication
@@ -71,7 +71,7 @@ theorem repeated_import_does_not_duplicate (m : Nat) (loaded : List Nat) :
     acquireOnce m (acquireOnce m loaded) = acquireOnce m loaded := by
   by_cases h : m ∈ loaded <;> simp [acquireOnce,h]
 
-theorem native_completion_still_needs_cleanup
+theorem loader_completion_still_needs_cleanup
     (pass : GerbilExitQualification.Qualified c receipt) :
     receipt.returned = true ∧ receipt.handles = [] :=
   GerbilExitQualification.qualification_preserves_cleanup pass
@@ -89,6 +89,6 @@ theorem dynamic_pass_still_needs_gateway_policy
 #print axioms publication_preserves_interface_identity
 #print axioms publication_preserves_body_identity
 #print axioms repeated_import_does_not_duplicate
-#print axioms native_completion_still_needs_cleanup
+#print axioms loader_completion_still_needs_cleanup
 #print axioms dynamic_pass_still_needs_gateway_policy
 end Weaver.DynamicLoaderPublication

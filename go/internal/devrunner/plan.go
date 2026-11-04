@@ -1,6 +1,6 @@
 // SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
 //
-// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 package devrunner
 
@@ -103,7 +103,8 @@ func Plan(goBinary string) []Stage {
 		{"publication-retained-source-safety", "quint", []string{"run", "dev/proofs/quint/PublicationRecovery.qnt", "--main", "PublicationRecovery", "--step", "retainedSourceRecoverySchedule", "--invariant", "sourceDecisionSafe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293", "--verbosity", "0"}},
 		{"publication-producer-review-safety", "quint", []string{"run", "dev/proofs/quint/PublicationRecovery.qnt", "--main", "PublicationRecovery", "--step", "producerReviewSchedule", "--invariant", "producerReviewSafe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293", "--verbosity", "0"}},
 		{"publication-qualified-review-safety", "quint", []string{"run", "dev/proofs/quint/PublicationRecovery.qnt", "--main", "PublicationRecovery", "--step", "qualifiedProducerSchedule", "--invariant", "qualifiedProducerSafe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293", "--verbosity", "0"}},
-		{"spec-imported-axiom-refusal", goBinary, []string{"-C", "go", "test", "-race", "-count=1", "-tags=proofintegration", "./internal/devrunner", "-run", "^TestImportedSPECCompositionCannotBypassAxiomGate$", "-v"}},
+		{"spec-proof-closure-integration", goBinary, []string{"-C", "go", "test", "-race", "-count=1", "-tags=proofintegration", "./internal/devrunner", "-run", "^TestSPECProofClosure", "-v"}},
+		{"spec-qualified-composition", "elan", []string{"run", proofToolchain, "lake", "-d", "dev/proofs/cedar", "env", "lean", "--json", "dev/proofs/cedar/QualifiedReview.lean"}},
 		{"publication-lean", "elan", []string{"run", proofToolchain, "lean", "--json", "dev/proofs/lean/PublicationRecovery.lean"}},
 		{"source-owner-quint-tests", "quint", []string{"test", "dev/proofs/quint/SourceOwner.qnt", "--main", "SourceOwner", "--seed", "293"}},
 		{"source-owner-quint-safety", "quint", []string{"run", "dev/proofs/quint/SourceOwner.qnt", "--main", "SourceOwner", "--invariant", "safe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
@@ -157,8 +158,8 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 		for _, stage := range Plan(goBinary) {
 			common := stage.Name == "project-architecture" || stage.Name == "workflow-contract"
 			language := mode == "check-rust" && (stage.Binary == "cargo" || stage.Binary == "rustc") ||
-				mode == "check-go" && stage.Binary == goBinary && stage.Name != "lean-json-integration" && stage.Name != "spec-real-qualification" && stage.Name != "spec-imported-axiom-refusal" ||
-				mode == "check-policy" && (stage.Binary == "quint" || stage.Binary == "elan" || stage.Name == "lean-json-integration" || stage.Name == "spec-real-qualification" || stage.Name == "spec-imported-axiom-refusal")
+				mode == "check-go" && stage.Binary == goBinary && stage.Name != "lean-json-integration" && stage.Name != "spec-real-qualification" && stage.Name != "spec-proof-closure-integration" ||
+				mode == "check-policy" && (stage.Binary == "quint" || stage.Binary == "elan" || stage.Name == "lean-json-integration" || stage.Name == "spec-real-qualification" || stage.Name == "spec-proof-closure-integration")
 			if common || language {
 				selected = append(selected, stage)
 			}

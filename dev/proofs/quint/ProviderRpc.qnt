@@ -1,6 +1,6 @@
 // SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
 //
-// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 module ProviderRpc {
   type S={stage:int,held:int,burned:bool,token:bool,calls:int,route:int,revision:int,fence:int,observedRevision:int,observedFence:int,

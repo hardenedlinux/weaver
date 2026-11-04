@@ -1,6 +1,6 @@
 // SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
 //
-// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 import {test,expect} from 'bun:test';
 import {fileURLToPath} from 'node:url';
@@ -15,12 +15,12 @@ const sources={...catalog.fs,...catalog.documents};
 const views=capturedViews(catalog.modelCapture);
 const resources={themeLayers:themes,sysmlViews:views,iconPacks:{...iconPacks,weaver:Object.fromEntries(['go','rust','kubernetes'].map(name=>[name,{svg:catalog.fs['docs/architecture/diagrams/assets/'+name+'.svg']!,label:name}]))}};
 const input=await compileFigureSource(sources,source,resources);
-const native=views['WeaverViews::architecture']!;
+const sdkCapture=views['WeaverViews::architecture']!;
 
-test('public Library binds native SysML identity, ownership and ordered endpoints',()=>{
- expect(input.model!.subjects.map(node=>node.id)).toEqual(native.rendering.nodes.map(node=>node.id));
- expect(input.model!.relations.map(edge=>[edge.src,edge.dst])).toEqual(native.rendering.edges.map(edge=>[edge.from,edge.to]));
- expect(input.modelSource?.modelHash).toBe(native.modelHash);
+test('public Library binds SDK SysML identity, ownership and ordered endpoints',()=>{
+ expect(input.model!.subjects.map(node=>node.id)).toEqual(sdkCapture.rendering.nodes.map(node=>node.id));
+ expect(input.model!.relations.map(edge=>[edge.src,edge.dst])).toEqual(sdkCapture.rendering.edges.map(edge=>[edge.from,edge.to]));
+ expect(input.modelSource?.modelHash).toBe(sdkCapture.modelHash);
  expect(input.sources[input.references.sdkCapture!]).toBe(input.modelTrace?.capturedRenderingJSON);
  expect(composeFigure(input,composeModelView).drawing.mode).toBe('sketch');
 });

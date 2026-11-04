@@ -1,6 +1,6 @@
 -- SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
 --
--- SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+-- SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 import GerbilExitQualification
 namespace Weaver.DynamicImportBoundary
@@ -53,7 +53,7 @@ theorem absent_required_initializer_rejects
   intro admitted
   exact missing (required_initializer_cannot_be_pruned admitted required)
 
-theorem dynamic_native_pass_still_closes_handles
+theorem dynamic_import_pass_still_closes_handles
     (pass : GerbilExitQualification.Qualified clock receipt) :
     receipt.returned = true ∧ receipt.handles = [] :=
   GerbilExitQualification.qualification_preserves_cleanup pass
@@ -76,7 +76,7 @@ theorem dynamic_pass_still_requires_final_policy
 #print axioms executable_bodies_are_unchanged
 #print axioms interface_abi_is_preserved
 #print axioms absent_required_initializer_rejects
-#print axioms dynamic_native_pass_still_closes_handles
+#print axioms dynamic_import_pass_still_closes_handles
 #print axioms late_dynamic_exit_is_not_qualification
 #print axioms dynamic_pass_still_requires_final_policy
 end Weaver.DynamicImportBoundary

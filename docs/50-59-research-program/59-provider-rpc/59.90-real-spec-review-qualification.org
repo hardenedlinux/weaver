@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
 #
-# SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 #+TITLE: 59.90 Real SPEC Delta Qualification and Final-Use Binding
 #+LANGUAGE: en
@@ -99,15 +99,13 @@ opaque authenticated references, not solver or signature correctness.
 existing arbitrary-key recovery owner's original decisions, intents and held
 exposure, while deriving predecessor error-free Allow for the same validated
 execution world. Changed deployment and parent selection cannot reuse evidence.
-The actual combination compiles, but its semantic theorem inherits nine
-Cedar/Int64 =native_decide= axioms that the existing strict gate refuses. The two
-local selection theorems are axiom-free. =spec-imported-axiom-refusal= is an
-explicit negative control: it requires successful Lean execution and the real
-structured semantic audit to remain FAIL, with its receipt retained in cache.
-It is not semantic proof acceptance. No axiom whitelist or dependency pin is
-changed. Strict kernel qualification of this imported semantic chain remains
-open until an admissible upstream proof closure is available; solver-checked
-Runtime qualification and existing local recovery proofs have separate status.
+The original imported proof closure depended on nine compiler-oracle facts in
+Int64/date arithmetic. =SpecProofClosure.lean= reconstructs those exact closed
+facts with kernel =decide= proofs and rechecks the affected imported proof terms.
+The composition now passes the unchanged strict axiom gate with its original
+SPEC type and premises. Positive execution-proof acceptance is mandatory;
+false arithmetic construction is a separate negative control. The original
+failed audit remains in ignored cache. [[file:59.91-kernel-proof-and-reading-acceptance.org][59.91]] records the source and validation boundaries.
 
 Executable solver-checked output is not a kernel UNSAT certificate. The Lean
 composition explicitly requires complete upstream query/UNSAT premises, native

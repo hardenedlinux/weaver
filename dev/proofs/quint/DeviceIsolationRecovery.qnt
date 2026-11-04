@@ -1,6 +1,6 @@
 // SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
 //
-// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 // Scoped native isolation evidence and durable floor recovery over the real key model.
 module DeviceIsolationRecovery {
@@ -135,7 +135,7 @@ module DeviceIsolationRecovery {
     .then(certify(d.captured.with("profile",9),true).fail())
   run missingAliasRosterRejectedTest = init.then(initialAliases).then(readCurrent).then(seal).then(blockAll(true))
     .then(certify(d.captured.with("members",d.captured.members.filter(m => m.id != 0)),true).fail())
-  run falseNativeIsolationReceiptRejectedTest = init.then(initialAliases).then(readCurrent).then(seal).then(blockAll(true)).then(certify(d.captured,false).fail())
+  run falseDriverIsolationReceiptRejectedTest = init.then(initialAliases).then(readCurrent).then(seal).then(blockAll(true)).then(certify(d.captured,false).fail())
   run resetInvalidatesOldIsolationReceiptTest = barrierPending.then(resetDevice(0)).then(certify(d.lastCertificate,true).fail())
   run resetDoesNotEraseCommittedFloorTest = computed.then(resetDevice(0)).expect(safety and K::k.epoch == 1 and d.journal.size() == 1)
   run historicalFloorReadAfterResetIsValidTest = computed.then(resetDevice(0)).then(readCurrent).expect(safety and viewCurrent and not(d.haveCert))

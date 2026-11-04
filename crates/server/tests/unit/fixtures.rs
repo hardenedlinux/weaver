@@ -1,6 +1,6 @@
 // SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
 //
-// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 //! Server-owned unit-test source fixture; independent of benchmark mounting.
 use weaver_contracts::{ProviderPlan, ProviderRoute, Task, body_digest};

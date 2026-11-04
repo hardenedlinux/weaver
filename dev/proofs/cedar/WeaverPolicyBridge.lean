@@ -1,6 +1,6 @@
 -- SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
 --
--- SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+-- SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 import CedarPooSpec.Admission.BoundOperation
 
@@ -479,7 +479,7 @@ structure BoundaryContext where
   captureEmissions : Nat
   captureCompleted : Bool
   capturePoisoned : Bool
-  nativeTyped : Bool
+  typedValues : Bool
   exactIntegers : Bool
   keyKinds : Bool
   assessmentImageOwned : Bool
@@ -498,7 +498,7 @@ def BoundaryContext.Ready (s : BoundaryContext) : Prop :=
   s.borrowedRegionStable = true ∧ s.rustOwned = true ∧
   s.retainsForeignPointer = false ∧ s.reentrant = false ∧
   s.captureEmissions = 1 ∧ s.captureCompleted = true ∧ s.capturePoisoned = false ∧
-  s.nativeTyped = true ∧ s.exactIntegers = true ∧ s.keyKinds = true ∧
+  s.typedValues = true ∧ s.exactIntegers = true ∧ s.keyKinds = true ∧
   s.assessmentImageOwned = true ∧ ∀ result ∈ s.policyDocuments, result = true
 
 instance (s : BoundaryContext) : Decidable s.Ready := by
@@ -551,8 +551,8 @@ theorem status_cannot_replace_source_completion (s : BoundaryContext)
 #print axioms status_cannot_replace_source_completion
 
 /-- Refinement premises are established by native SDK/PBT tests, not by these laws. -/
-theorem encoded_blob_cannot_claim_native_capture (s : BoundaryContext)
-    (blob : s.nativeTyped = false) : s.ready = false := by
+theorem encoded_blob_cannot_claim_typed_capture (s : BoundaryContext)
+    (blob : s.typedValues = false) : s.ready = false := by
   simp [BoundaryContext.ready,BoundaryContext.Ready,blob]
 
 theorem lossy_integer_cannot_preserve_original_budget (s : BoundaryContext)
@@ -563,12 +563,12 @@ theorem coerced_key_cannot_preserve_source_identity (s : BoundaryContext)
     (ambiguous : s.keyKinds = false) : s.ready = false := by
   simp [BoundaryContext.ready,BoundaryContext.Ready,ambiguous]
 
-#print axioms encoded_blob_cannot_claim_native_capture
+#print axioms encoded_blob_cannot_claim_typed_capture
 
 /-- An exported configuration cannot substitute for a completed native call.
 This is a boundary refinement law, not a proof of the SDK or filesystem. -/
 theorem file_export_cannot_replace_typed_delivery (s : BoundaryContext)
-    (blob : s.nativeTyped = false) (incomplete : s.captureCompleted = false) :
+    (blob : s.typedValues = false) (incomplete : s.captureCompleted = false) :
     s.ready = false := by
   simp [BoundaryContext.ready, BoundaryContext.Ready, blob, incomplete]
 

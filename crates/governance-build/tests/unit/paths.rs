@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
 //
-// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 use std::path::Path;
 #[test]
-fn native_stage_arguments_preserve_data_and_reject_invalid_paths() {
+fn archive_stage_arguments_preserve_data_and_reject_invalid_paths() {
     let app = crate::ProgramApplication::approved(
         "operator/application",
         Path::new("/tmp/a \"quoted λ/application.ss"),

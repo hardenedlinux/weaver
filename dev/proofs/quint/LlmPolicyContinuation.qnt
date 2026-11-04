@@ -1,6 +1,6 @@
 // SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
 //
-// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 module LlmPolicyContinuation {
   type Change={id:int,root:int,parent:int,tip:int,content:int,allowed:bool,claim:int,profile:int,budget:int,history:int}
@@ -697,7 +697,7 @@ module LlmPolicyContinuation {
   run borrowedAssessmentImageCounterexampleTest=init
     .then(unsafeBoundaryRecord(boundary0.with("assessmentImageOwned",false)))
     .expect(not(boundaryBound) and s.hold==6 and s.calls==0)
-  run unsafeNativeBlobWitness=init
+  run unsafeEncodedBlobWitness=init
     .then(unsafeBoundaryRecord(boundary0.with("schemeTyped",false))).expect(not(safety))
   run newSourceCutCannotUseOldCaptureTest=factPending.then(changeFactContract(closure0.with("cut",1),Set(),true))
     .then(projectFromBoundary(boundary0).fail())

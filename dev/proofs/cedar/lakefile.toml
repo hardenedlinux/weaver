@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
 #
-# SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 name = "WeaverPolicyBridge"
 version = "0.1.0"
@@ -34,3 +34,6 @@ srcDir = "../../../prod/policies/provider"
 
 [[lean_lib]]
 name = "QualifiedReview"
+
+[[lean_lib]]
+name = "SpecProofClosure"

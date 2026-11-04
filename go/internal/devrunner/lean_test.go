@@ -1,6 +1,6 @@
 // SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
 //
-// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 package devrunner
 
@@ -106,7 +106,7 @@ func TestLeanPlanUsesStructuredEvidenceInPolicyLane(t *testing.T) {
 				controls++
 			}
 		}
-		if mode == "check-policy" && (proofs != 6 || controls != 1) {
+		if mode == "check-policy" && (proofs != 7 || controls != 1) {
 			t.Fatalf("policy lane lost machine proof evidence: %d/%d", proofs, controls)
 		}
 		if mode == "check-go" && (proofs != 0 || controls != 0) {

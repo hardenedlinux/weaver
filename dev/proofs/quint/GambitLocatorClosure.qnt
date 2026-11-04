@@ -1,6 +1,6 @@
 // SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
 //
-// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 module GambitLocatorClosure {
   type State={image0:int,image1:int,entry0:int,entry1:int,source0:int,source1:int,complete:bool,pureBodies:bool,published:bool,init:Set[int],opened:Set[int],closed:Set[int],stopping:bool}

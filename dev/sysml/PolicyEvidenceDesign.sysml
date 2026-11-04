@@ -1,6 +1,6 @@
 // SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
 //
-// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 package PolicyEvidenceDesign {
     private import ScalarValues::*;
@@ -312,7 +312,7 @@ package PolicyEvidenceDesign {
            qualifies and exports exact before/after/schema bytes; independent
            issuance selects only covered zero-gain entries. Rust checks the
            privileged deployment reference and original parent at deciding CAS.
-           CVC5 output is solver-checked, not a Lean UNSAT certificate. The imported semantic composition compiles but is refused by the unchanged strict axiom gate due to upstream native_decide dependencies. Its explicit refusal control is not proof acceptance. */
+           CVC5 output is solver-checked, not a Lean UNSAT certificate. The imported semantic proof closure is rechecked with kernel proofs of its closed Int64/date computations. The composed execution law passes the unchanged strict axiom gate with the original type and premises; no package cache, dependency pin or assumption is changed. */
         attribute producerIdentity : String;
         attribute producerCredentialBinding : String;
         attribute toolClosure : String;

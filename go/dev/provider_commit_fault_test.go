@@ -1,6 +1,6 @@
 // SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
 //
-// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 //go:build integration && !windows
 
@@ -130,7 +130,7 @@ func assertNoFaultWorkerUnwind(t *testing.T, f *fixture) {
 // Every fault is reached after real TLS request seal. The commit cut surrounds
 // the actual native commit, not the client RPC reply. Crashes are subprocess
 // kills: no Rust Drop, unwind, or cleanup can manufacture the recovery witness.
-func TestProviderSealedNativeCommitRecovery(t *testing.T) {
+func TestProviderSealedTursoCommitRecovery(t *testing.T) {
 	for _, journal := range []string{"wal", "mvcc"} {
 		t.Run(journal, func(t *testing.T) {
 			t.Setenv("WEAVER_STORAGE_JOURNAL", journal)

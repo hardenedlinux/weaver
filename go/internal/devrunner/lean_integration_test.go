@@ -1,6 +1,6 @@
 // SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
 //
-// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 //go:build proofintegration
 
@@ -57,7 +57,7 @@ func TestLeanJSONMaintainedProofStages(t *testing.T) {
 			t.Fatalf("maintained proof stage %s: %+v", stage.Name, result)
 		}
 	}
-	if count != 6 {
+	if count != 7 {
 		t.Fatalf("unexpected maintained Lean stage inventory: %d", count)
 	}
 }

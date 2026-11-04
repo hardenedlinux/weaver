@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
 #
-# SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 #+title: Weaver Unified Gateway: System Design
 #+language: en
@@ -210,7 +210,7 @@ The concrete initial Go role is cloud-native integration and operational network
 services, including backend discovery and publication/status distribution. Go
 ingress and selected connectors remain qualified candidates. The inspected
 upstream responsibilities and their relevance to an AI-native gateway are in
-[[file:06-go-cloud-native-role.org][Go's cloud-native and Agent Gateway role]]. This establishes Go's value beyond
+[[file:06-go-control-plane-role.org][Go's cloud-native and Agent Gateway role]]. This establishes Go's value beyond
 an arbitrary language split without granting its controller effect authority.
 
 Go-owned ingress is a trusted enforcement component. Rust authorization does

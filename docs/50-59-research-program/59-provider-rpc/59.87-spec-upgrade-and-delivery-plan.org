@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
 #
-# SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 #+TITLE: 59.87 SPEC Upgrade and Gateway Delivery Plan
 #+LANGUAGE: en
@@ -1130,7 +1130,7 @@ three-second bounded control window fails if unconsumed. Transport's existing
 connect/write deadlines are unchanged. No lost gRPC reply substitutes for a lost
 native commit acknowledgment.
 
-=TestProviderSealedNativeCommitRecovery= runs seven named scenarios under both WAL
+=TestProviderSealedTursoCommitRecovery= runs seven named scenarios under both WAL
 and MVCC, with two seeded QuickCheck trials per scenario, including a successful
 current-authority control. The real HTTPS peer
 drains the request and offers a valid SSE response; the actual Rust writer seal

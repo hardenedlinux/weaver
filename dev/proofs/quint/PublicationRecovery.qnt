@@ -1,6 +1,6 @@
 // SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
 //
-// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 module PublicationRecovery {
   type Decision = {payload:int,parent:int,requestedFence:int,outcome:int,resultHead:int,resultFence:int,review:Set[Review],validatedFence:int,validatedCut:Cut,validatedEpoch:int}
@@ -464,7 +464,7 @@ module PublicationRecovery {
   run sameOrdinalDifferentParentBytesBlockLatchedCASTest=init.then(stageRequiringReview(staged0))
     .then(registerReview(review0)).then(unsafeMutateParentSchema)
     .expect(authority.head== -1 and authority.pending==Set(staged0) and authority.held==4).then(publish(0,0,-1,1).fail())
-  run omittedNativeLatchCounterexampleTest=init.then(stageRequiringReview(staged0))
+  run omittedReviewLatchCounterexampleTest=init.then(stageRequiringReview(staged0))
     .then(decidePublication(0,0,-1,1,Set(),true)).expect(safe and not(reviewSafe) and authority.requiredReviews==Set(0))
   run localReviewDoesNotEstablishIndependentSourceCurrentnessCounterexampleTest=init.then(stageRequiringReview(staged0))
     .then(registerReview(review0)).then(floorRotate).then(publish(0,0,-1,1))
@@ -521,9 +521,9 @@ module PublicationRecovery {
     registerUsingSource(sourceRegister0,review0),publishUsingSource(sourcePublish0,staged0,review0),
     revokeSource(100),revokeSource(101),rotateRegistrar,restoreReviewImage(List()),
     recoverReviewsBy(authority.floor.registrarOwner,authority.floor.registrarTerm),restart,observe}
-  run failedNativeReplayRetainsOriginalPendingTest=init.then(stageRequiringReview(staged0))
+  run failedCedarReplayRetainsOriginalPendingTest=init.then(stageRequiringReview(staged0))
     .expect(safe and authority.pending==Set(staged0) and authority.held==4).then(registerReplayChecked(review0,false,genesisReplay).fail())
-  run nativeReplayRegistrationLostObservationRecoveryTest=init.then(stageRequiringReview(staged0))
+  run cedarReplayRegistrationLostObservationRecoveryTest=init.then(stageRequiringReview(staged0))
     .then(registerReplayChecked(review0,true,genesisReplay)).then(restart).then(observeRegistration(review0))
     .then(recoverReviewsBy(1,0)).then(publish(0,0,-1,1)).expect(reviewSafe and authority.held==4)
   run successfulReplayCannotRegisterAtChangedParentTest=init.then(stageRequiringReview(staged0))

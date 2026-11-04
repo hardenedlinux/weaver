@@ -1,6 +1,6 @@
 // SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
 //
-// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 package dev
 
@@ -147,7 +147,7 @@ func TestCargoWorkspaceAndDevelopmentGates(t *testing.T) {
 	aspPin := regexp.MustCompile(`[?&]rev=[a-f0-9]{40}(?:$|&)`)
 	for _, id := range metadata.Members {
 		p := packages[id]
-		if p.License != "LGPL-2.1-or-later OR Apache-2.0" {
+		if p.License != "LGPL-2.1-or-later AND Apache-2.0" {
 			t.Fatalf("workspace SPDX license mismatch: %s: %s", p.Name, p.License)
 		}
 		packagePath, err := filepath.Rel(root(t), filepath.Dir(p.ManifestPath))

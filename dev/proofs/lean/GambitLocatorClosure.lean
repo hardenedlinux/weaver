@@ -1,6 +1,6 @@
 -- SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
 --
--- SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+-- SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 import DynamicPairedEvidence
 namespace Weaver.GambitLocatorClosure
@@ -54,7 +54,7 @@ theorem incomplete_producer_cannot_publish (m : Manifest) (missing : m.producerC
 theorem foreign_initializer_cannot_publish (m : Manifest) (foreignBody : m.pureBodies = false) : ¬ Admitted m := by
   intro valid; have pureBody := valid.2.1; simp [foreignBody] at pureBody
 
-theorem native_entries_preserve_original_entry (valid : Admitted m)
+theorem gambit_entries_preserve_original_entry (valid : Admitted m)
     (resolved : Resolves m whereAt mid) : whereAt.entry = m.originalEntry mid := by
   exact (congrArg Locator.entry resolved.2).symm.trans (valid.2.2.1 mid resolved.1)
 
@@ -76,7 +76,7 @@ theorem resolved_body_keeps_authoritative_commitment (admitted : SourceBound com
     (resolved : Resolves m whereAt mid) : m.sourceDigest mid = committed.digest mid :=
   admitted.2 mid resolved.1
 
-theorem semantic_owner_and_native_source_compose
+theorem semantic_owner_and_gambit_source_compose
     (semantic : DynamicImportBoundary.Admitted contract publication)
     (required : binding ∈ contract.requiredBindings)
     (native : SourceBound committed m)
@@ -102,7 +102,7 @@ theorem late_exit_rejects_even_with_valid_partition (_valid : Admitted m)
     (late : clock.budget < receipt.elapsed) : ¬ GerbilExitQualification.Qualified clock receipt :=
   GerbilExitQualification.late_natural_exit_still_fails late
 
-theorem shared_native_profile_never_grants_dispatch (_valid : Admitted m)
+theorem shared_gambit_profile_never_grants_dispatch (_valid : Admitted m)
     (pass : GerbilExitQualification.Qualified clock receipt)
     (step : LlmRouting.Step router owner before after)
     (changed : after.dispatches ≠ before.dispatches) :
@@ -114,12 +114,12 @@ theorem shared_native_profile_never_grants_dispatch (_valid : Admitted m)
 #print axioms wrong_image_cannot_resolve
 #print axioms incomplete_producer_cannot_publish
 #print axioms foreign_initializer_cannot_publish
-#print axioms native_entries_preserve_original_entry
+#print axioms gambit_entries_preserve_original_entry
 #print axioms replaced_source_rejects_committed_manifest
 #print axioms resolved_body_keeps_authoritative_commitment
-#print axioms semantic_owner_and_native_source_compose
+#print axioms semantic_owner_and_gambit_source_compose
 #print axioms identical_locator_cannot_name_distinct_modules
 #print axioms shared_image_preserves_all_owned_refs
 #print axioms late_exit_rejects_even_with_valid_partition
-#print axioms shared_native_profile_never_grants_dispatch
+#print axioms shared_gambit_profile_never_grants_dispatch
 end Weaver.GambitLocatorClosure

@@ -1,6 +1,6 @@
 -- SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
 --
--- SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+-- SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 namespace Weaver.RuntimeAdmission
 
@@ -308,7 +308,7 @@ theorem exclusive_final_use_keeps_current_fence
   | publish impossible => contradiction
   | unchanged => rfl
 
-theorem native_final_send_preserves_original_hold (state : State)
+theorem broker_final_send_preserves_original_hold (state : State)
     (safe : Safe budget state) (spent : state.spent = true) (fresh : state.calls = 0) :
     Safe budget {state with calls := 1} ∧
       ({state with calls := 1} : State).held = state.held :=
@@ -318,7 +318,7 @@ theorem native_final_send_preserves_original_hold (state : State)
 #print axioms disjoint_domain_commits_commute
 #print axioms family_step_preserves_all_budgets
 #print axioms exclusive_final_use_keeps_current_fence
-#print axioms native_final_send_preserves_original_hold
+#print axioms broker_final_send_preserves_original_hold
 
 inductive PublicationStep (readers : Nat) : Nat → Nat → Prop where
   | publish (drained : readers = 0) : PublicationStep readers fence (fence+1)

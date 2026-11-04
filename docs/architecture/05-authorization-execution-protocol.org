@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
 #
-# SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 #+title: Weaver Authorization-to-Execution Coordination Protocol
 #+language: en
@@ -125,7 +125,7 @@ state and authority ownership contract.
 
 No Go controller, Kubernetes leader lease, or status condition grants runtime
 commit authority. The detailed Go rationale is in
-[[file:06-go-cloud-native-role.org][Go's cloud-native and Agent Gateway role]].
+[[file:06-go-control-plane-role.org][Go's cloud-native and Agent Gateway role]].
 
 * Streaming specialization and typed claims
 

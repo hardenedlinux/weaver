@@ -1,6 +1,6 @@
 -- SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
 --
--- SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+-- SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 namespace Weaver.PublicationRecovery
 
@@ -227,14 +227,14 @@ theorem latched_new_commit_requires_original_local_review [DecidableEq Key]
     · simp_all [write]
   | _ => simp_all
 
-theorem native_review_recovery_composes_without_releasing_unknown [DecidableEq Key]
+theorem review_registration_recovery_composes_without_releasing_unknown [DecidableEq Key]
     (run : Run s t) (safe : Safe held calls s) (required : s.reviewRequired id = true) :
     t.reviewRequired id = true ∧ PreservesIntents s t ∧ Extends s t ∧ Safe held calls t :=
   ⟨recovery_cannot_remove_review_requirement run required, run_preserves_original_intents run,
     run_preserves_original_decisions run, run_preserves_accounting safe run⟩
 
 #print axioms latched_new_commit_requires_original_local_review
-#print axioms native_review_recovery_composes_without_releasing_unknown
+#print axioms review_registration_recovery_composes_without_releasing_unknown
 
 variable {id : Key} {entry : ReviewRegistration} {actor epoch : Nat}
 

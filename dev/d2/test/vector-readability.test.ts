@@ -1,6 +1,6 @@
 // SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
 //
-// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 import {test,expect} from 'bun:test';
 import {chromium} from 'playwright';
@@ -35,8 +35,14 @@ test('all Library model SVGs retain legible fonts, vector icons and complete tex
     const html=await readFile(cache+'.html','utf8');
     const exported:{htmlSHA256:string;inputSHA256:string}=JSON.parse(await readFile(cache+'.json','utf8'));
     expect(hash(html)).toBe(exported.htmlSHA256);
-    await page.setContent(html);await page.evaluate(()=>document.fonts.ready);
-    const provenance:{inputSHA256:string;sourceSHA256:Record<string,string>}=JSON.parse(await page.locator('#figure-provenance').textContent()??'');
+    // Provenance is data-only. Parse it without creating a browser document.
+    // SVG fonts, geometry, screenshots and decoding retain live checks below.
+    let metadata='',documents=0;
+    await new HTMLRewriter().on('script#figure-provenance',{
+     element(){documents++;},text(chunk){metadata+=chunk.text;},
+    }).transform(new Response(html)).text();
+    expect(documents).toBe(1);
+    const provenance:{inputSHA256:string;sourceSHA256:Record<string,string>}=JSON.parse(metadata);
     expect(provenance.inputSHA256).toBe(exported.inputSHA256);
     expect(provenance.sourceSHA256[image.source]).toBe(image.sourceSHA256);
     await page.setContent('<style>body{margin:0;background:#0d1117}body>svg{width:830px;height:auto}</style>'+body);
@@ -45,13 +51,19 @@ test('all Library model SVGs retain legible fonts, vector icons and complete tex
      const problems:string[]=[],root=document.querySelector('body>svg')!.getBoundingClientRect();
      const canvas=document.querySelector('body>svg>rect');
      if(!canvas||getComputedStyle(canvas).fill==='rgba(0, 0, 0, 0)'||getComputedStyle(canvas).fill==='none')problems.push('Transparent standalone canvas');
-     for(const text of document.querySelectorAll<SVGTextElement>('svg[data-vector-annotation] text,.scene-copy text,svg[data-vector-surface=sequence] text')){
+     for(const text of document.querySelectorAll<SVGTextElement>('svg text')){
       const box=text.getBoundingClientRect();
-      if(box.left<root.left-1||box.right>root.right+1||box.bottom>root.bottom+1)problems.push('Out of image: '+text.textContent);
+      if(box.left<root.left-1||box.right>root.right+1||box.top<root.top-1||box.bottom>root.bottom+1)problems.push('Out of image: '+text.textContent);
      }
      for(const text of document.querySelectorAll<SVGGraphicsElement>('svg[data-vector-surface=sequence] text:not(.sequence-index):not(.sequence-note-title),.scene-title,.scene-detail,.scene-label text,[data-heading-role=question] [data-annotation-part=label] text,[data-heading-role=answer] [data-annotation-part=label] text,[data-heading-role=note] text')){
       const matrix=text.getScreenCTM()!,size=parseFloat(getComputedStyle(text).fontSize)*Math.hypot(matrix.a,matrix.b);
       if(size<18)problems.push('Small model label: '+text.textContent+' '+size.toFixed(2));
+     }
+     // Preserve the original ordered-sequence line-overlap check in this
+     // single full-inventory browser owner, including all four sequence views.
+     for(const message of document.querySelectorAll('.sequence-message')){
+      const lines=[...message.querySelectorAll<SVGTextElement>('text[data-line]')].map(text=>text.getBoundingClientRect());
+      for(let index=1;index<lines.length;index++)if(lines[index]!.top<lines[index-1]!.bottom)problems.push('Overlapping message lines');
      }
      for(const annotation of document.querySelectorAll<SVGSVGElement>('svg[data-vector-annotation]')){
       const role=annotation.dataset.headingRole;
@@ -76,16 +88,16 @@ test('all Library model SVGs retain legible fonts, vector icons and complete tex
     failures.push(...issues.map(issue=>image.source+': '+issue));
     expect(body).not.toContain('<foreignObject');expect(body).toContain('data-scene-node=');
     await page.screenshot({path:root+'.cache/d2/'+name+'-830.png',fullPage:true});
-    await page.setContent('<style>body{margin:0;background:#0d1117}</style><img width="830" src="data:image/svg+xml;base64,'+Buffer.from(body).toString('base64')+'">');
-    expect(await page.locator('img').evaluate(async image=>{if(!(image instanceof HTMLImageElement))throw new Error("Not an image");await image.decode();return image.naturalWidth>0;})).toBe(true);
-    // Decode as an image, as GitHub does; an inline SVG on white can conceal
-    // a transparent root. Sample actual exported pixels, not HTML styling.
-    expect(await page.locator('img').evaluate(image=>{
-     if(!(image instanceof HTMLImageElement))throw new Error('Not an image');
+    // Decode the exported SVG through the real image decoder. An off-DOM
+    // Image avoids a second page layout/paint while preserving image and pixel
+    // checks; the complete standalone SVG screenshot above is unchanged.
+    const decoded=await page.evaluate(async url=>{
+     const image=new Image();image.src=url;await image.decode();
      const canvas=document.createElement('canvas');canvas.width=canvas.height=4;
      const context=canvas.getContext('2d')!;context.drawImage(image,0,0,4,4);
-     return [[0,0],[3,0],[0,3],[3,3]].every(([x,y])=>context.getImageData(x!,y!,1,1).data[3]===255);
-    })).toBe(true);
+     return {valid:image.naturalWidth>0,opaque:[[0,0],[3,0],[0,3],[3,3]].every(([x,y])=>context.getImageData(x!,y!,1,1).data[3]===255)};
+    },'data:image/svg+xml;base64,'+Buffer.from(body).toString('base64'));
+    expect(decoded.valid).toBe(true);expect(decoded.opaque).toBe(true);
     }
    }finally{await page.close();}
   }));

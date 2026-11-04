@@ -1,6 +1,6 @@
 -- SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
 --
--- SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+-- SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 namespace Weaver.StreamingExecution
 
@@ -44,9 +44,9 @@ inductive Step {M : Type} [DecidableEq M] (owner : ExecutorEvidence M) (budget :
       {s with unknown := fun x => if x=m then true else s.unknown x}
   | send (s p) (current : Current s p) (reserved : s.reserved p.message = true)
       (burned : s.unknown p.message = true)
-      (nativeFresh : s.calls (p.message,p.offset) = 0) : Step owner budget s
+      (freshConsumption : s.calls (p.message,p.offset) = 0) : Step owner budget s
       {s with calls := fun k => if k=(p.message,p.offset) then 1 else s.calls k}
-  | retireZeroCall (s m) (nativeZeroCallAndPermitDestroyed : owner.zeroCallAndRetired s m) : Step owner budget s
+  | retireZeroCall (s m) (zeroCallAndPermitDestroyed : owner.zeroCallAndRetired s m) : Step owner budget s
       {s with unknown := fun x => if x=m then false else s.unknown x}
   | publish (s) : Step owner budget s {s with revision := s.revision+1, fence := s.fence+1}
   | custody (s) : Step owner budget s {s with generation := s.generation+1}

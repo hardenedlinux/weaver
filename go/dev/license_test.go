@@ -1,6 +1,6 @@
 // SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
 //
-// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 package dev
 
@@ -14,7 +14,7 @@ import (
 )
 
 func TestProjectArchitectureLicensing(t *testing.T) {
-	const expression = "LGPL-2.1-or-later OR Apache-2.0"
+	const expression = "LGPL-2.1-or-later AND Apache-2.0"
 	const owner = "2026 hardenedlinux Linux Team and Contributors"
 	read := func(path string) string {
 		t.Helper()
@@ -26,7 +26,7 @@ func TestProjectArchitectureLicensing(t *testing.T) {
 	}
 	notice := read("LICENSE")
 	if !strings.Contains(notice, "SPDX-License-Identifier: "+expression) || !strings.Contains(notice, "SPDX-FileCopyrightText: "+owner) {
-		t.Fatal("repository SPDX choice/copyright mismatch")
+		t.Fatal("repository SPDX expression/copyright mismatch")
 	}
 	for path, title := range map[string]string{"LICENSES/LGPL-2.1-or-later.txt": "GNU LESSER GENERAL PUBLIC LICENSE", "LICENSES/Apache-2.0.txt": "Apache License"} {
 		text := read(path)

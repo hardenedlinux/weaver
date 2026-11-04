@@ -1,6 +1,6 @@
 // SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
 //
-// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 //! Authenticated upstream review transport; signatures do not establish Delta soundness.
 use crate::{Error, MAX_CREDITS, PublicationReview, Result, body_digest, identifier};

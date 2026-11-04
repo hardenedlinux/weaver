@@ -1,6 +1,6 @@
 // SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
 //
-// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 import {cpus} from 'node:os';
 import {fileURLToPath} from 'node:url';
@@ -9,13 +9,14 @@ import {createHash} from 'node:crypto';
 import {parseArgs} from 'node:util';
 import path from 'node:path';
 import {chromium} from 'playwright';
-import {compileFigureSource,composeFigure,composeModelView,selectFigureVariant} from '@deterministic-engineering/render';
+import {compileFigureSource,composeFigure,selectFigureVariant} from '@deterministic-engineering/render';
 import {iconPacks} from "@deterministic-engineering/render/icons";
 import {exportFigure} from '@deterministic-engineering/render/export';
 import {collectCatalog} from './source/catalog';
 import {capturedViews} from './source/models';
 import {themes} from '../themes';
 import {composeSequence} from './sequence';
+import {readingFigure,composeReadingView} from './reading';
 
 const root=fileURLToPath(new URL('../../../',import.meta.url));
 const licensing=await readFile(path.join(root,'LICENSE'),'utf8');
@@ -40,10 +41,10 @@ try{
  await Promise.all(Array.from({length:count},async()=>{
   while(!cancelled){const view=selected[cursor++];if(!view)return;
    try{
-    const input=await compileFigureSource({...catalog.fs,...catalog.documents},view.source,resources,{layout:'elk'});
+    const input=readingFigure(await compileFigureSource({...catalog.fs,...catalog.documents},view.source,resources,{layout:'elk'}));
     if(input.layout!=='model-view'&&!(input.layout==='sequence-view'&&input.view.kind==='sequence'))throw new Error('Unmigrated declaration: '+input.layout);
     if(input.modelSource&&!Object.hasOwn(catalog.modelCapture?.mapped??{},view.source))throw new Error('Missing authoritative mapped source');
-    const result=await exportFigure(composeFigure(input,input.layout==='sequence-view'?composeSequence:composeModelView),browser);
+    const result=await exportFigure(composeFigure(input,input.layout==='sequence-view'?composeSequence:composeReadingView),browser);
     const exportedSVG=result.svg[0];if(!exportedSVG)throw new Error('Library exported no standalone SVG');
     const declaration=exportedSVG.startsWith('<?xml')?exportedSVG.indexOf('?>')+2:0;
     const svg=exportedSVG.slice(0,declaration)+svgNotice+exportedSVG.slice(declaration);
@@ -52,7 +53,7 @@ try{
     await writeFile(stem+'.svg',svg);await writeFile(cache+'.png',result.png);await writeFile(cache+'.html',result.html);await writeFile(cache+'.json',JSON.stringify(result.receipt,null,2));
     if(await access(stem+'.png').then(()=>true,()=>false))await writeFile(stem+'.png',result.png);
     for(const variant of input.variants??[]){
-     const exported=await exportFigure(composeFigure(selectFigureVariant(input,variant.name),composeModelView),browser);
+     const exported=await exportFigure(composeFigure(readingFigure(selectFigureVariant(input,variant.name)),composeReadingView),browser);
      await writeFile(stem+'-'+variant.name+'.png',exported.png);await writeFile(cache+'-'+variant.name+'.html',exported.html);
     }
     images.push({source:view.source,theme:view.kind,layout:input.layout,sourceSHA256:view.sha256,svgSHA256:hash(svg),pngSHA256:hash(result.png),nodes:input.model?.subjects.length??0,edges:input.model?.relations.length??0,libraryInputSHA256:result.receipt.inputSHA256});

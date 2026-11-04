@@ -1,6 +1,6 @@
 // SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
 //
-// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 //! Real native MVCC event histories; original claims survive lost observations.
 use super::fixtures::{POLICY, initialized, proposal};
@@ -11,7 +11,7 @@ use weaver_ledger::{
 };
 
 #[test]
-fn mvcc_source_enrollment_ignores_only_exact_native_recovery_metadata() {
+fn mvcc_source_enrollment_ignores_only_exact_turso_recovery_metadata() {
     for fault in 0..3 {
         let directory = tempfile::tempdir().expect("directory");
         let path = directory.path().join("enrollment.db");

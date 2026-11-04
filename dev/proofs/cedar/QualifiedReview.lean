@@ -1,8 +1,8 @@
 -- SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
 --
--- SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+-- SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
-import CedarPooSpec.Gateway.AuthorizationDelta
+import SpecProofClosure
 import PublicationRecovery
 
 /-! Deployment qualification refines the existing publication owner. Catalogue
@@ -56,7 +56,7 @@ theorem qualified_execution_and_recovery_preserve_original
         (Cedar.Spec.Env.mk (projection effect state) entities) = true :=
   ⟨selected.2.2, run_preserves_original_intents run,
     run_preserves_original_decisions run, run_preserves_accounting safe run,
-    bound_admitted_execution_preserves_delta receipt selection.plan binding coverage
+    Weaver.SpecProofClosure.bound_admitted_execution_preserves_delta receipt selection.plan binding coverage
       envWellFormed beforeWellFormed afterWellFormed⟩
 
 #print axioms changed_parent_cannot_reuse_qualification

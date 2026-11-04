@@ -1,6 +1,6 @@
 // SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
 //
-// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 //! Scheme object conversion using the pinned Gerbil's GC-rooted APIs.
 //! No JSON text, unrooted object word, or VM borrow enters OwnedSource.
@@ -32,12 +32,12 @@ struct Limits {
     bytes: usize,
     nodes: usize,
 }
-struct Native<'r, 'a> {
+struct SchemeDeserializer<'r, 'a> {
     value: RootedSchemeObject<'r>,
     limits: &'a mut Limits,
     depth: usize,
 }
-impl Native<'_, '_> {
+impl SchemeDeserializer<'_, '_> {
     fn charge(&mut self) -> Result<(), SourceError> {
         self.limits.nodes = self.limits.nodes.checked_sub(1).ok_or(SourceError::Bound)?;
         if self.depth > 64 {
@@ -53,7 +53,7 @@ pub fn materialize_source(source: RootedSchemeObject<'_>) -> Result<OwnedSource,
         bytes: MAX_SOURCE_BYTES,
         nodes: 16384,
     };
-    let data = SourceData::deserialize(Native {
+    let data = SourceData::deserialize(SchemeDeserializer {
         value: source,
         limits: &mut limits,
         depth: 0,
@@ -77,7 +77,7 @@ impl<'de> SeqAccess<'de> for Sequence<'_, '_> {
         }
         let value = scheme_result(self.entries.root_element(self.index))?;
         self.index += 1;
-        seed.deserialize(Native {
+        seed.deserialize(SchemeDeserializer {
             value,
             limits: self.limits,
             depth: self.depth,
@@ -149,7 +149,7 @@ impl<'de> MapAccess<'de> for Mapping<'_, '_> {
         let value = scheme_result(self.entries.root_element(self.index + 1))?;
         self.index += 2;
         self.pending = false;
-        seed.deserialize(Native {
+        seed.deserialize(SchemeDeserializer {
             value,
             limits: self.limits,
             depth: self.depth,
@@ -159,7 +159,7 @@ impl<'de> MapAccess<'de> for Mapping<'_, '_> {
         Some((self.entries.len() - self.index) / 2)
     }
 }
-impl<'de> de::Deserializer<'de> for Native<'_, '_> {
+impl<'de> de::Deserializer<'de> for SchemeDeserializer<'_, '_> {
     type Error = SourceError;
     fn deserialize_any<V: Visitor<'de>>(mut self, visitor: V) -> Result<V::Value, Self::Error> {
         self.charge()?;
@@ -235,7 +235,7 @@ impl<'de> de::Deserializer<'de> for Native<'_, '_> {
     }
     serde::forward_to_deserialize_any! { bool i8 i16 i32 i64 u8 u16 u32 u64 f32 f64 char str string bytes byte_buf unit unit_struct newtype_struct seq tuple tuple_struct enum identifier ignored_any }
 }
-impl Native<'_, '_> {
+impl SchemeDeserializer<'_, '_> {
     fn mapping<'de, V: Visitor<'de>>(
         mut self,
         visitor: V,

@@ -1,6 +1,6 @@
 // SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
 //
-// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 module GerbilExitQualification {
   // Entry 0 is gerbil test; entry 1 is a diagnostic invocation. Even the same
@@ -36,7 +36,7 @@ module GerbilExitQualification {
   action recordTrial(t:Trial):bool=all {s.trials.indices().forall(i=>s.trials.nth(i).id!=t.id),s'=s.with("trials",s.trials.append(t)).with("failed",if (not(trialPass(t))) s.failed.union(Set(t.id)) else s.failed)}
   action step:bool=any {check,decoder,finishChecks,acquire(0),acquire(1),close(0),close(1),returnMain,naturalExit,tick,recordTrial(failedTrial),recordTrial(passedTrial)}
   run markerAloneIsNotPassTest=checked.expect(audit and not(qualified))
-  run nativeReturnAloneIsNotPassTest=checked.then(returnMain).expect(audit and not(qualified))
+  run packageReturnAloneIsNotPassTest=checked.then(returnMain).expect(audit and not(qualified))
   run aotStillAllowsNaturalCleanupTest=checked.then(acquire(0)).then(returnMain).then(close(0)).then(naturalExit).expect(qualified)
   run noDynamicSchemeHandlesStillChecksTest=checked.then(returnMain).then(naturalExit).expect(qualified)
   run outstandingHandleBlocksExitTest=checked.then(acquire(0)).then(returnMain).then(naturalExit.fail())

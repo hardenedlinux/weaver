@@ -1,6 +1,6 @@
 // SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
 //
-// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 import {beforeAll,describe,expect,test} from 'bun:test';
 import fc from 'fast-check';
@@ -11,8 +11,6 @@ import {composeSequence} from '../src/sequence';
 import {composeFigure} from '@deterministic-engineering/render';
 import {collectCatalog} from '../src/source/catalog';
 import {themes} from '../themes';
-import {readFile} from 'node:fs/promises';
-import {chromium} from 'playwright';
 
 const names=['02-admission-sequence','04-consume-timeout','09-claim-wins-race','10-commit-dispatch-sequence'];
 const inputs:FigureInput[]=[];
@@ -24,38 +22,7 @@ beforeAll(async()=>{
 });
 
 describe('source-bound ordered sequence notation',()=>{
- test('standalone vectors keep text readable and inside the image at GitHub width',async()=>{
-  const browser=await chromium.launch();
-  const root=fileURLToPath(new URL('../../../',import.meta.url));
-  try{
-   const results=await Promise.allSettled(names.map(async name=>{
-    const page=await browser.newPage();
-    try{
-     const svg=await readFile(`${root}docs/architecture/diagrams/${name}.svg`,'utf8');
-     await page.setContent('<style>body{margin:0}body>svg{width:830px;height:auto}</style>'+svg);
-     await page.evaluate(()=>document.fonts.ready);
-     const issues=await page.evaluate(()=>{
-      const root=document.querySelector('body>svg')!.getBoundingClientRect(),issues:string[]=[];
-      for(const text of document.querySelectorAll<SVGTextElement>('svg text')){
-       const box=text.getBoundingClientRect();
-       if(box.left<root.left-1||box.right>root.right+1||box.top<root.top-1||box.bottom>root.bottom+1)issues.push('Clipped: '+text.textContent);
-      }
-      for(const text of document.querySelectorAll<SVGTextElement>('[data-vector-surface=sequence] text:not(.sequence-index):not(.sequence-note-title)')){
-       const matrix=text.getScreenCTM()!,size=parseFloat(getComputedStyle(text).fontSize)*Math.hypot(matrix.a,matrix.b);
-       if(size<18)issues.push('Small: '+text.textContent);
-      }
-      for(const message of document.querySelectorAll('.sequence-message')){
-       const lines=[...message.querySelectorAll('text[data-line]')].map(text=>text.getBoundingClientRect());
-       for(let index=1;index<lines.length;index++)if(lines[index]!.top<lines[index-1]!.bottom)issues.push('Overlapping message lines');
-      }
-      return issues;
-     });
-     expect(issues).toEqual([]);
-    }finally{await page.close();}
-   }));
-   for(const result of results)if(result.status==='rejected')throw result.reason;
-  }finally{await browser.close();}
- });
+ // The complete image gate owns all standalone sequence geometry/font checks.
  test('every captured message, lifeline, self-call and constraint is retained',()=>{
   for(const [index,input] of inputs.entries()){
    const selected=sequenceModel(input.model,input.presentation);

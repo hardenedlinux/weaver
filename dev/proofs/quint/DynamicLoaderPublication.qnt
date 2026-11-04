@@ -1,6 +1,6 @@
 // SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
 //
-// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 module DynamicLoaderPublication {
   type State={interfacePresent:bool,interfaceDigest:int,originalInterface:int,compiled:List[int],source:List[int],bodyDigest:int,originalDigest:int,recognized:bool,published:bool,loaded:Set[int],open:Set[int],closed:Set[int],checks:int,decoder:bool,returned:bool,exited:bool,elapsed:int}

@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
 #
-# SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 #+title: Weaver Licensing
 #+language: en
@@ -8,8 +8,8 @@
 * Dual license
 
 Weaver's original contributions are offered under
-=LGPL-2.1-or-later OR Apache-2.0=. A recipient may choose either license.
-The OR operator expresses a choice; it does not require both licenses at once.
+=LGPL-2.1-or-later AND Apache-2.0=. Both licenses apply.
+The SPDX expression is a conjunction, not a choice between licenses.
 
 Copyright: 2026 hardenedlinux Linux Team and Contributors.
 
@@ -28,7 +28,7 @@ adjacent =.license= companions without changing data, dependency pins or images.
 Go fuzz corpus directories use the explicit =go/**/testdata/fuzz/**= REUSE
 annotation: their standard loader treats every sibling file as a seed and rejects
 license companions. The original corpus bytes remain unchanged.
-The Cargo workspace and renderer package declare the same dual-license choice.
+The Cargo workspace and renderer package declare the same conjunctive dual-license expression.
 
 The Go development gate checks leading notices across maintained source, model,
 document and generated files. Protobuf inherits the proto notice. The existing
@@ -37,7 +37,7 @@ there is no separate license postprocessor or rendering engine.
 
 * Retained third-party and historical material
 
-The project choice applies to Weaver's original contributions. Dependency
+The project declaration applies to Weaver's original contributions. Dependency
 licenses, embedded fonts and external brand assets retain their own terms;
 no repository annotation grants new rights to those components. Generated SVGs
 and archived evidence are not blanket-relicensed by REUSE.toml. Historical

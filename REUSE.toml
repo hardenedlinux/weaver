@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
 #
-# SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 version = 1
 
@@ -20,7 +20,7 @@ path = [
 ]
 precedence = "closest"
 SPDX-FileCopyrightText = "2026 hardenedlinux Linux Team and Contributors"
-SPDX-License-Identifier = "LGPL-2.1-or-later OR Apache-2.0"
+SPDX-License-Identifier = "LGPL-2.1-or-later AND Apache-2.0"
 
 # Go fuzz treats every sibling file as a corpus seed; adjacent .license files
 # are invalid inputs. Keep the exact corpus format and annotate this scope here.
@@ -28,4 +28,4 @@ SPDX-License-Identifier = "LGPL-2.1-or-later OR Apache-2.0"
 path = ["go/**/testdata/fuzz/**"]
 precedence = "closest"
 SPDX-FileCopyrightText = "2026 hardenedlinux Linux Team and Contributors"
-SPDX-License-Identifier = "LGPL-2.1-or-later OR Apache-2.0"
+SPDX-License-Identifier = "LGPL-2.1-or-later AND Apache-2.0"

@@ -1,6 +1,6 @@
 // SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
 //
-// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 use super::current;
 use crate::Ledger;
@@ -40,7 +40,7 @@ fn deployment_metadata_is_immutable_within_epoch_and_recovers_its_floor() {
     assert!(ledger.install_review_authority(&other).is_err());
 }
 #[test]
-fn failed_native_update_retains_the_complete_previous_configuration() {
+fn failed_turso_update_retains_the_complete_previous_configuration() {
     let temp = tempfile::tempdir().expect("directory");
     let mut ledger = Ledger::open(temp.path().join("atomic.db")).expect("store");
     let original = authority(0);

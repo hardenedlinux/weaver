@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
 #
-# SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 #+TITLE: Dynamic Loader Runtime Ownership and Proof Contract
 #+LANGUAGE: en
@@ -33,7 +33,7 @@ registry serialization; it is not a replacement proof for its mutex implementati
 | Executable bodies unchanged | executable_bodies_are_unchanged | executableMutationCounterexampleTest |
 | Interface ABI retained | interface_abi_is_preserved | interfaceSubstitutionRejectedTest; interfaceDriftCounterexampleTest |
 | Original registry still owns dynamic modules | Publication and actual runtime premise | duplicateImportIdempotentTest; publicationFreezesClosureTest |
-| Complete dynamic cleanup | dynamic_native_pass_still_closes_handles | narrowedDynamicCleanupTest; outstandingHandleRejectsExitTest |
+| Complete dynamic cleanup | dynamic_import_pass_still_closes_handles | narrowedDynamicCleanupTest; outstandingHandleRejectsExitTest |
 | Complete workload and unchanged deadline | late_dynamic_exit_is_not_qualification | missingDecoderRejectsReturnTest; lateNaturalExitRejectedTest |
 | Assurance never grants dispatch | dynamic_pass_still_requires_final_policy | Native qualification remains separate from execution authority |
 

@@ -1,6 +1,6 @@
 // SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
 //
-// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 // Native WriteSeal refinement: accepted plaintext + TLS flush, no detached driver.
 // Local drain is not provider receipt, settlement, or permission to replay.
@@ -21,7 +21,7 @@ module ProviderRequestFence {
  action recoverOrLoseReply=s'=s
  action failedCallback=all {not(s.committed),not(s.released),s'=s.with("failed",true).with("sealed",false)}
  action unsafeErrorCommit=s'=s.with("committed",true)
- action nativeCommitBeforeAck=all {s.alive,not(s.failed),not(s.poisoned),s.sealed,not(s.committed),s'=s.with("committed",true)}
+ action durableCommitBeforeAck=all {s.alive,not(s.failed),not(s.poisoned),s.sealed,not(s.committed),s'=s.with("committed",true)}
  action delayedAck=all {s.alive,not(s.failed),not(s.poisoned),s.worker==s.owner,s.committed,s'=s.with("ack",true)}
  action rollbackAfterSeal=all {s.alive,s.sealed,not(s.committed),s'=s.with("poisoned",true)}
  action crash=all {s.alive,s'=s.with("alive",false).with("ack",false).with("released",false).with("sealed",false).with("owner",s.owner+1)}
@@ -36,7 +36,7 @@ module ProviderRequestFence {
  action unsafeRetry=s'=s.with("calls",s.calls+1)
  val safe=(s.released implies s.sealed and s.committed and s.ack) and (s.sealed implies not(s.tail)) and (s.poisoned implies not(s.ack)) and (s.released implies s.alive and s.worker==s.owner) and (s.failed implies not(s.committed) and not(s.released)) and s.held==4 and s.burned and s.calls==1 and
    s.rows.indices().forall(i=>s.rows.nth(i).admitted==s.rows.nth(i).current)
- action step=any {bodyEOF,responseHead,localDrain,seal,commit,loseCommitAck,unlock,authorityChange,releaseRow,recoverOrLoseReply,nativeCommitBeforeAck,delayedAck,rollbackAfterSeal,crash,recover,failedCallback}
+ action step=any {bodyEOF,responseHead,localDrain,seal,commit,loseCommitAck,unlock,authorityChange,releaseRow,recoverOrLoseReply,durableCommitBeforeAck,delayedAck,rollbackAfterSeal,crash,recover,failedCallback}
  run eofIsNotDrainCounterexampleTest=init.then(bodyEOF).then(unsafeEOFUnlock).expect(not(safe) and s.tail)
  run earlyHeadIsNotDrainCounterexampleTest=init.then(responseHead).then(unsafeHeadUnlock).expect(not(safe) and s.tail)
  run drainWithoutSealingIsNotFenceCounterexampleTest=init.then(localDrain).then(unsafeDrainUnlock).expect(not(safe))
@@ -50,12 +50,12 @@ module ProviderRequestFence {
  run lateHeaderCannotReplayCounterexampleTest=init.then(responseHead).then(recoverOrLoseReply).then(unsafeRetry).expect(not(safe))
  run unacknowledgedCommitCannotStartHeaderReadTest=init.then(localDrain).then(seal).then(loseCommitAck).then(recoverOrLoseReply).expect(safe and s.held==4).then(unlock.fail())
  run sealWithoutCommitCannotStartHeaderReadTest=init.then(localDrain).then(seal).expect(safe).then(unlock.fail())
- run publicationBeforeHeadersCannotReleaseOldResponseTest=init.then(localDrain).then(seal).then(commit).then(unlock).then(authorityChange).then(responseHead).expect(safe and s.held==4).then(releaseRow.fail()) run nativeCommitThenFenceThenLateAckTest=init.then(localDrain).then(seal).then(nativeCommitBeforeAck).then(authorityChange).then(delayedAck).then(unlock).then(responseHead).expect(safe and s.held==4).then(releaseRow.fail())
+ run publicationBeforeHeadersCannotReleaseOldResponseTest=init.then(localDrain).then(seal).then(commit).then(unlock).then(authorityChange).then(responseHead).expect(safe and s.held==4).then(releaseRow.fail()) run durableCommitThenFenceThenLateAckTest=init.then(localDrain).then(seal).then(durableCommitBeforeAck).then(authorityChange).then(delayedAck).then(unlock).then(responseHead).expect(safe and s.held==4).then(releaseRow.fail())
  run appliedLostAckPoisonsOldWorkerTest=init.then(localDrain).then(seal).then(loseCommitAck).expect(safe and s.committed).then(delayedAck.fail())
  run precommitRollbackRetainsBurnTest=init.then(localDrain).then(seal).then(rollbackAfterSeal).expect(safe and not(s.committed)).then(unlock.fail())
  run crashBeforeCommitRecoveryTest=init.then(localDrain).then(seal).then(crash).then(recover).expect(safe and not(s.committed)).then(unlock.fail())
- run crashAfterCommitRecoveryTest=init.then(localDrain).then(seal).then(nativeCommitBeforeAck).then(crash).then(recover).expect(safe and s.committed).then(unlock.fail())
- run restoredMarkerIsNotPermissionCounterexampleTest=init.then(localDrain).then(seal).then(nativeCommitBeforeAck).then(crash).then(recover).then(unsafeRestoreAck).expect(not(safe))
- run failedCallbackCannotReachCommitTest=init.then(failedCallback).expect(safe and s.held==4).then(nativeCommitBeforeAck.fail())
+ run crashAfterCommitRecoveryTest=init.then(localDrain).then(seal).then(durableCommitBeforeAck).then(crash).then(recover).expect(safe and s.committed).then(unlock.fail())
+ run restoredMarkerIsNotPermissionCounterexampleTest=init.then(localDrain).then(seal).then(durableCommitBeforeAck).then(crash).then(recover).then(unsafeRestoreAck).expect(not(safe))
+ run failedCallbackCannotReachCommitTest=init.then(failedCallback).expect(safe and s.held==4).then(durableCommitBeforeAck.fail())
  run committingFailedCallbackCounterexampleTest=init.then(failedCallback).then(unsafeErrorCommit).expect(not(safe))
 }

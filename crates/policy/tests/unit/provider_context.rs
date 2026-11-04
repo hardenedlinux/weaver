@@ -1,6 +1,6 @@
 // SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
 //
-// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 use crate::ProviderCheck;
 use crate::provider_context::ProviderContext;
@@ -15,7 +15,7 @@ mod oracle;
 proptest! {
     #![proptest_config(ProptestConfig::with_cases(128))]
     #[test]
-    fn native_context_matches_json_without_retaining_mutable_domains(
+    fn typed_context_matches_json_without_retaining_mutable_domains(
         sequence in any::<u64>(), held in any::<u64>(), epoch in any::<u64>(),
         history in any::<u64>(), limit in any::<u64>(), text_value in ".{0,64}", include in any::<bool>()
     ) {

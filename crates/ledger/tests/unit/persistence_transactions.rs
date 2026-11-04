@@ -1,6 +1,6 @@
 // SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
 //
-// SPDX-License-Identifier: LGPL-2.1-or-later OR Apache-2.0
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 use crate::persistence::{self, Session};
 
@@ -23,7 +23,7 @@ impl persistence::commit_observer::Observer for CommitFault {
 proptest::proptest! {
     #![proptest_config(proptest::test_runner::Config::with_cases(16))]
     #[test]
-    fn native_applied_commit_without_ack_poison_is_not_reusable(after in proptest::bool::ANY, mvcc in proptest::bool::ANY, held in 1i64..1000) {
+    fn turso_applied_commit_without_ack_poison_is_not_reusable(after in proptest::bool::ANY, mvcc in proptest::bool::ANY, held in 1i64..1000) {
         let directory = tempfile::tempdir().expect("store");
         let path = directory.path().join("fault.db");
         let journal=if mvcc {persistence::Journal::Mvcc}else{persistence::Journal::Wal};
@@ -164,7 +164,7 @@ fn mvcc_conflicting_snapshot_aborts_without_a_reusable_session() {
 }
 
 #[test]
-fn mvcc_disjoint_admissions_have_overlapping_native_writes() {
+fn mvcc_disjoint_admissions_have_overlapping_turso_writes() {
     let directory = tempfile::tempdir().expect("directory");
     let path = directory.path().join("parallel.db");
     let mut first =
