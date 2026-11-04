@@ -96,7 +96,9 @@ package WeaverExecution {
            or rollback. After commit, acknowledgment can overlap a new CAS.
            Reviewed staging also takes the exclusive gate. Its durable pending
            barrier excludes a fresh final-use guard until a decision clears it.
-           A rejected parent or epoch cannot rebase an original command. */
+           A rejected parent or epoch cannot rebase an original command. The
+           deployment-qualified review uses the same staging and final-use gate.
+           Lost source and transport acknowledgments preserve separate outcomes. */
     }
     requirement def UnknownRetainsHold {
         doc /* Crashes, lost replies and partial writes cannot prove no execution or refund capacity. */

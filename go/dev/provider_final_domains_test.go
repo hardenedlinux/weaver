@@ -26,7 +26,7 @@ import (
 func independentProviderPlans(t *testing.T, f *fixture) []v1.ProviderPlan {
 	return boundProviderPlans(t, f, 0)
 }
-func boundProviderPlans(t *testing.T, f *fixture, sharedCap uint64) []v1.ProviderPlan {
+func boundProviderPlans(t testing.TB, f *fixture, sharedCap uint64) []v1.ProviderPlan {
 	t.Helper()
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

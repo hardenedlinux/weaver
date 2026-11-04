@@ -19,6 +19,7 @@ import (
 	"github.com/HardenedLinux/weaver/go/internal/specreview"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"io"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -35,10 +36,24 @@ func TestProviderRealSPECReviewRevocationLostRepliesAndRestart(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	for _, cut := range []string{"stream-release", "before", "after"} {
+		t.Run(cut, func(t *testing.T) { qualifiedProviderReview(t, qualified.Document, qualified.Digest, cut) })
+	}
+}
+
+func qualifiedProviderReview(t *testing.T, document []byte, digest, cut string) {
 	tail := make(chan struct{})
 	var once sync.Once
 	t.Cleanup(func() { once.Do(func() { close(tail) }) })
-	f := newFixture(t, func(w http.ResponseWriter, r *http.Request) {
+	handler := func(w http.ResponseWriter, r *http.Request) {
+		if cut != "stream-release" {
+			if _, err := io.Copy(io.Discard, r.Body); err != nil {
+				t.Error(err)
+				return
+			}
+			completeSSE(w, r)
+			return
+		}
 		w.Header().Set("Content-Type", "text/event-stream")
 		emitChunk(w, "prefix", false)
 		select {
@@ -47,8 +62,20 @@ func TestProviderRealSPECReviewRevocationLostRepliesAndRestart(t *testing.T) {
 			fmt.Fprint(w, "data: [DONE]\n\n")
 		case <-r.Context().Done():
 		}
-	}, false)
-	producer, err := specreview.New(qualified.Document, qualified.Digest, "test-gateway", 1, f.reviewKey)
+	}
+	var f *fixture
+	var observer *commitController
+	if cut == "stream-release" {
+		f = newFixture(t, handler, false)
+	} else {
+		t.Setenv("WEAVER_STORAGE_JOURNAL", "mvcc")
+		observer = observeCommit(t)
+		f = fixtureWithInvocation(t, handler, false, observedServer(t),
+			[]string{"--exact", "provider_commit_tests::serve_observed_gateway", "--ignored", "--nocapture"},
+			[]string{"WEAVER_TEST_COMMIT_SOCKET=" + observer.path, "WEAVER_TEST_COMMIT_CUT=" + cut})
+		observer.await(t, t.Context(), "Boot", 0)
+	}
+	producer, err := specreview.New(document, digest, "test-gateway", 1, f.reviewKey)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -77,7 +104,7 @@ func TestProviderRealSPECReviewRevocationLostRepliesAndRestart(t *testing.T) {
 		PublicKey      string `json:"public_key"`
 		AllowExpansion bool   `json:"allow_expansion"`
 		Catalog        string `json:"qualified_catalog"`
-	}{"test-gateway", 1, hex.EncodeToString(f.reviewKey.Public().(ed25519.PublicKey)), false, qualified.Digest})
+	}{"test-gateway", 1, hex.EncodeToString(f.reviewKey.Public().(ed25519.PublicKey)), false, digest})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -87,6 +114,9 @@ func TestProviderRealSPECReviewRevocationLostRepliesAndRestart(t *testing.T) {
 		}
 	}
 	f.start(t)
+	if observer != nil {
+		observer.await(t, ctx, "Boot", 0)
+	}
 	rawClient := func() gatewayclient.Client {
 		c := *f.admin
 		c.RPC = f.admin.RPC.(*fixtureReviewer).GatewayClient
@@ -130,6 +160,7 @@ func TestProviderRealSPECReviewRevocationLostRepliesAndRestart(t *testing.T) {
 	}
 	control := newControlProcess(t, f, path)
 	control.start(t)
+	t.Cleanup(func() { control.stop(t) })
 	if rejected, err := client.FinalizePublication(ctx, sibling); err != gatewayclient.ErrPublicationRejected || rejected.GetOutcome() != pb.PublicationOutcome_REJECTED {
 		t.Fatal("qualified old parent rebased or lost original outcome", rejected, err)
 	}
@@ -141,6 +172,12 @@ func TestProviderRealSPECReviewRevocationLostRepliesAndRestart(t *testing.T) {
 			t.Fatal(err)
 		}
 		return receipt
+	}
+	if observer != nil {
+		parent := uint64(2)
+		revoke := v1.Publication{OperationID: "racing-a", ExpectedRevision: &parent, Fence: 4, Policy: revoked.AfterPolicy, Schema: revoked.Schema}
+		qualifiedProviderCommitCut(t, f, control, observer, cut, bundle.Plans, revoke, producer)
+		return
 	}
 	prefix := make(chan struct{}, 1)
 	ended := make(chan error, 1)
@@ -215,5 +252,107 @@ func TestProviderRealSPECReviewRevocationLostRepliesAndRestart(t *testing.T) {
 	}
 	if _, _, err := execute(t, f, pb.Encoding_PROTOBUF, 1); err == nil || inspectOriginal().Held != 4 || f.primary.Load() != 1 || f.backup.Load() != 0 {
 		t.Fatal("restart reopened claim or released unknown budget", err)
+	}
+}
+
+func qualifiedProviderCommitCut(t *testing.T, f *fixture, control *controlProcess, observer *commitController, cut string, plans []v1.ProviderPlan, revoke v1.Publication, producer *specreview.Producer) {
+	t.Helper()
+	ctx, cancel := context.WithTimeout(t.Context(), 12*time.Second)
+	defer cancel()
+	ended := make(chan error, 1)
+	go func() {
+		_, err := control.client.Execute(ctx, f.plan, pb.Encoding_PROTOBUF, 1, func(*pb.Event) error {
+			t.Error("unconfirmed request released a response")
+			return nil
+		})
+		ended <- err
+	}()
+	phase, marker, decision := "BeforeCommit", 1, byte('r')
+	if cut == "after" {
+		phase, marker, decision = "AfterCommit", 2, 'l'
+	}
+	event := observer.await(t, ctx, phase, marker)
+	defer event.socket.Close()
+	client := *f.admin
+	raw := client.RPC.(*fixtureReviewer).GatewayClient
+	loss := &reviewReplyLoss{GatewayClient: raw}
+	loss.publication.Store(true)
+	client.RPC = loss
+	published := make(chan error, 1)
+	go func() {
+		if err := client.StageReviewedPublication(ctx, revoke); err != nil {
+			published <- err
+			return
+		}
+		parent, err := client.ReviewContext(ctx, revoke)
+		if err != nil {
+			published <- err
+			return
+		}
+		proof, err := producer.Issue(revoke, parent)
+		if err != nil {
+			published <- err
+			return
+		}
+		proposal := revoke
+		proposal.Review = &proof
+		_, err = client.FinalizePublication(ctx, proposal)
+		published <- err
+	}()
+	observer.await(t, ctx, "Stage", 0)
+	if cut == "before" {
+		select {
+		case err := <-published:
+			t.Fatalf("qualified publication resolved inside writer scope: %v", err)
+		case observed := <-observer.events:
+			t.Fatalf("qualified publication advanced inside writer scope: %s", observed.phase)
+		case <-time.After(30 * time.Millisecond):
+		}
+		resumeCommit(t, event, decision)
+	}
+	observer.await(t, ctx, "Publish", 0)
+	select {
+	case err := <-published:
+		if status.Code(err) != codes.Unavailable || loss.publishCalls.Load() != 1 {
+			t.Fatalf("qualified final CAS response was not lost: %v", err)
+		}
+	case <-ctx.Done():
+		t.Fatal(ctx.Err())
+	}
+	if cut == "after" {
+		resumeCommit(t, event, decision)
+	}
+	if err := <-ended; status.Code(err) != codes.FailedPrecondition {
+		t.Fatalf("unconfirmed native request did not fail closed: %v", err)
+	}
+	assertNoFaultWorkerUnwind(t, f)
+	control.stop(t)
+	f.stop(t)
+	f.start(t)
+	observer.await(t, ctx, "Boot", marker)
+	control.start(t)
+	client = *f.admin
+	client.RPC = client.RPC.(*fixtureReviewer).GatewayClient
+	receipt, err := client.InspectPublication(ctx, revoke)
+	if err != nil || receipt.GetOutcome() != pb.PublicationOutcome_COMMITTED || receipt.GetRevision() != 3 {
+		t.Fatalf("lost qualified CAS did not recover original decision: %v %v", receipt, err)
+	}
+	stale := revoke
+	stale.OperationID = "qualified-stale-at-cut"
+	rejected, err := client.FinalizePublication(ctx, stale)
+	if err != gatewayclient.ErrPublicationRejected || rejected.GetOutcome() != pb.PublicationOutcome_REJECTED {
+		t.Fatalf("stale parent did not durably reject: %v %v", rejected, err)
+	}
+	for _, plan := range plans {
+		if _, err := control.client.Execute(ctx, plan, pb.Encoding_PROTOBUF, 1, func(*pb.Event) error {
+			t.Error("historical control released a response")
+			return nil
+		}); status.Code(err) != codes.FailedPrecondition {
+			t.Fatalf("historical control did not reject %s: %v", plan.Node, err)
+		}
+	}
+	original, err := f.client.RPC.Inspect(f.client.Context(ctx), &pb.OperationKey{Family: f.plan.Family, Node: f.plan.Node})
+	if err != nil || original.GetHeld() != 4 || original.GetState() != "unknown" || original.GetEvents() != 0 || f.primary.Load() != 1 || f.backup.Load() != 0 {
+		t.Fatalf("recovered claim or exposure changed: %v %v, requests=%d", original, err, f.primary.Load())
 	}
 }

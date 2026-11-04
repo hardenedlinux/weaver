@@ -184,3 +184,54 @@ func BenchmarkGatewayHeaderWaitPair(b *testing.B) {
 		}
 	}
 }
+
+// Fresh MVCC stores and the same server image in both arms. Two independent
+// original requests each reserve four credits, so neither arm is over capacity.
+func BenchmarkGatewayDomainLoadPair(b *testing.B) {
+	b.Setenv("WEAVER_STORAGE_JOURNAL", "mvcc")
+	for i, shared := range []bool{false, true, true, false} {
+		name, capacity := "independent", uint64(0)
+		if shared {
+			name, capacity = "shared", 8
+		}
+		b.Run(fmt.Sprintf("%d-%s", i, name), func(b *testing.B) {
+			b.StopTimer()
+			var elapsed time.Duration
+			for range b.N {
+				f := newFixture(b, completeSSE, false)
+				plans := boundProviderPlans(b, f, capacity)
+				ctx, cancel := context.WithTimeout(b.Context(), 12*time.Second)
+				type outcome struct {
+					receipt *pb.ProviderReceipt
+					err     error
+				}
+				results := make(chan outcome, len(plans))
+				start := make(chan struct{})
+				for _, plan := range plans {
+					go func() {
+						<-start
+						r, err := f.client.Execute(ctx, plan, pb.Encoding_PROTOBUF, 1, func(*pb.Event) error { return nil })
+						results <- outcome{r, err}
+					}()
+				}
+				b.StartTimer()
+				began := time.Now()
+				close(start)
+				first, second := <-results, <-results
+				elapsed += time.Since(began)
+				b.StopTimer()
+				cancel()
+				for _, result := range []outcome{first, second} {
+					if result.err != nil || result.receipt.GetState() != "complete" || result.receipt.GetEvents() != 5 || result.receipt.GetHeld() != 4 {
+						b.Fatalf("paired execution failed: %v %v", result.receipt, result.err)
+					}
+				}
+				if f.primary.Load() != 2 || f.backup.Load() != 0 || f.denied.Load() != 0 {
+					b.Fatal("paired workload did not execute exactly two original requests")
+				}
+				f.stop(b)
+			}
+			b.ReportMetric(float64(elapsed.Nanoseconds())/float64(b.N), "pair-ns/op")
+		})
+	}
+}

@@ -178,3 +178,36 @@ view. Build details and acceptance evidence stay in this document.
 [[file:59.51-zero-trust-contract-refinement.svg]]
 [[file:../../architecture/diagrams/00d-zero-trust-overview.svg]]
 [[file:../../architecture/diagrams/19-finite-domains-and-migration.svg]]
+
+* Deployment-qualified review at the same commit cuts
+
+The Go integration fixture reuses the independently solver-qualified SPEC
+catalogue and the existing publication client. The candidate is staged and
+issued against the live review context. The matching signed Delta is registered
+before the deciding CAS. The current reviewed head and pending barrier still
+use the same Turso owner gate. The publication response-loss decorator discards
+only the acknowledgment of a real source commit. This is distinct from the
+provider transaction rollback or provider commit acknowledgment loss.
+
+Before provider commit, reviewed staging waits for release of the live sender.
+After provider commit, the qualified source can publish while the old sender
+is held at the acknowledgment cut. Recovery restarts both processes, reads the
+original immutable publication outcome and rejects stale-parent and historical
+control requests. A single provider request, zero emitted frames and the
+original unknown hold are required. Existing Quint staging schedules and Lean
+actual-image/old-parent theorems describe the same boundaries. The integration
+test supplies the runtime evidence for the independent producer premise.
+
+* No-fault domain workload
+
+The Go ABBA baseline runs two synchronized original provider requests against
+fresh MVCC stores using one optimized Rust service image. Each request reserves
+four credits. The shared arm registers a common budget and history domain with
+capacity eight. The independent arm keeps separate domains. Both require two
+completed operations and two TLS requests, with no fallback or denied target
+invocation. The timed interval starts at the shared launch and ends at the
+second RPC result. Store setup, source registration and process startup are
+outside that interval. This small paired baseline measures end-to-end latency
+under two simultaneous calls. The Rust contention experiment separately
+attributes owner-gate wait, domain wait, transaction hold, commit and request
+write. These overlapping intervals cannot be summed into wall time.
