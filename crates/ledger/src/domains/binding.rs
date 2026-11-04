@@ -81,6 +81,9 @@ pub(crate) fn bind(
         |r| r.get(0),
     )
     .map_err(db)?;
+    if !crate::metering::compatible(tx, [&budget; 2], [&history; 2], Some(&task.principal))? {
+        return Err(Error::Denied);
+    }
     persistence::exec(
         tx,
         "INSERT INTO execution_origins VALUES(?1,?2,?3,?4,?5)",

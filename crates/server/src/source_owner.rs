@@ -27,6 +27,11 @@ struct Envelope {
     command: Command,
 }
 enum Command {
+    ApplyMetering {
+        evidence: Box<weaver_contracts::MeteringReceipt>,
+        reply: oneshot::Sender<Result<weaver_contracts::MeteringApplication>>,
+        slot: OwnedSemaphorePermit,
+    },
     Original {
         task: Box<Task>,
         domains: weaver_contracts::DomainBinding,
@@ -188,14 +193,27 @@ impl SourceOwner {
         })
         .await
     }
+    pub(crate) async fn apply_metering(
+        &self,
+        caller: SourceIdentity,
+        evidence: weaver_contracts::MeteringReceipt,
+    ) -> std::result::Result<weaver_contracts::MeteringApplication, Status> {
+        self.submit(caller, |reply, slot| Command::ApplyMetering {
+            evidence: Box::new(evidence),
+            reply,
+            slot,
+        })
+        .await
+    }
     pub(crate) async fn start_reviewed(
         runtime: RuntimeOwner,
         slot: Arc<OwnedSemaphorePermit>,
         database: PathBuf,
         authority: weaver_contracts::ReviewAuthority,
+        metering: Option<weaver_contracts::MeteringDeployment>,
     ) -> Result<SourceWorker> {
         authority.validate()?;
-        Self::start_inner(runtime, slot, database, Some(authority)).await
+        Self::start_inner(runtime, slot, database, Some(authority), metering).await
     }
     #[cfg(test)]
     pub(crate) async fn start(
@@ -203,13 +221,14 @@ impl SourceOwner {
         slot: Arc<OwnedSemaphorePermit>,
         database: PathBuf,
     ) -> Result<SourceWorker> {
-        Self::start_inner(runtime, slot, database, None).await
+        Self::start_inner(runtime, slot, database, None, None).await
     }
     async fn start_inner(
         runtime: RuntimeOwner,
         slot: Arc<OwnedSemaphorePermit>,
         database: PathBuf,
         authority: Option<weaver_contracts::ReviewAuthority>,
+        metering: Option<weaver_contracts::MeteringDeployment>,
     ) -> Result<SourceWorker> {
         let (sender, receiver) = mpsc::channel(1);
         let (ready_tx, ready_rx) = oneshot::channel();
@@ -217,7 +236,13 @@ impl SourceOwner {
         let exit = runtime.shutdown_guard();
         let job = runtime.spawn_blocking(slot, move |cancel| {
             run(
-                database, authority, receiver, ready_tx, handle, cancel, exit,
+                database,
+                (authority, metering),
+                receiver,
+                ready_tx,
+                handle,
+                cancel,
+                exit,
             )
         })?;
         let ready = ready_rx
@@ -367,13 +392,17 @@ impl SourceOwner {
 }
 fn run(
     database: PathBuf,
-    authority: Option<weaver_contracts::ReviewAuthority>,
+    deployment: (
+        Option<weaver_contracts::ReviewAuthority>,
+        Option<weaver_contracts::MeteringDeployment>,
+    ),
     receiver: mpsc::Receiver<Envelope>,
     ready: oneshot::Sender<Result<()>>,
     handle: Handle,
     cancel: CancellationToken,
     _exit: ShutdownGuard,
 ) -> Result<()> {
+    let (authority, metering) = deployment;
     let mut ledger = match Ledger::open(database) {
         Ok(ledger) => ledger,
         Err(error) => {
@@ -388,6 +417,14 @@ fn run(
         return ledger
             .close()
             .and(Err(Error::Conflict("review authority startup refused")));
+    }
+    if let Some(config) = &metering
+        && let Err(error) = ledger.install_metering(config)
+    {
+        let _ = ready.send(Err(error));
+        return ledger
+            .close()
+            .and(Err(Error::Conflict("metering startup refused")));
     }
     let result = if ready.send(Ok(())).is_err() {
         Err(Error::Conflict("source startup abandoned"))
@@ -416,6 +453,15 @@ fn process(
         ledger.require_quiescent()?;
         let Envelope { caller, command } = command;
         match command {
+            Command::ApplyMetering {
+                evidence,
+                reply,
+                slot,
+            } => {
+                let result =
+                    ledger.with_authenticated_source(&caller, |l| l.apply_metering(&evidence));
+                answer(ledger, reply, result, slot)?;
+            }
             Command::Original {
                 task,
                 domains,

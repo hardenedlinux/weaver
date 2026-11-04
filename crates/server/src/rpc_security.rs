@@ -28,6 +28,7 @@ pub(crate) enum RpcRole {
 pub struct GrpcConfig {
     /// Independent SPEC review producer verification key, owned by deployment.
     pub review_authority: weaver_contracts::ReviewAuthority,
+    pub metering: Option<weaver_contracts::MeteringDeployment>,
     pub owner: ServerConfig,
     pub security: RpcSecurity,
     pub provider: ProviderTransport,

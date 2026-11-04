@@ -28,9 +28,17 @@ pub fn verify_delta_review(
         (Some(_), DeltaDisposition::ExplicitApproval) if authority.allow_expansion => {}
         _ => return Err(Error::Denied),
     }
-    let key = hex::decode(&authority.public_key).map_err(|_| Error::Denied)?;
-    let message = hex::decode(evidence.signing_digest()?).map_err(|_| Error::Denied)?;
-    let signature = hex::decode(&evidence.signature).map_err(|_| Error::Denied)?;
+    verify_signature(
+        &authority.public_key,
+        &evidence.signing_digest()?,
+        &evidence.signature,
+    )
+}
+
+pub(crate) fn verify_signature(key: &str, message: &str, signature: &str) -> Result<()> {
+    let key = hex::decode(key).map_err(|_| Error::Denied)?;
+    let message = hex::decode(message).map_err(|_| Error::Denied)?;
+    let signature = hex::decode(signature).map_err(|_| Error::Denied)?;
     ring::signature::UnparsedPublicKey::new(&ring::signature::ED25519, key)
         .verify(&message, &signature)
         .map_err(|_| Error::Denied)

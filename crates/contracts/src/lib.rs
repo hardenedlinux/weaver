@@ -11,7 +11,9 @@ mod json;
 pub use domains::{
     DomainBinding, DomainMigration, DomainMigrationReceipt, DomainStamp, DomainView,
 };
+mod metering;
 mod model;
+pub use metering::{MeteringApplication, MeteringDeployment, MeteringReceipt, MeteringTenant};
 mod provider;
 mod provider_profile;
 pub use provider_profile::{CHAT_TEXT_SSE, ProviderProfile, ProviderRequestFacts};

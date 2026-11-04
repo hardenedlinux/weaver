@@ -40,6 +40,7 @@ async fn source_rpc_reads_owned_parent_and_registers_only_authenticated_evidence
     let op_addr = listeners.operation.local_addr().expect("address");
     let src_addr = listeners.source.local_addr().expect("address");
     let settings = GrpcConfig {
+        metering: None,
         review_authority: weaver_contracts::ReviewAuthority {
             audience: "test-gateway".into(),
             epoch: 0,

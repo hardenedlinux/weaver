@@ -8,6 +8,7 @@ option go_package = "github.com/HardenedLinux/weaver/go/api/gateway/v1;gatewayv1
 service Gateway {
   rpc ExecuteProvider(ProviderRequest) returns (stream ProviderFrame);
   rpc Inspect(OperationKey) returns (ProviderReceipt);
+  rpc ApplyMetering(MeteringReceipt) returns (MeteringApplication);
   rpc RegisterTask(RegisterTaskRequest) returns (Empty);
   rpc RegisterPublishedTask(RegisterPublishedTaskRequest) returns (Empty);
   // Source-only admission. Domain roots and the immutable task commit together.
@@ -101,3 +102,24 @@ enum DeltaDisposition { DELTA_DISPOSITION_UNSPECIFIED = 0; BOOTSTRAP = 1; NO_EXE
 message DeltaReview { PublicationReview review = 1; string audience = 2; uint64 reviewer_epoch = 3; uint64 source_epoch = 4; string source_identity_digest = 5; DeltaDisposition disposition = 6; string delta = 7; string signature = 8; }
 message PublicationReviewContext { PublicationKey publication = 1; AuthorityParent parent = 2; ReviewAuthority reviewer = 3; SourceAuthorityView source = 4; }
 message ReviewRegistrationReceipt { PublicationKey publication = 1; string review_digest = 2; }
+
+message MeteringReceipt {
+  string audience = 1;
+  string tenant = 2;
+  string issuer = 3;
+  string application = 4;
+  string family = 5;
+  string node = 6;
+  string origin = 7;
+  string plan_digest = 8;
+  string target = 9;
+  string formula_digest = 10;
+  string terminal_digest = 11;
+  repeated uint64 tokens = 12;
+  string signature = 13;
+}
+message MeteringApplication {
+  string application = 1;
+  uint64 charged = 2;
+  uint64 released = 3;
+}

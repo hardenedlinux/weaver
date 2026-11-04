@@ -13,6 +13,7 @@ mod delta_registration;
 mod domains;
 mod execution_exposure;
 mod exposure_manifest;
+mod metering;
 mod provider;
 mod provider_profiles;
 mod publication;

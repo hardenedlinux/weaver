@@ -96,6 +96,11 @@ fn load() -> Result<(GrpcConfig, ListenAddresses)> {
             review_authority: weaver_contracts::decode(
                 required("WEAVER_REVIEW_AUTHORITY")?.as_bytes(),
             )?,
+            metering: match std::env::var("WEAVER_METERING") {
+                Ok(config) => Some(weaver_contracts::decode(config.as_bytes())?),
+                Err(std::env::VarError::NotPresent) => None,
+                Err(_) => return Err(Error::Invalid("metering deployment encoding")),
+            },
             owner,
             security: load_security()?,
             provider: load_transport()?,

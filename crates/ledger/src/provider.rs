@@ -87,6 +87,7 @@ impl Ledger {
                 return Err(Error::Conflict("shared provider budget exhausted"));
             }
             crate::persistence::exec(&tx, "INSERT INTO provider_runs(family,node,digest,plan,reserved,state) VALUES(?1,?2,?3,?4,?5,'queued')", crate::persistence::params![(plan.family).to_owned(),(plan.node).to_owned(),(digest).to_owned(),(serde_json::to_string(plan)?).to_owned(),(plan.ceiling as i64).to_owned()]).map_err(db)?;
+            crate::metering::bind(&tx, &plan.family, &plan.node)?;
         } else {
             crate::persistence::exec(
                 &tx,

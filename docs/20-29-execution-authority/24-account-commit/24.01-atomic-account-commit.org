@@ -194,56 +194,50 @@ without native measurements, and a cache hit is not recovery authorization.
 
 * Provider runtime integration boundary
 
-The current provider receipt records dispatch, response release and completion.
-The SSE adapter also exposes a usage observation. Neither record carries the
-independently qualified metering authority, final application identity and
-original reservation correspondence required for an account effect. A provider
-finish event or parser-accepted numeric usage must not debit or refund a
-reservation. Billing units and their conversion belong to the deployment's
-metering contract.
+The provider receipt records dispatch, response release and completion. The
+SSE adapter exposes usage for observation. The source-only =ApplyMetering= RPC
+accepts independent Ed25519 evidence. Its fixed signing domain covers audience,
+tenant, issuer, application ID, family, node, original origin, exact plan
+digest, selected target, pinned formula digest, terminal evidence digest and
+four normalized usage counts. A source bearer or TLS certificate alone cannot
+produce a valid receipt. The authenticated source channel can relay receipts
+from separately deployed issuers. It holds no metering private key.
 
-The current Turso verifier reconciles the immutable reservation manifest with
-the retained provider run and sums original ceilings to validate task and domain
-holds. Decrementing these counters alone would make the recovered image fail
-validation. The settlement implementation must extend that existing projection
-with an immutable application record keyed by both application ID and original
-reservation. Join it to qualified terminal evidence, the exact original task
-and provider run digest, and the current account and owner fence. Recompute
-charged and releasable amounts from that record in the same deciding transaction.
-The original execution claim and history survive settlement and domain union.
+The optional =WEAVER_METERING= deployment record maps canonical task principals
+to tenants. Each tenant has its own metering public key and explicit accounting
+rates. Registration and migration refuse mixed tenant domains whenever metering
+is configured. The deciding transaction checks existing budget and history
+membership again before applying a receipt. This profile assumes the source
+registrar is a trusted deployment operator and that its task principals are
+canonical deployment identities. A tenant label supplied by a client cannot
+choose a key, formula or account. Tenants can use the same application ID in
+their own scopes. Each original family/node reservation still settles once.
 
-The provider runtime currently retains the full original hold. Positive release
-acceptance requires a deployment-qualified metering source and a native atomic
-application path. Late duplicate evidence, changed bodies, stale owners,
-ambiguous commits and a missing or contradictory account image must all recover
-or refuse under the original identity. The existing account Lean and Quint
-models cover these invariants under their source and persistence premises.
+Rates are nonnegative integer credits per million tokens for uncached input,
+cache read, cache write and output. The external Go issuer helper accepts the
+provider-specific inclusive/exclusive input convention and avoids counting a
+cache category twice. Rust applies checked arithmetic and rounds the aggregate
+charge upward once. Both the formula and the full tenant authority are pinned
+at reservation. The first deployment profile keeps the configuration immutable
+per store. Changed keys, principals or formulas require a separate versioned
+migration protocol. Existing unbound reservations stay conservatively held.
 
-** Independent deployment metering
+The Turso application transaction inserts the tenant/application identity and
+the original reservation uniqueness record together. It subtracts only the
+unused remainder from the task and budget-domain booked exposure. Booked
+exposure therefore includes both unresolved holds and settled charges. It
+preserves the immutable original ceiling and history. Recovery reconciles
+booked exposure with the original manifest and each signed application. Exact
+replay returns the recorded charge and remainder. A changed application body
+or a new ID for a spent reservation cannot apply. A verified receipt for a
+locally unresolved dispatch cannot release capacity in this profile.
 
-The provider reports typed usage facts such as input and output tokens. Request
-credentials authenticate the transport, and do not establish the final usage of
-an original attempt. The tenant supplies a versioned accounting formula with
-explicit input and output units, rounding and maximum charge. Pin its canonical
-digest at reservation. Formula changes apply to new reservations. The accounting
-authority uses the pinned formula for a late receipt.
-
-Deploy the metering issuer independently from Go ingress, the Rust writer and
-the SPEC review producer. Its deployment configuration selects issuer, audience,
-public key, key epoch and permitted provider/account scope. The issuer gathers
-provider terminal evidence, then signs a commitment to the original task,
-reservation and selected provider attempt, the terminal proof and normalized
-usage, the pinned formula digest and the application ID. Tokens and terminal
-evidence are data inputs. The formula determines the charged amount. The
-signature binds their provenance and identity. SPEC review qualifies Policy
-semantics and has a separate key and decision scope.
-
-Authenticated delivery can be asynchronous and retried. Go transports the exact
-receipt without a balance write. Rust verifies it locally under the current
-account and source fence, checks the formula commitment and applies the existing
-dual-key accounting CAS. An unavailable issuer leaves the reservation held.
-The metering service need not participate in the live request transaction.
-Independent issuer deployment does not change Turso's local deciding-store
-boundary or establish cross-host write custody. A deployment that requires
-multi-host account failover must qualify the existing independent recovery
-anchor and fencing contract before enabling balance visibility after failover.
+The sender never waits for the independent metering process. An issuer can
+submit and retry through its own asynchronous delivery queue. The Go helpers
+normalize counters and sign already qualified facts. They do not implement a
+vendor billing connector or make an arbitrary usage observation authoritative.
+The deployed issuer owns terminal-evidence acquisition and delivery durability.
+The local atomic application uses the existing resolved reviewed Policy gate,
+current source identity and deployment metering scope. A separate programmable
+settlement Cedar action and cross-host rollback protection remain outside this
+first local profile. The account proof retains these as explicit Host premises.

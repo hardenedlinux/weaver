@@ -118,7 +118,14 @@ fn decide(
         && b.epoch == c.budget_to_epoch
         && x.epoch == c.history_from_epoch
         && y.epoch == c.history_to_epoch;
-    if !current {
+    if !current
+        || !crate::metering::compatible(
+            tx,
+            [&c.budget_from, &c.budget_to],
+            [&c.history_from, &c.history_to],
+            None,
+        )?
+    {
         return Ok(receipt);
     }
     let held = if c.budget_from == c.budget_to {

@@ -5,6 +5,8 @@
 //! Cedar admission API for the final deciding owner.
 mod delta_review;
 pub use delta_review::verify_delta_review;
+mod metering;
+pub use metering::verify_metering;
 mod authorize;
 mod compiled;
 mod provider;

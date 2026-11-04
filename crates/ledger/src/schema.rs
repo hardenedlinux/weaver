@@ -105,4 +105,14 @@ CREATE TABLE IF NOT EXISTS provider_releases (
  family TEXT NOT NULL, node TEXT NOT NULL, sequence INTEGER NOT NULL, length INTEGER NOT NULL, digest TEXT NOT NULL,
  state TEXT NOT NULL CHECK(state IN ('unknown','released')), PRIMARY KEY(family,node,sequence),
  FOREIGN KEY(family,node) REFERENCES provider_runs(family,node));
+CREATE TABLE IF NOT EXISTS metering_deployment (
+ singleton INTEGER PRIMARY KEY CHECK(singleton=1), record TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS metering_reservations (
+ family TEXT NOT NULL, node TEXT NOT NULL, tenant TEXT NOT NULL, formula_digest TEXT NOT NULL, authority_digest TEXT NOT NULL,
+ PRIMARY KEY(family,node), FOREIGN KEY(family,node) REFERENCES provider_runs(family,node));
+CREATE TABLE IF NOT EXISTS metering_applications (
+ tenant TEXT NOT NULL, application TEXT NOT NULL, family TEXT NOT NULL, node TEXT NOT NULL,
+ receipt TEXT NOT NULL, released INTEGER NOT NULL CHECK(released>=0),
+ PRIMARY KEY(tenant,application), UNIQUE(family,node),
+ FOREIGN KEY(family,node) REFERENCES metering_reservations(family,node));
 "#;

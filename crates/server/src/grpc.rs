@@ -57,6 +57,7 @@ struct Gateway {
     transport: ProviderTransport,
     admission: Admission,
     runtime: RuntimeOwner,
+    metering_enabled: bool,
 }
 #[derive(Clone)]
 enum Ingress {
@@ -144,6 +145,7 @@ async fn serve_owned(
         slot,
         settings.owner.database.clone(),
         settings.review_authority.clone(),
+        settings.metering.clone(),
     )
     .await
     {
@@ -186,6 +188,18 @@ fn validate_listeners(
 ) -> weaver_contracts::Result<()> {
     settings.owner.validate()?;
     settings.review_authority.validate()?;
+    if let Some(metering) = &settings.metering {
+        metering.validate()?;
+        if metering
+            .tenants
+            .values()
+            .any(|tenant| tenant.public_key == settings.review_authority.public_key)
+        {
+            return Err(Error::Invalid(
+                "metering and review keys must be independent",
+            ));
+        }
+    }
     let operation = listeners
         .operation
         .local_addr()
@@ -285,6 +299,7 @@ impl Gateway {
             transport: settings.provider.clone(),
             admission,
             runtime,
+            metering_enabled: settings.metering.is_some(),
         }
     }
     fn authenticate<T>(
@@ -451,6 +466,49 @@ impl pb::gateway_server::Gateway for Gateway {
             .await?;
         Ok(Response::new(domain_view(view)))
     }
+    async fn apply_metering(
+        &self,
+        request: Request<pb::MeteringReceipt>,
+    ) -> std::result::Result<Response<pb::MeteringApplication>, Status> {
+        let caller = self.source_identity(&request)?;
+        if !self.metering_enabled {
+            return Err(Status::failed_precondition(
+                "metering deployment unavailable",
+            ));
+        }
+        let r = request.into_inner();
+        let result = self
+            .ingress
+            .source()?
+            .apply_metering(
+                caller,
+                weaver_contracts::MeteringReceipt {
+                    audience: r.audience,
+                    tenant: r.tenant,
+                    issuer: r.issuer,
+                    application: r.application,
+                    family: r.family,
+                    node: r.node,
+                    origin: r.origin,
+                    plan_digest: r.plan_digest,
+                    target: r.target,
+                    formula_digest: r.formula_digest,
+                    terminal_digest: r.terminal_digest,
+                    tokens: r
+                        .tokens
+                        .try_into()
+                        .map_err(|_| Status::invalid_argument("metering token categories"))?,
+                    signature: r.signature,
+                },
+            )
+            .await?;
+        Ok(Response::new(pb::MeteringApplication {
+            application: result.application,
+            charged: result.charged,
+            released: result.released,
+        }))
+    }
+
     async fn migrate_execution_domains(
         &self,
         request: Request<pb::DomainMigration>,

@@ -144,6 +144,9 @@ pub(crate) fn require(tx: &WriteScope<'_>, family: &str) -> Result<()> {
     .map_err(db)?;
     let original_members = committed(tx, family)?;
     let (rows, total) = projected(tx, family)?;
+    let total = total
+        .checked_sub(crate::metering::applied_release(tx, family)?)
+        .ok_or_else(conflict)?;
     if budget != original || held > budget || held != total || original_members != rows {
         return Err(conflict());
     }

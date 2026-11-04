@@ -308,7 +308,7 @@ package WeaverExecutionReaderViews {
     }
     part def accountCommit_usage {
         attribute displayName : String = "Final usage";
-        attribute responsibility : String = "Admitted source evidence";
+        attribute responsibility : String = "Tenant signature + formula";
         attribute glyph : String = "history";
         port incoming : ~BoundRecordPort;
         port outgoing : BoundRecordPort;
