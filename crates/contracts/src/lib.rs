@@ -39,3 +39,6 @@ pub use stream::{
 
 #[cfg(test)]
 asp_rust::asp_rust_cargo_test_gate!(mode = deny, config = asp_rust::default_asp_rust_config());
+
+mod qualified_delta;
+pub use qualified_delta::{QualifiedDeltaCatalog, QualifiedDeltaEntry};

@@ -22,6 +22,7 @@ async fn aliased_or_empty_source_identity_is_rejected_before_serving() {
             epoch: 0,
             public_key: "4".repeat(64),
             allow_expansion: false,
+            qualified_catalog: None,
         },
         owner: ServerConfig {
             database: "unused.db".into(),

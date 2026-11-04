@@ -24,3 +24,6 @@ asp_rust::asp_rust_cargo_test_gate!(mode = deny, config = asp_rust::default_asp_
 #[cfg(test)]
 #[path = "../tests/unit/provider_context.rs"]
 mod provider_context_tests;
+
+mod qualified_delta;
+pub use qualified_delta::verify_qualified_delta;

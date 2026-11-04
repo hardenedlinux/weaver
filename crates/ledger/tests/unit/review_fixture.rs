@@ -20,7 +20,8 @@ pub fn issuer(epoch: u64) -> ReviewAuthority {
         audience: "test-gateway".into(),
         epoch,
         public_key: hex::encode(key.public_key().as_ref()),
-        allow_expansion: false,
+        allow_expansion: true,
+        qualified_catalog: None,
     }
 }
 pub fn change(id: &str, parent: Option<u64>) -> Publication {
@@ -52,7 +53,7 @@ pub fn evidence(ledger: &mut weaver_ledger::Ledger, p: &Publication) -> DeltaRev
         disposition: if p.expected_revision.is_none() {
             DeltaDisposition::Bootstrap
         } else {
-            DeltaDisposition::NoExecutionGain
+            DeltaDisposition::ExplicitApproval
         },
         delta: "synthetic fixture; no semantic proof claim".into(),
         signature: String::new(),

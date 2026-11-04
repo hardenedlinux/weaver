@@ -11,6 +11,7 @@ fn authority(epoch: u64) -> ReviewAuthority {
         epoch,
         public_key: "4".repeat(64),
         allow_expansion: false,
+        qualified_catalog: None,
     }
 }
 #[test]

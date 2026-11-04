@@ -14,12 +14,18 @@ pub struct ReviewAuthority {
     pub epoch: u64,
     pub public_key: String,
     pub allow_expansion: bool,
+    /// Independent deployment commitment to actual SPEC qualification output.
+    #[serde(default)]
+    pub qualified_catalog: Option<String>,
 }
 impl ReviewAuthority {
     pub fn validate(&self) -> Result<()> {
         identifier(&self.audience)?;
         if self.epoch > MAX_CREDITS {
             return Err(Error::Invalid("review authority epoch"));
+        }
+        if let Some(digest) = &self.qualified_catalog {
+            hexadecimal(digest, 64)?;
         }
         hexadecimal(&self.public_key, 64)
     }

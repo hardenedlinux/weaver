@@ -95,7 +95,7 @@ message SourceRotationReceipt { string operation_id = 1; string digest = 2; Sour
 
 // Review preparation and registration are source-only; none activates Policy.
 message AuthorityParent { uint64 revision = 1; uint64 fence = 2; string policy_digest = 3; optional string schema_digest = 4; }
-message ReviewAuthority { string audience = 1; uint64 epoch = 2; string public_key = 3; bool allow_expansion = 4; }
+message ReviewAuthority { string audience = 1; uint64 epoch = 2; string public_key = 3; bool allow_expansion = 4; optional string qualified_catalog = 5; }
 message PublicationReview { PublicationKey publication = 1; AuthorityParent parent = 2; string artifact = 3; }
 enum DeltaDisposition { DELTA_DISPOSITION_UNSPECIFIED = 0; BOOTSTRAP = 1; NO_EXECUTION_GAIN = 2; EXPLICIT_APPROVAL = 3; }
 message DeltaReview { PublicationReview review = 1; string audience = 2; uint64 reviewer_epoch = 3; uint64 source_epoch = 4; string source_identity_digest = 5; DeltaDisposition disposition = 6; string delta = 7; string signature = 8; }

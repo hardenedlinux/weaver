@@ -27,6 +27,7 @@ func Plan(goBinary string) []Stage {
 		{"quint-environment", "quint", []string{"--version"}},
 		{"proof-environment", "elan", []string{"run", proofToolchain, "lean", "--version"}},
 		{"lean-json-integration", goBinary, []string{"-C", "go", "test", "-count=1", "-tags=proofintegration", "./internal/devrunner", "-run", "^TestLeanJSONCompilerAndRunner$", "-v"}},
+		{"spec-real-qualification", goBinary, []string{"-C", "go", "test", "-race", "-count=1", "-tags=proofintegration", "./internal/specreview"}},
 		{"project-architecture", goBinary, []string{"-C", "go", "test", "-count=1", "./dev", "-run", "^Test(ProjectArchitecture|SysMLSDKAndRequirementTrace|CargoWorkspace|SchemeModuleOwnership|CIWorkflows)", "-v"}},
 		{"workflow-contract", "actionlint", nil},
 		{"rust-format", "cargo", []string{"fmt", "--all", "--", "--check"}},
@@ -101,6 +102,8 @@ func Plan(goBinary string) []Stage {
 		{"publication-source-key-safety", "quint", []string{"run", "dev/proofs/quint/PublicationRecovery.qnt", "--main", "PublicationRecovery", "--step", "sourceRecoverySchedule", "--invariant", "sourceDecisionSafe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293", "--verbosity", "0"}},
 		{"publication-retained-source-safety", "quint", []string{"run", "dev/proofs/quint/PublicationRecovery.qnt", "--main", "PublicationRecovery", "--step", "retainedSourceRecoverySchedule", "--invariant", "sourceDecisionSafe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293", "--verbosity", "0"}},
 		{"publication-producer-review-safety", "quint", []string{"run", "dev/proofs/quint/PublicationRecovery.qnt", "--main", "PublicationRecovery", "--step", "producerReviewSchedule", "--invariant", "producerReviewSafe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293", "--verbosity", "0"}},
+		{"publication-qualified-review-safety", "quint", []string{"run", "dev/proofs/quint/PublicationRecovery.qnt", "--main", "PublicationRecovery", "--step", "qualifiedProducerSchedule", "--invariant", "qualifiedProducerSafe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293", "--verbosity", "0"}},
+		{"spec-imported-axiom-refusal", goBinary, []string{"-C", "go", "test", "-race", "-count=1", "-tags=proofintegration", "./internal/devrunner", "-run", "^TestImportedSPECCompositionCannotBypassAxiomGate$", "-v"}},
 		{"publication-lean", "elan", []string{"run", proofToolchain, "lean", "--json", "dev/proofs/lean/PublicationRecovery.lean"}},
 		{"source-owner-quint-tests", "quint", []string{"test", "dev/proofs/quint/SourceOwner.qnt", "--main", "SourceOwner", "--seed", "293"}},
 		{"source-owner-quint-safety", "quint", []string{"run", "dev/proofs/quint/SourceOwner.qnt", "--main", "SourceOwner", "--invariant", "safe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
@@ -154,8 +157,8 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 		for _, stage := range Plan(goBinary) {
 			common := stage.Name == "project-architecture" || stage.Name == "workflow-contract"
 			language := mode == "check-rust" && (stage.Binary == "cargo" || stage.Binary == "rustc") ||
-				mode == "check-go" && stage.Binary == goBinary && stage.Name != "lean-json-integration" ||
-				mode == "check-policy" && (stage.Binary == "quint" || stage.Binary == "elan" || stage.Name == "lean-json-integration")
+				mode == "check-go" && stage.Binary == goBinary && stage.Name != "lean-json-integration" && stage.Name != "spec-real-qualification" && stage.Name != "spec-imported-axiom-refusal" ||
+				mode == "check-policy" && (stage.Binary == "quint" || stage.Binary == "elan" || stage.Name == "lean-json-integration" || stage.Name == "spec-real-qualification" || stage.Name == "spec-imported-axiom-refusal")
 			if common || language {
 				selected = append(selected, stage)
 			}

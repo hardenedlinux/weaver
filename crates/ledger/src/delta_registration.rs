@@ -48,11 +48,37 @@ pub(crate) fn require_current(c: &Connection, key: &PublicationKey) -> Result<Op
         "current authenticated Delta review missing",
     ))?;
     weaver_policy::verify_delta_review(&issuer, &source, &evidence)?;
+    verify_semantics(c, key, &issuer, &evidence)?;
     review::require_approved(c, key)?;
     if review::registered(c, key)?.as_ref() != Some(&evidence.review) {
         return Err(Error::Conflict("Delta review registration binding"));
     }
     Ok(Some(evidence))
+}
+
+/// Validate qualification under the same snapshot used for registry/publication.
+fn verify_semantics(
+    c: &Connection,
+    key: &PublicationKey,
+    issuer: &weaver_contracts::ReviewAuthority,
+    e: &DeltaReview,
+) -> Result<()> {
+    use weaver_contracts::DeltaDisposition;
+    if e.disposition == DeltaDisposition::ExplicitApproval {
+        return Ok(());
+    }
+    let Some(pin) = issuer.qualified_catalog.as_deref() else {
+        return if e.disposition == DeltaDisposition::Bootstrap {
+            Ok(())
+        } else {
+            Err(Error::Conflict(
+                "NoGain requires deployment-qualified SPEC output",
+            ))
+        };
+    };
+    let command:String=crate::persistence::one(c,"SELECT proposal FROM authority_pending WHERE operation_id=?1 AND digest=?2 UNION ALL SELECT request FROM authority_publications WHERE operation_id=?1 AND digest=?2 LIMIT 1",params![key.operation_id.clone(),key.digest.clone()],|r|r.get(0)).map_err(db)?;
+    let change: weaver_contracts::Publication = weaver_contracts::decode(command.as_bytes())?;
+    weaver_policy::verify_qualified_delta(pin, &change, e.review.parent.as_ref(), e)
 }
 
 impl Ledger {
@@ -80,6 +106,7 @@ impl Ledger {
             .ok_or(Error::Conflict("review issuer not configured"))?;
         let source = crate::source_authority::current(&tx)?.ok_or(Error::Denied)?;
         weaver_policy::verify_delta_review(&issuer, &source, e)?;
+        verify_semantics(&tx, key, &issuer, e)?;
         if let Some(old) = registered(&tx, key, issuer.epoch, source.epoch)? {
             if old != *e {
                 return Err(Error::Conflict("Delta registration already bound"));

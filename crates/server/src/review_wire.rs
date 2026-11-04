@@ -26,6 +26,7 @@ pub(crate) fn context(c: PublicationReviewContext) -> Result<pb::PublicationRevi
             epoch: c.reviewer.epoch,
             public_key: c.reviewer.public_key,
             allow_expansion: c.reviewer.allow_expansion,
+            qualified_catalog: c.reviewer.qualified_catalog,
         }),
         source: Some(crate::source_identity::view(c.source)?),
     })

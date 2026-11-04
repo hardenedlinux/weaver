@@ -307,6 +307,12 @@ package PolicyEvidenceDesign {
         item beforeImage : ArtifactImage;
         item afterImage : ArtifactImage;
         item coverage : Coverage;
+        doc /* The implemented restrictive deployment profile uses the actual
+           SPEC exact error-free analyzer for declared provider modules. Go
+           qualifies and exports exact before/after/schema bytes; independent
+           issuance selects only covered zero-gain entries. Rust checks the
+           privileged deployment reference and original parent at deciding CAS.
+           CVC5 output is solver-checked, not a Lean UNSAT certificate. The imported semantic composition compiles but is refused by the unchanged strict axiom gate due to upstream native_decide dependencies. Its explicit refusal control is not proof acceptance. */
         attribute producerIdentity : String;
         attribute producerCredentialBinding : String;
         attribute toolClosure : String;

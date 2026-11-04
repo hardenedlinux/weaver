@@ -127,6 +127,7 @@ async fn actual_scheme_vm_is_owner_local_and_cleanup_precedes_shared_drain() {
             epoch: 0,
             public_key: "4".repeat(64),
             allow_expansion: false,
+            qualified_catalog: None,
         },
         owner: ServerConfig {
             database: database.clone(),

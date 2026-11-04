@@ -2732,13 +2732,14 @@ func (x *AuthorityParent) GetSchemaDigest() string {
 }
 
 type ReviewAuthority struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	Audience       string                 `protobuf:"bytes,1,opt,name=audience,proto3" json:"audience,omitempty"`
-	Epoch          uint64                 `protobuf:"varint,2,opt,name=epoch,proto3" json:"epoch,omitempty"`
-	PublicKey      string                 `protobuf:"bytes,3,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"`
-	AllowExpansion bool                   `protobuf:"varint,4,opt,name=allow_expansion,json=allowExpansion,proto3" json:"allow_expansion,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	Audience         string                 `protobuf:"bytes,1,opt,name=audience,proto3" json:"audience,omitempty"`
+	Epoch            uint64                 `protobuf:"varint,2,opt,name=epoch,proto3" json:"epoch,omitempty"`
+	PublicKey        string                 `protobuf:"bytes,3,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"`
+	AllowExpansion   bool                   `protobuf:"varint,4,opt,name=allow_expansion,json=allowExpansion,proto3" json:"allow_expansion,omitempty"`
+	QualifiedCatalog *string                `protobuf:"bytes,5,opt,name=qualified_catalog,json=qualifiedCatalog,proto3,oneof" json:"qualified_catalog,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *ReviewAuthority) Reset() {
@@ -2797,6 +2798,13 @@ func (x *ReviewAuthority) GetAllowExpansion() bool {
 		return x.AllowExpansion
 	}
 	return false
+}
+
+func (x *ReviewAuthority) GetQualifiedCatalog() string {
+	if x != nil && x.QualifiedCatalog != nil {
+		return *x.QualifiedCatalog
+	}
+	return ""
 }
 
 type PublicationReview struct {
@@ -3299,13 +3307,15 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\x05fence\x18\x02 \x01(\x04R\x05fence\x12#\n" +
 	"\rpolicy_digest\x18\x03 \x01(\tR\fpolicyDigest\x12(\n" +
 	"\rschema_digest\x18\x04 \x01(\tH\x00R\fschemaDigest\x88\x01\x01B\x10\n" +
-	"\x0e_schema_digest\"\x8b\x01\n" +
+	"\x0e_schema_digest\"\xd3\x01\n" +
 	"\x0fReviewAuthority\x12\x1a\n" +
 	"\baudience\x18\x01 \x01(\tR\baudience\x12\x14\n" +
 	"\x05epoch\x18\x02 \x01(\x04R\x05epoch\x12\x1d\n" +
 	"\n" +
 	"public_key\x18\x03 \x01(\tR\tpublicKey\x12'\n" +
-	"\x0fallow_expansion\x18\x04 \x01(\bR\x0eallowExpansion\"\xb0\x01\n" +
+	"\x0fallow_expansion\x18\x04 \x01(\bR\x0eallowExpansion\x120\n" +
+	"\x11qualified_catalog\x18\x05 \x01(\tH\x00R\x10qualifiedCatalog\x88\x01\x01B\x14\n" +
+	"\x12_qualified_catalog\"\xb0\x01\n" +
 	"\x11PublicationReview\x12C\n" +
 	"\vpublication\x18\x01 \x01(\v2!.weaver.gateway.v1.PublicationKeyR\vpublication\x12:\n" +
 	"\x06parent\x18\x02 \x01(\v2\".weaver.gateway.v1.AuthorityParentR\x06parent\x12\x1a\n" +
@@ -3525,6 +3535,7 @@ func file_gateway_v1_gateway_proto_init() {
 	file_gateway_v1_gateway_proto_msgTypes[28].OneofWrappers = []any{}
 	file_gateway_v1_gateway_proto_msgTypes[29].OneofWrappers = []any{}
 	file_gateway_v1_gateway_proto_msgTypes[34].OneofWrappers = []any{}
+	file_gateway_v1_gateway_proto_msgTypes[35].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

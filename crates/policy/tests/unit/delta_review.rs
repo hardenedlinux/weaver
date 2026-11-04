@@ -17,6 +17,7 @@ fn fixture() -> (ReviewAuthority, SourceAuthority, DeltaReview) {
         epoch: 0,
         public_key: hex::encode(key.public_key().as_ref()),
         allow_expansion: false,
+        qualified_catalog: None,
     };
     let source = SourceAuthority {
         epoch: 0,

@@ -549,6 +549,7 @@ package WeaverProject {
         part 'go/internal/telemetry' : GoPackage;
         part 'go/internal/devrunner' : GoPackage;
         part 'go/internal/gatewayclient' : GoPackage;
+        part 'go/internal/specreview' : GoPackage;
         part 'go/internal/routing' : GoPackage;
         part 'go/internal/streaming' : GoPackage;
         part 'go/internal/devrunner/testdata/fuzzcontrol' : Directory;
@@ -572,6 +573,7 @@ package WeaverProject {
                or production Governance capability is introduced. */
         }
 
+        part 'prod/policies/provider/ProviderReview.lean' : File;
         part 'prod/policies/provider/schema.json' : File;
         part 'prod/policies/provider/provider.cedar' : File;
         part 'prod/policies/provider/profile.json' : File;

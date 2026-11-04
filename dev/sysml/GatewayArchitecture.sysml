@@ -46,12 +46,12 @@ package WeaverGatewayArchitecture {
     }
     part def ReviewedPublication {
         attribute displayName : String = "Reviewed Policy publication";
-        attribute responsibility : String = "Independent SPEC review producer\nGo carries signed original evidence\nRust commits current Policy + parent";
+        attribute responsibility : String = "SPEC-qualified Policy modules\nGo carries bound review evidence\nRust commits current Policy + parent";
         attribute glyph : String = "obligation";
         attribute visualRole : String = "publication";
         doc /* A logical publication responsibility, not a new Gateway signer.
            The independent producer uses the SPEC Library. Deployment owns its
-           verification public key. The Rust deciding transaction associates
+           verification public key and immutable qualified-catalogue reference. A signature alone cannot qualify NoGain. The Rust deciding transaction associates
            the current Policy with the approved original publication. */
         port policy : WorkPort;
     }

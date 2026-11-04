@@ -4,7 +4,7 @@
 
 name = "WeaverPolicyBridge"
 version = "0.1.0"
-defaultTargets = ["WeaverPolicyBridge", "ZeroTrustEnrichment", "ZeroTrustArchitecture"]
+defaultTargets = ["WeaverPolicyBridge", "ZeroTrustEnrichment", "ZeroTrustArchitecture", "QualifiedReview"]
 
 [[require]]
 name = "CedarPooSpec"
@@ -27,3 +27,10 @@ name = "ZeroTrustEnrichment"
 
 [[lean_lib]]
 name = "ZeroTrustArchitecture"
+
+[[lean_lib]]
+name = "ProviderReview"
+srcDir = "../../../prod/policies/provider"
+
+[[lean_lib]]
+name = "QualifiedReview"

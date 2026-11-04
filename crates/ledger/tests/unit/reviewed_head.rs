@@ -114,3 +114,57 @@ fn losing_verifier_metadata_cannot_downgrade_a_committed_served_profile() {
         );
     }
 }
+
+#[test]
+fn historical_signature_only_nogain_is_not_semantic_qualification() {
+    let temp = tempfile::tempdir().expect("dir");
+    let mut l = Ledger::open(temp.path().join("legacy-nogain.db")).expect("store");
+    l.install_review_authority(&issuer(0)).expect("root");
+    for (name, parent) in [("bootstrap", None), ("old-nogain", Some(0))] {
+        let p = change(name, parent);
+        let e = evidence(&mut l, &p);
+        l.with_authenticated_source(&source(), |l| l.register_delta_review(&e))
+            .expect("explicit approval fixture");
+        l.with_authenticated_source(&source(), |l| l.publish_authority(&p))
+            .expect("publish");
+    }
+    publication_barrier::require_resolved(&l.connection)
+        .expect("positive explicit approval control");
+    // Reconstruct the previously supported signature-only NoGain record. The
+    // signature and all current projection joins are valid, but no SPEC output
+    // was deployment-qualified. A historical receipt must not upgrade it.
+    let record: String = persistence::one(
+        &l.connection,
+        "SELECT delta_record FROM authority_review_heads",
+        (),
+        |r| r.get(0),
+    )
+    .expect("record");
+    let mut e: weaver_contracts::DeltaReview =
+        weaver_contracts::decode(record.as_bytes()).expect("entry");
+    e.disposition = weaver_contracts::DeltaDisposition::NoExecutionGain;
+    let key = ring::signature::Ed25519KeyPair::from_seed_unchecked(&[23; 32]).expect("test signer");
+    e.signature = hex::encode(
+        key.sign(&hex::decode(e.signing_digest().expect("digest")).expect("hex"))
+            .as_ref(),
+    );
+    let record = serde_json::to_string(&e).expect("record");
+    persistence::exec(
+        &l.connection,
+        "UPDATE authority_delta_reviews SET digest=?1,record=?2 WHERE operation_id='old-nogain'",
+        persistence::params![e.signing_digest().expect("digest"), record.clone()],
+    )
+    .expect("legacy image");
+    persistence::exec(
+        &l.connection,
+        "UPDATE authority_review_heads SET delta_record=?1",
+        persistence::params![record],
+    )
+    .expect("legacy association");
+    assert!(publication_barrier::require_resolved(&l.connection).is_err());
+    assert!(
+        l.publication_receipt(&e.review.publication)
+            .expect("historical outcome")
+            .is_some()
+    );
+}

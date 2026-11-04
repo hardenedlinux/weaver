@@ -905,5 +905,46 @@ module PublicationRecovery {
     .then(registerProducerReview(review0,0,true,true)).then(publishProducer(review0))
     .then(loseReviewMetadata).then(restart).expect(authority.records.get(0).outcome==1 and authority.held==4)
     .then(useReviewedHead.fail())
+  // Qualified deployment references abstract exact SPEC AST/schema bytes. No
+  // signature, report label, finite replay or caller-supplied boolean creates
+  // catalogue membership. Solver and codec correctness remain Host premises.
+  type SpecEntry={artifact:int,parent:int,before:int,after:int,schema:int,gains:int,worlds:int}
+  pure val qualifiedCatalog=Set(
+    {artifact:70,parent:-1,before:0,after:0,schema:0,gains:0,worlds:3},
+    {artifact:71,parent:-1,before:0,after:1,schema:0,gains:1,worlds:3},
+    {artifact:72,parent:0,before:0,after:2,schema:0,gains:0,worlds:3})
+  pure def specBound(r:Review,reference:int):bool=reference==700 and qualifiedCatalog.exists(e=>
+    e.artifact==r.artifact and e.parent==r.command.parent and e.before==r.parentPolicy and
+    e.after==r.command.payload and e.schema==r.parentSchema and e.gains==0 and e.worlds==3)
+  action registerQualifiedProducer(r:Review,reference:int):bool=
+    registerProducerReview(r,authority.reviewerEpoch,true,specBound(r,reference))
+  run actualQualificationCannotBeReplacedBySignatureTest=init.then(stageRequiringReview(sibling))
+    .expect(not(specBound(siblingReview,700)) and authority.held==4)
+    .then(registerQualifiedProducer(siblingReview,700).fail())
+  run selfPinnedCatalogCannotRegisterTest=init.then(stageRequiringReview(staged0))
+    .expect(authority.pending.contains(staged0) and safe).then(registerQualifiedProducer(review0,701).fail())
+  run qualifiedOldParentCannotRebaseTest=init.then(stageRequiringReview(staged0))
+    .then(stageRequiringReview(sibling)).then(registerQualifiedProducer(review0,700))
+    .then(publishProducer(review0)).expect(authority.pending.contains(sibling) and authority.held==4 and safe)
+    .then(registerQualifiedProducer(siblingReview,700).fail())
+  run qualifiedReplyLossAndRestartKeepOriginalIntentTest=init.then(stageRequiringReview(staged0))
+    .then(registerQualifiedProducer(review0,700)).then(restart)
+    .expect(authority.pending.contains(staged0) and authority.held==4).then(useReviewedHead.fail())
+  run qualifiedCommitRecoveryPositiveControlTest=init.then(stageRequiringReview(staged0))
+    .then(registerQualifiedProducer(review0,700)).then(restart)
+    .then(publishProducer(review0)).then(restart).then(useReviewedHead).expect(producerReviewSafe)
+  run qualifiedKeyRotationAfterReplyLossCannotCommitTest=init.then(stageRequiringReview(staged0))
+    .then(registerQualifiedProducer(review0,700)).then(restart).then(rotateReviewKey)
+    .expect(authority.pending.contains(staged0) and authority.held==4).then(publishProducer(review0).fail())
+  run signatureOnlyGainCounterexampleTest=init.then(stageRequiringReview(sibling))
+    .then(registerProducerReview(siblingReview,0,true,true)).then(publishProducer(siblingReview))
+    .expect(not(specBound(siblingReview,700)) and authority.records.get(1).outcome==1)
+  val qualifiedProducerSafe=producerReviewSafe and authority.producerReviews.forall(e=>specBound(e.review,700))
+  action qualifiedProducerSchedule=any {
+    stageRequiringReview(staged0),stageRequiringReview(sibling),stageRequiringReview(successor),
+    registerQualifiedProducer(review0,700),registerQualifiedProducer(siblingReview,700),
+    registerQualifiedProducer(successorReview,700),registerQualifiedProducer(review0,701),
+    publishProducer(review0),publishProducer(siblingReview),publishProducer(successorReview),
+    rotateReviewKey,loseReviewMetadata,rotateRegistrar,restart,observe,useReviewedHead}
 
 }

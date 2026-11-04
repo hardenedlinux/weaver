@@ -41,6 +41,7 @@ SELECT CASE WHEN NOT EXISTS(SELECT 1 FROM review_keys)
  JOIN review_keys k ON k.epoch=v.epoch AND k.record=v.record
  WHERE EXISTS(SELECT 1 FROM review_deployment) AND h.singleton=1 AND k.epoch=(SELECT MAX(epoch) FROM review_keys)
  AND json_extract(p.request,'$.policy')=a.policy AND json_extract(p.request,'$.schema')=s.schema
+ AND (json_extract(d.record,'$.disposition')!='no_execution_gain' OR json_type(v.record,'$.qualified_catalog')='text')
  AND json_extract(p.receipt,'$.outcome')='committed'
  AND json_extract(p.receipt,'$.revision')=h.revision AND json_extract(p.receipt,'$.fence')=h.fence
 ) END

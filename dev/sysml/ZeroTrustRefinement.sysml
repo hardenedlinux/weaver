@@ -77,7 +77,7 @@ package WeaverZeroTrust {
         attribute visualRole : String = "execution";
         doc /* Existing Rust ledger/policy/broker/executor roles discharge the
            application interpretation at final use, under the deciding transaction:
-           current Cedar and fence, original claim, exact exposure and durable burn. Independent SPEC review producer qualification is bound to an immutable original publication and authority-owned parent. Deployment owns only its verification key. The current reviewed-head association is checked inside each existing effect transaction; registration and publication cannot send bytes. Authentication and actual semantic qualification remain separate premises.
+           current Cedar and fence, original claim, exact exposure and durable burn. Independent SPEC review producer qualification is bound to an immutable original publication and authority-owned parent. Deployment owns its verification key and exact independently qualified catalogue. The native transaction binds actual candidate, parent policy/schema and epoch; signature-only historical NoGain heads cannot activate. The current reviewed-head association is checked inside each existing effect transaction; registration and publication cannot send bytes. Authentication and actual semantic qualification remain separate premises.
            Recheck after waits; ambiguous or partial writes keep their hold. External
            identity/fact authority and independent rollback protection still need
            deployment evidence. A conditional proof is not a writable capability. */

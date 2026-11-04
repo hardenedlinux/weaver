@@ -237,6 +237,7 @@ async fn review_context_uses_provisioned_metadata_and_does_not_publish() {
             epoch: 0,
             public_key: "4".repeat(64),
             allow_expansion: false,
+            qualified_catalog: None,
         })
         .expect("native provision");
     drop(ledger);

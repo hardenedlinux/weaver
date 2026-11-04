@@ -23,6 +23,7 @@ async fn source_rpc_reads_owned_parent_and_registers_only_authenticated_evidence
             epoch: 0,
             public_key: hex::encode(signer.public_key().as_ref()),
             allow_expansion: false,
+            qualified_catalog: None,
         })
         .expect("deployment provision");
     drop(ledger);
@@ -44,6 +45,7 @@ async fn source_rpc_reads_owned_parent_and_registers_only_authenticated_evidence
             epoch: 0,
             public_key: hex::encode(signer.public_key().as_ref()),
             allow_expansion: false,
+            qualified_catalog: None,
         },
         owner: ServerConfig {
             database: database.clone(),
