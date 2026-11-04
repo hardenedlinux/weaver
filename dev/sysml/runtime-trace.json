@@ -101,6 +101,11 @@
     {"file":"dev/proofs/quint/RuntimeAdmission.qnt","pattern":"run originalCostBoundTest"},
     {"file":"crates/ledger/tests/unit/recovery.rs","pattern":"fn authored_ceiling_cannot_underreserve_the_original_wire_cost"}]},
   {"id":"ZeroTrustContractRefinement","witnesses":[
+    {"file":"dev/proofs/cedar/DomainMigrationComposition.lean","pattern":"theorem final_use_on_committed_union","declaration":"Weaver.DomainMigrationComposition.final_use_on_committed_union"},
+    {"file":"crates/ledger/src/provider.rs","pattern":"let domains = active(&tx, permit)?"},
+    {"file":"crates/ledger/tests/unit/provider_domains.rs","pattern":"fn same_actual_domains_fence_original_provider_capability"},
+    {"file":"go/dev/provider_shared_domains_test.go","pattern":"actual migration committed; response discarded"},
+    {"file":"dev/proofs/quint/SharedDomains.qnt","pattern":"run committedUnionLostReplyKeepsBothOriginalsTest"},
     {"file":"dev/proofs/cedar/DomainMigrationComposition.lean","pattern":"theorem gateway_final_use_preserves_domain_contract","declaration":"Weaver.DomainMigrationComposition.gateway_final_use_preserves_domain_contract"},
     {"file":"dev/proofs/cedar/DomainMigrationComposition.lean","pattern":"theorem head_cas_preserves_original_obligations","declaration":"Weaver.DomainMigrationComposition.head_cas_preserves_original_obligations"},
     {"file":"dev/proofs/cedar/DomainMigrationComposition.lean","pattern":"theorem overbooked_actual_view_cannot_supply_final_run","declaration":"Weaver.DomainMigrationComposition.overbooked_actual_view_cannot_supply_final_run"},

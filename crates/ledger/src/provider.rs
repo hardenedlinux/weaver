@@ -156,8 +156,8 @@ impl Ledger {
         burn_dispatch(&mut self.connection, permit)?;
         let mut tx = crate::persistence::begin_family(&mut self.connection, &permit.plan.family)
             .map_err(db)?;
-        guard_live(&tx, permit, "invokeProvider", 0, "protobuf")?;
-        active(&tx, permit)?;
+        let domains = active(&tx, permit)?;
+        guard_live(&tx, permit, &domains, "invokeProvider", 0, "protobuf")?;
         let result = tx.request_effect(send)?;
         record_dispatch_callback(&tx, permit)?;
         tx.commit_provider().map_err(db)?;
@@ -176,7 +176,7 @@ impl Ledger {
         self.check_provider_session(permit)?;
         let tx = crate::persistence::begin_family(&mut self.connection, &permit.plan.family)
             .map_err(db)?;
-        active(&tx, permit)?;
+        let domains = active(&tx, permit)?;
         started(&tx, permit)?;
         let seq: u64 = crate::persistence::one(
             &tx,
@@ -185,7 +185,14 @@ impl Ledger {
             |r| integer(r, 0),
         )
         .map_err(db)?;
-        guard_live_range(&tx, permit, "emitProvider", seq..seq + length, format)?;
+        guard_live_range(
+            &tx,
+            permit,
+            &domains,
+            "emitProvider",
+            seq..seq + length,
+            format,
+        )?;
         let uncertain:bool=crate::persistence::one(&tx, "SELECT EXISTS(SELECT 1 FROM provider_releases WHERE family=?1 AND node=?2 AND state='unknown')", crate::persistence::params![permit.plan.family.to_owned(),permit.plan.node.to_owned()], |r|r.get(0)).map_err(db)?;
         if uncertain || seq + length > 4096 {
             return Err(Error::Conflict("unknown or oversized provider response"));
@@ -238,10 +245,11 @@ impl Ledger {
         }
         let mut tx = crate::persistence::begin_family(&mut self.connection, &permit.plan.family)
             .map_err(db)?;
-        active(&tx, permit)?;
+        let domains = active(&tx, permit)?;
         guard_live_range(
             &tx,
             permit,
+            &domains,
             "emitProvider",
             release.sequence..release.sequence + release.length,
             format,
@@ -259,9 +267,9 @@ impl Ledger {
         self.check_provider_session(permit)?;
         let tx = crate::persistence::begin_family(&mut self.connection, &permit.plan.family)
             .map_err(db)?;
-        active(&tx, permit)?;
+        let domains = active(&tx, permit)?;
         started(&tx, permit)?;
-        guard_live(&tx, permit, "emitProvider", 0, format)?;
+        guard_live(&tx, permit, &domains, "emitProvider", 0, format)?;
         let pending:bool=crate::persistence::one(&tx, "SELECT EXISTS(SELECT 1 FROM provider_releases WHERE family=?1 AND node=?2 AND state='unknown')", crate::persistence::params![permit.plan.family.to_owned(),permit.plan.node.to_owned()], |r|r.get(0)).map_err(db)?;
         if pending {
             return Err(Error::Conflict("response release unresolved"));
@@ -291,8 +299,8 @@ fn burn_dispatch(
     permit: &ProviderDispatch,
 ) -> Result<()> {
     let tx = crate::persistence::begin_family(session, &permit.plan.family).map_err(db)?;
-    guard_live(&tx, permit, "invokeProvider", 0, "protobuf")?;
-    active(&tx, permit)?;
+    let domains = active(&tx, permit)?;
+    guard_live(&tx, permit, &domains, "invokeProvider", 0, "protobuf")?;
     // Persist a separate affine dispatch burn: borrowing a handle cannot repeat this callback.
     let burn = crate::persistence::exec(
         &tx,
@@ -321,18 +329,19 @@ fn record_dispatch_callback(tx: &WriteScope<'_>, permit: &ProviderDispatch) -> R
     }
     Ok(())
 }
-fn active(tx: &WriteScope<'_>, p: &ProviderDispatch) -> Result<()> {
-    // stamp reads the canonical roots in this deciding transaction. The full
-    // shared-claim/exposure/history check is performed once by require_exposure
-    // below; require_stamp would repeat that entire check before it.
-    if crate::domains::stamp(tx, &p.plan.family)? != p.domains {
+fn active(tx: &WriteScope<'_>, p: &ProviderDispatch) -> Result<weaver_contracts::DomainView> {
+    // The exact view checked against the consumed stamp is also passed to Cedar.
+    // It never escapes this deciding transaction or authorizes a later callback.
+    let actual = crate::domains::view(tx, &p.plan.family)?;
+    if actual.canonical_family != p.plan.family || actual.stamp != p.domains {
         return Err(Error::Conflict(
             "execution domain migrated; old permit fenced",
         ));
     }
     let same:bool=crate::persistence::one(tx, "SELECT EXISTS(SELECT 1 FROM provider_runs WHERE family=?1 AND node=?2 AND digest=?3 AND target=?4 AND state='unknown')", crate::persistence::params![(p.plan.family).to_owned(),(p.plan.node).to_owned(),(p.digest).to_owned(),(p.route.target).to_owned()], |r|r.get(0)).map_err(db)?;
     if same {
-        require_exposure(tx, &p.plan, &p.digest)
+        require_exposure(tx, &p.plan, &p.digest)?;
+        Ok(actual)
     } else {
         Err(Error::Conflict("provider consumption changed"))
     }
@@ -416,11 +425,12 @@ fn guard(
 fn guard_live(
     tx: &WriteScope<'_>,
     p: &ProviderDispatch,
+    domains: &weaver_contracts::DomainView,
     action: &'static str,
     sequence: u64,
     format: &str,
 ) -> Result<()> {
-    guard_live_range(tx, p, action, sequence..sequence + 1, format)
+    guard_live_range(tx, p, domains, action, sequence..sequence + 1, format)
 }
 // State is read after the deciding lock is acquired, and cannot escape this
 // call. No SQL write, wait, or external callback occurs between row decisions.
@@ -428,6 +438,7 @@ fn guard_live(
 fn guard_live_range(
     tx: &WriteScope<'_>,
     p: &ProviderDispatch,
+    domains: &weaver_contracts::DomainView,
     action: &'static str,
     sequences: std::ops::Range<u64>,
     format: &str,
@@ -445,7 +456,6 @@ fn guard_live_range(
         return Err(Error::Conflict("stale provider release authority"));
     }
     crate::provider_profiles::require(tx, &p.plan)?;
-    let domains = crate::domains::view(tx, &p.plan.family)?;
     for sequence in sequences {
         p.binding.authorize(
             &source,
@@ -453,7 +463,7 @@ fn guard_live_range(
                 action,
                 sequence,
                 format,
-                domains: Some(&domains),
+                domains: Some(domains),
             },
         )?;
     }

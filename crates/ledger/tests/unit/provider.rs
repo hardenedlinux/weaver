@@ -8,6 +8,8 @@ use weaver_contracts::{ProviderPlan, ProviderRoute, Task, body_digest};
 use weaver_ledger::{Ledger, ProviderDispatch, ProviderRelease};
 #[path = "commit_floor.rs"]
 mod commit_floor;
+#[path = "provider_domains.rs"]
+mod domains;
 #[path = "provider_observation.rs"]
 mod observation;
 const POLICY: &str = include_str!(concat!(

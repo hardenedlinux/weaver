@@ -1,0 +1,118 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+#+TITLE: 59.93 Same Actual View from Publication to Final Provider Use
+#+LANGUAGE: en
+#+OPTIONS: toc:2
+
+* Runtime contract
+
+Go publishes authenticated, independently reviewed candidates and registers the
+original task under its publication identity. It does not publish execution
+permission. An acknowledged historical publication or migration receipt is an
+observation of its original decision, never a replacement for a current guard.
+The existing Go bootstrap stages, registers and finalizes without a provider
+execution call. An unknown outcome does not activate its ingress.
+
+Rust provider admission and consumption retain the original logical claim,
+reservation and history in the MRR Data/Turso transaction. Consumption changes
+the run to unknown before returning the private, session-bound dispatch handle.
+A second durable dispatch burn precedes the guarded transport callback.
+Neither commit phase initiates an external request.
+
+At each request callback, response preparation, final response queue insertion
+and completion, =provider::active= validates the exact original task/origin,
+canonical family, budget/history roots and epochs, selected route, run digest,
+unknown run and retained exposure. Its returned =DomainView= is passed directly
+to the existing =guard_live= / =guard_live_range= Cedar checks. All original
+active-check call sites remain. The previous separate view read is removed;
+there is no new view cache, serialized permission or second evaluator.
+
+The same =WriteScope= checks the resolved reviewed Policy head, task publication,
+profile, Policy revision and fence. Domain checks precede Cedar evaluation on
+that validated view. No wait or external callback separates these checks.
+The deciding owner/domain locks remain held through the bounded request write
+and its writer seal, or through the final queue callback. Response-header waits
+remain outside request-write custody. Preparing an encoded frame grants no
+queue or external-send authority.
+
+* Migration, failure and recovery
+
+| Boundary | Required behavior |
+|----------+-------------------|
+| Whole-domain union | Preserve every original claim, reservation and history member; enforce the minimum original ceiling; advance both joined domain epochs |
+| Old prepared request or response | Exact domain-stamp mismatch denies use; a fresh read cannot relabel the old private handle |
+| Migration commit response lost | Recover the exact stored operation/digest/outcome; never repeat the union against a new parent |
+| Same operation with changed command | Reject the identity substitution |
+| New worker | Original session-bound handles fail; unknown consumed runs cannot be consumed again |
+| Old live Go control process | Its routing snapshot cannot override Rust currentness, domain fencing or the durable consumption burn |
+| Partial response and late completion | Retain the original unknown reservation; completion is not authenticated usage or refund authority |
+| Concurrent publication or migration | Global mutations exclude live family scopes; shared roots select common locks; the final guard still joins the actual transaction |
+| Native commit uncertainty | Poison the affected write session; recover durable observations without redispatching an unknown non-idempotent request |
+
+Migration cannot detach a family from shared constraints merely to increase
+parallelism. Canonical identity resolution selects locks before the MVCC
+snapshot under the owner gate. Disjoint domains retain their existing parallel
+path; the change adds no global final-send lock.
+
+* Formal correspondence
+
+=DomainMigrationComposition.final_use_on_committed_union= composes the actual
+cedar-poo-spec =Gateway.ZeroTrust.FinalUse= law, the initialized head-CAS/finite
+domain run and existing =SharedDomains= union laws. The union projection is of
+the exact =use.actual= view. It proves the strengthened required framework,
+capacity conservation, retention of every original history member, fencing of
+both old epochs and refinement of the original profile.
+
+The admitted-union inequality and equality between the runtime domain projection
+and that actual union are explicit Host refinement obligations. This is not a
+proof of arbitrary configuration replacement: the finite execution configuration
+remains fixed along each execution trace. SQL transaction semantics, authentic
+source identity, sound independent review, correct transport mediation and
+durability remain implementation/deployment premises. A coherent rollback of
+every durable copy is not prevented by these local tests or this theorem.
+
+Quint extends the existing =SharedDomains= machine, rather than adding another
+authority. New schedules cover two shared originals through union/lost
+reply/restart, a late union reply with an old owner, and a partially sent original
+whose claim cannot reopen. Existing unsafe split, stale-permit, history-reset
+and unknown-refund counterexamples remain outside the normal transition set.
+
+* Executable acceptance
+
+The Rust proptest framework runs 64 generated combinations over real Turso MVCC:
+request dispatch, prepared response release and completion, with optional union,
+revocation and worker restart. Positive controls execute only when current.
+Stale combinations must deny the callback; original task/origin identity,
+8 retained credits and both original history entries must survive. Exact
+migration replay returns the original receipt and command substitution fails.
+
+The real Go integration test runs both direct Rust-owner and Go-control paths.
+The TLS provider sends an authorized prefix, then waits. After an actual
+Turso migration commits, a client decorator discards its real gRPC result and
+returns Unavailable. This is response loss after success, not an engine rollback
+or a packet-loss simulation. The caller receives no receipt. The old live
+executor must reject the tail; after Rust process restart, the source recovers
+the exact receipt and the old logical invocation cannot send again. The Go
+control process stays live across the owner restart, exercising its stale local
+routing/publication image against the recovered final owner.
+
+Positive Lean acceptance imports all existing model roots and audits transitive
+axioms, including the new composition theorem. The original 1,000-sample,
+60-step, seed-293 Quint safety controls remain. Standard Go acceptance also runs
+the existing real SPEC qualification/review, revocation, native commit-loss,
+partial-write and shared-domain concurrency cohorts. These distinct tests
+establish different failure cuts; none is presented as whole-machine rollback
+protection or a proof of the Rust/SQL implementation.
+
+Raw failures and success receipts remain in ignored cache. Runtime dependency
+pins and Scheme integration are unchanged.
+
+* Core architecture projection
+
+The model-to-render chain projects only runtime responsibilities into the core
+view. Build details and acceptance evidence stay in this document.
+
+[[file:59.51-zero-trust-contract-refinement.svg]]
+[[file:../../architecture/diagrams/00d-zero-trust-overview.svg]]

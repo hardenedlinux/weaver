@@ -18,6 +18,7 @@ import (
 	"time"
 
 	pb "github.com/HardenedLinux/weaver/go/api/gateway/v1"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
@@ -154,7 +155,29 @@ func TestProviderSharedDomainsConcurrentFamiliesAndRestart(t *testing.T) {
 	}
 }
 
+// The actual Rust/Turso transaction completes before its RPC response is discarded.
+type domainMigrationReplyLoss struct {
+	pb.GatewayClient
+	committed *pb.DomainMigrationReceipt
+}
+
+func (c *domainMigrationReplyLoss) MigrateExecutionDomains(ctx context.Context, command *pb.DomainMigration, opts ...grpc.CallOption) (*pb.DomainMigrationReceipt, error) {
+	receipt, err := c.GatewayClient.MigrateExecutionDomains(ctx, command, opts...)
+	if err == nil && c.committed == nil {
+		c.committed = proto.Clone(receipt).(*pb.DomainMigrationReceipt)
+		return nil, status.Error(codes.Unavailable, "actual migration committed; response discarded")
+	}
+	return receipt, err
+}
+
 func TestProviderDomainMigrationFencesStreamingReleaseAndRecoversLostReply(t *testing.T) {
+	for _, control := range []bool{false, true} {
+		t.Run(map[bool]string{false: "rust-owner", true: "go-control"}[control], func(t *testing.T) {
+			providerDomainMigrationRecovery(t, control)
+		})
+	}
+}
+func providerDomainMigrationRecovery(t *testing.T, useControl bool) {
 	t.Setenv("WEAVER_STORAGE_JOURNAL", "mvcc")
 	proceed := make(chan struct{})
 	var once sync.Once
@@ -167,14 +190,25 @@ func TestProviderDomainMigrationFencesStreamingReleaseAndRecoversLostReply(t *te
 		emitChunk(w, "", true)
 		fmt.Fprint(w, "data: [DONE]\n\n")
 	}, false)
-	plans := independentProviderPlans(t, f)
+	plan, client := f.plan, f.client
+	from, to := "left", "right"
+	if useControl {
+		bundle := controlBundle(t, f)
+		control := newControlProcess(t, f, writeControlBundle(t, f, bundle, "json"))
+		control.start(t)
+		t.Cleanup(func() { control.stop(t) })
+		plan, client = bundle.Plans[0], control.client
+		from, to = "control", "f"
+	} else {
+		plan = independentProviderPlans(t, f)[0]
+	}
 	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
 	defer cancel()
 	first := make(chan struct{}, 1)
 	done := make(chan error, 1)
 	var text string
 	go func() {
-		_, err := f.client.Execute(ctx, plans[0], pb.Encoding_PROTOBUF, 1, func(e *pb.Event) error {
+		_, err := client.Execute(ctx, plan, pb.Encoding_PROTOBUF, 1, func(e *pb.Event) error {
 			text += e.Text
 			select {
 			case first <- struct{}{}:
@@ -189,13 +223,14 @@ func TestProviderDomainMigrationFencesStreamingReleaseAndRecoversLostReply(t *te
 	case <-ctx.Done():
 		t.Fatal("authorized prefix missing")
 	}
-	command := &pb.DomainMigration{OperationId: "union-original-domains", BudgetFrom: "left", BudgetTo: "right", HistoryFrom: "left", HistoryTo: "right", BudgetFromEpoch: 1, BudgetToEpoch: 1, HistoryFromEpoch: 1, HistoryToEpoch: 1}
-	receipt, err := f.admin.RPC.MigrateExecutionDomains(f.admin.Context(ctx), command)
-	if err != nil || !receipt.GetCommitted() {
-		t.Fatalf("union: %v %v", receipt, err)
+	command := &pb.DomainMigration{OperationId: "union-original-domains", BudgetFrom: from, BudgetTo: to, HistoryFrom: from, HistoryTo: to, BudgetFromEpoch: 1, BudgetToEpoch: 1, HistoryFromEpoch: 1, HistoryToEpoch: 1}
+	loss := &domainMigrationReplyLoss{GatewayClient: f.admin.RPC}
+	receipt, err := loss.MigrateExecutionDomains(f.admin.Context(ctx), command)
+	if status.Code(err) != codes.Unavailable || receipt != nil || !loss.committed.GetCommitted() {
+		t.Fatalf("real committed migration reply was not lost: %v %v", receipt, err)
 	}
-	// Treat the response as lost. Recovery must return this exact receipt even
-	// though the root heads have advanced; the original parent is not rebased.
+	// An actual committed result is unavailable to the caller. The old live
+	// worker must reject its prepared response; recovery must not rebase the CAS.
 	once.Do(func() { close(proceed) })
 	if err = <-done; err == nil {
 		t.Fatal("pre-migration streaming owner released tail")
@@ -206,14 +241,14 @@ func TestProviderDomainMigrationFencesStreamingReleaseAndRecoversLostReply(t *te
 	f.stop(t)
 	f.start(t)
 	recovered, err := f.admin.RPC.MigrateExecutionDomains(f.admin.Context(ctx), command)
-	if err != nil || !proto.Equal(receipt, recovered) {
+	if err != nil || !proto.Equal(loss.committed, recovered) {
 		t.Fatalf("lost-reply recovery changed outcome: %v %v", recovered, err)
 	}
-	view, err := f.admin.RPC.InspectExecutionDomains(f.admin.Context(ctx), &pb.OperationKey{Family: "left"})
+	view, err := f.admin.RPC.InspectExecutionDomains(f.admin.Context(ctx), &pb.OperationKey{Family: from})
 	if err != nil || view.GetHeld() != 4 || view.GetHistoryCount() != 1 || view.GetStamp().GetBudgetEpoch() != 2 {
 		t.Fatalf("migration lost original exposure: %v %v", view, err)
 	}
-	if _, err = f.client.Execute(ctx, plans[0], pb.Encoding_PROTOBUF, 1, func(*pb.Event) error { return nil }); err == nil {
+	if _, err = client.Execute(ctx, plan, pb.Encoding_PROTOBUF, 1, func(*pb.Event) error { return nil }); err == nil {
 		t.Fatal("migration replayed consumed invocation")
 	}
 	if f.primary.Load() != 1 {

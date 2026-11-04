@@ -62,4 +62,35 @@ theorem overbooked_actual_view_cannot_supply_final_run
 #print axioms overbooked_actual_view_cannot_supply_final_run
 #print axioms gateway_final_use_preserves_domain_contract
 #print axioms head_cas_preserves_original_obligations
+
+/-- A committed whole-domain union is interpreted on the exact SPEC actual view.
+The projection equality and admission inequality are Host refinement obligations,
+not an assertion that arbitrary SQL or configuration replacement is verified. -/
+theorem final_use_on_committed_union
+    (use : Gateway.ZeroTrust.FinalUse proposal)
+    (events : GatewayHeadCAS.Run c owner GatewayHeadCAS.initial use.actual)
+    (domain : GatewayHeadCAS.State → SharedDomains.Domain)
+    (left right : SharedDomains.Domain)
+    (same : domain use.actual = SharedDomains.union left right)
+    (admitted : SharedDomains.total left.claims + SharedDomains.total right.claims ≤
+      min left.cap right.cap) :
+    (Gateway.ZeroTrust.specialize proposal (reachableDomain c)).required effect use.actual ∧
+    SharedDomains.Safe (domain use.actual) ∧
+    SharedDomains.total (domain use.actual).claims =
+      SharedDomains.total left.claims + SharedDomains.total right.claims ∧
+    (∀ entry, entry ∈ left.history ∨ entry ∈ right.history →
+      entry ∈ (domain use.actual).history) ∧
+    ((domain use.actual).epoch ≠ left.epoch ∧ (domain use.actual).epoch ≠ right.epoch) ∧
+    original.Refines prepared.profile := by
+  obtain ⟨framework, _, _, refinement⟩ := gateway_final_use_preserves_domain_contract use events
+  obtain ⟨capacity, retained⟩ := SharedDomains.admitted_union_conserves_capacity left right admitted
+  refine ⟨framework, ?_, ?_, ?_, ?_, refinement⟩
+  · simpa only [same] using capacity
+  · simpa only [same] using retained
+  · intro entry original
+    simpa only [same] using SharedDomains.union_retains_history left right entry original
+  · simpa only [same] using SharedDomains.union_fences_both_old_permits left right
+
+#print axioms final_use_on_committed_union
+
 end Weaver.DomainMigrationComposition

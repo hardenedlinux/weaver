@@ -51,4 +51,18 @@ module SharedDomains {
   run historyResetCounterexampleTest=accepted.then(migrate).then(unsafeHistoryReset).expect(not(safety))
   run stalePermitCounterexampleTest=accepted.then(migrate).then(unsafeStaleUse(0)).expect(not(safety))
   run unknownRefundCounterexampleTest=accepted.then(restart).then(unsafeRefund(0)).expect(not(safety))
+
+  run committedUnionLostReplyKeepsBothOriginalsTest =
+    accepted.then(reserve(1)).then(consume(1)).then(migrate).then(replyLoss).then(restart).then(replay)
+      .expect(safety and exposure(2)==6 and s.history.contains(0) and s.history.contains(1) and
+        s.spent.contains(0) and s.spent.contains(1))
+      .then(finalGuard(1).fail())
+  run lateMigrationReplyCannotRestoreOldOwnerTest =
+    accepted.then(migrate).then(restart).then(replyLoss).then(replay)
+      .expect(safety and s.calls.get(0)==0 and s.held.get(0)==3)
+      .then(finalGuard(0).fail())
+  run partialOriginalSendUnionNeverReopensClaimTest =
+    accepted.then(finalGuard(0)).then(send(0)).then(migrate).then(replyLoss).then(restart).then(replay)
+      .expect(safety and s.calls.get(0)==1 and s.history.contains(0) and s.held.get(0)==3)
+      .then(consume(0).fail())
 }
