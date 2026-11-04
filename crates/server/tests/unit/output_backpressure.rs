@@ -20,7 +20,7 @@ use std::{
 };
 use tokio::sync::mpsc;
 use tokio_util::sync::CancellationToken;
-use weaver_execution::ProviderOutput;
+use weaver_broker::ProviderOutput;
 use weaver_ledger::Ledger;
 type FrameMessage = Result<pb::ProviderFrame, tonic::Status>;
 type QueueSender = mpsc::Sender<FrameMessage>;

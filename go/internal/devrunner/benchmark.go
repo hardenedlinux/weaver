@@ -95,7 +95,9 @@ var rustBenchmarkCases = []string{
 	"ledger_profile_task_registration",
 	"ledger_profile_task_replay/1",
 	"ledger_profile_task_replay/256",
-	"execution_https_guarded_sse_three_events",
+	"broker_https_guarded_sse_three_events",
+	"broker_anthropic_sse_64_deltas",
+	"broker_wif_cached_token",
 	"server_encoding_guard_hold/inside",
 	"server_encoding_guard_hold/outside",
 	"server_response_encoding/protobuf_frames/1",
@@ -107,7 +109,7 @@ var rustBenchmarkCases = []string{
 
 // Criterion sanitizes the package/group separator to an underscore on disk.
 func benchmarkPackage(name string) (string, error) {
-	for _, member := range []string{"contracts", "governance", "governance-build", "policy", "policy-ffi", "ledger", "execution", "server", "telemetry"} {
+	for _, member := range []string{"contracts", "governance", "governance-build", "policy", "policy-ffi", "ledger", "broker", "server", "telemetry"} {
 		if strings.HasPrefix(name, member+"_") {
 			return "weaver-" + member, nil
 		}

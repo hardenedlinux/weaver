@@ -140,8 +140,8 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 			{"project-architecture", goBinary, []string{"-C", "go", "test", "-count=1", "./dev", "-run", "^Test(ProjectArchitecture|SysMLSDKAndRequirementTrace|CargoWorkspace)", "-v"}},
 			{"storage-rust-format", "cargo", []string{"fmt", "--all", "--", "--check"}},
 			{"storage-workspace-types", "cargo", []string{"check", "--workspace", "--all-targets", "--locked", "--offline"}},
-			{"storage-rust-tests", "cargo", []string{"test", "-p", "weaver-ledger", "-p", "weaver-execution", "--locked", "--offline"}},
-			{"storage-rust-clippy", "cargo", []string{"clippy", "-p", "weaver-ledger", "-p", "weaver-execution", "--all-targets", "--locked", "--offline", "--", "-D", "warnings"}},
+			{"storage-rust-tests", "cargo", []string{"test", "-p", "weaver-ledger", "-p", "weaver-broker", "--locked", "--offline"}},
+			{"storage-rust-clippy", "cargo", []string{"clippy", "-p", "weaver-ledger", "-p", "weaver-broker", "--all-targets", "--locked", "--offline", "--", "-D", "warnings"}},
 			{"storage-final-benchmark", "cargo", []string{"bench", "-p", "weaver-ledger", "--bench", "gateway", "--locked", "--offline", "--", "ledger/(final_family_pair|task_origin_registration)"}},
 		}
 		for _, stage := range Plan(goBinary) {
@@ -202,10 +202,10 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 		return []Stage{
 			{"execution-benchmark-target", goBinary, []string{"-C", "go", "test", "-count=1", "-tags=integration", "./internal/devrunner", "-run", "^TestCargoBenchmarkTargetFollowsCargoConfiguration$", "-v"}},
 			{"execution-policy-tests", "cargo", []string{"test", "-p", "weaver-policy", "--locked", "--offline"}},
-			{"execution-backend-tests", "cargo", []string{"test", "-p", "weaver-ledger", "-p", "weaver-execution", "-p", "weaver-server", "--features", "weaver-server/arrow", "--locked", "--offline"}},
+			{"execution-backend-tests", "cargo", []string{"test", "-p", "weaver-ledger", "-p", "weaver-broker", "-p", "weaver-server", "--features", "weaver-server/arrow", "--locked", "--offline"}},
 			{"execution-policy-benchmark", "cargo", []string{"bench", "-p", "weaver-policy", "--bench", "gateway", "--locked", "--offline", "--", "policy/context_", "--noplot"}},
 			{"execution-ledger-benchmark", "cargo", []string{"bench", "-p", "weaver-ledger", "--bench", "gateway", "--locked", "--offline", "--", "ledger/provider_release/", "--noplot"}},
-			{"execution-provider-benchmark", "cargo", []string{"bench", "-p", "weaver-execution", "--bench", "gateway", "--locked", "--offline", "--", "execution/https_guarded_sse_three_events", "--noplot"}},
+			{"execution-provider-benchmark", "cargo", []string{"bench", "-p", "weaver-broker", "--bench", "gateway", "--locked", "--offline", "--", "broker/https_guarded_sse_three_events", "--noplot"}},
 			{"execution-encoding-benchmark", "cargo", []string{"bench", "-p", "weaver-server", "--features", "arrow", "--bench", "gateway", "--locked", "--offline", "--", "server/encoding_guard_hold", "--noplot"}},
 			{"execution-contention-pair", goBinary, []string{"-C", "go", "test", "-count=1", "-tags=integration", "./dev", "-run", "^TestContentionPairs$", "-v"}},
 			{"execution-provider-integration", goBinary, []string{"-C", "go", "test", "-count=1", "-race", "-tags=integration", "./dev", "-run", "^TestProvider", "-v"}},

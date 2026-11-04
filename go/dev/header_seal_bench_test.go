@@ -25,7 +25,7 @@ func TestHeaderSealPairs(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	build := exec.CommandContext(t.Context(), "cargo", "bench", "-p", "weaver-execution", "--bench", "gateway", "--no-run", "--locked", "--offline", "--message-format=json-render-diagnostics")
+	build := exec.CommandContext(t.Context(), "cargo", "bench", "-p", "weaver-broker", "--bench", "gateway", "--no-run", "--locked", "--offline", "--message-format=json-render-diagnostics")
 	build.Dir, build.Stderr = root, os.Stderr
 	executable, err := buildCargoExecutable(build, cargoTarget{Name: "gateway", Kind: "bench", Test: true, Optimized: true})
 	if err != nil {

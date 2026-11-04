@@ -292,3 +292,18 @@ theorem cumulative_usage_is_not_added (previous current : Nat)
 #print axioms interrupted_usage_is_not_terminal
 #print axioms cumulative_usage_is_not_added
 end Weaver.AnthropicUsage
+
+namespace Weaver.Wif
+
+def mayWrite (binding current cedar spent : Bool) : Bool :=
+  binding && current && cedar && !spent
+
+theorem expired_token_cannot_write (binding cedar spent : Bool) :
+    mayWrite binding false cedar spent = false := by simp [mayWrite]
+
+theorem refreshed_token_cannot_reopen_consumed_send (binding current cedar : Bool) :
+    mayWrite binding current cedar true = false := by simp [mayWrite]
+
+#print axioms expired_token_cannot_write
+#print axioms refreshed_token_cannot_reopen_consumed_send
+end Weaver.Wif

@@ -185,7 +185,7 @@ by an unlocked send on another service does not implement this LP.
 
 The existing [[file:../../../crates/ledger/src/provider.rs][dispatch_provider]] first commits a burn, then rechecks Policy/fence
 under a second SQLite deciding transaction through the callback. The existing
-[[file:../../../crates/execution/src/provider/runtime.rs][open_guarded / ProviderTransport.open]] calls the private blocking request
+[[file:../../../crates/broker/src/provider/runtime.rs][open_guarded / ProviderTransport.open]] calls the private blocking request
 inside that callback; automatic retry, redirects, inherited proxies and pooled
 idle reuse are disabled. Its current lock window includes response-header wait,
 with the existing bounded request timeout. It has no independent commit floor

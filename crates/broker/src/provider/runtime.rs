@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 //! Guarded provider invocation; no retry, redirect, reconnect or automatic route fallback.
-use super::{anthropic_sse, openai_sse};
+use super::{anthropic_sse, openai_sse, wif};
 use std::{
     collections::{BTreeMap, BTreeSet},
     sync::Arc,
@@ -20,6 +20,8 @@ pub struct ProviderTransport {
 }
 struct Settings {
     credentials: BTreeMap<String, String>,
+    federation: BTreeMap<String, wif::Federation>,
+    exchange_client: Option<reqwest::Client>,
     tls: Arc<rustls::ClientConfig>,
     runtime: Arc<super::io_runtime::IoRuntime>,
 }
@@ -31,6 +33,26 @@ impl ProviderTransport {
         root_pem: Option<&[u8]>,
         reactor: tokio::runtime::Handle,
     ) -> Result<Self> {
+        Self::with_anthropic_wif(credentials, BTreeMap::new(), root_pem, reactor)
+    }
+
+    pub fn with_anthropic_wif(
+        credentials: BTreeMap<String, String>,
+        wif: BTreeMap<String, wif::AnthropicWifConfig>,
+        root_pem: Option<&[u8]>,
+        reactor: tokio::runtime::Handle,
+    ) -> Result<Self> {
+        if credentials.len().saturating_add(wif.len()) > 8 {
+            return Err(Error::Invalid("provider credential bound"));
+        }
+        let mut federation = BTreeMap::new();
+        for (target, config) in wif {
+            weaver_contracts::identifier(&target)?;
+            if credentials.contains_key(&target) {
+                return Err(Error::Invalid("ambiguous provider credential"));
+            }
+            federation.insert(target, wif::Federation::new(config)?);
+        }
         for (target, secret) in &credentials {
             weaver_contracts::identifier(target)?;
             if secret.is_empty()
@@ -65,16 +87,38 @@ impl ProviderTransport {
                 .with_no_client_auth()
         };
         tls.alpn_protocols = vec![b"http/1.1".to_vec()];
+        let exchange_client = if federation.is_empty() {
+            None
+        } else {
+            let _reactor = reactor.enter();
+            Some(
+                reqwest::Client::builder()
+                    .https_only(true)
+                    .no_proxy()
+                    .redirect(reqwest::redirect::Policy::none())
+                    .retry(reqwest::retry::never())
+                    .tls_backend_preconfigured(tls.clone())
+                    .build()
+                    .map_err(|_| Error::Invalid("WIF HTTPS client"))?,
+            )
+        };
         Ok(Self {
             inner: Arc::new(Settings {
                 credentials,
+                federation,
+                exchange_client,
                 tls: Arc::new(tls),
                 runtime: Arc::new(super::io_runtime::IoRuntime { handle: reactor }),
             }),
         })
     }
     fn eligible(&self) -> BTreeSet<String> {
-        self.inner.credentials.keys().cloned().collect()
+        self.inner
+            .credentials
+            .keys()
+            .chain(self.inner.federation.keys())
+            .cloned()
+            .collect()
     }
     fn prepare(
         &self,
@@ -84,15 +128,29 @@ impl ProviderTransport {
     ) -> Result<super::request::PreparedRequest> {
         crate::HttpsTransport::validate_endpoint(&route.endpoint)?;
         let runtime = self.inner.runtime.clone();
-        let secret = self
-            .inner
-            .credentials
-            .get(&route.target)
-            .ok_or(Error::Denied)?;
+        let token = if let Some(federation) = self.inner.federation.get(&route.target) {
+            if !matches!(protocol, ProviderProtocol::Anthropic) || route.endpoint != wif::MESSAGES {
+                return Err(Error::Denied);
+            }
+            let client = self.inner.exchange_client.as_ref().ok_or(Error::Denied)?;
+            Some(federation.token(client, &runtime)?)
+        } else {
+            None
+        };
+        let secret = match &token {
+            Some(token) => token.value.as_ref(),
+            None => self
+                .inner
+                .credentials
+                .get(&route.target)
+                .ok_or(Error::Denied)?
+                .as_str(),
+        };
         super::request::PreparedRequest::new(
             &route.endpoint,
             secret,
             protocol,
+            token.as_ref().map(|token| token.expires),
             &plan.body,
             self.inner.tls.clone(),
             runtime,
@@ -250,7 +308,7 @@ fn open_guarded<O: ProviderOutput>(
     if output.stopped() {
         return Err(Error::Conflict("cancelled after provider consumption"));
     }
-    // Request construction and local client initialization perform no provider IO.
+    // WIF exchange and request preparation occur outside the deciding send scope.
     let request = transport.prepare(permit.plan(), permit.route(), permit.protocol())?;
     let sealed = ledger.dispatch_provider(permit, || {
         if output.stopped() {

@@ -178,7 +178,8 @@ func FuzzModelViewCaptureTracksSource(f *testing.F) {
 			t.Fatal(err)
 		}
 		path := filepath.Join(root, "Project.sysml")
-		source := `package CaptureTest {
+		source := `package WeaverReaderDesigns {}
+package CaptureTest {
  private import Views::*;
  private import StandardViewDefinitions::*;
  part def Assembly { part sender; part receiver; connect sender to receiver; }

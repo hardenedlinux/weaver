@@ -15,8 +15,8 @@ use std::{
     thread,
     time::Duration,
 };
+use weaver_broker::{ProviderExecution, ProviderOutput, ProviderTransport, execute_provider};
 use weaver_contracts::{ProviderEvent, ProviderRoute, Result};
-use weaver_execution::{ProviderExecution, ProviderOutput, ProviderTransport, execute_provider};
 #[path = "../../contracts/benches/support/fixtures.rs"]
 mod fixtures;
 #[path = "../../policy/benches/support/fixtures.rs"]
@@ -157,7 +157,7 @@ fn guarded_provider(c: &mut Criterion) {
         provider.runtime.handle().clone(),
     )
     .expect("transport");
-    c.bench_function("execution/https_guarded_sse_three_events", |b| {
+    c.bench_function("broker/https_guarded_sse_three_events", |b| {
         b.iter_batched(
             || stores::fresh(128, &provider.endpoint),
             |(temp, mut ledger, plan)| {
@@ -205,7 +205,7 @@ fn anthropic_decode(c: &mut Criterion) {
         data.push_str("event: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"fragment\"}}\n\n");
     }
     data.push_str("event: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":0}\n\nevent: message_delta\ndata: {\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\"},\"usage\":{\"output_tokens\":64}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n");
-    c.bench_function("execution/anthropic_sse_64_deltas", |b| {
+    c.bench_function("broker/anthropic_sse_64_deltas", |b| {
         b.iter(|| {
             let mut decoder = anthropic_sse::Decoder::new(black_box(data.as_bytes()), "fixture");
             loop {
@@ -218,7 +218,23 @@ fn anthropic_decode(c: &mut Criterion) {
         })
     });
 }
-criterion_group! {name=benches;config=Criterion::default().sample_size(30).warm_up_time(Duration::from_secs(1)).measurement_time(Duration::from_secs(2));targets=guarded_provider,anthropic_decode}
+#[path = "../src/provider/wif_cache.rs"]
+mod wif_cache;
+
+fn wif_cache_hit(c: &mut Criterion) {
+    let cache = std::sync::Mutex::new(Some(wif_cache::AccessToken {
+        value: Arc::from("synthetic"),
+        expires: tokio::time::Instant::now() + Duration::from_secs(600),
+    }));
+    c.bench_function("broker/wif_cached_token", |b| {
+        b.iter(|| {
+            let guard = cache.lock().expect("fixture cache");
+            let token = wif_cache::reusable(black_box(guard.as_ref())).expect("current token");
+            black_box(token.value)
+        })
+    });
+}
+criterion_group! {name=benches;config=Criterion::default().sample_size(30).warm_up_time(Duration::from_secs(1)).measurement_time(Duration::from_secs(2));targets=guarded_provider,anthropic_decode,wif_cache_hit}
 #[path = "support/header_seal.rs"]
 mod header_seal;
 fn main() {

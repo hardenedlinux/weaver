@@ -5,7 +5,7 @@
 //! Process-owned RPC identity contracts, shared without service/configuration cycles.
 use crate::ServerConfig;
 use tonic::transport::ServerTlsConfig;
-use weaver_execution::ProviderTransport;
+use weaver_broker::ProviderTransport;
 /// Explicit mTLS roots, pinned caller certificate and distinct publication credential.
 pub struct RpcSecurity {
     pub tls: ServerTlsConfig,

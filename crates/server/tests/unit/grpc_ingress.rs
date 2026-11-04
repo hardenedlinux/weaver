@@ -37,7 +37,7 @@ async fn aliased_or_empty_source_identity_is_rejected_before_serving() {
             source_peer_sha256: [3; 32],
             admin_sha256: [4; 32],
         },
-        provider: weaver_execution::ProviderTransport::new(
+        provider: weaver_broker::ProviderTransport::new(
             Default::default(),
             None,
             tokio::runtime::Handle::current(),

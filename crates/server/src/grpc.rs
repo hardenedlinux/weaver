@@ -28,7 +28,7 @@ use tokio_stream::{Stream, wrappers::ReceiverStream};
 use tokio_util::sync::CancellationToken;
 use tonic::{Request, Response, Status};
 use weaver_contracts::{Error, ProviderPlan, ProviderRoute, Task};
-use weaver_execution::ProviderTransport;
+use weaver_broker::ProviderTransport;
 use weaver_ledger::Ledger;
 fn domain_view(v: weaver_contracts::DomainView) -> pb::DomainView {
     pb::DomainView {
@@ -748,9 +748,9 @@ impl pb::gateway_server::Gateway for Gateway {
                     #[cfg(all(test, unix))]
                     crate::provider_commit_tests::attach(&mut ledger);
                     ledger.require_principal(&config.principal, &plan.family)?;
-                    weaver_execution::execute_catalog_provider(
+                    weaver_broker::execute_catalog_provider(
                         &mut ledger,
-                        weaver_execution::ProviderExecution {
+                        weaver_broker::ProviderExecution {
                             plan: &plan,
                             transport: &transport,
                             format: if arrow { "arrow" } else { "protobuf" },

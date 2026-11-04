@@ -578,7 +578,7 @@ OpenAI-compatible execution. It performs one protocol selection per
 consumed dispatch, keeps a compact stream state and does no per-event
 network, policy publication or catalog fetch. Existing batch release
 still checks current Cedar authority. The Criterion benchmark
-=execution/anthropic_sse_64_deltas= isolates framing, decoding and
+=broker/anthropic_sse_64_deltas= isolates framing, decoding and
 normalization from TLS, Cedar and Turso. The TLS integration covers
 settlement and recovery. Tool, thinking, multimodal and beta fallback
 events are outside this profile.
@@ -587,14 +587,24 @@ See [[https://platform.claude.com/docs/en/build-with-claude/streaming][Anthropic
 
 *** Provider workload identity
 
-The current Anthropic adapter uses a deployment-owned API key. A separate
-credential mode can support Anthropic Workload Identity Federation through
-its OAuth JWT bearer exchange. Bind the issuer, federation rule, workspace,
-inference scope and concrete provider target in deployment authority.
-Acquire and refresh short-lived access tokens outside the send critical
-section. The broker must use a current token for the bound target and
-refuse expired credentials before send. A provider authentication response
-cannot initiate a retry after consumption or release unknown exposure.
-Inbound caller OAuth remains a separate identity boundary.
+The Rust =weaver-broker= package owns the guarded writer and private
+transport. Its =llm-provider= feature enables protocol adapters and
+their deployment-owned authentication. Set =WEAVER_ANTHROPIC_WIF= to
+a JSON map keyed by target. Each value provides =assertion_file=,
+=federation_rule_id=, =organization_id=, =service_account_id= and
+=workspace_id=. A target uses one credential mode. WIF requires the
+concrete Anthropic Messages endpoint and the exact inference scope.
+The exchange uses the official Anthropic token endpoint over verified
+TLS with redirects, proxies and transport retries disabled.
+
+The broker reads the projected assertion file on each refresh. A bounded
+per-target cache coalesces refresh and shares the current token. Exchange
+happens after original consumption and before the deciding send scope.
+No OAuth network wait runs under the send lock. Expiration is checked
+before connection and again immediately before submitting the HTTP
+request. Exchange failure, expiration or HTTP 401 keeps the original
+reservation. A future token cannot reopen a consumed original. The
+=broker/wif_cached_token= benchmark isolates cache lookup and credential
+sharing. Inbound caller OAuth remains a separate identity boundary.
 
 See [[https://platform.claude.com/docs/en/manage-claude/workload-identity-federation][Anthropic Workload Identity Federation]].

@@ -148,7 +148,7 @@ It does not introduce another permission or transport owner.
 | Rust contracts | =crates/contracts=: immutable provider commitments and closed native event/outcome types |
 | Rust Policy | =crates/policy=: original-fact binding and fresh error-free Cedar decisions |
 | Rust ledger | =crates/ledger=: shared holds, canonical consumption and affine dispatch/release records |
-| Rust execution | =crates/execution=: private HTTPS/SSE owner, bounded decoding and guarded publication |
+| Rust execution | =crates/broker=: private HTTPS/SSE owner, bounded decoding and guarded publication |
 | Rust server | =crates/server=: default mTLS gRPC ingress, caller binding, roles, tracked work and encoding |
 | Development assurance | =dev=: SysML, Cedar fixtures, Quint, Lean, benchmark fixtures and retained evidence |
 

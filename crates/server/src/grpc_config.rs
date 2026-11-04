@@ -6,8 +6,8 @@
 use crate::rpc_security::{GrpcConfig, GrpcListeners, RpcSecurity};
 use std::{collections::BTreeMap, io::Read};
 use tonic::transport::{Certificate, Identity, ServerTlsConfig};
+use weaver_broker::ProviderTransport;
 use weaver_contracts::{Error, Result};
-use weaver_execution::ProviderTransport;
 fn required(name: &str) -> Result<String> {
     std::env::var(name).map_err(|_| Error::Invalid("required gRPC configuration missing"))
 }
@@ -46,8 +46,16 @@ fn load_security() -> Result<RpcSecurity> {
     })
 }
 fn load_transport() -> Result<ProviderTransport> {
-    let names: BTreeMap<String, String> =
-        weaver_contracts::decode(required("WEAVER_PROVIDER_CREDENTIAL_ENVS")?.as_bytes())?;
+    let names: BTreeMap<String, String> = match std::env::var("WEAVER_PROVIDER_CREDENTIAL_ENVS") {
+        Ok(value) => weaver_contracts::decode(value.as_bytes())?,
+        Err(std::env::VarError::NotPresent) => BTreeMap::new(),
+        Err(_) => return Err(Error::Invalid("provider credential encoding")),
+    };
+    let federation = match std::env::var("WEAVER_ANTHROPIC_WIF") {
+        Ok(value) => weaver_contracts::decode(value.as_bytes())?,
+        Err(std::env::VarError::NotPresent) => BTreeMap::new(),
+        Err(_) => return Err(Error::Invalid("WIF configuration encoding")),
+    };
     if names.len() > 8 {
         return Err(Error::Invalid("provider configuration bound"));
     }
@@ -59,8 +67,9 @@ fn load_transport() -> Result<ProviderTransport> {
         .ok()
         .map(read_path)
         .transpose()?;
-    ProviderTransport::new(
+    ProviderTransport::with_anthropic_wif(
         credentials,
+        federation,
         root.as_deref(),
         tokio::runtime::Handle::current(),
     )

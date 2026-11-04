@@ -135,7 +135,7 @@
     {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn orphaned_request_claim_cannot_admit_a_replacement_operation"},
     {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn next_stream_message_cannot_recreate_a_lost_node_claim"},
     {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn lost_message_projection_cannot_recycle_original_unknown_hold"},
-    {"file":"crates/execution/tests/unit/https_transport.rs","pattern":"fn partial_transport_failure_is_unknown_and_never_retried"},
+    {"file":"crates/broker/tests/unit/https_transport.rs","pattern":"fn partial_transport_failure_is_unknown_and_never_retried"},
     {"file":"dev/proofs/quint/RuntimeAdmission.qnt","pattern":"run unknownRefundCounterexampleTest"}]},
   {"id":"NoImplicitRetry","witnesses":[
     {"file":"crates/ledger/tests/unit/concurrency.rs","pattern":"fn concurrent_consumers_invoke_once"},
@@ -146,14 +146,14 @@
     {"file":"crates/ledger/tests/unit/stream_properties.rs","pattern":"fn unknown_range_after_restart_blocks_new_nonce_and_authority"},
     {"file":"crates/policy/tests/unit/stream_policy.rs","pattern":"fn specification_derived_policy_is_typed_and_constrains_actual_range_facts"}]},
   {"id":"RangeFinalGuard","witnesses":[
-    {"file":"crates/execution/tests/unit/stream_wire.rs","pattern":"fn effective_revocation_stops_actual_next_range_and_prefix_reconnect"},
+    {"file":"crates/broker/tests/unit/stream_wire.rs","pattern":"fn effective_revocation_stops_actual_next_range_and_prefix_reconnect"},
     {"file":"dev/proofs/quint/StreamingExecution.qnt","pattern":"run revokedBetweenBurnAndWriteTest"}]},
   {"id":"UnknownPrefixRecovery","witnesses":[
-    {"file":"crates/execution/tests/unit/stream_wire.rs","pattern":"fn rust_partial_write_freezes_tail_and_never_refunds"},
+    {"file":"crates/broker/tests/unit/stream_wire.rs","pattern":"fn rust_partial_write_freezes_tail_and_never_refunds"},
     {"file":"dev/proofs/lean/StreamingExecution.lean","pattern":"theorem unknown_cannot_resume"}]},
   {"id":"PrivateBufferCustody","witnesses":[
-    {"file":"crates/execution/tests/unit/stream_wire.rs","pattern":"fn tls_flush_cannot_release_a_tail_after_effective_revocation"},
-    {"file":"crates/execution/tests/unit/stream_wire.rs","pattern":"fn recovered_old_worker_socket_cannot_use_new_custody"}]},
+    {"file":"crates/broker/tests/unit/stream_wire.rs","pattern":"fn tls_flush_cannot_release_a_tail_after_effective_revocation"},
+    {"file":"crates/broker/tests/unit/stream_wire.rs","pattern":"fn recovered_old_worker_socket_cannot_use_new_custody"}]},
   {"id":"BoundedPerformanceWork","witnesses":[
     {"file":"crates/policy/tests/unit/cache_storage.rs","pattern":"fn compiled_storage_caps_slots_and_exact_hits_do_not_allocate_new_entries"},
     {"file":"dev/proofs/lean/StreamingExecution.lean","pattern":"theorem bounded_range_copy_work"}]},
@@ -215,7 +215,7 @@
     {"file":"go/dev/provider_grpc_test.go","pattern":"func TestProviderArrowChecksEveryRow"},
     {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem arrow_cannot_weaken_row_authority"}]},
   {"id":"ProviderUnknownRetention","witnesses":[
-    {"file":"crates/execution/src/provider/runtime.rs","pattern":"fn open_guarded"},
+    {"file":"crates/broker/src/provider/runtime.rs","pattern":"fn open_guarded"},
     {"file":"crates/ledger/src/persistence/scope.rs","pattern":"fn commit_provider"},
     {"file":"crates/ledger/tests/unit/provider_observation.rs","pattern":"fn failed_callback_never_enters_final_commit_and_retains_original_exposure"},
     {"file":"crates/ledger/tests/unit/persistence_transactions.rs","pattern":"fn turso_applied_commit_without_ack_poison_is_not_reusable"},
@@ -287,8 +287,8 @@
     {"file":"dev/proofs/quint/SourceOwner.qnt","pattern":"run swallowedCloseErrorCounterexampleTest"},
     {"file":"dev/proofs/lean/PublicationRecovery.lean","pattern":"theorem owned_worker_and_publication_composition"}]},
   {"id":"FinalInvocationCancellation","witnesses":[
-    {"file":"crates/execution/tests/unit/provider_dispatch.rs","pattern":"fn cancellation_during_sql_wait_blocks_transport_and_keeps_spent_claim"},
-    {"file":"crates/execution/tests/unit/provider_dispatch.rs","pattern":"fn uncancelled_control_reaches_real_https_transport_once"},
+    {"file":"crates/broker/tests/unit/provider_dispatch.rs","pattern":"fn cancellation_during_sql_wait_blocks_transport_and_keeps_spent_claim"},
+    {"file":"crates/broker/tests/unit/provider_dispatch.rs","pattern":"fn uncancelled_control_reaches_real_https_transport_once"},
     {"file":"dev/proofs/quint/DispatchCancellation.qnt","pattern":"run skippedRecheckCounterexampleTest"},
     {"file":"dev/proofs/quint/ProviderRpc.qnt","pattern":"run missingFinalCancellationCheckCounterexampleTest"},
     {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem cancellation_and_original_hold_composition"}]},
@@ -525,7 +525,7 @@
   {"id":"WorkspaceBenchmarkCoverage","witnesses":[
     {"file":"go/internal/devrunner/benchmark_test.go","pattern":"func TestBenchmarkEvidenceRequiresEveryCase"},
     {"file":"go/dev/workspace_test.go","pattern":"func TestCargoWorkspaceAndDevelopmentGates"},
-    {"file":"crates/execution/benches/gateway.rs","pattern":"fn guarded_provider"},
+    {"file":"crates/broker/benches/gateway.rs","pattern":"fn guarded_provider"},
     {"file":"go/dev/provider_bench_test.go","pattern":"func BenchmarkGatewayInspect"}]},
   {"id":"DurableRangeProgressJoin","witnesses":[{"file":"crates/ledger/src/stream_progress.rs","pattern":"fn message"},{"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn restored_message_cursor_cannot_hide_consumed_range"},{"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn restored_progress_cannot_release_old_writer_or_connection"},{"file":"dev/proofs/quint/StreamingExecution.qnt","pattern":"run restoredUnknownProjectionBlocksAdmissionTest"},{"file":"dev/proofs/quint/StreamingExecution.qnt","pattern":"run unknownResetDuplicatesRangeCounterexampleTest"},{"file":"dev/proofs/lean/StreamingExecution.lean","pattern":"theorem unresolved_tail_blocks_admission","declaration":"Weaver.StreamingExecution.RangeProgress.unresolved_tail_blocks_admission"},{"file":"dev/proofs/lean/StreamingExecution.lean","pattern":"theorem changed_progress_cannot_execute","declaration":"Weaver.StreamingExecution.RangeProgress.changed_progress_cannot_execute"},{"file":"dev/proofs/lean/StreamingExecution.lean","pattern":"theorem joined_execution_preserves_safety","declaration":"Weaver.StreamingExecution.RangeProgress.joined_execution_preserves_safety"}]},
   {"id":"TursoAdmissionAtomicity","witnesses":[{"file":"crates/ledger/src/persistence/scope.rs","pattern":"pub fn begin"},{"file":"crates/ledger/src/exposure_manifest.rs","pattern":"pub\\(crate\\) fn require"},{"file":"crates/ledger/tests/unit/persistence_transactions.rs","pattern":"fn failed_commit_releases_writer_and_poisoned_session_cannot_reenter"},{"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn duplicate_claim_members_cannot_be_normalized_out_of_recovery"},{"file":"go/dev/workspace_test.go","pattern":"func TestProjectArchitectureStorageUsesMRRDataTursoOnly"},{"file":"dev/proofs/quint/TursoAdmission.qnt","pattern":"run tornCommitRefundCounterexampleTest"},{"file":"dev/proofs/lean/RuntimeAdmission.lean","pattern":"theorem storage_step_retains_admission_safety","declaration":"Weaver.RuntimeAdmission.Persistence.storage_step_retains_admission_safety"},{"file":"dev/proofs/lean/RuntimeAdmission.lean","pattern":"theorem committed_consume_survives_reply_loss_and_restart","declaration":"Weaver.RuntimeAdmission.Persistence.committed_consume_survives_reply_loss_and_restart"},{"file":"dev/proofs/lean/RuntimeAdmission.lean","pattern":"theorem commit_itself_does_not_send","declaration":"Weaver.RuntimeAdmission.Persistence.commit_itself_does_not_send"}]}

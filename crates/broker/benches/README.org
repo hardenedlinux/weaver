@@ -16,7 +16,7 @@ Source admission, durable burns, cold TLS connection, bounded parsing and releas
 
 * Entrypoints
 
-Run this package with =cargo bench -p weaver-execution --all-features --bench gateway --locked --offline -- --noplot=.
+Run this package with =cargo bench -p weaver-broker --all-features --bench gateway --locked --offline -- --noplot=.
 Run the complete measured matrix with =go -C go run ./cmd/weaver-dev bench=.
 Criterion is inherited from the workspace as a development dependency.
 Each case uses thirty samples, one second of warm-up and two seconds of requested measurement.

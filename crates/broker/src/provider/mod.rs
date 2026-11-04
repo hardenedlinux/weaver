@@ -9,11 +9,14 @@ mod openai_sse;
 mod request;
 mod response;
 mod runtime;
+mod wif;
+mod wif_cache;
 mod write_seal;
 pub use runtime::{
     ProviderExecution, ProviderOutput, ProviderTransport, execute_catalog_provider,
     execute_provider,
 };
+pub use wif::AnthropicWifConfig;
 
 #[cfg(test)]
 #[path = "../../tests/unit/runtime.rs"]

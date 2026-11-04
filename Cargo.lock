@@ -5505,21 +5505,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "weaver-contracts"
-version = "0.1.0"
-dependencies = [
- "asp-rust",
- "criterion",
- "hex",
- "proptest",
- "serde",
- "serde_json",
- "sha2 0.10.9",
- "thiserror",
-]
-
-[[package]]
-name = "weaver-execution"
+name = "weaver-broker"
 version = "0.1.0"
 dependencies = [
  "asp-rust",
@@ -5542,6 +5528,20 @@ dependencies = [
  "tokio-rustls",
  "weaver-contracts",
  "weaver-ledger",
+]
+
+[[package]]
+name = "weaver-contracts"
+version = "0.1.0"
+dependencies = [
+ "asp-rust",
+ "criterion",
+ "hex",
+ "proptest",
+ "serde",
+ "serde_json",
+ "sha2 0.10.9",
+ "thiserror",
 ]
 
 [[package]]
@@ -5643,8 +5643,8 @@ dependencies = [
  "tonic",
  "tonic-prost",
  "tonic-prost-build",
+ "weaver-broker",
  "weaver-contracts",
- "weaver-execution",
  "weaver-governance",
  "weaver-ledger",
  "weaver-policy-ffi",

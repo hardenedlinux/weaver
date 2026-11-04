@@ -15,7 +15,7 @@ Directory placement follows execution ownership rather than deployment packaging
 | =crates/contracts/= | Rust execution contracts and immutable message bindings |
 | =crates/policy/= | Cedar validation and evaluation against authoritative context |
 | =crates/ledger/= | Durable claims, reservations, range consumption and recovery |
-| =crates/execution/= | Final broker and private transport custody |
+| =crates/broker/= | Final broker and private transport custody |
 | =crates/server/= | Rust service entrypoint, authenticated admission and runtime lifecycle |
 | =crates/cli/= | Rust administration and local execution commands |
 | =go/= | Go control-plane module and cloud/protocol integration |

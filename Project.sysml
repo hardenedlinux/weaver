@@ -507,7 +507,7 @@ package WeaverProject {
             part 'weaver-contracts' : RuntimeDependency;
             part 'weaver-policy' : RuntimeDependency;
         }
-        part 'crates/execution' : RustPackage {
+        part 'crates/broker' : RustPackage {
             part 'weaver-contracts' : RuntimeDependency;
             part 'weaver-ledger' : RuntimeDependency;
         }
@@ -531,7 +531,7 @@ package WeaverProject {
             part 'weaver-contracts' : RuntimeDependency;
             part 'weaver-governance' : RuntimeDependency;
             part 'weaver-ledger' : RuntimeDependency;
-            part 'weaver-execution' : RuntimeDependency;
+            part 'weaver-broker' : RuntimeDependency;
             part 'weaver-telemetry' : RuntimeDependency;
         }
         part 'crates/telemetry' : RustPackage;
@@ -626,8 +626,8 @@ package WeaverProject {
     allocation cedarCode allocate Architecture::policy to Layout::'crates/policy';
     allocation cedarBridgeCode allocate Architecture::policy to Layout::'crates/policy-ffi';
     allocation ledgerCode allocate Architecture::ledger to Layout::'crates/ledger';
-    allocation brokerCode allocate Architecture::broker to Layout::'crates/execution';
-    allocation transportCode allocate Architecture::executor to Layout::'crates/execution';
+    allocation brokerCode allocate Architecture::broker to Layout::'crates/broker';
+    allocation transportCode allocate Architecture::executor to Layout::'crates/broker';
     allocation telemetryDesign allocate Architecture::telemetry to Layout::'docs/50-59-research-program/59-provider-rpc/59.24-telemetry-service.org';
     allocation telemetryCode allocate Architecture::telemetry to Layout::'crates/telemetry';
     allocation telemetryControlCode allocate Architecture::telemetry to Layout::'go/internal/telemetry';

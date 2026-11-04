@@ -244,7 +244,7 @@ package WeaverViews {
         attribute visualBands : String = "[[\"routing\",\"publication\"],[\"execution\",\"providers\",\"stream\"]]";
         attribute mappedFile : String = "docs/10-19-llm-gateway/10-routing-and-inference/10.05-route-execution.d2";
         attribute displayTitle : String = "Use the selected route";
-        attribute displaySubtitle : String = "One guarded send for OpenAI-compatible or Anthropic Messages.";
+        attribute displaySubtitle : String = "WIF refresh precedes the Rust broker send guard.";
         attribute displayEyebrow : String = "WEAVER / ROUTING";
         attribute readerQuestion : String = "What can authorize actual provider use?";
         attribute designAudience : String = "Gateway developers and operators";

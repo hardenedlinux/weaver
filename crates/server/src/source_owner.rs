@@ -584,7 +584,7 @@ fn process(
             } => {
                 let result = ledger.with_authenticated_source(&caller, |l| {
                     for endpoint in task.endpoints.values() {
-                        weaver_execution::HttpsTransport::validate_endpoint(endpoint)?;
+                        weaver_broker::HttpsTransport::validate_endpoint(endpoint)?;
                     }
                     l.register_original_task(&task, &domains, &admission, publication.as_ref())
                 });
@@ -599,7 +599,7 @@ fn process(
             } => {
                 let result = ledger.with_authenticated_source(&caller, |l| {
                     for endpoint in task.endpoints.values() {
-                        weaver_execution::HttpsTransport::validate_endpoint(endpoint)?;
+                        weaver_broker::HttpsTransport::validate_endpoint(endpoint)?;
                     }
                     l.register_task_domains(&task, &domains, publication.as_ref())
                 });
@@ -734,7 +734,7 @@ fn answer<T>(
 }
 fn register(ledger: &mut Ledger, task: &Task, publication: Option<&PublicationKey>) -> Result<()> {
     for endpoint in task.endpoints.values() {
-        weaver_execution::HttpsTransport::validate_endpoint(endpoint)?;
+        weaver_broker::HttpsTransport::validate_endpoint(endpoint)?;
     }
     match publication {
         Some(key) => ledger.register_published_task(task, key),

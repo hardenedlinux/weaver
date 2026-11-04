@@ -62,7 +62,7 @@ async fn source_rpc_reads_owned_parent_and_registers_only_authenticated_evidence
             source_peer_sha256: Sha256::digest(&pki.source.der).into(),
             admin_sha256: Sha256::digest(b"source-token").into(),
         },
-        provider: weaver_execution::ProviderTransport::new(
+        provider: weaver_broker::ProviderTransport::new(
             Default::default(),
             None,
             tokio::runtime::Handle::current(),

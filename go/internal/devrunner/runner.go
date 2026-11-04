@@ -331,7 +331,7 @@ func runStageObserved(ctx context.Context, root, directory string, environment [
 			cases = []string{"server_encoding_guard_hold/inside", "server_encoding_guard_hold/outside"}
 		}
 		if stage.Name == "execution-provider-benchmark" {
-			cases = []string{"execution_https_guarded_sse_three_events"}
+			cases = []string{"broker_https_guarded_sse_three_events"}
 		}
 		if stage.Name == "execution-ledger-benchmark" {
 			cases = []string{"ledger_provider_release/1", "ledger_provider_release/8", "ledger_provider_release/32"}

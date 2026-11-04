@@ -70,7 +70,7 @@ package WeaverGatewayArchitecture {
         attribute journeyName : String = "Actual-use gate";
         attribute journeySummary : String = "Claim + budget";
         attribute journeyGlyph : String = "permission-check";
-        attribute displayName : String = "Rust / governed execution";
+        attribute displayName : String = "Rust broker / governed send";
         attribute responsibility : String = "Cedar + current reviewed Policy\nClaim + budget + writer seal\nFresh checks on every release";
         attribute glyph : String = "authorization";
         attribute visualRole : String = "execution";
@@ -83,7 +83,7 @@ package WeaverGatewayArchitecture {
         attribute journeySummary : String = "One bound request";
         attribute journeyGlyph : String = "model-provider";
         attribute displayName : String = "LLM protocol adapters";
-        attribute responsibility : String = "OpenAI-compatible + Anthropic Messages\nBound endpoint, protocol and model\nBuffered SSE with terminal usage";
+        attribute responsibility : String = "OpenAI-compatible + Anthropic Messages\nTarget-bound API key or WIF\nBuffered SSE with terminal usage";
         attribute glyph : String = "provider";
         attribute visualRole : String = "selection";
         port request : ~WorkPort;

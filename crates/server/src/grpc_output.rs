@@ -10,7 +10,7 @@ use crate::{
 use tokio::sync::mpsc;
 use tokio_util::sync::CancellationToken;
 use weaver_contracts::{Error, ProviderEvent, ProviderRoute, Result};
-use weaver_execution::ProviderOutput;
+use weaver_broker::ProviderOutput;
 pub(crate) struct Output {
     pub telemetry: std::sync::Arc<weaver_telemetry::Metrics>,
     pub sender: mpsc::Sender<std::result::Result<pb::ProviderFrame, tonic::Status>>,

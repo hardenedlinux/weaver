@@ -27,6 +27,7 @@ pub(super) struct PreparedRequest {
     host: String,
     port: u16,
     length: usize,
+    expires: Option<Instant>,
     tls: Arc<rustls::ClientConfig>,
     runtime: Arc<IoRuntime>,
 }
@@ -35,6 +36,7 @@ impl PreparedRequest {
         endpoint: &str,
         secret: &str,
         protocol: ProviderProtocol,
+        expires: Option<Instant>,
         body: &str,
         tls: Arc<rustls::ClientConfig>,
         runtime: Arc<IoRuntime>,
@@ -58,7 +60,8 @@ impl PreparedRequest {
             .as_str();
         let (header, value) = match protocol {
             ProviderProtocol::OpenAi => ("authorization", format!("Bearer {secret}")),
-            ProviderProtocol::Anthropic => ("x-api-key", secret.to_owned()),
+            ProviderProtocol::Anthropic if expires.is_none() => ("x-api-key", secret.to_owned()),
+            ProviderProtocol::Anthropic => ("authorization", format!("Bearer {secret}")),
         };
         let mut authorization = hyper::header::HeaderValue::try_from(value)
             .map_err(|_| Error::Invalid("provider authorization"))?;
@@ -83,11 +86,13 @@ impl PreparedRequest {
             host,
             port,
             length: body.len(),
+            expires,
             tls,
             runtime,
         })
     }
     pub(super) fn write_and_seal(self) -> Result<SealedRequest> {
+        require_fresh(self.expires)?;
         let runtime = self.runtime.clone();
         let deadline = Instant::now() + Duration::from_secs(10);
         runtime.wait(deadline, async move {
@@ -108,6 +113,7 @@ impl PreparedRequest {
                 .handshake(io)
                 .await
                 .map_err(|_| Error::Conflict("provider HTTP unknown"))?;
+            require_fresh(self.expires)?;
             let response = Box::pin(async move { sender.send_request(self.request).await });
             SealedRequest::finish_writing(
                 Driver::new(connection),
@@ -124,3 +130,10 @@ impl PreparedRequest {
 #[cfg(test)]
 #[path = "../../tests/unit/provider_request.rs"]
 mod tests;
+
+fn require_fresh(expires: Option<Instant>) -> Result<()> {
+    if expires.is_some_and(|deadline| Instant::now() >= deadline) {
+        return Err(Error::Denied);
+    }
+    Ok(())
+}

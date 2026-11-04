@@ -44,7 +44,7 @@ the guarded executor.
 | weaver-policy | 6 | crates/policy/benches/gateway.rs |
 | weaver-policy-ffi | 1 | crates/policy-ffi/benches/gateway.rs |
 | weaver-ledger | 33 | crates/ledger/benches/gateway.rs |
-| weaver-execution | 1 | crates/execution/benches/gateway.rs |
+| weaver-broker | 1 | crates/broker/benches/gateway.rs |
 | weaver-server | 5 | crates/server/benches/gateway.rs |
 
 The current declared all-features matrix contains 62 Rust cases. Three additional Go
@@ -112,7 +112,7 @@ Each package also documents its entrypoint and timing boundary beside the target
 [[file:../../../crates/contracts/benches/README.org][contracts]],
 [[file:../../../crates/policy/benches/README.org][policy]],
 [[file:../../../crates/ledger/benches/README.org][ledger]],
-[[file:../../../crates/execution/benches/README.org][execution]], and
+[[file:../../../crates/broker/benches/README.org][execution]], and
 [[file:../../../crates/server/benches/README.org][server]].
 
 * Workload and measurement rules
