@@ -18,6 +18,7 @@ fn prepared_bearer_retains_sensitive_debug_redaction_without_io() {
     let prepared = PreparedRequest::new(
         "https://example.invalid/v1/chat/completions",
         "private-fixture-bearer",
+        weaver_contracts::ProviderProtocol::OpenAi,
         "{}",
         Arc::new(config),
         Arc::new(IoRuntime {

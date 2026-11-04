@@ -11,6 +11,7 @@ import (
 	"math"
 	"net/url"
 	"slices"
+	"strings"
 
 	v1 "github.com/HardenedLinux/weaver/go/api/v1"
 )
@@ -52,6 +53,10 @@ func CompileProvider(task v1.Task, p v1.ProviderPlan, view v1.View) (v1.Provider
 		parsed, err := url.Parse(route.Endpoint)
 		if err != nil || parsed.Scheme != "https" || parsed.Host == "" || parsed.User != nil || parsed.Fragment != "" || !slices.Contains(task.Targets, route.Target) || task.Endpoints[route.Target] != route.Endpoint || seen[route.Target] {
 			return zero, errors.New("unregistered provider route")
+		}
+		if task.ProviderProfile.Protocol == v1.AnthropicMessagesSSE &&
+			(parsed.EscapedPath() != "/v1/messages" || parsed.RawQuery != "" || parsed.ForceQuery || strings.Contains(route.Endpoint, "#")) {
+			return zero, errors.New("Anthropic Messages endpoint required")
 		}
 		seen[route.Target] = true
 	}

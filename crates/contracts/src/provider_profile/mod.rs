@@ -8,4 +8,6 @@ mod messages;
 mod request;
 mod sampling;
 
-pub use artifact::{CHAT_TEXT_SSE, ProviderProfile, ProviderRequestFacts};
+pub use artifact::{
+    ANTHROPIC_MESSAGES_SSE, CHAT_TEXT_SSE, ProviderProfile, ProviderProtocol, ProviderRequestFacts,
+};

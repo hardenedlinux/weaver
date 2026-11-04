@@ -40,6 +40,15 @@ import (
 )
 
 func TestProviderTerminalUsageIndependentIssuer(t *testing.T) {
+	checkTerminalUsageIndependentIssuer(t, false)
+}
+
+func TestAnthropicTerminalUsageIndependentIssuer(t *testing.T) {
+	checkTerminalUsageIndependentIssuer(t, true)
+}
+
+func checkTerminalUsageIndependentIssuer(t *testing.T, anthropic bool) {
+	t.Helper()
 	t.Setenv("WEAVER_STORAGE_JOURNAL", "mvcc")
 	binary := filepath.Join(t.TempDir(), "weaver-meter")
 	build := exec.Command(filepath.Join(runtime.GOROOT(), "bin/go"), "-C", "go", "build", "-o", binary, "./cmd/weaver-meter")
@@ -72,15 +81,25 @@ func TestProviderTerminalUsageIndependentIssuer(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			f := fixtureWithInvocation(t, func(w http.ResponseWriter, _ *http.Request) {
+			profile := providerProfile()
+			expected := []uint64{1, 2, 0, 1}
+			if anthropic {
+				profile.Protocol = v1.AnthropicMessagesSSE
+				expected[2] = 1
+			}
+			f := fixtureWithProfileInvocation(t, func(w http.ResponseWriter, _ *http.Request) {
 				w.Header().Set("Content-Type", "text/event-stream")
+				if anthropic {
+					emitAnthropic(w, complete)
+					return
+				}
 				emitChunk(w, "hello", false)
 				emitChunk(w, "", true)
 				fmt.Fprint(w, "data: {\"id\":\"stream-1\",\"object\":\"chat.completion.chunk\",\"model\":\"model-a\",\"choices\":[],\"usage\":{\"prompt_tokens\":3,\"completion_tokens\":1,\"total_tokens\":4,\"prompt_tokens_details\":{\"cached_tokens\":2}}}\n\n")
 				if complete {
 					fmt.Fprint(w, "data: [DONE]\n\n")
 				}
-			}, false, serverBinary, nil, []string{"WEAVER_METERING=" + string(config)})
+			}, false, serverBinary, nil, []string{"WEAVER_METERING=" + string(config)}, profile)
 			ctx, cancel := context.WithTimeout(t.Context(), 12*time.Second)
 			defer cancel()
 			rotate := func(tenant, issuer string, expected uint64, cert tls.Certificate, token string) *pb.MeterCredentialRotation {
@@ -133,6 +152,24 @@ func TestProviderTerminalUsageIndependentIssuer(t *testing.T) {
 				return out.Version, formula
 			}
 			version, oldFormula := publish("", [4]uint64{1_000_000, 0, 0, 50_000})
+			if anthropic {
+				changed := f.plan
+				changed.Routes = slices.Clone(f.plan.Routes)
+				for i, route := range changed.Routes {
+					if route.Target == "primary" {
+						changed.Routes[i].Endpoint = f.plan.Routes[len(f.plan.Routes)-1].Endpoint
+					}
+				}
+				wrong, err := f.client.RPC.ExecuteProvider(f.client.Context(ctx), &pb.ProviderRequest{
+					Plan: gatewayclient.Plan(changed), Encoding: pb.Encoding_PROTOBUF, BatchRows: 1, CatalogVersion: version,
+				})
+				if err == nil {
+					_, err = wrong.Recv()
+				}
+				if status.Code(err) != codes.FailedPrecondition || f.primary.Load() != 0 || f.backup.Load() != 0 {
+					t.Fatalf("replacement Anthropic target sent: %v", err)
+				}
+			}
 			stream, err := f.client.RPC.ExecuteProvider(f.client.Context(ctx), &pb.ProviderRequest{
 				Plan: gatewayclient.Plan(f.plan), Encoding: pb.Encoding_PROTOBUF, BatchRows: 1, CatalogVersion: version,
 			})
@@ -147,7 +184,7 @@ func TestProviderTerminalUsageIndependentIssuer(t *testing.T) {
 			if (err == nil) != complete {
 				t.Fatalf("execution: %v", err)
 			}
-			publish(version, [4]uint64{2_000_000, 0, 0, 50_000})
+			newVersion, _ := publish(version, [4]uint64{2_000_000, 0, 0, 50_000})
 			if !complete {
 				f.stop(t)
 				f.start(t)
@@ -169,13 +206,22 @@ func TestProviderTerminalUsageIndependentIssuer(t *testing.T) {
 				}); status.Code(err) != codes.PermissionDenied {
 					t.Fatalf("late signed usage released exposure: %v", err)
 				}
+				retry, err := f.client.RPC.ExecuteProvider(f.client.Context(ctx), &pb.ProviderRequest{
+					Plan: gatewayclient.Plan(f.plan), Encoding: pb.Encoding_PROTOBUF, BatchRows: 1, CatalogVersion: newVersion,
+				})
+				if err == nil {
+					_, err = retry.Recv()
+				}
+				if status.Code(err) != codes.FailedPrecondition || f.primary.Load() != 1 || f.backup.Load() != 0 {
+					t.Fatalf("interrupted provider was dispatched again: %v", err)
+				}
 				if r := inspect(t, f); r.GetState() != "unknown" || r.GetHeld() != 4 {
 					t.Fatalf("unknown hold changed: %v", r)
 				}
 				return
 			}
 			observed, err := meter.RPC.InspectTerminalUsage(meter.Context(ctx), operation)
-			if err != nil || !slices.Equal(observed.GetTokens(), []uint64{1, 2, 0, 1}) || observed.GetFormulaDigest() != oldFormula {
+			if err != nil || !slices.Equal(observed.GetTokens(), expected) || observed.GetFormulaDigest() != oldFormula {
 				t.Fatalf("normalized evidence: %v %v", observed, err)
 			}
 			if _, err := f.admin.RPC.InspectTerminalUsage(f.admin.Context(ctx), operation); status.Code(err) != codes.PermissionDenied {
@@ -284,4 +330,25 @@ func (c lostMeterRotation) RotateMeterCredential(ctx context.Context, r *pb.Mete
 		return nil, err
 	}
 	return nil, status.Error(codes.Unavailable, "meter rotation response lost")
+}
+
+func emitAnthropic(w http.ResponseWriter, complete bool) {
+	frames := []struct{ kind, payload string }{
+		{"message_start", `{"message":{"model":"model-a","role":"assistant","content":[],"stop_reason":null,"usage":{"input_tokens":1,"cache_read_input_tokens":2,"cache_creation_input_tokens":1,"output_tokens":1}}}`},
+		{"content_block_start", `{"index":0,"content_block":{"type":"text","text":""}}`},
+		{"content_block_delta", `{"index":0,"delta":{"type":"text_delta","text":"hello"}}`},
+		{"content_block_stop", `{"index":0}`},
+		{"message_delta", `{"delta":{"stop_reason":null},"usage":{"output_tokens":1}}`},
+		{"message_delta", `{"delta":{"stop_reason":"end_turn"},"usage":{"output_tokens":1}}`},
+	}
+	if complete {
+		frames = append(frames, struct{ kind, payload string }{"message_stop", "{}"})
+	}
+	for _, frame := range frames {
+		body := fmt.Sprintf("{\"type\":%q}", frame.kind)
+		if frame.payload != "{}" {
+			body = body[:len(body)-1] + "," + frame.payload[1:]
+		}
+		fmt.Fprintf(w, "event: %s\ndata: %s\n\n", frame.kind, body)
+	}
 }

@@ -181,7 +181,44 @@ fn guarded_provider(c: &mut Criterion) {
         )
     });
 }
-criterion_group! {name=benches;config=Criterion::default().sample_size(30).warm_up_time(Duration::from_secs(1)).measurement_time(Duration::from_secs(2));targets=guarded_provider}
+#[path = "../src/provider/anthropic_sse.rs"]
+mod anthropic_sse;
+
+fn anthropic_decode(c: &mut Criterion) {
+    use weaver_contracts::ProviderEventKind;
+    let mut data = String::new();
+    for (event, fields) in [
+        (
+            "message_start",
+            r#""message":{"model":"fixture","role":"assistant","content":[],"usage":{"input_tokens":1,"output_tokens":0}}"#,
+        ),
+        (
+            "content_block_start",
+            r#""index":0,"content_block":{"type":"text","text":""}"#,
+        ),
+    ] {
+        data.push_str(&format!(
+            "event: {event}\ndata: {{\"type\":\"{event}\",{fields}}}\n\n"
+        ));
+    }
+    for _ in 0..64 {
+        data.push_str("event: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"fragment\"}}\n\n");
+    }
+    data.push_str("event: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":0}\n\nevent: message_delta\ndata: {\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\"},\"usage\":{\"output_tokens\":64}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n");
+    c.bench_function("execution/anthropic_sse_64_deltas", |b| {
+        b.iter(|| {
+            let mut decoder = anthropic_sse::Decoder::new(black_box(data.as_bytes()), "fixture");
+            loop {
+                let event = black_box(decoder.next().expect("bounded provider event"));
+                if event.kind == ProviderEventKind::Done {
+                    break;
+                }
+            }
+            assert_eq!(black_box(decoder.tokens()), [1, 0, 0, 64]);
+        })
+    });
+}
+criterion_group! {name=benches;config=Criterion::default().sample_size(30).warm_up_time(Duration::from_secs(1)).measurement_time(Duration::from_secs(2));targets=guarded_provider,anthropic_decode}
 #[path = "support/header_seal.rs"]
 mod header_seal;
 fn main() {

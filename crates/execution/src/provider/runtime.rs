@@ -3,12 +3,14 @@
 // SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 //! Guarded provider invocation; no retry, redirect, reconnect or automatic route fallback.
-use super::openai_sse;
+use super::{anthropic_sse, openai_sse};
 use std::{
     collections::{BTreeMap, BTreeSet},
     sync::Arc,
 };
-use weaver_contracts::{Error, ProviderEvent, ProviderPlan, ProviderRoute, Result};
+use weaver_contracts::{
+    Error, ProviderEvent, ProviderPlan, ProviderProtocol, ProviderRoute, Result,
+};
 use weaver_ledger::{Ledger, ProviderDispatch};
 
 /// Process-owned provider credentials and a bounded, non-retrying HTTPS client.
@@ -78,6 +80,7 @@ impl ProviderTransport {
         &self,
         plan: &ProviderPlan,
         route: &ProviderRoute,
+        protocol: ProviderProtocol,
     ) -> Result<super::request::PreparedRequest> {
         crate::HttpsTransport::validate_endpoint(&route.endpoint)?;
         let runtime = self.inner.runtime.clone();
@@ -89,6 +92,7 @@ impl ProviderTransport {
         super::request::PreparedRequest::new(
             &route.endpoint,
             secret,
+            protocol,
             &plan.body,
             self.inner.tls.clone(),
             runtime,
@@ -171,7 +175,14 @@ fn execute_stream<O: ProviderOutput>(
     }
     let permit = ledger.consume_provider(&plan.family, &plan.node, &transport.eligible())?;
     let response = open_guarded(ledger, &permit, transport, output)?;
-    let mut reader = openai_sse::Decoder::new(response, &plan.model);
+    let mut reader = match permit.protocol() {
+        ProviderProtocol::OpenAi => {
+            StreamDecoder::OpenAi(openai_sse::Decoder::new(response, &plan.model))
+        }
+        ProviderProtocol::Anthropic => {
+            StreamDecoder::Anthropic(anthropic_sse::Decoder::new(response, &plan.model))
+        }
+    };
     let mut batch = Vec::with_capacity(batch_rows);
     loop {
         if output.stopped() {
@@ -206,7 +217,28 @@ fn execute_stream<O: ProviderOutput>(
             break;
         }
     }
-    ledger.complete_provider_with_usage(&permit, format, reader.terminal_tokens)
+    ledger.complete_provider_with_usage(&permit, format, reader.terminal_tokens())
+}
+
+enum StreamDecoder<R: std::io::Read> {
+    OpenAi(openai_sse::Decoder<R>),
+    Anthropic(anthropic_sse::Decoder<R>),
+}
+
+impl<R: std::io::Read> StreamDecoder<R> {
+    fn next(&mut self) -> Result<ProviderEvent> {
+        match self {
+            Self::OpenAi(reader) => reader.next(),
+            Self::Anthropic(reader) => reader.next(),
+        }
+    }
+
+    fn terminal_tokens(&self) -> Option<[u64; 4]> {
+        match self {
+            Self::OpenAi(reader) => reader.terminal_tokens,
+            Self::Anthropic(reader) => Some(reader.tokens()),
+        }
+    }
 }
 
 fn open_guarded<O: ProviderOutput>(
@@ -219,7 +251,7 @@ fn open_guarded<O: ProviderOutput>(
         return Err(Error::Conflict("cancelled after provider consumption"));
     }
     // Request construction and local client initialization perform no provider IO.
-    let request = transport.prepare(permit.plan(), permit.route())?;
+    let request = transport.prepare(permit.plan(), permit.route(), permit.protocol())?;
     let sealed = ledger.dispatch_provider(permit, || {
         if output.stopped() {
             return Err(Error::Conflict("cancelled before provider invocation"));

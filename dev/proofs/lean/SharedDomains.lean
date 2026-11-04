@@ -275,3 +275,20 @@ theorem imported_route_cannot_replay_consumed_send (matchesReview published ceda
 #print axioms import_cannot_replace_cedar
 #print axioms imported_route_cannot_replay_consumed_send
 end Weaver.ProviderImport
+
+namespace Weaver.AnthropicUsage
+
+def qualify (finished stopped : Bool) (cumulative : Nat) : Option Nat :=
+  if finished && stopped then some cumulative else none
+
+theorem interrupted_usage_is_not_terminal (finished : Bool) (cumulative : Nat) :
+    qualify finished false cumulative = none := by
+  simp [qualify]
+
+theorem cumulative_usage_is_not_added (previous current : Nat)
+    (_monotonic : previous ≤ current) :
+    qualify true true current = some current := rfl
+
+#print axioms interrupted_usage_is_not_terminal
+#print axioms cumulative_usage_is_not_added
+end Weaver.AnthropicUsage

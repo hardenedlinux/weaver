@@ -330,7 +330,7 @@ proptest::proptest! {
         let permit=ledger.consume_provider("f","infer",&eligible).expect("consume");
         let transport=ProviderTransport::new(BTreeMap::from([("primary".into(),"test-key".into())]),Some(endpoint.root.as_bytes()),endpoint.runtime.handle().clone()).expect("transport");
         let before=ledger.transaction_timings();
-        let request=transport.prepare(permit.plan(),permit.route()).expect("pure request");
+        let request=transport.prepare(permit.plan(),permit.route(),permit.protocol()).expect("pure request");
         proptest::prop_assert_eq!(endpoint.calls.load(Ordering::SeqCst),0);
         proptest::prop_assert_eq!(ledger.transaction_timings().transaction_hold.attempts,before.transaction_hold.attempts);
         if revoked {ledger.publish(Some(0),"forbid(principal,action,resource);",2).expect("new fence");}
@@ -408,7 +408,7 @@ fn dropped_sealed_result_closes_sole_driver_without_header_read_or_refund() {
     )
     .expect("transport");
     let request = transport
-        .prepare(permit.plan(), permit.route())
+        .prepare(permit.plan(), permit.route(), permit.protocol())
         .expect("inert request");
     let sealed = ledger
         .dispatch_provider(&permit, || request.write_and_seal())

@@ -21,7 +21,7 @@ use tokio::{
     time::{Instant, timeout},
 };
 use tokio_rustls::TlsConnector;
-use weaver_contracts::{Error, Result};
+use weaver_contracts::{Error, ProviderProtocol, Result};
 pub(super) struct PreparedRequest {
     request: Request<Full<Bytes>>,
     host: String,
@@ -34,6 +34,7 @@ impl PreparedRequest {
     pub(super) fn new(
         endpoint: &str,
         secret: &str,
+        protocol: ProviderProtocol,
         body: &str,
         tls: Arc<rustls::ClientConfig>,
         runtime: Arc<IoRuntime>,
@@ -55,18 +56,26 @@ impl PreparedRequest {
             .authority()
             .ok_or(Error::Invalid("provider authority"))?
             .as_str();
-        let mut authorization = hyper::header::HeaderValue::try_from(format!("Bearer {secret}"))
+        let (header, value) = match protocol {
+            ProviderProtocol::OpenAi => ("authorization", format!("Bearer {secret}")),
+            ProviderProtocol::Anthropic => ("x-api-key", secret.to_owned()),
+        };
+        let mut authorization = hyper::header::HeaderValue::try_from(value)
             .map_err(|_| Error::Invalid("provider authorization"))?;
         authorization.set_sensitive(true);
-        let request = Request::builder()
+        let mut builder = Request::builder()
             .method("POST")
             .uri(uri.path_and_query().map_or("/", |p| p.as_str()))
             .header("Host", authority)
-            .header("Authorization", authorization)
+            .header(header, authorization)
             .header("Content-Type", "application/json")
             .header("Accept", "text/event-stream")
             .header("Content-Length", body.len())
-            .header("Connection", "close")
+            .header("Connection", "close");
+        if matches!(protocol, ProviderProtocol::Anthropic) {
+            builder = builder.header("anthropic-version", "2023-06-01");
+        }
+        let request = builder
             .body(Full::new(Bytes::copy_from_slice(body.as_bytes())))
             .map_err(|_| Error::Invalid("provider request construction"))?;
         Ok(Self {

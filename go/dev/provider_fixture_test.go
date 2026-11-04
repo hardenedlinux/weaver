@@ -29,6 +29,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"sync/atomic"
 	"syscall"
 	"testing"
@@ -179,6 +180,14 @@ func fixtureWithBinary(t testing.TB, handler http.HandlerFunc, large bool, binar
 	return fixtureWithInvocation(t, handler, large, binary, nil, nil)
 }
 func fixtureWithInvocation(t testing.TB, handler http.HandlerFunc, large bool, binary string, arguments, extraEnvironment []string, withPlan ...func(v1.ProviderPlan) string) *fixture {
+	return fixtureWithProfileInvocation(t, handler, large, binary, arguments, extraEnvironment, providerProfile(), withPlan...)
+}
+func fixtureWithProfileInvocation(t testing.TB, handler http.HandlerFunc, large bool, binary string, arguments, extraEnvironment []string, profile *v1.ProviderProfile, withPlan ...func(v1.ProviderPlan) string) *fixture {
+	anthropic := profile.Protocol == v1.AnthropicMessagesSSE
+	path := "/v1/chat/completions"
+	if anthropic {
+		path = "/v1/messages"
+	}
 	t.Helper()
 	f := &fixture{directory: t.TempDir(), pki: pki(t), binary: binary, arguments: append([]string(nil), arguments...)}
 	certificate, err := tls.X509KeyPair(f.pki.serverPEM, f.pki.serverKey)
@@ -188,7 +197,9 @@ func fixtureWithInvocation(t testing.TB, handler http.HandlerFunc, large bool, b
 	upstream := func(count *atomic.Int64, h http.HandlerFunc) string {
 		server := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			count.Add(1)
-			if r.Header.Get("Authorization") != "Bearer test-provider-key" {
+			if r.URL.Path != path || r.URL.RawQuery != "" ||
+				(anthropic && (r.Header.Get("X-Api-Key") != "test-provider-key" || r.Header.Get("Anthropic-Version") != "2023-06-01" || r.Header.Get("Authorization") != "")) ||
+				(!anthropic && r.Header.Get("Authorization") != "Bearer test-provider-key") {
 				t.Error("provider credential mismatch")
 			}
 			h(w, r)
@@ -196,13 +207,16 @@ func fixtureWithInvocation(t testing.TB, handler http.HandlerFunc, large bool, b
 		server.TLS = &tls.Config{Certificates: []tls.Certificate{certificate}, MinVersion: tls.VersionTLS12}
 		server.StartTLS()
 		t.Cleanup(server.Close)
-		return server.URL + "/v1/chat/completions"
+		return server.URL + path
 	}
 	primary := upstream(&f.primary, handler)
 	backup := upstream(&f.backup, completeSSE)
 	denied := upstream(&f.denied, completeSSE)
 	body := `{"model":"model-a","stream":true,"messages":[{"role":"user","content":"hello"}],"max_completion_tokens":32}`
-	f.plan = v1.ProviderPlan{Family: "f", Node: "infer", Profile: "p", Model: "model-a", Body: body, Ceiling: 4, Revision: 0, Fence: 1, Routes: []v1.ProviderRoute{{Target: "missing", Endpoint: "https://missing.invalid/v1/chat/completions"}, {Target: "denied", Endpoint: denied}, {Target: "primary", Endpoint: primary}, {Target: "backup", Endpoint: backup}}}
+	if anthropic {
+		body = strings.Replace(body, "max_completion_tokens", "max_tokens", 1)
+	}
+	f.plan = v1.ProviderPlan{Family: "f", Node: "infer", Profile: "p", Model: "model-a", Body: body, Ceiling: 4, Revision: 0, Fence: 1, Routes: []v1.ProviderRoute{{Target: "missing", Endpoint: "https://missing.invalid" + path}, {Target: "denied", Endpoint: denied}, {Target: "primary", Endpoint: primary}, {Target: "backup", Endpoint: backup}}}
 	// Keep large requests inside the same fixed native request limit.
 	if large {
 		var request map[string]any
@@ -211,7 +225,7 @@ func fixtureWithInvocation(t testing.TB, handler http.HandlerFunc, large bool, b
 		data, _ := json.Marshal(request)
 		f.plan.Body = string(data)
 	}
-	f.plan.ProfileCommitment, _ = providerProfile().Digest()
+	f.plan.ProfileCommitment, _ = profile.Digest()
 	digest, err := f.plan.Digest()
 	if err != nil {
 		t.Fatal(err)
@@ -223,7 +237,7 @@ func fixtureWithInvocation(t testing.TB, handler http.HandlerFunc, large bool, b
 		endpoints[route.Target] = route.Endpoint
 		targets = append(targets, route.Target)
 	}
-	task := v1.Task{ProviderProfile: providerProfile(), Family: "f", Principal: "alice", Profile: "p", Nodes: []string{"infer"}, Targets: targets, Endpoints: endpoints, BodyDigests: map[string]string{"infer": hex.EncodeToString(sum[:])}, NodeCostBounds: map[string]uint64{"infer": 4}, StreamContracts: map[string]string{"infer": digest}, Models: []string{"model-a"}, Budget: 8}
+	task := v1.Task{ProviderProfile: profile, Family: "f", Principal: "alice", Profile: "p", Nodes: []string{"infer"}, Targets: targets, Endpoints: endpoints, BodyDigests: map[string]string{"infer": hex.EncodeToString(sum[:])}, NodeCostBounds: map[string]uint64{"infer": 4}, StreamContracts: map[string]string{"infer": digest}, Models: []string{"model-a"}, Budget: 8}
 	f.plan, err = routing.CompileProvider(task, f.plan, v1.View{Revision: 0, Fence: 1})
 	if err != nil {
 		t.Fatal(err)
@@ -277,7 +291,7 @@ func fixtureWithInvocation(t testing.TB, handler http.HandlerFunc, large bool, b
 	if err != nil {
 		t.Fatal(err)
 	}
-	f.policy = string(policy)
+	f.policy = strings.ReplaceAll(string(policy), v1.ChatTextSSE, profile.Protocol)
 	schema, err := os.ReadFile(filepath.Join(root(t), "prod/policies/provider/schema.json"))
 	if err != nil {
 		t.Fatal(err)

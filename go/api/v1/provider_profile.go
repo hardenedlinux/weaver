@@ -13,6 +13,7 @@ import (
 )
 
 const ChatTextSSE = "openai.chat-text-sse.v1"
+const AnthropicMessagesSSE = "anthropic.messages-text-sse.v1"
 
 // ProviderProfile is source data; registration and execution have distinct owners.
 type ProviderProfile struct {
@@ -29,7 +30,7 @@ type ProviderRequestFacts struct {
 }
 
 func (p ProviderProfile) Validate() error {
-	if !providerIdentifier(p.ID) || p.Protocol != ChatTextSSE || p.MaxOutputTokens == 0 || p.MaxOutputTokens > 4096 ||
+	if !providerIdentifier(p.ID) || (p.Protocol != ChatTextSSE && p.Protocol != AnthropicMessagesSSE) || p.MaxOutputTokens == 0 || p.MaxOutputTokens > 4096 ||
 		p.MaxMessages == 0 || p.MaxMessages > 64 || p.MaxBodyBytes == 0 || p.MaxBodyBytes > 1<<20 {
 		return errors.New("provider profile bounds or protocol")
 	}

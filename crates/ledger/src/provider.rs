@@ -27,6 +27,9 @@ impl ProviderDispatch {
     pub fn plan(&self) -> &ProviderPlan {
         &self.plan
     }
+    pub fn protocol(&self) -> weaver_contracts::ProviderProtocol {
+        self.binding.protocol()
+    }
     pub fn route(&self) -> &ProviderRoute {
         &self.route
     }

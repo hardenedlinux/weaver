@@ -48,6 +48,10 @@ module SharedDomains {
     matched and published and cedar and not(spent)
   run importedCatalogCannotBypassCedarTest=init.expect(not(importedSend(true,true,false,false)))
   run importedUnknownSendCannotRetryTest=init.expect(not(importedSend(true,true,true,true)))
+  pure def anthropicUsage(stopped:bool, cumulative:int):int=
+    if (stopped) cumulative else 0
+  run anthropicInterruptedUsageIsNotTerminalTest=init.expect(anthropicUsage(false,8)==0)
+  run anthropicUsesLatestCumulativeCountTest=init.expect(anthropicUsage(true,8)==8 and anthropicUsage(true,8)!=3+8)
   action init=s'=initial
   action reserve(f:int):bool=all{not(s.claims.contains(f)),s.active==Set(),exposure(s.root.get(f))+3<=6,
     s'=s.with("claims",s.claims.union(Set(f))).with("history",s.history.union(Set(f))).with("held",s.held.set(f,3))}

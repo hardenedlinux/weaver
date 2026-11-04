@@ -21,7 +21,9 @@ mod provider_catalog;
 pub use provider_catalog::{CatalogEntry, ProviderCatalog};
 mod provider_profile;
 mod quotas;
-pub use provider_profile::{CHAT_TEXT_SSE, ProviderProfile, ProviderRequestFacts};
+pub use provider_profile::{
+    ANTHROPIC_MESSAGES_SSE, CHAT_TEXT_SSE, ProviderProfile, ProviderProtocol, ProviderRequestFacts,
+};
 pub use quotas::{QuotaDeployment, QuotaKey};
 mod publication;
 mod publication_review;

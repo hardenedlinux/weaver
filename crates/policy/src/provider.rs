@@ -12,6 +12,7 @@ pub struct BoundProviderPolicy {
     principal: EntityUid,
     target: EntityUid,
     context: ProviderContext,
+    protocol: weaver_contracts::ProviderProtocol,
 }
 /// Current effect coordinates supplied by the deciding owner, not the RPC caller.
 pub struct ProviderCheck<'a> {
@@ -30,13 +31,31 @@ pub fn bind_provider(
     if !plan.routes.contains(route) {
         return Err(Error::Denied);
     }
+    let protocol = task
+        .provider_profile
+        .as_ref()
+        .ok_or(Error::Denied)?
+        .adapter()?;
+    if matches!(protocol, weaver_contracts::ProviderProtocol::Anthropic)
+        && route
+            .endpoint
+            .strip_prefix("https://")
+            .and_then(|endpoint| endpoint.split_once('/'))
+            .is_none_or(|(_, path)| path != "v1/messages")
+    {
+        return Err(Error::Denied);
+    }
     Ok(BoundProviderPolicy {
+        protocol,
         principal: authorize::entity("Principal", &task.principal)?,
         target: authorize::entity("Target", &route.target)?,
         context: ProviderContext::capture(task, plan, route, &facts)?,
     })
 }
 impl BoundProviderPolicy {
+    pub fn protocol(&self) -> weaver_contracts::ProviderProtocol {
+        self.protocol
+    }
     /// No current Policy, domains, action, sequence or format survives this call.
     pub fn authorize(&self, source: &str, check: ProviderCheck<'_>) -> Result<()> {
         authorize::evaluate_typed(

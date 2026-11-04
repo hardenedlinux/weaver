@@ -82,8 +82,8 @@ package WeaverGatewayArchitecture {
         attribute journeyName : String = "Provider";
         attribute journeySummary : String = "One bound request";
         attribute journeyGlyph : String = "model-provider";
-        attribute displayName : String = "LLM providers + tools";
-        attribute responsibility : String = "Exact model, endpoint and codec\nStreaming and tool-call results\nNo hidden SDK retry or redirect";
+        attribute displayName : String = "LLM protocol adapters";
+        attribute responsibility : String = "OpenAI-compatible + Anthropic Messages\nBound endpoint, protocol and model\nBuffered SSE with terminal usage";
         attribute glyph : String = "provider";
         attribute visualRole : String = "selection";
         port request : ~WorkPort;

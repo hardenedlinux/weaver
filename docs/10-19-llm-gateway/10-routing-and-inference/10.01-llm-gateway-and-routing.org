@@ -474,9 +474,8 @@ of the measured token counts.
 Weaver owns provider adaptation. The Rust =llm-provider=
 Cargo feature enables the direct provider subsystem and is on by default.
 A server built without the feature rejects execution before admission.
-OpenAI-compatible Chat Completions is the current adapter. Anthropic
-Messages and other protocols require their own qualified adapters under
-the same broker boundary. Go selects a concrete provider and model
+OpenAI-compatible Chat Completions and Anthropic Messages have distinct
+text streaming profiles under the same broker boundary. Go selects a concrete provider and model
 from the authorized catalog using task capabilities, tenant policy, cost
 and latency. Rust adapters translate and validate requests, decode streams
 and normalize usage. The Rust broker owns provider credentials, the final
@@ -554,3 +553,48 @@ to the plan before Cedar evaluation. Any provider feature whose final
 effect cannot be expressed and checked at this boundary requires a reviewed
 schema extension before activation. Keep the authorization context
 independent of caller assertions and response telemetry.
+
+
+** Anthropic Messages text streaming
+
+The =anthropic.messages-text-sse.v1= profile binds the exact model,
+request bytes and HTTPS =/v1/messages= target. It accepts text user and
+assistant messages, optional system text, streaming and a bounded
+=max_tokens=. The broker attaches its target-owned API key and the
+adapter's fixed Anthropic version header. Go validates the same source
+profile before proposing the plan. The Rust ledger derives the adapter
+from the retained profile and checks current Cedar Policy before sending.
+
+The decoder reuses bounded line and event buffers. It rejects foreign
+models, non-text blocks and invalid transitions. Usage fields represent
+uncached input, cache read, cache creation and output directly. The latest
+monotonic cumulative values replace earlier values. Only a valid
+=message_stop= qualifies terminal usage. The final usage write shares the
+original completion transaction, and the meter settles under the retained
+catalog formula. A stream interruption retains the original hold.
+
+The adapter uses the same guarded HTTPS writer and response queue as
+OpenAI-compatible execution. It performs one protocol selection per
+consumed dispatch, keeps a compact stream state and does no per-event
+network, policy publication or catalog fetch. Existing batch release
+still checks current Cedar authority. The Criterion benchmark
+=execution/anthropic_sse_64_deltas= isolates framing, decoding and
+normalization from TLS, Cedar and Turso. The TLS integration covers
+settlement and recovery. Tool, thinking, multimodal and beta fallback
+events are outside this profile.
+
+See [[https://platform.claude.com/docs/en/build-with-claude/streaming][Anthropic streaming event semantics]].
+
+*** Provider workload identity
+
+The current Anthropic adapter uses a deployment-owned API key. A separate
+credential mode can support Anthropic Workload Identity Federation through
+its OAuth JWT bearer exchange. Bind the issuer, federation rule, workspace,
+inference scope and concrete provider target in deployment authority.
+Acquire and refresh short-lived access tokens outside the send critical
+section. The broker must use a current token for the bound target and
+refuse expired credentials before send. A provider authentication response
+cannot initiate a retry after consumption or release unknown exposure.
+Inbound caller OAuth remains a separate identity boundary.
+
+See [[https://platform.claude.com/docs/en/manage-claude/workload-identity-federation][Anthropic Workload Identity Federation]].

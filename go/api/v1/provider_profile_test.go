@@ -6,8 +6,11 @@ package v1
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
+	"strings"
 	"testing"
+	"testing/quick"
 )
 
 func sourceProfile(t testing.TB) ProviderProfile {
@@ -111,4 +114,21 @@ func FuzzProviderProfileRequestFacts(f *testing.F) {
 			t.Fatal("request facts changed")
 		}
 	})
+}
+
+func TestAnthropicRequestProfile(t *testing.T) {
+	if err := quick.Check(func(output uint16, malformed bool) bool {
+		profile := ProviderProfile{ID: "anthropic-text", Protocol: AnthropicMessagesSSE, MaxOutputTokens: 4096, MaxMessages: 2, MaxBodyBytes: 4096}
+		body := fmt.Sprintf(`{"model":"claude-model","stream":true,"system":"policy","messages":[{"role":"user","content":"test"}],"max_tokens":%d}`, output)
+		if malformed {
+			body = strings.Replace(body, `"role":"user"`, `"role":"system"`, 1)
+		}
+		facts, err := profile.RequestFacts(body)
+		if malformed || output == 0 || output > 4096 {
+			return err != nil
+		}
+		return err == nil && facts.Model == "claude-model" && facts.OutputTokenLimit == uint64(output)
+	}, &quick.Config{MaxCount: 256}); err != nil {
+		t.Fatal(err)
+	}
 }
