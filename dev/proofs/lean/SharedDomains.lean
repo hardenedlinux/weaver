@@ -225,3 +225,19 @@ theorem unknown_or_duplicate_releases_nothing (original offered charge ceiling :
 #print axioms stale_formula_releases_nothing
 #print axioms unknown_or_duplicate_releases_nothing
 end Weaver.RetainedTariff
+
+namespace Weaver.TerminalUsage
+
+def release (terminal observed matched applied : Bool) (remainder : Nat) :=
+  if terminal && observed && matched && !applied then remainder else 0
+
+theorem late_observation_cannot_release (observed matched : Bool) (remainder : Nat) :
+    release false observed matched false remainder = 0 := rfl
+
+theorem issuer_replay_cannot_release_twice (terminal observed matched : Bool)
+    (remainder : Nat) : release terminal observed matched true remainder = 0 := by
+  simp [release]
+
+#print axioms late_observation_cannot_release
+#print axioms issuer_replay_cannot_release_twice
+end Weaver.TerminalUsage

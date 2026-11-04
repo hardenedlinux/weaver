@@ -277,6 +277,15 @@ impl Ledger {
         Ok(output)
     }
     pub fn complete_provider(&mut self, permit: &ProviderDispatch, format: &str) -> Result<()> {
+        self.complete_provider_with_usage(permit, format, None)
+    }
+
+    pub fn complete_provider_with_usage(
+        &mut self,
+        permit: &ProviderDispatch,
+        format: &str,
+        tokens: Option<[u64; 4]>,
+    ) -> Result<()> {
         self.check_provider_session(permit)?;
         let tx = crate::persistence::begin_family(&mut self.connection, &permit.plan.family)
             .map_err(db)?;
@@ -293,6 +302,18 @@ impl Ledger {
             crate::persistence::params![permit.plan.family.to_owned(), permit.plan.node.to_owned()],
         )
         .map_err(db)?;
+        if let Some(tokens) = tokens {
+            crate::persistence::exec(
+                &tx,
+                "INSERT INTO provider_terminal_usage VALUES(?1,?2,?3)",
+                [
+                    permit.plan.family.as_str(),
+                    permit.plan.node.as_str(),
+                    &serde_json::to_string(&tokens)?,
+                ],
+            )
+            .map_err(db)?;
+        }
         tx.commit().map_err(db)?;
         Ok(())
     }

@@ -21,6 +21,8 @@ pub struct MeteringTenant {
 #[serde(deny_unknown_fields)]
 pub struct MeteringDeployment {
     pub audience: String,
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub require_terminal_usage: bool,
     pub tenants: BTreeMap<String, MeteringTenant>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub quotas: Option<crate::QuotaDeployment>,

@@ -27,6 +27,13 @@ struct Envelope {
     command: Command,
 }
 enum Command {
+    TerminalUsage {
+        family: String,
+        node: String,
+        reply: oneshot::Sender<Result<weaver_contracts::MeteringReceipt>>,
+        slot: OwnedSemaphorePermit,
+    },
+
     ReadCatalog {
         reply: oneshot::Sender<Result<Option<(String, weaver_contracts::ProviderCatalog)>>>,
         slot: OwnedSemaphorePermit,
@@ -197,6 +204,20 @@ impl SourceOwner {
     ) -> std::result::Result<weaver_contracts::DomainMigrationReceipt, Status> {
         self.submit(caller, |reply, slot| Command::Migrate {
             change,
+            reply,
+            slot,
+        })
+        .await
+    }
+    pub(crate) async fn terminal_usage(
+        &self,
+        caller: SourceIdentity,
+        family: String,
+        node: String,
+    ) -> std::result::Result<weaver_contracts::MeteringReceipt, Status> {
+        self.submit(caller, |reply, slot| Command::TerminalUsage {
+            family,
+            node,
             reply,
             slot,
         })
@@ -481,6 +502,17 @@ fn process(
         ledger.require_quiescent()?;
         let Envelope { caller, command } = command;
         match command {
+            Command::TerminalUsage {
+                family,
+                node,
+                reply,
+                slot,
+            } => {
+                let result = ledger.with_authenticated_source(&caller, |ledger| {
+                    ledger.inspect_terminal_usage(&family, &node)
+                });
+                answer(ledger, reply, result, slot)?;
+            }
             Command::ReadCatalog { reply, slot } => {
                 let result =
                     ledger.with_authenticated_source(&caller, |ledger| ledger.provider_catalog());

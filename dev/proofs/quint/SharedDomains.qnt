@@ -36,6 +36,10 @@ module SharedDomains {
     if (terminal and not(applied) and retained==supplied) 3 else 0
   run formulaChangeKeepsOriginalSettlementTest=init.expect(settlementRelease(1,2,true,false)==0 and settlementRelease(1,1,true,false)==3)
   run unknownAndDuplicateTariffReleaseTest=init.expect(settlementRelease(1,1,false,false)==0 and settlementRelease(1,1,true,true)==0)
+  pure def observedRelease(terminal:bool, observed:bool, matching:bool, applied:bool):int=
+    if (terminal and observed and matching and not(applied)) 2 else 0
+  run lateProviderObservationCannotSettleTest=init.expect(observedRelease(false,true,true,false)==0)
+  run restartedIssuerReplayCannotReleaseAgainTest=init.expect(observedRelease(true,true,true,false)==2 and observedRelease(true,true,true,true)==0)
   action init=s'=initial
   action reserve(f:int):bool=all{not(s.claims.contains(f)),s.active==Set(),exposure(s.root.get(f))+3<=6,
     s'=s.with("claims",s.claims.union(Set(f))).with("history",s.history.union(Set(f))).with("held",s.held.set(f,3))}

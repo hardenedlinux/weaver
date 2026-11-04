@@ -3682,10 +3682,11 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\x1dDELTA_DISPOSITION_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tBOOTSTRAP\x10\x01\x12\x15\n" +
 	"\x11NO_EXECUTION_GAIN\x10\x02\x12\x15\n" +
-	"\x11EXPLICIT_APPROVAL\x10\x032\xca\x10\n" +
+	"\x11EXPLICIT_APPROVAL\x10\x032\xa7\x11\n" +
 	"\aGateway\x12Y\n" +
 	"\x0fExecuteProvider\x12\".weaver.gateway.v1.ProviderRequest\x1a .weaver.gateway.v1.ProviderFrame0\x01\x12N\n" +
 	"\aInspect\x12\x1f.weaver.gateway.v1.OperationKey\x1a\".weaver.gateway.v1.ProviderReceipt\x12[\n" +
+	"\x14InspectTerminalUsage\x12\x1f.weaver.gateway.v1.OperationKey\x1a\".weaver.gateway.v1.MeteringReceipt\x12[\n" +
 	"\rApplyMetering\x12\".weaver.gateway.v1.MeteringReceipt\x1a&.weaver.gateway.v1.MeteringApplication\x12P\n" +
 	"\fRegisterTask\x12&.weaver.gateway.v1.RegisterTaskRequest\x1a\x18.weaver.gateway.v1.Empty\x12b\n" +
 	"\x15RegisterPublishedTask\x12/.weaver.gateway.v1.RegisterPublishedTaskRequest\x1a\x18.weaver.gateway.v1.Empty\x12\\\n" +
@@ -3817,50 +3818,52 @@ var file_gateway_v1_gateway_proto_depIdxs = []int32{
 	36, // 38: weaver.gateway.v1.ReviewRegistrationReceipt.publication:type_name -> weaver.gateway.v1.PublicationKey
 	13, // 39: weaver.gateway.v1.Gateway.ExecuteProvider:input_type -> weaver.gateway.v1.ProviderRequest
 	10, // 40: weaver.gateway.v1.Gateway.Inspect:input_type -> weaver.gateway.v1.OperationKey
-	46, // 41: weaver.gateway.v1.Gateway.ApplyMetering:input_type -> weaver.gateway.v1.MeteringReceipt
-	22, // 42: weaver.gateway.v1.Gateway.RegisterTask:input_type -> weaver.gateway.v1.RegisterTaskRequest
-	33, // 43: weaver.gateway.v1.Gateway.RegisterPublishedTask:input_type -> weaver.gateway.v1.RegisterPublishedTaskRequest
-	26, // 44: weaver.gateway.v1.Gateway.RegisterDomainTask:input_type -> weaver.gateway.v1.RegisterDomainTaskRequest
-	28, // 45: weaver.gateway.v1.Gateway.RegisterOriginalTask:input_type -> weaver.gateway.v1.RegisterOriginalTaskRequest
-	30, // 46: weaver.gateway.v1.Gateway.RegisterFamilyAlias:input_type -> weaver.gateway.v1.FamilyAliasRequest
-	31, // 47: weaver.gateway.v1.Gateway.MigrateExecutionDomains:input_type -> weaver.gateway.v1.DomainMigration
-	10, // 48: weaver.gateway.v1.Gateway.InspectExecutionDomains:input_type -> weaver.gateway.v1.OperationKey
-	34, // 49: weaver.gateway.v1.Gateway.PublishAuthority:input_type -> weaver.gateway.v1.PublishRequest
-	34, // 50: weaver.gateway.v1.Gateway.StageAuthority:input_type -> weaver.gateway.v1.PublishRequest
-	36, // 51: weaver.gateway.v1.Gateway.InspectPublication:input_type -> weaver.gateway.v1.PublicationKey
-	34, // 52: weaver.gateway.v1.Gateway.StageReviewedAuthority:input_type -> weaver.gateway.v1.PublishRequest
-	36, // 53: weaver.gateway.v1.Gateway.InspectPublicationReview:input_type -> weaver.gateway.v1.PublicationKey
-	43, // 54: weaver.gateway.v1.Gateway.RegisterPublicationReview:input_type -> weaver.gateway.v1.DeltaReview
-	5,  // 55: weaver.gateway.v1.Gateway.InspectSourceAuthority:input_type -> weaver.gateway.v1.Empty
-	38, // 56: weaver.gateway.v1.Gateway.RotateSourceAuthority:input_type -> weaver.gateway.v1.SourceRotationRequest
-	6,  // 57: weaver.gateway.v1.Gateway.CompileSource:input_type -> weaver.gateway.v1.ProducerRequest
-	5,  // 58: weaver.gateway.v1.Gateway.InspectProviderCatalog:input_type -> weaver.gateway.v1.Empty
-	15, // 59: weaver.gateway.v1.Gateway.PublishProviderCatalog:input_type -> weaver.gateway.v1.ProviderCatalogChange
-	5,  // 60: weaver.gateway.v1.Gateway.InspectTelemetry:input_type -> weaver.gateway.v1.Empty
-	18, // 61: weaver.gateway.v1.Gateway.ExecuteProvider:output_type -> weaver.gateway.v1.ProviderFrame
-	19, // 62: weaver.gateway.v1.Gateway.Inspect:output_type -> weaver.gateway.v1.ProviderReceipt
-	47, // 63: weaver.gateway.v1.Gateway.ApplyMetering:output_type -> weaver.gateway.v1.MeteringApplication
-	5,  // 64: weaver.gateway.v1.Gateway.RegisterTask:output_type -> weaver.gateway.v1.Empty
-	5,  // 65: weaver.gateway.v1.Gateway.RegisterPublishedTask:output_type -> weaver.gateway.v1.Empty
-	5,  // 66: weaver.gateway.v1.Gateway.RegisterDomainTask:output_type -> weaver.gateway.v1.Empty
-	29, // 67: weaver.gateway.v1.Gateway.RegisterOriginalTask:output_type -> weaver.gateway.v1.TaskAdmissionReceipt
-	25, // 68: weaver.gateway.v1.Gateway.RegisterFamilyAlias:output_type -> weaver.gateway.v1.DomainView
-	32, // 69: weaver.gateway.v1.Gateway.MigrateExecutionDomains:output_type -> weaver.gateway.v1.DomainMigrationReceipt
-	25, // 70: weaver.gateway.v1.Gateway.InspectExecutionDomains:output_type -> weaver.gateway.v1.DomainView
-	35, // 71: weaver.gateway.v1.Gateway.PublishAuthority:output_type -> weaver.gateway.v1.PublicationReceipt
-	36, // 72: weaver.gateway.v1.Gateway.StageAuthority:output_type -> weaver.gateway.v1.PublicationKey
-	35, // 73: weaver.gateway.v1.Gateway.InspectPublication:output_type -> weaver.gateway.v1.PublicationReceipt
-	36, // 74: weaver.gateway.v1.Gateway.StageReviewedAuthority:output_type -> weaver.gateway.v1.PublicationKey
-	44, // 75: weaver.gateway.v1.Gateway.InspectPublicationReview:output_type -> weaver.gateway.v1.PublicationReviewContext
-	45, // 76: weaver.gateway.v1.Gateway.RegisterPublicationReview:output_type -> weaver.gateway.v1.ReviewRegistrationReceipt
-	37, // 77: weaver.gateway.v1.Gateway.InspectSourceAuthority:output_type -> weaver.gateway.v1.SourceAuthorityView
-	39, // 78: weaver.gateway.v1.Gateway.RotateSourceAuthority:output_type -> weaver.gateway.v1.SourceRotationReceipt
-	9,  // 79: weaver.gateway.v1.Gateway.CompileSource:output_type -> weaver.gateway.v1.CompiledSource
-	14, // 80: weaver.gateway.v1.Gateway.InspectProviderCatalog:output_type -> weaver.gateway.v1.ProviderCatalogSnapshot
-	14, // 81: weaver.gateway.v1.Gateway.PublishProviderCatalog:output_type -> weaver.gateway.v1.ProviderCatalogSnapshot
-	4,  // 82: weaver.gateway.v1.Gateway.InspectTelemetry:output_type -> weaver.gateway.v1.TelemetrySnapshot
-	61, // [61:83] is the sub-list for method output_type
-	39, // [39:61] is the sub-list for method input_type
+	10, // 41: weaver.gateway.v1.Gateway.InspectTerminalUsage:input_type -> weaver.gateway.v1.OperationKey
+	46, // 42: weaver.gateway.v1.Gateway.ApplyMetering:input_type -> weaver.gateway.v1.MeteringReceipt
+	22, // 43: weaver.gateway.v1.Gateway.RegisterTask:input_type -> weaver.gateway.v1.RegisterTaskRequest
+	33, // 44: weaver.gateway.v1.Gateway.RegisterPublishedTask:input_type -> weaver.gateway.v1.RegisterPublishedTaskRequest
+	26, // 45: weaver.gateway.v1.Gateway.RegisterDomainTask:input_type -> weaver.gateway.v1.RegisterDomainTaskRequest
+	28, // 46: weaver.gateway.v1.Gateway.RegisterOriginalTask:input_type -> weaver.gateway.v1.RegisterOriginalTaskRequest
+	30, // 47: weaver.gateway.v1.Gateway.RegisterFamilyAlias:input_type -> weaver.gateway.v1.FamilyAliasRequest
+	31, // 48: weaver.gateway.v1.Gateway.MigrateExecutionDomains:input_type -> weaver.gateway.v1.DomainMigration
+	10, // 49: weaver.gateway.v1.Gateway.InspectExecutionDomains:input_type -> weaver.gateway.v1.OperationKey
+	34, // 50: weaver.gateway.v1.Gateway.PublishAuthority:input_type -> weaver.gateway.v1.PublishRequest
+	34, // 51: weaver.gateway.v1.Gateway.StageAuthority:input_type -> weaver.gateway.v1.PublishRequest
+	36, // 52: weaver.gateway.v1.Gateway.InspectPublication:input_type -> weaver.gateway.v1.PublicationKey
+	34, // 53: weaver.gateway.v1.Gateway.StageReviewedAuthority:input_type -> weaver.gateway.v1.PublishRequest
+	36, // 54: weaver.gateway.v1.Gateway.InspectPublicationReview:input_type -> weaver.gateway.v1.PublicationKey
+	43, // 55: weaver.gateway.v1.Gateway.RegisterPublicationReview:input_type -> weaver.gateway.v1.DeltaReview
+	5,  // 56: weaver.gateway.v1.Gateway.InspectSourceAuthority:input_type -> weaver.gateway.v1.Empty
+	38, // 57: weaver.gateway.v1.Gateway.RotateSourceAuthority:input_type -> weaver.gateway.v1.SourceRotationRequest
+	6,  // 58: weaver.gateway.v1.Gateway.CompileSource:input_type -> weaver.gateway.v1.ProducerRequest
+	5,  // 59: weaver.gateway.v1.Gateway.InspectProviderCatalog:input_type -> weaver.gateway.v1.Empty
+	15, // 60: weaver.gateway.v1.Gateway.PublishProviderCatalog:input_type -> weaver.gateway.v1.ProviderCatalogChange
+	5,  // 61: weaver.gateway.v1.Gateway.InspectTelemetry:input_type -> weaver.gateway.v1.Empty
+	18, // 62: weaver.gateway.v1.Gateway.ExecuteProvider:output_type -> weaver.gateway.v1.ProviderFrame
+	19, // 63: weaver.gateway.v1.Gateway.Inspect:output_type -> weaver.gateway.v1.ProviderReceipt
+	46, // 64: weaver.gateway.v1.Gateway.InspectTerminalUsage:output_type -> weaver.gateway.v1.MeteringReceipt
+	47, // 65: weaver.gateway.v1.Gateway.ApplyMetering:output_type -> weaver.gateway.v1.MeteringApplication
+	5,  // 66: weaver.gateway.v1.Gateway.RegisterTask:output_type -> weaver.gateway.v1.Empty
+	5,  // 67: weaver.gateway.v1.Gateway.RegisterPublishedTask:output_type -> weaver.gateway.v1.Empty
+	5,  // 68: weaver.gateway.v1.Gateway.RegisterDomainTask:output_type -> weaver.gateway.v1.Empty
+	29, // 69: weaver.gateway.v1.Gateway.RegisterOriginalTask:output_type -> weaver.gateway.v1.TaskAdmissionReceipt
+	25, // 70: weaver.gateway.v1.Gateway.RegisterFamilyAlias:output_type -> weaver.gateway.v1.DomainView
+	32, // 71: weaver.gateway.v1.Gateway.MigrateExecutionDomains:output_type -> weaver.gateway.v1.DomainMigrationReceipt
+	25, // 72: weaver.gateway.v1.Gateway.InspectExecutionDomains:output_type -> weaver.gateway.v1.DomainView
+	35, // 73: weaver.gateway.v1.Gateway.PublishAuthority:output_type -> weaver.gateway.v1.PublicationReceipt
+	36, // 74: weaver.gateway.v1.Gateway.StageAuthority:output_type -> weaver.gateway.v1.PublicationKey
+	35, // 75: weaver.gateway.v1.Gateway.InspectPublication:output_type -> weaver.gateway.v1.PublicationReceipt
+	36, // 76: weaver.gateway.v1.Gateway.StageReviewedAuthority:output_type -> weaver.gateway.v1.PublicationKey
+	44, // 77: weaver.gateway.v1.Gateway.InspectPublicationReview:output_type -> weaver.gateway.v1.PublicationReviewContext
+	45, // 78: weaver.gateway.v1.Gateway.RegisterPublicationReview:output_type -> weaver.gateway.v1.ReviewRegistrationReceipt
+	37, // 79: weaver.gateway.v1.Gateway.InspectSourceAuthority:output_type -> weaver.gateway.v1.SourceAuthorityView
+	39, // 80: weaver.gateway.v1.Gateway.RotateSourceAuthority:output_type -> weaver.gateway.v1.SourceRotationReceipt
+	9,  // 81: weaver.gateway.v1.Gateway.CompileSource:output_type -> weaver.gateway.v1.CompiledSource
+	14, // 82: weaver.gateway.v1.Gateway.InspectProviderCatalog:output_type -> weaver.gateway.v1.ProviderCatalogSnapshot
+	14, // 83: weaver.gateway.v1.Gateway.PublishProviderCatalog:output_type -> weaver.gateway.v1.ProviderCatalogSnapshot
+	4,  // 84: weaver.gateway.v1.Gateway.InspectTelemetry:output_type -> weaver.gateway.v1.TelemetrySnapshot
+	62, // [62:85] is the sub-list for method output_type
+	39, // [39:62] is the sub-list for method input_type
 	39, // [39:39] is the sub-list for extension type_name
 	39, // [39:39] is the sub-list for extension extendee
 	0,  // [0:39] is the sub-list for field type_name

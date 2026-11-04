@@ -420,3 +420,41 @@ returns the same charge and release, and a competing application ID cannot
 settle the same reservation. A reservation with unknown execution releases
 nothing. Reservations created before catalog publication still use their
 deployment formula.
+
+* Terminal usage and independent signing
+
+The Chat Completions SSE adapter accepts a complete prompt and completion
+breakdown with a consistent total. Cached prompt tokens are inclusive and
+are subtracted once. The resulting vector is uncached input, cache read,
+cache write and output. This profile records zero cache writes. A
+total-only observation can still be displayed and supplies no billable
+breakdown. Invalid category arithmetic fails the stream.
+
+Rust persists the normalized vector with the completed execution transition.
+Both a terminal SSE marker and a successfully completed guarded response
+release are required. The source RPC joins the observation to the original
+family, node, origin, plan, actual target, catalog and historical formula.
+The observation digest also serves as the deterministic application ID.
+An observation before completion gives the issuer no signable record.
+
+The independent =weaver-meter FAMILY NODE= job reads the unsigned record
+over source mTLS, checks its configured audience, tenant and issuer, then
+signs it with its own Ed25519 seed. The seed is supplied through
+=WEAVER_METER_SIGNING_SEED= as a file containing hexadecimal seed bytes.
+The job uses =WEAVER_METER_SOURCE_ADDR=, =WEAVER_METER_SOURCE_TOKEN=,
+=WEAVER_METER_TLS_CERT=, =WEAVER_METER_TLS_KEY=, =WEAVER_METER_TLS_CA=,
+=WEAVER_METER_TLS_SERVER_NAME=, =WEAVER_METER_AUDIENCE=,
+=WEAVER_METER_TENANT= and =WEAVER_METER_ISSUER=. It can be restarted with
+the same operation and key after a lost response. The current RPC uses the
+source transport role and the separately provisioned metering signing key.
+
+When =require_terminal_usage= is enabled in the metering deployment,
+settlement requires exact normalized counts, observation digest and
+application identity from the deciding store. The receipt must also
+verify under the independent issuer key and original formula. Deployments
+without the setting can still accept signed external terminal evidence
+when the provider supplied no breakdown. When a stored breakdown exists,
+settlement always requires its exact binding. Missing terminal execution
+never releases a reservation. The gateway authenticates provider transport
+and validates the usage shape. The provider's usage report is the source
+of the measured token counts.

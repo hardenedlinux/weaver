@@ -197,6 +197,14 @@ fn original(
     )
     .map_err(db)?
     .ok_or(Error::Denied)?;
+    match terminal_usage(tx, config, &receipt.family, &receipt.node)? {
+        Some(expected)
+            if expected.application == receipt.application
+                && expected.tokens == receipt.tokens
+                && expected.terminal_digest == receipt.terminal_digest => {}
+        None if !config.require_terminal_usage => {}
+        _ => return Err(Error::Denied),
+    }
     let charged = weaver_policy::verify_metering(config, receipt)?;
     if charged > ceiling {
         return Err(Error::Denied);
@@ -453,4 +461,76 @@ pub(crate) fn require_task_quotes(
         }
     }
     Ok(())
+}
+
+fn terminal_usage(
+    connection: &driver::Connection,
+    config: &MeteringDeployment,
+    family: &str,
+    node: &str,
+) -> Result<Option<MeteringReceipt>> {
+    let record = persistence::maybe(
+        connection,
+        "SELECT m.tenant,o.origin,r.digest,r.target,m.formula_digest,u.tokens,c.catalog
+         FROM provider_terminal_usage u
+         JOIN provider_runs r ON (r.family,r.node)=(u.family,u.node)
+         JOIN metering_reservations m ON (m.family,m.node)=(u.family,u.node)
+         JOIN original_tasks o ON o.family=u.family
+         LEFT JOIN provider_catalog_reservations c ON (c.family,c.node)=(u.family,u.node)
+         WHERE u.family=?1 AND u.node=?2 AND r.state='complete' AND r.dispatched=2",
+        [family, node],
+        |row| {
+            Ok((
+                row.get::<String>(0)?,
+                row.get::<String>(1)?,
+                row.get::<String>(2)?,
+                row.get::<String>(3)?,
+                row.get::<String>(4)?,
+                row.get::<String>(5)?,
+                row.get::<Option<String>>(6)?,
+            ))
+        },
+    )
+    .map_err(db)?;
+    let Some((tenant, origin, plan_digest, target, formula_digest, raw, catalog)) = record else {
+        return Ok(None);
+    };
+    let tokens = weaver_contracts::decode(raw.as_bytes())?;
+    let rule = config.tenants.get(&tenant).ok_or(Error::Denied)?;
+    let terminal_digest = weaver_contracts::body_digest(&serde_json::to_string(&(
+        "weaver.provider-usage-observation.v1",
+        &config.audience,
+        &tenant,
+        family,
+        node,
+        &origin,
+        &plan_digest,
+        &target,
+        &formula_digest,
+        catalog,
+        tokens,
+    ))?);
+    Ok(Some(MeteringReceipt {
+        audience: config.audience.clone(),
+        tenant,
+        issuer: rule.issuer.clone(),
+        application: terminal_digest.clone(),
+        family: family.to_owned(),
+        node: node.to_owned(),
+        origin,
+        plan_digest,
+        target,
+        formula_digest,
+        terminal_digest,
+        tokens,
+        signature: String::new(),
+    }))
+}
+
+impl Ledger {
+    pub fn inspect_terminal_usage(&self, family: &str, node: &str) -> Result<MeteringReceipt> {
+        crate::source_authority::require(&self.connection, self.source.as_ref())?;
+        let config = deployment(&self.connection)?.ok_or(Error::Denied)?;
+        terminal_usage(&self.connection, &config, family, node)?.ok_or(Error::Denied)
+    }
 }

@@ -8,6 +8,7 @@ option go_package = "github.com/HardenedLinux/weaver/go/api/gateway/v1;gatewayv1
 service Gateway {
   rpc ExecuteProvider(ProviderRequest) returns (stream ProviderFrame);
   rpc Inspect(OperationKey) returns (ProviderReceipt);
+  rpc InspectTerminalUsage(OperationKey) returns (MeteringReceipt);
   rpc ApplyMetering(MeteringReceipt) returns (MeteringApplication);
   rpc RegisterTask(RegisterTaskRequest) returns (Empty);
   rpc RegisterPublishedTask(RegisterPublishedTaskRequest) returns (Empty);

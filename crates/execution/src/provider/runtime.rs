@@ -203,7 +203,7 @@ fn execute_stream<O: ProviderOutput>(
             break;
         }
     }
-    ledger.complete_provider(&permit, format)
+    ledger.complete_provider_with_usage(&permit, format, reader.terminal_tokens)
 }
 
 fn open_guarded<O: ProviderOutput>(

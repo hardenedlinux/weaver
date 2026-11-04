@@ -52,3 +52,21 @@ fn truncated_oversized_and_wrong_model_streams_are_not_completed() {
             .is_err()
     );
 }
+
+proptest::proptest! {
+    #[test]
+    fn inclusive_provider_usage_conserves_tokens(
+        uncached in 0u64..10000, cached in 0u64..10000, output in 0u64..10000,
+    ) {
+        let prompt = uncached + cached;
+        let mut value = serde_json::json!({
+            "prompt_tokens": prompt, "completion_tokens": output,
+            "prompt_tokens_details": {"cached_tokens": cached},
+        });
+        let result = super::normalize_usage(&value, prompt + output).expect("valid usage");
+        proptest::prop_assert_eq!(result, Some([uncached, cached, 0, output]));
+        proptest::prop_assert!(super::normalize_usage(&value, prompt + output + 1).is_err());
+        value["prompt_tokens_details"]["cached_tokens"] = serde_json::json!(prompt + 1);
+        proptest::prop_assert!(super::normalize_usage(&value, prompt + output).is_err());
+    }
+}

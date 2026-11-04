@@ -13,6 +13,7 @@ pub(super) struct Decoder<R: Read> {
     events: usize,
     finished: bool,
     usage: bool,
+    pub(super) terminal_tokens: Option<[u64; 4]>,
 }
 
 #[cfg(test)]
@@ -28,6 +29,7 @@ impl<R: Read> Decoder<R> {
             events: 0,
             finished: false,
             usage: false,
+            terminal_tokens: None,
         }
     }
     pub(super) fn next(&mut self) -> Result<ProviderEvent> {
@@ -192,6 +194,9 @@ impl<R: Read> Decoder<R> {
             .and_then(|v| v.as_u64())
             .filter(|n| *n <= i64::MAX as u64)
             .ok_or(Error::Invalid("provider usage"))?;
+        if let Some(usage) = chunk.get("usage") {
+            self.terminal_tokens = normalize_usage(usage, count)?;
+        }
         self.usage = true;
         Ok(ProviderEvent {
             sequence: 0,
@@ -200,4 +205,25 @@ impl<R: Read> Decoder<R> {
             tokens: count,
         })
     }
+}
+
+fn normalize_usage(value: &serde_json::Value, total: u64) -> Result<Option<[u64; 4]>> {
+    if value.get("prompt_tokens").is_none() && value.get("completion_tokens").is_none() {
+        return Ok(None);
+    }
+    let input = value.get("prompt_tokens").and_then(|v| v.as_u64());
+    let output = value.get("completion_tokens").and_then(|v| v.as_u64());
+    let (Some(input), Some(output)) = (input, output) else {
+        return Err(Error::Invalid("provider usage categories"));
+    };
+    let read = match value.pointer("/prompt_tokens_details/cached_tokens") {
+        None => 0,
+        Some(count) => count
+            .as_u64()
+            .ok_or(Error::Invalid("provider cache count"))?,
+    };
+    if input.checked_add(output) != Some(total) || read > input {
+        return Err(Error::Invalid("inconsistent provider usage"));
+    }
+    Ok(Some([input - read, read, 0, output]))
 }

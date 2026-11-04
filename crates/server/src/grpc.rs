@@ -466,6 +466,33 @@ impl pb::gateway_server::Gateway for Gateway {
             .await?;
         Ok(Response::new(domain_view(view)))
     }
+    async fn inspect_terminal_usage(
+        &self,
+        request: Request<pb::OperationKey>,
+    ) -> std::result::Result<Response<pb::MeteringReceipt>, Status> {
+        let caller = self.source_identity(&request)?;
+        let key = request.into_inner();
+        let r = self
+            .ingress
+            .source()?
+            .terminal_usage(caller, key.family, key.node)
+            .await?;
+        Ok(Response::new(pb::MeteringReceipt {
+            audience: r.audience,
+            tenant: r.tenant,
+            issuer: r.issuer,
+            application: r.application,
+            family: r.family,
+            node: r.node,
+            origin: r.origin,
+            plan_digest: r.plan_digest,
+            target: r.target,
+            formula_digest: r.formula_digest,
+            terminal_digest: r.terminal_digest,
+            tokens: r.tokens.to_vec(),
+            signature: r.signature,
+        }))
+    }
     async fn apply_metering(
         &self,
         request: Request<pb::MeteringReceipt>,
