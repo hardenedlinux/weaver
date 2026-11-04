@@ -15,8 +15,12 @@ package ProviderRpc {
            original claim before dispatch or response release. Revocation retains
            unknown holds, and credential renewal cannot reopen consumption.
        Go projects its actual verified ingress certificate. Rust authenticates
-       the relay TLS sender and checks the signed grant parent. An independent
-       witness retains root revocation and issuer epochs across store recovery. */
+       the relay TLS sender and prepares the signed grant lineage before the
+       shared-domain lock. Each deciding scope matches the exact deployment,
+       root and leaf records, reads both tombstones, checks current time and
+       compares the projected witness length with the retained journal. An
+       independent witness retains root revocation and issuer epochs across
+       store recovery. */
     }
     requirement def TransportSetupIsolation {
         doc /* Connection setup retains caller cancellation and deadlines. Transport reconnects do not issue application RPCs, reauthorize release, reset spent roots or refund unknown holds. Initial connection backoff is distinct from SDK operation retry. Readiness observation uses the caller's existing remaining budget; it never extends that deadline or changes the native reconnect policy after Ready. Native capacity and fresh Cedar guards still decide every effect. */

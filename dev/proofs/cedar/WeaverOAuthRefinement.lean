@@ -67,6 +67,21 @@ theorem ahead_witness_blocks_unreconciled_use
   intro ahead accepted
   exact (Nat.ne_of_lt ahead) accepted.1
 
+/-- The locked join matches every record used by the immutable candidate rule.
+    Time, revocation and the witness are observations of the deciding scope. -/
+theorem prepared_use_refines_current
+    {Records : Type} {candidate current : Records} {staticCheck : Records → Prop}
+    {view : Witness Key} {root leaf : Key} {senderBound : Prop}
+    {starts now expires projectedLength witnessLength : Nat}
+    (checked : staticCheck candidate) (same : current = candidate)
+    (active : RelayedUse view root leaf senderBound)
+    (fresh : starts ≤ now ∧ now < expires)
+    (reconciled : projectedLength = witnessLength) :
+    staticCheck current ∧ RelayedUse view root leaf senderBound ∧
+      (starts ≤ now ∧ now < expires) ∧ projectedLength = witnessLength := by
+  exact ⟨same.symm ▸ checked, active, fresh, reconciled⟩
+
+#print axioms prepared_use_refines_current
 #print axioms retained_root_revocation_blocks_child
 #print axioms retained_epoch_rejects_retired_signer
 #print axioms ahead_witness_blocks_unreconciled_use

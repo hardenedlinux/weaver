@@ -33,6 +33,7 @@ pub struct TransactionTimings {
     pub transaction_hold: Timing,
     pub commit: Timing,
     pub rollback: Timing,
+    pub provider_oauth_prepare: Timing,
     pub provider_oauth_check: Timing,
     pub provider_request: Timing,
     pub provider_queue: Timing,
@@ -75,6 +76,10 @@ impl TransactionTimings {
             transaction_hold: delta(self.transaction_hold, earlier.transaction_hold),
             commit: delta(self.commit, earlier.commit),
             rollback: delta(self.rollback, earlier.rollback),
+            provider_oauth_prepare: delta(
+                self.provider_oauth_prepare,
+                earlier.provider_oauth_prepare,
+            ),
             provider_oauth_check: delta(self.provider_oauth_check, earlier.provider_oauth_check),
             provider_request: delta(self.provider_request, earlier.provider_request),
             provider_queue: delta(self.provider_queue, earlier.provider_queue),

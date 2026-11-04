@@ -45,11 +45,16 @@ pub(crate) fn require_current(
     config: &ProviderOAuthDeployment,
 ) -> Result<()> {
     if let Some(path) = &config.witness_file {
-        let (length, _) = prefix(connection)?.ok_or(Error::Denied)?;
-        let metadata = std::fs::symlink_metadata(path).map_err(storage)?;
-        if !metadata.is_file() || metadata.len() != length {
-            return Err(Error::Conflict("OAuth witness requires reconciliation"));
-        }
+        require_current_path(connection, path)?;
+    }
+    Ok(())
+}
+
+pub(super) fn require_current_path(connection: &Connection, path: &str) -> Result<()> {
+    let (length, _) = prefix(connection)?.ok_or(Error::Denied)?;
+    let metadata = std::fs::symlink_metadata(path).map_err(storage)?;
+    if !metadata.is_file() || metadata.len() != length {
+        return Err(Error::Conflict("OAuth witness requires reconciliation"));
     }
     Ok(())
 }

@@ -765,11 +765,31 @@ The witness protects OAuth authority under database-only rollback.
 Its trust premise is retention independent of that rollback, along with
 the existing trusted server clock and deciding-owner assumptions.
 
+The Rust session prepares an immutable candidate before enqueue and before
+consumption. Preparation decodes the exact deployment, leaf and root records
+and checks the cedar-poo-spec resource-use contract with the observed sender.
+The consumed operation retains its candidate for its own writer and response
+scopes. Receipt inspection prepares its own scope-specific candidate.
+
+Each deciding scope reads the exact records and both tombstones by primary
+key and reads the current witness projection. The connection may reuse SQL
+programs. Each execution observes the current transaction. The scope verifies
+the witness
+file length and current clock interval under the lock. A changed record,
+revocation, unreconciled journal or expired candidate denies the effect.
+Cedar, claim, budget and fencing checks continue in the deciding scope.
+=prepared_use_refines_current= in Lean composes the record match with the
+live premises. The Quint cases cover changed records, late revocation,
+commit uncertainty and elapsed time. The native fault test retains a
+candidate across the pre-commit and post-commit cuts.
+
 The ABBA benchmark runs both arms on the same optimized Rust image with
-the same Go control binary. It excludes startup and credential
-publication. It records first event, terminal receipt, OAuth checks,
-domain and transaction hold, provider write and response queue time.
-Native intervals overlap and are interpreted separately.
+the same Go control binary and the deployment MVCC entrypoint. It excludes
+startup and credential publication. It reports first event, terminal receipt,
+grant preparation, locked grant checks, domain hold and wait, transaction
+begin and hold, commit, provider write and response queue. These intervals
+overlap. In particular, the difference in domain hold includes work beyond
+the OAuth check, and the paired control is necessary on each image.
 
 An existing direct deployment can enable its independent witness once
 while preserving the same issuer key, subject, client and audience.

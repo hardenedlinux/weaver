@@ -66,6 +66,17 @@ module SharedDomains {
     not(oauthRelayUse(true,true,true,0,1)) and oauthRelayUse(true,true,true,1,1))
   run oauthRecoveredRevocationBlocksDescendantTest=init.expect(
     not(oauthRelayUse(true,false,true,1,1)) and not(oauthRelayUse(false,true,true,1,1)))
+  pure def preparedOAuthUse(candidate:bool, sameRecords:bool, fresh:bool, live:bool):bool=
+    candidate and sameRecords and fresh and live
+  run preparedOAuthRejectsChangedRecordsTest=init.expect(
+    not(preparedOAuthUse(true,false,true,oauthRelayUse(true,true,true,1,1))))
+  run preparedOAuthRejectsLateRevocationAndLostCommitTest=init.expect(
+    not(preparedOAuthUse(true,true,true,oauthRelayUse(true,false,true,1,1)))
+    and not(preparedOAuthUse(true,true,true,oauthRelayUse(true,true,false,1,1)))
+    and not(preparedOAuthUse(true,true,true,oauthRelayUse(true,true,true,0,1))))
+  run preparedOAuthCannotFreezeTimeTest=init.expect(
+    preparedOAuthUse(true,true,true,oauthRelayUse(true,true,true,1,1))
+    and not(preparedOAuthUse(true,true,false,oauthRelayUse(true,true,true,1,1))))
   run oauthRetiredIssuerCannotPublishTest=init.expect(
     Set(0,1,2).forall(old=>old<3 and old!=3))
   run delegatedGrantCannotReplaceOperationCredentialTest=init.expect(

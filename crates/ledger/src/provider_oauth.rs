@@ -14,15 +14,32 @@ use weaver_contracts::{
     Error, ProviderOAuthDeployment, ProviderOAuthGrant, ProviderOAuthUse, Result, oauth_hex,
 };
 
-pub(crate) fn deployment(connection: &Connection) -> Result<Option<ProviderOAuthDeployment>> {
-    let value: Option<String> = persistence::maybe(
+fn record(
+    connection: &Connection,
+    sql: &str,
+    params: impl persistence::driver::IntoParams,
+) -> Result<Option<String>> {
+    let value = futures_executor::block_on(async {
+        let mut statement = connection.prepare_cached(sql).await?;
+        statement.query_row(params).await?.get(0)
+    });
+    match value {
+        Ok(value) => Ok(Some(value)),
+        Err(persistence::Error::QueryReturnedNoRows) => Ok(None),
+        Err(error) => Err(db(error)),
+    }
+}
+
+fn deployment_record(connection: &Connection) -> Result<Option<String>> {
+    record(
         connection,
         "SELECT record FROM provider_oauth_deployment WHERE singleton=1",
         (),
-        |row| row.get(0),
     )
-    .map_err(db)?;
-    value
+}
+
+pub(crate) fn deployment(connection: &Connection) -> Result<Option<ProviderOAuthDeployment>> {
+    deployment_record(connection)?
         .map(|record| weaver_contracts::decode(record.as_bytes()))
         .transpose()
 }
@@ -44,13 +61,16 @@ pub(crate) fn now() -> Result<u64> {
         .map_err(|_| Error::Conflict("provider OAuth clock unavailable"))
 }
 
-fn active_grant(connection: &Connection, hash: &str) -> Result<ProviderOAuthGrant> {
-    let grant: String = persistence::maybe(
+fn active_record(connection: &Connection, hash: &str) -> Result<String> {
+    record(
         connection,
         "SELECT record FROM provider_oauth_grants WHERE token_hash=?1 AND NOT EXISTS(SELECT 1 FROM provider_oauth_revocations WHERE token_hash=?1)",
-        persistence::params![hash.to_owned()], |row| row.get(0),
-    ).map_err(db)?.ok_or(Error::Denied)?;
-    weaver_contracts::decode(grant.as_bytes())
+        [hash],
+    )?.ok_or(Error::Denied)
+}
+
+fn active_grant(connection: &Connection, hash: &str) -> Result<ProviderOAuthGrant> {
+    weaver_contracts::decode(active_record(connection, hash)?.as_bytes())
 }
 
 fn require_parent(parent: &ProviderOAuthGrant, grant: &ProviderOAuthGrant) -> Result<()> {
@@ -72,38 +92,50 @@ fn require_parent(parent: &ProviderOAuthGrant, grant: &ProviderOAuthGrant) -> Re
     Ok(())
 }
 
-pub(crate) fn require(
+/// Request-local candidate derived from immutable records. Every effect must
+/// rejoin those exact records with live tombstones and the witness floor.
+pub(crate) struct PreparedUse {
+    token: String,
+    deployment: String,
+    leaf: String,
+    root: Option<(String, String)>,
+    witness: Option<String>,
+    not_before: u64,
+    expires: u64,
+}
+
+pub(crate) fn prepare(
     connection: &Connection,
     request: Option<&ProviderOAuthUse>,
     scope: &'static str,
-) -> Result<Option<u64>> {
-    let Some(deployment) = deployment(connection)? else {
-        return if request.is_none() {
-            Ok(None)
-        } else {
-            Err(Error::Denied)
-        };
+) -> Result<Option<PreparedUse>> {
+    let Some(request) = request else {
+        return Ok(None);
     };
-    witness::require_current(connection, &deployment)?;
-    let request = request.ok_or(Error::Denied)?;
-    let grant = active_grant(connection, &request.token_hash)?;
+    let deployment_record = deployment_record(connection)?.ok_or(Error::Denied)?;
+    let deployment: ProviderOAuthDeployment =
+        weaver_contracts::decode(deployment_record.as_bytes())?;
+    let leaf = active_record(connection, &request.token_hash)?;
+    let grant: ProviderOAuthGrant = weaver_contracts::decode(leaf.as_bytes())?;
     let relaying =
         deployment.relay_certificate_sha256.as_ref() == Some(&request.certificate_sha256);
-    match (
+    let root = match (
         &grant.parent_token_hash,
         &request.ingress_certificate_sha256,
         relaying,
     ) {
-        (None, None, false) => {}
-        (Some(parent_hash), Some(ingress), true) => {
-            let parent = active_grant(connection, parent_hash)?;
+        (None, None, false) => None,
+        (Some(digest), Some(ingress), true) => {
+            let record = active_record(connection, digest)?;
+            let parent: ProviderOAuthGrant = weaver_contracts::decode(record.as_bytes())?;
             require_parent(&parent, &grant)?;
             if &parent.certificate_sha256 != ingress {
                 return Err(Error::Denied);
             }
+            Some((digest.clone(), record))
         }
         _ => return Err(Error::Denied),
-    }
+    };
     weaver_policy::require_provider_oauth(weaver_policy::ProviderOAuthCheck {
         deployment: &deployment,
         grant: &grant,
@@ -111,7 +143,53 @@ pub(crate) fn require(
         scope,
         now: now()?,
     })?;
-    Ok(Some(grant.expires_at))
+    Ok(Some(PreparedUse {
+        token: request.token_hash.clone(),
+        deployment: deployment_record,
+        leaf,
+        root,
+        witness: deployment.witness_file,
+        not_before: grant.not_before,
+        expires: grant.expires_at,
+    }))
+}
+
+pub(crate) fn require(
+    connection: &Connection,
+    prepared: Option<&PreparedUse>,
+) -> Result<Option<u64>> {
+    let Some(prepared) = prepared else {
+        let configured: bool = persistence::one(
+            connection,
+            "SELECT EXISTS(SELECT 1 FROM provider_oauth_deployment WHERE singleton=1)",
+            (),
+            |row| row.get(0),
+        )
+        .map_err(db)?;
+        return if configured {
+            Err(Error::Denied)
+        } else {
+            Ok(None)
+        };
+    };
+    // Each primary-key lookup executes in the current deciding transaction.
+    if deployment_record(connection)?.as_deref() != Some(&prepared.deployment)
+        || active_record(connection, &prepared.token)? != prepared.leaf
+    {
+        return Err(Error::Denied);
+    }
+    if let Some((digest, expected)) = &prepared.root
+        && active_record(connection, digest)? != *expected
+    {
+        return Err(Error::Denied);
+    }
+    if let Some(path) = &prepared.witness {
+        witness::require_current_path(connection, path)?;
+    }
+    if !(prepared.not_before..prepared.expires).contains(&now()?) {
+        return Err(Error::Denied);
+    }
+    Ok(Some(prepared.expires))
 }
 
 fn can_enable_witness(current: &ProviderOAuthDeployment, next: &ProviderOAuthDeployment) -> bool {
@@ -252,8 +330,11 @@ impl Ledger {
         node: &str,
         request: Option<&ProviderOAuthUse>,
     ) -> Result<Option<weaver_contracts::ProviderReceipt>> {
+        let prepared = self
+            .connection
+            .prepare_provider_oauth(request, "provider:inspect")?;
         let tx = persistence::begin_family(&mut self.connection, family).map_err(db)?;
-        tx.check_provider_oauth(request, "provider:inspect")?;
+        tx.check_provider_oauth(prepared.as_ref())?;
         let result = super::provider::receipt(&tx, family, node)?;
         tx.commit().map_err(db)?;
         Ok(result)

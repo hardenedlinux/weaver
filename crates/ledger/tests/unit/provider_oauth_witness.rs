@@ -7,8 +7,11 @@ use crate::{
     persistence::commit_observer::{Cut, Decision, Observer},
     provider_oauth,
 };
+use ring::signature::{Ed25519KeyPair, KeyPair};
 use std::sync::Arc;
-use weaver_contracts::{ProviderOAuthDeployment, SourceIdentity, body_digest};
+use weaver_contracts::{
+    ProviderOAuthDeployment, ProviderOAuthGrant, ProviderOAuthUse, SourceIdentity, body_digest,
+};
 
 struct Fault(Cut);
 
@@ -31,13 +34,15 @@ fn oauth_witness_survives_both_uncertain_native_commit_cuts() {
         let independent = tempfile::tempdir().expect("witness directory");
         let witness = independent.path().join("authority.log");
         std::fs::File::create_new(&witness).expect("provision witness");
+        let signer = Ed25519KeyPair::from_seed_unchecked(&[9; 32]).expect("issuer");
+        let relay = body_digest("relay certificate");
         let config = ProviderOAuthDeployment {
             issuer: "issuer".into(),
             subject: "subject".into(),
             client: "client".into(),
             audience: "resource".into(),
-            public_key: "ab".repeat(32),
-            relay_certificate_sha256: None,
+            public_key: hex::encode(signer.public_key().as_ref()),
+            relay_certificate_sha256: Some(relay.clone()),
             witness_file: Some(witness.display().to_string()),
         };
         let identity = SourceIdentity {
@@ -50,7 +55,56 @@ fn oauth_witness_survives_both_uncertain_native_commit_cuts() {
         ledger
             .configure_provider_oauth(Some(&config))
             .expect("genesis");
+        let ingress = body_digest("ingress certificate");
         let digest = body_digest("original");
+        let leaf_digest = body_digest("leaf");
+        let now = provider_oauth::now().expect("clock");
+        let mut root = ProviderOAuthGrant {
+            issuer: config.issuer.clone(),
+            subject: config.subject.clone(),
+            client: config.client.clone(),
+            audience: config.audience.clone(),
+            scopes: vec!["provider:execute".into()],
+            token_hash: digest.clone(),
+            certificate_sha256: ingress.clone(),
+            not_before: now - 1,
+            expires_at: now + 60,
+            signature: String::new(),
+            parent_token_hash: None,
+            issuer_epoch: 0,
+        };
+        let mut leaf = ProviderOAuthGrant {
+            token_hash: leaf_digest.clone(),
+            certificate_sha256: relay.clone(),
+            parent_token_hash: Some(digest.clone()),
+            ..root.clone()
+        };
+        for grant in [&mut root, &mut leaf] {
+            let message =
+                hex::decode(grant.signing_digest().expect("grant digest")).expect("digest");
+            grant.signature = hex::encode(signer.sign(&message).as_ref());
+            ledger
+                .with_authenticated_source(&identity, |ledger| ledger.publish_provider_oauth(grant))
+                .expect("publish signed grant");
+        }
+        let evidence = ProviderOAuthUse {
+            token_hash: leaf_digest,
+            certificate_sha256: relay,
+            ingress_certificate_sha256: Some(ingress),
+        };
+        let prepared = ledger
+            .connection
+            .prepare_provider_oauth(Some(&evidence), "provider:execute")
+            .expect("prepare grant before revoke");
+        {
+            let scope = crate::persistence::begin(&mut ledger.connection).expect("original scope");
+            assert_eq!(
+                scope
+                    .check_provider_oauth(prepared.as_ref())
+                    .expect("current"),
+                Some(now + 60)
+            );
+        }
         ledger.observe_provider_commit(Arc::new(Fault(cut)));
         assert!(
             ledger
@@ -67,9 +121,24 @@ fn oauth_witness_survives_both_uncertain_native_commit_cuts() {
             provider_oauth::revoked(&ledger.connection, &digest).expect("native state"),
             cut == Cut::AfterCommit
         );
+        {
+            let scope = crate::persistence::begin(&mut ledger.connection).expect("recovered scope");
+            assert!(
+                scope.check_provider_oauth(prepared.as_ref()).is_err(),
+                "a cached candidate cannot bypass a witness ahead of the database or a committed tombstone"
+            );
+        }
         ledger
             .configure_provider_oauth(Some(&config))
             .expect("replay anchored decision");
+        {
+            let scope =
+                crate::persistence::begin(&mut ledger.connection).expect("reconciled scope");
+            assert!(
+                scope.check_provider_oauth(prepared.as_ref()).is_err(),
+                "a cached candidate cannot bypass the recovered tombstone"
+            );
+        }
         assert!(
             provider_oauth::revoked(&ledger.connection, &digest).expect("recovered revocation")
         );

@@ -13,10 +13,10 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"sync"
 	"testing"
@@ -327,7 +327,8 @@ func TestProviderOAuthIndependentWitnessRejectsRollback(t *testing.T) {
 // Boot, source publication and credential provisioning are outside the sample.
 func BenchmarkProviderOAuthRelayPair(b *testing.B) {
 	image := wifImage(b, true)
-	var totals [2][7]float64
+	labels := [...]string{"first", "terminal", "grant-check", "domain-hold", "txn-hold", "write", "queue", "grant-prepare", "txn-begin", "commit", "domain-wait", "domain-keys"}
+	var totals [2][len(labels)]float64
 	b.StopTimer()
 	for range b.N {
 		for _, arm := range []int{0, 1, 1, 0} {
@@ -356,13 +357,19 @@ func BenchmarkProviderOAuthRelayPair(b *testing.B) {
 			if err != nil {
 				b.Fatal(err)
 			}
-			var times [5]uint64
+			var times [len(labels) - 2]uint64
 			count := 0
 			for _, line := range strings.Split(string(log), "\n") {
 				if strings.HasPrefix(line, "weaver-oauth-timing ") {
-					_, err = fmt.Sscanf(line, "weaver-oauth-timing %d %d %d %d %d", &times[0], &times[1], &times[2], &times[3], &times[4])
-					if err != nil {
-						b.Fatal(err)
+					fields := strings.Fields(strings.TrimPrefix(line, "weaver-oauth-timing "))
+					if len(fields) != len(times) {
+						b.Fatalf("unexpected timing field count: %d", len(fields))
+					}
+					for i, field := range fields {
+						times[i], err = strconv.ParseUint(field, 10, 64)
+						if err != nil {
+							b.Fatal(err)
+						}
 					}
 					count++
 				}
@@ -381,7 +388,7 @@ func BenchmarkProviderOAuthRelayPair(b *testing.B) {
 	}
 	b.ReportMetric(0, "ns/op")
 	for arm, name := range []string{"baseline", "oauth"} {
-		for i, label := range []string{"first", "terminal", "grant-check", "domain-hold", "txn-hold", "write", "queue"} {
+		for i, label := range labels {
 			b.ReportMetric(totals[arm][i]/float64(2*b.N), name+"-"+label+"-ns/stream")
 		}
 	}

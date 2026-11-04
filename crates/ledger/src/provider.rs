@@ -22,7 +22,7 @@ pub struct ProviderDispatch {
     digest: String,
     binding: weaver_policy::BoundProviderPolicy,
     domains: weaver_contracts::DomainStamp,
-    oauth: Option<ProviderOAuthUse>,
+    oauth: Option<crate::provider_oauth::PreparedUse>,
     oauth_expires: Option<u64>,
 }
 impl ProviderDispatch {
@@ -84,9 +84,12 @@ impl Ledger {
         oauth: Option<&ProviderOAuthUse>,
     ) -> Result<ProviderReceipt> {
         let digest = plan.digest()?;
+        let prepared = self
+            .connection
+            .prepare_provider_oauth(oauth, "provider:execute")?;
         let tx =
             crate::persistence::begin_family(&mut self.connection, &plan.family).map_err(db)?;
-        tx.check_provider_oauth(oauth, "provider:execute")?;
+        tx.check_provider_oauth(prepared.as_ref())?;
         if let Some(old) = receipt(&tx, &plan.family, &plan.node)? {
             if old.digest != digest {
                 return Err(Error::Conflict("provider logical key already bound"));
@@ -158,8 +161,11 @@ impl Ledger {
         eligible: &BTreeSet<String>,
         oauth: Option<&ProviderOAuthUse>,
     ) -> Result<ProviderDispatch> {
+        let prepared = self
+            .connection
+            .prepare_provider_oauth(oauth, "provider:execute")?;
         let tx = crate::persistence::begin_family(&mut self.connection, family).map_err(db)?;
-        let oauth_expires = tx.check_provider_oauth(oauth, "provider:execute")?;
+        let oauth_expires = tx.check_provider_oauth(prepared.as_ref())?;
         let record: Option<String> = crate::persistence::maybe(
             &tx,
             "SELECT plan FROM provider_runs WHERE family=?1 AND node=?2 AND state='queued'",
@@ -195,7 +201,7 @@ impl Ledger {
             digest,
             binding,
             domains,
-            oauth: oauth.cloned(),
+            oauth: prepared,
             oauth_expires,
         })
     }
@@ -530,7 +536,7 @@ fn guard_live_range(
     format: &str,
 ) -> Result<()> {
     crate::publication_barrier::require_resolved(tx)?;
-    tx.check_provider_oauth(p.oauth.as_ref(), "provider:execute")?;
+    tx.check_provider_oauth(p.oauth.as_ref())?;
     crate::task_publication::require(tx, &p.plan.family)?;
     let (revision, fence, source): (u64, u64, String) = crate::persistence::one(
         tx,

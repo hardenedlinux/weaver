@@ -68,6 +68,16 @@ impl Session {
     pub fn timings(&self) -> super::TransactionTimings {
         self.timings
     }
+    pub(crate) fn prepare_provider_oauth(
+        &mut self,
+        request: Option<&weaver_contracts::ProviderOAuthUse>,
+        scope: &'static str,
+    ) -> weaver_contracts::Result<Option<crate::provider_oauth::PreparedUse>> {
+        self.require_quiescent().map_err(crate::store::db)?;
+        super::timing::measure(&mut self.timings.provider_oauth_prepare, || {
+            crate::provider_oauth::prepare(&self.connection, request, scope)
+        })
+    }
     /// Initialize this live MVCC owner's ledger once; this never caches authorization.
     pub(crate) fn initialize_ledger(&mut self) -> driver::Result<()> {
         self.require_quiescent()?;

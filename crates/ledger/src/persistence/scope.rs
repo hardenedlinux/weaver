@@ -150,11 +150,10 @@ impl WriteScope<'_> {
     }
     pub(crate) fn check_provider_oauth(
         &self,
-        evidence: Option<&weaver_contracts::ProviderOAuthUse>,
-        scope: &'static str,
+        evidence: Option<&crate::provider_oauth::PreparedUse>,
     ) -> weaver_contracts::Result<Option<u64>> {
         let started = Instant::now();
-        let result = crate::provider_oauth::require(self, evidence, scope);
+        let result = crate::provider_oauth::require(self, evidence);
         let mut timing = self.oauth_check.get();
         timing.record(started.elapsed());
         self.oauth_check.set(timing);
