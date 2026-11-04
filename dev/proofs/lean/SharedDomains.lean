@@ -304,6 +304,13 @@ theorem expired_token_cannot_write (binding cedar spent : Bool) :
 theorem refreshed_token_cannot_reopen_consumed_send (binding current cedar : Bool) :
     mayWrite binding current cedar true = false := by simp [mayWrite]
 
+theorem refresh_and_unknown_usage_keep_hold (binding current cedar : Bool) (usage : Nat) :
+    mayWrite binding current cedar true = false ∧
+    Weaver.AnthropicUsage.qualify true false usage = none := by
+  exact ⟨refreshed_token_cannot_reopen_consumed_send binding current cedar,
+    Weaver.AnthropicUsage.interrupted_usage_is_not_terminal true usage⟩
+
 #print axioms expired_token_cannot_write
 #print axioms refreshed_token_cannot_reopen_consumed_send
+#print axioms refresh_and_unknown_usage_keep_hold
 end Weaver.Wif

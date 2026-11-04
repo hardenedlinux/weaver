@@ -608,3 +608,45 @@ reservation. A future token cannot reopen a consumed original. The
 sharing. Inbound caller OAuth remains a separate identity boundary.
 
 See [[https://platform.claude.com/docs/en/manage-claude/workload-identity-federation][Anthropic Workload Identity Federation]].
+
+*** Isolated production qualification
+
+Use a dedicated Anthropic test workspace and a federation rule whose only
+granted scope is =workspace:inference=. Provision a projected assertion file
+from its authorized workload identity. Record the allowed model and a fixed
+request and Token budget before any live call. Use a fresh Weaver ledger,
+synthetic prompts and a release image identified by its digest. Keep secret
+values and token-bearing headers out of all receipts.
+
+- Establish a cold exchange and one completed Messages request through the
+  normal Go and Rust entry points. Record exchange and dispatch counts
+  separately, and reconcile terminal usage against the original reservation.
+- Exercise distinct operations on a shared target during a refresh window.
+  Require one successful exchange for concurrent callers sharing the same
+  process-owned target cache and one upstream dispatch per admitted original.
+  Rotate the projected assertion and verify its use on the next refresh.
+  Credential rotation cannot reopen a consumed original.
+- Expire a credential before write and verify zero Messages requests for
+  that original. If the provider returns HTTP 401 on an authorized test cut,
+  record the exact status and require a single attempt, including after
+  restart. A provider status other than 401 supplies evidence for its own
+  branch. Use the loopback fault control to exercise a deterministic 401.
+  An exchange rejection, an expired credential and an ambiguous Messages
+  outcome must be accounted for separately. None supplies settlement evidence.
+- Run interleaved warm-token and refresh-path measurements on the same
+  release image, with matched model, request, concurrency and output bounds.
+  Use distinct original operation keys. Report exchange time, time to first
+  response event, terminal latency and committed provider call counts. Keep
+  interrupted samples in the receipt and report their outcomes separately.
+
+Production qualification requires receipts from the official service and
+the deciding ledger.
+
+The local Snake Oil exchange fixture creates its own TLS root and temporary
+assertion file. Its DNS override is confined to the Rust test client. The
+fixture checks cold exchange, a shared refresh after assertion rotation,
+exchange rejection and insufficient token lifetime. The separate Go
+integration fixture drives an inference 401 through gRPC, the Rust broker
+and Turso, then checks that restart preserves the original hold and the
+single upstream attempt. The Lean and Quint checks join the no-reopen
+condition with the requirement for terminal settlement evidence.

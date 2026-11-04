@@ -6,7 +6,7 @@ use super::{AnthropicWifConfig, ExchangeResponse, Federation, IoRuntime, validat
 use std::{
     io::{BufRead, BufReader, Read, Write},
     net::TcpListener,
-    sync::Arc,
+    sync::{Arc, Barrier},
     thread,
     time::Duration,
 };
@@ -27,7 +27,7 @@ proptest::proptest! {
 }
 
 #[test]
-fn synthetic_tls_exchange_refreshes_rotated_assertion() {
+fn synthetic_tls_exchange_coalesces_concurrent_refresh() {
     let _ = rustls::crypto::ring::default_provider().install_default();
     let tls = rcgen::generate_simple_self_signed(vec!["api.anthropic.com".into()])
         .expect("fixture certificate");
@@ -49,7 +49,12 @@ fn synthetic_tls_exchange_refreshes_rotated_assertion() {
         listener
             .set_nonblocking(true)
             .expect("fixture accept bounds");
-        for expected in ["synthetic.first.jwt", "synthetic.second.jwt"] {
+        for (expected, status, expires) in [
+            ("synthetic.first.jwt", "200 OK", 60),
+            ("synthetic.second.jwt", "200 OK", 60),
+            ("synthetic.rejected.jwt", "401 Unauthorized", 60),
+            ("synthetic.expiring.jwt", "200 OK", 1),
+        ] {
             let deadline = std::time::Instant::now() + Duration::from_secs(8);
             let socket = loop {
                 match listener.accept() {
@@ -103,11 +108,11 @@ fn synthetic_tls_exchange_refreshes_rotated_assertion() {
                 "urn:ietf:params:oauth:grant-type:jwt-bearer"
             );
             let reply = format!(
-                r#"{{"access_token":"sk-ant-oat01-{expected}","token_type":"Bearer","expires_in":60,"scope":"workspace:inference"}}"#
+                r#"{{"access_token":"sk-ant-oat01-{expected}","token_type":"Bearer","expires_in":{expires},"scope":"workspace:inference"}}"#
             );
             write!(
                 stream.get_mut(),
-                "HTTP/1.1 200 OK\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{}",
+                "HTTP/1.1 {status}\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{}",
                 reply.len(),
                 reply
             )
@@ -152,7 +157,41 @@ fn synthetic_tls_exchange_refreshes_rotated_assertion() {
         .expect("token")
         .expires = Instant::now();
     std::fs::write(&assertion_file, "synthetic.second.jwt").expect("rotated synthetic JWT");
-    let second = federation.token(&client, &io).expect("refreshed exchange");
-    assert_eq!(second.value.as_ref(), "sk-ant-oat01-synthetic.second.jwt");
+    let ready = Barrier::new(8);
+    thread::scope(|scope| {
+        let workers: Vec<_> = (0..8)
+            .map(|_| {
+                scope.spawn(|| {
+                    ready.wait();
+                    federation.token(&client, &io).expect("shared refresh")
+                })
+            })
+            .collect();
+        let mut results = workers
+            .into_iter()
+            .map(|worker| worker.join().expect("refresh worker"));
+        let refreshed = results.next().expect("refresh token");
+        assert_eq!(
+            refreshed.value.as_ref(),
+            "sk-ant-oat01-synthetic.second.jwt"
+        );
+        for token in results {
+            assert!(Arc::ptr_eq(&refreshed.value, &token.value));
+        }
+    });
+    federation
+        .cached
+        .lock()
+        .expect("fixture cache")
+        .as_mut()
+        .expect("refreshed token")
+        .expires = Instant::now();
+    for assertion in ["synthetic.rejected.jwt", "synthetic.expiring.jwt"] {
+        std::fs::write(&assertion_file, assertion).expect("synthetic JWT");
+        assert!(matches!(
+            federation.token(&client, &io),
+            Err(weaver_contracts::Error::Denied)
+        ));
+    }
     worker.join().expect("fixture natural exit");
 }
