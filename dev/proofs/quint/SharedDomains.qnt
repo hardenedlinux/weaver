@@ -60,6 +60,14 @@ module SharedDomains {
   run oauthRevocationStopsReleaseTest=init.expect(
     oauthEffect(true,true,true,true) and not(oauthEffect(true,true,false,true))
     and observedRelease(false,true,true,false)==0)
+  pure def oauthRelayUse(peer:bool, rootActive:bool, leafActive:bool, dbHead:int, witnessHead:int):bool=
+    peer and rootActive and leafActive and dbHead==witnessHead
+  run oauthWitnessAheadRefusesOldProjectionTest=init.expect(
+    not(oauthRelayUse(true,true,true,0,1)) and oauthRelayUse(true,true,true,1,1))
+  run oauthRecoveredRevocationBlocksDescendantTest=init.expect(
+    not(oauthRelayUse(true,false,true,1,1)) and not(oauthRelayUse(false,true,true,1,1)))
+  run oauthRetiredIssuerCannotPublishTest=init.expect(
+    Set(0,1,2).forall(old=>old<3 and old!=3))
   run delegatedGrantCannotReplaceOperationCredentialTest=init.expect(
     not(oauthEffect(false,true,true,true)))
   run refreshAfter401CannotReopenTest=init.expect(not(wifMayWrite(true,true,true,true)))

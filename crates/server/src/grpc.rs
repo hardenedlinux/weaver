@@ -193,6 +193,10 @@ fn validate_listeners(
     if let Some(oauth) = &settings.provider_oauth {
         oauth.validate()?;
         if oauth.subject != settings.owner.principal
+            || oauth
+                .relay_certificate_sha256
+                .as_ref()
+                .is_some_and(|relay| relay != &hex::encode(settings.security.peer_sha256))
             || oauth.public_key == settings.review_authority.public_key
             || settings.metering.as_ref().is_some_and(|metering| {
                 metering
@@ -768,7 +772,7 @@ impl pb::gateway_server::Gateway for Gateway {
                     #[cfg(all(test, unix))]
                     crate::provider_commit_tests::attach(&mut ledger);
                     ledger.require_principal(&config.principal, &plan.family)?;
-                    weaver_broker::execute_catalog_provider_with_oauth(
+                    let execution = weaver_broker::execute_catalog_provider_with_oauth(
                         &mut ledger,
                         weaver_broker::ProviderExecution {
                             plan: &plan,
@@ -781,7 +785,20 @@ impl pb::gateway_server::Gateway for Gateway {
                             catalog: &request.catalog_version,
                             oauth: oauth.as_ref(),
                         },
-                    )
+                    );
+                    #[cfg(test)]
+                    if std::env::var_os("WEAVER_TEST_PROVIDER_TIMINGS").is_some() {
+                        let t = ledger.transaction_timings();
+                        eprintln!(
+                            "weaver-oauth-timing {} {} {} {} {}",
+                            t.provider_oauth_check.nanos,
+                            t.domain_hold.nanos,
+                            t.transaction_hold.nanos,
+                            t.provider_request.nanos,
+                            t.provider_queue.nanos
+                        );
+                    }
+                    execution
                 })();
                 output.telemetry.record(if result.is_ok() {
                     weaver_telemetry::Signal::ProviderCompleted

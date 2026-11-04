@@ -6,6 +6,7 @@
 use super::{Session, driver};
 use futures_executor::block_on;
 use std::{
+    cell::Cell,
     ops::Deref,
     sync::atomic::{AtomicBool, Ordering},
     sync::{MutexGuard, RwLockReadGuard, RwLockWriteGuard},
@@ -19,6 +20,7 @@ pub struct WriteScope<'a> {
     poisoned: &'a AtomicBool,
     timings: &'a mut super::TransactionTimings,
     entered: Instant,
+    oauth_check: Cell<super::Timing>,
     owner_entered: Option<Instant>,
     domains_entered: Option<Instant>,
     _exclusive: Option<RwLockWriteGuard<'a, ()>>,
@@ -99,6 +101,7 @@ fn start<'a>(session: &'a mut Session, family: Option<&str>) -> driver::Result<W
         poisoned: &session.poisoned,
         timings: &mut session.timings,
         entered: Instant::now(),
+        oauth_check: Cell::new(super::Timing::default()),
         owner_entered,
         domains_entered,
         _exclusive: exclusive,
@@ -145,6 +148,19 @@ impl WriteScope<'_> {
         #[cfg(not(any(test, feature = "commit-observer")))]
         self.commit()
     }
+    pub(crate) fn check_provider_oauth(
+        &self,
+        evidence: Option<&weaver_contracts::ProviderOAuthUse>,
+        scope: &'static str,
+    ) -> weaver_contracts::Result<Option<u64>> {
+        let started = Instant::now();
+        let result = crate::provider_oauth::require(self, evidence, scope);
+        let mut timing = self.oauth_check.get();
+        timing.record(started.elapsed());
+        self.oauth_check.set(timing);
+        result
+    }
+
     pub(crate) fn request_effect<T>(&mut self, run: impl FnOnce() -> T) -> T {
         super::timing::measure(&mut self.timings.provider_request, run)
     }
@@ -194,6 +210,10 @@ impl Drop for WriteScope<'_> {
             let _ = release_failed_transaction(self.connection);
         }
         self.timings.transaction_hold.record(self.entered.elapsed());
+        let sample = self.oauth_check.get();
+        let total = &mut self.timings.provider_oauth_check;
+        total.attempts = total.attempts.saturating_add(sample.attempts);
+        total.nanos = total.nanos.saturating_add(sample.nanos);
         self._domains.clear();
         if let Some(entered) = self.domains_entered {
             self.timings.domain_hold.record(entered.elapsed());

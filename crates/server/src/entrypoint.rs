@@ -7,6 +7,10 @@
 /// Run the deployment service with the default Tokio runtime and its normal drain.
 #[tokio::main]
 pub async fn run() -> weaver_contracts::Result<()> {
+    run_on_runtime().await
+}
+
+pub(crate) async fn run_on_runtime() -> weaver_contracts::Result<()> {
     use weaver_ledger::persistence::{Journal, Session};
     let journal = match std::env::var("WEAVER_STORAGE_JOURNAL").as_deref() {
         Ok("mvcc") => Journal::Mvcc,

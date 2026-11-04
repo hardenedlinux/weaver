@@ -66,6 +66,7 @@ when { context.family == "control" && ["infer", "next"].contains(context.node) &
 
 type controlProcess struct {
 	fixture            *fixture
+	ingress            *testPKI
 	env                []string
 	address, directory string
 	child              *exec.Cmd
@@ -126,7 +127,11 @@ func (c *controlProcess) start(t testing.TB) {
 	go func() { err := child.Wait(); log.Close(); exited <- err }()
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
-	c.client, err = gatewayclient.Dial(ctx, c.address, ownerToken, &tls.Config{RootCAs: c.fixture.pki.root, Certificates: []tls.Certificate{c.fixture.pki.client}, ServerName: "localhost", MinVersion: tls.VersionTLS13})
+	caller := c.fixture.pki.client
+	if c.ingress != nil {
+		caller = c.ingress.client
+	}
+	c.client, err = gatewayclient.Dial(ctx, c.address, ownerToken, &tls.Config{RootCAs: c.fixture.pki.root, Certificates: []tls.Certificate{caller}, ServerName: "localhost", MinVersion: tls.VersionTLS13})
 	if err != nil {
 		c.stop(t)
 		data, _ := os.ReadFile(filepath.Join(c.directory, "control.log"))

@@ -715,3 +715,63 @@ mTLS connection. =provider:execute= covers the provider request and
 its response stream. =provider:inspect= covers the separate receipt read.
 The OAuth sender is the certificate authenticated by Rust. A delegated
 token bound to a different connection cannot be used through this path.
+
+*** OAuth over two authenticated hops
+
+Set =WEAVER_CONTROL_PROVIDER_OAUTH_RELAY=1= on the Go control server and
+configure =relay_certificate_sha256= on the Rust OAuth deployment. Use
+distinct Go ingress and Rust operation client certificates. Go rejects
+caller-supplied ingress evidence and derives the first-hop fingerprint
+from the verified TLS peer. Rust accepts that projection only from the
+designated relay certificate.
+
+The issuer publishes a root grant bound to the original ingress
+certificate and a child bound to the Go client certificate seen by Rust.
+The child carries the signed =parent_token_hash=. The parent stays
+single-level and retains the issuer, subject, client and audience. The
+child can only narrow scopes and validity. The control client supplies
+the child bearer on the Go ingress. The Rust deciding scope checks both
+the root and child revocation records together with Cedar, consumption
+and the existing effect fences.
+
+For an epoch-zero child, use =weaver.provider-oauth.delegated-grant.v1=
+as the signing domain and append the parent digest to the existing grant
+array. For a grant after signing-key rotation, use
+=weaver.provider-oauth.epoch-grant.v1= and append the parent digest or JSON
+null, then the signing epoch.
+
+*** OAuth authority recovery and measurement
+
+Provision an empty regular =witness_file= at an absolute path outside the
+Turso database backup and restore domain before enabling relay mode. One
+deciding database owns that file. Protect its directory from replacement
+and preserve the deployment configuration and the witness across restore.
+The witness uses a bound genesis and an append-only prefix. Source changes
+append and sync the decision before acknowledging the Turso transaction.
+Startup verifies the retained prefix and replays any suffix. The effect
+guard requires the projected length to match the independently retained
+journal under the deciding scope. A malformed or incomplete record
+keeps the resource closed. The current journal has a fixed capacity and
+requires operator-managed lifecycle at exhaustion.
+
+The current issuer signs the digest of a compact JSON array containing
+=weaver.provider-oauth.rotate-issuer.v1=, issuer, current key, expected
+epoch and next public key. The source owner publishes the rotation through
+=ChangeProviderOAuth=. An exact retry returns the recorded decision.
+New publications require the current epoch, while previously admitted
+grant records retain their original expiry and revocation constraints.
+A root tombstone blocks existing descendants and late child publications.
+The witness protects OAuth authority under database-only rollback.
+Its trust premise is retention independent of that rollback, along with
+the existing trusted server clock and deciding-owner assumptions.
+
+The ABBA benchmark runs both arms on the same optimized Rust image with
+the same Go control binary. It excludes startup and credential
+publication. It records first event, terminal receipt, OAuth checks,
+domain and transaction hold, provider write and response queue time.
+Native intervals overlap and are interpreted separately.
+
+An existing direct deployment can enable its independent witness once
+while preserving the same issuer key, subject, client and audience.
+Activation seeds previously committed revocations before confirmation.
+Subsequent startup requires the installed witness and relay binding.

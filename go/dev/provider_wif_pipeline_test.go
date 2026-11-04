@@ -186,7 +186,7 @@ func wifFixture(t testing.TB, image string, p *wifPeer) *fixture {
 	profile.Protocol = v1.AnthropicMessagesSSE
 	return providerFixture(t, nil, false, image,
 		[]string{"--exact", "grpc_config::serve_wif_gateway", "--ignored", "--nocapture"},
-		nil, profile, p)
+		nil, profile, p, nil)
 }
 
 type wifResult struct {

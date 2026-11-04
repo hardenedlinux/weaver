@@ -13,7 +13,10 @@ mod provider;
 mod provider_context;
 mod provider_oauth;
 pub use provider::{BoundProviderPolicy, ProviderCheck, bind_provider};
-pub use provider_oauth::{ProviderOAuthCheck, require_provider_oauth, verify_provider_oauth_grant};
+pub use provider_oauth::{
+    ProviderOAuthCheck, require_provider_oauth, verify_provider_oauth_grant,
+    verify_provider_oauth_rotation,
+};
 mod publication_replay;
 mod stream;
 mod typed;

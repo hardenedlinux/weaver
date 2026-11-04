@@ -185,10 +185,10 @@ func fixtureWithInvocation(t testing.TB, handler http.HandlerFunc, large bool, b
 	return fixtureWithProfileInvocation(t, handler, large, binary, arguments, extraEnvironment, providerProfile(), withPlan...)
 }
 func fixtureWithProfileInvocation(t testing.TB, handler http.HandlerFunc, large bool, binary string, arguments, extraEnvironment []string, profile *v1.ProviderProfile, withPlan ...func(v1.ProviderPlan) string) *fixture {
-	return providerFixture(t, handler, large, binary, arguments, extraEnvironment, profile, nil, withPlan...)
+	return providerFixture(t, handler, large, binary, arguments, extraEnvironment, profile, nil, nil, withPlan...)
 }
 
-func providerFixture(t testing.TB, handler http.HandlerFunc, large bool, binary string, arguments, extraEnvironment []string, profile *v1.ProviderProfile, wif *wifPeer, withPlan ...func(v1.ProviderPlan) string) *fixture {
+func providerFixture(t testing.TB, handler http.HandlerFunc, large bool, binary string, arguments, extraEnvironment []string, profile *v1.ProviderProfile, wif *wifPeer, suppliedPKI *testPKI, withPlan ...func(v1.ProviderPlan) string) *fixture {
 	anthropic := profile.Protocol == v1.AnthropicMessagesSSE
 	path := "/v1/chat/completions"
 	if anthropic {
@@ -196,7 +196,9 @@ func providerFixture(t testing.TB, handler http.HandlerFunc, large bool, binary 
 	}
 	t.Helper()
 	f := &fixture{directory: t.TempDir(), binary: binary, arguments: append([]string(nil), arguments...)}
-	if wif != nil {
+	if suppliedPKI != nil {
+		f.pki = suppliedPKI
+	} else if wif != nil {
 		f.pki = pki(t, "api.anthropic.com")
 	} else {
 		f.pki = pki(t)

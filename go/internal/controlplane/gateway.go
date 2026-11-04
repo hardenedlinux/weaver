@@ -30,6 +30,7 @@ type Gateway struct {
 	source      *gatewayclient.Client
 	deferred    *config.Bundle
 	publication *pb.PublicationKey
+	oauthRelay  bool
 }
 
 // Bootstrap has no execution API calls. Unknown publication outcomes never activate ingress.
@@ -122,11 +123,15 @@ func (g *Gateway) ExecuteProvider(in *pb.ProviderRequest, out pb.Gateway_Execute
 		routes = append(routes, v1.ProviderRoute{Target: r.Target, Endpoint: r.Endpoint})
 	}
 	proposal := v1.ProviderPlan{Family: p.Family, Node: p.Node, Profile: p.Profile, ProfileCommitment: p.ProfileCommitment, Model: p.Model, Body: string(p.Body), Routes: routes, Ceiling: p.Ceiling}
+	forward, err := g.providerContext(out.Context())
+	if err != nil {
+		return err
+	}
 	compiled, catalog, err := g.compileProvider(out.Context(), proposal)
 	if err != nil {
 		return err
 	}
-	ctx, cancel := context.WithCancel(out.Context())
+	ctx, cancel := context.WithCancel(forward)
 	defer cancel()
 	upstream, err := g.owner.RPC.ExecuteProvider(g.owner.Context(ctx), &pb.ProviderRequest{Plan: gatewayclient.Plan(compiled), CatalogVersion: catalog, Encoding: in.Encoding, BatchRows: in.BatchRows})
 	if err != nil {
@@ -160,7 +165,11 @@ func (g *Gateway) Inspect(ctx context.Context, key *pb.OperationKey) (*pb.Provid
 	if key == nil || !g.operations[[2]string{key.Family, key.Node}] {
 		return nil, status.Error(codes.PermissionDenied, "unregistered operation")
 	}
-	return g.owner.RPC.Inspect(g.owner.Context(ctx), key)
+	forward, err := g.providerContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return g.owner.RPC.Inspect(g.owner.Context(forward), key)
 }
 
 func (g *Gateway) compileProvider(ctx context.Context, proposal v1.ProviderPlan) (v1.ProviderPlan, string, error) {

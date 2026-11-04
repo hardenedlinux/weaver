@@ -21,7 +21,8 @@ mod provider_catalog;
 mod provider_oauth;
 pub use provider_catalog::{CatalogEntry, ProviderCatalog};
 pub use provider_oauth::{
-    ProviderOAuthDeployment, ProviderOAuthGrant, ProviderOAuthUse, oauth_hex,
+    ProviderOAuthDeployment, ProviderOAuthGrant, ProviderOAuthIssuerRotation, ProviderOAuthUse,
+    oauth_hex,
 };
 mod provider_profile;
 mod quotas;

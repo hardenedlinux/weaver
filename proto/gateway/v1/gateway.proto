@@ -141,6 +141,7 @@ message ProviderOAuthChange {
   oneof action {
     ProviderOAuthGrant grant = 1;
     string revoke_token_hash = 2;
+    ProviderOAuthIssuerRotation rotate_issuer = 3;
   }
 }
 message ProviderOAuthGrant {
@@ -154,4 +155,11 @@ message ProviderOAuthGrant {
   uint64 not_before = 8;
   uint64 expires_at = 9;
   string signature = 10;
+  string parent_token_hash = 11;
+  uint64 issuer_epoch = 12;
+}
+message ProviderOAuthIssuerRotation {
+  uint64 expected_epoch = 1;
+  string public_key = 2;
+  string signature = 3;
 }

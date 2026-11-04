@@ -86,7 +86,7 @@ impl Ledger {
         let digest = plan.digest()?;
         let tx =
             crate::persistence::begin_family(&mut self.connection, &plan.family).map_err(db)?;
-        crate::provider_oauth::require(&tx, oauth, "provider:execute")?;
+        tx.check_provider_oauth(oauth, "provider:execute")?;
         if let Some(old) = receipt(&tx, &plan.family, &plan.node)? {
             if old.digest != digest {
                 return Err(Error::Conflict("provider logical key already bound"));
@@ -159,7 +159,7 @@ impl Ledger {
         oauth: Option<&ProviderOAuthUse>,
     ) -> Result<ProviderDispatch> {
         let tx = crate::persistence::begin_family(&mut self.connection, family).map_err(db)?;
-        let oauth_expires = crate::provider_oauth::require(&tx, oauth, "provider:execute")?;
+        let oauth_expires = tx.check_provider_oauth(oauth, "provider:execute")?;
         let record: Option<String> = crate::persistence::maybe(
             &tx,
             "SELECT plan FROM provider_runs WHERE family=?1 AND node=?2 AND state='queued'",
@@ -530,7 +530,7 @@ fn guard_live_range(
     format: &str,
 ) -> Result<()> {
     crate::publication_barrier::require_resolved(tx)?;
-    crate::provider_oauth::require(tx, p.oauth.as_ref(), "provider:execute")?;
+    tx.check_provider_oauth(p.oauth.as_ref(), "provider:execute")?;
     crate::task_publication::require(tx, &p.plan.family)?;
     let (revision, fence, source): (u64, u64, String) = crate::persistence::one(
         tx,

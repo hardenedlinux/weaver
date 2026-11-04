@@ -39,6 +39,19 @@ pub struct ProviderOAuthCheck<'a> {
     pub now: u64,
 }
 
+/// Authenticate one issuer rotation against the previously committed key.
+pub fn verify_provider_oauth_rotation(
+    issuer: &str,
+    current_key: &str,
+    rotation: &weaver_contracts::ProviderOAuthIssuerRotation,
+) -> Result<()> {
+    crate::delta_review::verify_signature(
+        current_key,
+        &rotation.signing_digest(issuer, current_key)?,
+        &rotation.signature,
+    )
+}
+
 /// Evaluate the upstream mTLS resource requirement over deciding-store facts.
 pub fn require_provider_oauth(check: ProviderOAuthCheck<'_>) -> Result<()> {
     let ProviderOAuthCheck {

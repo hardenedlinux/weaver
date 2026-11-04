@@ -249,7 +249,7 @@ package WeaverViews {
         attribute readerQuestion : String = "What can authorize actual provider use?";
         attribute designAudience : String = "Gateway developers and operators";
         attribute designMedium : String = "GitHub at 830 CSS pixels";
-        attribute designMessage : String = "Rust checks caller OAuth and Cedar at final use.\nA refreshed credential cannot reopen the original claim.";
+        attribute designMessage : String = "Rust checks relay lineage and Cedar at final use.\nThe OAuth witness retains committed revocation.";
         attribute designFocus : String = "execution";
         attribute captionContext : String = "journey";
         attribute visualThemes : String = "sketchbook,ember,compact,reading";

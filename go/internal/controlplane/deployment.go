@@ -6,6 +6,7 @@ package controlplane
 
 import (
 	"context"
+	"crypto/sha256"
 	"crypto/tls"
 	"crypto/x509"
 	"encoding/hex"
@@ -146,6 +147,14 @@ func RunFromEnv(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+	relayMode := os.Getenv("WEAVER_CONTROL_PROVIDER_OAUTH_RELAY")
+	if relayMode != "" && relayMode != "1" {
+		return errors.New("invalid provider OAuth relay mode")
+	}
+	oauthRelay := relayMode == "1"
+	if oauthRelay && sha256.Sum256(opKey.Certificate[0]) == leaf {
+		return errors.New("OAuth relay requires distinct ingress and authority certificates")
+	}
 	sourceKey, err := pair("WEAVER_CONTROL_AUTHORITY_SOURCE")
 	if err != nil {
 		return err
@@ -186,6 +195,7 @@ func RunFromEnv(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+	gateway.oauthRelay = oauthRelay
 	trace("authority-reconciled")
 	server, err := NewServer(gateway, &tls.Config{Certificates: []tls.Certificate{serverKey}, ClientCAs: clientRoots, ClientAuth: tls.RequireAndVerifyClientCert}, leaf, token)
 	if err != nil {

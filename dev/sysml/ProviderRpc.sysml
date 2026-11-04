@@ -13,7 +13,10 @@ package ProviderRpc {
            source custody alone can publish signed evidence or revoke a digest.
            The deciding Turso scope joins active grant status with Cedar and the
            original claim before dispatch or response release. Revocation retains
-           unknown holds, and credential renewal cannot reopen consumption. */
+           unknown holds, and credential renewal cannot reopen consumption.
+       Go projects its actual verified ingress certificate. Rust authenticates
+       the relay TLS sender and checks the signed grant parent. An independent
+       witness retains root revocation and issuer epochs across store recovery. */
     }
     requirement def TransportSetupIsolation {
         doc /* Connection setup retains caller cancellation and deadlines. Transport reconnects do not issue application RPCs, reauthorize release, reset spent roots or refund unknown holds. Initial connection backoff is distinct from SDK operation retry. Readiness observation uses the caller's existing remaining budget; it never extends that deadline or changes the native reconnect policy after Ready. Native capacity and fresh Cedar guards still decide every effect. */

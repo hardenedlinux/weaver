@@ -92,7 +92,9 @@ fn load_transport() -> Result<ProviderTransport> {
 #[tokio::test(flavor = "multi_thread")]
 #[ignore = "started as a child by the Go WIF fixture"]
 async fn serve_wif_gateway() {
-    run_from_env().await.expect("WIF test gateway");
+    crate::entrypoint::run_on_runtime()
+        .await
+        .expect("WIF test gateway");
 }
 struct ListenAddresses {
     operation: std::net::SocketAddr,

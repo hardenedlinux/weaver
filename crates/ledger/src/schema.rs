@@ -110,6 +110,10 @@ CREATE TABLE IF NOT EXISTS provider_oauth_deployment (
 CREATE TABLE IF NOT EXISTS provider_oauth_grants (
  token_hash TEXT PRIMARY KEY, record TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS provider_oauth_revocations (token_hash TEXT PRIMARY KEY);
+CREATE TABLE IF NOT EXISTS provider_oauth_issuer_rotations (
+ epoch INTEGER PRIMARY KEY CHECK(epoch>0), public_key TEXT NOT NULL UNIQUE, record TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS provider_oauth_witness (
+ singleton INTEGER PRIMARY KEY CHECK(singleton=1), length INTEGER NOT NULL CHECK(length>0), digest TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS metering_deployment (
  singleton INTEGER PRIMARY KEY CHECK(singleton=1), record TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS metering_reservations (

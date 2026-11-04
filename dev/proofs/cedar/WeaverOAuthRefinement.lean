@@ -40,4 +40,35 @@ theorem refreshed_grant_preserves_original_consumption
 
 #print axioms final_effect_requires_both
 #print axioms refreshed_grant_preserves_original_consumption
+structure Witness (Key : Type) where
+  revoked : Key → Prop
+  epoch : Nat
+
+def Retains (old current : Witness Key) : Prop :=
+  old.epoch ≤ current.epoch ∧ ∀ key, old.revoked key → current.revoked key
+
+def RelayedUse (current : Witness Key) (root leaf : Key) (senderBound : Prop) : Prop :=
+  senderBound ∧ ¬ current.revoked root ∧ ¬ current.revoked leaf
+
+theorem retained_root_revocation_blocks_child
+    (retained : Retains old current) (revoked : old.revoked root) :
+    ¬ RelayedUse current root leaf senderBound := by
+  intro accepted
+  exact accepted.2.1 (retained.2 root revoked)
+
+theorem retained_epoch_rejects_retired_signer
+    (retained : Retains old current) (retired : signedEpoch < old.epoch) :
+    signedEpoch ≠ current.epoch := by
+  exact Nat.ne_of_lt (Nat.lt_of_lt_of_le retired retained.1)
+
+theorem ahead_witness_blocks_unreconciled_use
+    {projectedLength witnessLength : Nat} {mayUse : Prop} :
+    projectedLength < witnessLength → ¬ (projectedLength = witnessLength ∧ mayUse) := by
+  intro ahead accepted
+  exact (Nat.ne_of_lt ahead) accepted.1
+
+#print axioms retained_root_revocation_blocks_child
+#print axioms retained_epoch_rejects_retired_signer
+#print axioms ahead_witness_blocks_unreconciled_use
+
 end WeaverOAuthRefinement
