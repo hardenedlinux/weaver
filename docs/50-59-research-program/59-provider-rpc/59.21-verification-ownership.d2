@@ -37,9 +37,10 @@ vars: { d2-config: { data: { figure: |json
     "model7": "dev/sysml/StreamingExecution.sysml",
     "model8": "dev/sysml/WeaverExecution.sysml",
     "model9": "dev/sysml/ZeroTrustRefinement.sysml",
-    "proof0": "dev/proofs/cedar/ZeroTrustEnrichment.lean",
-    "proof1": "dev/proofs/lean/ProviderRpc.lean",
-    "proof2": "dev/proofs/lean/StreamingExecution.lean",
+    "proof0": "dev/proofs/cedar/DomainMigrationComposition.lean",
+    "proof1": "dev/proofs/cedar/ZeroTrustEnrichment.lean",
+    "proof2": "dev/proofs/lean/ProviderRpc.lean",
+    "proof3": "dev/proofs/lean/StreamingExecution.lean",
     "sdkCapture": "dev/sysml/captures/WeaverViews-assurance.json"
   },
   "copy": {},
@@ -60,7 +61,8 @@ vars: { d2-config: { data: { figure: |json
     "obligationRefs": [
       "proof0",
       "proof1",
-      "proof2"
+      "proof2",
+      "proof3"
     ],
     "evidenceRefs": []
   },
@@ -129,7 +131,7 @@ vars: { d2-config: { data: { figure: |json
   "modelSource": {
     "ref": "sdkCapture",
     "view": "WeaverViews::assurance",
-    "modelHash": "c5cbc7bece45da9efca82423805eba847c79b87ff94397ad9033ae536065db23",
+    "modelHash": "89793845214d9ede1a4e0d9d352b55d3f7308a2d97b873f568d61d004d111bb6",
     "portProjection": "owner",
     "labels": {
       "n0": "Specify effects\nSysML + Org\nAllocate final-send ownership\nName the required contracts",

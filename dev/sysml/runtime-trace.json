@@ -101,6 +101,13 @@
     {"file":"dev/proofs/quint/RuntimeAdmission.qnt","pattern":"run originalCostBoundTest"},
     {"file":"crates/ledger/tests/unit/recovery.rs","pattern":"fn authored_ceiling_cannot_underreserve_the_original_wire_cost"}]},
   {"id":"ZeroTrustContractRefinement","witnesses":[
+    {"file":"dev/proofs/cedar/DomainMigrationComposition.lean","pattern":"theorem gateway_final_use_preserves_domain_contract","declaration":"Weaver.DomainMigrationComposition.gateway_final_use_preserves_domain_contract"},
+    {"file":"dev/proofs/cedar/DomainMigrationComposition.lean","pattern":"theorem head_cas_preserves_original_obligations","declaration":"Weaver.DomainMigrationComposition.head_cas_preserves_original_obligations"},
+    {"file":"dev/proofs/cedar/DomainMigrationComposition.lean","pattern":"theorem overbooked_actual_view_cannot_supply_final_run","declaration":"Weaver.DomainMigrationComposition.overbooked_actual_view_cannot_supply_final_run"},
+    {"file":"go/internal/devrunner/spec_proof_integration_test.go","pattern":"func TestSPECProofClosureResearchModels"},
+    {"file":"dev/proofs/quint/GatewayHeadCAS.qnt","pattern":"run finiteDomainCommitRestartPositiveTest"},
+    {"file":"dev/proofs/quint/GatewayHeadCAS.qnt","pattern":"run finiteDomainRevocationKeepsOriginalExposureTest"},
+    {"file":"dev/proofs/quint/GatewayHeadCAS.qnt","pattern":"run detachedLogicalLedgerCounterexampleTest"},
     {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem shared_exposure_keeps_original_budget","declaration":"Weaver.ProviderRpc.shared_exposure_keeps_original_budget"},
     {"file":"dev/proofs/cedar/ZeroTrustEnrichment.lean","pattern":"theorem gateway_specialization_retains_generic_framework","declaration":"Weaver.ZeroTrustEnrichment.gateway_specialization_retains_generic_framework"},
     {"file":"dev/proofs/cedar/ZeroTrustEnrichment.lean","pattern":"theorem retained_parent_and_selected_object_reach_gateway","declaration":"Weaver.ZeroTrustEnrichment.retained_parent_and_selected_object_reach_gateway"},

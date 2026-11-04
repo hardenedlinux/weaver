@@ -168,4 +168,16 @@ module GatewayHeadCAS {
   run preparedProjectionAsCommitCounterexampleTest = prepared.then(unsafePreparedRow).expect(not(rowsCommitted))
   run staleJoinAfterNewFenceCounterexampleTest = ready.then(unsafeKeepJoinAfterFence).expect(not(joinSound))
   run redirectedFinalSendCounterexampleTest = ready.then(unsafeRouteSend).expect(not(sendBound))
+
+  // The same existing finite ledger underlies CAS, recovery and the final offer.
+  run finiteDomainCommitRestartPositiveTest = ready
+    .then(send(decidedJob,0,0,8,0,10)).then(loseReply).then(restartBroker).then(rollbackProjection)
+    .expect(safety and P::booked(0) == 3 and P::s.messages.get(0).history and
+      P::s.messages.get(0).claims == 1 and P::s.messages.get(0).sends == 1)
+  run finiteDomainRevocationKeepsOriginalExposureTest = ready.then(restrict(0)).then(readJoin)
+    .expect(safety and P::booked(0) == 3 and P::s.messages.get(0).history and P::s.messages.get(0).sends == 0)
+    .then(send(decidedJob,0,0,8,0,10).fail())
+  action unsafeDetachedLogicalLedger = all {P::clearMessage(0),g' = g}
+  run detachedLogicalLedgerCounterexampleTest = ready.then(unsafeDetachedLogicalLedger)
+    .expect(not(P::reservationSafety) and not(safety))
 }

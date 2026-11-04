@@ -18,6 +18,9 @@ package WeaverZeroTrust {
            authoritative facts, original committed consumption, unknown retention
            and complete effect mediation. Obligations are witnessed transitions;
            recovery is not authorization and closure requires terminal AND accounted.
+           The finite-domain composition and SPEC FinalUse refer to the same
+           actual deciding view. Existing finite model sources are built through
+           their explicit Lake roots; a detached safe image supplies no evidence.
            The named Lean consumer is conditional and candidate-qualified; SDK
            structure or a diagram cannot discharge Rust/SQL/IO refinement premises. */
     }
@@ -72,7 +75,7 @@ package WeaverZeroTrust {
     }
     part def FinalEnforcement {
         attribute displayName : String = "Rust / Actual use";
-        attribute responsibility : String = "Persist original consumption\nCurrent reviewed Policy + fence\nMediate final external bytes\nUnknown writes keep their hold";
+        attribute responsibility : String = "Persist original consumption\nSame view: Policy + budget + fence\nCanonical claim + shared history\nMediate final external bytes\nUnknown writes keep their hold";
         attribute glyph : String = "rust";
         attribute visualRole : String = "execution";
         doc /* Existing Rust ledger/policy/broker/executor roles discharge the

@@ -66,7 +66,7 @@ func leanSource(stage Stage) string {
 	if stage.Binary == "elan" && len(stage.Args) == 9 && stage.Args[0] == "run" &&
 		stage.Args[1] == proofToolchain && stage.Args[2] == "lake" && stage.Args[3] == "-d" &&
 		stage.Args[4] == "dev/proofs/cedar" && stage.Args[5] == "env" && stage.Args[6] == "lean" &&
-		stage.Args[7] == "--json" && (stage.Args[8] == "dev/proofs/cedar/ZeroTrustArchitecture.lean" || stage.Args[8] == "dev/proofs/cedar/QualifiedReview.lean") {
+		stage.Args[7] == "--json" && (stage.Args[8] == "dev/proofs/cedar/ZeroTrustArchitecture.lean" || stage.Args[8] == "dev/proofs/cedar/QualifiedReview.lean" || stage.Args[8] == "dev/proofs/cedar/ModelClosure.lean" || stage.Args[8] == "dev/proofs/cedar/DomainMigrationComposition.lean") {
 		return stage.Args[8]
 	}
 	return ""

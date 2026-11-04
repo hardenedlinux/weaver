@@ -57,7 +57,7 @@ func TestLeanJSONMaintainedProofStages(t *testing.T) {
 			t.Fatalf("maintained proof stage %s: %+v", stage.Name, result)
 		}
 	}
-	if count != 7 {
+	if count != 9 {
 		t.Fatalf("unexpected maintained Lean stage inventory: %d", count)
 	}
 }

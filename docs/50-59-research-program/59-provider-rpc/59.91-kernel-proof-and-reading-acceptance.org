@@ -103,16 +103,13 @@ acceptance remains distinct from source generation; a selected layout probe is
 not complete acceptance. Historical timeout, small-font and failed proof audits
 remain cache evidence and are not relabeled as passes.
 
-* Historical proof inventory boundary
+* Model source closure correction
 
-The renamed historical =GambitLocatorClosure=, =DynamicImportBoundary= and
-=DynamicLoaderPublication= imports do not have an independently complete source
-closure in this checkout: their existing chain reaches the absent
-=FiniteDomainMigration.lean=. Direct compiler attempts and the missing-module
-diagnostic remain in ignored cache. Their identifier-only edits preserve the
-statements, but these older research files are not reported as newly accepted
-proofs. The mandatory current =QualifiedReview= composition has its own complete
-pinned source closure and requires a positive strict semantic audit.
+The earlier missing-source diagnosis was incorrect: the finite-domain source
+already exists under =dev/specs/lean=. Lake now includes that existing root and
+the older research root, and positive structured audits cover the imported
+models and actual SPEC final-use composition. See
+[[file:59.92-finite-domain-source-closure.org][the source-closure and composition audit]].
 
 * Responsibility names
 

@@ -49,7 +49,7 @@ func SourceInputs(root string) (map[string]string, error) {
 	// Include Lake manifests/pins, but do not traverse its dependency/build cache.
 	// Cache/toolchain integrity remains a separate qualification prerequisite.
 	// Historical evidence and generated diagrams are not source inputs.
-	for _, directory := range []string{"crates", "go", "proto", "scheme", "t", "prod", "dev/sysml", "dev/d2", ".github", "docs", "dev/proofs/lean", "dev/proofs/quint", "dev/proofs/cedar"} {
+	for _, directory := range []string{"crates", "go", "proto", "scheme", "t", "prod", "dev/sysml", "dev/d2", ".github", "docs", "dev/proofs/lean", "dev/proofs/quint", "dev/proofs/cedar", "dev/specs/lean", "dev/specs/quint"} {
 		err := filepath.WalkDir(filepath.Join(root, directory), func(path string, entry fs.DirEntry, err error) error {
 			if err != nil {
 				return err

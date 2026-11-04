@@ -41,7 +41,7 @@ func TestVerificationPlanProofInputsAreBound(t *testing.T) {
 	root, inputs := liveVerificationInputs(t)
 	for _, stage := range Plan("go") {
 		for _, arg := range stage.Args {
-			if !strings.HasPrefix(arg, "dev/proofs/") || (filepath.Ext(arg) != ".lean" && filepath.Ext(arg) != ".qnt") {
+			if !(strings.HasPrefix(arg, "dev/proofs/") || strings.HasPrefix(arg, "dev/specs/")) || (filepath.Ext(arg) != ".lean" && filepath.Ext(arg) != ".qnt") {
 				continue
 			}
 			if _, err := os.Stat(filepath.Join(root, arg)); err != nil {
@@ -56,7 +56,7 @@ func TestVerificationPlanProofInputsAreBound(t *testing.T) {
 
 func TestProofAndArchitectureChangesInvalidateCurrentness(t *testing.T) {
 	root, before := verificationInputsFixture(t)
-	for _, path := range []string{"dev/proofs/quint/InventoryProbe.qnt", "dev/proofs/lean/InventoryProbe.lean", "docs/inventory-probe.org", "docs/inventory-probe.d2"} {
+	for _, path := range []string{"dev/proofs/quint/InventoryProbe.qnt", "dev/proofs/lean/InventoryProbe.lean", "dev/specs/lean/InventoryProbe.lean", "dev/specs/quint/InventoryProbe.qnt", "docs/inventory-probe.org", "docs/inventory-probe.d2"} {
 		t.Run(path, func(t *testing.T) {
 			full := filepath.Join(root, path)
 			if err := os.WriteFile(full, []byte("source revision one\n"), 0600); err != nil {
@@ -88,7 +88,7 @@ func TestProofAndArchitectureChangesInvalidateCurrentness(t *testing.T) {
 
 func TestSourceInventoryExcludesGeneratedAndArchivedArtifacts(t *testing.T) {
 	root, before := verificationInputsFixture(t)
-	for _, path := range []string{"dev/proofs/cedar/.lake/packages/generated/BuildOutput.lean", "docs/generated.svg", "dev/proofs/evidence/inventory/receipt.json"} {
+	for _, path := range []string{"dev/proofs/cedar/.lake/packages/generated/BuildOutput.lean", "docs/generated.svg", "dev/proofs/evidence/inventory/receipt.json", "dev/specs/evidence/inventory/receipt.json"} {
 		full := filepath.Join(root, path)
 		if err := os.MkdirAll(filepath.Dir(full), 0700); err != nil {
 			t.Fatal(err)
@@ -103,23 +103,25 @@ func TestSourceInventoryExcludesGeneratedAndArchivedArtifacts(t *testing.T) {
 }
 
 func TestSourceInventoryRejectsProofAliases(t *testing.T) {
-	for _, directory := range []bool{false, true} {
-		root, _ := verificationInputsFixture(t)
-		external := t.TempDir()
-		file := filepath.Join(external, "external.qnt")
-		if err := os.WriteFile(file, []byte("external source"), 0600); err != nil {
-			t.Fatal(err)
-		}
-		alias := filepath.Join(root, "dev/proofs/quint/Alias")
-		if !directory {
-			external = file
-			alias += ".qnt"
-		}
-		if err := os.Symlink(external, alias); err != nil {
-			t.Fatal(err)
-		}
-		if _, err := SourceInputs(root); err == nil {
-			t.Fatal("external proof alias admitted", directory)
+	for _, sourceRoot := range []string{"dev/proofs/quint", "dev/specs/lean", "dev/specs/quint"} {
+		for _, directory := range []bool{false, true} {
+			root, _ := verificationInputsFixture(t)
+			external := t.TempDir()
+			file := filepath.Join(external, "external.qnt")
+			if err := os.WriteFile(file, []byte("external source"), 0600); err != nil {
+				t.Fatal(err)
+			}
+			alias := filepath.Join(root, sourceRoot, "Alias")
+			if !directory {
+				external = file
+				alias += ".qnt"
+			}
+			if err := os.Symlink(external, alias); err != nil {
+				t.Fatal(err)
+			}
+			if _, err := SourceInputs(root); err == nil {
+				t.Fatal("external proof alias admitted", directory)
+			}
 		}
 	}
 }
