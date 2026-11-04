@@ -13,6 +13,7 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
+	"net/http"
 	"strings"
 	"testing"
 	"time"
@@ -20,6 +21,7 @@ import (
 	v1 "github.com/HardenedLinux/weaver/go/api/v1"
 
 	pb "github.com/HardenedLinux/weaver/go/api/gateway/v1"
+	"github.com/HardenedLinux/weaver/go/internal/config"
 	"github.com/HardenedLinux/weaver/go/internal/gatewayclient"
 	"github.com/HardenedLinux/weaver/go/internal/routing"
 	"google.golang.org/grpc"
@@ -38,7 +40,20 @@ func (c lostCatalogReply) PublishProviderCatalog(ctx context.Context, req *pb.Pr
 
 func TestProviderModuleSelectionBindsOriginal(t *testing.T) {
 	t.Setenv("WEAVER_STORAGE_JOURNAL", "mvcc")
-	f := fixtureWithInvocation(t, completeSSE, false, serverBinary, nil, nil, func(plan v1.ProviderPlan) string {
+	for _, mode := range []string{"complete", "partial", "deny"} {
+		t.Run(mode, func(t *testing.T) { checkImportedProvider(t, mode) })
+	}
+}
+func checkImportedProvider(t *testing.T, mode string) {
+	t.Helper()
+	handler := completeSSE
+	if mode == "partial" {
+		handler = func(w http.ResponseWriter, _ *http.Request) {
+			w.Header().Set("Content-Type", "text/event-stream")
+			emitChunk(w, "partial", false)
+		}
+	}
+	f := fixtureWithInvocation(t, handler, false, serverBinary, nil, nil, func(plan v1.ProviderPlan) string {
 		digest, err := plan.Digest()
 		if err != nil {
 			t.Fatal(err)
@@ -69,6 +84,16 @@ func TestProviderModuleSelectionBindsOriginal(t *testing.T) {
 	task.BodyDigests, task.StreamContracts = nil, nil
 	delete(task.NodeCostBounds, "next")
 	qualified := bundle.Plans[0]
+	for _, route := range qualified.Routes {
+		if route.Target == "primary" {
+			qualified.Routes = []v1.ProviderRoute{route}
+			break
+		}
+	}
+	if mode == "deny" {
+		bundle.Publication.Policy += `
+forbid(principal, action == Weaver::Action::"invokeProvider", resource) when { context.family == "control" };`
+	}
 	cheap := qualified
 	cheap.Model = "model-b"
 	cheap.Body = strings.Replace(cheap.Body, "model-a", "model-b", 1)
@@ -104,12 +129,26 @@ func TestProviderModuleSelectionBindsOriginal(t *testing.T) {
 				"procurement_rates": [4]uint64{rate}, "token_bounds": [4]uint64{64, 0, 0, 32}},
 		}
 	}
-	originalDigest, _ := f.plan.Digest()
 	chosenDigest, _ := qualified.Digest()
 	change := func(parent string, rate uint64) *pb.ProviderCatalogChange {
-		record, err := json.Marshal(map[string]any{"parent": parent, "entries": map[string]any{
-			originalDigest: entry(rate), chosenDigest: entry(rate),
+		metadata, err := json.Marshal(entry(rate))
+		if err != nil {
+			t.Fatal(err)
+		}
+		litellm, err := json.Marshal(map[string]any{"model_list": []any{
+			map[string]any{"model_name": "premium", "litellm_params": map[string]string{
+				"model": "openai/" + qualified.Model, "api_base": strings.TrimSuffix(qualified.Routes[0].Endpoint, "/chat/completions"),
+				"api_key": "os.environ/WEAVER_TEST_KEY",
+			}},
 		}})
+		if err != nil {
+			t.Fatal(err)
+		}
+		record, err := config.ImportProviderCatalog(litellm, config.ProfileJSON, config.ProviderImportReview{
+			Parent: parent, Bindings: map[string]config.ProviderImportBinding{
+				"premium": {Plan: qualified, Credential: "os.environ/WEAVER_TEST_KEY", Entry: metadata},
+			},
+		})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -182,16 +221,26 @@ func TestProviderModuleSelectionBindsOriginal(t *testing.T) {
 		}()
 	}
 	first, other := <-done, <-done
-	if (first != nil && other != nil) || f.primary.Load() != 1 {
+	if mode == "deny" {
+		if first == nil || other == nil || f.primary.Load() != 0 {
+			t.Fatalf("import bypassed Cedar invocation: %v %v", first, other)
+		}
+		return
+	}
+	if (mode == "complete" && first != nil && other != nil) ||
+		(mode == "partial" && (first == nil || other == nil)) || f.primary.Load() != 1 {
 		t.Fatalf("expected a single provider dispatch: %v %v, calls=%d", first, other, f.primary.Load())
 	}
 	withdrawal, err := json.Marshal(map[string]any{"parent": current.Version, "entries": map[string]any{}})
 	if err != nil {
 		t.Fatal(err)
 	}
-	withdrawn, err := publish(&pb.ProviderCatalogChange{Record: withdrawal})
-	if err != nil {
-		t.Fatal(err)
+	withdrawn := current
+	if mode == "complete" {
+		withdrawn, err = publish(&pb.ProviderCatalogChange{Record: withdrawal})
+		if err != nil {
+			t.Fatal(err)
+		}
 	}
 	control.stop(t)
 	f.stop(t)
@@ -210,7 +259,7 @@ func TestProviderModuleSelectionBindsOriginal(t *testing.T) {
 	if err != nil || original.GetReserved() != 4 || original.GetHeld() != 4 || original.GetDigest() != chosenDigest {
 		t.Fatalf("original reservation changed: %v %v", original, err)
 	}
-	if f.primary.Load() != 1 {
+	if (mode == "partial" && original.GetState() != "unknown") || f.primary.Load() != 1 {
 		t.Fatal("restart reopened original provider dispatch")
 	}
 }

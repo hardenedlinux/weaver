@@ -217,7 +217,7 @@ package WeaverViews {
         attribute visualBands : String = "[[\"ingress\",\"routine\",\"catalog\"],[\"routing\"]]";
         attribute mappedFile : String = "docs/10-19-llm-gateway/10-routing-and-inference/10.02-llm-routing.d2";
         attribute displayTitle : String = "Choose an eligible model";
-        attribute displaySubtitle : String = "Match the task against the current model directory.";
+        attribute displaySubtitle : String = "Select from the published catalog, including reviewed provider imports.";
         attribute displayEyebrow : String = "WEAVER / ROUTING";
         attribute readerQuestion : String = "What can constrain a route proposal?";
         attribute designAudience : String = "Gateway developers and operators";

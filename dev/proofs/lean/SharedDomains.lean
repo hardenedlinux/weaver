@@ -258,3 +258,20 @@ theorem other_tenant_cannot_read (epoch tenant other issuer : Nat)
 #print axioms retired_epoch_cannot_settle
 #print axioms other_tenant_cannot_read
 end Weaver.MeterCredential
+
+namespace Weaver.ProviderImport
+
+def maySend (matchesReview published cedar unspent : Bool) : Bool :=
+  matchesReview && published && cedar && unspent
+
+theorem import_cannot_replace_cedar (matchesReview published unspent : Bool) :
+    maySend matchesReview published false unspent = false := by
+  simp [maySend]
+
+theorem imported_route_cannot_replay_consumed_send (matchesReview published cedar : Bool) :
+    maySend matchesReview published cedar false = false := by
+  simp [maySend]
+
+#print axioms import_cannot_replace_cedar
+#print axioms imported_route_cannot_replay_consumed_send
+end Weaver.ProviderImport

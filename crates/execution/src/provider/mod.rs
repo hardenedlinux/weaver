@@ -4,10 +4,10 @@
 
 //! Provider owner facade; request dispatch and output custody stay private.
 mod io_runtime;
+mod openai_sse;
 mod request;
 mod response;
 mod runtime;
-mod sse;
 mod write_seal;
 pub use runtime::{
     ProviderExecution, ProviderOutput, ProviderTransport, execute_catalog_provider,

@@ -44,6 +44,10 @@ module SharedDomains {
     currentEpoch==presented and tenant==requested and issuer==claimed
   run crossTenantMeterRefusedTest=init.expect(not(meterAllows(1,1,1,2,1,1)))
   run rotatedMeterRefusedAfterReplayTest=init.expect(not(meterAllows(2,1,1,1,1,1)) and meterAllows(2,2,1,1,1,1))
+  pure def importedSend(matched:bool, published:bool, cedar:bool, spent:bool):bool=
+    matched and published and cedar and not(spent)
+  run importedCatalogCannotBypassCedarTest=init.expect(not(importedSend(true,true,false,false)))
+  run importedUnknownSendCannotRetryTest=init.expect(not(importedSend(true,true,true,true)))
   action init=s'=initial
   action reserve(f:int):bool=all{not(s.claims.contains(f)),s.active==Set(),exposure(s.root.get(f))+3<=6,
     s'=s.with("claims",s.claims.union(Set(f))).with("history",s.history.union(Set(f))).with("held",s.held.set(f,3))}

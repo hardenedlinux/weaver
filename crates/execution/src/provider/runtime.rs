@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 //! Guarded provider invocation; no retry, redirect, reconnect or automatic route fallback.
-use super::sse;
+use super::openai_sse;
 use std::{
     collections::{BTreeMap, BTreeSet},
     sync::Arc,
@@ -134,6 +134,9 @@ pub fn execute_catalog_provider<O: ProviderOutput>(
     output: &mut O,
     catalog: &str,
 ) -> Result<()> {
+    if !cfg!(feature = "llm-provider") {
+        return Err(Error::Invalid("LLM provider feature disabled"));
+    }
     execute_stream(
         ledger,
         request.plan,
@@ -168,7 +171,7 @@ fn execute_stream<O: ProviderOutput>(
     }
     let permit = ledger.consume_provider(&plan.family, &plan.node, &transport.eligible())?;
     let response = open_guarded(ledger, &permit, transport, output)?;
-    let mut reader = sse::Decoder::new(response, &plan.model);
+    let mut reader = openai_sse::Decoder::new(response, &plan.model);
     let mut batch = Vec::with_capacity(batch_rows);
     loop {
         if output.stopped() {

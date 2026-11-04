@@ -469,18 +469,88 @@ and validates the usage shape. The provider's usage report is the source
 of the measured token counts.
 
 
-* Optional LiteLLM provider compatibility
+* Direct provider adapters
 
-LiteLLM is a candidate external OpenAI-compatible provider adapter. Go may
-list a qualified deployment as one model module. Rust must bind the exact
-endpoint and model before dispatch. A deployment that performs its own
-retries, fallback, caching or model substitution can change the number or
-identity of effects behind that endpoint. Qualification must demonstrate a
-single authorized upstream call and stable usage semantics under connection
-loss and stream interruption. Keep the route disabled until those conditions
-are verified. LiteLLM spend logs remain observations. Weaver's Cedar policy,
-quota reservations, fencing and independent signed settlement own the
-deciding path.
+Weaver owns provider adaptation. The Rust =llm-provider=
+Cargo feature enables the direct provider subsystem and is on by default.
+A server built without the feature rejects execution before admission.
+OpenAI-compatible Chat Completions is the current adapter. Anthropic
+Messages and other protocols require their own qualified adapters under
+the same broker boundary. Go selects a concrete provider and model
+from the authorized catalog using task capabilities, tenant policy, cost
+and latency. Rust adapters translate and validate requests, decode streams
+and normalize usage. The Rust broker owns provider credentials, the final
+Cedar check and the transport send. Turso retains the original claim,
+reservation and formula.
 
-See [[https://docs.litellm.ai/docs/proxy/architecture][LiteLLM request architecture]]
-and [[https://docs.litellm.ai/docs/routing][LiteLLM Router behavior]].
+Extend the existing OpenAI Chat Completions SSE profile through its
+OpenAI-compatible endpoint contract. Add provider-specific codecs where
+request, authentication or usage semantics differ. A codec supplies data
+to the broker. It has no execution authority. Qualification observes the
+actual upstream call, confirms that a broken stream cannot start another
+call, and checks that only terminal, bound usage can reach settlement.
+
+Agentgateway provides a reference for direct provider adapters and model
+routing. Its LiteLLM importer translates configuration into agentgateway's
+own model and routing definitions. Weaver treats LiteLLM as an
+interoperability reference outside the deciding runtime path.
+
+See [[https://agentgateway.dev/docs/standalone/latest/documentation/llm/about/][Agentgateway provider support]]
+and [[https://docs.litellm.ai/docs/proxy/architecture][LiteLLM request architecture]].
+
+** Import external provider configuration
+
+Run =weaver-import-provider json|yaml LITELLM_FILE REVIEW_JSON= to emit
+the existing catalog proposal record on stdout. The review manifest is
+JSON with a =parent= digest and =bindings= keyed by the external model
+alias. Each binding has a concrete Weaver =plan=, an inert
+=credential_reference= and an existing catalog =entry=. The import
+accepts the explicit OpenAI-compatible LiteLLM subset with one endpoint
+per plan and a matching =os.environ/NAME= reference. User tariffs and
+procurement estimates come from the review manifest. Unsupported or
+unmatched input stops the import with a diagnostic. Publish the resulting
+record with the existing =PublishProviderCatalog= source RPC.
+
+Import is an offline transformation. It performs no network discovery,
+environment expansion, secret resolution or plugin loading. Imported retry,
+fallback, proxy and arbitrary header settings cannot become execution
+instructions. A credential reference is resolved only after an authorized
+operator binds it to a deployment-owned secret and target.
+
+The proposal enters the existing catalog validation and source publication
+flow. Import cannot grant a tenant access, publish a catalog, create a
+reservation or dispatch a request. Go selects an eligible model only from the
+published catalog. Rust validates the translated request and actual target,
+then the broker checks current Cedar Policy and consumes the original
+authorization before writing. Turso retains the original quota reservation
+and historical billing formula. Terminal usage still requires independent
+metering evidence.
+
+Verify import with bounded parsing, deterministic conversion and negative
+cases for secret expansion, hidden retries, unsupported targets and model
+rewrites. Qualify each provider adapter independently with real upstream
+call counts, partial-write and disconnect injection, and historical-formula
+settlement. A successful import supplies no provider qualification evidence.
+
+** Authorize provider effects with Cedar
+
+The existing provider schema defines =admitProvider=, =invokeProvider= and
+=emitProvider=. The principal comes from the original task and the resource
+identifies the concrete target. Rust supplies the validated endpoint, model,
+protocol, profile and plan commitments, request bounds, Policy revision,
+fence and current domain facts. Go route selection and imported configuration
+supply proposals to this boundary.
+
+Admission authorizes reservation. Invocation checks the consumed route
+again under current Policy at the broker's write boundary. Emission checks
+authorize response ranges before release. A policy change between
+reservation and dispatch can therefore prevent the outbound call. Once
+transport activity is uncertain, the original consumption and hold remain
+in force.
+
+A new provider codec must expose the effective target, model and request
+semantics before admission. Commit those facts and the translated request
+to the plan before Cedar evaluation. Any provider feature whose final
+effect cannot be expressed and checked at this boundary requires a reviewed
+schema extension before activation. Keep the authorization context
+independent of caller assertions and response telemetry.

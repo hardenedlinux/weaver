@@ -28,7 +28,8 @@ arrow-schema = { workspace = true, optional = true }
 arrow-ipc = { workspace = true, optional = true }
 gerbil-scheme = { workspace = true, optional = true }
 [features]
-default = []
+default = ["llm-provider"]
+llm-provider = ["weaver-execution/llm-provider"]
 scheme-program = ["weaver-governance/scheme-program"]
 arrow = ["dep:arrow-array", "dep:arrow-schema", "dep:arrow-ipc"]
 governance-qualification = ["scheme-program", "weaver-governance/scheme-qualification", "dep:gerbil-scheme"]

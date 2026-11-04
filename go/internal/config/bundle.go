@@ -38,25 +38,9 @@ func DecodeBundle(data []byte, format ProfileFormat) (Bundle, error) {
 	if len(data) == 0 || len(data) > 8<<20 {
 		return zero, errors.New("source bundle bound")
 	}
-	if format == ProfileYAML {
-		decoder := yaml.NewDecoder(bytes.NewReader(data))
-		var doc, tail yaml.Node
-		if err := decoder.Decode(&doc); err != nil {
-			return zero, err
-		}
-		if decoder.Decode(&tail) != io.EOF {
-			return zero, errors.New("one source document required")
-		}
-		value, err := bundleNode(&doc, 0)
-		if err != nil {
-			return zero, err
-		}
-		data, err = json.Marshal(value)
-		if err != nil {
-			return zero, err
-		}
-	} else if format != ProfileJSON {
-		return zero, errors.New("source format")
+	data, err := sourceJSON(data, format)
+	if err != nil {
+		return zero, err
 	}
 	bundle, err := v1.DecodeSource[Bundle](data)
 	if err != nil {
@@ -190,4 +174,28 @@ func bundleNode(n *yaml.Node, depth int) (any, error) {
 		}
 	}
 	return nil, errors.New("unsupported source YAML value")
+}
+
+func sourceJSON(data []byte, format ProfileFormat) ([]byte, error) {
+	if format == ProfileYAML {
+		decoder := yaml.NewDecoder(bytes.NewReader(data))
+		var doc, tail yaml.Node
+		if err := decoder.Decode(&doc); err != nil {
+			return nil, err
+		}
+		if decoder.Decode(&tail) != io.EOF {
+			return nil, errors.New("one source document required")
+		}
+		value, err := bundleNode(&doc, 0)
+		if err != nil {
+			return nil, err
+		}
+		data, err = json.Marshal(value)
+		if err != nil {
+			return nil, err
+		}
+	} else if format != ProfileJSON {
+		return nil, errors.New("source format")
+	}
+	return data, nil
 }

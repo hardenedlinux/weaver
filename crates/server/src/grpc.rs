@@ -709,6 +709,9 @@ impl pb::gateway_server::Gateway for Gateway {
         request: Request<pb::ProviderRequest>,
     ) -> std::result::Result<Response<Self::ExecuteProviderStream>, Status> {
         self.authenticate(&request, RpcRole::Operation)?;
+        if !cfg!(feature = "llm-provider") {
+            return Err(Status::unimplemented("LLM provider feature disabled"));
+        }
         let slot = self.admission.execution()?;
         let request = request.into_inner();
         let arrow = match pb::Encoding::try_from(request.encoding) {

@@ -38,7 +38,7 @@ APIs are not the reviewed service profile. Scheme remains deferred.
 
 [[file:../../../go/internal/routing/provider.go][provider.go]] preserves registered
 routing order and original profile/body commitments. The current
-[[file:../../../crates/execution/src/provider/sse.rs][SSE decoder]] handles bounded
+[[file:../../../crates/execution/src/provider/openai_sse.rs][SSE decoder]] handles bounded
 single-choice text completions. These mechanisms do not yet constitute complete
 capability routing, tool execution or a multi-attempt routine interpreter.
 
