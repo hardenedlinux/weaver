@@ -10,8 +10,8 @@ use crate::{
 };
 use std::collections::BTreeSet;
 use weaver_contracts::{
-    DomainStamp, DomainView, Error, ProviderPlan, ProviderReceipt, ProviderRoute, ProviderState,
-    Result, Task,
+    DomainStamp, DomainView, Error, ProviderOAuthUse, ProviderPlan, ProviderReceipt, ProviderRoute,
+    ProviderState, Result, Task,
 };
 
 /// Affine deciding-owner custody for one selected original provider invocation.
@@ -22,6 +22,8 @@ pub struct ProviderDispatch {
     digest: String,
     binding: weaver_policy::BoundProviderPolicy,
     domains: weaver_contracts::DomainStamp,
+    oauth: Option<ProviderOAuthUse>,
+    oauth_expires: Option<u64>,
 }
 impl ProviderDispatch {
     pub fn plan(&self) -> &ProviderPlan {
@@ -32,6 +34,18 @@ impl ProviderDispatch {
     }
     pub fn route(&self) -> &ProviderRoute {
         &self.route
+    }
+    /// Expiration bound retained from the consumed grant for the TLS writer.
+    pub fn oauth_expires(&self) -> Option<u64> {
+        self.oauth_expires
+    }
+    fn require_oauth_time(&self) -> Result<()> {
+        if let Some(expires) = self.oauth_expires
+            && crate::provider_oauth::now()? >= expires
+        {
+            return Err(Error::Denied);
+        }
+        Ok(())
     }
 }
 /// Single-use response release burned before possible gRPC queue insertion.
@@ -59,9 +73,20 @@ impl Ledger {
         plan: &ProviderPlan,
         catalog: &str,
     ) -> Result<ProviderReceipt> {
+        self.enqueue_provider_with_oauth(plan, catalog, None)
+    }
+
+    /// Bind the request observation before exposing any reservation or prior outcome.
+    pub fn enqueue_provider_with_oauth(
+        &mut self,
+        plan: &ProviderPlan,
+        catalog: &str,
+        oauth: Option<&ProviderOAuthUse>,
+    ) -> Result<ProviderReceipt> {
         let digest = plan.digest()?;
         let tx =
             crate::persistence::begin_family(&mut self.connection, &plan.family).map_err(db)?;
+        crate::provider_oauth::require(&tx, oauth, "provider:execute")?;
         if let Some(old) = receipt(&tx, &plan.family, &plan.node)? {
             if old.digest != digest {
                 return Err(Error::Conflict("provider logical key already bound"));
@@ -122,7 +147,19 @@ impl Ledger {
         node: &str,
         eligible: &BTreeSet<String>,
     ) -> Result<ProviderDispatch> {
+        self.consume_provider_with_oauth(family, node, eligible, None)
+    }
+
+    /// Consume the original under the current issuer grant and Cedar view.
+    pub fn consume_provider_with_oauth(
+        &mut self,
+        family: &str,
+        node: &str,
+        eligible: &BTreeSet<String>,
+        oauth: Option<&ProviderOAuthUse>,
+    ) -> Result<ProviderDispatch> {
         let tx = crate::persistence::begin_family(&mut self.connection, family).map_err(db)?;
+        let oauth_expires = crate::provider_oauth::require(&tx, oauth, "provider:execute")?;
         let record: Option<String> = crate::persistence::maybe(
             &tx,
             "SELECT plan FROM provider_runs WHERE family=?1 AND node=?2 AND state='queued'",
@@ -158,6 +195,8 @@ impl Ledger {
             digest,
             binding,
             domains,
+            oauth: oauth.cloned(),
+            oauth_expires,
         })
     }
     /// The exact consumed route and current authority serialize with the sole HTTPS request.
@@ -274,7 +313,10 @@ impl Ledger {
         if digest.as_deref() != Some(&release.digest) {
             return Err(Error::Conflict("provider release binding"));
         }
-        let output = tx.queue_effect(|| send(release.sequence))?;
+        let output = tx.queue_effect(|| {
+            permit.require_oauth_time()?;
+            send(release.sequence)
+        })?;
         crate::persistence::exec(&tx, "UPDATE provider_releases SET state='released' WHERE family=?1 AND node=?2 AND sequence=?3", crate::persistence::params![(permit.plan.family).to_owned(),(permit.plan.node).to_owned(),(release.sequence as i64).to_owned()]).map_err(db)?;
         tx.commit().map_err(db)?;
         Ok(output)
@@ -488,6 +530,7 @@ fn guard_live_range(
     format: &str,
 ) -> Result<()> {
     crate::publication_barrier::require_resolved(tx)?;
+    crate::provider_oauth::require(tx, p.oauth.as_ref(), "provider:execute")?;
     crate::task_publication::require(tx, &p.plan.family)?;
     let (revision, fence, source): (u64, u64, String) = crate::persistence::one(
         tx,
@@ -513,7 +556,7 @@ fn guard_live_range(
     }
     Ok(())
 }
-fn receipt(
+pub(crate) fn receipt(
     c: &crate::persistence::driver::Connection,
     family: &str,
     node: &str,

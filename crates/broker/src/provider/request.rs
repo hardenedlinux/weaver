@@ -28,6 +28,7 @@ pub(super) struct PreparedRequest {
     port: u16,
     length: usize,
     expires: Option<Instant>,
+    oauth_expires: Option<u64>,
     tls: Arc<rustls::ClientConfig>,
     runtime: Arc<IoRuntime>,
     #[cfg(feature = "test-loopback")]
@@ -89,11 +90,16 @@ impl PreparedRequest {
             port,
             length: body.len(),
             expires,
+            oauth_expires: None,
             tls,
             runtime,
             #[cfg(feature = "test-loopback")]
             loopback: None,
         })
+    }
+    pub(super) fn with_oauth_expiration(mut self, expires: Option<u64>) -> Self {
+        self.oauth_expires = expires;
+        self
     }
     #[cfg(feature = "test-loopback")]
     pub(super) fn with_loopback(mut self, address: Option<std::net::SocketAddr>) -> Self {
@@ -102,6 +108,7 @@ impl PreparedRequest {
     }
     pub(super) fn write_and_seal(self) -> Result<SealedRequest> {
         require_fresh(self.expires)?;
+        require_oauth_fresh(self.oauth_expires)?;
         let runtime = self.runtime.clone();
         let deadline = Instant::now() + Duration::from_secs(10);
         runtime.wait(deadline, async move {
@@ -130,6 +137,7 @@ impl PreparedRequest {
                 .await
                 .map_err(|_| Error::Conflict("provider HTTP unknown"))?;
             require_fresh(self.expires)?;
+            require_oauth_fresh(self.oauth_expires)?;
             let response = Box::pin(async move { sender.send_request(self.request).await });
             SealedRequest::finish_writing(
                 Driver::new(connection),
@@ -150,6 +158,18 @@ mod tests;
 fn require_fresh(expires: Option<Instant>) -> Result<()> {
     if expires.is_some_and(|deadline| Instant::now() >= deadline) {
         return Err(Error::Denied);
+    }
+    Ok(())
+}
+
+fn require_oauth_fresh(expires: Option<u64>) -> Result<()> {
+    if let Some(expires) = expires {
+        let now = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map_err(|_| Error::Denied)?;
+        if now.as_secs() >= expires {
+            return Err(Error::Denied);
+        }
     }
     Ok(())
 }

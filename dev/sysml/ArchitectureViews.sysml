@@ -249,13 +249,14 @@ package WeaverViews {
         attribute readerQuestion : String = "What can authorize actual provider use?";
         attribute designAudience : String = "Gateway developers and operators";
         attribute designMedium : String = "GitHub at 830 CSS pixels";
-        attribute designMessage : String = "Rust joins current Policy with the original claim.\nA refreshed credential cannot reopen that claim.";
+        attribute designMessage : String = "Rust checks caller OAuth and Cedar at final use.\nA refreshed credential cannot reopen the original claim.";
         attribute designFocus : String = "execution";
         attribute captionContext : String = "journey";
         attribute visualThemes : String = "sketchbook,ember,compact,reading";
         attribute visualOptions : String = "{\"elk.algorithm\":\"layered\",\"elk.direction\":\"DOWN\",\"elk.edgeRouting\":\"ORTHOGONAL\",\"elk.spacing.nodeNode\":\"18\",\"elk.layered.spacing.nodeNodeBetweenLayers\":\"32\"}";
         attribute visualWidth : Integer = 980;
         requirement finalUse : WeaverExecution::ConsumeBeforeSend;
+        requirement callerOAuth : ProviderRpc::SenderBoundProviderOAuth;
         expose WeaverGatewayArchitecture::gateway::routing;
         expose WeaverGatewayArchitecture::gateway::publication;
         expose WeaverGatewayArchitecture::gateway::execution;

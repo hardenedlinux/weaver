@@ -17,6 +17,7 @@ mod metering;
 mod metering_credentials;
 mod provider;
 mod provider_catalog;
+mod provider_oauth;
 mod provider_profiles;
 mod provider_quota;
 mod publication;

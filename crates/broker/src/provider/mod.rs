@@ -13,8 +13,8 @@ mod wif;
 mod wif_cache;
 mod write_seal;
 pub use runtime::{
-    ProviderExecution, ProviderOutput, ProviderTransport, execute_catalog_provider,
-    execute_provider,
+    ProviderExecution, ProviderExecutionAuthority, ProviderOutput, ProviderTransport,
+    execute_catalog_provider, execute_catalog_provider_with_oauth, execute_provider,
 };
 pub use wif::AnthropicWifConfig;
 

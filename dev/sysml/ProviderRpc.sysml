@@ -7,6 +7,14 @@ package ProviderRpc {
     requirement def GrpcCallerBinding {
         doc /* Mutual TLS, pinned caller certificate and distinct operation/publication credentials bind all RPC entrypoints. A shared workload name does not grant authority. */
     }
+    requirement def SenderBoundProviderOAuth {
+        doc /* A configured resource requires the authenticated operation bearer,
+           actual TLS sender and independently issued delegated grant. Current
+           source custody alone can publish signed evidence or revoke a digest.
+           The deciding Turso scope joins active grant status with Cedar and the
+           original claim before dispatch or response release. Revocation retains
+           unknown holds, and credential renewal cannot reopen consumption. */
+    }
     requirement def TransportSetupIsolation {
         doc /* Connection setup retains caller cancellation and deadlines. Transport reconnects do not issue application RPCs, reauthorize release, reset spent roots or refund unknown holds. Initial connection backoff is distinct from SDK operation retry. Readiness observation uses the caller's existing remaining budget; it never extends that deadline or changes the native reconnect policy after Ready. Native capacity and fresh Cedar guards still decide every effect. */
         doc /* A new HTTP/2 connection, MCP session, A2A task or client ACP handle

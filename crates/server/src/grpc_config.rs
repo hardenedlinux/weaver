@@ -130,6 +130,11 @@ fn load() -> Result<(GrpcConfig, ListenAddresses)> {
                 Err(std::env::VarError::NotPresent) => None,
                 Err(_) => return Err(Error::Invalid("metering deployment encoding")),
             },
+            provider_oauth: match std::env::var("WEAVER_PROVIDER_OAUTH") {
+                Ok(config) => Some(weaver_contracts::decode(config.as_bytes())?),
+                Err(std::env::VarError::NotPresent) => None,
+                Err(_) => return Err(Error::Invalid("provider OAuth deployment encoding")),
+            },
             owner,
             security: load_security()?,
             provider: load_transport()?,

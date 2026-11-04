@@ -11,7 +11,7 @@ import (
 
 const rustRuntimeFeatures = "weaver-server/arrow,weaver-governance/scheme-vm"
 
-const proofToolchain = "leanprover/lean4:v4.34.1"
+const proofToolchain = "leanprover/lean4:v4.35.0"
 
 func schemeTool() string {
 	if tool := os.Getenv("WEAVER_SCHEME_TOOL"); tool != "" {

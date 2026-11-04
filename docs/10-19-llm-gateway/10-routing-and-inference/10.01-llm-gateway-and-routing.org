@@ -672,3 +672,46 @@ sample checks exchange and Messages counts and reports both per-stream
 and wave latency. Measurements start at
 Go invocation and include gRPC, broker, loopback TLS and the Turso receipt.
 They exclude process startup, task registration and cache priming.
+
+*** Sender-bound OAuth on operation ingress
+
+Deployments can require delegated OAuth authority in addition to the
+existing operation bearer and authenticated gRPC client certificate. The
+operation request supplies the separate opaque token through
+=weaver-provider-oauth=. The gateway derives the token digest and
+certificate fingerprint from the actual request.
+
+The independent issuer signs the token digest, certificate fingerprint,
+issuer, subject, client, audience, scopes and validity interval. The
+deployment pins the issuer key and expected resource identity. Only the
+current source authority can install verified evidence or revoke a digest.
+Revocation is absorbing, including when publication arrives late. The
+source RPC never receives the opaque token.
+
+Turso verifies the current grant when reserving and consuming the original
+operation. Final dispatch and response release recheck the grant in the
+same deciding scope as Cedar and the original claim. A committed
+revocation blocks subsequent effects. The broker retains the original
+reservation after an uncertain send, and a fresh grant cannot reopen the
+consumed operation. The Anthropic WIF cache supplies the separate
+provider-facing credential.
+
+Set =WEAVER_PROVIDER_OAUTH= on the Rust server with =issuer=, =subject=,
+=client=, =audience= and =public_key=. The subject must match the operation
+principal. The public key is a lowercase hex Ed25519 key and is independent
+of the review and metering keys. Once installed, the deciding store
+requires the same deployment binding at startup.
+
+The issuer signs the raw SHA-256 digest of the compact UTF-8 JSON array
+whose elements, in order, are =weaver.provider-oauth.grant.v1=, issuer,
+subject, client, audience, sorted scopes, token hash, certificate SHA-256,
+not-before and expiry. The last two elements are Unix seconds. The source
+owner accepts the resulting signed record through =ChangeProviderOAuth=.
+The same RPC accepts a token hash to revoke. A revoked hash cannot be
+published again.
+
+A direct Go operation client uses =WithProviderOAuth= with its existing
+mTLS connection. =provider:execute= covers the provider request and
+its response stream. =provider:inspect= covers the separate receipt read.
+The OAuth sender is the certificate authenticated by Rust. A delegated
+token bound to a different connection cannot be used through this path.

@@ -55,6 +55,13 @@ module SharedDomains {
   pure def wifMayWrite(bound:bool, fresh:bool, cedar:bool, spent:bool):bool=
     bound and fresh and cedar and not(spent)
   run expiredWifCannotWriteTest=init.expect(not(wifMayWrite(true,false,true,false)))
+  pure def oauthEffect(operation:bool, sender:bool, active:bool, cedar:bool):bool=
+    operation and sender and active and cedar
+  run oauthRevocationStopsReleaseTest=init.expect(
+    oauthEffect(true,true,true,true) and not(oauthEffect(true,true,false,true))
+    and observedRelease(false,true,true,false)==0)
+  run delegatedGrantCannotReplaceOperationCredentialTest=init.expect(
+    not(oauthEffect(false,true,true,true)))
   run refreshAfter401CannotReopenTest=init.expect(not(wifMayWrite(true,true,true,true)))
   run refreshAndLateUsageCannotSettleTest=init.expect(
     not(wifMayWrite(true,true,true,true)) and observedRelease(false,true,true,false)==0)

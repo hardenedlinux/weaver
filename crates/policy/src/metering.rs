@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
+//! Verify deployment-issued usage evidence before settlement.
 use weaver_contracts::{Error, Result};
 
 /// Verify deployment-owned metering evidence independently of Policy review.

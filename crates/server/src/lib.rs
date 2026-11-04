@@ -18,6 +18,7 @@ pub mod pb;
 #[cfg(all(test, unix))]
 #[path = "../tests/unit/provider_commit.rs"]
 mod provider_commit_tests;
+mod provider_oauth;
 mod review_wire;
 mod rpc_security;
 mod runtime;

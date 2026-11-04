@@ -27,8 +27,8 @@ use tokio::{
 use tokio_stream::{Stream, wrappers::ReceiverStream};
 use tokio_util::sync::CancellationToken;
 use tonic::{Request, Response, Status};
-use weaver_contracts::{Error, ProviderPlan, ProviderRoute, Task};
 use weaver_broker::ProviderTransport;
+use weaver_contracts::{Error, ProviderPlan, ProviderRoute, Task};
 use weaver_ledger::Ledger;
 fn domain_view(v: weaver_contracts::DomainView) -> pb::DomainView {
     pb::DomainView {
@@ -58,6 +58,7 @@ struct Gateway {
     admission: Admission,
     runtime: RuntimeOwner,
     metering_enabled: bool,
+    provider_oauth_enabled: bool,
 }
 #[derive(Clone)]
 enum Ingress {
@@ -146,6 +147,7 @@ async fn serve_owned(
         settings.owner.database.clone(),
         settings.review_authority.clone(),
         settings.metering.clone(),
+        settings.provider_oauth.clone(),
     )
     .await
     {
@@ -188,6 +190,22 @@ fn validate_listeners(
 ) -> weaver_contracts::Result<()> {
     settings.owner.validate()?;
     settings.review_authority.validate()?;
+    if let Some(oauth) = &settings.provider_oauth {
+        oauth.validate()?;
+        if oauth.subject != settings.owner.principal
+            || oauth.public_key == settings.review_authority.public_key
+            || settings.metering.as_ref().is_some_and(|metering| {
+                metering
+                    .tenants
+                    .values()
+                    .any(|tenant| tenant.public_key == oauth.public_key)
+            })
+        {
+            return Err(Error::Invalid(
+                "provider OAuth principal or issuer separation",
+            ));
+        }
+    }
     if let Some(metering) = &settings.metering {
         metering.validate()?;
         if metering
@@ -369,6 +387,7 @@ impl Gateway {
             admission,
             runtime,
             metering_enabled: settings.metering.is_some(),
+            provider_oauth_enabled: settings.provider_oauth.is_some(),
         }
     }
     fn authenticate<T>(
@@ -709,6 +728,7 @@ impl pb::gateway_server::Gateway for Gateway {
         request: Request<pb::ProviderRequest>,
     ) -> std::result::Result<Response<Self::ExecuteProviderStream>, Status> {
         self.authenticate(&request, RpcRole::Operation)?;
+        let oauth = crate::provider_oauth::observe(self.provider_oauth_enabled, &request)?;
         if !cfg!(feature = "llm-provider") {
             return Err(Status::unimplemented("LLM provider feature disabled"));
         }
@@ -748,7 +768,7 @@ impl pb::gateway_server::Gateway for Gateway {
                     #[cfg(all(test, unix))]
                     crate::provider_commit_tests::attach(&mut ledger);
                     ledger.require_principal(&config.principal, &plan.family)?;
-                    weaver_broker::execute_catalog_provider(
+                    weaver_broker::execute_catalog_provider_with_oauth(
                         &mut ledger,
                         weaver_broker::ProviderExecution {
                             plan: &plan,
@@ -757,7 +777,10 @@ impl pb::gateway_server::Gateway for Gateway {
                             batch_rows: request.batch_rows as usize,
                         },
                         &mut output,
-                        &request.catalog_version,
+                        weaver_broker::ProviderExecutionAuthority {
+                            catalog: &request.catalog_version,
+                            oauth: oauth.as_ref(),
+                        },
                     )
                 })();
                 output.telemetry.record(if result.is_ok() {
@@ -788,17 +811,22 @@ impl pb::gateway_server::Gateway for Gateway {
         request: Request<pb::OperationKey>,
     ) -> std::result::Result<Response<pb::ProviderReceipt>, Status> {
         self.authenticate(&request, RpcRole::Operation)?;
+        let oauth = crate::provider_oauth::observe(self.provider_oauth_enabled, &request)?;
         let slot = self.admission.observation()?;
         let key = request.into_inner();
         let config = self.config.clone();
         let job = self
             .runtime
             .spawn_blocking(slot, move |_| {
-                let ledger = Ledger::open(&config.database)?;
+                let mut ledger = Ledger::open(&config.database)?;
                 ledger.require_principal(&config.principal, &key.family)?;
-                ledger
-                    .provider_receipt(&key.family, &key.node)?
-                    .ok_or(Error::Conflict("operation missing"))
+                let receipt = match oauth.as_ref() {
+                    Some(evidence) => {
+                        ledger.inspect_provider_oauth(&key.family, &key.node, Some(evidence))
+                    }
+                    None => ledger.provider_receipt(&key.family, &key.node),
+                }?;
+                receipt.ok_or(Error::Conflict("operation missing"))
             })
             .map_err(status)?;
         let receipt = job
@@ -815,6 +843,21 @@ impl pb::gateway_server::Gateway for Gateway {
             held: receipt.held,
             events: receipt.events,
         }))
+    }
+    async fn change_provider_o_auth(
+        &self,
+        request: Request<pb::ProviderOAuthChange>,
+    ) -> std::result::Result<Response<pb::Empty>, Status> {
+        let caller = self.source_identity(&request)?;
+        let action = request
+            .into_inner()
+            .action
+            .ok_or(Status::invalid_argument("provider OAuth change required"))?;
+        self.ingress
+            .source()?
+            .change_provider_oauth(caller, action)
+            .await?;
+        Ok(Response::new(pb::Empty {}))
     }
     async fn register_task(
         &self,

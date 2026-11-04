@@ -36,8 +36,8 @@ thiserror = "2.0"
 sha2 = "0.10"
 ring = "=0.17.14"
 hex = "0.4"
-cedar-policy = { version = "=4.12.0", default-features = false }
-cedar-poo-runtime = { git = "https://github.com/HardenedLinux/cedar-poo-spec", rev = "b12c4a0dd7b8cd535e64840095ab54fa9e15a14a" }
+cedar-policy = { version = "=4.14.1", default-features = false }
+cedar-poo-runtime = { git = "https://github.com/HardenedLinux/cedar-poo-spec", rev = "76ecbcf9aea42af6785b3c12459adc61fc3fc523", features = ["gateway"] }
 mrr-data-backend = { git = "https://github.com/tao3k/mrr-data", rev = "daa6487820f798f0583713de8d03110aeac5d1fd", default-features = false, features = ["turso"] }
 futures-executor = "0.3"
 bytes = "=1.12.1"

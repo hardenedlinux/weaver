@@ -4,12 +4,12 @@
 
 name = "WeaverPolicyBridge"
 version = "0.1.0"
-defaultTargets = ["WeaverPolicyBridge", "ZeroTrustEnrichment", "ZeroTrustArchitecture", "QualifiedReview", "DomainSpecifications", "ExecutionResearch", "ModelClosure"]
+defaultTargets = ["WeaverPolicyBridge", "ZeroTrustEnrichment", "ZeroTrustArchitecture", "QualifiedReview", "DomainSpecifications", "ExecutionResearch", "ModelClosure", "WeaverOAuthRefinement"]
 
 [[require]]
 name = "CedarPooSpec"
 git = "https://github.com/HardenedLinux/cedar-poo-spec.git"
-rev = "b12c4a0dd7b8cd535e64840095ab54fa9e15a14a"
+rev = "76ecbcf9aea42af6785b3c12459adc61fc3fc523"
 
 [[lean_lib]]
 name = "WeaverPolicyBridge"
@@ -53,3 +53,6 @@ name = "DomainMigrationComposition"
 
 [[lean_lib]]
 name = "ModelClosure"
+
+[[lean_lib]]
+name = "WeaverOAuthRefinement"

@@ -248,28 +248,40 @@ pub fn execute_catalog_provider<O: ProviderOutput>(
     output: &mut O,
     catalog: &str,
 ) -> Result<()> {
+    execute_catalog_provider_with_oauth(
+        ledger,
+        request,
+        output,
+        ProviderExecutionAuthority {
+            catalog,
+            oauth: None,
+        },
+    )
+}
+
+/// Current catalog commitment and delegated caller observation supplied by the host.
+pub struct ProviderExecutionAuthority<'a> {
+    pub catalog: &'a str,
+    pub oauth: Option<&'a weaver_contracts::ProviderOAuthUse>,
+}
+
+/// Run the provider pipeline with the caller observation from authenticated RPC.
+pub fn execute_catalog_provider_with_oauth<O: ProviderOutput>(
+    ledger: &mut Ledger,
+    request: ProviderExecution<'_>,
+    output: &mut O,
+    authority: ProviderExecutionAuthority<'_>,
+) -> Result<()> {
     if !cfg!(feature = "llm-provider") {
         return Err(Error::Invalid("LLM provider feature disabled"));
     }
-    execute_stream(
-        ledger,
-        request.plan,
-        request.transport,
-        request.format,
-        request.batch_rows,
-        output,
-        catalog,
-    )
-}
-fn execute_stream<O: ProviderOutput>(
-    ledger: &mut Ledger,
-    plan: &ProviderPlan,
-    transport: &ProviderTransport,
-    format: &str,
-    batch_rows: usize,
-    output: &mut O,
-    catalog: &str,
-) -> Result<()> {
+    let ProviderExecution {
+        plan,
+        transport,
+        format,
+        batch_rows,
+    } = request;
+    let ProviderExecutionAuthority { catalog, oauth } = authority;
     if !(1..=32).contains(&batch_rows)
         || !matches!(format, "protobuf" | "arrow")
         || output.stopped()
@@ -279,11 +291,16 @@ fn execute_stream<O: ProviderOutput>(
     for route in &plan.routes {
         crate::HttpsTransport::validate_endpoint(&route.endpoint)?;
     }
-    ledger.enqueue_catalog_provider(plan, catalog)?;
+    ledger.enqueue_provider_with_oauth(plan, catalog, oauth)?;
     if output.stopped() {
         return Err(Error::Conflict("cancelled before provider consumption"));
     }
-    let permit = ledger.consume_provider(&plan.family, &plan.node, &transport.eligible())?;
+    let permit = ledger.consume_provider_with_oauth(
+        &plan.family,
+        &plan.node,
+        &transport.eligible(),
+        oauth,
+    )?;
     let response = open_guarded(ledger, &permit, transport, output)?;
     let mut reader = match permit.protocol() {
         ProviderProtocol::OpenAi => {
@@ -361,7 +378,9 @@ fn open_guarded<O: ProviderOutput>(
         return Err(Error::Conflict("cancelled after provider consumption"));
     }
     // WIF exchange and request preparation occur outside the deciding send scope.
-    let request = transport.prepare(permit.plan(), permit.route(), permit.protocol())?;
+    let request = transport
+        .prepare(permit.plan(), permit.route(), permit.protocol())?
+        .with_oauth_expiration(permit.oauth_expires());
     let sealed = ledger.dispatch_provider(permit, || {
         if output.stopped() {
             return Err(Error::Conflict("cancelled before provider invocation"));

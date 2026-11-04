@@ -77,6 +77,9 @@ fn has_application_rows(connection: &crate::persistence::driver::Connection) -> 
             crate::review_authority::current(connection)?;
             continue;
         }
+        if table == "provider_oauth_deployment" {
+            continue;
+        }
         if table == "metering_deployment" {
             if let Some(config) = crate::metering::deployment(connection)? {
                 config.validate()?;

@@ -123,6 +123,7 @@ async fn actual_scheme_vm_is_owner_local_and_cleanup_precedes_shared_drain() {
     let operation_address = listeners.operation.local_addr().expect("operation address");
     let settings = GrpcConfig {
         metering: None,
+        provider_oauth: None,
         review_authority: weaver_contracts::ReviewAuthority {
             audience: "test-gateway".into(),
             epoch: 0,

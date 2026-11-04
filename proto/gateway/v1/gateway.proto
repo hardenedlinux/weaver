@@ -36,6 +36,8 @@ service Gateway {
   rpc PublishProviderCatalog(ProviderCatalogChange) returns (ProviderCatalogSnapshot);
   // Statistical process-local counters only; never durable execution evidence.
   rpc InspectTelemetry(Empty) returns (TelemetrySnapshot);
+  // Source-only. Bearer bytes stay on the operation connection.
+  rpc ChangeProviderOAuth(ProviderOAuthChange) returns (Empty);
 }
 message TelemetrySnapshot {
   uint64 compilations_succeeded = 1;
@@ -133,4 +135,23 @@ message MeteringApplication {
   string application = 1;
   uint64 charged = 2;
   uint64 released = 3;
+}
+
+message ProviderOAuthChange {
+  oneof action {
+    ProviderOAuthGrant grant = 1;
+    string revoke_token_hash = 2;
+  }
+}
+message ProviderOAuthGrant {
+  string issuer = 1;
+  string subject = 2;
+  string client = 3;
+  string audience = 4;
+  repeated string scopes = 5;
+  string token_hash = 6;
+  string certificate_sha256 = 7;
+  uint64 not_before = 8;
+  uint64 expires_at = 9;
+  string signature = 10;
 }

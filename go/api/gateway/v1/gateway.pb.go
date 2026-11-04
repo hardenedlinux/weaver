@@ -3511,6 +3511,204 @@ func (x *MeteringApplication) GetReleased() uint64 {
 	return 0
 }
 
+type ProviderOAuthChange struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Types that are valid to be assigned to Action:
+	//
+	//	*ProviderOAuthChange_Grant
+	//	*ProviderOAuthChange_RevokeTokenHash
+	Action        isProviderOAuthChange_Action `protobuf_oneof:"action"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ProviderOAuthChange) Reset() {
+	*x = ProviderOAuthChange{}
+	mi := &file_gateway_v1_gateway_proto_msgTypes[46]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ProviderOAuthChange) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ProviderOAuthChange) ProtoMessage() {}
+
+func (x *ProviderOAuthChange) ProtoReflect() protoreflect.Message {
+	mi := &file_gateway_v1_gateway_proto_msgTypes[46]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ProviderOAuthChange.ProtoReflect.Descriptor instead.
+func (*ProviderOAuthChange) Descriptor() ([]byte, []int) {
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{46}
+}
+
+func (x *ProviderOAuthChange) GetAction() isProviderOAuthChange_Action {
+	if x != nil {
+		return x.Action
+	}
+	return nil
+}
+
+func (x *ProviderOAuthChange) GetGrant() *ProviderOAuthGrant {
+	if x != nil {
+		if x, ok := x.Action.(*ProviderOAuthChange_Grant); ok {
+			return x.Grant
+		}
+	}
+	return nil
+}
+
+func (x *ProviderOAuthChange) GetRevokeTokenHash() string {
+	if x != nil {
+		if x, ok := x.Action.(*ProviderOAuthChange_RevokeTokenHash); ok {
+			return x.RevokeTokenHash
+		}
+	}
+	return ""
+}
+
+type isProviderOAuthChange_Action interface {
+	isProviderOAuthChange_Action()
+}
+
+type ProviderOAuthChange_Grant struct {
+	Grant *ProviderOAuthGrant `protobuf:"bytes,1,opt,name=grant,proto3,oneof"`
+}
+
+type ProviderOAuthChange_RevokeTokenHash struct {
+	RevokeTokenHash string `protobuf:"bytes,2,opt,name=revoke_token_hash,json=revokeTokenHash,proto3,oneof"`
+}
+
+func (*ProviderOAuthChange_Grant) isProviderOAuthChange_Action() {}
+
+func (*ProviderOAuthChange_RevokeTokenHash) isProviderOAuthChange_Action() {}
+
+type ProviderOAuthGrant struct {
+	state             protoimpl.MessageState `protogen:"open.v1"`
+	Issuer            string                 `protobuf:"bytes,1,opt,name=issuer,proto3" json:"issuer,omitempty"`
+	Subject           string                 `protobuf:"bytes,2,opt,name=subject,proto3" json:"subject,omitempty"`
+	Client            string                 `protobuf:"bytes,3,opt,name=client,proto3" json:"client,omitempty"`
+	Audience          string                 `protobuf:"bytes,4,opt,name=audience,proto3" json:"audience,omitempty"`
+	Scopes            []string               `protobuf:"bytes,5,rep,name=scopes,proto3" json:"scopes,omitempty"`
+	TokenHash         string                 `protobuf:"bytes,6,opt,name=token_hash,json=tokenHash,proto3" json:"token_hash,omitempty"`
+	CertificateSha256 string                 `protobuf:"bytes,7,opt,name=certificate_sha256,json=certificateSha256,proto3" json:"certificate_sha256,omitempty"`
+	NotBefore         uint64                 `protobuf:"varint,8,opt,name=not_before,json=notBefore,proto3" json:"not_before,omitempty"`
+	ExpiresAt         uint64                 `protobuf:"varint,9,opt,name=expires_at,json=expiresAt,proto3" json:"expires_at,omitempty"`
+	Signature         string                 `protobuf:"bytes,10,opt,name=signature,proto3" json:"signature,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *ProviderOAuthGrant) Reset() {
+	*x = ProviderOAuthGrant{}
+	mi := &file_gateway_v1_gateway_proto_msgTypes[47]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ProviderOAuthGrant) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ProviderOAuthGrant) ProtoMessage() {}
+
+func (x *ProviderOAuthGrant) ProtoReflect() protoreflect.Message {
+	mi := &file_gateway_v1_gateway_proto_msgTypes[47]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ProviderOAuthGrant.ProtoReflect.Descriptor instead.
+func (*ProviderOAuthGrant) Descriptor() ([]byte, []int) {
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{47}
+}
+
+func (x *ProviderOAuthGrant) GetIssuer() string {
+	if x != nil {
+		return x.Issuer
+	}
+	return ""
+}
+
+func (x *ProviderOAuthGrant) GetSubject() string {
+	if x != nil {
+		return x.Subject
+	}
+	return ""
+}
+
+func (x *ProviderOAuthGrant) GetClient() string {
+	if x != nil {
+		return x.Client
+	}
+	return ""
+}
+
+func (x *ProviderOAuthGrant) GetAudience() string {
+	if x != nil {
+		return x.Audience
+	}
+	return ""
+}
+
+func (x *ProviderOAuthGrant) GetScopes() []string {
+	if x != nil {
+		return x.Scopes
+	}
+	return nil
+}
+
+func (x *ProviderOAuthGrant) GetTokenHash() string {
+	if x != nil {
+		return x.TokenHash
+	}
+	return ""
+}
+
+func (x *ProviderOAuthGrant) GetCertificateSha256() string {
+	if x != nil {
+		return x.CertificateSha256
+	}
+	return ""
+}
+
+func (x *ProviderOAuthGrant) GetNotBefore() uint64 {
+	if x != nil {
+		return x.NotBefore
+	}
+	return 0
+}
+
+func (x *ProviderOAuthGrant) GetExpiresAt() uint64 {
+	if x != nil {
+		return x.ExpiresAt
+	}
+	return 0
+}
+
+func (x *ProviderOAuthGrant) GetSignature() string {
+	if x != nil {
+		return x.Signature
+	}
+	return ""
+}
+
 var File_gateway_v1_gateway_proto protoreflect.FileDescriptor
 
 const file_gateway_v1_gateway_proto_rawDesc = "" +
@@ -3794,7 +3992,26 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\x13MeteringApplication\x12 \n" +
 	"\vapplication\x18\x01 \x01(\tR\vapplication\x12\x18\n" +
 	"\acharged\x18\x02 \x01(\x04R\acharged\x12\x1a\n" +
-	"\breleased\x18\x03 \x01(\x04R\breleased*'\n" +
+	"\breleased\x18\x03 \x01(\x04R\breleased\"\x8c\x01\n" +
+	"\x13ProviderOAuthChange\x12=\n" +
+	"\x05grant\x18\x01 \x01(\v2%.weaver.gateway.v1.ProviderOAuthGrantH\x00R\x05grant\x12,\n" +
+	"\x11revoke_token_hash\x18\x02 \x01(\tH\x00R\x0frevokeTokenHashB\b\n" +
+	"\x06action\"\xbc\x02\n" +
+	"\x12ProviderOAuthGrant\x12\x16\n" +
+	"\x06issuer\x18\x01 \x01(\tR\x06issuer\x12\x18\n" +
+	"\asubject\x18\x02 \x01(\tR\asubject\x12\x16\n" +
+	"\x06client\x18\x03 \x01(\tR\x06client\x12\x1a\n" +
+	"\baudience\x18\x04 \x01(\tR\baudience\x12\x16\n" +
+	"\x06scopes\x18\x05 \x03(\tR\x06scopes\x12\x1d\n" +
+	"\n" +
+	"token_hash\x18\x06 \x01(\tR\ttokenHash\x12-\n" +
+	"\x12certificate_sha256\x18\a \x01(\tR\x11certificateSha256\x12\x1d\n" +
+	"\n" +
+	"not_before\x18\b \x01(\x04R\tnotBefore\x12\x1d\n" +
+	"\n" +
+	"expires_at\x18\t \x01(\x04R\texpiresAt\x12\x1c\n" +
+	"\tsignature\x18\n" +
+	" \x01(\tR\tsignature*'\n" +
 	"\bEncoding\x12\f\n" +
 	"\bPROTOBUF\x10\x00\x12\r\n" +
 	"\tARROW_IPC\x10\x01*V\n" +
@@ -3810,7 +4027,7 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\x1dDELTA_DISPOSITION_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tBOOTSTRAP\x10\x01\x12\x15\n" +
 	"\x11NO_EXECUTION_GAIN\x10\x02\x12\x15\n" +
-	"\x11EXPLICIT_APPROVAL\x10\x032\x95\x12\n" +
+	"\x11EXPLICIT_APPROVAL\x10\x032\xee\x12\n" +
 	"\aGateway\x12Y\n" +
 	"\x0fExecuteProvider\x12\".weaver.gateway.v1.ProviderRequest\x1a .weaver.gateway.v1.ProviderFrame0\x01\x12N\n" +
 	"\aInspect\x12\x1f.weaver.gateway.v1.OperationKey\x1a\".weaver.gateway.v1.ProviderReceipt\x12l\n" +
@@ -3835,7 +4052,8 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\rCompileSource\x12\".weaver.gateway.v1.ProducerRequest\x1a!.weaver.gateway.v1.CompiledSource\x12^\n" +
 	"\x16InspectProviderCatalog\x12\x18.weaver.gateway.v1.Empty\x1a*.weaver.gateway.v1.ProviderCatalogSnapshot\x12n\n" +
 	"\x16PublishProviderCatalog\x12(.weaver.gateway.v1.ProviderCatalogChange\x1a*.weaver.gateway.v1.ProviderCatalogSnapshot\x12R\n" +
-	"\x10InspectTelemetry\x12\x18.weaver.gateway.v1.Empty\x1a$.weaver.gateway.v1.TelemetrySnapshotB=Z;github.com/HardenedLinux/weaver/go/api/gateway/v1;gatewayv1b\x06proto3"
+	"\x10InspectTelemetry\x12\x18.weaver.gateway.v1.Empty\x1a$.weaver.gateway.v1.TelemetrySnapshot\x12W\n" +
+	"\x13ChangeProviderOAuth\x12&.weaver.gateway.v1.ProviderOAuthChange\x1a\x18.weaver.gateway.v1.EmptyB=Z;github.com/HardenedLinux/weaver/go/api/gateway/v1;gatewayv1b\x06proto3"
 
 var (
 	file_gateway_v1_gateway_proto_rawDescOnce sync.Once
@@ -3850,7 +4068,7 @@ func file_gateway_v1_gateway_proto_rawDescGZIP() []byte {
 }
 
 var file_gateway_v1_gateway_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
-var file_gateway_v1_gateway_proto_msgTypes = make([]protoimpl.MessageInfo, 50)
+var file_gateway_v1_gateway_proto_msgTypes = make([]protoimpl.MessageInfo, 52)
 var file_gateway_v1_gateway_proto_goTypes = []any{
 	(Encoding)(0),                        // 0: weaver.gateway.v1.Encoding
 	(PublicationOutcome)(0),              // 1: weaver.gateway.v1.PublicationOutcome
@@ -3902,10 +4120,12 @@ var file_gateway_v1_gateway_proto_goTypes = []any{
 	(*MeterCredentialEpoch)(nil),         // 47: weaver.gateway.v1.MeterCredentialEpoch
 	(*MeteringReceipt)(nil),              // 48: weaver.gateway.v1.MeteringReceipt
 	(*MeteringApplication)(nil),          // 49: weaver.gateway.v1.MeteringApplication
-	nil,                                  // 50: weaver.gateway.v1.Task.EndpointsEntry
-	nil,                                  // 51: weaver.gateway.v1.Task.BodyDigestsEntry
-	nil,                                  // 52: weaver.gateway.v1.Task.NodeCostBoundsEntry
-	nil,                                  // 53: weaver.gateway.v1.Task.StreamContractsEntry
+	(*ProviderOAuthChange)(nil),          // 50: weaver.gateway.v1.ProviderOAuthChange
+	(*ProviderOAuthGrant)(nil),           // 51: weaver.gateway.v1.ProviderOAuthGrant
+	nil,                                  // 52: weaver.gateway.v1.Task.EndpointsEntry
+	nil,                                  // 53: weaver.gateway.v1.Task.BodyDigestsEntry
+	nil,                                  // 54: weaver.gateway.v1.Task.NodeCostBoundsEntry
+	nil,                                  // 55: weaver.gateway.v1.Task.StreamContractsEntry
 }
 var file_gateway_v1_gateway_proto_depIdxs = []int32{
 	7,  // 0: weaver.gateway.v1.SourceArtifact.governance:type_name -> weaver.gateway.v1.GovernanceSelection
@@ -3919,10 +4139,10 @@ var file_gateway_v1_gateway_proto_depIdxs = []int32{
 	0,  // 8: weaver.gateway.v1.ProviderRequest.encoding:type_name -> weaver.gateway.v1.Encoding
 	16, // 9: weaver.gateway.v1.ProviderFrame.event:type_name -> weaver.gateway.v1.Event
 	17, // 10: weaver.gateway.v1.ProviderFrame.arrow:type_name -> weaver.gateway.v1.ArrowBatch
-	50, // 11: weaver.gateway.v1.Task.endpoints:type_name -> weaver.gateway.v1.Task.EndpointsEntry
-	51, // 12: weaver.gateway.v1.Task.body_digests:type_name -> weaver.gateway.v1.Task.BodyDigestsEntry
-	52, // 13: weaver.gateway.v1.Task.node_cost_bounds:type_name -> weaver.gateway.v1.Task.NodeCostBoundsEntry
-	53, // 14: weaver.gateway.v1.Task.stream_contracts:type_name -> weaver.gateway.v1.Task.StreamContractsEntry
+	52, // 11: weaver.gateway.v1.Task.endpoints:type_name -> weaver.gateway.v1.Task.EndpointsEntry
+	53, // 12: weaver.gateway.v1.Task.body_digests:type_name -> weaver.gateway.v1.Task.BodyDigestsEntry
+	54, // 13: weaver.gateway.v1.Task.node_cost_bounds:type_name -> weaver.gateway.v1.Task.NodeCostBoundsEntry
+	55, // 14: weaver.gateway.v1.Task.stream_contracts:type_name -> weaver.gateway.v1.Task.StreamContractsEntry
 	21, // 15: weaver.gateway.v1.Task.provider_profile:type_name -> weaver.gateway.v1.ProviderProfile
 	20, // 16: weaver.gateway.v1.RegisterTaskRequest.task:type_name -> weaver.gateway.v1.Task
 	24, // 17: weaver.gateway.v1.DomainView.stamp:type_name -> weaver.gateway.v1.DomainStamp
@@ -3947,59 +4167,62 @@ var file_gateway_v1_gateway_proto_depIdxs = []int32{
 	41, // 36: weaver.gateway.v1.PublicationReviewContext.reviewer:type_name -> weaver.gateway.v1.ReviewAuthority
 	37, // 37: weaver.gateway.v1.PublicationReviewContext.source:type_name -> weaver.gateway.v1.SourceAuthorityView
 	36, // 38: weaver.gateway.v1.ReviewRegistrationReceipt.publication:type_name -> weaver.gateway.v1.PublicationKey
-	13, // 39: weaver.gateway.v1.Gateway.ExecuteProvider:input_type -> weaver.gateway.v1.ProviderRequest
-	10, // 40: weaver.gateway.v1.Gateway.Inspect:input_type -> weaver.gateway.v1.OperationKey
-	46, // 41: weaver.gateway.v1.Gateway.RotateMeterCredential:input_type -> weaver.gateway.v1.MeterCredentialRotation
-	10, // 42: weaver.gateway.v1.Gateway.InspectTerminalUsage:input_type -> weaver.gateway.v1.OperationKey
-	48, // 43: weaver.gateway.v1.Gateway.ApplyMetering:input_type -> weaver.gateway.v1.MeteringReceipt
-	22, // 44: weaver.gateway.v1.Gateway.RegisterTask:input_type -> weaver.gateway.v1.RegisterTaskRequest
-	33, // 45: weaver.gateway.v1.Gateway.RegisterPublishedTask:input_type -> weaver.gateway.v1.RegisterPublishedTaskRequest
-	26, // 46: weaver.gateway.v1.Gateway.RegisterDomainTask:input_type -> weaver.gateway.v1.RegisterDomainTaskRequest
-	28, // 47: weaver.gateway.v1.Gateway.RegisterOriginalTask:input_type -> weaver.gateway.v1.RegisterOriginalTaskRequest
-	30, // 48: weaver.gateway.v1.Gateway.RegisterFamilyAlias:input_type -> weaver.gateway.v1.FamilyAliasRequest
-	31, // 49: weaver.gateway.v1.Gateway.MigrateExecutionDomains:input_type -> weaver.gateway.v1.DomainMigration
-	10, // 50: weaver.gateway.v1.Gateway.InspectExecutionDomains:input_type -> weaver.gateway.v1.OperationKey
-	34, // 51: weaver.gateway.v1.Gateway.PublishAuthority:input_type -> weaver.gateway.v1.PublishRequest
-	34, // 52: weaver.gateway.v1.Gateway.StageAuthority:input_type -> weaver.gateway.v1.PublishRequest
-	36, // 53: weaver.gateway.v1.Gateway.InspectPublication:input_type -> weaver.gateway.v1.PublicationKey
-	34, // 54: weaver.gateway.v1.Gateway.StageReviewedAuthority:input_type -> weaver.gateway.v1.PublishRequest
-	36, // 55: weaver.gateway.v1.Gateway.InspectPublicationReview:input_type -> weaver.gateway.v1.PublicationKey
-	43, // 56: weaver.gateway.v1.Gateway.RegisterPublicationReview:input_type -> weaver.gateway.v1.DeltaReview
-	5,  // 57: weaver.gateway.v1.Gateway.InspectSourceAuthority:input_type -> weaver.gateway.v1.Empty
-	38, // 58: weaver.gateway.v1.Gateway.RotateSourceAuthority:input_type -> weaver.gateway.v1.SourceRotationRequest
-	6,  // 59: weaver.gateway.v1.Gateway.CompileSource:input_type -> weaver.gateway.v1.ProducerRequest
-	5,  // 60: weaver.gateway.v1.Gateway.InspectProviderCatalog:input_type -> weaver.gateway.v1.Empty
-	15, // 61: weaver.gateway.v1.Gateway.PublishProviderCatalog:input_type -> weaver.gateway.v1.ProviderCatalogChange
-	5,  // 62: weaver.gateway.v1.Gateway.InspectTelemetry:input_type -> weaver.gateway.v1.Empty
-	18, // 63: weaver.gateway.v1.Gateway.ExecuteProvider:output_type -> weaver.gateway.v1.ProviderFrame
-	19, // 64: weaver.gateway.v1.Gateway.Inspect:output_type -> weaver.gateway.v1.ProviderReceipt
-	47, // 65: weaver.gateway.v1.Gateway.RotateMeterCredential:output_type -> weaver.gateway.v1.MeterCredentialEpoch
-	48, // 66: weaver.gateway.v1.Gateway.InspectTerminalUsage:output_type -> weaver.gateway.v1.MeteringReceipt
-	49, // 67: weaver.gateway.v1.Gateway.ApplyMetering:output_type -> weaver.gateway.v1.MeteringApplication
-	5,  // 68: weaver.gateway.v1.Gateway.RegisterTask:output_type -> weaver.gateway.v1.Empty
-	5,  // 69: weaver.gateway.v1.Gateway.RegisterPublishedTask:output_type -> weaver.gateway.v1.Empty
-	5,  // 70: weaver.gateway.v1.Gateway.RegisterDomainTask:output_type -> weaver.gateway.v1.Empty
-	29, // 71: weaver.gateway.v1.Gateway.RegisterOriginalTask:output_type -> weaver.gateway.v1.TaskAdmissionReceipt
-	25, // 72: weaver.gateway.v1.Gateway.RegisterFamilyAlias:output_type -> weaver.gateway.v1.DomainView
-	32, // 73: weaver.gateway.v1.Gateway.MigrateExecutionDomains:output_type -> weaver.gateway.v1.DomainMigrationReceipt
-	25, // 74: weaver.gateway.v1.Gateway.InspectExecutionDomains:output_type -> weaver.gateway.v1.DomainView
-	35, // 75: weaver.gateway.v1.Gateway.PublishAuthority:output_type -> weaver.gateway.v1.PublicationReceipt
-	36, // 76: weaver.gateway.v1.Gateway.StageAuthority:output_type -> weaver.gateway.v1.PublicationKey
-	35, // 77: weaver.gateway.v1.Gateway.InspectPublication:output_type -> weaver.gateway.v1.PublicationReceipt
-	36, // 78: weaver.gateway.v1.Gateway.StageReviewedAuthority:output_type -> weaver.gateway.v1.PublicationKey
-	44, // 79: weaver.gateway.v1.Gateway.InspectPublicationReview:output_type -> weaver.gateway.v1.PublicationReviewContext
-	45, // 80: weaver.gateway.v1.Gateway.RegisterPublicationReview:output_type -> weaver.gateway.v1.ReviewRegistrationReceipt
-	37, // 81: weaver.gateway.v1.Gateway.InspectSourceAuthority:output_type -> weaver.gateway.v1.SourceAuthorityView
-	39, // 82: weaver.gateway.v1.Gateway.RotateSourceAuthority:output_type -> weaver.gateway.v1.SourceRotationReceipt
-	9,  // 83: weaver.gateway.v1.Gateway.CompileSource:output_type -> weaver.gateway.v1.CompiledSource
-	14, // 84: weaver.gateway.v1.Gateway.InspectProviderCatalog:output_type -> weaver.gateway.v1.ProviderCatalogSnapshot
-	14, // 85: weaver.gateway.v1.Gateway.PublishProviderCatalog:output_type -> weaver.gateway.v1.ProviderCatalogSnapshot
-	4,  // 86: weaver.gateway.v1.Gateway.InspectTelemetry:output_type -> weaver.gateway.v1.TelemetrySnapshot
-	63, // [63:87] is the sub-list for method output_type
-	39, // [39:63] is the sub-list for method input_type
-	39, // [39:39] is the sub-list for extension type_name
-	39, // [39:39] is the sub-list for extension extendee
-	0,  // [0:39] is the sub-list for field type_name
+	51, // 39: weaver.gateway.v1.ProviderOAuthChange.grant:type_name -> weaver.gateway.v1.ProviderOAuthGrant
+	13, // 40: weaver.gateway.v1.Gateway.ExecuteProvider:input_type -> weaver.gateway.v1.ProviderRequest
+	10, // 41: weaver.gateway.v1.Gateway.Inspect:input_type -> weaver.gateway.v1.OperationKey
+	46, // 42: weaver.gateway.v1.Gateway.RotateMeterCredential:input_type -> weaver.gateway.v1.MeterCredentialRotation
+	10, // 43: weaver.gateway.v1.Gateway.InspectTerminalUsage:input_type -> weaver.gateway.v1.OperationKey
+	48, // 44: weaver.gateway.v1.Gateway.ApplyMetering:input_type -> weaver.gateway.v1.MeteringReceipt
+	22, // 45: weaver.gateway.v1.Gateway.RegisterTask:input_type -> weaver.gateway.v1.RegisterTaskRequest
+	33, // 46: weaver.gateway.v1.Gateway.RegisterPublishedTask:input_type -> weaver.gateway.v1.RegisterPublishedTaskRequest
+	26, // 47: weaver.gateway.v1.Gateway.RegisterDomainTask:input_type -> weaver.gateway.v1.RegisterDomainTaskRequest
+	28, // 48: weaver.gateway.v1.Gateway.RegisterOriginalTask:input_type -> weaver.gateway.v1.RegisterOriginalTaskRequest
+	30, // 49: weaver.gateway.v1.Gateway.RegisterFamilyAlias:input_type -> weaver.gateway.v1.FamilyAliasRequest
+	31, // 50: weaver.gateway.v1.Gateway.MigrateExecutionDomains:input_type -> weaver.gateway.v1.DomainMigration
+	10, // 51: weaver.gateway.v1.Gateway.InspectExecutionDomains:input_type -> weaver.gateway.v1.OperationKey
+	34, // 52: weaver.gateway.v1.Gateway.PublishAuthority:input_type -> weaver.gateway.v1.PublishRequest
+	34, // 53: weaver.gateway.v1.Gateway.StageAuthority:input_type -> weaver.gateway.v1.PublishRequest
+	36, // 54: weaver.gateway.v1.Gateway.InspectPublication:input_type -> weaver.gateway.v1.PublicationKey
+	34, // 55: weaver.gateway.v1.Gateway.StageReviewedAuthority:input_type -> weaver.gateway.v1.PublishRequest
+	36, // 56: weaver.gateway.v1.Gateway.InspectPublicationReview:input_type -> weaver.gateway.v1.PublicationKey
+	43, // 57: weaver.gateway.v1.Gateway.RegisterPublicationReview:input_type -> weaver.gateway.v1.DeltaReview
+	5,  // 58: weaver.gateway.v1.Gateway.InspectSourceAuthority:input_type -> weaver.gateway.v1.Empty
+	38, // 59: weaver.gateway.v1.Gateway.RotateSourceAuthority:input_type -> weaver.gateway.v1.SourceRotationRequest
+	6,  // 60: weaver.gateway.v1.Gateway.CompileSource:input_type -> weaver.gateway.v1.ProducerRequest
+	5,  // 61: weaver.gateway.v1.Gateway.InspectProviderCatalog:input_type -> weaver.gateway.v1.Empty
+	15, // 62: weaver.gateway.v1.Gateway.PublishProviderCatalog:input_type -> weaver.gateway.v1.ProviderCatalogChange
+	5,  // 63: weaver.gateway.v1.Gateway.InspectTelemetry:input_type -> weaver.gateway.v1.Empty
+	50, // 64: weaver.gateway.v1.Gateway.ChangeProviderOAuth:input_type -> weaver.gateway.v1.ProviderOAuthChange
+	18, // 65: weaver.gateway.v1.Gateway.ExecuteProvider:output_type -> weaver.gateway.v1.ProviderFrame
+	19, // 66: weaver.gateway.v1.Gateway.Inspect:output_type -> weaver.gateway.v1.ProviderReceipt
+	47, // 67: weaver.gateway.v1.Gateway.RotateMeterCredential:output_type -> weaver.gateway.v1.MeterCredentialEpoch
+	48, // 68: weaver.gateway.v1.Gateway.InspectTerminalUsage:output_type -> weaver.gateway.v1.MeteringReceipt
+	49, // 69: weaver.gateway.v1.Gateway.ApplyMetering:output_type -> weaver.gateway.v1.MeteringApplication
+	5,  // 70: weaver.gateway.v1.Gateway.RegisterTask:output_type -> weaver.gateway.v1.Empty
+	5,  // 71: weaver.gateway.v1.Gateway.RegisterPublishedTask:output_type -> weaver.gateway.v1.Empty
+	5,  // 72: weaver.gateway.v1.Gateway.RegisterDomainTask:output_type -> weaver.gateway.v1.Empty
+	29, // 73: weaver.gateway.v1.Gateway.RegisterOriginalTask:output_type -> weaver.gateway.v1.TaskAdmissionReceipt
+	25, // 74: weaver.gateway.v1.Gateway.RegisterFamilyAlias:output_type -> weaver.gateway.v1.DomainView
+	32, // 75: weaver.gateway.v1.Gateway.MigrateExecutionDomains:output_type -> weaver.gateway.v1.DomainMigrationReceipt
+	25, // 76: weaver.gateway.v1.Gateway.InspectExecutionDomains:output_type -> weaver.gateway.v1.DomainView
+	35, // 77: weaver.gateway.v1.Gateway.PublishAuthority:output_type -> weaver.gateway.v1.PublicationReceipt
+	36, // 78: weaver.gateway.v1.Gateway.StageAuthority:output_type -> weaver.gateway.v1.PublicationKey
+	35, // 79: weaver.gateway.v1.Gateway.InspectPublication:output_type -> weaver.gateway.v1.PublicationReceipt
+	36, // 80: weaver.gateway.v1.Gateway.StageReviewedAuthority:output_type -> weaver.gateway.v1.PublicationKey
+	44, // 81: weaver.gateway.v1.Gateway.InspectPublicationReview:output_type -> weaver.gateway.v1.PublicationReviewContext
+	45, // 82: weaver.gateway.v1.Gateway.RegisterPublicationReview:output_type -> weaver.gateway.v1.ReviewRegistrationReceipt
+	37, // 83: weaver.gateway.v1.Gateway.InspectSourceAuthority:output_type -> weaver.gateway.v1.SourceAuthorityView
+	39, // 84: weaver.gateway.v1.Gateway.RotateSourceAuthority:output_type -> weaver.gateway.v1.SourceRotationReceipt
+	9,  // 85: weaver.gateway.v1.Gateway.CompileSource:output_type -> weaver.gateway.v1.CompiledSource
+	14, // 86: weaver.gateway.v1.Gateway.InspectProviderCatalog:output_type -> weaver.gateway.v1.ProviderCatalogSnapshot
+	14, // 87: weaver.gateway.v1.Gateway.PublishProviderCatalog:output_type -> weaver.gateway.v1.ProviderCatalogSnapshot
+	4,  // 88: weaver.gateway.v1.Gateway.InspectTelemetry:output_type -> weaver.gateway.v1.TelemetrySnapshot
+	5,  // 89: weaver.gateway.v1.Gateway.ChangeProviderOAuth:output_type -> weaver.gateway.v1.Empty
+	65, // [65:90] is the sub-list for method output_type
+	40, // [40:65] is the sub-list for method input_type
+	40, // [40:40] is the sub-list for extension type_name
+	40, // [40:40] is the sub-list for extension extendee
+	0,  // [0:40] is the sub-list for field type_name
 }
 
 func init() { file_gateway_v1_gateway_proto_init() }
@@ -4015,13 +4238,17 @@ func file_gateway_v1_gateway_proto_init() {
 	file_gateway_v1_gateway_proto_msgTypes[31].OneofWrappers = []any{}
 	file_gateway_v1_gateway_proto_msgTypes[36].OneofWrappers = []any{}
 	file_gateway_v1_gateway_proto_msgTypes[37].OneofWrappers = []any{}
+	file_gateway_v1_gateway_proto_msgTypes[46].OneofWrappers = []any{
+		(*ProviderOAuthChange_Grant)(nil),
+		(*ProviderOAuthChange_RevokeTokenHash)(nil),
+	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_gateway_v1_gateway_proto_rawDesc), len(file_gateway_v1_gateway_proto_rawDesc)),
 			NumEnums:      4,
-			NumMessages:   50,
+			NumMessages:   52,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

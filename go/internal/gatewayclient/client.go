@@ -88,6 +88,11 @@ func awaitReady(ctx context.Context, conn *grpc.ClientConn, interval time.Durati
 func (c *Client) Context(ctx context.Context) context.Context {
 	return metadata.AppendToOutgoingContext(ctx, "authorization", "Bearer "+c.Token)
 }
+
+// WithProviderOAuth adds delegated authority alongside the client transport credential.
+func WithProviderOAuth(ctx context.Context, token string) context.Context {
+	return metadata.AppendToOutgoingContext(ctx, "weaver-provider-oauth", "Bearer "+token)
+}
 func Plan(p v1.ProviderPlan) *pb.ProviderPlan {
 	routes := make([]*pb.Route, 0, len(p.Routes))
 	for _, r := range p.Routes {

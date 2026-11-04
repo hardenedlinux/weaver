@@ -47,6 +47,7 @@ const (
 	Gateway_InspectProviderCatalog_FullMethodName    = "/weaver.gateway.v1.Gateway/InspectProviderCatalog"
 	Gateway_PublishProviderCatalog_FullMethodName    = "/weaver.gateway.v1.Gateway/PublishProviderCatalog"
 	Gateway_InspectTelemetry_FullMethodName          = "/weaver.gateway.v1.Gateway/InspectTelemetry"
+	Gateway_ChangeProviderOAuth_FullMethodName       = "/weaver.gateway.v1.Gateway/ChangeProviderOAuth"
 )
 
 // GatewayClient is the client API for Gateway service.
@@ -83,6 +84,8 @@ type GatewayClient interface {
 	PublishProviderCatalog(ctx context.Context, in *ProviderCatalogChange, opts ...grpc.CallOption) (*ProviderCatalogSnapshot, error)
 	// Statistical process-local counters only; never durable execution evidence.
 	InspectTelemetry(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*TelemetrySnapshot, error)
+	// Source-only. Bearer bytes stay on the operation connection.
+	ChangeProviderOAuth(ctx context.Context, in *ProviderOAuthChange, opts ...grpc.CallOption) (*Empty, error)
 }
 
 type gatewayClient struct {
@@ -356,6 +359,16 @@ func (c *gatewayClient) InspectTelemetry(ctx context.Context, in *Empty, opts ..
 	return out, nil
 }
 
+func (c *gatewayClient) ChangeProviderOAuth(ctx context.Context, in *ProviderOAuthChange, opts ...grpc.CallOption) (*Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, Gateway_ChangeProviderOAuth_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // GatewayServer is the server API for Gateway service.
 // All implementations must embed UnimplementedGatewayServer
 // for forward compatibility
@@ -390,6 +403,8 @@ type GatewayServer interface {
 	PublishProviderCatalog(context.Context, *ProviderCatalogChange) (*ProviderCatalogSnapshot, error)
 	// Statistical process-local counters only; never durable execution evidence.
 	InspectTelemetry(context.Context, *Empty) (*TelemetrySnapshot, error)
+	// Source-only. Bearer bytes stay on the operation connection.
+	ChangeProviderOAuth(context.Context, *ProviderOAuthChange) (*Empty, error)
 	mustEmbedUnimplementedGatewayServer()
 }
 
@@ -468,6 +483,9 @@ func (UnimplementedGatewayServer) PublishProviderCatalog(context.Context, *Provi
 }
 func (UnimplementedGatewayServer) InspectTelemetry(context.Context, *Empty) (*TelemetrySnapshot, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method InspectTelemetry not implemented")
+}
+func (UnimplementedGatewayServer) ChangeProviderOAuth(context.Context, *ProviderOAuthChange) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ChangeProviderOAuth not implemented")
 }
 func (UnimplementedGatewayServer) mustEmbedUnimplementedGatewayServer() {}
 
@@ -917,6 +935,24 @@ func _Gateway_InspectTelemetry_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Gateway_ChangeProviderOAuth_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ProviderOAuthChange)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GatewayServer).ChangeProviderOAuth(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Gateway_ChangeProviderOAuth_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GatewayServer).ChangeProviderOAuth(ctx, req.(*ProviderOAuthChange))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Gateway_ServiceDesc is the grpc.ServiceDesc for Gateway service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1015,6 +1051,10 @@ var Gateway_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "InspectTelemetry",
 			Handler:    _Gateway_InspectTelemetry_Handler,
+		},
+		{
+			MethodName: "ChangeProviderOAuth",
+			Handler:    _Gateway_ChangeProviderOAuth_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

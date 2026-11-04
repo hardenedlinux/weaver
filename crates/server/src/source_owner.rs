@@ -26,7 +26,18 @@ struct Envelope {
     caller: SourceIdentity,
     command: Command,
 }
+struct SourceDeployment {
+    review: Option<weaver_contracts::ReviewAuthority>,
+    metering: Option<weaver_contracts::MeteringDeployment>,
+    oauth: Option<weaver_contracts::ProviderOAuthDeployment>,
+}
+
 enum Command {
+    ChangeProviderOAuth {
+        action: Box<crate::pb::provider_o_auth_change::Action>,
+        reply: oneshot::Sender<Result<()>>,
+        slot: OwnedSemaphorePermit,
+    },
     RotateMeter {
         tenant: String,
         issuer: String,
@@ -262,15 +273,38 @@ impl SourceOwner {
         })
         .await
     }
+    pub(crate) async fn change_provider_oauth(
+        &self,
+        caller: SourceIdentity,
+        action: crate::pb::provider_o_auth_change::Action,
+    ) -> std::result::Result<(), Status> {
+        self.submit(caller, |reply, slot| Command::ChangeProviderOAuth {
+            action: Box::new(action),
+            reply,
+            slot,
+        })
+        .await
+    }
     pub(crate) async fn start_reviewed(
         runtime: RuntimeOwner,
         slot: Arc<OwnedSemaphorePermit>,
         database: PathBuf,
         authority: weaver_contracts::ReviewAuthority,
         metering: Option<weaver_contracts::MeteringDeployment>,
+        oauth: Option<weaver_contracts::ProviderOAuthDeployment>,
     ) -> Result<SourceWorker> {
         authority.validate()?;
-        Self::start_inner(runtime, slot, database, Some(authority), metering).await
+        Self::start_inner(
+            runtime,
+            slot,
+            database,
+            SourceDeployment {
+                review: Some(authority),
+                metering,
+                oauth,
+            },
+        )
+        .await
     }
     #[cfg(test)]
     pub(crate) async fn start(
@@ -278,14 +312,23 @@ impl SourceOwner {
         slot: Arc<OwnedSemaphorePermit>,
         database: PathBuf,
     ) -> Result<SourceWorker> {
-        Self::start_inner(runtime, slot, database, None, None).await
+        Self::start_inner(
+            runtime,
+            slot,
+            database,
+            SourceDeployment {
+                review: None,
+                metering: None,
+                oauth: None,
+            },
+        )
+        .await
     }
     async fn start_inner(
         runtime: RuntimeOwner,
         slot: Arc<OwnedSemaphorePermit>,
         database: PathBuf,
-        authority: Option<weaver_contracts::ReviewAuthority>,
-        metering: Option<weaver_contracts::MeteringDeployment>,
+        deployment: SourceDeployment,
     ) -> Result<SourceWorker> {
         let (sender, receiver) = mpsc::channel(1);
         let (ready_tx, ready_rx) = oneshot::channel();
@@ -293,13 +336,7 @@ impl SourceOwner {
         let exit = runtime.shutdown_guard();
         let job = runtime.spawn_blocking(slot, move |cancel| {
             run(
-                database,
-                (authority, metering),
-                receiver,
-                ready_tx,
-                handle,
-                cancel,
-                exit,
+                database, deployment, receiver, ready_tx, handle, cancel, exit,
             )
         })?;
         let ready = ready_rx
@@ -468,17 +505,13 @@ impl SourceOwner {
 }
 fn run(
     database: PathBuf,
-    deployment: (
-        Option<weaver_contracts::ReviewAuthority>,
-        Option<weaver_contracts::MeteringDeployment>,
-    ),
+    deployment: SourceDeployment,
     receiver: mpsc::Receiver<Envelope>,
     ready: oneshot::Sender<Result<()>>,
     handle: Handle,
     cancel: CancellationToken,
     _exit: ShutdownGuard,
 ) -> Result<()> {
-    let (authority, metering) = deployment;
     let mut ledger = match Ledger::open(database) {
         Ok(ledger) => ledger,
         Err(error) => {
@@ -486,7 +519,7 @@ fn run(
             return Err(Error::Conflict("source database unavailable"));
         }
     };
-    if let Some(authority) = authority
+    if let Some(authority) = deployment.review
         && let Err(error) = ledger.install_review_authority(&authority)
     {
         let _ = ready.send(Err(error));
@@ -494,13 +527,19 @@ fn run(
             .close()
             .and(Err(Error::Conflict("review authority startup refused")));
     }
-    if let Some(config) = &metering
+    if let Some(config) = &deployment.metering
         && let Err(error) = ledger.install_metering(config)
     {
         let _ = ready.send(Err(error));
         return ledger
             .close()
             .and(Err(Error::Conflict("metering startup refused")));
+    }
+    if let Err(error) = ledger.configure_provider_oauth(deployment.oauth.as_ref()) {
+        let _ = ready.send(Err(error));
+        return ledger
+            .close()
+            .and(Err(Error::Conflict("provider OAuth startup refused")));
     }
     let result = if ready.send(Ok(())).is_err() {
         Err(Error::Conflict("source startup abandoned"))
@@ -529,6 +568,16 @@ fn process(
         ledger.require_quiescent()?;
         let Envelope { caller, command } = command;
         match command {
+            Command::ChangeProviderOAuth {
+                action,
+                reply,
+                slot,
+            } => {
+                let result = ledger.with_authenticated_source(&caller, |ledger| {
+                    crate::provider_oauth::change(ledger, *action)
+                });
+                answer(ledger, reply, result, slot)?;
+            }
             Command::RotateMeter {
                 tenant,
                 issuer,

@@ -105,6 +105,11 @@ CREATE TABLE IF NOT EXISTS provider_releases (
  family TEXT NOT NULL, node TEXT NOT NULL, sequence INTEGER NOT NULL, length INTEGER NOT NULL, digest TEXT NOT NULL,
  state TEXT NOT NULL CHECK(state IN ('unknown','released')), PRIMARY KEY(family,node,sequence),
  FOREIGN KEY(family,node) REFERENCES provider_runs(family,node));
+CREATE TABLE IF NOT EXISTS provider_oauth_deployment (
+ singleton INTEGER PRIMARY KEY CHECK(singleton=1), record TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS provider_oauth_grants (
+ token_hash TEXT PRIMARY KEY, record TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS provider_oauth_revocations (token_hash TEXT PRIMARY KEY);
 CREATE TABLE IF NOT EXISTS metering_deployment (
  singleton INTEGER PRIMARY KEY CHECK(singleton=1), record TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS metering_reservations (
