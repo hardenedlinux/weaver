@@ -1,0 +1,171 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+...@../../../dev/d2/themes/flow
+vars: { d2-config: { layout-engine: tala;  pad: 80 } }
+title: MRR ADMISSION / RUST FINAL USE {
+  shape: text
+  near: top-center
+  style.font-size: 36
+  style.bold: true
+}
+semantic: Weaver canonical coordination home\nOriginal claim / shared budget scope\nImmutable obligation body {
+  class: card
+  icon: ../../architecture/diagrams/assets/rust.svg
+  icon.near: top-left
+  left: 0
+  top: 0
+  width: 550
+  height: 240
+  style.fill: "#eef3ef"
+}
+storage: MRR Data backend\nTurso embedded storage\nPure validation / authority checks {
+  class: card
+  left: 810
+  top: 0
+  width: 550
+  height: 240
+  style.fill: "#e7edf4"
+}
+retained: Retained admission outcome\nExact operation / content commitment\nBurn and original unknown obligation {
+  class: card
+  left: 1620
+  top: 0
+  width: 550
+  height: 240
+  style.fill: "#e7edf4"
+}
+pending: Missing body or uncertain outcome\nKeep original reservation and exposure\nNo new home or inferred refund {
+  class: card
+  left: 0
+  top: 620
+  width: 550
+  height: 240
+  style.fill: "#f4f2ec"
+}
+projection: Read body / qualify current cut\nOriginal owner and exposure projection\nReplay grants no live send ticket {
+  class: card
+  left: 810
+  top: 620
+  width: 550
+  height: 240
+  style.fill: "#e7edf4"
+}
+execution: Rust final transport owner\nLive one-use ticket / current Policy\nSingle release / no replay authority {
+  class: card
+  icon: ../../architecture/diagrams/assets/rust.svg
+  icon.near: top-left
+  left: 1620
+  top: 620
+  width: 550
+  height: 240
+  style.fill: "#eef3ef"
+}
+semantic -> storage: Publish durable body first { style.font-size: 20 }
+storage -> retained: Metadata decision and outbox { style.font-size: 20 }
+storage -> projection: Recover exact original outcome { style.font-size: 20 }
+pending -> projection: Recover original obligation { style.font-size: 20 }
+projection -> execution: Fresh final-use guards { style.font-size: 20 }
+retained -> execution: Recheck current cut { style.font-size: 20 }
+footer: "Scheme owns workflow semantics · Go owns protocol admission · Rust owns final release\nA historical storage decision cannot authorize a new effect" {
+  shape: text
+  left: 140
+  top: 1080
+  width: 1890
+  height: 120
+  style.font-size: 28
+  style.font-color: "#5c8b77"
+}
+
+# Project-owned presentation question; not an issued governance Question.
+vars: { d2-config: { data: { figure: |json
+{
+  "title": "63 mrr admission contract",
+  "purpose": "workflow",
+  "kind": "flow",
+  "language": "en",
+  "width": 1600,
+  "primary": "main",
+  "questions": [
+    {
+      "ref": "main",
+      "text": "Which progression and failure boundaries govern 63 mrr admission contract?",
+      "focusRefs": [
+        "catalog",
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "catalog": "docs/architecture/08-diagram-catalog.org",
+    "model": "Project.sysml"
+  },
+  "copy": {
+    "takeaway": "The declared source relationships define this view; presentation does not grant execution authority."
+  },
+  "basis": {
+    "captureRef": "docs/50-59-research-program/59-provider-rpc/59.63-mrr-admission-contract.d2#design-view",
+    "modelRefs": [
+      "Project.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "sketchbook",
+    "blueprint",
+    "reading"
+  ],
+  "layout": "model-view",
+  "variants": [],
+  "presentation": {
+    "graph": {
+      "id": "weaver-source-view",
+      "children": [
+        {
+          "id": "title"
+        },
+        {
+          "id": "semantic"
+        },
+        {
+          "id": "storage"
+        },
+        {
+          "id": "retained"
+        },
+        {
+          "id": "pending"
+        },
+        {
+          "id": "projection"
+        },
+        {
+          "id": "execution"
+        },
+        {
+          "id": "footer"
+        }
+      ],
+      "layoutOptions": {
+        "elk.algorithm": "layered",
+        "elk.direction": "DOWN",
+        "elk.edgeRouting": "ORTHOGONAL"
+      }
+    },
+    "options": {
+      "elk.algorithm": "layered",
+      "elk.direction": "DOWN",
+      "elk.edgeRouting": "ORTHOGONAL"
+    },
+    "icons": {},
+    "roles": {}
+  },
+  "icons": [
+    "engineering",
+    "weaver"
+  ]
+}
+|
+} } }

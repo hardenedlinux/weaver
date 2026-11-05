@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Weaver Concurrent WAL Append and Checkpoint Cut Index
 #+language: en
 #+options: toc:2
@@ -24,3 +28,9 @@ model separates the sealed cut from the live append generation and protects both
 Four artifacts: [[file:../../../dev/proofs/lean/LlmAppendHandoff.lean][Lean]] / [[file:../../../dev/proofs/quint/LlmAppendHandoff.qnt][Quint]] / English Org / core D2.
 Run the isolated checker (retired Python driver). No Gateway implementation, dependency pin, upstream
 source or historical sealed evidence is changed.
+
+* Embedded architecture views
+
+** 28.02-append-handoff.svg
+
+[[file:28.02-append-handoff.svg]]

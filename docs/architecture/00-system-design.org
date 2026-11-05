@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Weaver Unified Gateway: System Design
 #+language: en
 #+date: 2026-10-18
@@ -55,7 +59,7 @@ Weaver is greenfield: existing Gateway APIs, old Policy encodings and native
 objects need no compatibility layer. Reuse owner semantics and source contracts
 against one deliberately selected baseline, then regenerate and qualify its
 consumers. Research pins document evidence rather than mandate legacy support.
-[[file:12-fm1-baseline-and-native-qualification.org][FM1 baseline selection]] distinguishes internal semantic/native consistency
+[[file:12-fm1-baseline-and-runtime-qualification.org][FM1 baseline selection]] distinguishes internal semantic/native consistency
 from backward compatibility and defines the direct migration boundary.
 
 * One architecture, three different kinds of responsibility
@@ -82,7 +86,7 @@ and Lean proof checking are not per-packet RPCs. An admitted profile may still
 require a Lean-native evaluator at operation time: proof checking and policy
 evaluation are distinct activities, and optimization must preserve that profile.
 
-The reference placement is deliberate: Go brings the Kubernetes/network/SDK
+The reference placement is deliberate: Go brings the Kubernetes/network/Gerbil toolchain
 integration ecosystem; Rust reuses the native authority boundary and provides
 explicit ownership for physical coordination; Scheme preserves POO-native
 Governance. Neither cloud readiness nor the implementation language confers
@@ -206,7 +210,7 @@ The concrete initial Go role is cloud-native integration and operational network
 services, including backend discovery and publication/status distribution. Go
 ingress and selected connectors remain qualified candidates. The inspected
 upstream responsibilities and their relevance to an AI-native gateway are in
-[[file:06-go-cloud-native-role.org][Go's cloud-native and Agent Gateway role]]. This establishes Go's value beyond
+[[file:06-go-control-plane-role.org][Go's cloud-native and Agent Gateway role]]. This establishes Go's value beyond
 an arbitrary language split without granting its controller effect authority.
 
 Go-owned ingress is a trusted enforcement component. Rust authorization does
@@ -491,3 +495,17 @@ resolve without a new claim or budget domain; no election resets the joint state
 rollback premise, separates signer retirement from actual broker isolation and
 preserves original Policy, budget/history and consumption domains.
 [[file:diagrams/29-quorum-durable-promises.d2][Core D2]] / [[file:diagrams/29-quorum-durable-promises.svg][rendered diagram]] / [[file:../../dev/specs/evidence/quorum-durable-promises-2026-10-19.org][check receipt]].
+
+* Embedded architecture views
+
+** 21-composed-journal-transport-lifecycle.svg
+
+[[file:diagrams/21-composed-journal-transport-lifecycle.svg]]
+
+** 22-finite-stream-manifest.svg
+
+[[file:diagrams/22-finite-stream-manifest.svg]]
+
+** 29-quorum-durable-promises.svg
+
+[[file:diagrams/29-quorum-durable-promises.svg]]

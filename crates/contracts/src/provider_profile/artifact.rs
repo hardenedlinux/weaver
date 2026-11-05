@@ -1,9 +1,20 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 //! Validated source artifacts and domain-separated `ProviderProfile` commitments.
 use crate::{Error, MAX_BODY_BYTES, Result, body_digest, identifier};
 use serde::{Deserialize, Serialize};
 
 /// Closed implementation protocol; other protocols require their own semantic owner.
 pub const CHAT_TEXT_SSE: &str = "openai.chat-text-sse.v1";
+pub const ANTHROPIC_MESSAGES_SSE: &str = "anthropic.messages-text-sse.v1";
+
+#[derive(Clone, Copy)]
+pub enum ProviderProtocol {
+    OpenAi,
+    Anthropic,
+}
 
 /// Authenticated source artifact, registered atomically with its original task.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -26,14 +37,21 @@ pub struct ProviderRequestFacts {
 impl ProviderProfile {
     pub fn validate(&self) -> Result<()> {
         identifier(&self.id)?;
-        if self.protocol != CHAT_TEXT_SSE
-            || !(1..=4096).contains(&self.max_output_tokens)
+        self.adapter()?;
+        if !(1..=4096).contains(&self.max_output_tokens)
             || !(1..=64).contains(&self.max_messages)
             || !(1..=MAX_BODY_BYTES as u64).contains(&self.max_body_bytes)
         {
             return Err(Error::Invalid("provider profile"));
         }
         Ok(())
+    }
+    pub fn adapter(&self) -> Result<ProviderProtocol> {
+        match self.protocol.as_str() {
+            CHAT_TEXT_SSE => Ok(ProviderProtocol::OpenAi),
+            ANTHROPIC_MESSAGES_SSE => Ok(ProviderProtocol::Anthropic),
+            _ => Err(Error::Invalid("provider protocol")),
+        }
     }
     pub fn digest(&self) -> Result<String> {
         self.validate()?;

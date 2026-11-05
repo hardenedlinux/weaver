@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Device Isolation and Floor Recovery Validation Evidence
 #+language: en
 #+date: 2026-10-19
@@ -204,3 +208,9 @@ source-highlighting diagnostics remain in the Org export log.
 dependencies, Johnny Decimal artifacts and raw evidence. Native HSM/driver/FD/DMA
 isolation, protected persistence and final broker acceptance remain pending.
 No gateway implementation or dependency-pin change is delivered.
+
+* Embedded architecture views
+
+** 33.02-device-isolation.svg
+
+[[file:33.02-device-isolation.svg]]

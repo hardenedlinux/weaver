@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 // Package gatewayclient is the typed Go control-plane boundary to the Rust owner.
 package gatewayclient
 
@@ -6,12 +10,15 @@ import (
 	"crypto/tls"
 	"errors"
 	"io"
+	"maps"
+	"slices"
 	"time"
 
 	pb "github.com/HardenedLinux/weaver/go/api/gateway/v1"
 	v1 "github.com/HardenedLinux/weaver/go/api/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/backoff"
+	"google.golang.org/grpc/connectivity"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/metadata"
 )
@@ -29,17 +36,62 @@ func Dial(ctx context.Context, address, token string, security *tls.Config) (*Cl
 	settings := security.Clone()
 	settings.MinVersion = tls.VersionTLS13
 	// Retain exponential growth, jitter and the long-outage cap. Only the
-	// initial transport delay changes; no application RPC is sent or retried.
+	// initial transport delay changes; final-budget readiness also caps stale
+	// backoff. No application RPC is sent or retried.
 	connectionBackoff := backoff.DefaultConfig
 	connectionBackoff.BaseDelay = 100 * time.Millisecond
-	conn, err := grpc.DialContext(ctx, address, grpc.WithTransportCredentials(credentials.NewTLS(settings)), grpc.WithBlock(), grpc.WithConnectParams(grpc.ConnectParams{Backoff: connectionBackoff, MinConnectTimeout: 20 * time.Second}), grpc.WithDisableRetry(), grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(4*1024*1024), grpc.MaxCallSendMsgSize(2*1024*1024)))
+	conn, err := grpc.DialContext(ctx, address, grpc.WithTransportCredentials(credentials.NewTLS(settings)), grpc.WithConnectParams(grpc.ConnectParams{Backoff: connectionBackoff, MinConnectTimeout: 20 * time.Second}), grpc.WithDisableRetry(), grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(4*1024*1024), grpc.MaxCallSendMsgSize(2*1024*1024)))
 	if err != nil {
+		return nil, err
+	}
+	if err := awaitReady(ctx, conn, connectionBackoff.BaseDelay); err != nil {
+		conn.Close()
 		return nil, err
 	}
 	return &Client{Connection: conn, RPC: pb.NewGatewayClient(conn), Token: token}, nil
 }
+
+// Only initial transport establishment uses the final portion of the caller's
+// existing budget. Once Ready, native exponential reconnect/backoff is unchanged.
+// No application RPC is issued, retried or authorized by observing Ready.
+func awaitReady(ctx context.Context, conn *grpc.ClientConn, interval time.Duration) error {
+	for {
+		if err := ctx.Err(); err != nil {
+			return err
+		}
+		state := conn.GetState()
+		if state == connectivity.Ready {
+			return nil
+		}
+		if state == connectivity.Idle {
+			conn.Connect()
+		}
+		wait := ctx
+		cancel := func() {}
+		if deadline, ok := ctx.Deadline(); ok {
+			edge := deadline.Add(-5 * interval)
+			if time.Now().Before(edge) {
+				wait, cancel = context.WithDeadline(ctx, edge)
+			} else {
+				wait, cancel = context.WithTimeout(ctx, interval)
+			}
+		}
+		changed := conn.WaitForStateChange(wait, state)
+		cancel()
+		if !changed && ctx.Err() == nil {
+			if deadline, ok := ctx.Deadline(); ok && time.Until(deadline) <= 5*interval && conn.GetState() == connectivity.TransientFailure {
+				conn.ResetConnectBackoff()
+			}
+		}
+	}
+}
 func (c *Client) Context(ctx context.Context) context.Context {
 	return metadata.AppendToOutgoingContext(ctx, "authorization", "Bearer "+c.Token)
+}
+
+// WithProviderOAuth adds delegated authority alongside the client transport credential.
+func WithProviderOAuth(ctx context.Context, token string) context.Context {
+	return metadata.AppendToOutgoingContext(ctx, "weaver-provider-oauth", "Bearer "+token)
 }
 func Plan(p v1.ProviderPlan) *pb.ProviderPlan {
 	routes := make([]*pb.Route, 0, len(p.Routes))
@@ -53,12 +105,19 @@ func Task(t v1.Task) *pb.Task {
 	if p := t.ProviderProfile; p != nil {
 		profile = &pb.ProviderProfile{Id: p.ID, Protocol: p.Protocol, MaxOutputTokens: p.MaxOutputTokens, MaxMessages: p.MaxMessages, MaxBodyBytes: p.MaxBodyBytes}
 	}
-	return &pb.Task{Family: t.Family, Principal: t.Principal, Profile: t.Profile, ProviderProfile: profile, Nodes: t.Nodes, Targets: t.Targets, Endpoints: t.Endpoints, BodyDigests: t.BodyDigests, NodeCostBounds: t.NodeCostBounds, StreamContracts: t.StreamContracts, Models: t.Models, Budget: t.Budget}
+	return &pb.Task{Family: t.Family, Principal: t.Principal, Profile: t.Profile, ProviderProfile: profile, Nodes: slices.Clone(t.Nodes), Targets: slices.Clone(t.Targets), Endpoints: maps.Clone(t.Endpoints), BodyDigests: maps.Clone(t.BodyDigests), NodeCostBounds: maps.Clone(t.NodeCostBounds), StreamContracts: maps.Clone(t.StreamContracts), Models: slices.Clone(t.Models), Budget: t.Budget}
 }
 
 // Execute never retries. A disconnected, partial or indeterminate operation must
 // be inspected under its original key. A DONE event alone is not a durable receipt.
 func (c *Client) Execute(ctx context.Context, p v1.ProviderPlan, encoding pb.Encoding, batchRows uint32, receive func(*pb.Event) error) (*pb.ProviderReceipt, error) {
+	if len(p.Routes) == 0 || len(p.Routes) > 8 {
+		return nil, errors.New("provider route bound")
+	}
+	// Strings/scalars already have value semantics. Retain the sole mutable
+	// plan field before invoking RPC or user callbacks; no wire object aliases it.
+	// The caller must keep input stable during this initial bounded copy.
+	p.Routes = slices.Clone(p.Routes)
 	streamCtx, cancel := context.WithCancel(ctx)
 	defer cancel()
 	stream, err := c.RPC.ExecuteProvider(c.Context(streamCtx), &pb.ProviderRequest{Plan: Plan(p), Encoding: encoding, BatchRows: batchRows})

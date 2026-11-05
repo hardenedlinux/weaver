@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Weaver Zero Trust Assurance Framework: Quint, Lean, and Cedar POO Spec
 #+language: en
 #+date: 2026-10-18
@@ -61,7 +65,7 @@ credential/transport check.
 | Two workers consume/claim concurrently | Can both obtain usable authority for the same attempt? | Preserve grant affinity, unique claims and budget conservation under declared serialization | Real issuer serialization, durable ledger atomicity and one local handle |
 | A publication or identity observation becomes stale | Can stale input cross admission or a later checkpoint? | Preserve source/identity validity predicates under the selected lease rules | Authentic owner observations, bounded lifetime and runtime rejection |
 | A paused broker resumes after takeover | Can a stale emitter act despite a new database owner? | Keep database fencing distinct from the physical stop/receiver premise | Qualified stop/drain or receiver fencing where stronger exclusion is required |
-| An SDK retries after an unknown result | Is a second application attempt reachable without new admission? | Bind each attempt to its unique claim and preserve conservative unknown state | Retry controls, constrained credentials/egress and attributable observations |
+| An provider-client retries after an unknown result | Is a second application attempt reachable without new admission? | Bind each attempt to its unique claim and preserve conservative unknown state | Retry controls, constrained credentials/egress and attributable observations |
 
 These are requirements to model, prove and exercise, not claims of completed
 integration proofs. The detailed FM dossiers preserve the separate evidence
@@ -95,9 +99,9 @@ accepted integrated build. In particular, their declarations differ:
 
 | Selected source | Declared toolchain / dependency | Consequence |
 |-----------------+--------------------------------+-------------|
-| cedar-poo-spec c8d1a0641120cf65e299e8a98f9fe7666ca96ab5 | Lean 4.34.1; Cedar 017c35c3d1f856a0f8b62a66660ee6628870bbcf; LeanPoo ccb94dc44d874050dc8a8ede692bb2afac55ea37 | C7/C12 fix this semantic source closure |
-| POO Flow a74fc2fd63437252175b5a67649ee54b886d3bf4 proof package | Lean 4.31.0; Cedar e9fa9c1e6b636f29b0897d8706bd7aa5eaf06f9a | P9 fixes a different Lean/Cedar closure |
-| POO Flow Cedar Rust bridge | Rust manifest pins cedar-poo-spec c8d1a06 | A Rust dependency pin does not align the separate Lean package or native ABI |
+| cedar-poo-spec historical proof package | Original lean-toolchain and Lake manifest/lock | C7/C12 qualify this semantic source closure |
+| POO Flow historical proof package | Its own lean-toolchain and Lake manifest/lock | P9 qualifies a different Lean/Cedar closure |
+| POO Flow Cedar Rust bridge | Original Rust workspace manifest/lock | A Rust dependency pin does not align the separate Lean package or native ABI |
 | POO Flow Core / Lambda Aitia | Distinct revisions in the source register; Core checkout differs from parent gitlink | Reproduce each owner independently before asserting an integrated closure |
 
 Do not reuse =.olean= files or native Lean objects across toolchains, assume
@@ -116,7 +120,7 @@ Host/component artifacts and the final Weaver consumer revision. A dependency
 change invalidates affected proofs, replay and native evidence. An internally consistent
 closure must be selected before enabling the protected integration. The
 greenfield decision and isolated qualification belong to
-[[file:12-fm1-baseline-and-native-qualification.org][FM1 baseline selection and native qualification]].
+[[file:12-fm1-baseline-and-runtime-qualification.org][FM1 baseline selection and native qualification]].
 
 * Assurance structure and ownership
 

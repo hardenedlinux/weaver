@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Weaver High-Performance Paths and Validation Plan
 #+language: en
 #+date: 2026-10-18
@@ -18,7 +22,7 @@ proofs, exact-head CI, and deployed behavior are distinct evidence classes.
 
 The selected ordering and recovery behavior are in
 [[file:05-authorization-execution-protocol.org][Authorization-to-execution coordination]]. The Go cloud-integration scope and
-its independent validation needs are in [[file:06-go-cloud-native-role.org][Go's cloud-native and Agent Gateway role]].
+its independent validation needs are in [[file:06-go-control-plane-role.org][Go's cloud-native and Agent Gateway role]].
 
 The [[file:04-zero-trust-and-review.org][Zero Trust baseline]] is a required input to every architecture experiment.
 Hold mediation coverage, credential isolation, internal RPC authorization,
@@ -296,7 +300,7 @@ and the binding between proof assumptions and actual observations.
 | Sensitive read racing with egress across tools/workers | Pending flow restriction committed before data release and enforced on send |
 | History crash, truncation, policy update or replica switch | No permission gain from lost or reset state |
 | Same history version used by competing admissions | At most the compatible serialized transitions commit |
-| SDK redirect/retry or pooled connection across credential scopes | No secret misrouting, attempt bypass, or confused-deputy signing |
+| Gerbil toolchain redirect/retry or pooled connection across credential scopes | No secret misrouting, attempt bypass, or confused-deputy signing |
 | Buffer mutation after hashing/consumption | Actual emission rejected or immutable bytes preserved |
 | Partitioned issuer after lease expiry / rollback after restart | No stale issuance or lowered epoch/high-water state |
 | Crash during group commit or credential dispatch | No pre-durable permission/secret release; uncertain effects remain fenced |

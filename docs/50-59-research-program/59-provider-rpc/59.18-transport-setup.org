@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+TITLE: 59.18 Transport Setup and Original Execution Authority
 #+LANGUAGE: en
 
@@ -15,7 +19,7 @@ This is an actual client behavior change, not a larger acceptance timeout or
 prewarming admission. It permits more early TCP/TLS attempts during a transient
 outage; exponential growth, jitter, the original long-outage cap and native
 connection custody remain necessary. These settings must not be copied into
-provider SDK retries after a request or partial write. Library-transparent replay
+provider provider-client retries after a request or partial write. Library-transparent replay
 is not permission: Rust still joins the canonical original root, fresh Cedar,
 spent state and current fence before any possible effect.
 
@@ -113,3 +117,9 @@ workload, startup or cleanup limits.
 The implementation was pushed to the verified private =hardenedlinux/weaver=
 repository. [[https://github.com/hardenedlinux/weaver/actions/runs/40988862524][Independent Linux CI for this exact implementation]] is separate evidence;
 its observed in-progress status does not imply acceptance.
+
+* Embedded architecture views
+
+** 59.03-provider-rpc-core.svg
+
+[[file:59.03-provider-rpc-core.svg]]

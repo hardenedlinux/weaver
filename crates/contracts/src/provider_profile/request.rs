@@ -1,5 +1,9 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 //! Closed request interpretation for the registered text/SSE protocol.
-use super::{ProviderProfile, ProviderRequestFacts, messages, sampling};
+use super::{ProviderProfile, ProviderProtocol, ProviderRequestFacts, messages, sampling};
 use crate::{Error, Result};
 
 impl ProviderProfile {
@@ -13,7 +17,17 @@ impl ProviderProfile {
         let object = body
             .as_object()
             .ok_or(Error::Invalid("provider request object"))?;
+        let anthropic = matches!(self.adapter()?, ProviderProtocol::Anthropic);
         for key in object.keys() {
+            if anthropic {
+                if !matches!(
+                    key.as_str(),
+                    "model" | "stream" | "messages" | "max_tokens" | "system"
+                ) {
+                    return Err(Error::Invalid("unregistered Anthropic request field"));
+                }
+                continue;
+            }
             if !matches!(
                 key.as_str(),
                 "model"
@@ -51,7 +65,10 @@ impl ProviderProfile {
         }
         .filter(|n| *n > 0 && *n <= self.max_output_tokens)
         .ok_or(Error::Invalid("profile output token limit"))?;
-        let messages = messages::validate(body.get("messages"), self.max_messages)?;
+        let messages = messages::validate(body.get("messages"), self.max_messages, anthropic)?;
+        if anthropic && body.get("system").is_some_and(|value| !value.is_string()) {
+            return Err(Error::Invalid("Anthropic system text"));
+        }
         sampling::validate(object)?;
         Ok(ProviderRequestFacts {
             model: model.into(),

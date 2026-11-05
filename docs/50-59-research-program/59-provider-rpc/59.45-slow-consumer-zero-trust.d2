@@ -1,0 +1,231 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+...@../../../dev/d2/themes/flow
+# Core relationships only. Research alignment and evidence remain in Org.
+vars: { d2-config: { layout-engine: tala;  pad: 70 } }
+classes: {
+  card: {
+    label.near: center-center
+    style.font-size: 21
+    style.border-radius: 12
+    style.stroke-width: 1
+  }
+}
+title: ZERO TRUST / ONE FINAL EXECUTION OWNER {
+  shape: text
+  near: top-center
+  style.font-size: 32
+  style.bold: true
+}
+spec: Cedar functional frameworks\nZero Trust requirements\nAuthorization and Policy Delta\nPOO specialization in Gateway {
+  class: card
+  left: 0
+  top: 0
+  width: 490
+  height: 240
+  style.fill: "#e7edf4"
+}
+scheme: Scheme Session / Workflow\nHigher-order Governor\nSemantic continuation proposals\nOriginal claim and result evidence {
+  class: card
+  left: 700
+  top: 0
+  width: 490
+  height: 240
+  style.fill: "#eef3ef"
+}
+go: Go cloud / protocol ingress\nTyped gRPC control\nOptional Arrow data\nReconnect preserves original identity {
+  class: card
+  icon: ../../architecture/diagrams/assets/go.svg
+  icon.near: top-left
+  left: 1400
+  top: 0
+  width: 490
+  height: 240
+  style.fill: "#eef3ef"
+}
+view: Weaver complete deciding view\nAuthentic Policy / profile / source\nCurrent owner and commit floor\nOriginal claim / budget / history {
+  class: card
+  left: 0
+  top: 480
+  width: 490
+  height: 240
+  style.fill: "#e7edf4"
+}
+rust: Rust broker / final release\nReserve capacity outside SQL lock\nFresh join after every wait\nEvery row and original range guarded {
+  class: card
+  icon: ../../architecture/diagrams/assets/rust.svg
+  icon.near: top-left
+  left: 700
+  top: 480
+  width: 490
+  height: 240
+  style.fill: "#e7edf4"
+}
+queue: Bounded output / transport\nOne-use runtime capability\nOnly admitted buffers may drain\nDelivery remains an observation {
+  class: card
+  left: 1400
+  top: 480
+  width: 490
+  height: 240
+  style.fill: "#f4f2ec"
+}
+unknown: Unknown or interrupted outcome\nKeep original claim and hold\nPersist pending range and frontier\nReconcile without replay or refund {
+  class: card
+  left: 700
+  top: 960
+  width: 490
+  height: 220
+  style.fill: "#f4f2ec"
+}
+spec -> view: Application enrichment { style.font-size: 18 }
+scheme -> go: Canonical proposal { style.font-size: 18 }
+go -> rust: Authenticated gRPC { style.font-size: 18 }
+view -> rust: Current authoritative join { style.font-size: 18 }
+rust -> queue: Guarded queue insertion { style.font-size: 18 }
+queue -> go: Protobuf / Arrow observation { style.font-size: 18 }
+rust -> unknown: Cancel / crash / lost commit {
+  style.font-size: 18
+  style.stroke-dash: 5
+}
+footer: "Capacity is not authority · Proof data is not a send handle\nReconnect is not a new claim · Unknown exposure is not a refund" {
+  shape: text
+  left: 340
+  top: 1320
+  width: 1280
+  height: 100
+  style.font-size: 24
+  style.font-color: "#5c8b77"
+}
+
+# Project-owned presentation question; not an issued governance Question.
+vars: { d2-config: { data: { figure: |json
+{
+  "title": "45 slow consumer zero trust",
+  "purpose": "workflow",
+  "kind": "flow",
+  "language": "en",
+  "width": 960,
+  "primary": "main",
+  "questions": [
+    {
+      "ref": "main",
+      "text": "How does backpressure preserve current authorization?",
+      "focusRefs": [
+        "catalog",
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "catalog": "docs/architecture/08-diagram-catalog.org",
+    "model": "Project.sysml"
+  },
+  "copy": {
+    "takeaway": "How does backpressure preserve current authorization?"
+  },
+  "basis": {
+    "captureRef": "docs/50-59-research-program/59-provider-rpc/59.45-slow-consumer-zero-trust.d2#design-view",
+    "modelRefs": [
+      "Project.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "sketchbook",
+    "node-editor",
+    "reading"
+  ],
+  "layout": "model-view",
+  "variants": [],
+  "presentation": {
+    "graph": {
+      "id": "weaver-source-view",
+      "children": [
+        {
+          "id": "title"
+        },
+        {
+          "id": "spec"
+        },
+        {
+          "id": "scheme"
+        },
+        {
+          "id": "go"
+        },
+        {
+          "id": "view"
+        },
+        {
+          "id": "rust"
+        },
+        {
+          "id": "queue"
+        },
+        {
+          "id": "unknown"
+        },
+        {
+          "id": "footer"
+        }
+      ],
+      "layoutOptions": {
+        "elk.direction": "DOWN",
+        "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+        "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+        "elk.layered.layering.coffmanGraham.layerBound": "1",
+        "elk.spacing.nodeNode": "24",
+        "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+        "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+        "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+        "elk.separateConnectedComponents": "false",
+        "elk.aspectRatio": "0.55",
+        "elk.spacing.componentComponent": "24"
+      }
+    },
+    "options": {
+      "elk.direction": "DOWN",
+      "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+      "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+      "elk.layered.layering.coffmanGraham.layerBound": "1",
+      "elk.spacing.nodeNode": "24",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+      "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+      "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+      "elk.separateConnectedComponents": "false",
+      "elk.aspectRatio": "0.55",
+      "elk.spacing.componentComponent": "24"
+    },
+    "icons": {
+      "title": "capture",
+      "spec": "decision",
+      "scheme": "library",
+      "go": "go",
+      "view": "capture",
+      "rust": "rust",
+      "queue": "capture",
+      "unknown": "pending",
+      "footer": "obligation"
+    },
+    "roles": {
+      "spec": "policy",
+      "scheme": "semantic",
+      "go": "default",
+      "view": "default",
+      "rust": "execution",
+      "unknown": "pending",
+      "footer": "default",
+      "title": "default",
+      "queue": "default"
+    }
+  },
+  "icons": [
+    "engineering",
+    "weaver"
+  ]
+}
+|
+} } }

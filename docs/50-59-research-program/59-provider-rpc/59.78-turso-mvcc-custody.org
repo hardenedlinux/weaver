@@ -1,0 +1,190 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+#+TITLE: 59.78 Turso MVCC Admission and Final-Use Custody
+#+LANGUAGE: en
+#+OPTIONS: toc:2
+
+* Execution boundary
+
+[[file:59.79-turso-final-domains.org][Independent final-effect domains]] supersedes this initial profile's global
+final-send serialization. The exclusive-final-use design and receipts below
+retain their historical provenance; current family final use holds shared
+authority custody and the original budget/history-family mutex.
+
+This extends [[file:59.77-mrr-turso-storage.org][the single MRR Data / Turso storage boundary]]. The service accepts
+=WEAVER_STORAGE_JOURNAL=mvcc= explicitly; WAL remains the default. Both profiles
+use the same pinned engine, schema, budget rules and execution code. Nonempty
+databases are never converted implicitly. MVCC requires canonical =.db= paths;
+Unix hard-link aliases and live journal changes are rejected.
+
+[[file:59.77-mrr-turso-storage.svg]]
+
+MVCC concurrency is concurrent transactions on distinct connections in one
+process. The locked engine explicitly rejects multiprocess MVCC because commit
+serialization, logical-log offsets and checkpoint exclusion are process-local.
+The [[https://github.com/tursodatabase/turso/releases/tag/v0.8.3][official latest release]] is v0.8.3; being latest does not remove this limit.
+See the [[https://github.com/tursodatabase/turso/blob/v0.8.3/docs/manual.md][native transaction contract]] and the locked database-open guard.
+
+* Responsibilities
+
+| Owner | Responsibility |
+|-------+----------------|
+| Scheme / Governor | Original semantics, profile and Policy source commitments |
+| Go | Authenticated gRPC publication and routing proposals; no native send permits |
+| MRR Data | Public Turso driver and native engine lifecycle |
+| Rust storage | One shared Database, independent connections and process custody |
+| Rust ledger | Canonical family ordering, atomic original claims/holds/consumption |
+| Rust broker | Exclusive current final-use checks and private bounded transport |
+| Quint | Failure schedules and unsafe counterexamples |
+| Lean | Framed domain preservation and fence stability under explicit native premises |
+
+A canonical-path weak registry retains one native Database while sessions live;
+it does not cache authorization or operation outcomes. The service retains its
+initial owner through complete drain. An advisory custody file is shared by WAL
+processes and exclusive to the MVCC process. Its handle outlives the engine;
+never unlink or replace it while an owner lives. Managed directory/file identity,
+absence of out-of-band writers, and participation of all instances are deployment
+premises. This is logical custody, not physical isolation or anti-rollback trust.
+A second MVCC process fails closed rather than creating another coordinator.
+
+* Transaction classes
+
+| Class | Custody before snapshot | Native transaction | Work |
+|-------+-------------------------+--------------------+------|
+| Family admission/consumption | Shared database gate and canonical-family mutex | BEGIN CONCURRENT in MVCC | Request/provider enqueue/consume and range consumption |
+| Global mutation/final use | Exclusive gate; drain family transactions | Immediate transaction | Policy/history/owner/schema changes, remaining mutations and final callbacks |
+
+Family custody survives commit/abort. Hash-stripe collisions only reduce
+parallelism; they do not redefine identity. Same-family nodes and effect kinds
+share one original budget order. Current distinct families have independent
+budgets. A future cross-family budget/history domain must acquire one canonical
+conflict key before entering the parallel lane. Reconnects cannot invent a family
+to evade the existing original identity binding.
+
+All unclassified mutations remain exclusive. Parallel admission changes no
+Policy, source owner, profiles, schema or other families. This excludes snapshot
+write skew that native write/write conflict detection alone would miss. Schema
+initialization uses exclusive custody and native immediate mode, not concurrent
+DDL. Final sends remain serialized; independent admission concurrency is the
+implemented improvement, not parallel final-writer throughput.
+
+* Final-send ordering
+
+1. Admission commits the original hold with no external send.
+2. Consumption commits the original opportunity as unknown before returning a
+   permit. Provider dispatch retains its separate durable one-use burn;
+   request/range permits remain private and non-clonable.
+3. Final use acquires exclusive custody after admissions drain, starts a fresh
+   native transaction and rechecks current Policy/fence, claim, exposure and owner.
+4. The bounded callback holds both custody and the deciding transaction. Policy,
+   history and owner changes cannot publish between this check and actual use.
+   Each later streaming release reacquires custody and rechecks authorization.
+5. Errors after possible bytes remain unknown. No transaction/SDK retry,
+   replacement consumption or unknown-budget refund is authorized. Fresh sessions
+   recover the same original durable outcome.
+
+If publication wins custody, old permits fail. If final use wins, publication
+becomes effective after that bounded call. Submission/pending is not retroactive
+revocation of sent bytes. HTTP dispatch includes waiting for response headers;
+no publication latency SLO is claimed. Mutex fairness is not a proof of progress.
+
+Native conflicts are handled before returning a new admission permit: rollback
+or poison and report failure/uncertainty. There is no transparent retry. If commit
+succeeded but its response was lost, canonical outcome reads recover the same
+result. Restarts or restored allow Policies cannot unspend original operations.
+Commit acknowledgement and filesystem durability remain native premises.
+
+* Catalog and recovery
+
+MVCC creates =__turso_internal_mvcc_meta=. Enrollment recognizes only that exact
+name in MVCC mode, its pinned two-column shape, and exactly one expected
+nonnegative integer replay-boundary row. It does not exclude a name prefix.
+Similar application names, unknown shapes and extra rows remain residual state.
+Closed fault copies include WAL and the MVCC =.db-log= when present; SHM is
+derived. Custody files are not copied/deleted. Live copy and independent
+anti-rollback protection are not provided by this implementation.
+
+* Checkable obligations
+
+| Obligation | Owner |
+|------------+-------|
+| Two native writes overlap, commit and survive complete reopen | Persistence transaction tests |
+| Conflicting snapshots cannot refund retained exposure | Native conflict test |
+| Second process rejected; natural close allows replacement | Child-process custody test |
+| Concurrent same-family claims cannot oversubscribe | Rust proptest |
+| Revoke, reply loss, restored allow and complete restart retain claims/holds | Rust proptest histories |
+| Actual partial transport, revoke, SDK duplicates and restart | Go race-enabled mTLS/gRPC MVCC suite |
+| Publication between snapshot check and send is unsafe | TursoMvcc snapshot-write-skew counterexample |
+| Retry and unknown refund violate safety | TursoMvcc counterexamples |
+| Independent domain commits commute and preserve all budgets | RuntimeAdmission.MVCC Lean theorems |
+| Exclusive final use keeps current fence | exclusive_final_use_keeps_current_fence |
+| Crash/conflict retains original committed exposure | Reused Persistence.StorageStep laws |
+
+Go =check-storage= includes the new Quint checks, source-bound Lean JSON, Rust/PBT
+and the provider suite including explicit MVCC cases. No dependency pin, timeout
+or ASP deny gate changes. Lean does not prove Rust locks, the engine or actual IO;
+native refinement and complete original-domain binding remain explicit premises.
+
+* Retained failures
+
+The first journal-mode batch call failed with =unexpected row during execution=;
+setup now consumes and verifies its returned row. Concurrent schema setup failed
+the engine's exclusive-DDL rule; it now uses the exclusive class. The shrunk
+proptest seed remains a regression. Initial Go MVCC listeners started, but
+bootstrap publication failed because source enrollment counted native recovery
+metadata as application residue. Exact catalog recognition fixes this without
+hiding similarly named application tables. Turso rejected an attempted adversarial
+reserved-prefix name; the regression now uses an allowed similar name.
+
+Earlier socket tests inside the restricted environment failed at bind with
+=Operation not permitted=. These are retained environment failures, not passing
+runtime evidence. Bulky raw receipts stay ignored in =.cache/evidence/mvcc/=.
+
+* Local qualification
+
+The selected native cohort passed 30 ledger library/ASP tests, 97 integration/PBT
+tests and 15 real TCP/TLS execution tests. The new proptest histories include
+concurrent same-family reservation and complete native owner teardown/reopen.
+The actual Go race-enabled MVCC sub-suite passed all six fault groups, including
+redirect, overload, partial SSE and tool-proposal controls. Its first authenticated
+startup remained inside the original three-second gate; natural drain retained
+the original fifteen-second gate.
+
+Quint passed fourteen positive/negative scenarios and 1,000 schedules of sixty
+steps with seed 293. Current Lean JSON accepted the domain commutation, per-domain
+budget, exclusive-fence and original-hold theorems, with no sorry or new axioms.
+These are bounded schedule evidence and conditional transition proofs, respectively.
+
+Both =ledger/concurrent_family_pair/wal= and =mvcc= Criterion workloads passed
+their smoke entrypoint. Setup is outside timing; measured work includes two
+admissions, worker drain and resource teardown. These smoke results are not
+release-mode latency, throughput, speedup or p99 evidence.
+
+The exact storage view was regenerated through the ordinary Go driver from
+current Lean JSON and SysML, then exported by the locked upstream Library.
+TypeScript type checking and five scoped capture/readability tests passed,
+including legibility at 830-pixel GitHub width, vector icons and opaque backgrounds.
+This is a one-view receipt, not full SPEC/architecture admission. Earlier scoped
+render attempts retained missing-out-of-scope-capture and existing-log-name
+failures; explicit selection and per-invocation proof directories address these
+without accepting a missing imported security declaration.
+
+At committed source =c5c807650199608659cbcd94040a0d3c0718774c=, the ordinary
+=go -C go run ./cmd/weaver-dev -clean-source check-storage= entrypoint passes all
+seventeen stages: architecture, workspace types, format, native/PBT and ASP,
+strict Clippy, streaming and Turso/MVCC Quint, both Lean JSON owners, the full
+race-enabled Provider suite, source-currentness and committed-source checks
+before/after. The host exposes twelve CPUs and the builds use twelve jobs.
+All Go packages also pass =go test -race -count=1 ./...=.
+
+The first unified run failed architecture compilation because its reused Go
+cache alias referred to missing standard-library archives. The preserved failure
+receipt is distinct from the subsequent complete PASS with the entrypoint's own
+real cache directory. This isolates acceptance from the shared-cache failure;
+it does not establish that failure's operating-system cause or a cold-runtime
+performance claim. No vet check, dependency pin or timeout was relaxed. The
+following change records this receipt only; runtime, proof and model sources
+remain those of the admitted commit. Raw and structured receipts remain ignored
+under =.cache= and are not promoted into tracked execution logs.

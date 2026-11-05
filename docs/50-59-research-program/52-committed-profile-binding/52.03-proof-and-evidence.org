@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+TITLE: Committed Profile Proofs, Counterexamples and Qualification Gates
 #+LANGUAGE: en
 #+OPTIONS: toc:2 num:nil
@@ -29,7 +33,7 @@ and forgotten consumption. Unsafe actions are excluded from the safe step.
 Full official type/effect analysis precedes fresh evaluator groups; the typed IR
 must remain unchanged. These finite controls are not exhaustive state checking.
 
-* Native qualification classification
+* Runtime qualification classification
 The native fixture emitted eleven contract check results and actual duplicate-key
 rejection, but a natural-exit timeout remains unresolved. Independent controls
 and instrumented diagnostics are separate observations. No receipt may promote

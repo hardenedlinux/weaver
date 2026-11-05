@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Weaver Join-to-Enqueue Proof and Source Evidence
 #+language: en
 #+options: toc:3
@@ -81,7 +85,7 @@ qualification obligation.
 
 Operation and slot tables are monotonic. =original_operation_never_replaced= and
 =original_slot_never_replaced= preserve original immutable bodies across source
-commits, owner restart/recovery, observations and SDK retries. The slot is independent
+commits, owner restart/recovery, observations and provider-client retries. The slot is independent
 of a new operation key, payload or route. =occupied_slot_blocks_retry= therefore
 applies even after a fresh current permit has been issued. Qualified original
 manifest validation is still required to reject overlapping or invented ranges.
@@ -144,7 +148,7 @@ comparison evidence, not instructions to add a compatibility layer or change pin
 | Source | Existing contract | Reuse / extension in this boundary |
 |--------+-------------------+-----------------------------------|
 | P12 authorized-effect-token | Original root, nonce, operation, payload/range and validity binding | Reuse exact semantic identity; final enqueue materializes the consumed original intent, not a fresh token |
-| P13 strict-mediation | Pure nonce/root transitions; indeterminate observation still consumes | Reuse original spent-state; no SDK acknowledgment or retry resets it |
+| P13 strict-mediation | Pure nonce/root transitions; indeterminate observation still consumes | Reuse original spent-state; no Gerbil toolchain acknowledgment or retry resets it |
 | P15 assurance effect Host | Exact serialized local owner, grant reservation without external effect, delivery in a separate configured runtime operation | Reuse phase separation; extend to current multi-store join/slot CAS and durable broker outcomes |
 | P17/P22 durable store/backend | Scheme projects contracts; runtime owns locking, leases, fsync, replay and repair | Reuse ownership boundary; native transaction must order final gate, key/slot claims and admission receipt with owner retirement |
 | P18/P19 transaction recovery | Source-bound recovery and authority exclusivity | Reuse attribution; recovering an original decision does not grant current enqueue or replace scope |
@@ -156,7 +160,7 @@ comparison evidence, not instructions to add a compatibility layer or change pin
 | C10 CompoundAuthorization | Nonempty required layers must allow without evaluation errors | Evaluate effective final action under aligned current Policy/history; fresh observation is not an allow |
 | C11 Composition | Evaluation/validation certificates need actual input alignment | Reuse semantic alignment; it is not a native join/enqueue atomicity proof |
 
-* Native acceptance and remaining qualification
+* Implementation acceptance and remaining qualification
 
 Inject a new source commit between join read and final enqueue, including a run
 where projections catch up before enqueue. Interleave owner retirement, qualified

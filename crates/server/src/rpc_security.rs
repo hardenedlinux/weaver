@@ -1,7 +1,11 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 //! Process-owned RPC identity contracts, shared without service/configuration cycles.
 use crate::ServerConfig;
 use tonic::transport::ServerTlsConfig;
-use weaver_execution::ProviderTransport;
+use weaver_broker::ProviderTransport;
 /// Explicit mTLS roots, pinned caller certificate and distinct publication credential.
 pub struct RpcSecurity {
     pub tls: ServerTlsConfig,
@@ -22,6 +26,11 @@ pub(crate) enum RpcRole {
 }
 /// Named deployment inputs for the default Rust RPC owner.
 pub struct GrpcConfig {
+    /// Independent SPEC review producer verification key, owned by deployment.
+    pub review_authority: weaver_contracts::ReviewAuthority,
+    pub metering: Option<weaver_contracts::MeteringDeployment>,
+    /// Additional delegated authority on the operation ingress.
+    pub provider_oauth: Option<weaver_contracts::ProviderOAuthDeployment>,
     pub owner: ServerConfig,
     pub security: RpcSecurity,
     pub provider: ProviderTransport,

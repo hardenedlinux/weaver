@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 //go:build integration && !windows
 
 package dev
@@ -5,6 +9,7 @@ package dev
 import (
 	"context"
 	"crypto/ecdsa"
+	"crypto/ed25519"
 	"crypto/elliptic"
 	"crypto/rand"
 	"crypto/sha256"
@@ -14,7 +19,9 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"encoding/pem"
+	"flag"
 	"fmt"
+	"io"
 	"math/big"
 	"net"
 	"net/http"
@@ -23,6 +30,8 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"slices"
+	"strings"
 	"sync/atomic"
 	"syscall"
 	"testing"
@@ -41,25 +50,41 @@ var serverBinary string
 var controlBinary string
 
 func TestMain(m *testing.M) {
+	flag.Parse()
+	if os.Getenv(pressureChild) == "1" && flag.Lookup("test.run").Value.String() == "^TestProviderCPUPressureWorker$" {
+		os.Exit(m.Run())
+	}
+	benchmark := flag.Lookup("test.bench").Value.String()
+	profile := "dev"
+	if benchmark != "" {
+		profile = "release"
+	}
 	_, source, _, ok := runtime.Caller(0)
 	if !ok {
 		os.Exit(1)
 	}
 	repo := filepath.Clean(filepath.Join(filepath.Dir(source), "../.."))
-	cmd := exec.Command("cargo", "build", "-p", "weaver-server", "--features", "arrow", "--locked", "--offline")
+	cmd := exec.Command("cargo", providerCargoBuildArgs(providerRuntimeFeatures, benchmark)...)
 	cmd.Dir = repo
-	cmd.Stdout = os.Stderr
 	cmd.Stderr = os.Stderr
-	if err := cmd.Run(); err != nil {
+	executable, err := buildCargoExecutable(cmd, cargoTarget{Name: "weaver-server", Kind: "bin", Optimized: benchmark != ""})
+	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
-	serverBinary = filepath.Join(repo, "target/debug/weaver-server")
 	directory, err := os.MkdirTemp("", "weaver-control-build-*")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
+	serverBinary = filepath.Join(directory, "weaver-server")
+	digest, err := publishProviderImage(executable, serverBinary)
+	if err != nil {
+		os.RemoveAll(directory)
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	fmt.Fprintf(os.Stderr, "test-owned provider image sha256=%s profile=%s\n", digest, profile)
 	controlBinary = filepath.Join(directory, "weaver-control")
 	controlBuild := exec.Command(filepath.Join(runtime.GOROOT(), "bin/go"), "-C", "go", "build", "-race", "-o", controlBinary, "./cmd/weaver-control")
 	controlBuild.Dir, controlBuild.Stdout, controlBuild.Stderr = repo, os.Stderr, os.Stderr
@@ -80,7 +105,7 @@ type testPKI struct {
 	source                                              tls.Certificate
 }
 
-func pki(t testing.TB) *testPKI {
+func pki(t testing.TB, providerNames ...string) *testPKI {
 	t.Helper()
 	key, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 	if err != nil {
@@ -102,6 +127,7 @@ func pki(t testing.TB) *testPKI {
 			t.Fatal(err)
 		}
 		cert := &x509.Certificate{SerialNumber: big.NewInt(serial), Subject: pkix.Name{CommonName: "shared-kubernetes-identity"}, DNSNames: []string{"localhost"}, IPAddresses: []net.IP{net.IPv4(127, 0, 0, 1)}, NotBefore: ca.NotBefore, NotAfter: ca.NotAfter, KeyUsage: x509.KeyUsageDigitalSignature, ExtKeyUsage: []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth}}
+		cert.DNSNames = append(cert.DNSNames, providerNames...)
 		if client {
 			cert.ExtKeyUsage = []x509.ExtKeyUsage{x509.ExtKeyUsageClientAuth}
 		}
@@ -136,14 +162,17 @@ func pki(t testing.TB) *testPKI {
 }
 
 type fixture struct {
+	reviewKey                         ed25519.PrivateKey
 	directory, address, sourceAddress string
 	binary                            string
 	pki                               *testPKI
 	env                               []string
 	child                             *exec.Cmd
+	arguments                         []string
 	exited                            chan error
 	client, admin                     *gatewayclient.Client
 	plan                              v1.ProviderPlan
+	plans                             []v1.ProviderPlan
 	primary, backup, denied           atomic.Int64
 	policy, schema                    string
 }
@@ -155,8 +184,30 @@ func providerProfile() *v1.ProviderProfile {
 	return &v1.ProviderProfile{ID: "p", Protocol: v1.ChatTextSSE, MaxOutputTokens: 4096, MaxMessages: 64, MaxBodyBytes: 1 << 20}
 }
 func fixtureWithBinary(t testing.TB, handler http.HandlerFunc, large bool, binary string) *fixture {
+	return fixtureWithInvocation(t, handler, large, binary, nil, nil)
+}
+func fixtureWithInvocation(t testing.TB, handler http.HandlerFunc, large bool, binary string, arguments, extraEnvironment []string, withPlan ...func(v1.ProviderPlan) string) *fixture {
+	return fixtureWithProfileInvocation(t, handler, large, binary, arguments, extraEnvironment, providerProfile(), withPlan...)
+}
+func fixtureWithProfileInvocation(t testing.TB, handler http.HandlerFunc, large bool, binary string, arguments, extraEnvironment []string, profile *v1.ProviderProfile, withPlan ...func(v1.ProviderPlan) string) *fixture {
+	return providerFixture(t, handler, large, binary, arguments, extraEnvironment, profile, nil, nil, withPlan...)
+}
+
+func providerFixture(t testing.TB, handler http.HandlerFunc, large bool, binary string, arguments, extraEnvironment []string, profile *v1.ProviderProfile, wif *wifPeer, suppliedPKI *testPKI, withPlan ...func(v1.ProviderPlan) string) *fixture {
+	anthropic := profile.Protocol == v1.AnthropicMessagesSSE
+	path := "/v1/chat/completions"
+	if anthropic {
+		path = "/v1/messages"
+	}
 	t.Helper()
-	f := &fixture{directory: t.TempDir(), pki: pki(t), binary: binary}
+	f := &fixture{directory: t.TempDir(), binary: binary, arguments: append([]string(nil), arguments...)}
+	if suppliedPKI != nil {
+		f.pki = suppliedPKI
+	} else if wif != nil {
+		f.pki = pki(t, "api.anthropic.com")
+	} else {
+		f.pki = pki(t)
+	}
 	certificate, err := tls.X509KeyPair(f.pki.serverPEM, f.pki.serverKey)
 	if err != nil {
 		t.Fatal(err)
@@ -164,7 +215,9 @@ func fixtureWithBinary(t testing.TB, handler http.HandlerFunc, large bool, binar
 	upstream := func(count *atomic.Int64, h http.HandlerFunc) string {
 		server := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			count.Add(1)
-			if r.Header.Get("Authorization") != "Bearer test-provider-key" {
+			if r.URL.Path != path || r.URL.RawQuery != "" ||
+				(anthropic && (r.Header.Get("X-Api-Key") != "test-provider-key" || r.Header.Get("Anthropic-Version") != "2023-06-01" || r.Header.Get("Authorization") != "")) ||
+				(!anthropic && r.Header.Get("Authorization") != "Bearer test-provider-key") {
 				t.Error("provider credential mismatch")
 			}
 			h(w, r)
@@ -172,13 +225,20 @@ func fixtureWithBinary(t testing.TB, handler http.HandlerFunc, large bool, binar
 		server.TLS = &tls.Config{Certificates: []tls.Certificate{certificate}, MinVersion: tls.VersionTLS12}
 		server.StartTLS()
 		t.Cleanup(server.Close)
-		return server.URL + "/v1/chat/completions"
+		return server.URL + path
 	}
-	primary := upstream(&f.primary, handler)
-	backup := upstream(&f.backup, completeSSE)
-	denied := upstream(&f.denied, completeSSE)
+	var routes []v1.ProviderRoute
+	if wif != nil {
+		extraEnvironment = append(extraEnvironment, wif.start(t, f.directory, certificate)...)
+		routes = []v1.ProviderRoute{{Target: "primary", Endpoint: "https://api.anthropic.com/v1/messages"}}
+	} else {
+		routes = []v1.ProviderRoute{{Target: "missing", Endpoint: "https://missing.invalid" + path}, {Target: "denied", Endpoint: upstream(&f.denied, completeSSE)}, {Target: "primary", Endpoint: upstream(&f.primary, handler)}, {Target: "backup", Endpoint: upstream(&f.backup, completeSSE)}}
+	}
 	body := `{"model":"model-a","stream":true,"messages":[{"role":"user","content":"hello"}],"max_completion_tokens":32}`
-	f.plan = v1.ProviderPlan{Family: "f", Node: "infer", Profile: "p", Model: "model-a", Body: body, Ceiling: 4, Revision: 0, Fence: 1, Routes: []v1.ProviderRoute{{Target: "missing", Endpoint: "https://missing.invalid/v1/chat/completions"}, {Target: "denied", Endpoint: denied}, {Target: "primary", Endpoint: primary}, {Target: "backup", Endpoint: backup}}}
+	if anthropic {
+		body = strings.Replace(body, "max_completion_tokens", "max_tokens", 1)
+	}
+	f.plan = v1.ProviderPlan{Family: "f", Node: "infer", Profile: "p", Model: "model-a", Body: body, Ceiling: 4, Revision: 0, Fence: 1, Routes: routes}
 	// Keep large requests inside the same fixed native request limit.
 	if large {
 		var request map[string]any
@@ -187,7 +247,7 @@ func fixtureWithBinary(t testing.TB, handler http.HandlerFunc, large bool, binar
 		data, _ := json.Marshal(request)
 		f.plan.Body = string(data)
 	}
-	f.plan.ProfileCommitment, _ = providerProfile().Digest()
+	f.plan.ProfileCommitment, _ = profile.Digest()
 	digest, err := f.plan.Digest()
 	if err != nil {
 		t.Fatal(err)
@@ -199,11 +259,34 @@ func fixtureWithBinary(t testing.TB, handler http.HandlerFunc, large bool, binar
 		endpoints[route.Target] = route.Endpoint
 		targets = append(targets, route.Target)
 	}
-	task := v1.Task{ProviderProfile: providerProfile(), Family: "f", Principal: "alice", Profile: "p", Nodes: []string{"infer"}, Targets: targets, Endpoints: endpoints, BodyDigests: map[string]string{"infer": hex.EncodeToString(sum[:])}, NodeCostBounds: map[string]uint64{"infer": 4}, StreamContracts: map[string]string{"infer": digest}, Models: []string{"model-a"}, Budget: 8}
+	task := v1.Task{ProviderProfile: profile, Family: "f", Principal: "alice", Profile: "p", Nodes: []string{"infer"}, Targets: targets, Endpoints: endpoints, BodyDigests: map[string]string{"infer": hex.EncodeToString(sum[:])}, NodeCostBounds: map[string]uint64{"infer": 4}, StreamContracts: map[string]string{"infer": digest}, Models: []string{"model-a"}, Budget: 8}
+	if wif != nil {
+		for i := 1; i < wif.operations; i++ {
+			plan := f.plan
+			plan.Node = fmt.Sprintf("infer-%d", i)
+			digest, err := plan.Digest()
+			if err != nil {
+				t.Fatal(err)
+			}
+			task.Nodes = append(task.Nodes, plan.Node)
+			task.BodyDigests[plan.Node] = task.BodyDigests[f.plan.Node]
+			task.NodeCostBounds[plan.Node] = plan.Ceiling
+			task.StreamContracts[plan.Node] = digest
+			task.Budget += plan.Ceiling
+			f.plans = append(f.plans, plan)
+		}
+	}
 	f.plan, err = routing.CompileProvider(task, f.plan, v1.View{Revision: 0, Fence: 1})
 	if err != nil {
 		t.Fatal(err)
 	}
+	for i, plan := range f.plans {
+		f.plans[i], err = routing.CompileProvider(task, plan, v1.View{Revision: 0, Fence: 1})
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+	f.plans = append([]v1.ProviderPlan{f.plan}, f.plans...)
 	listener, err := net.Listen("tcp4", "127.0.0.1:0")
 	if err != nil {
 		t.Fatal(err)
@@ -229,13 +312,38 @@ func fixtureWithBinary(t testing.TB, handler http.HandlerFunc, large bool, binar
 	f.env = []string{"WEAVER_DB=" + filepath.Join(f.directory, "owner.db"), "WEAVER_PRINCIPAL=alice", "WEAVER_LISTEN=" + f.address, "WEAVER_TOKEN_SHA256=" + hex.EncodeToString(ownerHash[:]), "WEAVER_ADMIN_TOKEN_SHA256=" + hex.EncodeToString(adminHash[:]), "WEAVER_GRPC_PEER_SHA256=" + hex.EncodeToString(peerHash[:]), "WEAVER_GRPC_CERT=" + filepath.Join(f.directory, "server.pem"), "WEAVER_GRPC_KEY=" + filepath.Join(f.directory, "server-key.pem"), "WEAVER_GRPC_CLIENT_CA=" + filepath.Join(f.directory, "ca.pem"), "WEAVER_PROVIDER_CA=" + filepath.Join(f.directory, "ca.pem"), `WEAVER_PROVIDER_CREDENTIAL_ENVS={"primary":"WEAVER_TEST_KEY","backup":"WEAVER_TEST_KEY","denied":"WEAVER_TEST_KEY"}`, "WEAVER_TEST_KEY=test-provider-key"}
 	sourceHash := sha256.Sum256(f.pki.source.Certificate[0])
 	f.env = append(f.env, "WEAVER_SOURCE_LISTEN="+f.sourceAddress, "WEAVER_GRPC_SOURCE_PEER_SHA256="+hex.EncodeToString(sourceHash[:]))
+	_, f.reviewKey, err = ed25519.GenerateKey(rand.Reader)
+	if err != nil {
+		t.Fatal(err)
+	}
+	reviewConfig, err := json.Marshal(struct {
+		Audience       string `json:"audience"`
+		Epoch          uint64 `json:"epoch"`
+		PublicKey      string `json:"public_key"`
+		AllowExpansion bool   `json:"allow_expansion"`
+	}{"test-gateway", 0, hex.EncodeToString(f.reviewKey.Public().(ed25519.PublicKey)), true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	f.env = append(f.env, "WEAVER_REVIEW_AUTHORITY="+string(reviewConfig))
+	f.env = append(f.env, extraEnvironment...)
+	for _, env := range withPlan {
+		f.env = append(f.env, env(f.plan))
+	}
 	f.start(t)
 	t.Cleanup(func() { f.stop(t) })
 	policy, err := os.ReadFile(filepath.Join(root(t), "prod/policies/provider/provider.cedar"))
 	if err != nil {
 		t.Fatal(err)
 	}
-	f.policy = string(policy)
+	f.policy = strings.ReplaceAll(string(policy), v1.ChatTextSSE, profile.Protocol)
+	if wif != nil {
+		nodes, err := json.Marshal(task.Nodes)
+		if err != nil {
+			t.Fatal(err)
+		}
+		f.policy = strings.Replace(f.policy, `context.node == "infer"`, string(nodes)+".contains(context.node)", 1)
+	}
 	schema, err := os.ReadFile(filepath.Join(root(t), "prod/policies/provider/schema.json"))
 	if err != nil {
 		t.Fatal(err)
@@ -265,9 +373,11 @@ func (f *fixture) start(t testing.TB) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	f.child = exec.Command(f.binary)
+	f.child = exec.Command(f.binary, f.arguments...)
 	f.child.Env = append(os.Environ(), f.env...)
-	f.child.Stdout = log
+	if !slices.Contains(f.env, "WEAVER_TEST_PROVIDER_SCOPE_TRACE=1") {
+		f.child.Stdout = log
+	}
 	f.child.Stderr = log
 	if err := f.child.Start(); err != nil {
 		log.Close()
@@ -295,6 +405,7 @@ func (f *fixture) start(t testing.TB) {
 		f.stop(t)
 		t.Fatalf("source gRPC startup: %v", err)
 	}
+	f.admin.RPC = &fixtureReviewer{GatewayClient: f.admin.RPC, key: f.reviewKey}
 	if stages, err := os.ReadFile(filepath.Join(f.directory, "server.log")); err == nil {
 		t.Logf("Rust owner startup stage observations: %s", stages)
 	}
@@ -323,13 +434,16 @@ func (f *fixture) stop(t testing.TB) {
 	f.child = nil
 }
 func emitChunk(w http.ResponseWriter, text string, finish bool) {
+	writeProviderChunk(w, text, finish)
+	w.(http.Flusher).Flush()
+}
+func writeProviderChunk(w io.Writer, text string, finish bool) {
 	var reason any
 	if finish {
 		reason = "stop"
 	}
 	data, _ := json.Marshal(map[string]any{"id": "stream-1", "object": "chat.completion.chunk", "model": "model-a", "choices": []any{map[string]any{"index": 0, "delta": map[string]any{"content": text}, "finish_reason": reason}}})
 	fmt.Fprintf(w, "data: %s\n\n", data)
-	w.(http.Flusher).Flush()
 }
 func completeSSE(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/event-stream")

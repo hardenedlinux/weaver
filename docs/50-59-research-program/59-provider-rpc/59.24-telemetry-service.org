@@ -1,12 +1,56 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+TITLE: 59.24 Default Telemetry Service and Architecture Differentiation
 #+LANGUAGE: en
 
 * Top-level service decision
 
-Telemetry is a default service in the target Gateway architecture. The current
-implementation checkpoint has not delivered its event bus, Collector or exporter;
-this chapter and the Project SysML service part define that delivery contract.
-No new external listener or data export is enabled by this design document.
+Telemetry is now a default local service in both running components. Rust's
+=ServiceRuntime= owns =weaver-telemetry=; the Go Gateway owns the matching
+=go/internal/telemetry= recorder. Neither needs a worker, queue or exporter.
+Both use the existing authenticated =InspectTelemetry= gRPC method. Rust permits
+it only on source ingress and rechecks the current source authority. Go applies
+its existing control-plane mutual TLS and credential interceptor. No new listener
+or external destination is enabled.
+
+The implemented vocabulary has nine fixed counters: successful/failed compilation,
+admitted/completed/failed provider handlers, response frames queued, queue wait
+failures, rejected RPC authentication and snapshot reads. Rust compilation failure
+counts owned compiler-job failures; it is not a count of every rejected source
+request. Provider completion counts a handler result, not exactly-once delivery.
+Queued or forwarded frames do not prove peer receipt. No metric is a coherent
+authority snapshot, readiness acknowledgment, usage receipt or no-execution proof.
+
+Counters use fixed storage, saturate instead of wrapping, and accept only closed
+signal kinds. Prompts, response text, Policy bodies, credentials, identifiers,
+arbitrary labels and propagated trace context cannot enter the recorder API.
+Updates perform no IO or callbacks. Their compare/exchange retry loops are
+lock-free rather than wait-free; no hard latency bound is claimed under contention.
+Restart resets local counters; durable consumption and unknown holds remain in
+the existing MRR Data/Turso boundary. Rust and Go observations are separate views,
+not a globally synchronized total.
+
+OTLP export, sampled traces, a security event bus and durable audit are still
+unimplemented. The destination/credential publication and Policy requirements
+below apply before enabling any exporter. The local recorder exposes no exporter
+configuration that could silently bypass those requirements.
+
+Current Go producers emit local structured startup/source-process phases through
+standard =slog=. Fields contain fixed phase names, elapsed time, child PID,
+outcome/cancellation categories, byte count and host-wall timestamps. They exclude
+source paths, source/Policy bodies and credentials. These ordinary stderr
+diagnostics do not deliver the target event bus, nonblocking exporter, loss
+accounting or durable security audit. A PID is not an authenticated incarnation.
+The native integration fixture also emits fixed labels and Gerbil toolchain CPU/real/host-wall
+clocks. Trusted operator code can forge that text; it never selects a claim,
+authorizes publication or proves process quiescence.
+
+Child reaping, artifact decoding, authority reconciliation and issuing Serve are
+separate observations. Tests still require authenticated readiness and natural
+exit. Clock-domain and failed sampling evidence is retained in
+[[file:59.39-ffi-local-results.org][the installed-prefix qualification chapter]].
 
 The service observes Scheme source compilation, Go publication/routing and Rust
 authority/dispatch/release events. Default collection is local and bounded.
@@ -46,7 +90,59 @@ stall, queue exhaustion, export reply loss, shutdown and restart. Tests must sho
 unchanged claim/held-budget/dispatch state for telemetry-only transitions. No
 telemetry security proof is claimed before those implementation witnesses exist.
 
+* Implementation validation
+
+The existing Go development driver provides the composed entry:
+
+#+begin_src text
+go -C go run ./cmd/weaver-dev -clean-source check-telemetry
+#+end_src
+
+It joins strict model/ownership checks, Rust ASP/unit properties, Go race/PBT,
+real mTLS provider fault/recovery tests, Quint schedules, Lean JSON and freshly
+collected package benchmarks. The compact receipt stays under ignored
+=.cache/verification/=; no individual process log becomes a repository asset.
+
+Rust proptest and Go quick.Check exercise monotonic recording, saturation and
+process-local reset. Twelve concurrent writers retain every completed observation.
+The new Rust package retains the workspace ASP deny gate and its own thirty-sample
+Criterion record/snapshot benchmarks, registered in the existing Go benchmark
+inventory. No runtime dependency pin is changed.
+
+Real Go integration starts the Rust authority and Go control services over mutual
+TLS. A partial provider response retains its original hold through generated
+telemetry-read sequences and process restart; repeated execution still fails and
+provider call counts remain unchanged. An operation-role connection cannot read
+Rust source-side telemetry. A second test observes both live components after an
+actual complete stream. Existing revocation, source recovery and partial-write
+tests remain necessary; counters never replace their receipts.
+
+Quint adds telemetry stuttering and an unsafe-refund counterexample to the
+existing =TursoMvcc= model. Lean extends =RuntimeAdmission.MVCC.EffectImage= with
+a separate statistical projection: arbitrary finite observation traces preserve
+the execution image, and counter reset preserves spent-state and unknown holds.
+These laws assume the runtime recorder has no ledger/transport callback and that
+the existing durable owner recovers the original effect. They do not prove the
+native binary, atomic instruction timing or an external exporter.
+
+** Accepted local cohort
+
+The merged PR1 cohort =7efd256c4a405cc0fc973ca43e6c5d9fecf63a76= passed all
+twelve stages of =-clean-source check-telemetry=, including committed-source
+checks before and after. The receipt is
+=.cache/verification/latest-check-telemetry.json=. Server library checks retain
+the existing separately launched integration observation; no ignored test is
+counted as having executed by the library suite.
+
+This is telemetry-scoped acceptance. The separate cold Scheme entry failed
+before Weaver tests during its declared Ascent dependency build, as recorded in
+[[file:59.82-semantic-responsibility-allocation.org][59.82]]. Complete Gateway SPEC import retains the source-closure gate in
+[[file:59.83-spec-source-closure-and-architecture-admission.org][59.83]]. Neither failure is converted into a passing result by this gate.
+
 * OpenShell reference and Weaver leverage
+
+The fuller [[file:59.25-openshell-and-tao3k-ecosystem.org][OpenShell and TAO3K ecosystem review]] separates Scheme's programmable
+semantic role, Cedar proof reuse, runtime delivery and optional containment.
 
 The research checkout is =.data/openshell=, with origin
 [[https://github.com/NVIDIA/OpenShell][NVIDIA/OpenShell]]. The inspected snapshot is

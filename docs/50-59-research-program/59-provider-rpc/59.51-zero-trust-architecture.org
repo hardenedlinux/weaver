@@ -1,0 +1,780 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+#+TITLE: 59.51 Zero Trust Architecture and Weaver Integration
+#+LANGUAGE: en
+#+OPTIONS: toc:2
+
+* Decision and evidence status
+
+The architecture projection combines imported formal constraints with
+model-assisted architectural synthesis. =cedar-poo-spec= owns the security
+definitions; Org and implementation sources provide the application context.
+The model completes the SysML allocation, interactions, lifecycle and failure
+paths. It must not invent a replacement Zero Trust framework. Go/OpenSysML
+checks that allocation and its references before the shared rendering Library
+produces the view. A diagram is an explanation of the design, not a raw dump of
+Lean fields and not proof that the explanation is implemented.
+
+=dev/proofs/cedar/ZeroTrustArchitecture.lean= reflects declarations, structure
+fields, types and definition bodies directly from the imported Lean environment.
+The existing Lean JSON reader now retains this structured payload as well as
+compiler diagnostics and axiom audits. SysML supplies the runtime owners and
+reader-facing explanation; =leanDeclaration= and =leanFields= bind that
+explanation to imported contracts. Lean identifies proof-valued fields in the imported environment. Go rejects
+absent, duplicate, stale or unresolved references, including an allocation that
+omits an imported proof condition. This checks references and provenance; it does not prove
+the truth or completeness of natural-language explanation or Rust refinement.
+Typed requirements, transition proofs and implementation tests remain necessary.
+
+The corrected generation path is:
+
+#+begin_example
+Imported SPEC / Lean environment + Org / source context
+  -> model-assisted SysML architecture and explicit constraint allocation
+  -> Go / OpenSysML validation and source-current Lean JSON join
+  -> generated D2 presentation declaration
+  -> upstream Library composition and standalone image export
+#+end_example
+
+The ordinary Go rendering entrypoint uses the existing locked Lake dependency
+closure. It must not substitute the ignored upstream research checkout. The
+locked revision =38af276ffbd17a378408bb7886e8122faadcbcfd= does not provide
+=CedarPooSpec.Gateway.ZeroTrust=; the attempted export failed with a missing
+module and produced no accepted environment. The isolated reference at
+=9489ee91ac26562bd0e34275d5bd78165ed627f5= exported twelve declarations and
+five theorem axiom audits, and the Go/OpenSysML join passed. This is isolated
+projection evidence, not acceptance of the unchanged locked dependency.
+The initial exporter syntax failure and the locked-dependency failure remain
+under temporary or ignored evidence paths; no raw logs are committed.
+
+The follow-up [[file:59.52-reviewed-publication-cas.org][reviewed publication CAS audit]]
+restricts ordinary review-record splicing and adds exact LeanPoo evidence-binding
+composition. Mandatory native review admission remains an implementation gap.
+
+Zero Trust is Weaver's core security model. The previous seven-predicate effect
+guard is a useful safety kernel, but does not constitute a complete architecture.
+An unconstrained =currentAtUse= predicate leaves identity provenance, fact freshness,
+control-plane authority and enforcement completeness to the consumer. This review
+makes those obligations explicit instead of treating their names as evidence.
+
+[[file:../../../Project.sysml][Project SysML]] and
+[[file:../../../dev/sysml/WeaverExecution.sysml][CedarSecurityFrameworks]] remain
+the responsibility authority. SPEC owns the generic functional/POO library;
+Weaver owns application refinement and deployment. Existing Lean and Quint
+owners are reused. The implementation follow-up below strengthens the actual
+provider final-use boundary; dependency pins remain unchanged.
+
+* Zero Trust authorization at actual use
+
+** Reader model and checked correspondence
+
+[[file:../../../dev/sysml/ZeroTrustRefinement.sysml][ZeroTrustRefinement.sysml]]
+defines a semantic contract view over existing owners, not another runtime
+topology. Its arrows mean requirements carried into an interpretation. The
+contract-refinement reference is generated from that exact SDK model through
+the shared Library. It belongs to this design document. The README uses the
+separate runtime trust-boundary model in GatewayArchitecture.sysml.
+
+[[file:59.51-zero-trust-contract-refinement.svg]]
+
+| Model subject | SPEC source meaning | Weaver proof consumer / actual owner |
+|---------------+---------------------+--------------------------------------|
+| CoreContract | ZeroTrust.Model Framework and Continuous.required: authenticated, authorized, current at use, committed consumption, unknown retention, not revoked, mediated | gateway_specialization_retains_generic_framework; Rust policy/ledger/broker interpretation |
+| UsageContract | UsageControl.step joins initial/ongoing authorization, conditions, witnessed obligation and mutation; resume is recovery; close is terminal AND accounted | usage_control_keeps_current_consumption; current final-use checks and explicit external-fact/obligation premises |
+| ParentContract | ProfileObject.composeSessions retains the independently required parent and selected object projections | retained_parent_and_selected_object_reach_gateway; Scheme source/profile publication and Rust commitment checks |
+| ApplicationInterpretation | Gateway.ZeroTrust specializes the generic framework with publication-indexed effects and a committed prefix | ZeroTrustEnrichment.RuntimeView; original claim, profile, budget/history, pending publication and owner joins |
+| FinalEnforcement | Application responsibility, not a library-provided daemon | Existing Rust final transaction and transport custody; Go proposes and Scheme defines semantics |
+
+The =ZeroTrustContractRefinement= requirement names the existing Lean theorems,
+Quint counterexample and real runtime tests in =runtime-trace.json=. Go checks
+model/source trace coverage and accepts structured Lean diagnostics separately.
+For selected standalone proof runs, an exact =declaration= must appear in the
+compiler's axiom audit. This prevents source-name coverage from masquerading as
+a checked run. It does not prove that a SysML connection semantically refines a
+Lean predicate or that Rust faithfully materializes Host state. Those are explicit
+review/refinement obligations, not edges inferred from a picture.
+
+The SPEC consumer remains isolated candidate qualification, as described below;
+the default Lake pin has not been promoted. Generic UsageControl conditions,
+external credential/fact freshness, mandatory review admission and rollback
+protection must not be presented as fully deployed merely because these symbols
+exist. Current tests establish the selected concrete local boundaries.
+
+** Authorization contract
+
+The source-reviewed upstream contract is
+[[https://github.com/hardenedlinux/cedar-poo-spec/pull/8][SPEC ZeroTrust and Gateway composition]]. The generic framework is the
+authorization contract: authenticated, authorized, current at use, consumption
+committed, unknown retained, not revoked and mediated. Cedar Allow is one
+condition. Neither a Go proposal, Scheme receipt, proof object nor an Gerbil toolchain handle
+is by itself permission to send.
+
+The required parent is the authoritative original semantic contract, not a
+caller-selected replacement and not necessarily the historical global Policy.
+An authorized later Policy change may change permissions. It cannot rebind the
+original task/profile, recreate a spent claim, discard pending history or refund
+unknown exposure. Do not intersect every future decision with a birth Policy:
+that would also incorrectly prohibit legitimate authorized changes.
+
+| SPEC obligation | Concrete Weaver enforcement and remaining premise |
+|-----------------+----------------------------------------------------|
+| Authenticated | Existing distinct mTLS/credential-bound gRPC ingress and private Rust session custody; complete external identity lifecycle remains an adapter obligation |
+| Authorized | Scheme supplies retained task/profile semantics through AA Governor; Rust validates those commitments and evaluates current Cedar against the exact route, request and row |
+| Current at use / not revoked | Pending-publication barrier, current revision/fence and profile checks run after waits inside the final deciding transaction |
+| Consumption committed | Original canonical task/node claim and consumed provider run precede dispatch; final use now requires that the persisted claim still has stream ownership |
+| Unknown retained | Exact selected reservations and all retained request/message/provider exposure are checked against shared task held and the immutable original budget at admission and final use |
+| Mediated | Rust alone invokes the private transport/queue callback while holding deciding write order; affine burns and unknown release ranges prevent replay after ambiguity |
+
+Go manages cloud-native integration, configuration publication and routing
+proposals over typed gRPC. It cannot turn a cached Allow into an execution
+permit. Scheme retains the AA semantic/governance owner; it does not introduce
+a second authorization DSL. Rust owns current Cedar assessment, durable claim
+and exposure checks, and final execution. These checks do not add JSON to the
+Scheme/Rust object conversion boundary.
+
+** Durable claim and exposure refinement
+
+=crates/ledger/src/execution_exposure.rs= is the sole shared conservation
+projection. The provider =require_exposure= adapter and the request/message
+owners join original execution-kind claims, exact selected reservations and
+shared task accounting under the existing SQLite deciding writer. The held
+amount must equal the sum of all retained request, stream-message and provider
+reservations in the family, including queued and complete records: none of
+these completion paths currently authorizes settlement/refund. The projected
+budget must still equal the immutable task's original budget.
+Checking only the current run's cost would allow two reservations of four to
+survive with a shared held projection of four. SQLite SUM overflow or a failed
+read denies use. The check runs before queued consumption and through =active=
+at dispatch, range preparation, range release and completion. No new ledger,
+permit type, scheduler or caller-supplied truth flag is introduced.
+
+This is exact conservation over the three implemented reservation owners,
+not a complete recovery-authority proof. It does not detect a coherent rollback of every correlated
+record, establish external identity authority or implement an independent
+anti-rollback anchor. An inconsistent recovery image is rejected, not repaired
+from the request. A previously admitted physical write cannot be unsent.
+
+The family reservation sum uses the existing family/node primary-key prefix.
+Its cost grows with retained family runs; do not describe it as constant time.
+The existing consume/dispatch benchmark measures this path. Any future
+materialized aggregate must preserve the same atomic claim/reservation/hold
+invariant and be validated before replacing this source-of-truth check.
+
+** Proof and dependency boundary
+
+=ProviderRpc.lean= supplies finite-list exposure obligations and rejection laws;
+=ProviderRpc.qnt= supplies explicit bad recovery projections and the shared-hold
+counterexample. Native Proptest drives real SQLite faults through dispatch,
+range release and completion, with callback counts and restart checks.
+=ZeroTrustEnrichment.lean= imports SPEC's real functional framework and uses
+=withRequirement= to strengthen its continuing contract with this exposure
+obligation. It cannot replace the original framework or consume a fresh root.
+Native materialization of the claim and complete family reservation list under
+the final transaction remains an explicit refinement premise, not a theorem
+about Rust or SQLite supplied by the SPEC library.
+
+The earlier review qualified these models only in an isolated candidate.
+The maintained Rust and Lean packages now consume the producer through their
+normal declarations and locks; see
+[[file:59.87-spec-upgrade-and-delivery-plan.org][the current integration plan]]. Package resolution does not establish complete
+deployment qualification or discharge the native refinement premises above.
+
+** Provider refinement baseline receipt
+
+The pre-fix native property failed with minimized input =fault = 0, phase = 0=:
+deleting the original claim after consumption still admitted the callback. The
+Proptest regression seed is retained in the crate's test corpus. The repaired
+property covers missing/substituted claims, changed reservation and a lost
+shared-hold projection through dispatch, range release and completion; none may
+invoke the callback or make the run complete. Restart cannot reconsume the
+original run. These are injected recovery inconsistencies, not a claim that
+ordinary API transactions can independently lose one SQLite row.
+
+- =cargo test -p weaver-ledger=: 22 library and 68 integration tests passed,
+  including the 64-case native property and existing real socket tests. The
+  first sandboxed run retained its three local-socket permission failures;
+  the complete run with socket access passed without skipping those tests.
+- Strict all-target Clippy and formatting passed without gate exceptions.
+- =ProviderRpc.qnt=: 64 witnesses passed with seed 293; 1,000 sampled safety
+  traces of 60 steps found no violation. Sampling is not exhaustive proof.
+- Standalone =ProviderRpc.lean= checked with the existing Lean toolchain; no
+  new axioms or =sorry= were added. The initial =Decidable= authoring failure
+  in the concrete counterexample is retained separately from the repaired run.
+- An isolated, clean checkout of the exact PR commit built
+  =CedarPooSpec.Gateway.ZeroTrust= and =PublicationReview= successfully (381
+  build jobs, not theorem count), with its declared LeanPoo commit
+  =c684858fdbf3df2557b96868d02b451676ea9784=. The complete updated Weaver
+  =ZeroTrustEnrichment= consumer passed, including the new exposure-strengthening
+  law; its axioms are =propext=, =Classical.choice= and =Quot.sound=, with no
+  =sorryAx=. The isolated copy of the fixed-pin bridge required six namespace
+  replacements from =CompoundAuthorization= to =Authorization.Compound=;
+  its initial unmigrated import failure remains recorded. This temporary
+  migration changes neither the maintained fixed-pin bridge nor dependency
+  pins. The unchanged default =WeaverPolicyBridge= also built successfully.
+- Four race-enabled Go/Rust TLS/gRPC integration tests passed: slow-consumer
+  revocation/restart/restored Policy, publication reply loss, partial request
+  and restart, and source profile/Cedar final-send binding. This is focused
+  integration coverage, not a fresh full =check-scheme= receipt.
+- Existing Criterion =ledger/consume_and_dispatch_burn= completed with 30
+  samples, one-second warmup and two-second requested measurement: estimate
+  2.2871 ms, interval 1.0611--4.6244 ms. Concurrent proof/build work and the
+  wide interval prohibit a performance improvement or regression claim.
+- Go-owned SysML/project/source-currentness checks passed; the updated D2
+  rendered and its raster preview was visually inspected.
+
+Raw failing and passing transcripts remain in temporary storage. Only curated
+evidence and the replayable property seed are committed.
+
+** Cross-effect recovery and conservation follow-up
+
+#+CAPTION: A data view shows the shared records and deciding join separately from the system overview.
+#+ATTR_ORG: :width 1600
+[[file:../../architecture/diagrams/39-shared-execution-exposure.svg]]
+
+[[file:../../architecture/diagrams/39-shared-execution-exposure.d2][Editable data view]].
+
+The previous provider-only check left the ordinary request and original stream
+owners outside the refinement. Real SQLite properties reproduced consumption
+and custody with missing claims. The request startup schema also rebuilt claims
+from operations, so opening an incomplete image could silently issue a new
+request-kind claim. The shared implementation now checks every retained row's
+kind and exact conservation across all three reservation owners.
+
+Let =R= be the sum of =operations.reserved=, =stream_messages.reserved= and
+=provider_runs.reserved= for the original family. Admission and actual use
+require =held = R=, =held <= originalBudget= and
+=projectedBudget = originalBudget=. Every retained row must join the same
+family/node execution claim with its original kind. The selected effect also
+requires its stored reservation to equal its immutable proposal cost. The
+source audit found exactly three writes increasing =tasks.held=, each atomic
+with its corresponding reservation insertion; no implemented completion or
+usage observation decrements that field. Adding a new reservation owner or
+settlement path must extend this projection and its proofs before deployment.
+
+A lower bound alone would miss orphaned holds after message/outcome projection
+loss. Exact equality denies that image rather than treating its old hold as
+capacity for a replacement logical message. Fresh request admission also
+refuses an existing claim without its original operation. Startup performs no
+claim backfill. New stream messages cannot recreate a missing node claim while
+retained earlier messages exist. Read-only outcomes remain available for
+diagnosis, but they carry no repair or send capability.
+
+The projection executes under the existing deciding writer, before any fresh
+hold and at request consumption/dispatch, stream custody/connect/resume/range
+consumption/write, and provider consumption/final use. It shares no new ledger
+or scheduler with Go. Go remains the cloud/protocol integration owner and
+Scheme remains the source semantic owner. Neither can publish a new caller
+flag that bypasses the Rust invariant.
+
+=SharedExecutionExposure= in the existing Lean owner covers arbitrary finite
+lists from each reservation domain, exact conservation and the original budget.
+The SPEC continuing-contract consumer strengthens its existing requirement
+with both per-effect and shared exposure. Quint supplies bad-projection and
+separate-domain counterexamples; these pure guard checks are not a temporal
+model of SQLite corruption. Native Proptest injects the concrete faults around
+consumption, custody, writes, restart and new admission. Authentic complete
+projection under the deciding writer remains the native refinement premise.
+Coherent correlated rollback, cryptographic source authority and independent
+anti-rollback recovery remain outside this single-host proof boundary.
+
+The follow-up qualification receipts are separate from the provider baseline:
+
+- Pre-fix native properties failed for both request and stream with minimized
+  =fault = 0, phase = 0=. Their regression seeds remain in the test corpus.
+  The first test-authoring =FromSql= and assertion-format compile failures are
+  retained separately; they are not counted as behavioral counterexamples.
+- The final exact-conservation implementation passed 22 ledger library tests,
+  75 ledger integration tests and 14 actual executor tests. The new module
+  contains three 64-case Proptest properties and four deterministic recovery
+  regressions, covering missing/substituted claims, wrong selected reservation,
+  shared-hold deficit/surplus, changed original-budget projection, lost message
+  rows and mixed request/message exposure. Original callbacks remain uncalled
+  on refusal. Outcome observation and the corrupted image are not repaired.
+- Four race-enabled Go/Rust TLS/gRPC tests passed again after the equality
+  change: complete streams sharing budget with provider-client retry rejection, publication
+  reply loss, partial request/restart and original profile/Cedar final binding.
+  This does not add a Go bypass around the Rust deciding owner.
+- Strict all-target Clippy passed. The Go benchmark-owner tests passed with
+  the three new required Criterion case identities.
+- Go-owned SysML/project and source-currentness checks passed after correcting
+  the new witness regex, which initially interpreted =pub(crate)= as a regex
+  group. The D2 rendered and its raster preview was visually inspected.
+- Standalone Lean checked exact conservation over arbitrary finite domain
+  lists. The updated SPEC consumer checked against the same isolated upstream
+  commit and retained namespace-only bridge migration. Native complete-image
+  materialization remains a premise; no new axiom or =sorry= was introduced.
+- Quint passed 70 witnesses with seed 293, including separate-domain and
+  orphaned-hold counterexamples and refusal of negative integer reservations.
+  The prior 1,000 sampled temporal traces remain focused model evidence;
+  these new projection tests do not model filesystem corruption transitions.
+- The three focused Criterion cases completed with 30 samples, one-second
+  warmup and two-second requested measurement. Estimates for 1/8/64 retained
+  provider runs were 2.1090/4.0437/3.6069 ms; intervals were
+  1.3972--3.3094 / 2.3574--6.0696 / 2.8057--4.6224 ms. Criterion estimated
+  7.8512 seconds to collect the 64-run case including untimed setup; the target
+  settings were unchanged. Concurrent build/test work, outliers and wide
+  intervals prohibit a scaling, improvement or regression claim. This is not
+  the complete workspace benchmark matrix or a transport throughput result.
+
+The earlier full =check-scheme= failures remain open historical evidence; this
+follow-up does not replace them with focused Rust/Go/model passes. No dependency
+pin, timeout, CPU limit or production recovery-authority profile was changed.
+
+#+NAME: fig:zero-trust-architecture
+#+CAPTION: Identity, governance and enforcement form a continuous resource protection loop.
+#+ATTR_ORG: :width 1600
+#+ATTR_HTML: :width 100% :alt Weaver Zero Trust decision administration and enforcement architecture
+[[file:59.51-zero-trust-architecture.svg]]
+
+* Research and public implementation alignment
+
+| Primary source | Architectural lesson | Weaver interpretation and limitation |
+|----------------+----------------------+--------------------------------------|
+| [[https://doi.org/10.6028/NIST.SP.800-207][NIST SP 800-207]], sections 2.1, 3 and 5 | Resource protection, dynamic assessment, PE/PA/PEP roles and threats to their dependencies | Define authority and deployment boundaries; no claim of deployed NIST conformance |
+| [[https://doi.org/10.6028/NIST.SP.800-207A][NIST SP 800-207A]], sections 4.6 and 4.7 | Identity-tier application controls complement network controls and monitoring | Go integrates cloud identity; Rust binds identities to concrete operations; cluster membership grants no application rights |
+| [[https://doi.org/10.1145/984334.984339][Park and Sandhu, UCONABC]] and [[https://profsandhu.com/journals/tissec/p351-zhang.pdf][Zhang et al., formal UCON model]] | Authorizations, obligation actions, conditions, continuity and attribute mutation | SPEC UsageControl adds a safety adapter over existing application transitions; the entire temporal rule system is not translated |
+| [[https://github.com/spiffe/spiffe/blob/main/standards/SPIFFE_Workload_API.md][SPIFFE Workload API]], sections 4.1--4.6 | Caller identification, full update streams, redaction and trust-domain bundle selection | Identity material has authority and update semantics; a successful gRPC reconnect does not preserve redacted credentials or refresh application grants |
+| [[https://github.com/spiffe/spire/blob/main/doc/plugin_agent_workloadattestor_k8s.md][SPIRE Kubernetes workload attestor]] | Concrete workload selectors have a compromised-node boundary | Shared service account is insufficient for incarnation/custody; node root compromise is outside this attestor's protection |
+| [[https://github.com/openziti/ziti][OpenZiti public architecture]] | Cryptographic identity, service-specific connectivity and encrypted communication | Useful network protection pattern; it does not establish Weaver's canonical claim, token budget or semantic history invariants |
+
+These sources have different evidentiary roles: architecture guidance, a research
+formalization, interface specifications and implementation documentation. No
+GitHub README is admitted as a proof dependency. No SPIRE or OpenZiti dependency
+is introduced. Their inspected interfaces guide adapter requirements.
+
+* Seven-tenet coverage review
+
+The following is our design mapping to NIST's seven tenets. Each row needs a
+concrete deployment argument in addition to a functional requirement.
+
+| Tenet | Required Weaver design | Current evidence and remaining work |
+|-------+------------------------+-------------------------------------|
+| Treat services and data as resources | Identify model invocation, tool effect, prompt/response data, Policy publication and telemetry export independently | Existing task/route/profile binding; complete resource inventory and data classification remain open |
+| Protect communication regardless of location | Authenticate peers and protect confidentiality/integrity across ingress, Go/Rust RPC, FFI memory ownership and provider egress | Focused credential/source tests exist; end-to-end certificate rotation, trust-bundle removal and egress coverage still need qualification |
+| Grant access per session/resource | Bind principal, actor, delegation, original task/family, operation, route and intended effect | Existing canonical consumption and reservations; transport session is not the logical claim and reconnect creates no authority |
+| Decide dynamically using attributes and Policy | Join current Policy/schema/profile, identity/posture facts, budget and history cuts | Local Policy/fence checks exist; complete externally sourced fact closure and mandatory review artifact admission remain open |
+| Monitor resource integrity/security posture | Receive provenance-bound posture with explicit validity and revocation | No generic production posture authority is qualified; cached Allow and unavailable monitoring cannot imply healthy |
+| Authenticate and authorize dynamically before access | Recheck at actual effect admission and after waits; revoke future admissions | Real slow-consumer/restart tests cover local enforcement; all outbound paths and independent rollback resistance remain open |
+| Collect and use security observations | Local protected decisions/outcomes feed governed analysis and future Policy changes | Telemetry is an observation input, not authority; privacy, retention, exporter Policy and durable audit failure behavior require acceptance |
+
+This table is a coverage ledger, not a seven-out-of-seven implementation score.
+
+* Final range receipt refinement
+
+The Rust final writer must join the consumed in-memory opportunity with the
+exact durable range, not merely an =unknown= status. The primary key binds
+family/node/message/sequence; the row must also preserve offset, length and
+=written IS NULL=. The message must retain the same cursor, =unknown= state and
+=next_sequence = consumed sequence + 1=. This join runs under the existing
+deciding transaction before Policy evaluation or any writer callback. A mismatch
+returns =range consumption changed= without recording =not_sent=, moving the
+cursor or releasing the original hold. Missing/invalid rows also fail closed.
+
+Go supplies inert data and Scheme supplies the original semantic contract;
+neither can repair a damaged Rust receipt or mint a replacement opportunity.
+The existing immutable BLOB and authentic database transaction assumptions still
+apply. This check detects local recovery inconsistency; it does not establish
+coherent rollback resistance or verify external provider exactly-once delivery.
+It reads fixed-size metadata in the existing lookup and does not rehash the
+entire message on every range.
+
+The Proptest =final_write_requires_exact_durable_range= varies range size and
+offset/length/successor/written faults. It requires the exact denial, zero writer
+calls, retained hold and unchanged unknown range. Before the guard, an offset
+change with a one-byte range reaches the writer; the failing run remains in
+temporary evidence. =StreamingExecution.qnt= records the state-only guard
+counterexample and denial before both send and no-send classification. Its
+=receiptExact= flag abstracts the concrete field conjunction; it is not a model
+of SQLite recovery. Lean =RangeReceipt= proves mismatch rejection and composition
+with the existing execution safety step, conditional on faithful field reads and
+the transaction lock. The Rust property supplies concrete refinement evidence;
+the Lean theorem does not prove the SQL implementation.
+
+[[file:../../architecture/diagrams/15-stream-message-authorization.svg]]
+
+* Typed protection context and authority
+
+A subject consists of end-user/tenant identity, workload identity, actor
+incarnation and delegation chain. A resource consists of canonical resource
+identity, operation/right, semantic contract and data classification. A context
+contains independently authoritative identity, resource, Policy, posture, budget,
+history and owner cuts. Authority is established per source and trust domain;
+caller-supplied attributes and Kubernetes labels are claims until validated.
+
+The application adapter must supply the following meanings to the generic API:
+
+| Interpretation | Required binding |
+|----------------+------------------|
+| =authenticated= | Validated peer and actor, trust domain, credential audience/expiry, delegation and incarnation/custody binding |
+| =authorized= | Actual Cedar request/entities/schema, original profile plus retained authoritative parents, rights and current conditions |
+| =currentAtUse= | The deciding source cut is joined at final use; no unresolved relevant pending change; no stale owner/floor; valid freshness evidence |
+| =consumptionCommitted= | Durable original canonical consumption, not just a nonce cache or a replacement Authority |
+| =unknownRetained= | Original claim, reservation and uncertain ranges survive failure and recovery |
+| =revoked= | Authoritative Policy, identity, delegation, resource or posture revocation ordered against admission |
+| =mediated= | The owning executor controls every relevant effect path, including retry, redirect, fallback and tool dispatch |
+
+A digest authenticates no producer by itself. Each evidence artifact needs its
+subject, source authority, source cut, schema/meaning, validity, producer identity
+and reference binding. Missing evidence is unresolved, not an empty successful
+result. Freshness requires an authority protocol: if source changes cannot be
+ordered against admission, an expiry only bounds exposure and does not prove
+instantaneous revocation. Disconnection then blocks new sensitive admissions or
+uses an explicitly weaker, separately approved contract. No silently stale mode.
+
+* Decision, administration and enforcement
+
+PE, PA and PEP are logical responsibilities; none corresponds to an entire
+language or assumes a separate daemon.
+
+| Owner | Concrete responsibility | Cannot confer |
+|-------+-------------------------+---------------|
+| Scheme / AA Session, Workflow, Governor | Higher-order governance composition, task semantics, JSON-schema validated configuration, evidence requirements and receipt-driven progression | A closure or generated profile cannot mint final send rights or replace its captured source cut |
+| SPEC Authorization / Delta | Cedar composition, exact policy-world comparison and conditional no-gain/replay laws | Same-world no-gain does not prove mutable-fact or trajectory safety |
+| Rust authority / PE responsibility | Reconstruct the concrete Cedar assessment, bind reviewed source/schema/profile evidence and current parent, resolve publication CAS | A staged proposal or historical publication result cannot authorize current use |
+| Go cloud integration / PA orchestration | Kubernetes/workload identity integration, lifecycle, protocol ingress, gRPC control, activation/revocation coordination | Informer readiness, RPC success or authenticated channel cannot skip Rust's deciding checks |
+| Rust broker / PEP responsibility | Durable consumption, reservations, dispatch burn, current checks and final queue/transport admission | A queue credit, provider-client retry, Arrow batch or copied proof cannot create another send capability |
+| Fact authorities and local telemetry | Publish authenticated observations; preserve audit outcomes and governed feedback | Monitoring scores and raw LLM/tool output cannot directly mutate authoritative Policy |
+
+Go's value is its cloud-native controllers, protocol libraries, operational
+integration and network tooling. Rust owns bounded memory-sensitive execution
+and final capability custody. Scheme supplies programmable semantic governance,
+not merely a configuration DSL. SPEC provides shared formal meanings rather
+than embedding Weaver runtime types into the ZeroTrust core.
+
+* Admission, ongoing use and closure
+
+1. Establish the subject and resource; bind the original task/profile, canonical
+   family, budget/history domains and independent parent authority.
+2. Capture governed facts and witnessed pre-use obligations. Scheme closures
+   expose their captured source cut; Rust owns immutable FFI projections. An
+   obligation promise is not evidence that its action occurred.
+3. Review the exact parent/candidate/schema/source pair. Bind Delta and replay
+   artifacts through the existing LeanPoo Contract/evidence facilities. The final
+   publication CAS checks the same parent, expected revision/fence, evidence and
+   pending decision. Commit phase performs no external provider send.
+4. Rust admits the original operation and persists consumption/reservation. The
+   final owner rechecks current source cuts after every wait, burns dispatch
+   before invocation and persists unknown range exposure before row release.
+5. Each new effect satisfies ongoing authorization, current conditions,
+   witnessed obligations and permitted attribute updates. gRPC and optional
+   Arrow use the same row/range authority. Partial write or lost completion
+   retains uncertainty; it cannot select a fallback provider under a new nonce.
+6. Revocation blocks admissions after its authoritative ordering point. Already
+   admitted bytes can drain. The deployment must distinguish queue insertion,
+   actual write, peer receipt and business completion; no retroactive recall.
+7. Reconcile exact historical outcomes after restart. A committed old outcome is
+   queryable but not current authority. Preserve original claim/holds and pending
+   intent; independently recover the floor before admitting more work.
+8. Session advances only on the required bound receipt. Settlement requires
+   terminal evidence and exactly-once account application, with unresolved
+   exposure still held. Post-use accounting is our application contract, not a
+   theorem of eventual obligation fulfillment imported from UCON.
+
+* POO integration and verification allocation
+
+=ProfileObject= already uses actual LeanPoo Dataflow inheritance, Contract and
+factory-indexed Session. Retain independently authoritative parent and selected
+Session projections through =composeSessions=. A root refinement proof alone
+does not retain an extra ancestor requirement. See
+[[file:59.50-parent-contract-and-replay.org][the concrete raw override counterexample]].
+
+SPEC's new =ZeroTrust.UsageControl= composes the existing Framework with initial
+and ongoing authorizations, environmental conditions, witnessed transition
+obligations and mutation relations. =resume= records only the application's
+recovery relation; =close= requires terminal and accounted. Its step theorem
+still requires core consumption and unknown retention. This is a functional
+safety adapter, not a second ledger/scheduler or a full UCON temporal calculus.
+
+| Evidence owner | Checked artifact or acceptance obligation | Status |
+|----------------+-------------------------------------------+--------|
+| SPEC Lean | UsageControl laws and non-Gateway counterexamples: Allow without posture, promised obligation, consumption reset, recovery as authorization, terminal with unknown accounting | Checked locally in this round |
+| Existing ProviderRpc Quint | Changed hard-fact cut during queue wait / between prepare and release; restart cannot refresh it; Allow-only bypass counterexample | Executable abstract witnesses; concrete fact-source refinement remains open |
+| Existing Go/Rust integration | Pending proposals, old-parent rejection, lost staging/publication replies, local restart, slow consumer, unknown tail | Existing real fixtures reused; current-run receipt recorded below |
+| Weaver adapter | Identity rotation/bundle removal during active stream; delegated actor mismatch; disconnected posture; forwarded enrollment credential | Required new real acceptance; not demonstrated by Policy-only fixtures |
+| Publication adapter | Exact authoritative POO parent plus Delta/replay evidence bound at final CAS | Production gap; existing typed-publication counterexample shows review can be omitted |
+| Recovery/transport deployment | Independent anti-rollback floor and exclusive live transport custody | Production gap; SQLite restart is insufficient evidence against snapshot rollback |
+
+Lean owns functional preservation and conditional composition. Quint owns
+interleaving counterexamples over existing transitions. SysML owns allocation.
+Go/Rust tests own concrete adapter and process behavior. These responsibilities
+are stated once here by reference to SysML; passing one tier cannot replace
+another tier's evidence.
+
+* Comparative metric and completion gates
+
+The comparison metric is evidence coverage, not invented performance or
+compression improvement. Weaver has reusable conditional proofs and real local
+Policy/stream recovery fixtures, while its external fact, independent floor and
+mandatory Delta publication paths remain incomplete. Box and OpenShell retain
+their separately reviewed request/sandbox strengths in
+[[file:59.29-strands-box-cross-review.org][the source-grounded comparison]]. This
+round supplies no new Box/OpenShell execution or common benchmark. Network
+identity lessons from OpenZiti/SPIRE complement, rather than establish, our
+semantic claim/budget/history properties.
+
+Before claiming full Weaver integration, require separate receipts for identity
+lifecycle, complete fact projection/freshness, exact review-evidence CAS,
+anti-rollback recovery, complete outbound mediation and receipt-driven closure.
+The advantage is the intended composability of semantic governance, Cedar and
+execution evidence. The cost is the adapter/refinement work needed to make that
+composition real. Architecture coverage is not measured security superiority.
+
+* Earlier architecture verification receipt
+
+Local checks on the reviewed candidate sources:
+
+- SPEC =lake build CedarPooSpec Tests=: passed, 590 build jobs. New usage laws
+  print no new axioms or =sorry=; the full Cedar dependency still contains its
+  existing native-decision axioms. Job count is not a theorem count.
+- SPEC =check-lean-layers=: passed for 329 local modules, including the generic
+  core's transitive Gateway import exclusion.
+- Weaver candidate =ZeroTrustEnrichment=: checked against the isolated SPEC
+  candidate. Only the temporary bridge's prior namespace is migrated; the normal
+  fixed-pin bridge and dependency files are unchanged.
+- Existing =ProviderRpc.qnt=: 58 executable witnesses passed, including expected
+  unsafe counterexamples; the safe step relation also passed 1,000 sampled runs
+  of 60 steps with seed 293. Sampling is not exhaustive verification.
+- Go =-race -tags=integration=: ten existing real Go/Rust tests passed, covering
+  slow consumers, cancellation/reconnect, pending proposals, lost staging and
+  publication replies, old parents, local restart and profile-bound sends.
+  These do not exercise external identity/posture sources or mandatory Delta CAS.
+- The OpenOpenSysML Go API project/trace checks passed. Named trace coverage is structural,
+  not a behavioral refinement proof. Both D2 figures render; SVG is embedded above.
+
+Raw logs and generated receipts remain in temporary storage. CI does not gate
+this architecture iteration. Dependency pins remain unchanged.
+
+* Recovery review: balanced reservation projections
+
+A matching aggregate is insufficient when a recovered row has lost part of its
+original reservation. Reducing an unknown request reservation and =tasks.held=
+together preserves the sum but can admit a different logical node using unknown
+exposure. The deciding transaction must compare every retained request, stream
+message and provider reservation against its retained original ceiling before
+admitting another effect. This extends the existing shared-exposure guard; it
+introduces no new ledger or refund path.
+
+The regression =balanced_projection_cannot_shrink_another_original_reservation=
+restarts after such a balanced projection fault and requires rejection without
+creating the next operation or repairing the damaged hold. The original retained
+proposal/plan remains a trusted recovery premise. Correlated replacement of that
+record still requires an independent recovery authority. The RuntimeAdmission Quint model retains original amounts independently,
+exhibits the aggregate-only bypass, and rejects admission after damaged recovery.
+Lean proves pointwise binding preserves the total for arbitrary finite lists and
+composes it with admission capacity. Authentic original records, complete row
+coverage, and real transactional checks remain native refinement premises.
+
+** Reservation-guard cost boundary
+
+The source-owned =ledger/original_reservation_bytes/<count>/<bytes>= Criterion
+matrix in [[file:../../../crates/ledger/benches/README.org][the ledger benchmark contract]] varies retained plan count and original
+prompt content size. It times consumption, durable dispatch burn, current final
+use and hold observation, with fixture creation outside timing. This captures
+the JSON-backed original-ceiling checks in their actual durable path; it does
+not isolate parsing cost or establish concurrent/network throughput. Keep cold
+release build time separate from runtime samples and do not compare unmatched
+historical intervals as a regression estimate. The Go benchmark owner requires
+every new case rather than accepting only a favorable subset.
+
+** Focused local runtime receipt
+
+The seven cases completed in the optimized bench profile on a Darwin arm64 host
+with 12 logical CPUs. The first release build took 2m 56s, separate from runtime
+samples. Each case retained 30 samples and one-second warm-up. The configured
+two-second target is not a deadline: Criterion collected the large-body case
+using its normal longer estimate without reducing the sample count.
+
+| Retained plans | Prompt bytes per plan | Mean ms | Mean confidence interval ms |
+|----------------+-----------------------+---------+-----------------------------|
+| 1 | 128 | 1.031 | 0.945 to 1.131 |
+| 8 | 128 | 2.573 | 1.423 to 4.670 |
+| 64 | 128 | 1.718 | 1.498 to 1.993 |
+| 1 | 16384 | 3.621 | 1.897 to 6.915 |
+| 8 | 16384 | 3.013 | 2.493 to 3.681 |
+| 64 | 16384 | 4.957 | 4.564 to 5.407 |
+| 1 | 524288 | 78.012 | 60.884 to 96.486 |
+
+These are focused local measurements with shared-host variability, not a
+matched before/after comparison. In particular, selected request validation and
+authorization are included: the large-body result cannot be attributed solely
+to the original-reservation SQL scan. The full workspace benchmark gate was not
+run by this focused invocation. Raw artifacts remain under ignored target/tmp.
+
+** Native specialization across retained execution kinds
+
+The original-reservation recovery property is exercised for requests, stream
+messages and provider runs. Stream tests retain an unknown consumed range before
+shrinking its message reservation and the shared aggregate; the next declared
+message must not be created. Provider tests retain a consumed original plan,
+shrink its projected reservation and aggregate, then attempt a different original
+plan. Both properties vary original costs and running/restarted owners. Their
+original combined exposure exceeds the authenticated task budget even though
+the damaged aggregate appears to admit the next operation.
+
+A controlled negative run removed only the per-record original-amount predicate.
+All four balanced-projection tests failed, including the request properties.
+The source was restored exactly before qualifying the fixed tests. No failure
+corpus from that intentionally weakened run is treated as a production fixture.
+Raw negative/positive receipts remain in temporary storage.
+
+These native cases specialize the existing type-erased RuntimeAdmission Quint
+counterexample and arbitrary-finite-list Lean composition; they do not extend
+those proofs to arbitrary database corruption. Completeness and authenticity of
+original records, real transactional serialization and the claim-kind joins
+remain separate premises. The core D2 shared-exposure view already shows all
+three retained domains and their common original-amount guard.
+
+** Exact reservation manifests under partial recovery
+
+Node/kind coverage is insufficient for a multi-message stream. A native negative
+control enqueues two messages under the same stream claim, consumes the first
+range, then removes that message/range and adjusts the shared hold to the
+surviving row. The former node-only guard accepts the original message again:
+the surviving sibling masks the missing reservation. This is a partial-image
+fault, not evidence that a whole-store rollback can be detected locally.
+
+The existing =execution_claims= root now retains a reservation member map.
+Requests and provider invocations have one member; a stream appends each original
+message key, binding its digest and original ceiling. Admission writes that
+member, the execution row and the budget hold in one deciding transaction.
+Only a distinct message can extend an existing stream claim. Provider roots use
+a separate execution kind, avoiding an implicit raw-stream/provider namespace.
+
+The family guard requires both directions of an exact join: every committed
+member has its original row, and every row has its committed member, kind,
+digest and ceiling. It also retains the existing original-record amount check,
+aggregate conservation and source-task budget equality. Completed rows remain
+members; an observation never removes an original reservation or releases
+unknown capacity. The materialized family projections avoid repeated expansion
+of the same JSON manifest within one deciding SQL statement. The selected typed
+proposal/message binding must also match its committed digest before actual
+use. Provider consumption computes that digest once and retains it inside the
+private dispatch owner; response releases reuse that commitment rather than
+rehashing the full original prompt per event.
+
+| Boundary | Required result |
+|----------+-----------------|
+| Lost row with a surviving sibling and balanced =held= | Refuse re-admission; do not reconstruct the original row from its sibling |
+| Changed member key, digest or original ceiling | Refuse current custody and the existing final-write handle; callback count remains zero |
+| Process restart after a rejected write | Re-evaluate the same manifest before granting custody; do not repair the damaged aggregate |
+| Historical receipt lookup or idempotent observation | May return the original observation; it conveys no dispatch capability |
+| Old schema without the retained member map | Fail opening the execution owner; never backfill a manifest from outcome rows |
+| Correlated rollback/replacement of root, rows and aggregate | Remains outside the local profile; requires independent recovery authority |
+
+=exact_message_manifest_guards_recovery_and_existing_write_handles= uses the
+existing Proptest framework to generate row deletion, identity substitution,
+digest substitution and balanced ceiling shrink, both with and without restart.
+The test exercises the actual final write callback and subsequent custody.
+=surviving_stream_message_cannot_hide_a_lost_unknown_reservation= preserves the
+focused native negative-control scenario. Raw diagnostics remain in temporary
+storage; regression seeds stay in the property framework's normal source file.
+
+=finite_manifest_siblings_cannot_mask_a_missing_original_member= extends the
+actual Rust protocol to generated source manifests of 3--64 messages. A separate
+64-message boundary case removes the last admitted sibling and restarts the
+owner. One source-declared message remains unadmitted with capacity available;
+an independent intact-ledger control proves its admission is authorized. The
+fault deletes another member and balances =held= to the surviving row sum.
+An already consumed write still invokes no callback, and neither lost-member
+recreation nor fresh-message admission may repair the image implicitly. Publishing
+the same explicit finite Policy under a new revision/fence does not repair the
+manifest; fresh admission fails at the original-exposure guard. The original
+manifest bytes and damaged aggregate remain unchanged rather than being rebuilt
+or further released by these refused effects.
+
+The production example Policy deliberately allows only =m0= and =m1=. The first
+wider fixture therefore failed before reaching the recovery boundary. Preserve
+that failed run. The generalized test fixture publishes the same Policy rules
+with an explicit source-sized member allowlist; production Policy and dependency
+pins are unchanged. A wildcard or a Policy-denied spare would make the intended
+recovery check invalid. Host linker/SDK setup failures are also distinct from a
+native execution result; the standard compiler and SDK are selected from their
+environment overrides or =xcrun= discovery, without a hardcoded SDK path.
+
+The Quint model deliberately maps two logical members to the same stream owner.
+Its partial-loss witness satisfies node coverage and row-local amount equality
+while violating exact member coverage. Separate digest-substitution witnesses
+show why set cardinality alone is insufficient. Recovery and final-use actions
+require exact member and digest binding. This is a bounded schedule model, not
+an arbitrary-size theorem or a compiled-code proof.
+
+Two additional fault traces refresh caller-observed authority after member loss.
+One surviving unspent member is tested after restart; an existing final-use
+ticket is tested without restart. Both traces have current observed revision and
+fence, so stale-authority refusal cannot mask a missing membership check. The
+refresh action is an adversarial observation update excluded from the safe
+transition relation; it is not an authenticated reauthorization implementation.
+
+Lean models arbitrary finite commitment lists with node, execution kind, member,
+digest and original ceiling. Permutation expresses complete multiplicity-aware
+coverage. The proofs show that a missing member blocks admission, a surviving
+sibling does not imply completeness, and exact coverage plus the aggregate and
+capacity premises bounds original exposure. SQL key uniqueness, authentic roots,
+transaction atomicity and real transport fencing remain refinement premises.
+The Cedar evaluator and cedar-poo-spec semantic proofs remain the Policy owner;
+this manifest guard supplies execution evidence, never a substitute Policy DSL.
+The existing missing-member theorem applies to every finite commitment list;
+it is reused for the wider native fixture rather than duplicated as another
+theorem with a different name. Quint supplies bounded schedules, Proptest tests
+the Rust refinement through the contract's bound, and Lean proves the finite-list
+implication under the stated authentic-root and exact-coverage premises.
+
+The completed local check includes 22 ledger library/deny tests and 90 integration
+tests, including the generated and maximum-width manifest cases and real loopback
+socket controls. Strict Clippy passes for all ledger targets. The 27 Quint tests
+and 1000 bounded safe traces pass with seed 293, and the existing Lean file checks
+with its reported standard axioms. Go architecture/development tests and the
+updated core diagram's exact source/graph binding check pass. The earlier sandbox
+run denied three TCP listeners; it is not counted as successful transport
+validation. These results do not qualify correlated rollback, the full Gateway
+integration suite or the separately pending Library dependency adoption.
+
+The per-crate =ledger/stream_manifest_guard/{1,8,64}= benchmark measures range
+consumption and current final-write admission with that many messages under one
+claim. Fixture creation is outside timing. The existing provider-family and
+original-body matrices remain required; a fast one-member result cannot admit
+multi-message overhead or establish network throughput.
+
+*** Focused implementation evidence
+
+The local ledger run passes 22 library tests and 88 integration/property tests,
+including the ASP Rust deny gate, real loopback transport controls, concurrent
+member append and rollback after budget exhaustion. The prior partial-message
+recovery negative control fails on the node-only guard before this change.
+A property-test assertion that incorrectly treated a historical receipt as a
+capability was corrected; its saved seed is retained and is not reported as a
+runtime bypass. Restricted-listener and missing-host-linker runs are failures,
+separate from the qualified native execution.
+
+The Go integration owner rebuilds the current Rust server and race-enabled Go
+control binary. Real mutually authenticated gRPC/HTTPS tests pass for JSON/YAML
+publication and revocation across restart, shared-budget streaming and provider-client retry,
+Protobuf/Arrow streaming, and partial-request recovery retaining unknown claims.
+These focused tests do not substitute for the complete Scheme integration suite.
+
+Quint typechecking, 25 tests and the existing 1,000-sample/50-step seeded safety
+run pass. Lean checks the finite manifest theorems and the conditional
+=manifest_bound_runtime_step= composition without =sorry=. Core =propext= is
+used by manifest equality proofs; the composed runtime theorem also inherits
+=Quot.sound= from =safe_step=. No new axiom or unproved native refinement is
+silently introduced.
+
+The initial optimized compilation takes 1m 03s; the final incremental build
+takes 3.37s, separately from the runtime samples
+on the 12-logical-CPU Darwin arm64 host. Each new case retains 30 samples and
+one-second warm-up. Criterion retains its normal adaptive collection; neither sample count nor
+configured target is relaxed. Its comparisons against the earlier local trial
+show no statistically detected change, not a matched pre-fix baseline.
+
+| Messages in one claim | Reported runtime interval | Point estimate |
+|-----------------------+---------------------------+----------------|
+| 1 | 728.65--756.57 us | 741.88 us |
+| 8 | 743.00--817.81 us | 771.41 us |
+| 64 | 1.1263--1.1738 ms | 1.1494 ms |
+
+These are focused current-path samples with outliers retained. There is no
+matched prior-revision run, network throughput claim, p99 admission claim or
+whole-workspace benchmark acceptance. Raw diagnostics and Criterion artifacts
+remain temporary or under ignored build output rather than committed logs.

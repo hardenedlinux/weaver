@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 // Qualified root publication is assumed; broker authority is modeled separately.
 module AnchorBrokerCommit {
   import GateConsumptionPersistence as G from "./GateConsumptionPersistence"

@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Weaver Cross-Message Identity and Shared Budget Proof
 #+language: en
 #+date: 2026-10-19
@@ -30,7 +34,7 @@ prove that untrusted text can be classified into intent without trusted facts.
 
 | Coordinate | Meaning and authority |
 |------------+-----------------------|
-| Raw alias | Client/SDK correlation input; a new value has no authority to create intent, a budget domain or a history domain |
+| Raw alias | Client/Gerbil toolchain correlation input; a new value has no authority to create intent, a budget domain or a history domain |
 | Canonical intent | Scheme-owned authenticated tenant/workflow/parent-operation/message-slot meaning; independent of issuance and transport coordinates |
 | Immutable payload projection | The complete admitted effect, recipient and semantic content; the model uses a natural-number projection as its abstraction |
 | Shared domain | Owner-resolved budget window/account plus history conflict scope and publication lineage; never reconstructed from a new client key |
@@ -191,7 +195,7 @@ unequal alias field. Complete traces and exact tool results are linked below.
 Scheme owns authenticated semantic projection, canonical intent/domain meaning,
 Cedar request/entity inventory, units/cost-bound semantics and history policy.
 It reuses POO immutable input, exact subject and recovery-obligation relations.
-Go owns cloud-native and SDK/protocol integration, inert staging, correlation
+Go owns cloud-native and Gerbil toolchain/protocol integration, inert staging, correlation
 transport and attributable observations. It cannot certify a new intent or
 budget domain from retry metadata, mint a claim, or autonomously replay a stream.
 Rust owns the canonical alias/record index, shared atomic revision/allocation,

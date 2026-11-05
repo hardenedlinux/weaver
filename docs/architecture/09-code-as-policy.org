@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Weaver Code as Policy and Cedar Integration
 #+language: en
 #+date: 2026-10-18
@@ -22,7 +26,7 @@ fallback chosen after Cedar fails.
 All implementation observations below refer to the exact source identities in
 [[file:01-reference-comparison.org][the evidence register]]. The initial review made no fresh native/build acceptance claim. Subsequent
 scoped owner/native results are recorded in
-[[file:12-fm1-baseline-and-native-qualification.org][the qualification record]]; no Weaver deployment or performance result is claimed.
+[[file:12-fm1-baseline-and-runtime-qualification.org][the qualification record]]; no Weaver deployment or performance result is claimed.
 The subsequent read-only standalone guard-proof checks are separately scoped
 in [[file:11-source-to-execution-assurance-review.org][the source-to-execution review]]; they do not compile the Cedar proof closure.
 
@@ -312,7 +316,7 @@ subsequent transform must be admitted as part of that operation's contract;
 otherwise changing its target, semantic headers, tool arguments or payload
 requires a new operation. DNS resolution, TLS peer selection and pooled
 connection reuse must satisfy the admitted recipient constraints at use time.
-A redirect or SDK retry is another application attempt unless the selected
+A redirect or provider-client retry is another application attempt unless the selected
 protocol contract explicitly proves otherwise; the conservative profile disables
 invisible retries and redirects. Never reuse a spent claim to hide them.
 
@@ -338,7 +342,7 @@ a restricted document. Cedar may permit that tool action under the admitted
 recipient/classification facts. If a route update selects an external provider,
 the old authorization cannot follow it merely because the logical tool name is
 unchanged. The broker checks the actual destination against the bound scope;
-a changed disclosure boundary requires new admission. An SDK retry after a
+a changed disclosure boundary requires new admission. An provider-client retry after a
 lost response cannot reuse the prior claim. Quint models these update/send and
 retry/recovery interleavings; Lean states the binding and conservation laws;
 the Go adapter, Rust broker and deployment must preserve their concrete premises.

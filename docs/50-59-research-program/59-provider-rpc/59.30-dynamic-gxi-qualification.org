@@ -1,16 +1,27 @@
-#+title: 59.30 Ordinary Dynamic gxi: Local Cold-Process Qualification
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+#+title: 59.30 Historical Dynamic Entry Controls (Retired)
 #+language: en
+
+* Status
+This is a historical failed/diagnostic cohort, not a current runner or acceptance
+procedure. The dynamic GXI experiments and their flags have been retired. Their
+failures are not repaired by native SDK acceptance or by changing package test
+budgets. Current native Runtime and standard package requirements are maintained
+in [[file:59.87-spec-upgrade-and-delivery-plan.org][the delivery plan]].
 
 * Contract and scope
 This work qualifies the ordinary installed =gxi= entry on the local twelve-CPU
 Darwin host. Every runtime trial retains the original fifteen-second deadline,
-all nineteen Scheme-owned test cases, the SDK =gxtest= result check, caller
+all nineteen Scheme-owned test cases, the Gerbil toolchain =gxtest= result check, caller
 return, natural process exit, and an empty owned process group. A watchdog kill
 is a failed trial and cannot establish successful cleanup. No successful path
 calls =exit=, skips =dlclose=, or disables library validation or dyld notifications.
 
 Dependency pins and the installed Gerbil runtime remain unchanged. Rust's
-existing pinned SDK supplies dynamic module compilation and linker-export
+existing pinned Gerbil toolchain supplies dynamic module compilation and linker-export
 validation. Go owns preparation, paired trials and typed evidence; Scheme's
 standard suites own semantic assertions. This is development load-path
 packaging, not a replacement Governor, a new VM, Gateway runtime code, or an
@@ -63,7 +74,7 @@ upstream ABI targets are not added merely to manufacture a dependency closure.
 
 The development inventory evaluates the same exported suite values through
 the public expander interface used by =gxtest=. It records Gerbil's actual
-module registry after discovery; it does not scan the SDK tree or execute test
+module registry after discovery; it does not scan the Gerbil toolchain tree or execute test
 cases. The subsequent runtime still performs ordinary discovery and executes
 the complete standard suites. A newly encountered module falls back to its
 original loader path; the inventory is a packaging selection, never authority.
@@ -131,32 +142,13 @@ The bounded diagnostic failure extract is
 failure remains explicit. The final report must distinguish this diagnostic
 record from a committed, stable-source timing PASS.
 
-* Reproduction
-Use the existing host/compiler environment and unchanged source pins. Let the
-runner use the machine's available twelve CPUs; do not set a smaller parallel
-budget. Build time is separate from each child's fixed runtime deadline.
+* Historical reproduction boundary
+The former custom source checkout flags, compiler environment variable and
+paired-image Go runner are no longer supported. Do not reconstruct those paths.
+Use the root package declaration and standard gerbil build/test entrypoints for
+current acceptance; retained historical receipts keep their original scope.
 
-#+begin_src text
-go -C go test -count=1 -timeout=30m -tags=schemeintegration \
-  ./internal/devrunner -run '^TestDynamicSchemeColdStartPairs$' -v -args \
-  -scheme-source /absolute/pinned/agentic-ai-lab \
-  -scheme-poo /absolute/inherited/pinned/gerbil-poo \
-  -scheme-require-committed
-
-go -C go run ./cmd/weaver-dev -clean-source \
-  -scheme-source /absolute/pinned/agentic-ai-lab \
-  -scheme-poo /absolute/inherited/pinned/gerbil-poo check-scheme
-#+end_src
-
-Set =WEAVER_CONTROL_SCHEME_COMPILER= to the ordinary absolute =gxi= entry.
-The thirty-minute Go envelope permits source compilation and the complete
-matrix; it does not replace or widen any fifteen-second child limit. Optional
-=-scheme-profile-phases= produces diagnostic sampling, never a timing PASS.
-An explicit =-scheme-prepared-environment= supports isolated diagnosis; the caller
-owns that prefix and must remove it. Default preparation always cleans its
-owned prefix and checks the pinned dependency sources.
-
-* Remaining evidence boundary
+* Historical remaining evidence boundary
 The repair is not qualified by an AOT executable, a success marker, a remote
 workflow, or a quiet-host-only pass. Local source-qualified cold-image pairs,
 natural cleanup accounting and the full Scheme/Rust/Go integration path are

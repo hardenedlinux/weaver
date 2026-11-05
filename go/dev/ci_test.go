@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 package dev
 
 import (
@@ -17,8 +21,14 @@ type suiteWorkflow struct {
 		Uses  string    `yaml:"uses"`
 		Needs yaml.Node `yaml:"needs"`
 		With  struct {
-			Suite string `yaml:"suite"`
+			Suite  string `yaml:"suite"`
+			Runner string `yaml:"runner"`
 		} `yaml:"with"`
+		Strategy struct {
+			Matrix struct {
+				Runner []string `yaml:"runner"`
+			} `yaml:"matrix"`
+		} `yaml:"strategy"`
 	} `yaml:"jobs"`
 }
 
@@ -54,6 +64,11 @@ func TestCIWorkflowsMatchProjectSuites(t *testing.T) {
 		if job.Needs.Kind != 0 {
 			t.Fatalf("independent suite %s is unnecessarily serialized", name)
 		}
+		for _, runner := range job.Strategy.Matrix.Runner {
+			if !strings.HasSuffix(runner, "-latest") {
+				t.Fatalf("suite %s pins an operating-system image: %s", name, runner)
+			}
+		}
 		if strings.Contains(strings.ToLower(job.Name), "native") {
 			t.Fatalf("non-specific CI namespace for %s", name)
 		}
@@ -61,6 +76,25 @@ func TestCIWorkflowsMatchProjectSuites(t *testing.T) {
 		if err != nil || len(stages) == 0 {
 			t.Fatalf("CI mode %s has no executable checks", mode)
 		}
+	}
+	data, err = os.ReadFile(filepath.Join(root(t), ".github/workflows/verify-suite.yml"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var reusable struct {
+		On struct {
+			Call struct {
+				Inputs map[string]struct {
+					Default string `yaml:"default"`
+				} `yaml:"inputs"`
+			} `yaml:"workflow_call"`
+		} `yaml:"on"`
+	}
+	if err := yaml.Unmarshal(data, &reusable); err != nil {
+		t.Fatal(err)
+	}
+	if reusable.On.Call.Inputs["runner"].Default != "ubuntu-latest" {
+		t.Fatal("default suite runner must follow ubuntu-latest")
 	}
 	for _, path := range []string{".github/workflows/verify-suite.yml", ".github/actions/prepare-toolchain/action.yml"} {
 		data, err := os.ReadFile(filepath.Join(root(t), path))

@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+TITLE: 59.07 Reserved Authority Admission Under Execution Saturation
 #+LANGUAGE: en
 
@@ -82,7 +86,7 @@ lane schedules. Go race checks include the actual saturation test, which passes
 in the retained full integration run. AuthorityAdmission has nine executable controls;
 its sampled safety check retains 1000 traces and sixty-step bounds. ProviderRpc
 now prints twelve checked Lean declarations, including the three new admission
-properties, with no sorryAx. The strict in-process SysML SDK and trace gate also
+properties, with no sorryAx. The strict in-process OpenSysML Go API and trace gate also
 pass. D2 was rendered to SVG/PNG and the updated core diagram was visually checked.
 
 * Availability and performance limits

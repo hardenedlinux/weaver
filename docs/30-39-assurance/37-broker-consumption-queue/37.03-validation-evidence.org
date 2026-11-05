@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Broker Consumption Queue Validation Evidence
 #+language: en
 #+date: 2026-10-19
@@ -120,3 +124,9 @@ interval invocation, original receipt authentication and account-application
 idempotency under the injected failures listed in 37.01. Conditional formal
 closure must not be reported as production exactly-once delivery or a performance
 result.
+
+* Embedded architecture views
+
+** 37.02-broker-consumption-queue.svg
+
+[[file:37.02-broker-consumption-queue.svg]]

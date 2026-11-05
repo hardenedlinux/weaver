@@ -1,0 +1,205 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+...@../../../dev/d2/themes/flow
+vars: { d2-config: { layout-engine: tala;  pad: 80 } }
+title: THIN GATEWAY / RETAINED ADMISSION {
+  shape: text
+  near: top-center
+  style.font-size: 36
+  style.bold: true
+}
+semantic: Weaver semantic admission\nCedar / original claim / current fence\nFrozen operation and obligation {
+  class: card
+  icon: ../../architecture/diagrams/assets/rust.svg
+  icon.near: top-left
+  left: 0
+  top: 0
+  width: 550
+  height: 240
+  style.fill: "#eef3ef"
+}
+storage: MRR Data backend\nTurso embedded storage\nBounded atomic transaction profile {
+  class: card
+  left: 810
+  top: 0
+  width: 550
+  height: 240
+  style.fill: "#e7edf4"
+}
+retained: Retained admission outcome\nOne-use burn / original reservation\nUnknown exposure and root generation {
+  class: card
+  left: 1620
+  top: 0
+  width: 550
+  height: 240
+  style.fill: "#e7edf4"
+}
+pending: Missing reply or restored held=0\nRetain original unknown obligation\nNo fresh key or inferred refund {
+  class: card
+  left: 0
+  top: 620
+  width: 550
+  height: 240
+  style.fill: "#f4f2ec"
+}
+projection: Qualified burn and budget projection\nExact retained body and owner cut\nData repair grants no send ticket {
+  class: card
+  left: 810
+  top: 620
+  width: 550
+  height: 240
+  style.fill: "#e7edf4"
+}
+execution: Rust final transport owner\nLive one-use ticket / current Policy\nNo SDK replay or duplicate send {
+  class: card
+  icon: ../../architecture/diagrams/assets/rust.svg
+  icon.near: top-left
+  left: 1620
+  top: 620
+  width: 550
+  height: 240
+  style.fill: "#eef3ef"
+}
+semantic -> storage: Atomic admission request { style.font-size: 20 }
+storage -> retained: Burn and exposure commit { style.font-size: 20 }
+storage -> projection: Recover complete records { style.font-size: 20 }
+pending -> projection: Recover original obligation { style.font-size: 20 }
+projection -> execution: Current qualified projection { style.font-size: 20 }
+retained -> execution: Recheck retained cut { style.font-size: 20 }
+footer: "Storage reuse preserves the domain contract · A database receipt is not an execution permit\nHeld zero after restore does not discharge unknown exposure" {
+  shape: text
+  left: 140
+  top: 1080
+  width: 1890
+  height: 120
+  style.font-size: 28
+  style.font-color: "#5c8b77"
+}
+
+# Project-owned presentation question; not an issued governance Question.
+vars: { d2-config: { data: { figure: |json
+{
+  "title": "62 burn exposure recovery",
+  "purpose": "workflow",
+  "kind": "flow",
+  "language": "en",
+  "width": 960,
+  "primary": "main",
+  "questions": [
+    {
+      "ref": "main",
+      "text": "How does recovery preserve the burn and its exposure?",
+      "focusRefs": [
+        "catalog",
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "catalog": "docs/architecture/08-diagram-catalog.org",
+    "model": "Project.sysml"
+  },
+  "copy": {
+    "takeaway": "How does recovery preserve the burn and its exposure?"
+  },
+  "basis": {
+    "captureRef": "docs/50-59-research-program/59-provider-rpc/59.62-burn-exposure-recovery.d2#design-view",
+    "modelRefs": [
+      "Project.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "sketchbook",
+    "node-editor",
+    "reading"
+  ],
+  "layout": "model-view",
+  "variants": [],
+  "presentation": {
+    "graph": {
+      "id": "weaver-source-view",
+      "children": [
+        {
+          "id": "title"
+        },
+        {
+          "id": "semantic"
+        },
+        {
+          "id": "storage"
+        },
+        {
+          "id": "retained"
+        },
+        {
+          "id": "pending"
+        },
+        {
+          "id": "projection"
+        },
+        {
+          "id": "execution"
+        },
+        {
+          "id": "footer"
+        }
+      ],
+      "layoutOptions": {
+        "elk.direction": "DOWN",
+        "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+        "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+        "elk.layered.layering.coffmanGraham.layerBound": "1",
+        "elk.spacing.nodeNode": "24",
+        "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+        "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+        "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+        "elk.separateConnectedComponents": "false",
+        "elk.aspectRatio": "0.55",
+        "elk.spacing.componentComponent": "24"
+      }
+    },
+    "options": {
+      "elk.direction": "DOWN",
+      "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+      "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+      "elk.layered.layering.coffmanGraham.layerBound": "1",
+      "elk.spacing.nodeNode": "24",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+      "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+      "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+      "elk.separateConnectedComponents": "false",
+      "elk.aspectRatio": "0.55",
+      "elk.spacing.componentComponent": "24"
+    },
+    "icons": {
+      "title": "capture",
+      "semantic": "capture",
+      "storage": "capture",
+      "retained": "capture",
+      "pending": "capture",
+      "projection": "selection",
+      "execution": "rust",
+      "footer": "capture"
+    },
+    "roles": {
+      "semantic": "default",
+      "retained": "default",
+      "pending": "default",
+      "execution": "execution",
+      "footer": "default",
+      "title": "default",
+      "storage": "default",
+      "projection": "default"
+    }
+  },
+  "icons": [
+    "engineering",
+    "weaver"
+  ]
+}
+|
+} } }

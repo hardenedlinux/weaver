@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 module RoutineRoutingConfig {
   import LlmRouting as R from "./LlmRouting"
   type Normal={root:int,payload:int,profile:int,node:int,response:int,requirements:Set[int],targets:Set[int],allowance:int,contextNeeded:int,region:int}

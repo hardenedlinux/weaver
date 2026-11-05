@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 package v1
 
 import (
@@ -18,7 +22,16 @@ func (p ProviderProfile) RequestFacts(source string) (ProviderRequestFacts, erro
 	if err != nil || body == nil {
 		return zero, errors.New("profile request object")
 	}
+	anthropic := p.Protocol == AnthropicMessagesSSE
 	for key := range body {
+		if anthropic {
+			switch key {
+			case "model", "stream", "messages", "max_tokens", "system":
+				continue
+			default:
+				return zero, errors.New("unregistered Anthropic request field")
+			}
+		}
 		switch key {
 		case "model", "stream", "messages", "max_completion_tokens", "max_tokens", "n", "temperature", "top_p", "frequency_penalty", "presence_penalty", "seed", "stop", "stream_options", "user", "response_format":
 		default:
@@ -48,6 +61,11 @@ func (p ProviderProfile) RequestFacts(source string) (ProviderRequestFacts, erro
 	tokens, ok := providerValue[uint64](cap)
 	if !ok || tokens == 0 || tokens > p.MaxOutputTokens {
 		return zero, errors.New("profile token limit")
+	}
+	if system, present := body["system"]; anthropic && present {
+		if _, ok := providerValue[string](system); !ok {
+			return zero, errors.New("Anthropic system text")
+		}
 	}
 	count, err := p.messages(body["messages"])
 	if err != nil {
@@ -86,6 +104,9 @@ func (p ProviderProfile) messages(raw json.RawMessage) (uint64, error) {
 		role, ok := providerValue[string](fields["role"])
 		if !ok || (role != "system" && role != "developer" && role != "user" && role != "assistant") {
 			return 0, errors.New("unregistered message role")
+		}
+		if _, named := fields["name"]; p.Protocol == AnthropicMessagesSSE && (named || (role != "user" && role != "assistant")) {
+			return 0, errors.New("unregistered Anthropic message semantics")
 		}
 		if _, ok := providerValue[string](fields["content"]); !ok {
 			return 0, errors.New("text content required")

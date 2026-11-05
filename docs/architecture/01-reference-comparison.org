@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Weaver Reference Comparison and Evidence Register
 #+language: en
 #+date: 2026-10-18
@@ -25,7 +29,7 @@ the Go-owned plan; see [[file:../50-59-research-program/59-provider-rpc/59.21-ve
 
 The initial comparison inspected exact source snapshots on 2026-10-18 without
 building them. The subsequent [[file:11-source-to-execution-assurance-review.org][guard-law review]] records limited standalone
-proof checks; [[file:12-fm1-baseline-and-native-qualification.org][the isolated FM1 investigation]] now records complete owner builds,
+proof checks; [[file:12-fm1-baseline-and-runtime-qualification.org][the isolated FM1 investigation]] now records complete owner builds,
 selected native execution and retained failures. Each receipt retains its own
 source/target/scope. Source inspection alone is not a fresh acceptance result.
 No exact-head remote CI, deployment or benchmark result is claimed here.
@@ -384,7 +388,7 @@ qualification was performed by this documentation review.
 The resulting concrete ordering and safe-orphan treatment are in
 [[file:05-authorization-execution-protocol.org][Authorization-to-execution coordination]]. The upstream Go source investigation
 and its distinct cloud-integration role are in
-[[file:06-go-cloud-native-role.org][Go's cloud-native and Agent Gateway role]].
+[[file:06-go-control-plane-role.org][Go's cloud-native and Agent Gateway role]].
 
 ** Source-admission, ledger and stale-worker refinement
 
@@ -516,7 +520,7 @@ actual evaluator/validator/protobuf changes, not just compiler version strings.
 
 * Greenfield baseline qualification follow-up
 
-[[file:12-fm1-baseline-and-native-qualification.org][The isolated FM1 investigation]] is the current owner for new complete-build
+[[file:12-fm1-baseline-and-runtime-qualification.org][The isolated FM1 investigation]] is the current owner for new complete-build
 and native qualification results. The earlier source-only and standalone-proof
 receipts above retain their original scope. Its POO build uses Core at the
 parent gitlink 377761072f2e8e39ae03ee26027d1fa5ad80b018 rather than the separate

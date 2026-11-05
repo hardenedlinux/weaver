@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 // Parameterized finite fixture. Lean proves arbitrary finite key-list cardinality.
 // Root, budget account, history account and endpoint are different coordinates.
 module FiniteDomainMigration {

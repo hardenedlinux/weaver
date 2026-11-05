@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 //go:build integration && !windows
 
 package dev
@@ -24,24 +28,12 @@ func TestProviderFreshImageAndRestartStartup(t *testing.T) {
 
 func copyStartupImage(t *testing.T) string {
 	t.Helper()
-	source, err := os.Open(serverBinary)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer source.Close()
 	path := filepath.Join(t.TempDir(), "weaver-server")
-	target, err := os.OpenFile(path, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0700)
+	digest, err := publishProviderImage(serverBinary, path)
 	if err != nil {
 		t.Fatal(err)
 	}
-	hash := sha256.New()
-	_, copyError := io.Copy(io.MultiWriter(target, hash), source)
-	syncError := target.Sync()
-	closeError := target.Close()
-	if copyError != nil || syncError != nil || closeError != nil {
-		t.Fatalf("fresh image: copy=%v sync=%v close=%v", copyError, syncError, closeError)
-	}
-	t.Logf("copied image sha256=%x", hash.Sum(nil))
+	t.Logf("copied image sha256=%s", digest)
 	return path
 }
 

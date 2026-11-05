@@ -1,7 +1,11 @@
+-- SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+--
+-- SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 namespace Weaver.StreamingExecution
 
-/- Native refinement premises: authentic source and cost bounds; durable SQLite
-   CAS/lock semantics; non-forgeable Rust capabilities; immutable BLOB ownership;
+/- Native refinement premises: authentic source and cost bounds; durable Turso FULL/WAL
+   CAS/immediate-write semantics; non-forgeable Rust capabilities; immutable BLOB ownership;
    unused canonical range at send; faithful bounded TCP/TLS observations.
    No compiler, filesystem power-loss, provider exactly-once or native timing proof. -/
 structure State (Message : Type) where
@@ -40,9 +44,9 @@ inductive Step {M : Type} [DecidableEq M] (owner : ExecutorEvidence M) (budget :
       {s with unknown := fun x => if x=m then true else s.unknown x}
   | send (s p) (current : Current s p) (reserved : s.reserved p.message = true)
       (burned : s.unknown p.message = true)
-      (nativeFresh : s.calls (p.message,p.offset) = 0) : Step owner budget s
+      (freshConsumption : s.calls (p.message,p.offset) = 0) : Step owner budget s
       {s with calls := fun k => if k=(p.message,p.offset) then 1 else s.calls k}
-  | retireZeroCall (s m) (nativeZeroCallAndPermitDestroyed : owner.zeroCallAndRetired s m) : Step owner budget s
+  | retireZeroCall (s m) (zeroCallAndPermitDestroyed : owner.zeroCallAndRetired s m) : Step owner budget s
       {s with unknown := fun x => if x=m then false else s.unknown x}
   | publish (s) : Step owner budget s {s with revision := s.revision+1, fence := s.fence+1}
   | custody (s) : Step owner budget s {s with generation := s.generation+1}
@@ -157,4 +161,144 @@ theorem execution_and_drain_composition {M Worker : Type} [DecidableEq M]
 #print axioms shutdown_blocks_admission
 #print axioms execution_and_drain_composition
 end Lifecycle
+/- Refinement of the final durable receipt join. The database transaction must
+   read these fields faithfully and hold the writer lock through the callback.
+   This premise excludes coherent rollback and hostile storage forgery. -/
+namespace RangeReceipt
+
+structure Identity where
+  sequence : Nat
+  offset : Nat
+  length : Nat
+  deriving DecidableEq
+
+structure Record where
+  identity : Identity
+  unknown : Bool
+  written : Option Nat
+  cursor : Nat
+  nextSequence : Nat
+
+def Exact (r : Record) (p : Identity) : Prop :=
+  r.identity = p ∧ r.unknown = true ∧ r.written = none ∧
+  r.cursor = p.offset ∧ r.nextSequence = p.sequence + 1
+
+def GuardedStep {M : Type} [DecidableEq M] (owner : ExecutorEvidence M)
+    (budget : Nat) (s t : State M) (r : Record) (p : Identity) : Prop :=
+  Exact r p ∧ Step owner budget s t
+
+theorem mismatched_record_denies {r : Record} {p : Identity}
+    (mismatch : r.identity ≠ p ∨ r.unknown ≠ true ∨ r.written ≠ none ∨
+      r.cursor ≠ p.offset ∨ r.nextSequence ≠ p.sequence + 1) : ¬ Exact r p := by
+  intro h
+  rcases h with ⟨identity, unknown, written, cursor, successor⟩
+  rcases mismatch with h | h | h | h | h
+  · exact h identity
+  · exact h unknown
+  · exact h written
+  · exact h cursor
+  · exact h successor
+
+theorem inexact_cannot_refine_execution {M : Type} [DecidableEq M]
+    {owner : ExecutorEvidence M} {s t : State M} {r : Record} {p : Identity}
+    (inexact : ¬ Exact r p) : ¬ GuardedStep owner budget s t r p := by
+  intro step
+  exact inexact step.1
+
+theorem guarded_step_preserves_safety {M : Type} [DecidableEq M]
+    {owner : ExecutorEvidence M} {s t : State M} {r : Record} {p : Identity}
+    (safe : Safe budget s) (step : GuardedStep owner budget s t r p) : Safe budget t :=
+  safe_step safe step.2
+
+#print axioms mismatched_record_denies
+#print axioms inexact_cannot_refine_execution
+#print axioms guarded_step_preserves_safety
+end RangeReceipt
+
+namespace RangeProgress
+/- The SQL adapter must faithfully read the latest durable range and mutable
+message projection under one deciding transaction. This is not an anti-rollback
+anchor: coherent rollback/deletion of both histories is outside this premise. -/
+inductive Phase where | queued | active | unknown | complete
+  deriving DecidableEq
+inductive Outcome where | unknown | partialWrite | complete | notSent
+  deriving DecidableEq
+structure Projection where
+  phase : Phase := .queued
+  cursor : Nat := 0
+  nextSequence : Nat := 0
+  deriving DecidableEq
+structure Tail where
+  sequence : Nat
+  offset : Nat
+  length : Nat
+  written : Option Nat
+  outcome : Outcome
+
+def ValidTail (total : Nat) (tail : Tail) : Prop :=
+  0 < tail.length ∧ tail.offset + tail.length ≤ total ∧
+  match tail.outcome with
+  | .unknown => tail.written = none
+  | .partialWrite => ∃ n, tail.written = some n ∧ n < tail.length
+  | .complete => tail.written = some tail.length
+  | .notSent => tail.written = some 0
+
+def expected (total : Nat) : Option Tail → Projection
+  | none => {}
+  | some tail =>
+    let endOffset := tail.offset + tail.length
+    match tail.outcome with
+    | .unknown | .partialWrite => ⟨.unknown, tail.offset, tail.sequence + 1⟩
+    | .complete => ⟨if endOffset = total then .complete else .active, endOffset, tail.sequence + 1⟩
+    | .notSent => ⟨if tail.offset = 0 then .queued else .active, tail.offset, tail.sequence + 1⟩
+
+def Joined (total : Nat) (tail : Option Tail) (actual : Projection) : Prop :=
+  (∀ t, tail = some t → ValidTail total t) ∧ actual = expected total tail
+
+def CanAdmit (total : Nat) (tail : Option Tail) (actual : Projection) : Prop :=
+  Joined total tail actual ∧ (actual.phase = .queued ∨ actual.phase = .active) ∧ actual.cursor < total
+
+theorem changed_projection_rejected (changed : actual ≠ expected total tail) :
+    ¬ Joined total tail actual := fun joined => changed joined.2
+
+theorem unresolved_tail_blocks_admission (tail : Tail)
+    (unresolved : tail.outcome = .unknown ∨ tail.outcome = .partialWrite) :
+    ¬ CanAdmit total (some tail) actual := by
+  rintro ⟨joined,phase,_⟩
+  rcases unresolved with h | h <;>
+    simp [joined.2, expected, h] at phase
+
+theorem completed_tail_preserves_cursor (tail : Tail) (complete : tail.outcome = .complete)
+    (joined : Joined total (some tail) actual) :
+    actual.cursor = tail.offset + tail.length ∧ actual.nextSequence = tail.sequence + 1 := by
+  simp [joined.2, expected, complete]
+
+def ProgressGuardedStep {M : Type} [DecidableEq M] (owner : ExecutorEvidence M)
+    (budget : Nat) (s t : State M) (total : Nat) (tail : Option Tail) (actual : Projection)
+    (record : RangeReceipt.Record) (permit : RangeReceipt.Identity) : Prop :=
+  Joined total tail actual ∧ RangeReceipt.GuardedStep owner budget s t record permit
+
+theorem changed_progress_cannot_execute {M : Type} [DecidableEq M]
+    {owner : ExecutorEvidence M} {s t : State M}
+    (changed : actual ≠ expected total tail) :
+    ¬ ProgressGuardedStep owner budget s t total tail actual record permit :=
+  fun step => changed step.1.2
+
+theorem joined_execution_preserves_safety {M : Type} [DecidableEq M]
+    {owner : ExecutorEvidence M} {s t : State M}
+    (safe : Safe budget s)
+    (step : ProgressGuardedStep owner budget s t total tail actual record permit) : Safe budget t :=
+  RangeReceipt.guarded_step_preserves_safety safe step.2
+
+example : ¬ Joined 8 (some ⟨0,0,1,none,.unknown⟩) ({} : Projection) := by
+  intro h
+  have phase := congrArg Projection.phase h.2
+  simp [expected] at phase
+
+#print axioms changed_projection_rejected
+#print axioms unresolved_tail_blocks_admission
+#print axioms completed_tail_preserves_cursor
+#print axioms changed_progress_cannot_execute
+#print axioms joined_execution_preserves_safety
+end RangeProgress
 end Weaver.StreamingExecution

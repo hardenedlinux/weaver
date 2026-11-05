@@ -1,0 +1,95 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+#+title: 59.33 Environment-Driven Build: Local PR Qualification
+#+language: en
+
+* Source and experiment boundary
+The implementation in [[https://github.com/hardenedlinux/weaver/pull/1][private PR 1]] was qualified at
+=1543e92e2b79bde9bb387fb81dafb6def01fb72e= on the actual twelve-CPU Darwin host.
+The runs explicitly unset =CC=, =CXX= and =COMPILER_PATH=. Compiler discovery,
+Cargo-owned pkg-config metadata and ordinary dynamic loading used the selected
+environment; no fixed compiler executable or profile directory was injected.
+
+The original runtime deadline remains fifteen seconds. Source preparation and
+compilation have separate durations. No passing gxi trial uses an explicit
+early exit, omitted cleanup or a larger runtime deadline. Dependency pins and
+Gateway execution semantics are unchanged. This file is derived evidence and
+does not change the qualified implementation.
+
+| Binding | SHA-256 |
+|---------+---------|
+| Qualified source input digest | 20a383cace6345977de7a9c223feeb734a84cb4f7a2fb05f3e85d7f6dc1cde2f |
+| Dependency source digest | a862e398c7dcb0266f17efcdae7a9594f67973f8d75f19b26807746f748bf3e5 |
+
+* Cold-image paired result
+Four fresh generations alternate ABBA and BAAB layouts linked from the same C
+objects. All 1,572 image UUIDs and inodes are distinct. Every runtime child is
+the ordinary installed gxi entry, with a new process and the unchanged deadline.
+Shared installed runtime/foreign bodies and OS caches are not an OS-wide cold
+boot; first use of the selected fresh images is reported separately.
+
+| Generation | Coalesced first use | Coalesced repeat / new process |
+|------------+---------------------+--------------------------------|
+| 0 | 7.874421 s | 1.649901 s |
+| 1 | 6.949212 s | 1.903959 s |
+| 2 | 6.186550 s | 1.588407 s |
+| 3 | 5.609414 s | 1.573039 s |
+
+All eight coalesced trials completed nineteen original cases, checked the
+standard test-runner result, returned to their caller, exited naturally with
+status zero and left an empty owned process group. Their complete output
+matches the installed-layout control. All eight separate-layout trials remain
+recorded deadline failures; watchdog cancellation is not a cleanup success.
+The original installed-layout observation completed in 14.266815 s and is not
+substituted for the paired first-use result.
+
+The profile exercises all 386 selected logical entries in seven physical
+images. Native diagnostics retain the real loader and closer calls:
+
+| Layout | Opens | Closes | Outstanding | Errors / overflow | Peak images |
+|--------+-------+--------+-------------+-------------------+-------------|
+| Separate | 463 | 463 | 0 | 0 / 0 | 513 |
+| Coalesced | 463 | 463 | 0 | 0 / 0 | 134 |
+
+The compiler used by the diagnostic is obtained from the SDK's typed tool
+receipt and resolved through the build environment, rather than a test constant.
+
+* Independent complete integration result
+A second newly prepared prefix passed all sixteen =check-scheme= stages on the
+same committed source. Source and dependency hashes matched before and after.
+
+| Check | Result | Duration |
+|-------+--------+----------|
+| Environment and real pkg-config integration | PASS | 2.703 s |
+| Dynamic image preparation and activation | PASS | 79.241 s |
+| Ordinary dynamic gxi standard suites | PASS, natural exit 0 | 8.482807 s |
+| Actual Scheme / Rust / Go control and stream integration | PASS, exit 0 | 144.272 s |
+
+The stream tests cover revocation, restart, partial writes, shared budgets,
+provider-client retries and publication response loss. The environment test executes the
+actual Rust metadata producer and pkg-config consumer, including paths with
+spaces and a version checked against Cargo workspace metadata. Focused Go race
+tests, architecture/workflow checks, actionlint, example Clippy with warnings
+denied and the FFI crate's three tests including its ASP deny gate also passed.
+
+The earlier cache-copy/check ordering conflict was discarded with a complete
+clean of the task-owned Cargo target. Its exploratory output is not acceptance
+evidence. Final builds and both native acceptance runs completed afterward.
+
+* Remote CI boundary and retained evidence
+PR workflow [[https://github.com/hardenedlinux/weaver/actions/runs/41074924436][41074924436]] did not start any test step. GitHub rejected all seven
+jobs with an account payment or spending-limit annotation. It did recognize
+the requested =ubuntu-latest= and =macos-latest= labels. This is an external
+account restriction, not a passing CI result or a source assertion failure.
+Organization administration must resolve it before exact-PR remote checks can
+execute. No billing setting, permission, dependency pin or timeout was changed
+to hide that restriction.
+
+The fixed ignored results are =latest-scheme-startup.json= and
+=latest-check-scheme.json= under =.cache/verification/=. Native traces, generated
+package metadata, preparation prefixes and build logs are temporary and cleaned
+after verification. Curated English Org evidence is committed; raw logs are
+not added to Git. The PR is complete for code review with the remote CI
+restriction stated explicitly; it is not merged by this qualification.

@@ -1,0 +1,19 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+[package]
+name = "weaver-governance-build"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+[dependencies]
+gerbil-scheme-aot-build.workspace = true
+[lints]
+workspace = true
+[dev-dependencies]
+asp-rust.workspace = true
+criterion.workspace = true
+[[bench]]
+name = "gateway"
+harness = false

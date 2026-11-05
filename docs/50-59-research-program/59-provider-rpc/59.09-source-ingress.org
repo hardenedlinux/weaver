@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+TITLE: 59.09 Independent Source Ingress and Authority Binding
 #+LANGUAGE: en
 
@@ -43,6 +47,7 @@ kept as a fallback. No CLI/stdio or HTTP request bridge is added.
 | WEAVER_GRPC_SOURCE_PEER_SHA256 | Required approved source leaf DER digest; distinct from operation |
 | WEAVER_TOKEN_SHA256 | Operation bearer digest |
 | WEAVER_ADMIN_TOKEN_SHA256 | Required source bearer digest; distinct from operation |
+| WEAVER_REVIEW_AUTHORITY | Required bounded JSON: audience, epoch, public_key (Ed25519 verification key), allow_expansion; independent producer, deployment-owned |
 | WEAVER_GRPC_CERT / WEAVER_GRPC_KEY / WEAVER_GRPC_CLIENT_CA | Process-owned server identity and client issuer roots shared by the two listeners |
 
 Both addresses must remain loopback in this deployment profile and must be
@@ -118,7 +123,7 @@ combined saturation, cross-ingress identity/method, source capacity and joint
 shutdown controls alongside earlier provider retry/partial-write/Arrow tests.
 SourceIngress has ten executable controls and a 1000-trace, sixty-step sampled
 safety run. ProviderRpc prints twenty checked Lean declarations without sorryAx.
-The strict in-process SysML SDK and trace map also pass. The updated core D2 was
+The strict in-process OpenSysML Go API and trace map also pass. The updated core D2 was
 rendered to SVG/PNG and visually checked for readable labels and routing.
 
 * Availability, recovery and performance limits
@@ -165,3 +170,10 @@ These are serial Apple M2 Pro/Darwin samples, not a matched before/after study.
 Variance, filesystem durability and validation work must be considered; these
 numbers do not establish a publication latency bound under contested locks.
 The source benchmark's zero-provider-call assertion passes in every run.
+
+* Independent reviewed publication
+
+The default served profile requires the deployment verification key before
+serving. Source-role authentication cannot issue reviews or install that key.
+See [[file:59.89-reviewed-publication-authority-boundary.org][Independent SPEC Review and Governed Publication]] for the signed evidence,
+original-parent CAS, current reviewed-head guard and recovery obligations.

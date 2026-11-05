@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 package devrunner
 
 import (
@@ -44,7 +48,7 @@ func TestOldBenchmarkFilesCannotQualifyCurrentRun(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	if err := collectBenchmarks(root, t.TempDir(), time.Unix(200, 0).UTC().Format(time.RFC3339Nano)); err == nil {
+	if err := collectBenchmarks(filepath.Join(root, "target"), t.TempDir(), time.Unix(200, 0).UTC().Format(time.RFC3339Nano)); err == nil {
 		t.Fatal("stale benchmarks accepted")
 	}
 }

@@ -1,0 +1,120 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+#+TITLE: 59.67 Writer Owner Cancellation and Recovery
+#+LANGUAGE: en
+#+OPTIONS: toc:2
+
+* SysML decision before implementation
+
+[[file:../../../Project.sysml][Project]] and the existing
+=ControlActivation.GovernancePolicyProjection= own this refinement of
+[[file:59.66-bounded-writer-reuse.org][bounded writer reuse]]. Reuse SPEC meanings
+and existing Lean/Quint ownership; add native scheduling evidence in MRR Data's
+standard test targets, without a second ledger or qualification package.
+
+The current provider closes the writer owner, reader and bootstrap connection
+through separate critical sections. It also permits reopening the stopped
+object. An older partial teardown can therefore overlap a new resource image.
+Closing becomes terminal for that object. Recovery uses a fresh provider with
+the same original database, coordination home, operation and authority bindings.
+The existing Backend already constructs a fresh provider on recovery. This is
+resource ownership, not a new subject/authority issuance protocol.
+
+#+CAPTION: Terminal resource ownership preserves the original obligation and separate final-use admission.
+#+ATTR_ORG: :width 1600
+#+ATTR_HTML: :width 100% :alt Terminal writer ownership, exact recovery and separate Rust final admission
+[[file:59.67-writer-owner-lifecycle.svg]]
+
+Serialize complete open/close resource changes with the existing bootstrap
+writer/lifecycle mutex. Closing disables checkout before any successful close
+acknowledgment. Live leases retain ownership and make close fail. Their late
+return cannot populate the stopped idle set. Complete close is idempotent, and
+neither a late close nor a late return on an old object can address a new owner.
+
+* Required scheduling distinctions
+
+| Event | Meaning and required observation |
+|-------+----------------------------------|
+| Cancel before validation | No new metadata decision; old reservation/exposure still needs its existing domain evidence |
+| Cancel after validation | Accepted worker may commit; drain and reconcile original operation, never infer abort or refund |
+| Driver COMMIT Unknown | Discard the session; recover the exact operation and retain uncertainty |
+| Lost response after known commit | Healthy physical reuse is allowed; caller still has an Unknown delivery outcome and cannot mint another consume |
+| Effective revocation before seal | Existing shared-home write witness rejects the stale attempt; reopening cannot refresh its old authority vector |
+| Consume writes are pending before COMMIT | Seal is not commitment; resolve the durable outcome, and never treat a failed revocation attempt as effective acknowledgment |
+| Close with live lease | No successful shutdown, no new checkout; late completion is not permission to reuse the stopped owner |
+| Fresh owner recovery | Reconstruct original durable outcomes and obligations, not idle sessions or new logical identities |
+
+Close does not cancel an executing transaction or replace the final Rust fence.
+A provider object is not a durable independent epoch anchor. Cross-process old
+credentials, whole-store rollback and external authority effectiveness remain
+the existing Host/SPEC/executor obligations.
+
+* Implementation acceptance plan
+
+[[file:59.68-cpu-matched-writer-review.org][CPU-matched requalification]] subsequently raises the lifecycle fixture to actual
+Host parallelism with a four-worker floor; the fixed-four receipts below retain
+their original configurations. The core resource/authority diagram remains shared.
+
+First preserve a regression failure for same-object resurrection. Add bounded
+thread rendezvous tests for late successful return, simultaneous close, refusal
+of new checkout and fresh-object recovery. Use real MRR Backend/Turso transactions
+to cancel before/after validation, inject lost commit delivery, retire authority
+during validation and invoke concurrent shutdown. Recover original typed body,
+head/operation/outbox and complete authority vector after restart. Verify no
+repeat validation/consumption and no disappearance of held unknown exposure.
+
+Reuse the existing process-death/partial-tuple/outbox cases with the reusable
+factory. Distinguish provider reconstruction tests from actual process restart.
+Use at least four runtime workers, with four write/shared workers and reusable
+writers in the lifecycle fixture. Other multithreaded Backend test runtimes also
+use a four-worker floor; CPU-derived performance drivers use the available Host CPU count
+with that minimum. Logical single-slot refusal controls remain separate. Earlier
+two-thread measurements are historical and cannot qualify this configuration.
+Keep prior watchdog and byte/admission bounds and full worker cleanup, preserve failures
+outside Git, and leave dependency pins and production Weaver code unchanged.
+
+* Executed evidence and semantic limits
+
+MRR Data [[https://github.com/tao3k/mrr-data/pull/12][PR 12]] commit =9125c1b4= contains the resource fix and native controls.
+Its [[https://github.com/tao3k/mrr-data/blob/9125c1b4/docs/architecture/shared-backend-writer-lifecycle.org][canonical lifecycle record]] owns test entrypoints and evidence distinctions.
+
+MRR Data's standard Cargo targets now include eight native writer-owner tests
+and five lifecycle integration tests covering six bounded schedules. The new
+controls use real Turso commits, the shared authority engine and acknowledged
+filesystem content. They retain the original claim/reservation/history and held=4
+unknown-exposure binding, including after an exact operation replay and outbox
+acknowledgment. Known-commit reply loss produces Unknown delivery without a second
+validation/consume. Effective retirement rejects a new nonce under the old
+authority, including after provider reconstruction.
+
+The resurrection negative control failed against the previous implementation:
+same-object reopening returned success. After the owner-state refinement, local
+four-worker WAL-control, fresh-MVCC and reusable standard runs each pass 63 tests.
+The reusable Arrow/query and graph/publication configuration passes 78 tests;
+all-target Clippy with that expanded feature set passes with warnings denied.
+Seven performance measurements stay opt-in. Existing ASP deny checks and
+watchdog bounds remain unchanged. No new throughput result is claimed.
+
+The fixture pauses before validation, before native COMMIT and after a known
+native COMMIT with lost delivery. Concurrent shutdown cannot acknowledge closure
+while accepted work remains live. A separate unit injection forces COMMIT failure
+after rollback; it checks conservative driver-Unknown disposal, not an ambiguous
+durable commit. A staged write/seal is not effective retirement: competing
+retirement must resolve the original proposal against the actual durable outcome.
+Caller cancellation and unsuccessful retirement cannot authorize a refund.
+
+Fresh-provider recovery tests reconstruct resources in the same process. Existing
+partial-tuple/process-death/outbox cases remain a separate evidence class in the
+same standard targets. A first WAL-labeled invocation accidentally set the MVCC
+selector; its log remains as fresh-mode evidence. The actual WAL control unsets
+the selector. Initial harness compile errors and the failing regression remain
+in temporary storage; no logs become production assets or tracked evidence blobs.
+
+SPEC owns the original semantic obligations. Existing Lean/Quint owners remain
+unchanged: this resource lifecycle has native scheduling evidence, not another
+authorization or accounting model. Cross-process credentials, independent roots,
+whole-store rollback protection and Rust currentAtUse at actual transport release
+still require their existing Host/executor evidence. These fixtures execute no
+external send or account refund and cannot establish those missing refinements.

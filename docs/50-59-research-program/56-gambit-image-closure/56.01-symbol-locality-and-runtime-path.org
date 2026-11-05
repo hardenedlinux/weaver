@@ -1,0 +1,114 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+#+TITLE: Symbol Locality and the Ordinary Dynamic Native Path
+#+LANGUAGE: en
+#+OPTIONS: toc:2 num:nil
+
+* Controllable work at the actual blocking boundary
+The prior checkpoint identified first-use F_CHECK_LV library-validation waits,
+separately from synchronous dyld image-notification waits. It also showed that
+sharing only the original Core/POO/bootstrap subset left too many independent
+stdlib images. Reducing those mappings is an application packaging change;
+removing library validation or skipping dlclose would change the security and
+resource contract and is excluded.
+
+The new admission inventory covers all 260 native body/phase units consumed by
+the narrowed original workload. It selects 238 conservatively pure lowered
+Scheme units and leaves 22 C/FFI-token units on their original fallback paths.
+The latter are not silently admitted through an exception. The native builder
+reuses 98 source-hash-verified objects with complete configured compiler options
+and freshly compiles the additional 140 lowered Scheme units with those options.
+No high-level Scheme function, Contract or initializer body is rewritten.
+
+* Hidden assumption: a linker entry is not globally unique
+Different logical modules can export the same native linker entry. Directory
+boundaries previously kept these definitions in separate images. A naive whole
+closure merge would collide; renaming entries or resolving only by basename could
+also initialize the wrong module.
+
+The publication manifest binds the complete module identity and source digest to
+its image, original entry, object digest and compiler profile. The partitioner
+compares every exported native definition, not just filenames or LNK symbols.
+Intersecting definition sets must occupy different images. No module may be
+omitted or appear in two partitions. Each completed linked image is checked for
+exact entry membership and absence of C init/term sections. There are no direct
+undefined LNK dependencies in admitted objects.
+
+Gambit's current dlopen path resolves the requested symbol with dlsym against the
+returned image handle. The handle/entry pair, together with the manifest's logical
+module identity, supplies locality. Bare symbol names, physical image hashes,
+inodes and UUIDs do not identify logical modules or authorize Gateway effects.
+The [[file:../../../dev/proofs/evidence/native-image-closure/partition.json][partition]] and [[file:../../../dev/proofs/evidence/native-image-closure/images.json][native manifest]] retain that relation explicitly.
+
+* Publication and consumption
+Object progress records are diagnostic only. The producer publishes a completed,
+content-bound object/partition record only after every expected unit and audit
+finishes. Image preparation checks that record, validates all input digests,
+links each declared partition and checks each image's exported entry set. It then
+publishes a second content-bound image-completion record by an atomic local rename.
+
+The native controller verifies the image-completion record and its referenced
+manifest before starting a timed child. The complete actually consumed Scheme
+body/interface closure, including all excluded fallback bodies, is pre/post
+hashed. There is one trusted writer and no concurrent artifact mutation. These
+local rename/hash checks do not establish a distributed publication or filesystem
+anti-rollback protocol; before/after hashes cannot exclude transient tampering.
+
+* Fixed first-use controls
+The [[file:../../../dev/proofs/evidence/native-image-closure/plan.json][pre-execution plan]] fixes four paired blocks with reversed cell order.
+Every cell first use is followed by a repeat. Controls use the exact same 238
+objects as the candidate: the original directory grouping for the first 98 and
+independent images for the other 140. Only the packing partition differs.
+
+Every cell/block has separately linked selected-image files, fresh inodes and
+unique random UUIDs. Every process has a fresh GERBIL_PATH. All sixteen samples
+remain in the matrix. All eight candidate observations must independently pass
+the original fifteen-second whole-process gate, original checks, decoder rejection,
+exact consumed module paths and complete tracked cleanup. A deadline failure stays
+failed while the controller waits for natural exit; no native child is killed.
+
+Common installed runtime/foreign bodies and OS caches remain shared. The claim is
+selected application-image first use with an ordinary cold process, not an OS-wide
+page-cache reset or a global latency guarantee. Linking, image validation and
+hashing touch file data before timing. No host security check is disabled, no
+unrelated service is stopped and no cache purge is performed.
+
+* Native controls for symbol locality
+The native collision probe gives two different modules the same exported linker
+entry. An attempted shared-image merge must fail linking. Separate handles must
+initialize the requested A and B bodies in order, without eager initialization.
+A deliberately wrong alias points B's path at A's image. Even a natural zero exit
+cannot turn that wrong binding into valid identity evidence. Every observed probe
+still uses the real loader and closes every tracked successful acquisition.
+
+* Native link-profile correction
+The first expanded link generation rejected an unresolved legacy math import,
+_pow, against the newer SDK stubs. No native matrix sample used that generation.
+The same unchanged object resolves against the already installed workspace SDK
+stubs and still imports the runtime libSystem implementation. The separate
+[[file:../../../dev/proofs/evidence/native-image-closure/link-profile.json][link profile]] is applied symmetrically to control and candidate; no unresolved
+symbol suppression, symbol renaming, global SDK change or dependency pin change
+is used. The rejected artifacts and exact linker output remain retained.
+
+Native math interface checks follow the primary matrix, so they cannot prewarm
+its selected candidate images. RTLD_NOW import binding and checked original math
+operations provide bounded ABI evidence; they are not a universal numerical proof.
+
+* Stronger ordinary-entry supplement
+A separate [[file:../../../dev/proofs/evidence/native-image-closure/launcher-cold-plan.json][ordinary-launcher supplement]] is declared before creating and executing
+four additional candidate generations. These have new random UUIDs and native
+files disjoint from the primary matrix. All four must pass the same fifteen-second
+whole-process gate through the unchanged original shell launcher, without an
+observer or appended script. They supplement, rather than replace, the original
+matrix and its four declared warm launcher controls.
+
+The protected shell strips the observer insertion variable. Its natural runtime
+cleanup remains unchanged; no per-handle counts are invented for unobserved runs.
+The matched observed binary/profile and the separate LU destructor probe provide
+complementary resource evidence. Token screening is a trusted-source artifact
+admission heuristic, not a general Scheme purity proof or an untrusted-code
+sandbox. The final independent audit also checks native initializer/finalizer
+section types. Semantic effects remain governed by the original Contracts and
+final Policy/execution guards.

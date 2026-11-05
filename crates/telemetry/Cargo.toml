@@ -1,0 +1,21 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+[package]
+name = "weaver-telemetry"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dev-dependencies]
+asp-rust.workspace = true
+criterion.workspace = true
+proptest.workspace = true
+
+[[bench]]
+name = "gateway"
+harness = false
+
+[lints]
+workspace = true

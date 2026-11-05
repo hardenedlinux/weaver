@@ -1,13 +1,23 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: AI Agent Gateway Authoritative Head Observation and Original Root CAS
 #+language: en
 #+date: 2026-10-19
 #+property: STATUS logical-gateway-profile-conditional-runtime-refinement-pending
 #+options: toc:3
 
+* Reader view
+
+An earlier read cannot grant a later effect.
+
+[[file:36.02-gateway-head-cas.svg]]
+
 * Scope correction: AI Agent Gateway execution authority
 
 Weaver is an AI Agent Gateway. Its enforcement boundary covers canonical agent
-requests, provider/model routes, SDK retries and redirects, message/stream queues,
+requests, provider/model routes, provider-client retries and redirects, message/stream queues,
 original claims and budgets, and Rust broker admission of the actual send.
 Isolation here means separation and revocation of logical execution authority.
 A broker session, queue owner or routing head can be fenced through software
@@ -74,9 +84,9 @@ registry or declare a replacement original root.
 |-------+-------------------------+--------------------|
 | Scheme | Define canonical operation identity, continuation meaning, claim/history/budget invariants and Policy request projection | Reconciliation never creates a fresh semantic root or refunds unknown work |
 | Cedar Code as Policy | Evaluate the actual bound principal/action/resource/context and every required policy layer | An earlier allow is invalid when actual effect, route or relevant state changes |
-| Go | Kubernetes lifecycle/reconciliation, provider/agent protocol shaping and network/SDK adapters | Every outbound attempt, retry or redirect returns to the Rust broker; adapter health and process identity are not execution authority |
+| Go | Kubernetes lifecycle/reconciliation, provider/agent protocol shaping and network/Gerbil toolchain adapters | Every outbound attempt, retry or redirect returns to the Rust broker; adapter health and process identity are not execution authority |
 | Rust authority/ledger owner | Persist prepared records and root decisions, authenticate full views and serialize root CAS against head/fence changes | Check expected image at the actual deciding write, not before an asynchronous queue |
-| Rust final broker | Own outbound queue/transport admission, original consumption and exact request/route binding; recheck current authority and Policy | A stored projection, SDK callback or old queue handle cannot emit independently |
+| Rust final broker | Own outbound queue/transport admission, original consumption and exact request/route binding; recheck current authority and Policy | A stored projection, Gerbil toolchain callback or old queue handle cannot emit independently |
 | Quint and Lean | Check fault traces and prove invariant preservation over real semantic source steps | No claim of native HTTP, database or provider refinement from finite models alone |
 
 Go's network and Kubernetes ecosystems justify its adapter/control-plane role.
@@ -188,11 +198,11 @@ a requirement for hardware antirollback. Complete unobservable rollback or a
 fork of the deciding authority violates the premise; the model does not claim
 it can detect such a history from an entirely rolled-back local state.
 
-* Actual send, SDK retries, redirects and streaming queues
+* Actual send, provider-client retries, redirects and streaming queues
 
 Go adapters construct normalized attempt intents for the broker. They must not
 retain an independent provider transport or credential path that bypasses it.
-Automatic SDK retries/redirects must be mediated as proposed attempts against
+Automatic provider-client retries/redirects must be mediated as proposed attempts against
 the same original logical key. Kubernetes election, a new request ID, reconnect
 or new nonce cannot create a second original claim or restore its unknown budget.
 Runtime network/credential permissions enforce this software mediation contract.
@@ -274,7 +284,7 @@ The following reuse does not assert extraction or existing runtime implementatio
 |--------+-------------------------------------+----------------------------|
 | P12 authorized-effect-token | Exact payload/runtime/session/sequence/arena binding and immutable consume | Canonical provider/model/route/head/fence envelope at actual broker admission |
 | P13 strict-mediation | Indeterminate result retains consumed nonce and sequencing | Persist original root decision and authoritative spent-state; no replacement claim on lost response |
-| P15 effect-host | Consume before callback and check local identity | Mediate asynchronous provider/SDK retries and final queue admission |
+| P15 effect-host | Consume before callback and check local identity | Mediate asynchronous provider/provider-client retries and final queue admission |
 | P17/P22 durable store backend/store | Append/fsync/checkpoint/rebuild and recovery ownership mechanisms | Atomic expected-view/root CAS and authenticated current joins across independent projections |
 | P18 promotion transaction recovery | Original authentic commit can be recovered; duplicate response is not a prior commit | Typed prepared versus committed versus projected Gateway decision |
 | P19/P20 authorized recovery/application | Source-bound recovery joins; conditional effect uniqueness | Map to actual logical broker offer; metadata is not provider completion or budget settlement |
@@ -338,3 +348,9 @@ safety and concrete recovery cases; it does not inherit a liveness theorem from
 the different earlier hardware/continuation graph. No native software/store or
 provider refinement, performance claim or unconditional recovery guarantee is
 asserted. No gateway implementation or dependency pin is changed.
+
+* Embedded architecture views
+
+** 36.02-gateway-head-cas.svg
+
+[[file:36.02-gateway-head-cas.svg]]

@@ -1,0 +1,20 @@
+{
+  "name": "@weaver/architecture-renderer",
+  "private": true,
+  "license": "LGPL-2.1-or-later AND Apache-2.0",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "render": "bun src/render.ts",
+    "test": "bun test"
+  },
+  "devDependencies": {
+    "@types/bun": "1.4.4",
+    "fast-check": "4.10.2",
+    "typescript": "7.0.2",
+    "@deterministic-engineering/render": "git+ssh://git@github.com/hardenedlinux/deterministic-engineering.git#1b950df63a542c478bea3127fc9bd4472c07cbd9&path:/packages/render",
+    "playwright": "1.64.1",
+    "@openmbee/opensysml": "0.11.0"
+  },
+  "packageManager": "pnpm@11.25.0"
+}

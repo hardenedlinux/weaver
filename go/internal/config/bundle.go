@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 package config
 
 import (
@@ -13,10 +17,12 @@ import (
 
 // Bundle is trusted source configuration, not authority supplied by an agent.
 type Bundle struct {
-	Governance  Governance        `json:"governance"`
-	Tasks       []v1.Task         `json:"tasks"`
-	Plans       []v1.ProviderPlan `json:"plans"`
-	Publication v1.Publication    `json:"publication"`
+	SelectOnRequest bool                `json:"select_on_request,omitempty"`
+	Routing         []routing.Selection `json:"routing,omitempty"`
+	Governance      Governance          `json:"governance"`
+	Tasks           []v1.Task           `json:"tasks"`
+	Plans           []v1.ProviderPlan   `json:"plans"`
+	Publication     v1.Publication      `json:"publication"`
 }
 
 // Governance is the native governor's selected handoff, not a runtime permit.
@@ -32,34 +38,15 @@ func DecodeBundle(data []byte, format ProfileFormat) (Bundle, error) {
 	if len(data) == 0 || len(data) > 8<<20 {
 		return zero, errors.New("source bundle bound")
 	}
-	if format == ProfileYAML {
-		decoder := yaml.NewDecoder(bytes.NewReader(data))
-		var doc, tail yaml.Node
-		if err := decoder.Decode(&doc); err != nil {
-			return zero, err
-		}
-		if decoder.Decode(&tail) != io.EOF {
-			return zero, errors.New("one source document required")
-		}
-		value, err := bundleNode(&doc, 0)
-		if err != nil {
-			return zero, err
-		}
-		data, err = json.Marshal(value)
-		if err != nil {
-			return zero, err
-		}
-	} else if format != ProfileJSON {
-		return zero, errors.New("source format")
-	}
-	bundle, err := v1.Decode[Bundle](data)
+	data, err := sourceJSON(data, format)
 	if err != nil {
 		return zero, err
 	}
-	if err = bundle.Validate(); err != nil {
+	bundle, err := v1.DecodeSource[Bundle](data)
+	if err != nil {
 		return zero, err
 	}
-	return bundle, nil
+	return FreezeBundle(bundle)
 }
 
 func (b Bundle) Validate() error {
@@ -187,4 +174,28 @@ func bundleNode(n *yaml.Node, depth int) (any, error) {
 		}
 	}
 	return nil, errors.New("unsupported source YAML value")
+}
+
+func sourceJSON(data []byte, format ProfileFormat) ([]byte, error) {
+	if format == ProfileYAML {
+		decoder := yaml.NewDecoder(bytes.NewReader(data))
+		var doc, tail yaml.Node
+		if err := decoder.Decode(&doc); err != nil {
+			return nil, err
+		}
+		if decoder.Decode(&tail) != io.EOF {
+			return nil, errors.New("one source document required")
+		}
+		value, err := bundleNode(&doc, 0)
+		if err != nil {
+			return nil, err
+		}
+		data, err = json.Marshal(value)
+		if err != nil {
+			return nil, err
+		}
+	} else if format != ProfileJSON {
+		return nil, errors.New("source format")
+	}
+	return data, nil
 }

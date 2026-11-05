@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+TITLE: 59.15 Committed Source and Cold Dependency Assurance
 #+LANGUAGE: en
 
@@ -49,7 +53,7 @@ for public visibility; no new repository secret is required.
 
 The first offline profile build attempted source downloads and failed on TLS.
 Its log remains separate from the later successful build using the trusted
-binary cache. This is SDK preparation evidence, not a model counterexample.
+binary cache. This is Gerbil toolchain preparation evidence, not a model counterexample.
 
 The first actual bootstrap also exposed two command semantics. A workspace-wide
 Go dependency download expanded =go.work.sum=; Elan's explicit install returned
@@ -79,14 +83,14 @@ accepted under an unchanged revision ID; that failed test remains in evidence.
 End-of-run source currentness and revision admission must also pass.
 
 The receipt records the revision and resolved executable paths. Inputs include
-the workflow and SDK configuration. An SDK initialization that changes a tracked
+the workflow and Gerbil toolchain configuration. An Gerbil toolchain initialization that changes a tracked
 lock before the Go runner starts is therefore still rejected against the
 committed blob. A dirty local working tree can be checked without this option,
 but that receipt is a working-tree snapshot, not committed-source acceptance.
 
 This checks declared input snapshots under the trusted compiler/tool premise.
 It does not prove arbitrary toolchains, malicious transient filesystem writes,
-or every historical research asset. SDK caches and generated runtime artifacts
+or every historical research asset. Gerbil toolchain caches and generated runtime artifacts
 remain outside the committed source input set.
 
 * CI and retained results
@@ -99,14 +103,14 @@ sampling and real loopback HTTPS/mTLS execution keep their original limits.
 The core D2 and SysML Gateway design retain their runtime roles. No CI result,
 compiler version or acceptance count is added to the architecture diagram.
 Existing Quint and Lean models continue to describe the execution contracts;
-source and SDK admission are separately verified host obligations.
+source and Gerbil toolchain admission are separately verified host obligations.
 
-The adjacent [[file:../../../dev/proofs/evidence/cold-assurance-20261030/][evidence directory]] retains the initial SDK and bootstrap failures, the
+The adjacent [[file:../../../dev/proofs/evidence/cold-assurance-20261030/][evidence directory]] retains the initial Gerbil toolchain and bootstrap failures, the
 checksum expansion, the successful preparation and the uncommitted-source
 negative control. Remote completion must be observed for the exact pushed
 revision before it can qualify this independent consumer profile.
 
-The [[file:../../../dev/proofs/evidence/cold-assurance-20261030/verification-before-replacement-guard/receipt.json][local profile run]] passes forty-four stages under the declared Nix SDK,
+The [[file:../../../dev/proofs/evidence/cold-assurance-20261030/verification-before-replacement-guard/receipt.json][local profile run]] passes forty-four stages under the declared Nix Gerbil toolchain,
 including all existing Rust/Go native checks and the original Quint/Lean gates.
 Its Quint 0.30 safety logs identify the TypeScript interpreter. This receipt
 precedes the final Git-replacement guard and is retained under its own inputs.
@@ -121,10 +125,10 @@ trigger it. Repository checks and artifacts remain separately observable at the
 
 For commit =6177ce3=, the [[file:../../../dev/proofs/evidence/cold-assurance-20261030/committed-bootstrap/receipt.json][committed local bootstrap]] passes seven stages and the
 [[file:../../../dev/proofs/evidence/cold-assurance-20261030/committed-check/receipt.json][committed local check]] passes forty-six, with 171 unchanged inputs. These are
-the actual declared Darwin SDK profile, not Linux acceptance.
+the actual declared Darwin Gerbil toolchain profile, not Linux acceptance.
 
-The [[https://github.com/hardenedlinux/weaver/actions/runs/40951720087][first Linux run]] failed at SDK CLI argument parsing before any Go dependency,
-native or formal stage. Its [[file:../../../dev/proofs/evidence/cold-assurance-20261030/ci-40951720087-first-failed.log][raw failure log]] is retained. The fixed SDK was
+The [[https://github.com/hardenedlinux/weaver/actions/runs/40951720087][first Linux run]] failed at Gerbil toolchain CLI argument parsing before any Go dependency,
+native or formal stage. Its [[file:../../../dev/proofs/evidence/cold-assurance-20261030/ci-40951720087-first-failed.log][raw failure log]] is retained. The fixed Gerbil toolchain was
 invoked through =nix run= with global profile arguments; it interpreted =ci= as
 the old test alias and rejected =shell=. The next workflow explicitly selects
 the fixed package with =nix shell --command devenv= and attaches the profile
@@ -137,7 +141,7 @@ The [[https://github.com/hardenedlinux/weaver/actions/runs/40952881893][second L
 both committed-source guards passing. Elan fails while unpacking the unchanged
 Lean toolchain with =No space left on device=. The imported proof dependency
 stage also fails; native, formal and benchmark qualification did not run.
-The [[file:../../../dev/proofs/evidence/cold-assurance-20261030/pinned-cli-local-entry.log][fixed SDK entrypoint completes locally]] without forcing process exit.
+The [[file:../../../dev/proofs/evidence/cold-assurance-20261030/pinned-cli-local-entry.log][fixed Gerbil toolchain entrypoint completes locally]] without forcing process exit.
 CLI invocation is therefore no longer the observed Linux blocker. Failed-run
 logs were unavailable from the run/job endpoints at observation time; the
 uploaded per-stage failure artifact provides the retained failure evidence.
@@ -145,9 +149,9 @@ uploaded per-stage failure artifact provides the retained failure evidence.
 The next workflow prepares capacity through the existing Go development tool,
 using the explicit =prepare-ci-host= command. It admits only privileged Linux
 GitHub-hosted jobs with the expected hosted-runner markers. Its fixed deletion
-list contains only preinstalled Android, .NET, Haskell and CodeQL SDK locations;
+list contains only preinstalled Android, .NET, Haskell and CodeQL Gerbil toolchain locations;
 no caller-provided cleanup path is accepted. Nix, Elan, project sources and
-verification caches are not cleanup targets. Final SDK symlinks are unlinked,
+verification caches are not cleanup targets. Final Gerbil toolchain symlinks are unlinked,
 ancestor symlinks are rejected, and local controls operate exclusively in
 temporary roots. Hosted-image immutability during preparation is a trust
 premise; environment markers are guardrails, not an authentication protocol.
@@ -168,7 +172,7 @@ inputs unchanged. This includes the new Go host-preparation controls, all
 existing Rust tests and ASP deny gates, Clippy, Go race/PBT, Quint, Lean and
 actual HTTPS/mTLS provider scenarios. It does not execute privileged cleanup
 on the developer machine. The [[https://github.com/hardenedlinux/weaver/actions/runs/40954543662][new exact-commit Linux run]] was independently
-observed live at hosted capacity preparation after its fixed SDK identity step
+observed live at hosted capacity preparation after its fixed Gerbil toolchain identity step
 succeeded; its final bootstrap/native/formal/benchmark outcome remains pending.
 
 A later [[file:../../../dev/proofs/evidence/cold-assurance-20261030/ci-40954543662-live-steps.json][authoritative step observation]] shows both hosted capacity preparation and

@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Weaver LLM Attempts and Failover Index
 #+language: en
 #+options: toc:2
@@ -26,3 +30,9 @@ Earlier sealed documents remain historical receipts.
 Formal sources: [[file:../../../dev/proofs/lean/LlmAttemptLedger.lean][Lean]] and [[file:../../../dev/proofs/quint/LlmAttemptLedger.qnt][Quint]].
 Reproduction: bounded local check runner (retired Python driver).
 No Gateway runtime or dependency pin is changed.
+
+* Embedded architecture views
+
+** 11.02-attempt-ledger.svg
+
+[[file:11.02-attempt-ledger.svg]]

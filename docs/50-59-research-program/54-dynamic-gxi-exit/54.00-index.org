@@ -1,9 +1,13 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+TITLE: Weaver Ordinary Dynamic gxi Exit Qualification
 #+LANGUAGE: en
 #+OPTIONS: toc:2 num:nil
 
 * Scope
-Continue beyond [[file:../53-native-gerbil-exit/53.00-index.org][the bounded AOT verifier result]]. The target here is the
+Continue beyond [[file:../53-gerbil-exit/53.00-index.org][the bounded AOT verifier result]]. The target here is the
 ordinary installed gxi interpreter processing the original Scheme source fixture,
 with actual independently initialized native bodies, normal resource cleanup and the
 unchanged fifteen-second whole-process deadline. No Gateway implementation,
@@ -24,3 +28,9 @@ remain unchanged. See the current receipt for exact results and retained limits.
 The [[file:../../../dev/proofs/evidence/dynamic-gxi-exit/receipt.json][current result receipt]] controls the status. Neither the earlier AOT pass,
 a printed completion marker, a late natural exit, nor a low-noise exploratory
 run substitutes for ordinary dynamic qualification.
+
+* Embedded architecture views
+
+** 54.04-dynamic-lifecycle.svg
+
+[[file:54.04-dynamic-lifecycle.svg]]

@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Durable Floor Intent Decision and Reset Context Fence
 #+language: en
 #+date: 2026-10-19
@@ -26,6 +30,13 @@ unconditional recovery progress.
 
 [[file:34.02-floor-decision.d2][Core D2]] / [[file:34.02-floor-decision.svg][SVG]] show the design; [[file:34.03-validation-evidence.org][the receipt]] records versions and checks.
 [[file:../../../dev/proofs/quint/FloorIntentDecision.qnt][Quint]] and [[file:../../../dev/proofs/lean/FloorIntentDecision.lean][Lean]] are executable formal artifacts, not gateway code.
+
+The ordering view separates the two durable outcomes. The recovery view
+separates acknowledgment of the original commit from current release.
+
+[[file:34.02-floor-decision.svg]]
+
+[[file:34.04-floor-recovery.svg]]
 
 * Three separate linearization points
 
@@ -148,7 +159,7 @@ an inherited premise, not a capability bestowed by a process restart.
 |----------+----------------+---------------------|
 | Scheme semantics and Cedar Code as Policy | Bind original operation, claim, history and shared budget; specify all required authorization layers and resolution meaning | Fenced means cancelled; a new nonce or root restores the original capacity |
 | Scheme immutable publication/session mechanism | Use current revision/generation and publish the accepted/decided image only through its owning durable protocol | Pure value construction or an accepted receipt proves durable publication |
-| Go cloud-native adapter | Reconcile Kubernetes lifecycle, original request identity and protected status; retry reads and idempotent requests; report unknown/retained states | Pod replacement, leader election, SDK retry or cloud readiness creates a new cut or proves native isolation |
+| Go cloud-native adapter | Reconcile Kubernetes lifecycle, original request identity and protected status; retry reads and idempotent requests; report unknown/retained states | Pod replacement, leader election, provider-client retry or cloud readiness creates a new cut or proves native isolation |
 | Rust protected owner/native adapter | Serialize decision with context fence, bind every completion to original intent, persist the full deciding prefix and fail closed on mismatch | A stale storage absence, lease timeout, cached fence or response ordering proves non-commit |
 | Rust final broker | Recheck original consumption, live Cedar authority, sealed protected result, current key/context and actual FD/buffer fence at final release | Historical committed floor, isolation receipt or usable signature bypasses current final-send checks |
 | Quint and Lean | Explore fault traces; prove retained obligations, unique decision and initialized composition | Finite exploration or abstract proof certifies an arbitrary HSM or storage service |
@@ -235,3 +246,9 @@ original spent-state and live Policy. It must not delegate final release to Go
 SDK automatic retries. Cache invalidation is mandatory on reset/fence/Policy or
 route changes. No throughput/latency improvement is claimed without matched native
 measurements; durable safety is not weakened to keep the fast path available.
+
+* Embedded architecture views
+
+** 34.02-floor-decision.svg
+
+[[file:34.02-floor-decision.svg]]

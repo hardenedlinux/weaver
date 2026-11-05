@@ -1,0 +1,209 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+...@../../../dev/d2/themes/flow
+vars: { d2-config: { layout-engine: tala;  pad: 80 } }
+title: INDEPENDENT AUTHORITY / SAFE RECOVERY {
+  shape: text
+  near: top-center
+  style.font-size: 36
+  style.bold: true
+}
+source: Scheme Governance and source input\nOwned Policy artifacts under prod\nOriginal command and evidence {
+  class: card
+  left: 0
+  top: 0
+  width: 550
+  height: 230
+  style.fill: "#eef3ef"
+}
+observer: Go cloud and protocol ingress\nFresh authenticated context\nCached reads confer no authority {
+  class: card
+  icon: ../../architecture/diagrams/assets/go.svg
+  icon.near: top-left
+  left: 810
+  top: 0
+  width: 550
+  height: 230
+  style.fill: "#eef3ef"
+}
+cas: Rust final publication CAS\nCurrent source / exact evidence\nOriginal parent and pending intent {
+  class: card
+  icon: ../../architecture/diagrams/assets/rust.svg
+  icon.near: top-left
+  left: 1620
+  top: 0
+  width: 550
+  height: 230
+  style.fill: "#e7edf4"
+}
+authority: Independently retained authority\nEpoch / owner / revocation\nRegistry and exact outcomes {
+  class: card
+  left: 0
+  top: 580
+  width: 550
+  height: 230
+  style.fill: "#e7edf4"
+}
+recovery: Rust registry recovery qualification\nInherited prefix and fresh context\nMissing projection blocks use {
+  class: card
+  icon: ../../architecture/diagrams/assets/rust.svg
+  icon.near: top-left
+  left: 810
+  top: 580
+  width: 550
+  height: 230
+  style.fill: "#e7edf4"
+}
+execution: Rust final transport admission\nFresh authorization at use\nOriginal claim / budget / history {
+  class: card
+  icon: ../../architecture/diagrams/assets/rust.svg
+  icon.near: top-left
+  left: 1620
+  top: 580
+  width: 550
+  height: 230
+  style.fill: "#eef3ef"
+}
+source -> observer: Typed inert proposal { style.font-size: 20 }
+observer -> cas: Bound source operation { style.font-size: 20 }
+authority -> recovery: Verify inherited prefix { style.font-size: 20 }
+recovery -> observer: Fresh authority observation { style.font-size: 20 }
+recovery -> cas: Join current recovery qualification { style.font-size: 20 }
+cas -> execution: Publication is not a send right { style.font-size: 20 }
+footer: "Unknown outcomes retain pending intent and budget exposure\nLate receipts remain history · Configuration cannot restore permission" {
+  shape: text
+  left: 140
+  top: 1040
+  width: 1890
+  height: 120
+  style.font-size: 28
+  style.font-color: "#5c8b77"
+}
+
+# Project-owned presentation question; not an issued governance Question.
+vars: { d2-config: { data: { figure: |json
+{
+  "title": "58 independent source recovery",
+  "purpose": "workflow",
+  "kind": "flow",
+  "language": "en",
+  "width": 960,
+  "primary": "main",
+  "questions": [
+    {
+      "ref": "main",
+      "text": "What independent evidence permits recovery to proceed?",
+      "focusRefs": [
+        "catalog",
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "catalog": "docs/architecture/08-diagram-catalog.org",
+    "model": "Project.sysml"
+  },
+  "copy": {
+    "takeaway": "What independent evidence permits recovery to proceed?"
+  },
+  "basis": {
+    "captureRef": "docs/50-59-research-program/59-provider-rpc/59.58-independent-source-recovery.d2#design-view",
+    "modelRefs": [
+      "Project.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "sketchbook",
+    "node-editor",
+    "reading"
+  ],
+  "layout": "model-view",
+  "variants": [],
+  "presentation": {
+    "graph": {
+      "id": "weaver-source-view",
+      "children": [
+        {
+          "id": "title"
+        },
+        {
+          "id": "source"
+        },
+        {
+          "id": "observer"
+        },
+        {
+          "id": "cas"
+        },
+        {
+          "id": "authority"
+        },
+        {
+          "id": "recovery"
+        },
+        {
+          "id": "execution"
+        },
+        {
+          "id": "footer"
+        }
+      ],
+      "layoutOptions": {
+        "elk.direction": "DOWN",
+        "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+        "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+        "elk.layered.layering.coffmanGraham.layerBound": "1",
+        "elk.spacing.nodeNode": "24",
+        "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+        "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+        "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+        "elk.separateConnectedComponents": "false",
+        "elk.aspectRatio": "0.55",
+        "elk.spacing.componentComponent": "24"
+      }
+    },
+    "options": {
+      "elk.direction": "DOWN",
+      "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+      "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+      "elk.layered.layering.coffmanGraham.layerBound": "1",
+      "elk.spacing.nodeNode": "24",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+      "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+      "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+      "elk.separateConnectedComponents": "false",
+      "elk.aspectRatio": "0.55",
+      "elk.spacing.componentComponent": "24"
+    },
+    "icons": {
+      "title": "capture",
+      "source": "library",
+      "observer": "go",
+      "cas": "rust",
+      "authority": "capture",
+      "recovery": "rust",
+      "execution": "rust",
+      "footer": "pending"
+    },
+    "roles": {
+      "source": "semantic",
+      "observer": "default",
+      "cas": "execution",
+      "recovery": "execution",
+      "execution": "execution",
+      "footer": "pending",
+      "title": "default",
+      "authority": "default"
+    }
+  },
+  "icons": [
+    "engineering",
+    "weaver"
+  ]
+}
+|
+} } }

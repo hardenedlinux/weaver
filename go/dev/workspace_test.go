@@ -1,16 +1,24 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 package dev
 
 import (
 	"bufio"
+	"bytes"
 	"context"
 	"encoding/json"
+	"math/rand"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"regexp"
 	"runtime"
+	"strconv"
 	"strings"
 	"testing"
+	"testing/quick"
 	"time"
 
 	"github.com/HardenedLinux/weaver/go/internal/devrunner"
@@ -22,20 +30,25 @@ func tool(t *testing.T, binary string, args ...string) []byte {
 	defer cancel()
 	cmd := exec.CommandContext(ctx, binary, args...)
 	cmd.Dir = root(t)
-	data, err := cmd.CombinedOutput()
+	var diagnostics bytes.Buffer
+	cmd.Stderr = &diagnostics
+	data, err := cmd.Output()
 	if err != nil {
-		t.Fatalf("%s %v: %v: %s", binary, args, err, data)
+		t.Fatalf("%s %v: %v: stdout=%s stderr=%s", binary, args, err, data, diagnostics.Bytes())
 	}
 	return data
 }
 
 type cargoDependency struct {
-	Name   string
-	Kind   *string
-	Source *string
+	Name                string
+	Kind                *string
+	Source              *string
+	Features            []string
+	UsesDefaultFeatures bool `json:"uses_default_features"`
 }
 type cargoPackage struct {
 	ID, Name     string
+	License      string
 	ManifestPath string `json:"manifest_path"`
 	Dependencies []cargoDependency
 	Targets      []struct {
@@ -44,12 +57,63 @@ type cargoPackage struct {
 	}
 }
 type cargoNode struct {
-	ID   string
-	Deps []struct {
+	ID       string
+	Features []string
+	Deps     []struct {
 		Pkg   string
 		Kinds []struct{ Kind *string } `json:"dep_kinds"`
 	}
 }
+
+func TestProjectArchitectureStorageUsesMRRDataTursoOnly(t *testing.T) {
+	var metadata cargoMetadata
+	if err := json.Unmarshal(tool(t, "cargo", "metadata", "--locked", "--offline", "--format-version", "1"), &metadata); err != nil {
+		t.Fatal(err)
+	}
+	members := map[string]bool{}
+	for _, id := range metadata.Members {
+		members[id] = true
+	}
+	backendID := ""
+	ledgerUsesBackend := false
+	for _, p := range metadata.Packages {
+		if p.Name == "rusqlite" || p.Name == "libsqlite3-sys" {
+			t.Fatalf("retired SQLite implementation remains in dependency graph: %s", p.Name)
+		}
+		if p.Name == "mrr-data-backend" {
+			if backendID != "" {
+				t.Fatal("multiple backend identities")
+			}
+			backendID = p.ID
+		}
+		if !members[p.ID] {
+			continue
+		}
+		for _, dependency := range p.Dependencies {
+			if dependency.Name == "turso" {
+				t.Fatalf("bypassed MRR Data driver ownership: %s", p.Name)
+			}
+			if dependency.Name == "mrr-data-backend" {
+				if p.Name != "weaver-ledger" || dependency.Kind != nil || dependency.Source == nil || !regexp.MustCompile(`[?&]rev=[a-f0-9]{40}(?:$|&)`).MatchString(*dependency.Source) {
+					t.Fatalf("unowned or unpinned backend edge: %s", p.Name)
+				}
+				if dependency.UsesDefaultFeatures || len(dependency.Features) != 1 || dependency.Features[0] != "turso" {
+					t.Fatalf("admission enabled another backend capability: %+v", dependency)
+				}
+				ledgerUsesBackend = true
+			}
+		}
+	}
+	if backendID == "" || !ledgerUsesBackend {
+		t.Fatal("ledger does not use the shared backend")
+	}
+	for _, node := range metadata.Resolve.Nodes {
+		if node.ID == backendID && (len(node.Features) != 1 || node.Features[0] != "turso") {
+			t.Fatalf("shared backend feature leakage: %v", node.Features)
+		}
+	}
+}
+
 type cargoMetadata struct {
 	Packages []cargoPackage
 	Members  []string `json:"workspace_members"`
@@ -80,10 +144,12 @@ func TestCargoWorkspaceAndDevelopmentGates(t *testing.T) {
 	if len(metadata.Members) != len(layers) {
 		t.Fatal("unmapped native workspace members")
 	}
-	inherited := regexp.MustCompile(`^[A-Za-z0-9_-]+(?:\.workspace\s*=\s*true|\s*=\s*\{\s*workspace\s*=\s*true,\s*optional\s*=\s*true\s*\})\s*$`)
 	aspPin := regexp.MustCompile(`[?&]rev=[a-f0-9]{40}(?:$|&)`)
 	for _, id := range metadata.Members {
 		p := packages[id]
+		if p.License != "LGPL-2.1-or-later AND Apache-2.0" {
+			t.Fatalf("workspace SPDX license mismatch: %s: %s", p.Name, p.License)
+		}
 		packagePath, err := filepath.Rel(root(t), filepath.Dir(p.ManifestPath))
 		if err != nil {
 			t.Fatal(err)
@@ -104,7 +170,7 @@ func TestCargoWorkspaceAndDevelopmentGates(t *testing.T) {
 				dependencies = strings.Contains(line, "dependencies")
 				continue
 			}
-			if dependencies && line != "" && !inherited.MatchString(line) {
+			if dependencies && line != "" && !inheritedDependency.MatchString(line) {
 				t.Fatalf("dependency not inherited from workspace: %s: %s", p.Name, line)
 			}
 		}
@@ -213,8 +279,53 @@ func TestCargoWorkspaceAndDevelopmentGates(t *testing.T) {
 }
 func TestSysMLSDKIsAbsentFromProductionBuild(t *testing.T) {
 	goBinary := filepath.Join(runtime.GOROOT(), "bin/go")
-	deps := tool(t, goBinary, "-C", "go", "list", "-deps", "./cmd/...")
-	if strings.Contains(string(deps), "github.com/Open-MBEE/OpenSysML") {
-		t.Fatal("development SDK leaked into production command graph")
+	commands := strings.Fields(string(tool(t, goBinary, "-C", "go", "list", "./cmd/...")))
+	production := 0
+	for _, command := range commands {
+		// The development owner intentionally captures SDK views in-process.
+		// Every other command, including future commands, remains covered.
+		if strings.HasSuffix(command, "/cmd/weaver-dev") {
+			continue
+		}
+		production++
+		t.Run(command, func(t *testing.T) {
+			deps := tool(t, goBinary, "-C", "go", "list", "-deps", command)
+			if strings.Contains(string(deps), "github.com/Open-MBEE/OpenSysML") {
+				t.Fatal("development SDK leaked into production command graph")
+			}
+		})
+	}
+	if production == 0 {
+		t.Fatal("no production commands were checked")
+	}
+}
+
+// Canonical member declarations may select workspace features without becoming
+// optional. Source/version/path overrides remain forbidden; Cargo metadata above
+// independently resolves every member and checks its actual dependency graph.
+var inheritedDependency = regexp.MustCompile(`^[A-Za-z0-9_-]+(?:\.workspace\s*=\s*true|\s*=\s*\{\s*workspace\s*=\s*true(?:,\s*optional\s*=\s*true)?(?:,\s*features\s*=\s*\["[A-Za-z0-9_/-]+"(?:,\s*"[A-Za-z0-9_/-]+")*\])?\s*\})\s*$`)
+
+func TestCargoWorkspaceInheritanceForms(t *testing.T) {
+	check := func(selector uint8) bool {
+		gap := strings.Repeat(" ", int(selector%4))
+		feature := "commit-observer-" + strconv.Itoa(int(selector))
+		base := "weaver-ledger = {" + gap + "workspace = true"
+		optional := ""
+		if selector&1 != 0 {
+			optional = ", optional = true"
+		}
+		valid := base + optional + ", features = [\"" + feature + "\"]" + gap + "}"
+		if !inheritedDependency.MatchString(valid) || !inheritedDependency.MatchString("weaver-ledger.workspace = true") {
+			return false
+		}
+		for _, override := range []string{`version = "1"`, `path = "../ledger"`, `git = "https://example.invalid/ledger"`, `workspace = false`} {
+			if inheritedDependency.MatchString("weaver-ledger = {"+override+"}") || inheritedDependency.MatchString(base+", "+override+"}") {
+				return false
+			}
+		}
+		return true
+	}
+	if err := quick.Check(check, &quick.Config{MaxCount: 64, Rand: rand.New(rand.NewSource(293))}); err != nil {
+		t.Fatal(err)
 	}
 }

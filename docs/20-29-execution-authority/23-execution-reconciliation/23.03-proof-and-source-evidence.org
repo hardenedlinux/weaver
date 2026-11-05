@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Weaver Execution Reconciliation Proof and Source Evidence
 #+language: en
 #+options: toc:3
@@ -158,7 +162,7 @@ only two control-plane import paths; the captured [[file:../../../dev/proofs/evi
 The comments assigning native persistence responsibility still hold. Import target
 runtime/ABI equivalence is not established by that textual observation.
 
-* Native acceptance gates
+* Implementation acceptance gates
 
 | Gate | Required executable native evidence before implementation acceptance |
 |------+--------------------------------------------------------------------|

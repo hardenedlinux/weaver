@@ -1,13 +1,17 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #[path = "../../../contracts/benches/support/fixtures.rs"]
 mod fixtures;
 
-use rusqlite::Connection;
 use std::{
     collections::BTreeSet,
     sync::{Arc, Barrier},
 };
 use weaver_contracts::{ProviderPlan, ProviderState, Task};
 use weaver_ledger::Ledger;
+use weaver_ledger::persistence::Session;
 
 fn source(path: &std::path::Path) -> (Ledger, Task, ProviderPlan) {
     let (task, plan) = fixtures::task_plan(8, "https://provider.invalid/v1/chat/completions");
@@ -38,18 +42,21 @@ fn lost_registration_reply_recovers_one_profile_and_original_hold() {
         .register_task(&task)
         .expect("exact registration recovery");
     assert_eq!(restarted.held(&task.family).expect("hold"), 4);
-    let connection = Connection::open(&path).expect("observation");
+    let connection = Session::open(&path).expect("observation");
     assert_eq!(
-        connection
-            .query_row("SELECT count(*) FROM provider_profiles", [], |r| r
-                .get::<_, i64>(0))
-            .expect("profiles"),
+        weaver_ledger::persistence::one(
+            &connection,
+            "SELECT count(*) FROM provider_profiles",
+            (),
+            |r| r.get::<i64>(0)
+        )
+        .expect("profiles"),
         1
     );
     assert_eq!(
-        connection
-            .query_row("SELECT count(*) FROM tasks", [], |r| r.get::<_, i64>(0))
-            .expect("tasks"),
+        weaver_ledger::persistence::one(&connection, "SELECT count(*) FROM tasks", (), |r| r
+            .get::<i64>(0))
+        .expect("tasks"),
         1
     );
 }
@@ -60,9 +67,8 @@ fn original_task_floor_prevents_missing_registry_from_rebinding_identity() {
     let path = temp.path().join("profile.db");
     let (mut ledger, original, plan) = source(&path);
     ledger.enqueue_provider(&plan).expect("original hold");
-    let observation = Connection::open(&path).expect("fault injector");
-    observation
-        .execute("DELETE FROM provider_profiles", [])
+    let observation = Session::open(&path).expect("fault injector");
+    weaver_ledger::persistence::exec(&observation, "DELETE FROM provider_profiles", ())
         .expect("lost registry projection");
     let mut forged = original.clone();
     forged.family = "another-family".into();
@@ -88,10 +94,13 @@ fn original_task_floor_prevents_missing_registry_from_rebinding_identity() {
         "missing registry erased original semantic floor"
     );
     assert_eq!(
-        observation
-            .query_row("SELECT count(*) FROM provider_profiles", [], |row| row
-                .get::<_, i64>(0))
-            .expect("profiles"),
+        weaver_ledger::persistence::one(
+            &observation,
+            "SELECT count(*) FROM provider_profiles",
+            (),
+            |row| row.get::<i64>(0)
+        )
+        .expect("profiles"),
         0
     );
     ledger
@@ -105,6 +114,7 @@ fn original_task_floor_prevents_missing_registry_from_rebinding_identity() {
     ledger
         .dispatch_provider(&permit, || {
             calls += 1;
+            Ok(())
         })
         .expect("same claim dispatch");
     assert_eq!(calls, 1);
@@ -117,19 +127,21 @@ fn metadata_key_order_does_not_reinterpret_the_original_profile() {
     let path = temp.path().join("profile.db");
     let (mut ledger, task, plan) = source(&path);
     ledger.enqueue_provider(&plan).expect("original hold");
-    let observation = Connection::open(&path).expect("recovery projection");
-    let record: String = observation
-        .query_row("SELECT record FROM tasks WHERE family='f'", [], |r| {
-            r.get(0)
-        })
-        .expect("task");
-    let profile_record: String = observation
-        .query_row(
-            "SELECT record FROM provider_profiles WHERE id='p'",
-            [],
-            |r| r.get(0),
-        )
-        .expect("profile");
+    let observation = Session::open(&path).expect("recovery projection");
+    let record: String = weaver_ledger::persistence::one(
+        &observation,
+        "SELECT record FROM tasks WHERE family='f'",
+        (),
+        |r| r.get(0),
+    )
+    .expect("task");
+    let profile_record: String = weaver_ledger::persistence::one(
+        &observation,
+        "SELECT record FROM provider_profiles WHERE id='p'",
+        (),
+        |r| r.get(0),
+    )
+    .expect("profile");
     let profile_fields: std::collections::BTreeMap<String, serde_json::Value> =
         serde_json::from_str(&profile_record).expect("profile fields");
     let reordered_profile = serde_json::to_string(&profile_fields).expect("metadata");
@@ -142,18 +154,18 @@ fn metadata_key_order_does_not_reinterpret_the_original_profile() {
     let reordered_task = serde_json::to_string(&fields).expect("task metadata");
     assert_ne!(record, reordered_task);
     assert_ne!(profile_record, reordered_profile);
-    observation
-        .execute(
-            "UPDATE tasks SET record=?1 WHERE family='f'",
-            [reordered_task],
-        )
-        .expect("restore task metadata");
-    observation
-        .execute(
-            "UPDATE provider_profiles SET record=?1 WHERE id='p'",
-            [reordered_profile],
-        )
-        .expect("restore profile metadata");
+    weaver_ledger::persistence::exec(
+        &observation,
+        "UPDATE tasks SET record=?1 WHERE family='f'",
+        weaver_ledger::persistence::params![(reordered_task).to_owned()],
+    )
+    .expect("restore task metadata");
+    weaver_ledger::persistence::exec(
+        &observation,
+        "UPDATE provider_profiles SET record=?1 WHERE id='p'",
+        weaver_ledger::persistence::params![(reordered_profile).to_owned()],
+    )
+    .expect("restore profile metadata");
     drop(ledger);
     let mut recovered = Ledger::open(&path).expect("restart");
     recovered
@@ -167,6 +179,7 @@ fn metadata_key_order_does_not_reinterpret_the_original_profile() {
     recovered
         .dispatch_provider(&permit, || {
             calls += 1;
+            Ok(())
         })
         .expect("original dispatch");
     assert_eq!(calls, 1);
@@ -182,25 +195,30 @@ fn unknown_null_profile_field_cannot_hide_behind_cached_facts() {
     let permit = ledger
         .consume_provider("f", "infer", &BTreeSet::from(["primary".into()]))
         .expect("consume");
-    let connection = Connection::open(&path).expect("inconsistent image");
-    let record: String = connection
-        .query_row("SELECT record FROM tasks WHERE family='f'", [], |r| {
-            r.get(0)
-        })
-        .expect("record");
+    let connection = Session::open(&path).expect("inconsistent image");
+    let record: String = weaver_ledger::persistence::one(
+        &connection,
+        "SELECT record FROM tasks WHERE family='f'",
+        (),
+        |r| r.get(0),
+    )
+    .expect("record");
     let mut value: serde_json::Value = serde_json::from_str(&record).expect("task");
     value["provider_profile"]["scope"] = serde_json::Value::Null;
-    connection
-        .execute(
-            "UPDATE tasks SET record=?1 WHERE family='f'",
-            [serde_json::to_string(&value).expect("image")],
-        )
-        .expect("restore unknown field");
+    weaver_ledger::persistence::exec(
+        &connection,
+        "UPDATE tasks SET record=?1 WHERE family='f'",
+        weaver_ledger::persistence::params![
+            (serde_json::to_string(&value).expect("image")).to_owned()
+        ],
+    )
+    .expect("restore unknown field");
     let mut calls = 0;
     assert!(
         ledger
             .dispatch_provider(&permit, || {
                 calls += 1;
+                Ok(())
             })
             .is_err()
     );
@@ -268,28 +286,33 @@ fn missing_artifact_identifier_cannot_erase_the_task_profile_floor() {
     let permit = ledger
         .consume_provider("f", "infer", &BTreeSet::from(["primary".into()]))
         .expect("consume");
-    let connection = Connection::open(&path).expect("inconsistent projection");
-    let record: String = connection
-        .query_row("SELECT record FROM tasks WHERE family='f'", [], |row| {
-            row.get(0)
-        })
-        .expect("record");
+    let connection = Session::open(&path).expect("inconsistent projection");
+    let record: String = weaver_ledger::persistence::one(
+        &connection,
+        "SELECT record FROM tasks WHERE family='f'",
+        (),
+        |row| row.get(0),
+    )
+    .expect("record");
     let mut value: serde_json::Value = serde_json::from_str(&record).expect("metadata");
     value["provider_profile"]
         .as_object_mut()
         .expect("artifact")
         .remove("id");
-    connection
-        .execute(
-            "UPDATE tasks SET record=?1 WHERE family='f'",
-            [serde_json::to_string(&value).expect("image")],
-        )
-        .expect("restore partial artifact");
+    weaver_ledger::persistence::exec(
+        &connection,
+        "UPDATE tasks SET record=?1 WHERE family='f'",
+        weaver_ledger::persistence::params![
+            (serde_json::to_string(&value).expect("image")).to_owned()
+        ],
+    )
+    .expect("restore partial artifact");
     let mut calls = 0;
     assert!(
         ledger
             .dispatch_provider(&permit, || {
                 calls += 1;
+                Ok(())
             })
             .is_err()
     );
@@ -338,25 +361,25 @@ fn profile_collision_and_task_conflict_cannot_publish_partial_registration() {
         replacement.digest().expect("plan"),
     );
     assert!(ledger.register_task(&changed).is_err());
-    let observation = Connection::open(&path).expect("observation");
+    let observation = Session::open(&path).expect("observation");
     assert_eq!(
-        observation
-            .query_row(
-                "SELECT count(*) FROM tasks WHERE family='other-family'",
-                [],
-                |r| r.get::<_, i64>(0)
-            )
-            .expect("task"),
+        weaver_ledger::persistence::one(
+            &observation,
+            "SELECT count(*) FROM tasks WHERE family='other-family'",
+            (),
+            |r| r.get::<i64>(0)
+        )
+        .expect("task"),
         0
     );
     assert_eq!(
-        observation
-            .query_row(
-                "SELECT count(*) FROM provider_profiles WHERE id='new-profile'",
-                [],
-                |r| r.get::<_, i64>(0)
-            )
-            .expect("profile"),
+        weaver_ledger::persistence::one(
+            &observation,
+            "SELECT count(*) FROM provider_profiles WHERE id='new-profile'",
+            (),
+            |r| r.get::<i64>(0)
+        )
+        .expect("profile"),
         0
     );
     assert_eq!(ledger.held("f").expect("original hold"), 4);
@@ -377,6 +400,7 @@ fn restored_registry_mismatch_blocks_cached_dispatch_and_release() {
             ledger
                 .dispatch_provider(&permit, || {
                     calls += 1;
+                    Ok(())
                 })
                 .expect("dispatch");
             Some(
@@ -394,13 +418,12 @@ fn restored_registry_mismatch_blocks_cached_dispatch_and_release() {
             .max_output_tokens = 16;
         let record = serde_json::to_string(task.provider_profile.as_ref().expect("profile"))
             .expect("record");
-        Connection::open(&path)
-            .expect("fault injector")
-            .execute(
-                "UPDATE provider_profiles SET record=?1 WHERE id='p'",
-                [record],
-            )
-            .expect("restore mismatch");
+        weaver_ledger::persistence::exec(
+            &weaver_ledger::persistence::Session::open(&path).expect("fault injector"),
+            "UPDATE provider_profiles SET record=?1 WHERE id='p'",
+            weaver_ledger::persistence::params![(record).to_owned()],
+        )
+        .expect("restore mismatch");
         if let Some(release) = pending {
             assert!(
                 ledger
@@ -415,6 +438,7 @@ fn restored_registry_mismatch_blocks_cached_dispatch_and_release() {
                 ledger
                     .dispatch_provider(&permit, || {
                         calls += 1;
+                        Ok(())
                     })
                     .is_err()
             );
@@ -481,18 +505,21 @@ fn concurrent_profile_registrations_cannot_fork_one_identity() {
             .collect::<Vec<_>>()
     });
     assert_eq!(results.into_iter().filter(|ok| *ok).count(), 1);
-    let connection = Connection::open(&path).expect("observe");
+    let connection = Session::open(&path).expect("observe");
     assert_eq!(
-        connection
-            .query_row("SELECT count(*) FROM provider_profiles", [], |r| r
-                .get::<_, i64>(0))
-            .expect("profiles"),
+        weaver_ledger::persistence::one(
+            &connection,
+            "SELECT count(*) FROM provider_profiles",
+            (),
+            |r| r.get::<i64>(0)
+        )
+        .expect("profiles"),
         1
     );
     assert_eq!(
-        connection
-            .query_row("SELECT count(*) FROM tasks", [], |r| r.get::<_, i64>(0))
-            .expect("tasks"),
+        weaver_ledger::persistence::one(&connection, "SELECT count(*) FROM tasks", (), |r| r
+            .get::<i64>(0))
+        .expect("tasks"),
         1
     );
 }

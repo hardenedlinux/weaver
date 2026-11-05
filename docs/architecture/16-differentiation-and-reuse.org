@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Weaver Differentiation: Reuse Gateway Mechanisms, Preserve POO Authority
 #+language: en
 #+date: 2026-10-18
@@ -153,3 +157,17 @@ useful cloud integration, controlled additional attempts and recovery that
 retains uncertain exposure. Architecture documents and diagrams alone establish
 none of those deployed outcomes. The next implementation phase must qualify
 them before turning design intent into a product claim.
+
+* Embedded architecture views
+
+** 01-system-boundaries.svg
+
+[[file:diagrams/01-system-boundaries.svg]]
+
+** 15-stream-message-authorization.svg
+
+[[file:diagrams/15-stream-message-authorization.svg]]
+
+** 16-authoritative-spent-state.svg
+
+[[file:diagrams/16-authoritative-spent-state.svg]]

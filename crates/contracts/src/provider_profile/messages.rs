@@ -1,8 +1,12 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 //! Text message roles and fields, without implicit tool or multimodal authority.
 use crate::{Error, Result};
 use serde_json::Value;
 
-pub(super) fn validate(value: Option<&Value>, limit: u64) -> Result<u64> {
+pub(super) fn validate(value: Option<&Value>, limit: u64, anthropic: bool) -> Result<u64> {
     let messages = value
         .and_then(Value::as_array)
         .filter(|v| !v.is_empty() && v.len() as u64 <= limit)
@@ -11,6 +15,15 @@ pub(super) fn validate(value: Option<&Value>, limit: u64) -> Result<u64> {
         let fields = message
             .as_object()
             .ok_or(Error::Invalid("text message object"))?;
+        if anthropic
+            && (fields.contains_key("name")
+                || !matches!(
+                    message.get("role").and_then(Value::as_str),
+                    Some("user" | "assistant")
+                ))
+        {
+            return Err(Error::Invalid("unregistered Anthropic message semantics"));
+        }
         if fields
             .keys()
             .any(|k| !matches!(k.as_str(), "role" | "content" | "name"))

@@ -1,11 +1,19 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+TITLE: Weaver Research Plan: A Qualified Semantic Gateway Slice
 #+LANGUAGE: en
 #+OPTIONS: toc:2 num:nil
 
 * Immediate decision
-Proceed with bounded design research. Do not implement Gateway code, change
-pins, or treat this plan as deployment authorization. Order work by decisions
-and evidence rather than unsupported calendar or staffing estimates.
+This document retains the earlier design-research checkpoint. Current authorized
+implementation and SPEC upgrade gates are maintained in
+[[file:../59-provider-rpc/59.87-spec-upgrade-and-delivery-plan.org][59.87 SPEC Upgrade and Gateway Delivery Plan]]. Its qualified runtime slice
+supersedes the former design-only and frozen-pin decision here. The research
+packages below remain a gap inventory, not evidence of completed implementation
+or deployment authorization. Order work by decisions and evidence rather than
+unsupported calendar or staffing estimates.
 
 The central hypothesis is that configurable POO routines and LLM routing can
 share one original-task semantic authority, so protocol/provider changes remain
@@ -44,7 +52,7 @@ Resolve A04 and A06. Reuse semantic-contract, broker, and streaming designs.
 Deliver a small provider/deployment feature matrix, independent golden corpus,
 and exact canonical-to-wire mapping with unsupported conversions rejected.
 Trace original claim/profile, Policy facts, budget, destination, payload,
-credential, queue identity, and deciding fence through every SDK call.
+credential, queue identity, and deciding fence through every Gerbil toolchain call.
 
 Exit evidence: retry, redirect, cancellation, partial write, policy change after
 queueing, and lost response each have a deciding event and conservative unknown

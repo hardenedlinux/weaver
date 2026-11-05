@@ -1,11 +1,58 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 name = "WeaverPolicyBridge"
 version = "0.1.0"
-defaultTargets = ["WeaverPolicyBridge"]
+defaultTargets = ["WeaverPolicyBridge", "ZeroTrustEnrichment", "ZeroTrustArchitecture", "QualifiedReview", "DomainSpecifications", "ExecutionResearch", "ModelClosure", "WeaverOAuthRefinement"]
 
 [[require]]
 name = "CedarPooSpec"
 git = "https://github.com/HardenedLinux/cedar-poo-spec.git"
-rev = "38af276ffbd17a378408bb7886e8122faadcbcfd"
+rev = "76ecbcf9aea42af6785b3c12459adc61fc3fc523"
 
 [[lean_lib]]
 name = "WeaverPolicyBridge"
+
+[[lean_lib]]
+name = "PublicationRecovery"
+srcDir = "../lean"
+
+[[lean_lib]]
+name = "ProviderRpc"
+srcDir = "../lean"
+
+[[lean_lib]]
+name = "ZeroTrustEnrichment"
+
+[[lean_lib]]
+name = "ZeroTrustArchitecture"
+
+[[lean_lib]]
+name = "ProviderReview"
+srcDir = "../../../prod/policies/provider"
+
+[[lean_lib]]
+name = "QualifiedReview"
+
+[[lean_lib]]
+name = "SpecProofClosure"
+
+[[lean_lib]]
+name = "DomainSpecifications"
+srcDir = "../../specs/lean"
+roots = ["AnchorBrokerCommit","AnchorReconfiguration","AnchoredRecoveryAndEgress","ComposedGatewayLifecycle","DriverCompletionRecovery","FiniteDomainMigration","FiniteStreamManifest","GateConsumptionPersistence","LogicalMessageAuthority","QuorumDurablePromises","SettlementAnchorRecovery","SharedMessageBudget","WriterSettlementClosure"]
+
+[[lean_lib]]
+name = "ExecutionResearch"
+srcDir = "../lean"
+roots = ["BrokerConsumptionQueue","CommittedSemanticProfile","DeviceIsolationRecovery","DynamicImageCustody","DynamicImportBoundary","DynamicLoaderPublication","DynamicPairedEvidence","FencedIntentContinuation","FloorIntentDecision","GambitLocatorClosure","GatewayHeadCAS","GerbilExitQualification","KeyBoundaryQueue","LlmAccountCommit","LlmAdmissionFloor","LlmAppendHandoff","LlmAttemptLedger","LlmAuthoritativeScope","LlmBeneficiaryRegistration","LlmBootstrapInvitation","LlmCallerCustody","LlmCanonicalRegistry","LlmCheckpointTruncation","LlmCustodyPublication","LlmEnrollmentCredential","LlmExecutionReconciliation","LlmExecutorOffer","LlmIncarnationIssuance","LlmJoinEnqueue","LlmManifestSwitch","LlmMultiKeyRegistry","LlmPolicyContinuation","LlmPolicyPublication","LlmRecoveryCAS","LlmRegistryPublication","LlmResultProjection","LlmRouting","LlmSemanticContract","LlmSourceCustody","LlmSourceJoin","LlmSubjectAuthority","LlmWalActivation","LogicalRangeRecovery","ProtectedSignerRelease","ProviderEgressWindow","ProviderSemanticProgress","ProviderSnapshotPublication","RoutineRoutingConfig","RuntimeAdmission","SemanticGatewaySlice","SharedDomains","StreamingExecution"]
+
+[[lean_lib]]
+name = "DomainMigrationComposition"
+
+[[lean_lib]]
+name = "ModelClosure"
+
+[[lean_lib]]
+name = "WeaverOAuthRefinement"

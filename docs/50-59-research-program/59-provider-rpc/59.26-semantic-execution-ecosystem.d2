@@ -1,0 +1,263 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+...@../../../dev/d2/themes/assurance
+# Target relationships only. Delivery status and evidence belong in 59.25 Org.
+vars: {
+  d2-config: {
+    layout-engine: tala
+    pad: 70
+  }
+}
+classes: {
+  card: {
+    label.near: center-center
+    style.font-size: 20
+    style.border-radius: 12
+    style.stroke-width: 1
+  }
+}
+title: TAO3K / ZERO TRUST SEMANTIC EXECUTION {
+  shape: text
+  near: top-center
+  style.font-size: 30
+  style.bold: true
+}
+ecosystem: TAO3K Semantic Modules\nYuanxu / POO\nTask · Session · Workflow\nGovernor · Governance {
+  class: card
+  left: 0
+  top: 0
+  width: 420
+  height: 160
+  style.fill: "#eef3ef"
+}
+scheme: Scheme Semantic Runtime\nHigher-order Governance / routines\nReceipt-bound successor proposals\nAdmitted functions / POO modules {
+  class: card
+  left: 540
+  top: 0
+  width: 440
+  height: 160
+  style.fill: "#eef3ef"
+}
+go: Go Control Plane\nDiscovery · routing proposals\nCloud lifecycle · protocol adapters\nAuthenticated gRPC {
+  class: card
+  icon: ../../architecture/diagrams/assets/go.svg
+  icon.near: top-left
+  left: 1100
+  top: 0
+  width: 440
+  height: 160
+}
+cedar: Cedar / cedar-poo-spec\nC4 profiles · explicit Contracts\nAuthority-bound Admission + Delta\nSchema-bound Rust replay {
+  class: card
+  left: 0
+  top: 520
+  width: 420
+  height: 160
+}
+rust: Rust Deciding Broker\nDurable fact barrier · fresh CAS\nClaim · profile · budget · history\nExact facts at dispatch / release {
+  class: card
+  icon: ../../architecture/diagrams/assets/rust.svg
+  icon.near: top-left
+  left: 540
+  top: 520
+  width: 440
+  height: 160
+  style.fill: "#e7edf4"
+}
+effects: Governed Agent Effects\nLLM streams · admitted tools\nExact destination and payload\nBounded output release {
+  class: card
+  left: 1100
+  top: 520
+  width: 440
+  height: 160
+}
+derived: AA Context / Gerbil Ascent\nRetained rules / closed scopes\nFrozen typed fact candidates\nMRR: optional qualified backend {
+  class: card
+  left: 0
+  top: 250
+  width: 420
+  height: 160
+  style.fill: "#f4f2ec"
+}
+continuity: Recovery Authority\nFour-prefix commit floor\nImmutable outcomes / owner epoch\nComplete recovery before activation {
+  class: card
+  left: 1100
+  top: 250
+  width: 440
+  height: 160
+  style.fill: "#f4f2ec"
+}
+binding: "Original claim / shared exposure / history survive recovery\nRecord receipt → propose step → fresh admission → guarded effect\nClosed scope / frozen values / admitted freshness at every use\nUnknown usage retains the original reservation" {
+  shape: text
+  left: 350
+  top: 820
+  width: 1000
+  height: 140
+  style.font-size: 22
+  style.font-color: "#5c8b77"
+}
+ecosystem -> scheme: Admit scopes {
+  style.font-size: 16
+}
+derived -> scheme: Derived evidence {
+  style.font-size: 16
+  style.stroke-dash: 5
+}
+scheme -> go: Proposals {
+  style.font-size: 16
+}
+go -> rust: gRPC proposals {
+  style.font-size: 16
+}
+cedar -> rust: Bound evidence {
+  style.font-size: 16
+}
+continuity -> rust: Current cut / one-use admission {
+  style.font-size: 16
+  style.stroke-dash: 5
+}
+rust -> effects: Execute {
+  style.font-size: 16
+}
+rust -> scheme: Bound observations {
+  style.font-size: 16
+  style.stroke-dash: 5
+}
+
+# Project-owned presentation question; not an issued governance Question.
+vars: { d2-config: { data: { figure: |json
+{
+  "title": "26 semantic execution ecosystem",
+  "purpose": "architecture",
+  "kind": "assurance",
+  "language": "en",
+  "width": 960,
+  "primary": "main",
+  "questions": [
+    {
+      "ref": "main",
+      "text": "How do semantic modules govern real agent effects?",
+      "focusRefs": [
+        "catalog",
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "catalog": "docs/architecture/08-diagram-catalog.org",
+    "model": "Project.sysml"
+  },
+  "copy": {
+    "takeaway": "How do semantic modules govern real agent effects?"
+  },
+  "basis": {
+    "captureRef": "docs/50-59-research-program/59-provider-rpc/59.26-semantic-execution-ecosystem.d2#design-view",
+    "modelRefs": [
+      "Project.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "sketchbook",
+    "field-notes",
+    "reading"
+  ],
+  "layout": "model-view",
+  "variants": [],
+  "presentation": {
+    "graph": {
+      "id": "weaver-source-view",
+      "children": [
+        {
+          "id": "title"
+        },
+        {
+          "id": "ecosystem"
+        },
+        {
+          "id": "scheme"
+        },
+        {
+          "id": "go"
+        },
+        {
+          "id": "cedar"
+        },
+        {
+          "id": "rust"
+        },
+        {
+          "id": "effects"
+        },
+        {
+          "id": "derived"
+        },
+        {
+          "id": "continuity"
+        },
+        {
+          "id": "binding"
+        }
+      ],
+      "layoutOptions": {
+        "elk.direction": "DOWN",
+        "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+        "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+        "elk.layered.layering.coffmanGraham.layerBound": "1",
+        "elk.spacing.nodeNode": "24",
+        "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+        "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+        "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+        "elk.separateConnectedComponents": "false",
+        "elk.aspectRatio": "0.55",
+        "elk.spacing.componentComponent": "24"
+      }
+    },
+    "options": {
+      "elk.direction": "DOWN",
+      "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+      "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+      "elk.layered.layering.coffmanGraham.layerBound": "1",
+      "elk.spacing.nodeNode": "24",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+      "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+      "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+      "elk.separateConnectedComponents": "false",
+      "elk.aspectRatio": "0.55",
+      "elk.spacing.componentComponent": "24"
+    },
+    "icons": {
+      "title": "capture",
+      "ecosystem": "capture",
+      "scheme": "library",
+      "go": "go",
+      "cedar": "decision",
+      "rust": "rust",
+      "effects": "capture",
+      "derived": "capture",
+      "continuity": "capture",
+      "binding": "document"
+    },
+    "roles": {
+      "ecosystem": "default",
+      "scheme": "semantic",
+      "go": "default",
+      "cedar": "policy",
+      "rust": "execution",
+      "binding": "default",
+      "title": "default",
+      "effects": "default",
+      "derived": "default",
+      "continuity": "default"
+    }
+  },
+  "icons": [
+    "engineering",
+    "weaver"
+  ]
+}
+|
+} } }

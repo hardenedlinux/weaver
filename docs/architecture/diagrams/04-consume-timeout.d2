@@ -1,22 +1,26 @@
-...@lib/theme
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+...@../../../dev/d2/themes/sequence
 # W04: one legal race outcome, with abort winning the authoritative CAS.
 shape: sequence_diagram
-coord: Original coordinator
-issuer: Original issuer
-ledger: Authoritative ledger
-broker: Broker gate
-coord -> ledger: Persist ConsumePending: exact command / attempt
-coord -> issuer: Consume original signed grant
-issuer -> issuer: Remove pending grant
-coord -> coord: Response timeout\nconsumption is unknown
-coord -> ledger: AbortNoDispatch CAS\nclaim must be absent
-ledger -> coord: Durable abort wins
-issuer -> coord: Late positive response
-coord -> ledger: Late commit proposal with original correlation
-ledger -> coord: Reject: attempt is terminal
-coord -> broker: Status observation only\nno emission handle
-broker -> broker: No SendCommitted / claim\nno send
-ledger.rule: "if abort reply is lost, resolve the durable command first.\nIf a claim won another race, abort/refund must fail."
+coord: Coordinator
+issuer: Grant authority
+ledger: Admission ledger
+broker: Rust broker
+coord -> ledger: Record ConsumePending\nBind the exact command and attempt
+coord -> issuer: Consume the original signed grant
+issuer -> issuer: Remove the pending grant
+coord -> coord: Treat consumption as unknown\nThe response timed out
+coord -> ledger: Try AbortNoDispatch CAS\nNo claim may exist
+ledger -> coord: Confirm that abort is committed
+issuer -> coord: Return a late success receipt
+coord -> ledger: Try to commit the original attempt\nKeep its original correlation
+ledger -> coord: Reject the terminal attempt
+coord -> broker: Report status only\nIssue no send handle
+broker -> broker: Block dispatch\nRequire SendCommitted and a valid claim
+ledger.rule: "If the abort reply is lost, read the recorded command outcome first.\nIf a claim wins first, refuse both abort and refund."
 
 # Shared role accents; brand marks are confined to architecture headers.
 coord.class: runtime
@@ -24,3 +28,76 @@ issuer.class: policy
 ledger.class: ledger
 broker.class: runtime
 ledger.rule.class: note
+
+# Project-owned presentation question; not an issued governance Question.
+vars: { d2-config: { data: { figure: |json
+{
+  "title": "When the consume response times out",
+  "purpose": "workflow",
+  "kind": "sequence",
+  "language": "en",
+  "width": 1600,
+  "primary": "main",
+  "questions": [
+    {
+      "ref": "main",
+      "text": "Can a late receipt reopen an aborted attempt?",
+      "focusRefs": [
+        "catalog",
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "catalog": "docs/architecture/08-diagram-catalog.org",
+    "model": "Project.sysml"
+  },
+  "copy": {
+    "takeaway": "The declared source relationships define this view; presentation does not grant execution authority."
+  },
+  "basis": {
+    "captureRef": "docs/architecture/diagrams/04-consume-timeout.d2#design-view",
+    "modelRefs": [
+      "Project.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "blueprint", "sequence-reading"
+  ],
+  "layout": "sequence-view",
+  "variants": [],
+  "presentation": {
+    "actors": [
+      "coord",
+      "issuer",
+      "ledger",
+      "broker"
+    ],
+    "messages": [
+      "(coord -> ledger)[0]",
+      "(coord -> issuer)[0]",
+      "(issuer -> issuer)[0]",
+      "(coord -> coord)[0]",
+      "(coord -> ledger)[1]",
+      "(ledger -> coord)[0]",
+      "(issuer -> coord)[0]",
+      "(coord -> ledger)[2]",
+      "(ledger -> coord)[1]",
+      "(coord -> broker)[0]",
+      "(broker -> broker)[0]"
+    ],
+    "lifelines": [
+      "(coord -- )[0]",
+      "(issuer -- )[0]",
+      "(ledger -- )[0]",
+      "(broker -- )[0]"
+    ],
+    "notes": {
+      "ledger.rule": "ledger"
+    }
+  }
+}
+|
+} } }

@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Weaver Policy Conflict Resolution and Protocol Boundaries Index
 #+language: en
 #+options: toc:2
@@ -26,3 +30,9 @@ are aliases of canonical authority, not new authorization roots.
 Formal sources: [[file:../../../dev/proofs/lean/LlmPolicyContinuation.lean][Lean]] and [[file:../../../dev/proofs/quint/LlmPolicyContinuation.qnt][Quint]].
 Reproduce with the isolated runner (retired Python driver). No Gateway implementation, upstream source or
 dependency pin is changed. Earlier sealed artifacts remain unchanged.
+
+* Embedded architecture views
+
+** 17.02-policy-continuation.svg
+
+[[file:17.02-policy-continuation.svg]]

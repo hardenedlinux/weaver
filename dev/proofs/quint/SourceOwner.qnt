@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 module SourceOwner {
   import PublicationRecovery as P from "./PublicationRecovery"
   type Owner = {started:bool,live:bool,closing:bool,busy:bool,slot:bool,transaction:bool,receiver:bool,closed:bool,closeOk:bool,failed:bool,ack:bool,command:int,returned:Set[int],decided:Set[int],replies:Set[int],reads:List[{observed:int,actual:int}]}

@@ -1,8 +1,12 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+...@../../../dev/d2/themes/flow
 # Core design only. Flagship Terrastruct is the built-in presentation theme.
 vars: {
   d2-config: {
     layout-engine: tala
-    theme-id: 3
     pad: 60
   }
 }
@@ -142,3 +146,122 @@ drained: Acknowledge Drain\nNo live writer and original holds survive {
 }
 owner.admission -> closing: Close
 closing -> drained: Quiescent
+
+# Project-owned presentation question; not an issued governance Question.
+vars: { d2-config: { data: { figure: |json
+{
+  "title": "03 streaming runtime",
+  "purpose": "workflow",
+  "kind": "flow",
+  "language": "en",
+  "width": 1600,
+  "primary": "main",
+  "questions": [
+    {
+      "ref": "main",
+      "text": "Which progression and failure boundaries govern 03 streaming runtime?",
+      "focusRefs": [
+        "catalog",
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "catalog": "docs/architecture/08-diagram-catalog.org",
+    "model": "Project.sysml"
+  },
+  "copy": {
+    "takeaway": "The declared source relationships define this view; presentation does not grant execution authority."
+  },
+  "basis": {
+    "captureRef": "docs/50-59-research-program/58-streaming-execution/58.03-streaming-runtime.d2#design-view",
+    "modelRefs": [
+      "Project.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "sketchbook",
+    "blueprint",
+    "reading"
+  ],
+  "layout": "model-view",
+  "variants": [],
+  "presentation": {
+    "graph": {
+      "id": "weaver-source-view",
+      "children": [
+        {
+          "id": "title"
+        },
+        {
+          "id": "semantic",
+          "children": [
+            {
+              "id": "semantic.source"
+            },
+            {
+              "id": "semantic.adapter"
+            },
+            {
+              "id": "semantic.proof"
+            }
+          ]
+        },
+        {
+          "id": "owner",
+          "children": [
+            {
+              "id": "owner.admission"
+            },
+            {
+              "id": "owner.ledger"
+            },
+            {
+              "id": "owner.guard"
+            }
+          ]
+        },
+        {
+          "id": "effect",
+          "children": [
+            {
+              "id": "effect.transport"
+            },
+            {
+              "id": "effect.observation"
+            },
+            {
+              "id": "effect.recovery"
+            }
+          ]
+        },
+        {
+          "id": "closing"
+        },
+        {
+          "id": "drained"
+        }
+      ],
+      "layoutOptions": {
+        "elk.algorithm": "layered",
+        "elk.direction": "DOWN",
+        "elk.edgeRouting": "ORTHOGONAL"
+      }
+    },
+    "options": {
+      "elk.algorithm": "layered",
+      "elk.direction": "DOWN",
+      "elk.edgeRouting": "ORTHOGONAL"
+    },
+    "icons": {},
+    "roles": {}
+  },
+  "icons": [
+    "engineering",
+    "weaver"
+  ]
+}
+|
+} } }

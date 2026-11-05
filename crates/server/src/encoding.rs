@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 //! Pure response encoding. Returning bytes here grants no permission to enqueue or send.
 use crate::pb;
 use weaver_contracts::{Error, ProviderEvent, Result};

@@ -1,0 +1,353 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+#+title: 59.39 FFI-only Scheme Qualification: Local Evidence
+#+language: en
+
+* Source-bound standard package result admission
+
+The current production boundary is the compiled, typed SDK path described in
+[[file:59.64-governance-capture-ownership.org][Original Governance Capture]]. There is no production source subprocess or
+JSON artifact-file bridge. The subprocess preparation observations below are
+historical qualification evidence, not the current deployment architecture.
+
+The Go result validator contained an independent qualification bug: it required
+exactly 19 =CASE-OK= lines even though the current standard suite contains 40
+cases. It could reject a complete expanded suite, while accepting 19 orphaned
+completion lines without actual case starts or source modules. Neither case
+count was evidence of correct SDK protocol completion. This defect was not the
+cause of the retained watchdog failures: those processes were terminated before
+the result validator could run.
+
+The validator now derives the selected module inventory from direct
+=t/*-test.ss= regular files, matching the existing Gerbil toolchain =collect-files= rule for
+the unchanged unfiltered =gerbil test -g -v 5 t= entry. No separate module list,
+Scheme evaluator or second test driver is introduced. It requires the exact
+harness inventory, one completed nonempty visit to each module, balanced named
+suite/case starts and completions, no failure diagnostic and terminal =OK=.
+Newly selected source modules cannot disappear from the reported harness.
+Source aliases are refused. Process success, the original deadline and source
+currentness remain independently required by the existing stage owner.
+
+Go testing.F owns generation, corpus replay and shrinking. Race-enabled negative
+controls include incomplete and mismatched cases/suites, missing and duplicated
+modules, an omitted newly selected source, contradictory harness completion and
+the old orphaned-count witness. A real zero-exit Go subprocess exercises both
+refusal and successful admission through =runStage=. A recorded actual SDK
+transcript verifies format correspondence; that file-only check cannot certify
+process exit or timing. The complete devrunner race suite passed. Fixed fuzzing
+completed 1000 executions with 12 workers, and Project SysML/module ownership
+checks passed. The check-scheme Go stage now includes these controls and the
+framework's seed corpus.
+
+** Frozen dependency-image matrix
+
+The fixed ABBA matrix was completed on unchanged source
+=1ff85b1e5676aae5665843e5d522880aff85673c= with 12 host CPUs and all native PBT
+cases retained. Each slot cloned a prepared prefix, removed/rebuilt Weaver
+products through =gerbil build=, and used the unchanged 15-second test deadline.
+Only dependency =.o1= identity differed: cloned images versus hardlinks to the
+same seed. Source and seed hashes were stable across all four slots. The seed
+SHA-256 was =d8edd464075b9d30b9acc39fddace638c0dc2a9b63837151d75c7babdd084412=.
+
+| Slot | Dependency images | Build seconds | Test seconds | Harness begins, seconds | Result |
+|------+-------------------+---------------+--------------+-------------------------+--------|
+| 0 | Cloned | 82.385 | 15.012 | 10.889 | Fail |
+| 1 | Hardlinked | 14.496 | 15.012 | 9.133 | Fail |
+| 2 | Hardlinked | 14.375 | 15.012 | 9.124 | Fail |
+| 3 | Cloned | 82.727 | 15.009 | 11.231 | Fail |
+
+The cloned slots stopped during the program lifecycle property; the hardlinked
+slots stopped during assessed compilation ownership properties. None reached
+terminal harness completion or exit cleanup. Shared image identity alone does
+not close the failure. These are fresh paths/product builds, not OS-wide cold
+caches; the small fixed matrix does not isolate path, signing/page-cache and
+host scheduling effects or establish a universal timing improvement.
+
+** Corrected owner on an existing prepared prefix
+
+After correcting the result validator, the existing Go package-entry test ran
+four fixed trials on the explicitly prepared prefix. All completed naturally
+within the original 15-second deadline. The report retains its source identity
+map, before/after stability, complete output hashes and bounded failure excerpts
+through the existing retention owner. No forced exit, case reduction or timeout
+change was introduced.
+
+| Trial | Pre-harness seconds | Harness complete, seconds | Natural exit seconds | Post-terminal seconds |
+|-------+---------------------+---------------------------+----------------------+-----------------------|
+| 0 | 4.592 | 11.167 | 12.937 | 1.770 |
+| 1 | 3.105 | 9.658 | 11.435 | 1.777 |
+| 2 | 3.125 | 9.680 | 11.465 | 1.784 |
+| 3 | 3.143 | 9.687 | 11.451 | 1.764 |
+
+All four output hashes were
+=d1c73073ce8e2ae1eab92962ad34722230f4d677524dca7c64ee1ea14b650bca=;
+the report bound 855 source inputs and reported stable source. The existing
+128-case native framework properties were not reduced. These passes establish
+the corrected standard-entry admission on that prepared prefix. They do not
+replace the four failed fresh-prefix slots, the failed complete check-scheme
+campaign, the Apple linker failure or the executable cold connection failure.
+The new validator changes qualification evidence, not Runtime authorization.
+
+Frozen compact results and raw command transcripts remain temporary
+=/private/tmp/weaver-scheme-images-1ff85b1-*= and
+=/private/tmp/weaver-scheme-result-*= artifacts; only this curated summary is
+tracked. Existing Quint/Lean source, lifecycle, claim and budget laws remain
+unchanged: log protocol checks are native verification premises, not proofs
+of the SDK, a portable execution permit or authority to release an unknown hold.
+
+* Historical source-preparation observations
+
+An earlier Go-owned source-preparation qualification path recorded child
+start/reap, artifact decode and control configuration/authority/Serve phases
+without source paths or payloads.
+The existing Scheme fixture library records module readiness, entry, compile-begin
+and artifact-written. Gerbil toolchain CPU/real clocks and host-wall microseconds remain
+distinct: subtracting a Go elapsed clock from the Gerbil toolchain real clock is invalid.
+Host-wall calibration assumes no intervening clock adjustment. Only actual Wait
+proves that child was reaped; phase text cannot certify descendants, durable
+publication, natural exit or readiness.
+
+The first observation passed but its report extractor missed Go's default slog
+format. Native module-ready/artifact-written clocks were 5.644/7.927 seconds.
+After correcting extraction, another observation passed with native clocks
+4.526/6.194 seconds and Go process elapsed 8.207 seconds. Those different origins
+cannot establish a two-second exit interval. They remain incomplete observations,
+not performance acceptance or causes of the earlier failures.
+
+A calibrated unprofiled observation passed. Relative to child launch, module
+readiness took 3.044448 seconds, generation after compile-begin took 1.532838
+seconds and artifact-write to child reaping took 1.952435 seconds. Go's monotonic
+process elapsed was 6.529992 seconds. Configuration-ready to authority-reconciled
+took 0.023985 seconds; issuing Serve followed. The test still required actual
+mTLS readiness and denied the provider request despite inert FFI success. These
+are installed-prefix measurements, not cold qualification or runtime throughput.
+
+The first sampling attempt could not list processes: sandbox pgrep returned
+status three with =sysmond service not found=. That is unavailable inventory,
+not proof that a child was absent. The existing test handle later confirmed a
+terminal pass (native process elapsed 6.025101 seconds); no sample was captured
+for it. Inventory was verified separately before the corrected attempt.
+
+The corrected sample identified the exact fixture child and requested six seconds
+at five-millisecond intervals. It reproduced failed startup: module readiness
+occurred 10.533130 seconds after launch, compile-begin followed, no artifact-written
+record appeared and the existing watchdog canceled the process. Go observed failed
+reaping after 14.453231 seconds; the whole test failed in 16.75 seconds. The outer
+test readiness deadline starts before the child Go startup context, so these
+elapsed clocks need not reach fifteen simultaneously.
+
+Of 1059 main-thread samples, 977 were beneath =___dynamic_load -> dlopen= and 909
+beneath =notifyDebuggerLoad=; a branch of 548 reached
+=RemoteNotificationResponder::blockOnSynchronousEvent=. This identifies sampled
+loader/notification work before fixture readiness, rather than a run that finished
+work and hung only in cleanup. Sampling can perturb that wait. It does not identify
+the responder, explain every historical failure or explain the unprofiled
+post-artifact interval. The sample SHA-256 was
+=8fd414419b2dcd8882c37f7e3dd1ed62f36de558f86353745a5531adeefd3862=;
+raw output is temporary rather than tracked. Earlier samples below remain
+separately scoped. No timeout, pin, library validation, dyld notification or
+cleanup path is changed or disabled.
+
+The ordinary Go race suite and focused SysML/ownership checks passed. Standard
+Gerbil testing passed all five modules/23 cases, including both 128-trial native
+properties. The actual JSON/YAML partial-send, revocation and dual-restart test
+passed in 7.86 seconds (JSON 5.07, YAML 2.79); its command also rebuilt Rust
+dependencies for 46.40 seconds, outside those scenario timings. Its successes do
+not reclassify the failed sampled Scheme startup. Per-start report extraction
+prints only that process's appended phase records rather than repeating previous
+restart records. Temporary logs/native samples are removed after curation; core
+execution diagrams retain their existing semantic boundaries without diagnostic
+timestamps or sample counts.
+
+After preserving the concurrent MRR ownership change, committed source =2bf31f5=
+passed the standard clean-source architecture gate. The actual JSON/YAML restart
+test passed again in 9.03 seconds (JSON 6.42, YAML 2.61), with each startup's
+records reported once. This post-merge check qualifies that implementation and
+reporting change; it does not override the retained failed native sample.
+
+* Fixed inputs and result boundary
+The fresh-prefix complete =check-scheme= run on
+=6c91131f8709e1538c6034d8426b8a0ed8439369= reported =FAIL=: thirteen of fourteen
+stages passed. The host reported twelve available process CPUs. All dependency
+pins and the fifteen-second package-test deadline were unchanged.
+
+The active package contains FFI-loaded libraries only. The removed =dev/scheme=
+inventory and observer, =dev/build.ss=, =dev/gerbil.pkg= and image-packaging runner
+are not project acceptance prerequisites. Production modules belong in
+=scheme/=; their Scheme test suites belong in =t/=. Standard Gerbil build/test
+commands own discovery, compilation and execution.
+
+* Complete gate observations
+| Stage group | Result |
+|-------------+--------|
+| Committed source before/after, source currentness, linked source before/after | PASS |
+| Project/SysML architecture | PASS |
+| Rust Cedar FFI library and twelve-CPU capacity report | PASS |
+| Declared POO library / inherited Core library / Weaver module build | PASS |
+| SDK tool and pkg-config environment tests | PASS |
+| =gerbil test -g -v 5 t= | FAIL, killed by the unchanged watchdog at 15.038839375 s |
+| Real Scheme/Cedar CFFI, Go authority and Rust streaming integration | PASS, 3m49.383082584s |
+
+The failed package process printed nineteen =CASE-OK= reports, =HARNESS-OK= and
+terminal =OK=. These markers do not establish a natural process exit. The
+original receipt did not timestamp them, so it cannot establish whether most
+of the delay occurred before the reports or during subsequent cleanup.
+
+The passing integration stage includes source-assets response-loss recovery,
+revocation after a partial stream, preserved unknown budget across dual-process
+restart, a shared-budget concurrency race and rejection of provider-client retry. These are
+real local mTLS/transport tests with controlled provider endpoints, not live
+commercial provider qualification or proof of whole-store anti-rollback.
+
+A diagnostic replay of the same public command and prefix observed its first
+Harness at 3.070389 s, first Case at 3.070392250 s, terminal result at
+3.213005417 s and natural exit at 4.978567250 s. This is a later-use observation,
+not a replacement for the failed first-use receipt or evidence of its cause.
+
+* Earlier failures and focused checks
+The preceding fresh-prefix preparation attempt failed before gate execution:
+development links for inherited Core/POO created empty package tags, and the
+official dependency installer read =#!eof= where it required a string.
+Preparation now links the source package alone, lets =gerbil deps --install=
+install its declared dependency graph, and verifies installed Core/POO revisions
+against the unchanged source cohort. No tag or manifest is synthesized.
+
+The first focused Scheme shared-budget attempt exceeded control readiness and
+failed. After a standard root library build refresh, the same test passed in
+11.29 s; its complete Go test process took 15.937 s. This operation is distinct
+from the deadline-bound package test. One failed/successful pair does not
+attribute the difference exclusively to stale artifacts or host contention.
+
+Go development/project race tests passed. The FFI cleanup qualification model
+passed fourteen named Quint scenarios and its existing thousand-sample,
+sixty-step audit exploration at seed 293. Lean qualification passed with its
+compiled dependency closure. Authority publication passed twenty-seven named
+Quint scenarios. None of these results discharges native wall-clock acceptance.
+
+* Timing and next acceptance obligation
+The Go runner now observes the existing public SDK output while preserving
+every original log byte. Receipts distinguish the first Harness/Case, successful
+Harness, terminal result and the interval from terminal output to process
+completion. Missing markers remain missing. Pre-Harness time combines startup,
+discovery, loading and output delivery; these are byte-arrival observations,
+not internal SDK clocks. No unsupported per-phase attribution is fabricated.
+
+The observer neither changes test arguments nor grants acceptance. A fresh
+complete run must still finish naturally within fifteen seconds and preserve
+all nineteen Cases and source checks. The existing Quint and Lean properties
+retain separate completion, cleanup, source and deadline obligations; a fast
+replay cannot retroactively qualify a failed run. Raw logs are temporary, and
+the current compact receipt belongs under ignored =.cache/verification=.
+
+* Subsequent complete fixed-source result
+A second full run on =cf2af574ad8cf47ed98de0d997187245d6ecf18f= completed
+=PASS=, fourteen of fourteen stages. It used another new isolated Gerbil
+prefix, official unchanged dependency installation/builds, and the twelve-CPU
+host. This is fresh-prefix evidence, not an OS-wide cold-boot measurement.
+Source, committed-input and linked-dependency checks passed before and after.
+The real Scheme/Cedar/Go/Rust integration stage passed in 3m26.063729875s.
+
+| First public package test in this prefix | Observed elapsed time |
+|-----------------------------------------+-----------------------|
+| First Harness output | 6.333291834 s |
+| First Case output | 6.333295125 s |
+| Successful Harness output | 8.068833875 s |
+| Terminal =OK= output | 8.068837500 s |
+| Terminal output to natural process completion | 1.825007542 s |
+| Complete process, natural exit 0 | 9.893845042 s |
+
+All nineteen original Cases passed. Four subsequent independent package-test
+processes also passed: 5.129443125, 5.049557042, 5.099636292 and 5.211156500
+seconds. Their post-terminal intervals were 1.763362333, 1.774865000,
+1.814391000 and 1.888166166 seconds. The repeated SDK output SHA-256 was
+=755f076aace8000951cdf39774ea994dfc4be4cbca19ee076483af64a5f4ae37=.
+The source guard remained stable. These later-use processes overlapped the
+integration suite; they are not isolated cold paired controls.
+
+The earlier fifteen-second failure remains a failed receipt. The added observer
+uses a drained output pipe instead of handing the Gerbil toolchain the log file directly;
+the Gerbil toolchain arguments and all output bytes remain unchanged. There is no matched
+first-use control isolating that output transport from prefix or host effects.
+Therefore this result qualifies the current complete entry locally; it does
+not establish a repaired Gerbil cleanup defect, prove the earlier timeout's
+cause, or establish a universal fifteen-second latency guarantee. No timeout,
+cleanup rule or dependency pin was relaxed.
+
+* Concurrent PR preservation
+After the complete run ended, parallel PR changes through =9c0e64d= were
+fast-forwarded without replacing the original dirty checkout. Those additions
+change models, diagrams and reference/resource tests, not production Gateway
+code. On the merged source, all forty-seven ledger tests passed; Go development,
+gateway-client and runner race tests passed; the existing PublicationRecovery
+and ProviderRpc Lean owners checked. Quint reported thirty-five publication
+scenarios, forty-one provider scenarios and 105 scenarios across the authority
+module's imported closure. The complete fourteen-stage receipt remains bound
+to =cf2af57= rather than being relabeled as a later-source execution.
+
+* Bounded cold-start investigation and Runtime priority
+The historical timeout is not declared repaired. An initial eight-slot
+experiment cloned dependency prefixes, removed product libraries, rebuilt them
+with =gerbil build= and used the same =gerbil test -g -v 5 t= command. Its first
+three completed observations were:
+
+| Slot | Output boundary | Runtime result |
+|------+-----------------+----------------|
+| 0 | Regular file with a diagnostic read observer | FAIL, 15.008740250 s, no Harness output |
+| 1 | Drained pipe | PASS, 11.740627584 s, terminal result at 9.879834250 s |
+| 2 | Drained pipe | FAIL, 15.013553084 s, no Harness output |
+
+The enclosing Go test hit its unchanged ten-minute default watchdog during the
+fourth build. That batch is incomplete, not a qualified paired matrix. Its SDK
+build processes subsequently finished naturally; the unobserved fourth slot is
+not assigned a result. A setup attempt also refused GNU =cp= with BSD clone
+flags; the diagnostic now uses the existing Go/x/sys Darwin =clonefile= API.
+Independent slot invocations and immutable, source-bound compact receipts
+replace the failed batch organization; neither watchdog is increased.
+
+The pipe failure falsifies the claim that replacing regular-file output alone
+reliably repairs cold startup. This initial batch does not separate host load,
+page/signature caches, inode identity or observer effects. Cold scope means new
+prefix paths and fresh product-library builds; it is not an OS-wide cold boot.
+The optional image study holds output constant and varies cloned versus
+hardlinked dependency-image identity. Shared seed hashes are checked before and
+after, and product images are always removed/rebuilt. An unrun study is not
+evidence for a causal conclusion.
+
+Temporary SDK overlays expose collection, individual imports, test execution
+and return boundaries while retaining the original nineteen Cases and complete
+output hash. Two exploratory profiles observed:
+
+| Profile | File discovery | Module imports | Execution | Post-return exit | Whole process |
+|---------+----------------+----------------+-----------+------------------+---------------|
+| Existing prepared prefix | 0.679 ms | 3.776589 s | 0.185873 s | approximately 2.11 s | 7.932098 s |
+| Rebuilt prefix not previously tested | 0.171 ms | 9.011746 s | 1.866710 s | approximately 1.83 s | 14.793552209 s |
+
+These are instrumented diagnostic runs, not original-SDK acceptance. Wall-clock
+phase timestamps are not silently promoted to monotonic deadline receipts. The
+Go collector also records process CPU and the SDK's CPU/real-time observations.
+The profiles show little file-enumeration work in these samples and materially
+larger import/first-execution costs in the latter; they do not uniquely attribute
+the earlier uninstrumented failure after terminal =OK=.
+
+One separate native sample during the first cloned-prefix build found 89 of 92
+main-thread samples under dyld =mapSegments -> fcntl= and three under load
+notifications. A later instrumented test sampled loading/validation and found
+a post-return branch containing 88 of 92 samples under
+=notifyDebuggerUnload=. Sampling is excluded from timing acceptance and does not
+prove every startup has the same dominant wait. Apple's
+[[https://github.com/apple-oss-distributions/dyld/blob/main/dyld/Loader.cpp][published Loader implementation]]
+places signature registration and =F_CHECK_LV= in =mapSegments=. That source
+supports the validation-path interpretation; the sample did not record the
+fcntl argument and is not a captured kernel-call trace of the historical run.
+
+The Runtime priority is now explicit: package preparation/startup remains an
+engineering-cost diagnostic; the primary optimization work measures the already
+running Gateway. The cold-start causal investigation remains open, and no larger
+matrix or SDK packaging optimization is claimed here. The original fifteen-second
+gate and all failures remain intact. Quint now checks twenty-four qualification
+and evidence scenarios; Lean proves the ordered-cut partition, diagnostic-entry
+exclusion, matching requirements and preservation of earlier failed receipts.
+Their clocks, exact source/image identities and native mechanisms remain Host
+premises. See 59.05 for request-path benchmark boundaries.

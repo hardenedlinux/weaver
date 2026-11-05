@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Weaver LLM Gateway Core Index
 #+language: en
 #+options: toc:2
@@ -27,6 +31,8 @@ Area =10-19 LLM Gateway=; category =10 Routing and inference=.
 | 10.02 | [[file:10.02-llm-routing.d2][Core D2]] / [[file:10.02-llm-routing.svg][SVG]] |
 | 10.03 | [[file:10.03-differentiation-and-delivery.org][Differentiation, reference comparison and delivery/measurement plan]] |
 | 10.04 | [[file:10.04-validation-evidence.org][Formal evidence and remaining qualification]] |
+| 10.06 | [[file:10.06-provider-egress-window.org][Bounded provider egress window design candidate]] |
+| 10.07 | [[file:10.07-provider-egress-window.d2][Candidate D2]] / [[file:10.07-provider-egress-window.svg][SVG]] |
 
 [[file:../../../dev/proofs/lean/LlmRouting.lean][Lean]] and [[file:../../../dev/proofs/quint/LlmRouting.qnt][Quint]] model candidate eligibility, selection, current route
 binding and the initial single-provider-admission profile. Detailed downstream
@@ -42,3 +48,20 @@ python3 dev/proofs/evidence/llm-routing/check-counterexample-observations.py
 #+end_src
 
 No Gateway runtime or dependency pin is changed.
+
+* Embedded architecture views
+
+** 10.02-llm-routing.svg
+
+[[file:10.02-llm-routing.svg]]
+
+** 10.07-provider-egress-window.svg
+
+[[file:10.07-provider-egress-window.svg]]
+
+* Send-window promotion
+
+[[file:10.08-send-window-promotion.org][Writer mediation and final delivery join]]
+[[file:10.09-provider-delivery-join.svg]]
+
+- [[file:10.10-snapshot-publication.org][Published range snapshots and the final delivery boundary]]

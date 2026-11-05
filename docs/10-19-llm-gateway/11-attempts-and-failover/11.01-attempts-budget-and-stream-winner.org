@@ -1,6 +1,16 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Weaver Task Sponsorship, LLM Attempts and Stream Winner
 #+language: en
 #+options: toc:3
+
+* Reader view
+
+Failover proposals keep the original task and allowance.
+
+[[file:11.02-attempt-ledger.svg]]
 
 * Product outcome and design advantage
 
@@ -30,7 +40,7 @@ subject to an explicit spend limit and application semantics.
 | Stream range | Root, winning attempt, manifest, range identity, disclosure policy, current owner fence | Existing range broker and persistent consumption contract |
 | Usage observation | Exact child, provider request identity, terminal evidence, final amount or unknown | Attributable reconciliation, never authority to send |
 
-The ordinal is allocated by a serialized durable owner; a client nonce, SDK retry
+The ordinal is allocated by a serialized durable owner; a client nonce, provider-client retry
 identifier, model alias or reconnect identifier cannot choose a new root or
 reset the ordinal. Recovery queries by the original root and child operation ID.
 A lost allocation reply cannot cause allocation of another child merely because
@@ -157,13 +167,13 @@ already-started executions and late usage remain in the ledger.
 |----------+-------------------+----+------|
 | Task contract | Canonical root, retry/duplicate profile, sponsorship semantics, history and budget domains | Validate Kubernetes configuration and publish typed snapshots | Admit exact sponsored root and persist allowance |
 | Routing | Define hard capability/residency/semantic constraints and Cedar operation schema | Discover providers/model pools, workload identities, health and prices; reconcile cloud-native resources | Filter hard eligibility, rank eligible candidates, validate actual wire target |
-| Child execution | Define child operation and no-execution/usage observation contracts | Normalize provider-specific SDK responses; report data with source identity | Allocate ordinal, reserve maximum, persist consume, own final queue and epoch fence |
+| Child execution | Define child operation and no-execution/usage observation contracts | Normalize provider-specific Gerbil toolchain responses; report data with source identity | Allocate ordinal, reserve maximum, persist consume, own final queue and epoch fence |
 | Streaming | Define response/tool/disclosure semantics | Adapt protocols without independent replay or winner authority | Commit winner and gate each logical range |
 | Accounting | Define admissible final usage and original-root settlement semantics | Collect attributable provider usage; no refund authority | Durable child slots, aggregate usage, original-root settlement gate |
 
 Go is chosen for Kubernetes controllers, resource APIs, workload identity,
 cloud/provider integrations and their ecosystems. Its network ecosystem is
-useful where a protocol adapter materially benefits from it. Putting a Go SDK in
+useful where a protocol adapter materially benefits from it. Putting a Go Gerbil toolchain in
 the hot path is optional and must preserve the Rust broker boundary. Rust owns
 connection/stream processing, bounded buffers and the last authoritative send
 path. Scheme owns semantic composition and Code as Policy; Cedar evaluates the

@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 //go:build integration && !windows
 
 package dev
@@ -7,6 +11,7 @@ import (
 	"crypto/tls"
 	"errors"
 	"net"
+	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -24,14 +29,47 @@ import (
 // Test-only mTLS relay loses the successful source reply after forwarding one RPC.
 type publicationReplyLoss struct {
 	pb.UnimplementedGatewayServer
-	source *gatewayclient.Client
-	calls  atomic.Int64
+	source      *gatewayclient.Client
+	sourceMu    sync.RWMutex
+	calls       atomic.Int64
+	inspections atomic.Int64
+	stages      atomic.Int64
+	sourceViews atomic.Int64
+	loseStage   bool
+}
+
+func (s *publicationReplyLoss) sourceClient() *gatewayclient.Client {
+	s.sourceMu.RLock()
+	defer s.sourceMu.RUnlock()
+	return s.source
+}
+func (s *publicationReplyLoss) replaceSource(source *gatewayclient.Client) {
+	s.sourceMu.Lock()
+	defer s.sourceMu.Unlock()
+	s.source = source
+}
+
+func (s *publicationReplyLoss) InspectSourceAuthority(ctx context.Context, in *pb.Empty) (*pb.SourceAuthorityView, error) {
+	s.sourceViews.Add(1)
+	source := s.sourceClient()
+	return source.RPC.InspectSourceAuthority(source.Context(ctx), in)
+}
+
+func (s *publicationReplyLoss) InspectPublication(ctx context.Context, key *pb.PublicationKey) (*pb.PublicationReceipt, error) {
+	s.inspections.Add(1)
+	source := s.sourceClient()
+	return source.RPC.InspectPublication(source.Context(ctx), key)
 }
 
 func (s *publicationReplyLoss) PublishAuthority(ctx context.Context, p *pb.PublishRequest) (*pb.PublicationReceipt, error) {
 	s.calls.Add(1)
-	if _, err := s.source.RPC.PublishAuthority(s.source.Context(ctx), p); err != nil {
+	source := s.sourceClient()
+	r, err := source.RPC.PublishAuthority(source.Context(ctx), p)
+	if err != nil {
 		return nil, err
+	}
+	if s.loseStage {
+		return r, nil
 	}
 	return nil, status.Error(codes.Unavailable, "injected reply loss after durable decision")
 }
@@ -127,5 +165,56 @@ func TestProviderPublicationLostReplyRestartAndHistoricalDecision(t *testing.T) 
 	}
 	if receipt := inspect(t, f); receipt.Held != 4 || f.primary.Load() != 1 || f.backup.Load() != 0 {
 		t.Fatalf("publication recovery changed original budget or execution: %v", receipt)
+	}
+}
+
+func TestProviderHistoricalPublicationReadCannotAuthorizeAfterRestart(t *testing.T) {
+	f := newFixture(t, completeSSE, false)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	bootstrap := v1.Publication{OperationID: "bootstrap", Fence: 1, Policy: f.policy, Schema: f.schema}
+	original, err := f.admin.InspectPublication(ctx, bootstrap)
+	if err != nil || original.GetRevision() != 0 {
+		t.Fatalf("original publication: %v %v", original, err)
+	}
+	zero := uint64(0)
+	denied := v1.Publication{OperationID: "deny-after-read", ExpectedRevision: &zero, Fence: 2, Policy: "forbid(principal,action,resource);", Schema: f.schema}
+	if _, err := f.admin.Publish(ctx, denied); err != nil {
+		t.Fatal(err)
+	}
+	f.stop(t)
+	f.start(t)
+	historical, err := f.admin.InspectPublication(ctx, bootstrap)
+	if err != nil || !proto.Equal(original, historical) {
+		t.Fatalf("historical receipt changed: %v %v", historical, err)
+	}
+	if _, _, err := execute(t, f, pb.Encoding_PROTOBUF, 1); err == nil {
+		t.Fatal("old publication authorized a new invocation after restart")
+	}
+	if f.primary.Load() != 0 || f.backup.Load() != 0 {
+		t.Fatal("stale authority reached a provider")
+	}
+	one := uint64(1)
+	restored := v1.Publication{OperationID: "restore-current", ExpectedRevision: &one, Fence: 3, Policy: f.policy, Schema: f.schema}
+	if _, err := f.admin.Publish(ctx, restored); err != nil {
+		t.Fatal(err)
+	}
+	if _, _, err := execute(t, f, pb.Encoding_PROTOBUF, 1); err == nil {
+		t.Fatal("later allow made an old publication current")
+	}
+	f.plan.Revision, f.plan.Fence = 2, 3
+	if _, _, err := execute(t, f, pb.Encoding_PROTOBUF, 1); err != nil {
+		t.Fatalf("fresh authority could not admit the unconsumed original claim: %v", err)
+	}
+	f.stop(t)
+	f.start(t)
+	if _, err := f.admin.Publish(ctx, restored); err != nil {
+		t.Fatal("exact source outcome recovery failed", err)
+	}
+	if _, _, err := execute(t, f, pb.Encoding_PROTOBUF, 1); err == nil {
+		t.Fatal("source recovery reopened consumed original claim")
+	}
+	if receipt := inspect(t, f); receipt.Held != 4 || f.primary.Load() != 1 || f.backup.Load() != 0 {
+		t.Fatalf("recovery changed execution or unknown hold: %v", receipt)
 	}
 }

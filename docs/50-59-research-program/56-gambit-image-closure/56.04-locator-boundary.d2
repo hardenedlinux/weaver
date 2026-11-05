@@ -1,0 +1,277 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+...@../../../dev/d2/themes/flow
+# Core lifecycle only. Commands, timings and receipts belong to Org.
+title: WEAVER / QUALIFIED NATIVE LOCATORS / EFFECT AUTHORITY {
+  class: title
+  near: top-center
+}
+source: SCHEME / DEFINING OWNERS {
+  left: 0
+  top: 0
+  width: 370
+  height: 650
+  label.near: top-center
+  style.font-size: 16
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  contract: JSON and parser semantic Contract\nOriginal binding owners and ABI\nRequired initializer closure {
+    left: 20
+    top: 85
+    width: 330
+    height: 115
+    label.near: center-center
+    class: semantic
+  }
+  closure: Keep original source and binding owners\nPartition exported symbol conflicts\nPreserve independent lazy entries {
+    left: 20
+    top: 270
+    width: 330
+    height: 115
+    label.near: center-center
+    class: cloud
+  }
+  image: Completed source-bound publication\nSource digest / image / entry locator\nInstalled ordinary dynamic gxi {
+    left: 20
+    top: 455
+    width: 330
+    height: 115
+    label.near: center-center
+    class: runtime
+  }
+}
+lifecycle: GXI / DYNAMIC EXECUTION {
+  left: 460
+  top: 0
+  width: 370
+  height: 650
+  label.near: top-center
+  style.font-size: 16
+  style.fill: "#f8fafb"
+  style.stroke: "#9bb6ad"
+  checks: Original expander and module identity\nReal loader / OS library validation\nResolve entry against its image handle {
+    left: 20
+    top: 85
+    width: 330
+    height: 115
+    label.near: center-center
+    class: semantic
+  }
+  return: Original Contract assertions\nDecode unchanged configuration\nPreserve every native acquisition {
+    left: 20
+    top: 270
+    width: 330
+    height: 115
+    label.near: center-center
+    class: runtime
+  }
+  exit: Normal return / reject late initialization\nClose every reference / run destructors\nRelease image after its final close {
+    left: 20
+    top: 455
+    width: 330
+    height: 115
+    label.near: center-center
+    class: policy
+  }
+}
+authority: GATEWAY / EFFECT AUTHORITY {
+  left: 920
+  top: 0
+  width: 370
+  height: 650
+  label.near: top-center
+  style.font-size: 16
+  style.fill: "#f7faf9"
+  style.stroke: "#9bb6ad"
+  evidence: Native bodies / required initializers\nPass / fail / late evidence retained\nFailed candidate stays unqualified\nNo execution permission minted {
+    left: 20
+    top: 85
+    width: 330
+    height: 115
+    label.near: center-center
+    class: ledger
+  }
+  go: Go cloud native control\nPublish typed proposals\nPreserve task and reservation {
+    left: 20
+    top: 270
+    width: 330
+    height: 115
+    label.near: center-center
+    class: cloud
+  }
+  broker: Rust final broker and executor\nCurrent Cedar Policy / history join\nFenced actual provider dispatch {
+    left: 20
+    top: 455
+    width: 330
+    height: 115
+    label.near: center-center
+    class: runtime
+  }
+}
+quint: QUINT / EXECUTABLE COUNTEREXAMPLES\nWrong owner / replaced source / incomplete publication {
+  left: 50
+  top: 740
+  width: 575
+  height: 90
+  class: policy
+}
+lean: LEAN / COMPOSITION\nQualified locator / committed source / actual Policy guard {
+  left: 740
+  top: 740
+  width: 575
+  height: 90
+  class: semantic
+}
+authority.goBrand: "" {
+  shape: image
+  icon: ../../architecture/diagrams/assets/go.svg
+  top: 246
+  left: 310
+  width: 35
+  height: 20
+}
+authority.rustBrand: "" {
+  shape: image
+  icon: ../../architecture/diagrams/assets/rust.svg
+  top: 418
+  left: 312
+  width: 28
+  height: 28
+}
+source.contract -> source.closure
+source.closure -> source.image
+source.image -> lifecycle.checks
+lifecycle.checks -> lifecycle.return
+lifecycle.return -> lifecycle.exit
+lifecycle.exit -> authority.evidence
+authority.go -> authority.broker: Canonical proposal
+authority.evidence -> authority.broker { style.stroke-dash: 4 }
+
+lifecycle.checks -> authority.evidence { style.stroke-dash: 4 }
+
+# Project-owned presentation question; not an issued governance Question.
+vars: { d2-config: { data: { figure: |json
+{
+  "title": "04 locator boundary",
+  "purpose": "workflow",
+  "kind": "flow",
+  "language": "en",
+  "width": 1600,
+  "primary": "main",
+  "questions": [
+    {
+      "ref": "main",
+      "text": "Which progression and failure boundaries govern 04 locator boundary?",
+      "focusRefs": [
+        "catalog",
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "catalog": "docs/architecture/08-diagram-catalog.org",
+    "model": "Project.sysml"
+  },
+  "copy": {
+    "takeaway": "The declared source relationships define this view; presentation does not grant execution authority."
+  },
+  "basis": {
+    "captureRef": "docs/50-59-research-program/56-gambit-image-closure/56.04-locator-boundary.d2#design-view",
+    "modelRefs": [
+      "Project.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "sketchbook",
+    "blueprint",
+    "reading"
+  ],
+  "layout": "model-view",
+  "variants": [],
+  "presentation": {
+    "graph": {
+      "id": "weaver-source-view",
+      "children": [
+        {
+          "id": "title"
+        },
+        {
+          "id": "source",
+          "children": [
+            {
+              "id": "source.contract"
+            },
+            {
+              "id": "source.closure"
+            },
+            {
+              "id": "source.image"
+            }
+          ]
+        },
+        {
+          "id": "lifecycle",
+          "children": [
+            {
+              "id": "lifecycle.checks"
+            },
+            {
+              "id": "lifecycle.return"
+            },
+            {
+              "id": "lifecycle.exit"
+            }
+          ]
+        },
+        {
+          "id": "authority",
+          "children": [
+            {
+              "id": "authority.evidence"
+            },
+            {
+              "id": "authority.go"
+            },
+            {
+              "id": "authority.broker"
+            },
+            {
+              "id": "authority.goBrand"
+            },
+            {
+              "id": "authority.rustBrand"
+            }
+          ]
+        },
+        {
+          "id": "quint"
+        },
+        {
+          "id": "lean"
+        }
+      ],
+      "layoutOptions": {
+        "elk.algorithm": "layered",
+        "elk.direction": "DOWN",
+        "elk.edgeRouting": "ORTHOGONAL"
+      }
+    },
+    "options": {
+      "elk.algorithm": "layered",
+      "elk.direction": "DOWN",
+      "elk.edgeRouting": "ORTHOGONAL"
+    },
+    "icons": {},
+    "roles": {}
+  },
+  "icons": [
+    "engineering",
+    "weaver"
+  ]
+}
+|
+} } }

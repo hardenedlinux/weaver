@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Weaver Checkpoint Publication and WAL Truncation Index
 #+language: en
 #+options: toc:2
@@ -24,3 +28,9 @@ monotonic recovery floor, local prefix deletion and checkpoint-plus-suffix recov
 Models: [[file:../../../dev/proofs/lean/LlmCheckpointTruncation.lean][Lean]] / [[file:../../../dev/proofs/quint/LlmCheckpointTruncation.qnt][Quint]].
 Run the isolated runner (retired Python driver). English only; no Gateway implementation, dependency
 pin, upstream source or historical sealed artifact is changed.
+
+* Embedded architecture views
+
+** 26.02-checkpoint-truncation.svg
+
+[[file:26.02-checkpoint-truncation.svg]]

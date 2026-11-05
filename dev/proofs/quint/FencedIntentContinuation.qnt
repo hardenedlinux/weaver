@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 // Durable intent decisions precede acknowledgement; fences never erase acceptance.
 module FencedIntentContinuation {
   import DeviceIsolationRecovery as D from "./DeviceIsolationRecovery"

@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 use proptest::{prop_assert_eq, proptest, test_runner::Config};
 use serde::Deserialize;
 use std::collections::BTreeMap;

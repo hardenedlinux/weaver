@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Weaver Durable Queue to Executor Offer Index
 #+language: en
 #+options: toc:2
@@ -24,3 +28,9 @@ recovery qualification and separately checked burn/offer transitions.
 Models: [[file:../../../dev/proofs/lean/LlmExecutorOffer.lean][Lean]] / [[file:../../../dev/proofs/quint/LlmExecutorOffer.qnt][Quint]].
 Run the isolated runner (retired Python driver). Documents and diagrams are English only.
 No Gateway implementation, dependency pin or earlier sealed artifact is changed.
+
+* Embedded architecture views
+
+** 22.02-executor-offer.svg
+
+[[file:22.02-executor-offer.svg]]

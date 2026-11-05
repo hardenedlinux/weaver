@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 package dev
 
 import (
@@ -10,6 +14,14 @@ import (
 
 func TestSchemeModuleOwnershipAndSpecificContracts(t *testing.T) {
 	repository := root(t)
+	manifest, err := os.ReadFile(filepath.Join(repository, "gerbil.pkg"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	dependencies := regexp.MustCompile(`"github\.com/[^\"]+"`).FindAllString(string(manifest), -1)
+	if len(dependencies) != 1 || !strings.HasPrefix(dependencies[0], `"github.com/tao3k/agentic-ai-lab`) {
+		t.Fatal("Agentic AI Lab must remain the only direct Scheme dependency", dependencies)
+	}
 	for _, name := range []string{"gerbil.pkg", "build.ss", "init.ss"} {
 		info, err := os.Stat(filepath.Join(repository, name))
 		if err != nil || !info.Mode().IsRegular() {
@@ -51,9 +63,24 @@ func TestSchemeModuleOwnershipAndSpecificContracts(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, required := range []string{"./init.ss", "std-make-spec", "defbuild-script", "scheme/policy/cedar-ffi"} {
+	for _, required := range []string{"./init.ss", "std-make-spec", "defbuild-script", "scheme/policy/cedar-ffi", "pkg-config-cflags", "pkg-config-libs"} {
 		if !strings.Contains(string(build), required) {
 			t.Fatalf("root build does not use its declared owner: %s", required)
+		}
+	}
+	info, err := os.Stat(filepath.Join(repository, "build.ss"))
+	if err != nil || info.Mode()&0111 == 0 || !strings.HasPrefix(string(build), "#!/usr/bin/env gxi\n") {
+		t.Fatal("root must retain the standard Gerbil package script")
+	}
+	if strings.Contains(string(build), "target/debug") {
+		t.Fatal("Scheme build must obtain FFI paths from pkg-config")
+	}
+	if strings.Contains(string(build), "exe:") || strings.Contains(string(build), "bin:") {
+		t.Fatal("FFI-loaded governance libraries must not acquire executable build targets")
+	}
+	for _, retired := range []string{"dev/build.ss", "dev/gerbil.pkg"} {
+		if _, err := os.Stat(filepath.Join(repository, retired)); !os.IsNotExist(err) {
+			t.Fatalf("unneeded Scheme executable package remains: %s", retired)
 		}
 	}
 }

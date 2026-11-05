@@ -1,13 +1,16 @@
+;;; SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+;;;
+;;; SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 ;;; This Contract describes an inert Rust preflight, not an authorization grant.
 (import (only-in :clan/poo/object .cc)
         (only-in :clan/poo/mop Function Bool)
         (only-in :yuanxu/object-types/contracts YuanxuContract.)
-        (only-in :clan/poo/type Record String))
+        (only-in :clan/poo/type Record String)
+        (only-in "./source-bytes.ss" bounded-cedar-source?))
 (import (only-in :clan/poo/type List)
         (only-in :agentic-ai-lab/modules/governance/types AgenticAILabGovernanceProfile))
 (export PolicyScopeContract CedarPolicySource CedarSchemaSource PolicyDocument PolicyProjection)
-(def (bounded-cedar-source? value)
-  (and (string? value) (< 0 (u8vector-length (string->utf8 value)) 65537)))
 (def CedarPolicySource (.cc String sexp: 'CedarPolicySource '.element? bounded-cedar-source?))
 (def CedarSchemaSource (.cc String sexp: 'CedarSchemaSource '.element? bounded-cedar-source?))
 (def PolicyDocument

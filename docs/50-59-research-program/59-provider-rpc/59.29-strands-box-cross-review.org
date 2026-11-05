@@ -1,0 +1,226 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+#+TITLE: 59.29 Strands Box Source Review and Weaver Design Leverage
+#+LANGUAGE: en
+#+OPTIONS: toc:2 num:nil
+
+* Scope and source identity
+
+The requested reference is cloned at =.data/strands-box= from
+[[https://github.com/strands-agents/box][strands-agents/box]]. The inspected revision is
+=fcc1302690c42f44cf231019ac89af888f96223a=. This is a research checkout,
+not a Weaver dependency or integration acceptance result. No Box binaries are run.
+
+Follow =WeaverProject::DesignProcess=. This review refines
+[[file:59.27-policy-evidence-architecture.org][the evidence architecture]] and [[file:59.28-ascent-mrr-and-fact-review.org][the Ascent/MRR review]]. Responsibilities remain in
+Project SysML; no duplicate proof models, production code or pin changes follow.
+
+* Correct Policy comparison
+
+Box uses Dogwood Local Engine. Dogwood extends Cedar with temporal rules; Box's
+Rust request adapter also constructs schema-bound Cedar requests. Describing the
+choice as Dogwood versus Cedar hides that relationship. Weaver selects standard
+Cedar and cedar-poo-spec composition/proof reuse with authenticated host history.
+
+Box already combines semantic checks, event history, durable recovery, typed MCP
+arguments and endpoint credential injection. Do not claim it merely isolates
+processes, lacks history or forgets budgets on restart. Its inspected history
+contract recovers or refuses rather than falling back to empty history.
+
+Dogwood's temporal extension is not automatically covered by ordinary Cedar or
+cedar-poo-spec theorems. Consuming a Box verdict as proved Cedar authorization
+would require an explicit semantic adapter. No such translation is introduced.
+
+* Source lessons
+
+| Inspected surface | Existing Box mechanism | Weaver obligation |
+|-------------------+------------------------+-------------------|
+| =crates/policy/src/schema.rs=: to_cedar_request | Actual schema-bound request construction before evaluation | Publication/replay validation cannot substitute for checking the actual request |
+| =crates/policy/src/dogwood.rs= | Serialized local engine/history submission | One deciding authority, with fresh mutable state at the actual effect boundary |
+| =crates/policy/tests/temporal_egress_budget.rs= | Separate decision and outcome recording, including an unrecorded-delivery control | Reserve shared exposure and consume before possible external bytes; unknown results retain their hold |
+| =crates/policy/tests/runtime_mcp_policy_staging.rs= | Pending typed tools are held while schemas stage; schema-independent operations have separate coverage | Never silently evaluate an incomplete Policy/schema bundle for the same effect |
+| =crates/policy/src/observe.rs= | Nonblocking observer receives already extracted metadata | Telemetry cannot re-read mutable inputs, retry effects or own accounting |
+| =crates/box/src/lib.rs= and README | One Box run per host process, constrained initialization/hardening | Do not embed this lifecycle wholesale into an already threaded Gateway |
+
+Schema-bound actual request construction is an existing Box strength and a
+current Weaver gap. The comparison strengthens a concrete obligation; it does
+not establish that Weaver already provides a stronger complete product.
+
+The Box =decide_with_identity= path calls =to_cedar_request= before submitting
+the temporal request event. Its source documents a catch-all permit accepting
+an out-of-vocabulary principal/action without this gate. Carry that negative
+control into Weaver's existing actual-request adapter: a valid Policy bundle and
+replay must not admit a schema-invalid request. Current Weaver
+=crates/policy/src/authorize.rs= constructs Context and Request without a schema;
+this review records the implementation gap rather than claiming it fixed.
+
+* Temporal counts versus reserved exposure
+
+Box distinguishes request counts from outcome counts. Request recording supports
+serialized attempt limits. Rules counting outcomes can see multiple in-flight
+operations before those results arrive. Its
+=an_unrecorded_delivery_does_not_consume_budget= test explicitly pins what happens
+when a caller fails to record a delivery. This is a specified boundary, not a
+claim that every Box rule or budget is bypassable.
+
+Weaver's target contract requires one original shared allowance, pre-effect
+reservation, durable consumption and affine dispatch/release. A failed outcome
+append cannot restore that opportunity or its capacity. Qualify this across
+providers, tools, sessions and rule edits using actual fault tests.
+
+Box's durable history and engine-owned time are recovery precedents. Its stated
+scope remains per box and history window, without tamper evidence or atomic
+effect/outcome commit. Rule changes can affect temporal state. Weaver must keep
+claim/account/history domains independent of Policy text, rule module and backend
+identity: a new rule does not create a fresh budget. Windowed Policy state and
+durable accounting are different contracts.
+
+Comparison scenarios include two in-flight effects before either result, crash
+after bytes but before result recording, missing/corrupt history, rule edit after
+unknown consumption and old-worker return after a changed fence. Reuse existing
+claim/recovery owners; another Box-shaped verification model is unnecessary.
+
+Box's =observe_outcome= submits a completed effect to the durable engine; it
+cannot make the external effect and history append one transaction. In Weaver,
+an authenticated result is also an observation, not an undo operation: if bytes
+may have escaped before recording failed, keep the original unknown exposure.
+The present provider ledger already retains holds even on completion. Releasing
+capacity requires the existing account owner's unique, reservation-bound atomic
+application, not an outcome count or a Session success flag. Final usage mapping
+and its integration remain unqualified. See the single
+[[file:59.28-ascent-mrr-and-fact-review.org::*Uncovered obligations and existing owners][thirteen-obligation evidence ledger]], especially R2-09 and R2-12.
+
+* Mediation and Session coverage
+
+Box's shared history covers mediated operations; direct OS grants have another
+coverage boundary. Weaver must likewise enumerate covered provider/tool effects
+and reject unsupported conversions. One guarded path cannot control a second
+ambient SDK or direct provider route.
+
+Bind actual tool/server identity and argument schema to the original task/profile.
+Discovery advertises a capability; it does not authorize it. Pending schemas and
+invalidated sources block affected typed effects. Ascent/MRR candidates still
+enter normal Cedar/claim admission.
+
+Box distinguishes requests, responses and definitely-no-effect events. This
+reinforces Weaver's separate invocation, response-release and accounting domains.
+Session progress requires its original step's authoritative completion domain;
+a denied request or publication acknowledgment is not completion.
+
+* Embedding and deployment
+
+Box may be investigated as an optional contained-workload complement, as OpenShell
+may. It is not required physical isolation for Weaver's logical execution design.
+Its library entrypoint is guarded against a second run and has thread/secret
+initialization constraints. Calling it from a live Gateway needs a separate
+lifecycle review, not simply an added Cargo dependency.
+
+A combined deployment must prevent direct provider/tool access bypassing Weaver's
+original claim/shared allowance. Select one endpoint credential owner and prohibit
+proxy retries or redirected secrets. Box history and Weaver's ledger retain
+distinct owners; no cross-store atomicity is assumed. A Box outcome remains an
+external observation until authenticated and bound by the effect adapter.
+
+* Differentiation to validate
+
+The target is a connected TAO3K process: Agentic AI Lab/POO/Yuanxu composes reusable
+routines, inherited Ascent derives bounded candidates, optional MRR supplies
+qualified semantic data queries, cedar-poo-spec supplies composition and semantic
+evidence, Go adapts cloud/protocol lifecycle, and Rust owns effects and recovery.
+
+Validate fewer duplicated semantic adapters and preserved original constraints
+under real failures. Merely using Cedar, importing a rule engine, writing more
+proof files or copying a sandbox lifecycle does not establish an advantage.
+No matched Box/OpenShell performance or security-equivalence experiment was run.
+
+The design leverage is a connected contract rather than a copied sandbox:
+AA Session/Workflow/Governor preserves task meaning; inherited Ascent derives
+bounded candidates; cedar-poo-spec ties composed Policy evidence to exact images;
+Rust retains original claims and exposure under ambiguous effects. Go transports
+authenticated proposals and observations without interpreting a result as a new
+permit. The durable hard-fact barrier links invalidation to both successor
+admission and final execution. These connections are the differentiating target,
+and the evidence ledger identifies the bridges still needed to demonstrate it.
+
+* Per-round comparison metric and evidence compression
+
+Zero Trust is Weaver's mandatory core model, shared by every semantic and
+execution extension. Compare the actual request, evidence, consumption and
+recovery boundaries of each project rather than treat that principle as an
+exclusive product feature. Box's schema/history enforcement and OpenShell's
+mediated isolation are relevant concrete precedents; neither proves Weaver's
+original-family/budget/Session integration for it.
+
+The requested "compression metric" is recorded here as a compact comparison
+and evidence-progress vector. It is not a token/byte compression ratio, a security
+score or a throughput claim. Each round report must identify this comparison,
+state its change and answer benefit, disadvantage, mitigation and leverage.
+=DesignReviewRecord.comparisonMetricIdentity= binds the report to the exact
+snapshot. A later measured compression or performance ratio needs a separate
+workload, numerator and denominator; none is available from this review.
+
+Use =S= for an inspected pinned reference implementation, =T= for executed Weaver
+baseline tests, =M= for a checked abstract composition/semantic contract, =D= for
+unimplemented design and =U= for unassessed scope. These are evidence labels, not
+ordinal product ratings. A source-backed competitor feature is not a local test
+pass; U does not mean absent. Reference identities remain the Box revision above
+and OpenShell =3a5dfcd2f1afd9c7376b07b11036265bbb68453c=.
+
+| Dimension | Box | OpenShell | Weaver benefit and current disadvantage | Response and leverage |
+|-----------+-----+-----------+-----------------------------------------+-----------------------|
+| Actual request validation | S: schema-bound Cedar request before temporal submission | S: supervisor network/L7 checks and Rego policy mediation; different schema contract | D: exact schema-bound execution target; current shared evaluator still omits schema | Reuse official Cedar parsing with the active image and mutation-negative actual-request tests; learn Box's check location |
+| History and ambiguous outcomes | S: durable recover-or-refuse history; outcome recording is a separate fallible operation | S: runtime/run identity and Policy application lifecycle; same account invariant U | T/M: affine consumption and retained unknown exposure; final settlement integration D | Keep the original hold independent of Policy text/outcome counts; bind reservation and unique account application before release |
+| Hard-fact changes and successor steps | S: temporal rules/shared mediated history; equivalent original-family protocol U | S: dynamic Policy/prover and supervisor application; equivalent Session protocol U | M/D: barrier, pending set and original graph/frontier join; durable adapter missing | Reuse AA owner-local feed and Session composition, extend only their Rust authority bridge; validate lost-response/restart schedules |
+| Semantic programmability | S: supported tool/MCP and policy interfaces; TAO3K composition U | S: runtime/provider/middleware extension surfaces; TAO3K composition U | S/M/D: AA higher-order Governance/Profile generic methods plus inherited Yuanxu JsonSchema; shared JSON/Scheme profile admission modeled, embedded delivery incomplete | Compose assessment and strategies in Scheme while accepting JSON data; bind explicit configuration schema and module/capture provenance to the same typed output and Rust authority |
+| Fact evidence at actual use | S: actual request schema and temporal event checks; same projection/ownership/freshness contract U | S: run-bound supervisor and mediated network/Policy checks; same fact contract U | M/D: exact closure, closed scope, owned image and admitted freshness at projection/admission/send; actual AA/FFI/source adapter unqualified | Reuse Ascent stable-procedure/full-recompute boundary; qualify canonical capture, source promises and trusted clock rather than infer truth from result labels |
+| Containment and bypass coverage | S: constrained embedding/hardening and mediated operation boundary | S: explicit workload/supervisor isolation, kernel controls and outer egress fence | Logical Gateway boundary only; does not confine arbitrary agent filesystem/process/ambient network effects | Declare covered effects and credential owner; reject ambient Gerbil toolchain bypass; qualify optional external containment where the deployment threat model needs it |
+| Policy assurance | S: Dogwood extends Cedar; temporal extension needs its own semantic scope | S: SMT containment checks and Rego parity tests | M/D: imported cedar-poo-spec composition/refinement; actual adapter premises still missing | Reuse upstream semantics and one Quint concurrency owner; prove exact materialization and test SQL/transport correspondence |
+| Credentials and routing | S: endpoint-bound injection and typed mediated calls | S: supervisor injection, inference endpoint and API-aware checks | T/D: Rust provider path and Go routing; cross-routine coverage incomplete | Preserve original root/profile/shared allowance across fallback; bind actual endpoint, payload and credential at every final guard |
+| Operational cost and availability | S: per-box durable engine and constrained one-run embedding | S: supervisor/runtime lifecycle and isolation infrastructure | Unknown holds reduce usable capacity; tri-language bridge, durable barriers and long critical sections add cost | Keep Ascent baseline, MRR optional, derivation/replay outside final lock; measure update latency, hold age, lock time and recovery before claiming a performance advantage |
+
+The repeatable progress vector for this round is:
+
+| Metric | Previous round | Current round | Meaning |
+|--------+----------------+---------------+---------|
+| Hard-fact/Session composition obligations with executable witnesses | 13/13 | 13/13 | Existing denominator preserved; adapter/cross-entry refinements deepen the same obligations |
+| Obligations with concrete acceptance contracts | Not enumerated as full scenarios | 13/13 specified | AT-R2-01 through AT-R2-13 name fault points and actual store/transport receipts; these are planned scenarios |
+| Concrete integrated R2 obligations accepted | 0/13 | 0/13 | Real durable bridge, account application and Session adapter remain missing |
+| Existing continuation-suite named tests passing | 128 | 163 | 35 additions: 30 positive/rejection controls and five unsafe witnesses; no runtime memory-safety proof implied |
+| Total unsafe-design witnesses passing in that suite | 26 | 31 | Cohorts preserved; added JSON Governance bypass, pointer retention, old VM, preflight promotion and forged sender labels |
+| Current adapter negative-control cohort | Not present | 5/5 | These are modeled unsafe actions, not five production exploits |
+| Total Cedar bridge theorems kernel-checked | 28 | 40 | Twelve added configuration/capture/owned-data lemmas; exact Cedar composition and Host premises retained |
+| Current adapter semantic cohort | Not present | 12/12 | Dual-profile checks, authenticated callback/capture, borrow/owned contracts, stored-capture/current-source binding and Cedar composition |
+| Executed baseline adapter checks | Prior source evidence | 3 Rust tests; 2 Go package suites | Policy-FFI ASP/argument/text and existing config/routing checks; compiled Scheme/GC bridge integration remains unexecuted |
+| Matched comparative performance measurements | 0 | 0 | No latency, cost, throughput or security-superiority ratio is justified |
+
+The 13/13 metric counts bounded executable witnesses for the frozen thirteen
+obligations, not complete proof or runtime acceptance. It must never replace
+the 0/13 integrated acceptance metric. New negative-control/semantic cohorts
+are named separately so changing a denominator cannot disguise regression.
+The 31 unsafe witnesses are successful checks of deliberately unsafe actions,
+not 31 discovered production vulnerabilities. The fixed campaign remains 1,000
+sampled traces with at most 60 steps; =boundaryStep= includes the earlier projection
+and composition schedules, so its wider action set changes trace coverage.
+
+The advantage to pursue is continuity: higher-order Scheme Governance can compose
+assessments, evidence and adaptive routines, and a routine can adapt provider or
+strategy while Rust retains the original claim, budget and history through
+withdrawal and recovery. The disadvantage is integration and recovery complexity,
+including capacity trapped by unknown usage. Address it with small existing owner
+extensions and authentic reconciliation, never auto-refund or duplicate engines.
+Containment remains a complementary deployment property; it is not silently
+added to Weaver's logical Gateway claim. The next concrete gate is actual adapter
+conformance under fault injection after the design is confirmed.
+
+* Primary source anchors
+
+- [[https://github.com/strands-agents/box/blob/fcc1302690c42f44cf231019ac89af888f96223a/docs/design/policy.md][Policy and durable-history boundary]]
+- [[https://github.com/strands-agents/box/blob/fcc1302690c42f44cf231019ac89af888f96223a/crates/policy/src/schema.rs][Schema-bound actual request]]
+- [[https://github.com/strands-agents/box/blob/fcc1302690c42f44cf231019ac89af888f96223a/crates/policy/tests/temporal_egress_budget.rs][Outcome budget controls]]
+- [[https://github.com/strands-agents/box/blob/fcc1302690c42f44cf231019ac89af888f96223a/crates/policy/tests/runtime_mcp_policy_staging.rs][MCP staging controls]]
+- [[https://github.com/strands-agents/box/blob/fcc1302690c42f44cf231019ac89af888f96223a/crates/policy/src/observe.rs][Nonblocking observation]]
+- [[https://github.com/strands-agents/box/blob/fcc1302690c42f44cf231019ac89af888f96223a/crates/box/src/lib.rs][Library lifecycle]]
+- [[https://github.com/NVIDIA/OpenShell/blob/3a5dfcd2f1afd9c7376b07b11036265bbb68453c/docs/about/architecture.mdx][OpenShell mediation, containment and run identity]]
+- [[file:59.25-openshell-and-tao3k-ecosystem.org][OpenShell source inventory and TAO3K ownership comparison]]

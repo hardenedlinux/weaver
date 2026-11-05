@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Weaver Projection Join and Final Queue Admission Index
 #+language: en
 #+options: toc:2
@@ -25,3 +29,9 @@ observation. Final admission compares current authority and immutable scope agai
 Models: [[file:../../../dev/proofs/lean/LlmJoinEnqueue.lean][Lean]] / [[file:../../../dev/proofs/quint/LlmJoinEnqueue.qnt][Quint]].
 Run the isolated runner (retired Python driver). This audit compares POO Flow and cedar-poo-spec.
 No Gateway implementation, dependency pin or previous sealed artifact is changed.
+
+* Embedded architecture views
+
+** 21.02-join-enqueue.svg
+
+[[file:21.02-join-enqueue.svg]]

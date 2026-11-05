@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 // Command weaver-dev runs the development gates directly, without a shell.
 package main
 
@@ -8,7 +12,6 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
-	"path/filepath"
 
 	"github.com/HardenedLinux/weaver/go/internal/devrunner"
 )
@@ -20,15 +23,13 @@ func main() {
 	}
 }
 
-func run() (resultErr error) {
+func run() error {
 	goBinary := flag.String("go-bin", "", "Go executable; defaults to the compiling toolchain")
 	clean := flag.Bool("clean-source", false, "Require every verification input to match the same committed revision")
-	schemeSource := flag.String("scheme-source", "", "Agentic AI Lab source checkout for Scheme source qualification")
-	schemeLibrary := flag.String("scheme-library", "", "Optional additional qualified Scheme dependency library")
-	schemePoo := flag.String("scheme-poo", "", "Gerbil POO checkout at Core's existing declared dependency pin")
+	view := flag.String("view", "", "Render one exact SysML-mapped D2 source; default renders the complete inventory")
 	flag.Parse()
 	if flag.NArg() != 1 {
-		return errors.New("usage: weaver-dev [-go-bin PATH] [-clean-source] bootstrap|bootstrap-build|bootstrap-proofs|check|check-rust|check-go|check-policy|check-architecture|check-scheme|bench|generate-rpc|prepare-ci-host")
+		return errors.New("usage: weaver-dev [-go-bin PATH] [-clean-source] qualify-policy|bootstrap|bootstrap-build|bootstrap-proofs|check|check-rust|check-go|check-policy|check-architecture|check-scheme|check-storage|check-telemetry|bench|bench-runtime|bench-execution|render-diagrams|check-diagrams|generate-rpc|prepare-ci-host")
 	}
 	if flag.Arg(0) == "prepare-ci-host" {
 		return devrunner.PrepareHostedCI(os.Stdout)
@@ -48,41 +49,28 @@ func run() (resultErr error) {
 	}
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
-	if flag.Arg(0) == "scheme-poo-revision" {
-		source := *schemeSource
-		if !filepath.IsAbs(source) {
-			source = filepath.Join(working, source)
-		}
-		revision, err := devrunner.DeclaredPooRevision(filepath.Join(source, "core"))
+	if flag.Arg(0) == "qualify-policy" {
+		qualified, err := devrunner.QualifySpec(ctx, working)
 		if err != nil {
 			return err
 		}
-		if target := os.Getenv("GITHUB_OUTPUT"); target != "" {
-			file, err := os.OpenFile(target, os.O_APPEND|os.O_WRONLY, 0600)
-			if err != nil {
-				return err
-			}
-			_, written := fmt.Fprintln(file, "revision="+revision)
-			return errors.Join(written, file.Close())
-		}
-		fmt.Fprintln(os.Stdout, revision)
+		fmt.Fprintf(os.Stdout, "qualified artifact: %s\ndeployment digest: %s\n", qualified.Path, qualified.Digest)
 		return nil
 	}
-	if flag.Arg(0) == "check-scheme" {
-		root, err := devrunner.FindRoot(working)
-		if err != nil {
-			return err
+	if flag.Arg(0) == "render-diagrams" {
+		if *view != "" {
+			return devrunner.RenderDiagrams(ctx, working, os.Stdout, *view)
 		}
-		settings, err := devrunner.PrepareScheme(ctx, root, *schemeSource, *schemePoo, *schemeLibrary, os.Stdout)
-		if err != nil {
-			return err
+		return devrunner.RenderDiagrams(ctx, working, os.Stdout)
+	}
+	if flag.Arg(0) == "check-diagrams" {
+		if *view != "" {
+			return devrunner.CheckDiagrams(ctx, working, os.Stdout, *view)
 		}
-		defer func() { resultErr = errors.Join(resultErr, os.RemoveAll(settings["GERBIL_PATH"])) }()
-		for key, value := range settings {
-			if err := os.Setenv(key, value); err != nil {
-				return err
-			}
-		}
+		return devrunner.CheckDiagrams(ctx, working, os.Stdout)
+	}
+	if *view != "" {
+		return errors.New("-view requires render-diagrams or check-diagrams")
 	}
 	_, err = devrunner.Run(ctx, devrunner.Config{Root: working, GoBinary: *goBinary, Mode: flag.Arg(0), RequireClean: *clean}, os.Stdout)
 	return err

@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 [package]
 name = "weaver-server"
 version.workspace = true
@@ -5,8 +9,10 @@ edition.workspace = true
 license.workspace = true
 [dependencies]
 weaver-contracts.workspace = true
+weaver-governance.workspace = true
 weaver-ledger.workspace = true
-weaver-execution.workspace = true
+weaver-broker.workspace = true
+weaver-telemetry.workspace = true
 tokio.workspace = true
 tokio-util.workspace = true
 sha2.workspace = true
@@ -20,18 +26,40 @@ rustls.workspace = true
 arrow-array = { workspace = true, optional = true }
 arrow-schema = { workspace = true, optional = true }
 arrow-ipc = { workspace = true, optional = true }
+gerbil-scheme = { workspace = true, optional = true }
 [features]
-default = []
+default = ["llm-provider"]
+llm-provider = ["weaver-broker/llm-provider"]
+scheme-program = ["weaver-governance/scheme-program"]
 arrow = ["dep:arrow-array", "dep:arrow-schema", "dep:arrow-ipc"]
+governance-qualification = ["scheme-program", "weaver-governance/scheme-qualification", "dep:gerbil-scheme"]
 [build-dependencies]
 tonic-prost-build.workspace = true
 [dev-dependencies]
+weaver-broker = { workspace = true, features = ["test-loopback"] }
+ring.workspace = true
+weaver-ledger = { workspace = true, features = ["commit-observer"] }
+rcgen.workspace = true
 asp-rust.workspace = true
 criterion.workspace = true
 proptest.workspace = true
 tempfile.workspace = true
+weaver-policy-ffi.workspace = true
+gerbil-scheme-sys.workspace = true
 [[bench]]
 name = "gateway"
 harness = false
-[lints]
-workspace = true
+[[test]]
+name = "governance_owner"
+path = "tests/integration/governance_owner.rs"
+required-features = ["governance-qualification"]
+# Production library/binary forbid unsafe code. The qualification target reuses
+# only Governance's documented test ABI leaf for its approved linked graph.
+[lints.rust]
+unsafe_code = "deny"
+unsafe_op_in_unsafe_fn = "deny"
+[lints.clippy]
+unwrap_used = "deny"
+dbg_macro = "deny"
+todo = "deny"
+unimplemented = "deny"

@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+TITLE: Weaver Qualified Semantic Slice: Design Checkpoint
 #+LANGUAGE: en
 #+OPTIONS: toc:2 num:nil
@@ -23,7 +27,7 @@ change pins, or authorize deployment.
 |---------+-----------------+----------------|
 | RP1 | Representative task and minimum assurance profile specified | Workload acceptance by product owners; native feasibility |
 | RP2 | Common subset and constructive refinement defined | Native Scheme/JSON/YAML compiler parity and authentic publication |
-| RP3 | Provider conversion and final-effect contract specified | Concrete adapter matrix, bytes/SDK/transport conformance |
+| RP3 | Provider conversion and final-effect contract specified | Concrete adapter matrix, bytes/Gerbil toolchain/transport conformance |
 | RP4 | Minimal logical transaction topology and fault contract specified | Actual storage semantics, authentic fences and fault recovery |
 | RP5 | Three-node bounded routine and protocol seams scoped | General interpreter and additional protocol profiles |
 | RP6 | One attempt and unknown-hold rules retained | Full asynchronous exact accounting/attempt/range composition |
@@ -32,3 +36,9 @@ change pins, or authorize deployment.
 
 A specification or finite model passing is not a completed native gate. Role
 names are responsibilities, not staffing assignments or mandatory microservices.
+
+* Embedded architecture views
+
+** 51.06-semantic-gateway-slice.svg
+
+[[file:51.06-semantic-gateway-slice.svg]]

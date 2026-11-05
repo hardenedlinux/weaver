@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+TITLE: 59.17 Source Provider Profiles and Final Execution
 #+LANGUAGE: en
 
@@ -209,3 +213,9 @@ and TLS; it is not attributed entirely to backoff. These same-host wall-clock
 observations are not a formal timing proof, and identifying loader, image or
 host effects requires a further controlled comparison. No cache purge, warm-up
 admission, timeout extension or retry-policy change is introduced.
+
+* Embedded architecture views
+
+** 59.03-provider-rpc-core.svg
+
+[[file:59.03-provider-rpc-core.svg]]

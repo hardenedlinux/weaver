@@ -1,22 +1,21 @@
-use rusqlite::{Connection, params};
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+use weaver_ledger::persistence::Session;
 
 #[test]
 fn semantic_floor_uses_two_composite_range_seeks() {
-    let connection = Connection::open_in_memory().expect("query planner");
-    connection
-        .execute_batch(crate::schema::SCHEMA)
-        .expect("schema");
-    let mut query = connection
-        .prepare(&format!(
-            "EXPLAIN QUERY PLAN {}",
-            super::PROFILE_FLOOR_QUERY
-        ))
-        .expect("plan");
-    let operations = query
-        .query_map(params!["p", "{}"], |row| row.get::<_, String>(3))
-        .expect("operations")
-        .collect::<rusqlite::Result<Vec<_>>>()
-        .expect("plan rows");
+    let directory = tempfile::tempdir().expect("query-plan store");
+    let connection = Session::open(directory.path().join("plan.db")).expect("query planner");
+    weaver_ledger::persistence::script(&connection, crate::schema::SCHEMA).expect("schema");
+    let operations = weaver_ledger::persistence::read_all(
+        &connection,
+        &format!("EXPLAIN QUERY PLAN {}", super::PROFILE_FLOOR_QUERY),
+        ["p", "{}"],
+        |r| r.get::<String>(3),
+    )
+    .expect("plan rows");
     assert_eq!(
         operations
             .iter()

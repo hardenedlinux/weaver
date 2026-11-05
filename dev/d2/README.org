@@ -1,0 +1,160 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+#+title: Architecture rendering consumer
+#+language: en
+
+* Ownership
+
+Go owns source acquisition, OpenSysML SDK calls, Lean JSON evidence and exact
+source-currentness checks. SysML owns component responsibilities, typed
+requirements and view selection. Lean declares the associated semantic laws;
+a missing compiler receipt remains NOT_EXECUTED. D2 is the generated display
+projection for the mapped views, not a second semantic architecture.
+
+Deterministic Engineering owns D2 compilation, OpenSysML display projection,
+functional composition, themes, fonts, icons, measured ELK layout, Rough.js
+strokes and standalone SVG/PNG export. Weaver uses the public functions
+=compileFigureSource=, =composeFigure=, =composeModelView= and =exportFigure=.
+It does not maintain an alternate compiler worker pool, raw D2 SVG renderer,
+SVG identity rewriter, caption-partition engine or model-name binding adapter.
+Unsupported notation must refuse; a renderer failure must never choose an
+alternate implementation.
+
+The illustrated overview is a consumer composition of public Library headings,
+vector surfaces and connection routing. Its reading groups and narrative come
+from the source Design. Component =glyph= declarations select canonical functional
+symbols; contextual pictures are separate from both function and brand marks.
+The [[file:../../docs/architecture/diagrams/assets/icon-sources.org][asset vocabulary]] records each meaning and attribution. Rendering uses captured
+local SVG assets and never downloads an icon during export. An unknown functional
+glyph or a missing declared asset fails instead of substituting a decorative mark.
+
+* Git dependency
+
+The rendering development dependency selects the upstream Git repository,
+exact commit and =packages/render= directory in =package.json=.
+=pnpm-lock.yaml= records that resolution and transitive integrity values.
+There is no local archive prerequisite, floating main dependency or second
+Bun dependency lock. pnpm installs; Bun executes TypeScript.
+
+The pnpm lock also records the upstream candidate patch applied to that
+package. Its compiler batch shares one SDK initialization across an ordered
+source set and returns results after the owned process closes. The workspace
+patch is checked into Weaver and participates in the source receipt. A frozen
+installation requires no local upstream checkout.
+
+#+begin_src text
+pnpm --dir dev/d2 install --frozen-lockfile --ignore-scripts
+pnpm --dir dev/d2 exec playwright install chromium
+go -C go run ./cmd/weaver-dev check-diagrams
+#+end_src
+
+The Git source selects =1b950df63a542c478bea3127fc9bd4472c07cbd9=,
+the allocation-lifetime fix based on upstream main
+=d000902e6321dd227393bcf206052e82531c4188=. Only the renderer development
+resolution changes. Runtime and proof dependency pins remain independent.
+Dependency lifecycle scripts are not needed by the source-only renderer.
+
+* Source binding
+
+Go captures the native SDK rendering, source hashes and typed requirement
+references. It emits =modelSource= with the exact model hash, requested view,
+SDK node IDs and source-owned captions. The host decodes SDK transport through
+=renderedViewFromJson= and supplies =FigureResources.sysmlViews= plus the
+captured JSON source bytes. The Library compares the selected source bytes and
+capture before performing its native projection. Weaver does not re-resolve
+SDK nodes by display names.
+
+Generated declarations must also occur in Go's mapped-source receipt. Removing
+the mapping or reusing an old declaration is an error. Lean source mutations
+invalidate their capture. A source-bound diagram is an explanation, not a
+proof that the runtime, database or external provider satisfies that contract.
+
+For native interconnection views, the SysML source explicitly exposes both
+parts and named connections. Exposing parts alone can omit their owner's
+connections. Exposing the enclosing owner can unnecessarily enlarge the whole
+layout. The native SDK output, rather than a downstream node deletion, defines
+the selected view.
+
+* Presentation declarations
+
+The Go driver accepts =-view <exact-mapped-source> render-diagrams= or
+=check-diagrams= for a declared subset. It compiles current local Lean JSON
+owners, captures SysML through OpenSysML, and records only the selected derived
+D2/SVG outputs. Subset receipts cannot pass a full-inventory check. Views requiring
+imported SPEC declarations still reject missing current Lean environments; a
+local storage view does not substitute an isolated SPEC checkout for that import.
+Each invocation owns a fresh ignored proof-log directory, so an earlier failure
+cannot be overwritten or prevent another invocation through an existing log name.
+Scoped checks retain all source/graph/vector checks for the selected view and run
+capture PBT plus standalone readability tests; full checks retain the full suite.
+
+Project-owned themes extend the public theme-layer map. README views select
+hand-drawn paper, Kalam typography and engineering glyphs. Optional technology
+logos are captured source assets exposed through an icon pack. Themes and
+ELK graph preferences are data; Weaver has no project drawing engine.
+Historical D2 views select explicit graph projections when the SDK does not
+supply ownership. The projection retains captured subject IDs and relations;
+unsupported endpoints require an explicit source or upstream adapter decision.
+No dotted-name ownership or generated-lifeline filtering runs in Weaver.
+
+* Artifacts and checks
+
+The Go development entrypoint captures models before launching the TypeScript
+consumer. The consumer uses the host CPU count for export work, drains active
+exports on interruption, closes its browser and records incomplete runs as
+FAIL. The upstream Library owns each model compiler worker's lifetime.
+
+SVGs are direct Library output. Go checks their existing provenance, source
+digests, complete subject/relation inventories and ordered endpoints. It does
+not replace metadata or add fabricated source markers. Browser checks must
+also examine the exported standalone image against a dark host, including its
+opaque background, effective text size and nonoverlapping text. Model fidelity
+and visual readability are distinct checks.
+
+Generated images are embedded directly in =README.org=. Org design documents
+link the corresponding SVG using an Org file link. Temporary screenshots,
+logs, model captures and receipts stay under ignored =.cache/= or temporary
+storage; a failed render is not publishable evidence.
+
+* Current migration evidence and limits
+
+The first direct-main consumer probe retained about 5 GB parent RSS after 24
+small compiler calls, even with explicit GC. The upstream allocation-domain
+fix instead waits for natural process exit per call; the paired 24-call probe
+kept parent RSS around 50 MB. This is a resource-lifetime observation, not a
+runtime latency or throughput benchmark. The fix is maintained in
+[[https://github.com/hardenedlinux/deterministic-engineering/pull/5][the upstream Library PR]];
+Weaver consumes its exact Git commit rather than copying its implementation.
+
+107 declarations select the public model-view composition. W02, W04, W09 and
+W10 now use a project-owned =sequence-view= composer through the same Library
+theme, font, compile and export interfaces. This adapter handles the exact
+captured participant and synthetic-lifeline identities; it does not parse a
+second D2 language or flatten time into a general graph. The upstream
+[[https://github.com/hardenedlinux/deterministic-engineering/issues/6][sequence-projection issue]] remains a separate producer concern.
+All 17, 11, 15 and 16 source messages, their order, self-calls and constraint
+ownership remain checked. English copy changes preserve those transitions and
+make actions and conditions readable as sentences.
+
+Four real exports, property checks and 830-pixel browser checks pass locally.
+The original sequential four-source hook failure and a measured font-line
+overlap failure remain in ignored persistent cache evidence. Independent source
+captures now run concurrently and drain under the original five-second hook;
+actual font-box measurements determine line spacing. The existing two-source
+acceptance boundary is unchanged.
+
+The complete catalog entry still fails before rendering: the locked SPEC
+revision lacks =CedarPooSpec/Gateway/ZeroTrust.lean=, which the existing
+=ZeroTrustArchitecture.lean= capture imports. The real Lake build failure is
+retained; no fallback, fabricated capture or dependency-pin change substitutes
+for that prerequisite. Focused diagram results are not 111-view architecture
+acceptance, Lean acceptance, gateway safety proof or remote CI success.
+
+The concurrent PR1 complete-entry obligation is retained as one standard
+five-second integration test over the two original real sources. Source
+compilation and both measured SVG exports occur inside that test, followed by
+natural compiler completion and browser closure. Its local uninstrumented run
+passed in 4.43 seconds; this is one complete-entry receipt, not a latency bound
+or a claim that the historical failure never occurred.

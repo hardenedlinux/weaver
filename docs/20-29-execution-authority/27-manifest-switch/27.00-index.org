@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Weaver Manifest Switch and Deletion Recovery Index
 #+language: en
 #+options: toc:2
@@ -24,3 +28,9 @@ persistence, current-root switch, result readback and incremental deletion.
 Four artifacts: [[file:../../../dev/proofs/lean/LlmManifestSwitch.lean][Lean]] / [[file:../../../dev/proofs/quint/LlmManifestSwitch.qnt][Quint]] / this Org category / core D2.
 Reproduce with the isolated runner (retired Python driver). This is design and executable formal evidence;
 no Gateway implementation, dependency pin or historical sealed artifact changes.
+
+* Embedded architecture views
+
+** 27.02-manifest-switch.svg
+
+[[file:27.02-manifest-switch.svg]]

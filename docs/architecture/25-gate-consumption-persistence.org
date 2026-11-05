@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Weaver Gate Consumption Persistence and Independent Root Recovery
 #+language: en
 #+date: 2026-10-19
@@ -145,12 +149,12 @@ release requires a separate original-bound no-effect/terminal accounting proof.
 |-------+----------------+---------------------|
 | Scheme / POO Flow | Canonical logical identity, claim/history/budget binding, pure nonce/semantic transitions, original settlement intent and exact invalidation rules | An unchanged semantic root or pure returned state proves native durability |
 | Cedar / cedar-poo-spec | Code as Policy admission for the bound actual operation and state; all required layers allow without evaluation errors; fixed evaluation/validation alignment | A constructed certificate authenticates caller-supplied state or makes a permit reusable |
-| Go / cloud-native adapters | Kubernetes discovery, workload identity, reconciliation, Agent/SDK integration, readiness and exact original-status resolution | Restart/retry/controller reconciliation can regrant, submit raw effects or mint new logical keys |
+| Go / cloud-native adapters | Kubernetes discovery, workload identity, reconciliation, Agent/Gerbil toolchain integration, readiness and exact original-status resolution | Restart/retry/controller reconciliation can regrant, submit raw effects or mint new logical keys |
 | Rust / independent-root client and final broker | Full binding validation, qualified root CAS durability, irreversible issuance/burn ordering, affine actual I/O ownership, final epoch barrier, authentic receipt ingestion and conservative projection recovery | Local fsync, stale cache equality or a cancelled task alone isolates every physical writer |
 | External account/transport owner | Actual account effect/receipt atomicity and enforced no-new-submission barrier over every alias | Its acknowledgement can be fabricated by Scheme, Go or a generic timer |
 
 Language choice follows ecosystem strengths: Go integrates cloud-native control
-and Agent SDK lifecycles; Rust owns memory/FD/capability-sensitive final execution;
+and Agent Gerbil toolchain lifecycles; Rust owns memory/FD/capability-sensitive final execution;
 Scheme owns the existing POO semantics. Rust owns the root adapter and final
 broker; a qualified external root service need not be reimplemented in Rust.
 These are ownership requirements, not a
@@ -230,7 +234,7 @@ events; they do not claim to simulate OS FD revocation or prove a second physica
 write. Ghost counters are audit observations, never acceptance guards or recovery
 records. Neither formal tool proves the concrete runtime refines these models.
 
-* Native qualification and performance boundary
+* Runtime qualification and performance boundary
 
 | Physical obligation | Required acceptance evidence |
 |---------------------+------------------------------|
@@ -253,3 +257,9 @@ Sharding cannot split a shared budget/history domain into independent new funds.
 The current full-shard unknown barrier is deliberately conservative and may be
 unacceptable for availability; optimizing it requires a separately checked
 per-key recovery protocol rather than weakening the safety invariant.
+
+* Embedded architecture views
+
+** 26-gate-consumption-persistence.svg
+
+[[file:diagrams/26-gate-consumption-persistence.svg]]

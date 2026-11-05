@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Logical Range Recovery Index
 #+language: en
 #+options: toc:2
@@ -36,3 +40,9 @@ python3 dev/proofs/evidence/logical-range-recovery/check-counterexample-observat
 
 No Gateway implementation or dependency pin is changed. Earlier sealed categories
 remain historical evidence; the design delta is maintained here.
+
+* Embedded architecture views
+
+** 38.02-logical-range-recovery.svg
+
+[[file:38.02-logical-range-recovery.svg]]

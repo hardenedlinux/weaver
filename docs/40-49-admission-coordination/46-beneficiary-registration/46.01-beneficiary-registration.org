@@ -1,6 +1,16 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: First Beneficiary Key, Bootstrap Session and Invitation Publication
 #+language: en
 #+startup: overview
+
+* Reader view
+
+Enrollment authority and possession of the new key must agree.
+
+[[file:46.02-beneficiary-registration.svg]]
 
 * Decision
 A new-key signature proves possession, not entitlement to register that key for
@@ -182,7 +192,7 @@ is ahead of local projections, the result is unresolved; no fresh key slot is ex
 | Component | Responsibility | Restriction |
 |-----------+----------------+-------------|
 | Scheme / POO / Cedar | Original semantic contract and dependency lineage; approved launch/enrollment principal; current publication and execution policy over authentic source facts | An equality proof or evaluation result cannot authenticate a new key or create execution authority |
-| Go | Kubernetes eligibility/discovery, enrollment rendezvous and protocol adapters, authenticated channel assertions, coordinator recovery under current read policy | Shared workload identity cannot allocate first-key authority; SDK retries cannot remint roots or publish/send independently |
+| Go | Kubernetes eligibility/discovery, enrollment rendezvous and protocol adapters, authenticated channel assertions, coordinator recovery under current read policy | Shared workload identity cannot allocate first-key authority; provider-client retries cannot remint roots or publish/send independently |
 | Rust authority / broker | Verify both transcript proofs and channel origin; canonical first-binding CAS; exact publication/outcome join; complete-prefix recovery; issuer-fence propagation | No first-presenter key, stale proof, one-sided projection or historical reply can grant current permission |
 | Rust executor | Existing dispatch ledger, message/range authorization, owner fence and final transport checks | Enrollment and invitation publication do not enqueue or send provider traffic |
 

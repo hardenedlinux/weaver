@@ -1,0 +1,189 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+#+TITLE: Core Gateway Lean Library and Weaver Execution Boundary
+
+* Authoritative ownership
+
+=Project.sysml= and =WeaverExecution::CedarSecurityFrameworks= define ownership.
+The reusable Gateway library belongs under =CedarPooSpec/Gateway/= in
+cedar-poo-spec and is written in Lean. Scenario-specific Gateway Rust execution
+belongs in Weaver. The upstream library composes existing capabilities; it does
+not move Weaver's persistence, drivers or transport into another repository.
+
+| Owner | Contract |
+|-------+----------|
+| Scheme / AA | Higher-order Session, Workflow, Governor and typed Policy projections; JSON and Scheme profiles share admitted semantics |
+| cedar-poo-spec Lean | Actual-operation admission, schema validation, source binding, original-operation/grant transitions, exact execution Delta composition |
+| Go | Cloud lifecycle, discovery, routing proposals and authenticated gRPC adapters |
+| Weaver Rust | Authenticate actual facts, serialize final CAS, persist consumption/reservations, guard dispatch and stream release |
+| Existing Quint | Explore concurrency/failure traces under the existing model responsibilities |
+| Existing Lean | Prove semantic laws and conditional composition without duplicating the state-machine model |
+
+* Upstream composition
+
+The Gateway library reuses BoundOperation, PolicySnapshot, OperationLedger,
+AuthorityLedger, Functional compilation and the exact operational Delta theorem.
+Governance profiles now use =LeanPoo.Object.Dataflow.Instance= directly:
+=Builder.derived= and =Expr.need= read final self; =Fragment.extend= appends
+inherited checks; =Instance.extendWith= builds successive objects and
+=Instance.defineWith= constructs a shared-base C4 diamond in one source family.
+=Instance.defineFrom= merges disjoint families and refuses duplicate declaration
+owners. The failed duplicate-base experiment is preserved as an expected refusal.
+The implementation does not introduce its own object or inheritance evaluator.
+
+=Functional.ObjectProfile.Session= retains the actual selected factory/object.
+=prepareFromObject= takes the selected actual profile through existing admission.
+The explicit strengthening Contract is parameterized by an externally admitted
+original profile. A child cannot change an internal template to redefine its
+parent's obligations. Ordered original requirements and identity survive
+projection; refinement composes transitively; accepted assessments include every
+inherited original check. This proves inclusion and satisfied labels, not the
+truth of external budget/history responses. Ordinary POO overriding alone does
+not establish safe refinement. Raw record preparation remains a lower-level API.
+It cannot enter Gateway consumption until it passes the current publication's
+exact content/scope binding and acquires publication-indexed evidence.
+
+Flat =Except= steps retain validation evidence in admission receipts. Successful
+admission proves error-free Cedar allow for the actual bound operation, with
+current supplied context, source declarations and the exact required profile
+assessments. Replacing an approval does not change the original operation key.
+
+Delta analysis distinguishes execution gains/losses from decision-only changes,
+policy bodies, provenance and proof footprint. Receipt-to-Delta composition
+requires the actual admitted policy set to equal the analyzed after-policy set;
+the upstream theorem retains schema/environment/UNSAT premises. A solver's empty
+gain list does not automatically discharge those premises.
+
+=AdmissionBinding= strengthens composition with actual schema equality, original
+scope, source declarations, after-root, current-plan check and evaluated policy
+equality. The bound theorem consumes request/entity validation from the receipt.
+The lower-level implication theorem remains a semantic result and cannot replace
+this binding or the final execution guard.
+
+| Constraint | Kernel-checked library result | Weaver execution contract still required |
+|------------+-------------------------------+------------------------------------------|
+| Claim/root/operation | Exact scope preservation; operation ID equals supplied canonical key; Delta binds that scope | Authenticated original registry; no relabeling through new family, approval or protocol session |
+| Budget/history identity | Supplied domain identifiers preserved through scope equality | Authoritative domain binding/migration; shared accounting and durable history |
+| Profile obligations | Actual inherited projection refines original; all original named assessments are satisfied | Authenticate original profile content, true assessments and source closure; mandate object Contract admission |
+| Operation consumption | Full operation prefix preserved; returned ledger rejects the same key with any renewed grant | Serialize durable CAS; recover authoritative ledger, including unknown commits and anti-rollback anchor |
+| Budget amount and unknown usage | No reservation arithmetic or unknown-result release theorem in the upstream library | Existing Rust reservation/account rules and settlement evidence; unknown exposure remains held |
+| Freshness/actual sending | Receipt binds supplied revisions and exact effect/state at admission | Recheck current Policy/history/owner at final CAS and guarded dispatch; recovery cannot duplicate capacity |
+
+The executable Host counterexamples include concurrent consumers of one pre-state,
+old-ledger recovery, consistent scope/domain relabeling, raw profile weakening,
+satisfied labels with zero external balance, stale supplied history, and owner
+change after admission. Same-policy authorization in two fact worlds also
+demonstrates why fixed-world Delta cannot authorize changed facts. These tests
+are expected successes of intentionally weaker pure boundaries and must not be
+counted as permitted production behavior.
+The generic effect comparator was another hidden assumption: the general-purpose
+authority ledger accepts =BEq= alone. The Gateway consumption API now requires
+=LawfulBEq=, and a deliberately unlawful comparator is retained as a counterexample
+against the weaker underlying interface. Existing dependency pins are unchanged.
+
+* Original-profile authority and raw preparation review
+
+The former =consumeAdmission= accepted a raw semantic =Receipt=, allowing a
+same-name weaker raw profile to skip the object Contract postcondition. The
+current interface requires an explicit current =ProfileObject.Publication= and
+a =PublishedReceipt= indexed by it. =authorizePublished= composes existing Cedar
+admission with =bindPublication=: compare the complete selected profile content
+and complete Context, rather than comparing a display name or constructor flag.
+Matching raw values are admitted through the same gate as object-derived values;
+there is no claim that a raw value was produced by a particular constructor.
+
+The publication retains the actual original Profile, actual Dataflow object,
+factory-indexed Session and exact selected projection. Contract consequences are
+reused through these values, not a new checker. The composition theorem joins
+original refinement and original scope with the existing exact Delta theorem.
+It retains all schema, environment and UNSAT premises. The raw-receipt negative
+type check prevents calling the privileged Gateway consumption interface directly.
+
+This is a pure authority read view, not a new registry, issuance protocol or
+cryptographic credential. Rust must load it independently of the candidate from
+the existing original-family assignment and authority ledger. Bind immutable
+original full profile content, actual source/factory/Contract closure and the
+canonical claim/budget/history assignment. A payload/source change advances the
+authority identity/revision. Join that identity/revision with current deciding
+state under final CAS and anti-rollback recovery. Go carries proposals; Scheme
+produces admitted higher-order objects; neither can self-select the original or
+reset the domain assignment by presenting a new profile name or Session.
+
+Tests deliberately show a self-selected weaker publication can succeed if Host
+authority resolution is wrong. The library does not prove authentication of the
+Host input, storage durability, real balance/history truth or freshness after the
+read. Reconstruct checked bindings across FFI; a serialized proof tag is inert.
+Profile binding also does not authenticate Cedar model/root/schema arguments.
+Rust must select them from the same current ArtifactImage and reject mixed or
+stale images; a current profile is not permission to select an arbitrary root.
+=ProfileAuthorityCommitment= and =FinalEffectJoin= capture these target contracts
+in the existing SysML owner, without a parallel state machine or policy engine.
+
+* Remaining Host obligations
+
+All scope identities, supplied revisions and assessment truth need authenticated
+Host sources. Exact whole-model source binding is conservative; no performance
+or incremental-reuse claim follows from it. The Host binds schema identity to
+the actual canonical schema and joins fresh authoritative state at final CAS.
+Pure ledger updates must be persisted atomically with the original reservation.
+Old ledgers, lost responses, partial writes and restart cannot be turned into
+new sends or released unknown budget by citing a Lean receipt.
+
+This change adds semantic API and tests upstream. It does not establish Weaver
+runtime acceptance for the thirteen existing adapter obligations. Their existing
+SysML/Quint/Lean ownership remains unchanged; no parallel proof model is added.
+Existing =WeaverPolicyBridge= successor/freshness and unknown-settlement lemmas
+remain conditional model laws. They do not turn the upstream receipt into a
+durable CAS proof; no new copy of those models is introduced here.
+
+* Focused evidence and comparison metric
+
+Upstream delivery: [[https://github.com/hardenedlinux/cedar-poo-spec/pull/8][cedar-poo-spec PR 8]], commit
+=b688288e385d0da700b016570ccde2731c737eb9=. The existing PR remains open;
+its prior Dataflow work and evidence are preserved. The exact-head CI run is
+[[https://github.com/hardenedlinux/cedar-poo-spec/actions/runs/41079974744][41079974744]]; its Lean, Rust and Authorization Delta jobs passed. The remaining
+conformance job was cancelled by the existing workflow concurrency rule when the
+follow-up commit arrived; the original whole workflow is not counted as a pass.
+The follow-up object/binding/consumption review is commit
+=f524732a227b9549c6f3953a91d29970a60e27e2=; its independent exact-head workflow is
+[[https://github.com/hardenedlinux/cedar-poo-spec/actions/runs/41083422271][41083422271]]. Baseline results are not transferred to that commit.
+For =f524732= itself, the complete Lean job passed (=check-lean=,
+=bench-functional-reuse= and =bench-functional-native=), and the Rust job passed.
+Its dependent Authorization Delta and conformance jobs subsequently passed too:
+all four jobs and the complete =f524732= workflow are successful. This baseline
+result is separate from the follow-up publication-binding commit and its CI.
+The mandatory publication-binding follow-up is commit
+=f47fe33f0f987624ddd53c3144424fdc214f0eef=, with independent workflow
+[[https://github.com/hardenedlinux/cedar-poo-spec/actions/runs/41087622544][41087622544]]. Its Ubuntu Lean, Rust and Authorization Delta jobs passed.
+Conformance remained in progress at handoff. Per the delivery instruction,
+remote CI continues without blocking further work; the local watch was stopped,
+not the GitHub workflow. Code is already pushed. No overall-green claim is made.
+
+The isolated cedar-poo-spec audit compiled the complete CedarPooSpec library,
+passed 28 executable Gateway contract assertions, audited eight exported laws,
+parsed the maintained Org collection, and ran CVC5 restriction/expansion/equivalence
+checks across both declared action environments. Weaver's linked Project SysML
+Go tests passed and the core D2 was rendered successfully. This is focused semantic
+evidence, not full-repository CI or real-provider admission. Weaver dependency
+pins and production code remain unchanged.
+
+Comparison metric: explicitly implemented reusable Gateway semantic-library
+components = 6 (Context, ProfileObject, Admission, ProfileAdmission, Consumption,
+AuthorizationDelta). The publication review passes 70 assertions (54 earlier
+checks plus 16 publication controls), one negative type check, and audits
+27 Gateway laws plus two reused object laws. These are semantic/model evidence,
+not real-store or driver receipts.
+New Weaver runtime acceptance scenarios executed by this change = 0.
+This is a scope/coverage metric, not a performance or security score.
+
+| Project | Benefit relevant to this change | Gap / resolution |
+|---------+---------------------------------+------------------|
+| Weaver | AA higher-order semantics and Cedar exact Delta can share a proof-bearing admission interface | Must connect authenticated Host state and durable final CAS through actual runtime tests |
+| Box | Existing request validation/result recording is a useful comparison baseline | No new Box validation was run here; do not infer comparable proof coverage |
+| OpenShell | Existing containment and operational observability provide useful design references | No new OpenShell validation was run here; containment does not discharge Weaver's semantic CAS obligations |
+
+The comparison builds on [[file:59.29-strands-box-cross-review.org][the earlier source review]]. It adds no unmeasured latency,
+throughput or relative-security ranking. Amplification comes from upstream proof
+and semantic API reuse while keeping Weaver's execution boundary explicit.

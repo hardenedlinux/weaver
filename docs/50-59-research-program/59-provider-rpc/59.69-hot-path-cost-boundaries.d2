@@ -1,0 +1,204 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+...@../../../dev/d2/themes/flow
+vars: { d2-config: { layout-engine: tala;  pad: 80 } }
+title: BORROWED GOVERNANCE / CONTINUOUS EXECUTION AUTHORITY {
+  shape: text
+  near: top-center
+  style.font-size: 36
+  style.bold: true
+}
+original: Scheme semantics / Go ingress\nOriginal claim / reservation / history\nCurrent authority binding {
+  class: card
+  icon: ../../architecture/diagrams/assets/go.svg
+  icon.near: top-left
+  left: 0
+  top: 0
+  width: 550
+  height: 240
+  style.fill: "#eef3ef"
+}
+admission: Original canonical home\nOrdered head / bounded Host admission\nCPU-budgeted worker dispatch {
+  class: card
+  left: 810
+  top: 0
+  width: 550
+  height: 240
+  style.fill: "#e7edf4"
+}
+transaction: MRR exclusive transaction\nCurrent head and authority checks\nBounded record reads / owned results\nWorker retains transaction through answer {
+  class: card
+  left: 1620
+  top: 0
+  width: 550
+  height: 240
+  style.fill: "#e7edf4"
+}
+validator: Borrowed validator on Host runtime\nLive guard / original body integrity\nRequest and answer rendezvous {
+  class: card
+  left: 1620
+  top: 620
+  width: 550
+  height: 240
+  style.fill: "#eef3ef"
+}
+commit: FULL sync / retained outcome\nKnown COMMIT permits session reuse\nUnknown retains original exposure {
+  class: card
+  left: 810
+  top: 620
+  width: 550
+  height: 240
+  style.fill: "#f4f2ec"
+}
+execution: Rust final transport owner\nCurrent Policy / history / owner fence\nOne-use admission at actual release {
+  class: card
+  icon: ../../architecture/diagrams/assets/rust.svg
+  icon.near: top-left
+  left: 0
+  top: 620
+  width: 550
+  height: 240
+  style.fill: "#eef3ef"
+}
+original -> admission: Preserve original identity { style.font-size: 20 }
+admission -> transaction: Accepted bounded work { style.font-size: 20 }
+transaction <-> validator: Borrowed request / answer { style.font-size: 20 }
+transaction -> commit: Original durable decision { style.font-size: 20 }
+commit -> execution: Receipt + current-use gate { style.font-size: 20 }
+footer: "Cancellation is not rollback · Historical recovery creates no send capability\nBenchmark results and returned resources cannot release unknown budget" {
+  shape: text
+  left: 140
+  top: 1080
+  width: 1890
+  height: 120
+  style.font-size: 28
+  style.font-color: "#5c8b77"
+}
+
+# Project-owned presentation question; not an issued governance Question.
+vars: { d2-config: { data: { figure: |json
+{
+  "title": "69 hot path cost boundaries",
+  "purpose": "workflow",
+  "kind": "flow",
+  "language": "en",
+  "width": 960,
+  "primary": "main",
+  "questions": [
+    {
+      "ref": "main",
+      "text": "Which work belongs on each runtime cost boundary?",
+      "focusRefs": [
+        "catalog",
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "catalog": "docs/architecture/08-diagram-catalog.org",
+    "model": "Project.sysml"
+  },
+  "copy": {
+    "takeaway": "Which work belongs on each runtime cost boundary?"
+  },
+  "basis": {
+    "captureRef": "docs/50-59-research-program/59-provider-rpc/59.69-hot-path-cost-boundaries.d2#design-view",
+    "modelRefs": [
+      "Project.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "sketchbook",
+    "node-editor",
+    "reading"
+  ],
+  "layout": "model-view",
+  "variants": [],
+  "presentation": {
+    "graph": {
+      "id": "weaver-source-view",
+      "children": [
+        {
+          "id": "title"
+        },
+        {
+          "id": "original"
+        },
+        {
+          "id": "admission"
+        },
+        {
+          "id": "transaction"
+        },
+        {
+          "id": "validator"
+        },
+        {
+          "id": "commit"
+        },
+        {
+          "id": "execution"
+        },
+        {
+          "id": "footer"
+        }
+      ],
+      "layoutOptions": {
+        "elk.direction": "DOWN",
+        "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+        "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+        "elk.layered.layering.coffmanGraham.layerBound": "1",
+        "elk.spacing.nodeNode": "24",
+        "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+        "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+        "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+        "elk.separateConnectedComponents": "false",
+        "elk.aspectRatio": "0.55",
+        "elk.spacing.componentComponent": "24"
+      }
+    },
+    "options": {
+      "elk.direction": "DOWN",
+      "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+      "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+      "elk.layered.layering.coffmanGraham.layerBound": "1",
+      "elk.spacing.nodeNode": "24",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+      "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+      "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+      "elk.separateConnectedComponents": "false",
+      "elk.aspectRatio": "0.55",
+      "elk.spacing.componentComponent": "24"
+    },
+    "icons": {
+      "title": "library",
+      "original": "library",
+      "admission": "document",
+      "transaction": "capture",
+      "validator": "capture",
+      "commit": "capture",
+      "execution": "rust",
+      "footer": "capture"
+    },
+    "roles": {
+      "title": "semantic",
+      "original": "semantic",
+      "commit": "default",
+      "execution": "execution",
+      "footer": "default",
+      "admission": "default",
+      "transaction": "default",
+      "validator": "default"
+    }
+  },
+  "icons": [
+    "engineering",
+    "weaver"
+  ]
+}
+|
+} } }

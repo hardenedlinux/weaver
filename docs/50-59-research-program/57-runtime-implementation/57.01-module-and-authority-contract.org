@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+TITLE: Native Module and Authority Contract
 #+LANGUAGE: en
 #+OPTIONS: toc:2 num:nil
@@ -12,7 +16,7 @@
 | Rust contracts | =weaver-contracts= | Original task, explicit wire binding and domain-separated proposal digest |
 | Rust policy | =weaver-policy= | Actual Cedar evaluation over trusted original task and exact operation facts; error-free allow required |
 | Rust deciding store | =weaver-ledger= | Immutable task records, shared holds, queue, irreversible consumption, publication CAS and final serialization |
-| Rust final broker | =weaver-broker= | One private bounded HTTPS send with no redirect, proxy inheritance or SDK retry |
+| Rust final broker | =weaver-broker= | One private bounded HTTPS send with no redirect, proxy inheritance or provider-client retry |
 | Rust local adapter | =weaver-cli= | Trusted local publication/registration and explicit enqueue/execute commands |
 
 Go's next adapters can reuse its Kubernetes, networking and protocol ecosystems.
@@ -67,10 +71,10 @@ pending/publication/acknowledgment bridge specified in earlier chapters.
 Calling a change pending is not an immediate effective revocation.
 
 * Storage and availability premises
-SQLite uses WAL, =synchronous=FULL= and immediate write transactions. The database
+Turso uses WAL, =synchronous=FULL= and immediate write transactions. The database
 file, WAL and shared-memory file form one local deciding store; operating it over
 unqualified network filesystems or copying a live partial snapshot is forbidden.
-Power-loss durability depends on the SQLite/VFS/filesystem/device contract.
+Power-loss durability depends on the Turso IO/filesystem/device contract.
 The profile assumes no rollback of the deciding store. Independently anchored
 rollback detection and distributed owner recovery are not implemented here.
 

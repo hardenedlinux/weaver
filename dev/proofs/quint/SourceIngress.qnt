@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 module SourceIngress {
   type Caller = {ingress:int,certificate:int,credential:int,method:int}
   type Ingress = {operation:Set[int],source:Set[int],closing:bool,shared:bool,publications:List[Caller],executions:List[Caller]}

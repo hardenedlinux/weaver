@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+TITLE: Semantic Slice Proof, Model and Source Evidence
 #+LANGUAGE: en
 #+OPTIONS: toc:2 num:nil
@@ -49,7 +53,7 @@ native identifier encoding, fixed-width arithmetic or the research workload size
 Six deliberate actions excluded from the safe step expose: sending from queue
 without consumption, refunding unknown budget, forgetting execution on restart,
 inferring no execution from source-side state, replacing ticket origin, and a
-hidden SDK retry. Each must reach a state violating the stated invariant.
+hidden provider-client retry. Each must reach a state violating the stated invariant.
 
 The initial Lean draft had a record-update layout error and a reserved local
 identifier; a later added rejection theorem needed an explicit node-rule binder.
@@ -105,7 +109,7 @@ See [[file:../../../dev/proofs/evidence/semantic-gateway-slice/clean-proof-recei
 [[file:../../../dev/proofs/evidence/semantic-gateway-slice/SHA256SUMS][byte seal]].
 
 Fresh evidence is conditional design/proof/model validation. It is not native
-Scheme compiler parity, a provider SDK/storage test, remote CI, or a performance
+Scheme compiler parity, a provider Gerbil toolchain/storage test, remote CI, or a performance
 result. Ancestor test declarations are omitted only from the execution bundle;
 all ancestor transitions remain byte-derived, and the originals remain unchanged.
 The new leaf is at [[file:../../../dev/proofs/lean/SemanticGatewaySlice.lean][Lean source]] and

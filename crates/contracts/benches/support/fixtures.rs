@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 //! Deterministic benchmark source fixture; no external provider or credential.
 use weaver_contracts::{ProviderPlan, ProviderRoute, Task, body_digest};
 pub fn task_plan(bytes: usize, endpoint: &str) -> (Task, ProviderPlan) {

@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Weaver Zero Trust Baseline and Architecture Review
 #+language: en
 #+date: 2026-10-18
@@ -207,7 +211,7 @@ Validate the final resolved destination and TLS/service identity. Bind pooled
 connections to credential and authorization scope, not only a hostname. Redirect,
 retry, CONNECT tunnel, or authority change cannot forward injected secrets
 under an earlier decision. An opaque tunnel cannot claim method/path inspection.
-Automatic SDK retries and redirect following must be disabled or integrated
+Automatic provider-client retries and redirect following must be disabled or integrated
 with the same attempt authority. A signing endpoint must not become a general
 signing oracle.
 
@@ -237,7 +241,7 @@ if the original assumption were implemented, not a discovered deployed exploit.
 | R10 | High | Go/Rust separation or memory-safe types isolate a compromised adapter | Explicit compromise domains and minimized credential holder, Z2/Z6 |
 | R11 | High | POO token/state constructors imply authenticated durable mediation | Keep pure semantics distinct from crypto, serialization, and host commit evidence |
 | R12 | High | Caches, shared memory, and group commit preserve currentness automatically | Identity-complete keys, mutation protection, durable-commit and lease checks, Z8 |
-| R13 | High | SDK retries, policy callouts, and telemetry are harmless internals | Treat them as scoped effects with bounded attempt and disclosure authority, Z1 |
+| R13 | High | provider-client retries, policy callouts, and telemetry are harmless internals | Treat them as scoped effects with bounded attempt and disclosure authority, Z1 |
 | R14 | High | Partitioned replicas can keep checking a locally current epoch | Issuer lease expiry and monotonic fencing; no stale renewal, Z7 |
 
 R11 is grounded in newly inspected POO sources P12-P14 in the comparison

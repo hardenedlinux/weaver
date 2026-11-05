@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 package devrunner
 
 import (
@@ -8,6 +12,23 @@ import (
 	"strings"
 	"testing"
 )
+
+func TestSingleGoModuleRootNeedsNoWorkspace(t *testing.T) {
+	root := t.TempDir()
+	module := filepath.Join(root, "go")
+	if err := os.MkdirAll(filepath.Join(module, "cmd"), 0700); err != nil {
+		t.Fatal(err)
+	}
+	for path, data := range map[string]string{"Cargo.toml": "[workspace]\n", "go/go.mod": "module example.test/control\n"} {
+		if err := os.WriteFile(filepath.Join(root, path), []byte(data), 0600); err != nil {
+			t.Fatal(err)
+		}
+	}
+	actual, err := FindRoot(filepath.Join(module, "cmd"))
+	if err != nil || actual != root {
+		t.Fatalf("single-module project root: %q %v", actual, err)
+	}
+}
 
 func TestToolProcess(t *testing.T) {
 	mode := os.Getenv("WEAVER_TEST_TOOL")

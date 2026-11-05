@@ -1,0 +1,61 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+[package]
+name = "weaver-governance"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[features]
+scheme-vm = ["dep:gerbil-scheme"]
+scheme-program = ["scheme-vm", "dep:gerbil-scheme-sys", "dep:weaver-policy-ffi"]
+scheme-qualification = ["scheme-program"]
+
+[dependencies]
+weaver-contracts.workspace = true
+serde.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+tokio-util.workspace = true
+gerbil-scheme = { workspace = true, optional = true, features = ["external-program"] }
+gerbil-scheme-sys = { workspace = true, optional = true }
+weaver-policy-ffi = { workspace = true, optional = true }
+
+[build-dependencies]
+gerbil-scheme = { workspace = true, optional = true }
+weaver-governance-build.workspace = true
+
+[dev-dependencies]
+serde_json.workspace = true
+asp-rust.workspace = true
+criterion.workspace = true
+proptest.workspace = true
+weaver-policy-ffi.workspace = true
+gerbil-scheme-sys.workspace = true
+
+[[test]]
+name = "scheme_vm"
+path = "tests/integration/scheme_vm.rs"
+required-features = ["scheme-qualification"]
+
+[[bench]]
+name = "gateway"
+harness = false
+
+[[bench]]
+name = "scheme_conversion"
+harness = false
+required-features = ["scheme-qualification"]
+
+# Unsafe is scoped to the fixed Gerbil linker/export binding module; all typed
+# conversion, lifecycle, catalog and source ownership code retains deny mode.
+[lints.rust]
+unsafe_code = "deny"
+unsafe_op_in_unsafe_fn = "deny"
+[lints.clippy]
+unwrap_used = "deny"
+dbg_macro = "deny"
+todo = "deny"
+unimplemented = "deny"

@@ -1,0 +1,112 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+#+TITLE: 59.70 Borrowed Validation and Dispatch Review
+#+LANGUAGE: en
+#+OPTIONS: toc:2
+
+* SysML review before implementation
+
+The existing =ControlActivation.GovernancePolicyProjection= owns the refinement
+of [[file:59.69-hot-path-cost-boundaries.org][hot-path attribution]]. The selected implementation retains pinned Tokio
+oneshot request/answer channels and the original async admission task, the borrowed
+callback on the async caller and the original transaction on its worker. A custom Condvar rendezvous was reviewed
+and tested, then rejected without stable benefit. Its complete samples and frozen
+binary remain available; its additional protocol is not shipped.
+
+Dropping the caller before an answer refuses validation. Dropping it after true
+must not revoke the accepted decision or create another operation; exact Unknown
+recovery and the worker's original lease remain required. A worker that never
+requests validation closes the request channel so the caller can observe exact
+historical replay or refusal. No validator is cached or moved to detached work.
+
+A second candidate attempted to acquire existing worker/shared permits without
+an intermediate async task and submit the same owned job to the blocking pool.
+Partial acquisition released permits before falling back to the original async
+wait path. This candidate also lacked attributable performance benefit and was
+withdrawn. Keep original limits, keys, drain-before-close and accounting release
+before success publication; neither experimental runtime change is shipped.
+
+Semaphore fairness concerns registered waiters. Already admitted jobs whose
+async tasks have not registered are not globally FIFO. Original authority,
+content and pending intent order is decided by the existing durable home/CAS
+witness, not arrival order. Dropping a partial permit cannot release a logical
+reservation, unknown exposure or the accepted scheduler lease.
+
+No unsafe lifetime extension, validator offload, spin loop, cached decision,
+weakened FULL or early unknown-budget release is permitted. Review one-shot
+decision, close/wake races, spurious wakeups, validation failure/panic, borrowed
+stack guards held through native completion, queued cancellation and restart.
+Use frozen original/candidate executables with the same instrumentation and
+workload, actual available CPUs with minimum four, and fixed ABBA measurement
+order. Record every sample, including regressions. SPEC and existing Lean/Quint
+semantics remain authoritative; do not create another authorization model.
+
+The synchronous native callback and cancellable async caller still require a
+request/answer handoff under the borrowed API. block_in_place would block sibling
+futures in the same task and change cancellation/polling behavior. Moving the
+borrowed callback into spawn_blocking would require a static lifetime or unsafe
+extension. Neither is a permissible default optimization. The retained changes
+are native borrowed-guard/rejection/panic tests and review evidence. No production
+runtime change passed performance acceptance in this round.
+
+#+CAPTION: Original dispatch retains the borrowed validation and final-use authority boundaries.
+#+ATTR_ORG: :width 1600
+#+ATTR_HTML: :width 100% :alt Original-home admission, borrowed validator and separate Rust final-use gate
+[[file:59.69-hot-path-cost-boundaries.svg]]
+
+The shared core diagram remains architectural. Versions, timings and acceptance
+counts belong in the evidence record, not in another architecture diagram.
+
+* Measured outcome and acceptance
+
+The subsequent [[file:59.71-host-envelope-and-retest.org][Host-envelope review and direct retest]] fixes criteria before observation
+and separates admission A/O from conditional-validator AV/A instead of conflating both.
+
+MRR Data [[https://github.com/tao3k/mrr-data/pull/12][PR 12]] commit =895a06c3= owns the new native guard tests and
+[[https://github.com/tao3k/mrr-data/blob/895a06c3/docs/benchmarks/shared-backend-borrowed-dispatch.org][complete matching samples, frozen identities, rejected-source receipts and reproduction commands]].
+Weaver consumes this MRR-owned record; it adds no benchmark package or backend.
+
+Each candidate used a fixed baseline/candidate/candidate/baseline sequence of
+18 real-validation cases per leg. The original and candidate executables were
+frozen before measurement; benchmark code, FULL, original identities and actual
+12-worker/16-blocking allocation remained fixed. Both sequences preserve 144
+cases and 110,592 commits with exact original-operation recovery and no unexpected
+failure, refusal or Unknown. Separate unchanged-metadata controls add 18 cases
+and 13,824 exact commits/recoveries: total 162 cases and 124,416 operations.
+
+| Candidate | All six paired hot-reuse candidate/original TPS ratios |
+|-----------+-------------------------------------------------------|
+| Condvar rendezvous plus ready permits | 1.09, 0.90, 0.87, 0.45, 0.51, 0.21 |
+| Ready permits with original oneshots | 0.40, 0.24, 0.25, 1.63, 0.68, 0.84 |
+
+Neither qualifies stable attributable benefit. All slower samples remain. An
+isolated Condvar case reduced outside-provider cost from 47.37 to 19.27
+microseconds and bridge residual from 50.54 to 15.10, but later cases deteriorated
+substantially. Such a selected sample cannot authorize a runtime replacement.
+
+A read-only Host probe during the second series reports 12 physical/logical CPUs
+and load averages 50.16, 34.82, 29.52. Separate public-engine control loops do not
+execute dispatcher or ProfilePort rendezvous during timing, yet their gets and
+COMMIT/release wall costs also shift substantially. Reuse/WAL get ratios vary
+from 1.14/1.05/1.11 in the original control to 2.90/1.10/0.93 in the later control.
+This corroborates Host/context sensitivity and weakens a fixed intrinsic-read
+penalty explanation; it does not isolate pure native CPU or kernel I/O cost.
+
+The final production source and dependency manifests match the original after
+withdrawal. Three new native tests retain the useful acceptance improvement:
+borrowed stack guard on the caller through paused native completion; typed
+validation refusal; validator panic followed by bounded drain and exact recovery.
+Original claim/reservation/history and held=4 remain bound. Existing approved
+cancellation, pending cancellation, revocation, lost reply, restart and old-owner
+controls remain unchanged. WAL/fresh standard configurations pass 67 each;
+expanded reusable suite passes 82; strict Clippy and ASP deny gate pass.
+
+The optimization objective remains open. No performance admission is claimed,
+and no production guard, cancellation, accounting, final-send or SPEC semantic
+contract is weakened to force a pass. Existing Lean/Quint owners remain intact.
+Next acceptance requires a controlled Host with the same actual CPU allocation,
+the existing MRR targets/frozen workloads, all samples and separate native CPU/
+kernel completion evidence. Logs, rejected source and executables stay temporary;
+do not add a qualification package or stop unrelated Host work.

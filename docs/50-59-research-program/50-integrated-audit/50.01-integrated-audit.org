@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+TITLE: Weaver Integrated Audit: Research Priorities and Hidden Assumptions
 #+LANGUAGE: en
 #+OPTIONS: toc:2 num:nil
@@ -20,7 +24,7 @@ center. Its first slice still spans several strategies and profiles. Freeze a
 representative =support.resolve= task: retrieval, one typed inference, and a
 governed response release. Specify one client API, bounded SSE, one response
 mode, and a small explicit deployment/provider matrix. Use one provider admission
-per inference step initially. Hidden SDK retries, hedging, redirects to a new
+per inference step initially. Hidden provider-client retries, hedging, redirects to a new
 provider, and failover after an emitted prefix must not silently expand it.
 
 This is a proposed research baseline, not a claim that every first deployment
@@ -154,7 +158,7 @@ new research index to navigate current product evidence.
 | Boundary | Responsibility | Must not substitute for |
 |----------+----------------+-------------------------|
 | Scheme / POO | Contracts, configuration semantics, routine graph and refinement, authoritative semantic package construction | Per-request transport ownership or unauthenticated mutable facts |
-| Go | Kubernetes reconciliation, service/capability discovery, protocol/SDK integration and lifecycle adapters; emit canonical proposals and observations | Hidden retry/redirect, new family/budget, direct ungoverned final sends |
+| Go | Kubernetes reconciliation, service/capability discovery, protocol/Gerbil toolchain integration and lifecycle adapters; emit canonical proposals and observations | Hidden retry/redirect, new family/budget, direct ungoverned final sends |
 | Rust | Canonical admission consumption, fences, durable queue/executor ownership, bounded stream processing and actual-effect checks | Independently redefining Scheme semantics or treating an old permit as current |
 | Cedar | Code as Policy decisions over authenticated typed entities/actions/context, explicit obligations for actual effects | Budget storage, authenticity, or delivery guarantees |
 | Quint | Executable interleavings and negative controls for deciding events and faults | Unbounded proof or native conformance |

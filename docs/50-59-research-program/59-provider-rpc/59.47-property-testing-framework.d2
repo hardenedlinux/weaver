@@ -1,0 +1,208 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+...@../../../dev/d2/themes/flow
+# Core developer-framework relationships; evidence and bounds belong in Org.
+direction: down
+vars: {d2-config: {layout-engine: elk;  pad: 60}}
+classes: {
+  card: {
+    width: 410
+    height: 150
+    style.font-size: 21
+    style.border-radius: 12
+    style.stroke-width: 1
+  }
+}
+title: PROPERTY TESTING FRAMEWORK {
+  shape: text
+  near: top-center
+  style.font-size: 30
+  style.bold: true
+}
+proof: Existing proof owners\nQuint schedules / Lean and Cedar laws {
+  class: card
+  style.fill: "#eef0f6"
+}
+contract: Property contract\nOriginal task / claim / budget / fence {
+  class: card
+  style.fill: "#e7edf4"
+}
+rust: Rust / proptest\nGeneration / shrinking / replay {
+  class: card
+  icon: ../../architecture/diagrams/assets/rust.svg
+  style.fill: "#f3eee9"
+}
+go: Go / testing.F\nCorpus / coverage / native fuzzing {
+  class: card
+  icon: ../../architecture/diagrams/assets/go.svg
+  style.fill: "#e8f2f5"
+}
+trace: Typed input / command trace\nPositive paths and invalid classes {
+  class: card
+  style.fill: "#f1f4f1"
+}
+model: Independent reference model\nPreconditions / expected outcome {
+  class: card
+  style.fill: "#eef3ef"
+}
+driver: Implementation driver\nPublic Rust / Go APIs\nReal storage and transport {
+  class: card
+  style.fill: "#e7edf4"
+}
+oracle: Refinement oracle\nCompare every relevant prefix {
+  class: card
+  style.fill: "#eef3ef"
+}
+replay: Framework shrink / replay\nPreserve causal preconditions\nRetain the minimal failure {
+  class: card
+  style.fill: "#f6efe4"
+}
+proof -> contract: assumptions / established laws {style.stroke-dash: 4}
+contract -> rust
+contract -> go
+rust -> trace
+go -> trace
+trace -> model
+trace -> driver
+model -> oracle
+driver -> oracle
+oracle -> replay: failing property
+replay -> trace: minimal replay {style.stroke-dash: 4}
+
+# Project-owned presentation question; not an issued governance Question.
+vars: { d2-config: { data: { figure: |json
+{
+  "title": "47 property testing framework",
+  "purpose": "workflow",
+  "kind": "flow",
+  "language": "en",
+  "width": 960,
+  "primary": "main",
+  "questions": [
+    {
+      "ref": "main",
+      "text": "Which boundaries do properties and runtime tests exercise?",
+      "focusRefs": [
+        "catalog",
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "catalog": "docs/architecture/08-diagram-catalog.org",
+    "model": "Project.sysml"
+  },
+  "copy": {
+    "takeaway": "Which boundaries do properties and runtime tests exercise?"
+  },
+  "basis": {
+    "captureRef": "docs/50-59-research-program/59-provider-rpc/59.47-property-testing-framework.d2#design-view",
+    "modelRefs": [
+      "Project.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "sketchbook",
+    "node-editor",
+    "reading"
+  ],
+  "layout": "model-view",
+  "variants": [],
+  "presentation": {
+    "graph": {
+      "id": "weaver-source-view",
+      "children": [
+        {
+          "id": "title"
+        },
+        {
+          "id": "proof"
+        },
+        {
+          "id": "contract"
+        },
+        {
+          "id": "rust"
+        },
+        {
+          "id": "go"
+        },
+        {
+          "id": "trace"
+        },
+        {
+          "id": "model"
+        },
+        {
+          "id": "driver"
+        },
+        {
+          "id": "oracle"
+        },
+        {
+          "id": "replay"
+        }
+      ],
+      "layoutOptions": {
+        "elk.direction": "DOWN",
+        "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+        "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+        "elk.layered.layering.coffmanGraham.layerBound": "1",
+        "elk.spacing.nodeNode": "24",
+        "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+        "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+        "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+        "elk.separateConnectedComponents": "false",
+        "elk.aspectRatio": "0.55",
+        "elk.spacing.componentComponent": "24"
+      }
+    },
+    "options": {
+      "elk.direction": "DOWN",
+      "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+      "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+      "elk.layered.layering.coffmanGraham.layerBound": "1",
+      "elk.spacing.nodeNode": "24",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+      "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+      "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+      "elk.separateConnectedComponents": "false",
+      "elk.aspectRatio": "0.55",
+      "elk.spacing.componentComponent": "24"
+    },
+    "icons": {
+      "title": "capture",
+      "proof": "obligation",
+      "contract": "capture",
+      "rust": "rust",
+      "go": "go",
+      "trace": "capture",
+      "model": "capture",
+      "driver": "capture",
+      "oracle": "capture",
+      "replay": "capture"
+    },
+    "roles": {
+      "proof": "default",
+      "rust": "execution",
+      "go": "default",
+      "title": "default",
+      "contract": "default",
+      "trace": "default",
+      "model": "default",
+      "driver": "default",
+      "oracle": "default",
+      "replay": "default"
+    }
+  },
+  "icons": [
+    "engineering",
+    "weaver"
+  ]
+}
+|
+} } }

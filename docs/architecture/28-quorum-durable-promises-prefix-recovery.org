@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Weaver Quorum Durable Promises and Prefix Recovery
 #+language: en
 #+date: 2026-10-19
@@ -239,7 +243,7 @@ actual forked-root replay counterexample is rerun separately to connect loss of
 root history to duplicate internal account application; the new small quorum
 model does not itself simulate account writes.
 
-* Native qualification still required
+* Runtime qualification still required
 
 - Crash after durable promise but before signature, after signature but before
   response, and after certificate commit but before the caller observes it.
@@ -268,3 +272,9 @@ control/durability work; the normal Rust send path consumes qualified original
 capabilities and fences without a Go/Scheme callback per byte. Optimizing or
 batching publication must preserve each original identity and the same linearized
 promise-before-ack boundary; no such optimization is validated here.
+
+* Embedded architecture views
+
+** 29-quorum-durable-promises.svg
+
+[[file:diagrams/29-quorum-durable-promises.svg]]

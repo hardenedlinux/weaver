@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Weaver Authoritative Task-to-Scope Binding Index
 #+language: en
 #+options: toc:2
@@ -27,3 +31,9 @@ owner/storage contracts; it is not an implementation of those contracts.
 Formal sources: [[file:../../../dev/proofs/lean/LlmAuthoritativeScope.lean][Lean]] and [[file:../../../dev/proofs/quint/LlmAuthoritativeScope.qnt][Quint]].
 Run the isolated local check runner (retired Python driver). Earlier sealed categories remain historical.
 No Gateway runtime, upstream source or dependency pin is changed.
+
+* Embedded architecture views
+
+** 13.02-authoritative-scope.svg
+
+[[file:13.02-authoritative-scope.svg]]

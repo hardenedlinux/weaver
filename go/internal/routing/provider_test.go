@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 package routing
 
 import (
@@ -5,9 +9,34 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	v1 "github.com/HardenedLinux/weaver/go/api/v1"
+	"slices"
 	"strings"
 	"testing"
 )
+
+func FuzzCompiledProviderOwnsRouteOrder(f *testing.F) {
+	f.Add(uint8(0), false)
+	f.Add(uint8(1), true)
+	f.Fuzz(func(t *testing.T, route uint8, reverse bool) {
+		task, original := providerOriginal(t)
+		compiled, err := CompileProvider(task, original, v1.View{Revision: 3, Fence: 7})
+		if err != nil {
+			t.Fatal(err)
+		}
+		before := slices.Clone(original.Routes)
+		if reverse {
+			compiled.Routes[int(route)%len(compiled.Routes)].Endpoint = "https://changed.invalid"
+			if !slices.Equal(original.Routes, before) {
+				t.Fatal("compiled output mutated the source route order")
+			}
+		} else {
+			original.Routes[int(route)%len(original.Routes)].Target = "changed"
+			if !slices.Equal(compiled.Routes, before) {
+				t.Fatal("compiled routing retained caller storage")
+			}
+		}
+	})
+}
 
 func providerOriginal(t testing.TB) (v1.Task, v1.ProviderPlan) {
 	t.Helper()

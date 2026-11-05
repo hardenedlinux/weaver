@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Beneficiary Registration Proof and Source Evidence
 #+language: en
 #+startup: overview
@@ -239,7 +243,7 @@ The predecessor's 30-second randomized exploration timeout remains unchanged;
 no new randomized pass, fairness, liveness, native crypto, provider exactly-once,
 performance result or remote CI is claimed.
 
-* Native acceptance obligations
+* Implementation acceptance obligations
 The formal contracts still require independent enrollment-credential provisioning,
 authentic producer/root assignment, both signature checks over the exact transcript,
 authenticated adapter channel facts, canonical key encoding, durable atomic commits,

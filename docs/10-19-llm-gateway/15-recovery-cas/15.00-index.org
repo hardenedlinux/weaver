@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Weaver Authority Read and Final Consumption CAS Index
 #+language: en
 #+options: toc:2
@@ -26,3 +30,9 @@ no execution-ledger write occurs.
 Formal sources: [[file:../../../dev/proofs/lean/LlmRecoveryCAS.lean][Lean]] and [[file:../../../dev/proofs/quint/LlmRecoveryCAS.qnt][Quint]].
 Reproduce with the isolated check runner (retired Python driver). This work changes design, formal models and
 local evidence only. No Gateway implementation or dependency pin is changed.
+
+* Embedded architecture views
+
+** 15.02-recovery-cas.svg
+
+[[file:15.02-recovery-cas.svg]]

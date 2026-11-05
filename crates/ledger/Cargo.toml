@@ -1,14 +1,29 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 [package]
 name = "weaver-ledger"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+[features]
+default = []
+# Explicitly selected by the observed server's dev dependency, never by its binary.
+commit-observer = []
 [dependencies]
 weaver-contracts.workspace = true
 weaver-policy.workspace = true
-rusqlite.workspace = true
+mrr-data-backend.workspace = true
+futures-executor.workspace = true
 serde_json.workspace = true
+serde.workspace = true
 [dev-dependencies]
+# Standard Cargo self dev-dependency: tests/benches expose fault-host APIs; production does not.
+weaver-ledger = { workspace = true, features = ["commit-observer"] }
+ring.workspace = true
+hex.workspace = true
+cedar-poo-runtime.workspace = true
 asp-rust.workspace = true
 criterion.workspace = true
 tempfile.workspace = true

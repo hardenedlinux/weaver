@@ -1,0 +1,40 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+#+TITLE: Schema-Bound Candidate Replay Asset
+#+LANGUAGE: en
+
+The complete =namespaced-enum-validated.json= manifest is produced by SPEC's
+standard =caseManifestsNative namespaced-enum-validated= entrypoint. It contains
+four Lean-computed cases over two revisions, including named =read-document=
+Policy identity, namespaced entities and enum schema. It is a curated native
+interop fixture, not a deployment approval or a no-gain certificate.
+
+=named-permit.json= and =named-forbid.json= are official materialized PolicySet
+JSON fixtures for the actual Gateway control/stream tests. The permit fixture
+retains the original denied-route prohibition. Original task, claim, budget and
+history enforcement still occurs separately in the Rust deciding owner.
+
+The source checkout was clean at
+=13b69c90a17a283b36c611c8a28a4bfcce8be798=. Its standard
+=lake build caseManifestsNative= completed before regeneration. The file SHA-256
+is =2a3d8086716fd6425aca03bc07b050201c931f779376e47e046013efd3bdef75=.
+The Weaver native consumer uses the existing SPEC pin
+=38af276ffbd17a378408bb7886e8122faadcbcfd=; this fixture is a separately scoped
+producer/consumer interoperability observation, not a claim that all candidate
+SPEC interfaces or the complete candidate library have been admitted.
+
+Tests recompute receipts through the actual fixed SPEC Rust runtime. They do not
+trust hand-copied receipts or a true approval label. Only the two =scoped= cases
+cover the selected =scoped-public= candidate PolicySet; four total manifest
+cases must not be reported as four selected-candidate checks. Receipt replay is
+finite evidence and does not prove semantic parent/profile binding, source
+authenticity, policy no-gain or current registry recovery.
+
+Revision replay additionally selects =published-public= as the predecessor
+case and supplies the original full Policy/schema bytes. The ledger's captured
+parent, not that label, fixes their required commitments. The two =published=
+cases cover the predecessor, and the two =scoped= cases cover the candidate.
+Both cohorts reuse official upstream replay; their combined count is not
+universal schema-environment coverage or a publication approval.

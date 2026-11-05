@@ -1,0 +1,92 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+#+title: 59.34 Control Activation from Original Publication Outcomes
+#+language: en
+
+* Problem and resulting behavior
+An authority commit may succeed while its gRPC response is lost. Previously,
+Go bootstrap submitted the publication again on every restart, even when Rust
+already held its durable outcome. Rust's existing idempotency made that replay
+safe, but recovery unnecessarily depended on another successful write response.
+
+Go now observes the original publication before submitting it. This changes
+activation recovery, not the authorization or provider execution protocol.
+No dependency pin, governance DSL or Rust ledger format changes are required.
+
+* Authority and language boundaries
+Scheme retains Agentic AI Lab governor and Governance semantics. Its existing
+source-assets and policy bridge produce the admitted Cedar publication and
+typed task/profile contracts. JSON and YAML use the same frozen Go bundle.
+Go validates that bundle, registers its immutable tasks, then calls
+=ObserveOrPublish= with its original publication identity. Task registration
+does not activate ingress and does not authorize an external provider call.
+
+Rust remains the deciding owner of publication records, Policy/fence state,
+claim consumption, shared budget and final provider dispatch/release checks.
+Go does not synthesize a replacement parent, new operation ID or fresh claim
+when recovery fails. Existing Rust publication replay semantics are reused.
+
+| Observation | Go action | Activation |
+|-------------+-----------+------------|
+| Exact committed ID, digest, revision and fence | Return original receipt; no PublishAuthority | Only after frozen bundle/view checks |
+| Exact rejected decision | Return original rejection; no submission | Denied |
+| Authoritative NotFound | Submit identical command once through Rust CAS | Only after validated committed response |
+| Unavailable, denied, unsupported or other read failure | Return error; no submission | Denied |
+| Malformed or mismatched receipt | Return binding error; no submission | Denied |
+| Submission response lost | Return error; no automatic retry in this startup | Denied until another exact observation |
+
+NotFound is an observation, not an abort certificate. An earlier command may
+still commit after that read. The subsequent identical command must therefore
+reach the existing Rust idempotency/CAS boundary; the read and write are not
+claimed to be one cross-language transaction. Concurrent identical startups
+may each submit after NotFound. Rust must serialize them and preserve one
+original outcome. Conflicting payloads under the same ID remain rejected.
+
+The parent value is copied before inspection so caller mutation cannot rebase
+the submission. Production bootstrap already freezes its complete validated
+bundle. The authenticated source endpoint and pinned method role remain trust
+premises; a forged NotFound response from an untrusted server is not accepted
+as an authority design.
+
+* Historical outcomes are not execution permission
+A committed original receipt may remain readable after a newer revocation.
+Recovering it only reestablishes Go's original routing view. Rust must reject
+that stale view at fresh admission, consumption, dispatch and stream release
+boundaries. Recovery does not reset a consumed logical claim, refund an unknown
+reservation or redispatch a non-idempotent provider request. This change does
+not add automatic policy hot reload or prove exactly-once remote execution.
+
+* Executable assurance
+The gatewayclient unit tests cover committed and rejected observations, read
+failures, malformed receipts, missing outcomes, lost submission responses and
+parent mutation. The actual mTLS recovery test keeps a relay that drops every
+successful publication response throughout recovery. Activation after restart
+therefore demonstrates observation-based recovery rather than a lucky replay.
+
+The integration sequence restarts both owners, retries a consumed original
+node and compares its canonical receipt without a second provider invocation.
+It then publishes a later revocation and tests a different, unused original
+node, distinguishing a fresh authority rejection from a spent-claim rejection.
+The Scheme source-assets path runs the same recovery helper as the JSON path.
+
+| Asset | Responsibility |
+|-------+----------------|
+| =dev/proofs/quint/AuthorityPublication.qnt= | Bounded interleavings of observation, late commit, response loss, restart, activation, revocation and spent execution; explicit unsafe activation/source substitution/retry counterexamples |
+| =dev/proofs/lean/PublicationRecovery.lean= | Inductive preservation of original decisions and accounting; exact payload/parent/fence observation survives the existing recovery relation |
+| =dev/sysml/WeaverExecution.sysml= | Allocate observation-based recovery and execution freshness to their existing Go/Rust responsibilities |
+| =59.03-provider-rpc-core.d2= | Show outcome lookup and initial CAS on the source lane, distinct from operation admission |
+
+The Quint submission counter checks Go's per-bootstrap operational contract.
+Its known-outcome replay counterexample intentionally leaves Rust ledger and
+execution safety intact: redundant recovery writes violate that narrower
+contract, not Rust idempotency. Missing and failed reads cannot activate ingress.
+Lean abstracts authenticated persistence and transport validation; actual
+digest binding, durable restart behavior and fresh Cedar checks require the
+native integration evidence. Neither model substitutes for those checks.
+
+Local validation is the acceptance path for this change. Remote GitHub CI is
+not a blocker under the current private-project workflow. Exact commands,
+source identity and results belong in the local qualification record; raw
+logs and generated runtime products remain temporary or ignored.

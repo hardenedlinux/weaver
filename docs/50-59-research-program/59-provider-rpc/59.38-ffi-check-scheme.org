@@ -1,0 +1,99 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+#+title: 59.38 FFI Library Pipeline and Complete Scheme Qualification
+#+language: en
+
+* Current build and execution boundary
+Scheme Governance and its Cedar adapter are library consumers. Root
+=gerbil.pkg= and =build.ss= declare the project modules and FFI compilation
+options through the existing Yuanxu/Gerbil build mechanism. There is no Scheme
+=exe:=/=bin:= target or secondary executable package. Runtime Go/Rust service
+entrypoints are separate from these library declarations.
+
+The removed inventory executable did not contribute authority, Policy
+enforcement or final dispatch safety. Its earlier results remain historical
+evidence in 59.37; removing the declaration does not erase failed controls.
+Library acquisition and cleanup remain obligations of the real consumer.
+The obsolete =dev/scheme= inventory, observer and image-packaging experiment
+are removed from the active tree. Their sealed historical evidence is retained.
+Gerbil toolchain tool resolution stays with the Go development runner; Scheme source tests
+stay in =t/= and production modules stay in =scheme/=. No per-language development
+program package or second discovery driver is introduced.
+
+* Full gate and native consumer evidence
+The complete =check-scheme= command must run on one fixed committed input set:
+source/dependency admission, project/SysML checks, real Cargo Cedar FFI library,
+available CPU reporting, standard package builds, pkg-config/environment checks,
+the unmodified =gerbil test -g -v 5 t= command and the actual Go/Rust control
+integration suite. Before/after source and dependency checks must agree.
+
+The Scheme test stage keeps the original fifteen-second deadline. It requires
+all nineteen original successful Cases, the successful Harness result, terminal
+=OK= and a natural successful process exit. A complete gate cannot be inferred
+from a passing focused test, a success marker or a previous committed source.
+Dependency preparation/build time is reported separately from the test deadline.
+Build parallelism uses the host's available CPUs; local qualification uses the
+actual twelve-CPU host. No dependency pin or timeout changes are permitted.
+
+| Real integration path | Required observation |
+|-----------------------+----------------------|
+| Scheme source-assets / Governance assessment / Cedar validation | Source binding and original claims remain intact; validation alone cannot authorize a send |
+| Go authority publication | Original ID/digest/CAS binding; compilation and publication never invoke a provider |
+| Rust partial stream / later revocation | An already delivered prefix is retained; forbidden tail is withheld; unknown usage remains held |
+| Dual process restart | Historical publication remains observable but does not override current Policy/fence or reopen consumed claims |
+| Publication response loss | Ingress stays inactive until exact outcome recovery; no rebasing, replacement identity or extra publication write |
+| Concurrent Scheme-authorized messages sharing one budget | Exactly one admissible send under the original reservation; losing requests and provider-client retry cannot create extra capacity |
+
+The existing control tests share these helpers between JSON/YAML and the actual
+Scheme source-assets path. The added Scheme shared-budget test uses the same
+real mTLS frontend, Rust ledger, provider transport and canonical receipt checks;
+it does not reproduce governance semantics in a mock.
+
+* Formal responsibilities
+=AuthorityPublication.qnt= and =ProviderRpc.qnt= model publication recovery,
+fresh authority checks, affine invocation, held budget and revocation after
+partial release. Their unsafe retry/reset and stale-authority counterexamples
+remain in place. =GerbilExitQualification.qnt= separately checks qualification:
+the official package entry, complete checks, exact source, natural return,
+closed library references and the unchanged deadline. A new two-reference
+counterexample rejects exit after only one FFI reference has closed.
+
+=PublicationRecovery.lean= composes immutable original decisions with accounting
+preservation. =GerbilExitQualification.lean= retains cleanup and check-count
+obligations for FFI-loaded libraries; it does not assume or require a Scheme
+executable. The native integration tests refine the abstract transport, source,
+digest, persistence and real-send premises. Neither tool proves wall-clock
+performance or whole-store anti-rollback protection from these tests.
+
+* Evidence discipline
+The final local result must name its source commit, dependency identities,
+available CPUs and every gate stage. Raw logs remain temporary; compact current
+receipts stay under ignored =.cache/verification=. Failed source-preparation and
+historical gxi controls remain distinct from the final result. Results and all
+implementation/model changes are delivered through PR 1 only. GitHub CI is
+nonblocking under the requested private-project workflow.
+
+* Runtime priority and separate diagnostic evidence
+The primary performance target is the running Gateway: route selection, current
+Cedar decisions, original claim/budget consumption, bounded queues and actual
+stream release. The implemented Scheme source compiler runs before activation;
+its process startup and package-test discovery are not per-request Gateway
+latency. Scheme routines added to a live request path would require separate
+measurement and the same final Rust authority checks.
+
+Cold package diagnostics remain a separate optional study. They invoke only
+=gerbil build/test=, retain the existing fifteen-second test deadline, preserve
+the nineteen Cases and record failures rather than retrying a slot into success.
+Each matrix slot runs in its own normal Go test process, so compilation does not
+consume an entire multi-slot test process's default watchdog. Gerbil toolchain trace overlays
+are rebuilt only in temporary directories, identify original/modified source
+hashes and are explicitly diagnostic. They never qualify the original Gerbil toolchain.
+
+The existing GerbilExitQualification Quint/Lean owners now distinguish original
+package tests from instrumented tests, preserve failed observations across
+successful replays, and require matched source/cold-artifact premises. Ordered
+phase-cut decomposition is conditional on faithful native clocks and event
+boundaries; it proves neither a dyld cause nor a latency bound for an unobserved
+historical run. A short cleanup interval does not bound whole-process time.

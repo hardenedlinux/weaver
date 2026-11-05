@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+TITLE: 59.12 Final Invocation Cancellation After Deciding-Lock Waits
 #+LANGUAGE: en
 
@@ -134,7 +138,7 @@ independently at the final guard. A pending publication is not a committed
 revocation. This increment preserves the write-lock-through-response-headers
 design; it does not establish a publication latency guarantee under contention.
 
-Source ownership, logical identities, original reservations, SDK retry policy,
+Source ownership, logical identities, original reservations, provider-client retry policy,
 optional Arrow encoding and provider response limits are unchanged. No dependency
 pin or timeout is adjusted for the new controls. This remains an AI Agent Gateway
 logical execution boundary, without physical-isolation or hardware-fencing claims.

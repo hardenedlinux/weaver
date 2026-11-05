@@ -1,0 +1,125 @@
+-- SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+--
+-- SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+import DynamicPairedEvidence
+namespace Weaver.GambitLocatorClosure
+
+structure Locator where
+  image : Nat
+  entry : Nat
+  deriving DecidableEq
+structure Manifest where
+  modules : List Nat
+  locate : Nat → Locator
+  originalEntry : Nat → Nat
+  sourceDigest : Nat → Nat
+  producerComplete : Bool
+  pureBodies : Bool
+
+def EntryPreserved (m : Manifest) : Prop :=
+  ∀ mid ∈ m.modules, (m.locate mid).entry = m.originalEntry mid
+
+def CollisionFree (m : Manifest) : Prop :=
+  ∀ a ∈ m.modules, ∀ b ∈ m.modules,
+    (m.locate a).image = (m.locate b).image → m.originalEntry a = m.originalEntry b → a = b
+
+def Admitted (m : Manifest) : Prop :=
+  m.producerComplete = true ∧ m.pureBodies = true ∧ EntryPreserved m ∧ CollisionFree m
+
+def Resolves (m : Manifest) (whereAt : Locator) (mid : Nat) : Prop :=
+  mid ∈ m.modules ∧ m.locate mid = whereAt
+
+theorem qualified_lookup_is_unique (valid : Admitted m)
+    (first : Resolves m whereAt a) (second : Resolves m whereAt b) : a = b := by
+  have same : m.locate a = m.locate b := first.2.trans second.2.symm
+  apply valid.2.2.2 a first.1 b second.1
+  · exact congrArg Locator.image same
+  · exact (valid.2.2.1 a first.1).symm.trans ((congrArg Locator.entry same).trans (valid.2.2.1 b second.1))
+
+theorem colliding_names_require_different_images (valid : Admitted m)
+    (first : a ∈ m.modules) (second : b ∈ m.modules)
+    (different : a ≠ b) (sameEntry : m.originalEntry a = m.originalEntry b) :
+    (m.locate a).image ≠ (m.locate b).image := by
+  intro sameImage
+  exact different (valid.2.2.2 a first b second sameImage sameEntry)
+
+theorem wrong_image_cannot_resolve (m : Manifest) (whereAt : Locator) (mid : Nat) (wrong : (m.locate mid).image ≠ whereAt.image) :
+    ¬ Resolves m whereAt mid := by
+  intro resolved; exact wrong (congrArg Locator.image resolved.2)
+
+theorem incomplete_producer_cannot_publish (m : Manifest) (missing : m.producerComplete = false) : ¬ Admitted m := by
+  intro valid; have done := valid.1; simp [missing] at done
+
+theorem foreign_initializer_cannot_publish (m : Manifest) (foreignBody : m.pureBodies = false) : ¬ Admitted m := by
+  intro valid; have pureBody := valid.2.1; simp [foreignBody] at pureBody
+
+theorem gambit_entries_preserve_original_entry (valid : Admitted m)
+    (resolved : Resolves m whereAt mid) : whereAt.entry = m.originalEntry mid := by
+  exact (congrArg Locator.entry resolved.2).symm.trans (valid.2.2.1 mid resolved.1)
+
+-- A unique entry does not establish source authority. The commitment comes
+-- from the authoritative semantic source, not from the proposed manifest.
+structure SourceCommitment where
+  digest : Nat → Nat
+
+def SourceBound (committed : SourceCommitment) (m : Manifest) : Prop :=
+  Admitted m ∧ ∀ mid ∈ m.modules, m.sourceDigest mid = committed.digest mid
+
+theorem replaced_source_rejects_committed_manifest
+    (m : Manifest) (committed : SourceCommitment) (mid : Nat)
+    (member : mid ∈ m.modules) (wrong : m.sourceDigest mid ≠ committed.digest mid) :
+    ¬ SourceBound committed m := by
+  intro admitted; exact wrong (admitted.2 mid member)
+
+theorem resolved_body_keeps_authoritative_commitment (admitted : SourceBound committed m)
+    (resolved : Resolves m whereAt mid) : m.sourceDigest mid = committed.digest mid :=
+  admitted.2 mid resolved.1
+
+theorem semantic_owner_and_gambit_source_compose
+    (semantic : DynamicImportBoundary.Admitted contract publication)
+    (required : binding ∈ contract.requiredBindings)
+    (native : SourceBound committed m)
+    (resolved : Resolves m whereAt (publication.resolve binding)) :
+    Resolves m whereAt (contract.resolve binding) ∧
+      m.sourceDigest (contract.resolve binding) = committed.digest (contract.resolve binding) := by
+  have owner := DynamicImportBoundary.admitted_bindings_keep_original_owner semantic required
+  have original : Resolves m whereAt (contract.resolve binding) := owner ▸ resolved
+  exact ⟨original,native.2 _ original.1⟩
+
+-- All exported C definitions are checked by the native publisher. The abstract
+-- entry condition below is necessary, not a proof of Mach-O linking correctness.
+theorem identical_locator_cannot_name_distinct_modules (valid : Admitted m)
+    (aMember : a ∈ m.modules) (bMember : b ∈ m.modules)
+    (same : m.locate a = m.locate b) : a = b :=
+  qualified_lookup_is_unique valid ⟨aMember,rfl⟩ ⟨bMember,same.symm⟩
+
+theorem shared_image_preserves_all_owned_refs
+    (run : DynamicImageCustody.Run owner {} images) : DynamicImageCustody.Safe owner images :=
+  DynamicImageCustody.initialized_shared_image_custody run
+
+theorem late_exit_rejects_even_with_valid_partition (_valid : Admitted m)
+    (late : clock.budget < receipt.elapsed) : ¬ GerbilExitQualification.Qualified clock receipt :=
+  GerbilExitQualification.late_natural_exit_still_fails late
+
+theorem shared_gambit_profile_never_grants_dispatch (_valid : Admitted m)
+    (pass : GerbilExitQualification.Qualified clock receipt)
+    (step : LlmRouting.Step router owner before after)
+    (changed : after.dispatches ≠ before.dispatches) :
+    ∃ p, owner.wireValid p ∧ owner.finalPolicyValid p (LlmRouting.view before) :=
+  GerbilExitQualification.natural_pass_still_needs_gateway_policy pass step changed
+
+#print axioms qualified_lookup_is_unique
+#print axioms colliding_names_require_different_images
+#print axioms wrong_image_cannot_resolve
+#print axioms incomplete_producer_cannot_publish
+#print axioms foreign_initializer_cannot_publish
+#print axioms gambit_entries_preserve_original_entry
+#print axioms replaced_source_rejects_committed_manifest
+#print axioms resolved_body_keeps_authoritative_commitment
+#print axioms semantic_owner_and_gambit_source_compose
+#print axioms identical_locator_cannot_name_distinct_modules
+#print axioms shared_image_preserves_all_owned_refs
+#print axioms late_exit_rejects_even_with_valid_partition
+#print axioms shared_gambit_profile_never_grants_dispatch
+end Weaver.GambitLocatorClosure

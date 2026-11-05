@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 use super::fixtures::{POLICY, initialized, proposal};
 use std::{sync::mpsc, thread, time::Duration};
 use weaver_ledger::Ledger;

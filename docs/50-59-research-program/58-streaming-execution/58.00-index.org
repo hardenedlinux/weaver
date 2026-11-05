@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+TITLE: 58.00 Streaming Execution and Workspace Ownership
 #+LANGUAGE: en
 
@@ -11,7 +15,7 @@ Directory placement follows execution ownership rather than deployment packaging
 | =crates/contracts/= | Rust execution contracts and immutable message bindings |
 | =crates/policy/= | Cedar validation and evaluation against authoritative context |
 | =crates/ledger/= | Durable claims, reservations, range consumption and recovery |
-| =crates/execution/= | Final broker and private transport custody |
+| =crates/broker/= | Final broker and private transport custody |
 | =crates/server/= | Rust service entrypoint, authenticated admission and runtime lifecycle |
 | =crates/cli/= | Rust administration and local execution commands |
 | =go/= | Go control-plane module and cloud/protocol integration |
@@ -64,3 +68,9 @@ Streaming implementation evidence remains under
 - [[file:58.02-assurance-and-development.org][Assurance and Go development integration]]
 - [[file:58.03-streaming-runtime.svg][Core streaming runtime]]
 - [[file:58.04-checked-results.org][Checked results, retained failures and production boundaries]]
+
+* Embedded architecture views
+
+** 58.03-streaming-runtime.svg
+
+[[file:58.03-streaming-runtime.svg]]

@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+TITLE: Weaver Modular Runtime Implementation
 #+LANGUAGE: en
 #+OPTIONS: toc:2 num:nil
@@ -5,7 +9,7 @@
 * Delivery boundary
 This checkpoint starts native Rust and Go implementation. Earlier design and
 qualification checkpoints remain historical evidence. The implemented profile is
-a trusted local owner, one SQLite deciding store, immutable original tasks,
+a trusted local owner, one MRR Data / Turso deciding store, immutable original tasks,
 non-streaming committed JSON requests and a bounded HTTPS executor. It is not a
 production multi-tenant service or the complete architecture.
 
@@ -37,3 +41,9 @@ and registration/publication commands is administrative authority. It must never
 be mounted as an unauthenticated agent-facing service. Configure an admitted
 real task and destination before using =execute=. Execution is explicit and
 irreversible even when the HTTP result is unknown.
+
+* Embedded architecture views
+
+** 57.03-runtime-boundary.svg
+
+[[file:57.03-runtime-boundary.svg]]

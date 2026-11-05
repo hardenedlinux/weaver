@@ -1,0 +1,246 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+...@../../../dev/d2/themes/system
+# Core control/data relationships; evidence and implementation gaps stay in Org.
+vars: { d2-config: { layout-engine: tala;  pad: 70 } }
+classes: {
+  card: {
+    label.near: center-center
+    style.font-size: 21
+    style.border-radius: 12
+    style.stroke-width: 1
+  }
+}
+title: CLOUD / RPC / DATA · ONE EXECUTION AUTHORITY {
+  shape: text
+  near: top-center
+  style.font-size: 32
+  style.bold: true
+}
+go: Go cloud / protocol ingress\nDiscovery and route candidates\nCanonical task / frozen context\nNo provider execution credentials {
+  class: card
+  icon: ../../architecture/diagrams/assets/go.svg
+  icon.near: top-left
+  left: 0
+  top: 0
+  width: 460
+  height: 220
+  style.fill: "#eef3ef"
+}
+request: Rust request admission\nCurrent Policy / floor / owner\nOriginal claim and budget hold\nDurable one-use invocation {
+  class: card
+  icon: ../../architecture/diagrams/assets/rust.svg
+  icon.near: top-left
+  left: 650
+  top: 0
+  width: 460
+  height: 220
+  style.fill: "#e7edf4"
+}
+provider: Provider / tool endpoint\nExact destination and body\nPartial IO remains uncertain {
+  class: card
+  left: 1300
+  top: 0
+  width: 460
+  height: 220
+}
+guard: Rust response release\nRecheck after capacity wait\nEvery row / original range / context\nFixed encoding and immutable data {
+  class: card
+  left: 1300
+  top: 420
+  width: 460
+  height: 220
+  style.fill: "#e7edf4"
+}
+queue: Bounded private output\nReserve outside deciding lock\nInsert inside final row guard\nAdmitted buffers may drain {
+  class: card
+  left: 650
+  top: 420
+  width: 460
+  height: 220
+  style.fill: "#f4f2ec"
+}
+observe: Go bounds decode / owns data\nScheme Session proposes next step\nOriginal identity survives reconnect\nFresh admission for every effect {
+  class: card
+  left: 0
+  top: 420
+  width: 460
+  height: 220
+  style.fill: "#eef3ef"
+}
+unknown: Unknown / incomplete outcome\nOriginal claim and hold retained\nPending range cannot be replayed\nInspect the exact original outcome {
+  class: card
+  left: 650
+  top: 850
+  width: 460
+  height: 200
+  style.fill: "#f4f2ec"
+}
+go -> request: gRPC / Protobuf {
+  style.font-size: 18
+}
+request -> provider: Guarded request {
+  style.font-size: 18
+}
+provider -> guard: Owned typed rows {
+  style.font-size: 18
+}
+guard -> queue: Current per-row admission {
+  style.font-size: 18
+}
+queue -> observe: Protobuf / Arrow IPC {
+  style.font-size: 18
+}
+observe -> go: Continuation proposal {
+  style.font-size: 18
+  style.stroke-dash: 5
+}
+guard -> unknown: Reject / cancel / lost commit {
+  style.font-size: 18
+  style.stroke-dash: 5
+}
+observe -> unknown: Missing terminal evidence {
+  style.font-size: 18
+  style.stroke-dash: 5
+}
+footer: "Capacity credit is not authority · Reconnect is not a fresh claim\nQueue delivery is not settlement · No automatic execution retry" {
+  shape: text
+  left: 280
+  top: 1220
+  width: 1200
+  height: 90
+  style.font-size: 24
+  style.font-color: "#5c8b77"
+}
+
+# Project-owned presentation question; not an issued governance Question.
+vars: { d2-config: { data: { figure: |json
+{
+  "title": "44 cloud rpc arrow boundaries",
+  "purpose": "architecture",
+  "kind": "system",
+  "language": "en",
+  "width": 960,
+  "primary": "main",
+  "questions": [
+    {
+      "ref": "main",
+      "text": "Who owns ingress, request dispatch and stream release?",
+      "focusRefs": [
+        "catalog",
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "catalog": "docs/architecture/08-diagram-catalog.org",
+    "model": "Project.sysml"
+  },
+  "copy": {
+    "takeaway": "Who owns ingress, request dispatch and stream release?"
+  },
+  "basis": {
+    "captureRef": "docs/50-59-research-program/59-provider-rpc/59.44-cloud-rpc-arrow-boundaries.d2#design-view",
+    "modelRefs": [
+      "Project.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "sketchbook",
+    "reading"
+  ],
+  "layout": "model-view",
+  "variants": [],
+  "presentation": {
+    "graph": {
+      "id": "weaver-source-view",
+      "children": [
+        {
+          "id": "title"
+        },
+        {
+          "id": "go"
+        },
+        {
+          "id": "request"
+        },
+        {
+          "id": "provider"
+        },
+        {
+          "id": "guard"
+        },
+        {
+          "id": "queue"
+        },
+        {
+          "id": "observe"
+        },
+        {
+          "id": "unknown"
+        },
+        {
+          "id": "footer"
+        }
+      ],
+      "layoutOptions": {
+        "elk.direction": "DOWN",
+        "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+        "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+        "elk.layered.layering.coffmanGraham.layerBound": "1",
+        "elk.spacing.nodeNode": "24",
+        "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+        "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+        "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+        "elk.separateConnectedComponents": "false",
+        "elk.aspectRatio": "0.55",
+        "elk.spacing.componentComponent": "24"
+      }
+    },
+    "options": {
+      "elk.direction": "DOWN",
+      "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+      "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+      "elk.layered.layering.coffmanGraham.layerBound": "1",
+      "elk.spacing.nodeNode": "24",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+      "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+      "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+      "elk.separateConnectedComponents": "false",
+      "elk.aspectRatio": "0.55",
+      "elk.spacing.componentComponent": "24"
+    },
+    "icons": {
+      "title": "capture",
+      "go": "go",
+      "request": "rust",
+      "provider": "model",
+      "guard": "rust",
+      "queue": "capture",
+      "observe": "go",
+      "unknown": "pending",
+      "footer": "capture"
+    },
+    "roles": {
+      "go": "default",
+      "request": "execution",
+      "provider": "default",
+      "guard": "execution",
+      "observe": "default",
+      "unknown": "pending",
+      "title": "default",
+      "queue": "default",
+      "footer": "default"
+    }
+  },
+  "icons": [
+    "engineering",
+    "weaver"
+  ]
+}
+|
+} } }

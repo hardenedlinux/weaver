@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+TITLE: 59.23 Governance Policy Projection and Authority Publication
 #+LANGUAGE: en
 
@@ -20,6 +24,35 @@ no whitespace normalization and no assumption that combining permit clauses
 attenuates authority. Ordinary Cedar policy-set and forbid semantics apply.
 The existing schema field remains authoritative and is validated with the exact
 projected Policy by the Rust Cedar FFI and again during Rust publication.
+
+* Complete documents before composition
+
+Each named input must independently pass strict Rust Cedar validation under the
+exact publication schema before the aggregate is validated. The Scheme Policy
+module owns this ordering; it reuses the existing synchronous C ABI and passes
+copies to validators. Gateway compilation invokes it before Governance
+assessment. A false result or exception stops compilation. An empty document
+inventory still validates the explicit publication policy once.
+
+Aggregate validity alone does not establish document completeness. The real
+parser accepts =permit(principal,action,resource)= followed by a newline and
+=;= as one policy, although neither document is valid alone. This is a source
+contract ambiguity, not evidence that a complete valid =forbid= can be erased.
+The pinned grammar supports line comments, not block comments. Regression
+properties retain a trailing line comment and both document orders to check
+that the newline separator preserves the complete next statement. Actual Rust
+authorization properties additionally require =forbid= to deny in both orders;
+successful parsing alone is insufficient evidence for this semantic obligation.
+
+An individual official materialized PolicySet JSON document remains supported.
+Textual concatenation does not merge multiple JSON objects; such an aggregate
+rejects. This patch introduces no JSON merge engine, syntax rewriting, or new
+policy language. Multiple text documents use ordinary Cedar policy-set semantics.
+Document identity, path and digest remain assessment evidence, not Cedar PolicyId
+or execution authority. These preparation checks do not run for every stream
+message. Current Rust Cedar authorization and the final-use CAS remain required.
+
+[[file:../../architecture/diagrams/00a-readme-overview.svg]]
 
 An operator may construct the prospective command from the same Policy object's
 source. The equality check binds those values without requiring duplicated text
@@ -70,23 +103,19 @@ durably binds Cedar/schema bytes, command identity, parent and fence, plus the
 separately immutable task/profile constraints. It does not attest that an asset
 path remained unchanged forever or that arbitrary operator Scheme was sandboxed.
 
-* Distinct verification responsibilities
+* Projection evidence
 
-| Owner | Responsibility | Reuse |
-|-------+----------------+-------|
-| Scheme suites | Concrete source types, deterministic projection, unsupported facets, duplicate identities and value/asset equality | Upstream POO Records, Cedar Policy values and standard gxtest |
-| Go/Rust integration | Actual source compilation, mTLS roles, persisted publication, lost reply, owner restart, partial stream and revoke | Existing relay, source owner and actual Rust broker |
-| AuthorityPublication.qnt | Compose Go activation with publication outcomes and execution schedules; find unsafe recovery and early activation traces | Imports PublicationRecovery and ProviderRpc; does not reimplement either ledger |
-| WeaverPolicyBridge.lean | Relate the authenticated actual effect/state and exact materialized Policy set to error-free Cedar allow | Imports cedar-poo-spec BoundOperation and compound authorization |
-| ProviderRpc.lean | Existing parameterized execution/profile/hold preservation results | Reused without another Go-control state machine |
-
-The duplicate ControlActivation Lean gate model and its standalone CI stage have
-been removed. Quint does not repeat the source decoder, and Lean does not repeat
-the Quint publication state machine. Imported model unit cases run in their owner
-stages; the composite's test selector runs its own integration cases. Bounded
-Quint exploration is not a proof over all schedules. The Lean bridge assumes
-faithful source-to-Policy materialization and authenticated host facts; it does
-not prove the parser, TLS, SQLite or Rust compiler.
+Verification responsibilities are declared once in
+=WeaverProject::AssuranceResponsibilities= in [[file:../../../Project.sysml][Project.sysml]].
+The [[file:59.27-policy-evidence-architecture.org][architecture reuse map]] identifies the existing semantic and schedule owners.
+Projection witnesses remain =t/policy-projection-test.ss=,
+=t/governance-test.ss=, =t/gateway-source-test.ss= and
+=t/integration/governed-control-test.ss= and
+=go/dev/provider_program_deployment_test.go=, with named links in the
+SysML trace. Imported model cases run at their owner stages; composition stages
+select their local cases. Semantic bridge premises include faithful
+materialization and authenticated host facts; neither source shape nor bounded
+exploration proves SQL, TLS, compiler or storage correctness.
 
 * Names and build ownership
 
@@ -101,8 +130,54 @@ Cargo and Go use their host-aware defaults; CI does not hardcode one or two buil
 workers. Fixed fuzz sampling and the fifteen-second source completion threshold
 are independent acceptance workloads. Scheme package dependencies are built
 through their own declared entries before the application. Ordinary dynamic gxi
-configuration still runs as ordinary source; dependency libraries are not a
-replacement AOT configuration executable.
+diagnostics are historical observations. The package entry is =gerbil build/test=
+and the runtime boundary is an FFI-loaded library, without a configuration
+executable.
+
+* Current validation scope
+
+The Rust preflight regression suite exercises the actual locked Cedar engine,
+including the aggregate-only counterexample, official JSON input, invalid source
+regions and 128-case composition properties. Scheme tests add actual-CFFI
+document rejection, copied callback inputs, exact validation order and 128-case
+refusal-position coverage. The initial standard package qualification was blocked
+by the upstream dependency closure documented in
+[[file:59.85-source-preparation-admission.org][source preparation admission]]. Current Release qualification is tracked in
+[[file:59.86-release-zero-trust-integration.org][Release integration]]; adding tests alone does not claim they ran.
+
+=BoundaryContext.policyDocuments= and the Quint boundary evidence retain the
+individual results separately from aggregate/schema status. Lean proves that a
+false document result blocks admission. Quint preserves the aggregate-only
+negative control and the invariant that valid preflight grants neither a send
+nor a refund. These models assume faithful native parsing of the exact frozen
+documents under the exact schema; they do not prove Cedar parser correctness.
+The document-preflight change originally retained the former SPEC pin. The
+subsequent [[file:59.86-release-zero-trust-integration.org][Release integration]] updates the maintained SPEC closure and directly
+imports =Gateway.ZeroTrust=, without copying its definitions.
+
+The Go =check-scheme= plan now includes =scheme-policy-preflight= for the Rust
+unit/property suite and Criterion smoke checks. The existing package build/test
+and prepared-source admission remain prerequisites; this stage does not replace
+them. The two benchmark smoke checks establish runnable workloads, not release
+performance measurements.
+
+| Current check | Result | Ignored local evidence |
+|---------------+--------+------------------------|
+| Actual Rust C ABI/preflight suite and benchmark smoke | 7 tests and 2 workloads pass, including ASP deny | .cache/policy-document-rust-benches.log |
+| Rust Policy unit suite, including forbid composition PBT | 10 pass | .cache/policy-document-unit.log |
+| Rust preflight Clippy, including tests/benches | Pass with -D warnings | .cache/policy-document-clippy.log |
+| Lean bridge against the locked dependency | 100 build jobs pass | .cache/policy-document-lean-final.log |
+| Quint composition scenarios | 221 pass | .cache/policy-document-quint-final.log |
+| Quint safety exploration | 1,000 samples, 60 steps; no violation | .cache/policy-document-safety.log |
+| Go development-runner race suite | Pass | .cache/policy-document-go-runner.log |
+| Go SysML/project/module checks | Pass | .cache/policy-document-architecture.log |
+| Scoped Library source-bound architecture render | Pass; 5 renderer checks | .cache/policy-document-diagram-final.log |
+
+The first Rust invocation lost build-output paths during compilation; its
+incomplete result remains in =.cache/policy-document-rust.log=. The accepted
+Rust checks use the independent =/private/tmp/weaver-policy-documents-target=
+directory. The sandbox-denied Chromium attempt is retained separately from the
+successful local render. Neither infrastructure failure is counted as a pass.
 
 * Linked-source qualification boundary
 

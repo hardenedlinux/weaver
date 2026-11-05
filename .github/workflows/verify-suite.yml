@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 name: Reusable verification suite
 
 on:
@@ -10,7 +14,7 @@ on:
         required: true
         type: string
       runner:
-        default: ubuntu-24.04
+        default: ubuntu-latest
         type: string
 
 permissions:
@@ -43,38 +47,23 @@ jobs:
         run: go -C go run ./cmd/weaver-dev -clean-source bootstrap-proofs
       - name: Prepare published Scheme SDK
         if: inputs.suite == 'check-scheme'
-        uses: tao3k/gerbil-scheme-rust/.github/actions/setup-gerbil@80e68254092589bbb778c9761a058da16fb6f72e
+        uses: tao3k/gerbil-scheme-rust/.github/actions/setup-gerbil@838af1ab4e6c0c8177fed176efba448c694012b5
         with:
           release-root: ${{ runner.temp }}/gerbil-sdk
-      - name: Check out Agentic AI Lab dependency closure
+      - name: Install declared Scheme dependencies
         if: inputs.suite == 'check-scheme'
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
-        with:
-          repository: tao3k/agentic-ai-lab
-          ref: 921e75f830a60c2ec42c384139846b05ba5d3317
-          submodules: recursive
-          persist-credentials: false
-          path: .data/agentic-ai-lab
-      - name: Read the inherited POO revision
-        id: poo-dependency
-        if: inputs.suite == 'check-scheme'
-        run: go -C go run ./cmd/weaver-dev -scheme-source .data/agentic-ai-lab scheme-poo-revision
-      - name: Check out the inherited POO dependency
-        if: inputs.suite == 'check-scheme'
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
-        with:
-          repository: tao3k/gerbil-poo
-          ref: ${{ steps.poo-dependency.outputs.revision }}
-          persist-credentials: false
-          path: .data/gerbil-poo
+        env:
+          GERBIL_PATH: ${{ runner.temp }}/weaver-gerbil
+        run: gerbil deps --install
       - name: Verify declared suite
         if: inputs.suite != 'check-scheme'
         run: go -C go run ./cmd/weaver-dev -clean-source "$WEAVER_VERIFY_SUITE"
       - name: Verify Scheme modules, Cedar FFI and streaming recovery
         if: inputs.suite == 'check-scheme'
         env:
-          WEAVER_CONTROL_SCHEME_COMPILER: ${{ env.GERBIL_PREFIX }}/bin/gxi
-        run: go -C go run ./cmd/weaver-dev -clean-source -scheme-source .data/agentic-ai-lab -scheme-poo .data/gerbil-poo check-scheme
+          GERBIL_GXI: ${{ env.GERBIL_PREFIX }}/bin/gxi
+          GERBIL_PATH: ${{ runner.temp }}/weaver-gerbil
+        run: go -C go run ./cmd/weaver-dev -clean-source check-scheme
       - name: Publish latest structured result
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4

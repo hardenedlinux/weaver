@@ -1,8 +1,18 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Safe Fenced Intent Continuation and Conditional Recovery Progress
 #+language: en
 #+date: 2026-10-19
 #+property: STATUS conditional-continuation-composition-native-qualification-pending
 #+options: toc:3
+
+* Reader view
+
+A new physical attempt preserves the original obligation and unknown exposure.
+
+[[file:35.02-intent-continuation.svg]]
 
 * Decision and explicit extension boundary
 
@@ -191,7 +201,7 @@ preserve safety while defeating unconditional recovery progress.
 |-------+----------------+----------|
 | Scheme semantics | Define original root, claim/history/shared budget, exact continuation equivalence and unknown-result meaning | No root renaming, budget refund or semantic effect widening during recovery |
 | Cedar Code as Policy | Authorize the actual bound effect/state and every required policy layer | Recovery readiness is not an allow for arbitrary final send |
-| Go cloud-native reconciliation | Reconcile Kubernetes/agent lifecycle and idempotent status under original root; retry authentic reads and detect stalled recovery | Pod replacement, SDK retry and controller leadership cannot create a root or attest a native barrier |
+| Go cloud-native reconciliation | Reconcile Kubernetes/agent lifecycle and idempotent status under original root; retry authentic reads and detect stalled recovery | Pod replacement, provider-client retry and controller leadership cannot create a root or attest a native barrier |
 | Rust protected owner | Persist and serialize accepted root, retired attempts, head and root CAS; authenticate full-prefix/session reads | No stale worker or storage write can bypass current fence |
 | Rust native driver and final broker | Qualify complete alias isolation and actual key/output state; recheck protected commit, original consumption and live Policy at release | Old FD/DMA/buffer/callback cannot emit through a new head |
 | Quint and Lean | Check fault interleavings, invariant preservation, source-step projection and conditional recovery rank | No implicit proof of HSM, quorum or storage implementation |
@@ -273,3 +283,9 @@ Measure real owner transactions and actual output/account application counts,
 not SDK successes. Native antirollback state, complete alias inventory, authentic
 observations, fair availability and fail-closed output interlocks remain explicit
 qualification requirements. No gateway or dependency implementation is delivered.
+
+* Embedded architecture views
+
+** 35.02-intent-continuation.svg
+
+[[file:35.02-intent-continuation.svg]]

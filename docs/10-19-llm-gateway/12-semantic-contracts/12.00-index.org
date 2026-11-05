@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Weaver LLM Semantic Contracts Index
 #+language: en
 #+options: toc:2
@@ -26,3 +30,9 @@ LLM behavior across providers or that a model obeys every instruction.
 Formal sources: [[file:../../../dev/proofs/lean/LlmSemanticContract.lean][Lean]] and [[file:../../../dev/proofs/quint/LlmSemanticContract.qnt][Quint]].
 Run the local check runner (retired Python driver). Earlier sealed artifacts remain unchanged.
 No Gateway runtime or dependency pin is changed.
+
+* Embedded architecture views
+
+** 12.02-semantic-contract.svg
+
+[[file:12.02-semantic-contract.svg]]

@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 //go:build integration && !windows
 
 package dev
@@ -30,6 +34,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 	"gopkg.in/yaml.v3"
 )
 
@@ -61,6 +66,7 @@ when { context.family == "control" && ["infer", "next"].contains(context.node) &
 
 type controlProcess struct {
 	fixture            *fixture
+	ingress            *testPKI
 	env                []string
 	address, directory string
 	child              *exec.Cmd
@@ -103,6 +109,11 @@ func (c *controlProcess) start(t testing.TB) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	previousLog, err := log.Stat()
+	if err != nil {
+		log.Close()
+		t.Fatal(err)
+	}
 	child := exec.Command(controlBinary)
 	child.Env = append(os.Environ(), c.env...)
 	child.Stdout, child.Stderr = log, log
@@ -116,12 +127,43 @@ func (c *controlProcess) start(t testing.TB) {
 	go func() { err := child.Wait(); log.Close(); exited <- err }()
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
-	c.client, err = gatewayclient.Dial(ctx, c.address, ownerToken, &tls.Config{RootCAs: c.fixture.pki.root, Certificates: []tls.Certificate{c.fixture.pki.client}, ServerName: "localhost", MinVersion: tls.VersionTLS13})
+	caller := c.fixture.pki.client
+	if c.ingress != nil {
+		caller = c.ingress.client
+	}
+	c.client, err = gatewayclient.Dial(ctx, c.address, ownerToken, &tls.Config{RootCAs: c.fixture.pki.root, Certificates: []tls.Certificate{caller}, ServerName: "localhost", MinVersion: tls.VersionTLS13})
 	if err != nil {
 		c.stop(t)
 		data, _ := os.ReadFile(filepath.Join(c.directory, "control.log"))
 		t.Fatalf("control readiness: %v: %s", err, data)
 	}
+	// Preserve phase observations in the native test report, not persistent logs.
+	// These unauthenticated diagnostics never replace readiness or exit checks.
+	data, err := os.ReadFile(filepath.Join(c.directory, "control.log"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if previousLog.Size() > int64(len(data)) {
+		t.Fatal("control phase log was truncated during startup")
+	}
+	for _, line := range strings.Split(string(data[previousLog.Size():]), "\n") {
+		if strings.HasPrefix(line, "weaver scheme phase=") || strings.Contains(line, "Control startup") {
+			t.Log(line)
+		}
+	}
+}
+
+func (c *controlProcess) useProducer(name string) {
+	if name == "" {
+		return
+	}
+	var environment []string
+	for _, value := range c.env {
+		if !strings.HasPrefix(value, "WEAVER_CONTROL_CONFIG=") {
+			environment = append(environment, value)
+		}
+	}
+	c.env = append(environment, "WEAVER_CONTROL_PRODUCER="+name)
 }
 func (c *controlProcess) stop(t testing.TB) {
 	t.Helper()
@@ -148,6 +190,19 @@ func (c *controlProcess) stop(t testing.TB) {
 
 func writeControlBundle(t testing.TB, f *fixture, b config.Bundle, format string) string {
 	t.Helper()
+	if b.Publication.Review == nil {
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		reviewer, ok := f.admin.RPC.(*fixtureReviewer)
+		if !ok {
+			t.Fatal("independent fixture reviewer missing")
+		}
+		reviewed, err := reviewer.review(f.admin.Context(ctx), b.Publication)
+		if err != nil {
+			t.Fatal(err)
+		}
+		b.Publication.Review = reviewed
+	}
 	data, err := json.Marshal(b)
 	if err != nil {
 		t.Fatal(err)
@@ -170,6 +225,15 @@ func writeControlBundle(t testing.TB, f *fixture, b config.Bundle, format string
 }
 
 func exerciseControl(t *testing.T, format string, source func(*testing.T, *fixture, config.Bundle) string) {
+	exerciseControlPolicies(t, format, source, controlPolicySources{})
+}
+
+type controlPolicySources struct {
+	initial, revoked, producer string
+	configure                  func(*testing.T, *fixture, config.Bundle)
+}
+
+func exerciseControlPolicies(t *testing.T, format string, source func(*testing.T, *fixture, config.Bundle) string, policies controlPolicySources) {
 	t.Helper()
 	allowTail := make(chan struct{})
 	var once sync.Once
@@ -187,20 +251,30 @@ func exerciseControl(t *testing.T, format string, source func(*testing.T, *fixtu
 		}
 	}, false)
 	bundle := controlBundle(t, f)
+	if policies.initial != "" {
+		bundle.Publication.Policy = policies.initial
+	}
 	path := writeControlBundle(t, f, bundle, format)
 	if source != nil {
 		path = source(t, f, bundle)
 	}
+	if policies.configure != nil {
+		policies.configure(t, f, bundle)
+	}
 	c := newControlProcess(t, f, path)
+	c.useProducer(policies.producer)
 	c.start(t)
 	parent := uint64(1)
 	revocation := v1.Publication{OperationID: "control-revoke", ExpectedRevision: &parent, Fence: 3, Policy: `forbid(principal,action,resource);`, Schema: f.schema}
+	if policies.revoked != "" {
+		revocation.Policy = policies.revoked
+	}
 	if source != nil {
 		revoked := bundle
 		revoked.Publication = revocation
 		// Compile prospective revocation before starting the bounded stream RPC.
 		// No source publication or provider send occurs during compilation.
-		revocation = compileControlSource(t, source(t, f, revoked)).Publication
+		revocation = preparedControlBundle(t, source(t, f, revoked)).Publication
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
 	defer cancel()
@@ -225,6 +299,9 @@ func exerciseControl(t *testing.T, format string, source func(*testing.T, *fixtu
 	}
 	if _, err = c.client.RPC.RegisterTask(c.client.Context(ctx), &pb.RegisterTaskRequest{Task: gatewayclient.Task(bundle.Tasks[0])}); status.Code(err) != codes.Unimplemented {
 		t.Fatalf("frontend exposes registration: %v", err)
+	}
+	if _, err = c.client.RPC.RegisterPublishedTask(c.client.Context(ctx), &pb.RegisterPublishedTaskRequest{Task: gatewayclient.Task(bundle.Tasks[0])}); status.Code(err) != codes.Unimplemented {
+		t.Fatalf("frontend exposes publication-bound registration: %v", err)
 	}
 	wrongPlan := bundle.Plans[0]
 	wrongPlan.Body = strings.Replace(wrongPlan.Body, "hello", "forged", 1)
@@ -292,10 +369,27 @@ func TestProviderControlJSONYAMLRevocationAndRestart(t *testing.T) {
 }
 
 func TestProviderControlCompleteStreamsShareBudgetAndRejectSDKRetry(t *testing.T) {
+	exerciseControlSharedBudget(t, nil)
+}
+
+func exerciseControlSharedBudget(t *testing.T, source func(*testing.T, *fixture, config.Bundle) string) {
+	exerciseControlSharedBudgetPolicies(t, source, controlPolicySources{})
+}
+
+func exerciseControlSharedBudgetPolicies(t *testing.T, source func(*testing.T, *fixture, config.Bundle) string, policies controlPolicySources) {
+	t.Helper()
 	f := newFixture(t, completeSSE, false)
 	bundle := controlBundle(t, f)
 	bundle.Tasks[0].Budget = 4
-	c := newControlProcess(t, f, writeControlBundle(t, f, bundle, "json"))
+	path := writeControlBundle(t, f, bundle, "json")
+	if source != nil {
+		path = source(t, f, bundle)
+	}
+	if policies.configure != nil {
+		policies.configure(t, f, bundle)
+	}
+	c := newControlProcess(t, f, path)
+	c.useProducer(policies.producer)
 	c.start(t)
 	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
 	defer cancel()
@@ -337,24 +431,35 @@ func TestProviderControlCompleteStreamsShareBudgetAndRejectSDKRetry(t *testing.T
 
 // Reuse the native publication reply-loss relay and its per-call counter.
 func (p *publicationReplyLoss) RegisterTask(ctx context.Context, in *pb.RegisterTaskRequest) (*pb.Empty, error) {
-	return p.source.RPC.RegisterTask(p.source.Context(ctx), in)
+	source := p.sourceClient()
+	return source.RPC.RegisterTask(source.Context(ctx), in)
+}
+func (p *publicationReplyLoss) CompileSource(ctx context.Context, in *pb.ProducerRequest) (*pb.CompiledSource, error) {
+	source := p.sourceClient()
+	return source.RPC.CompileSource(source.Context(ctx), in)
+}
+func (p *publicationReplyLoss) RegisterPublishedTask(ctx context.Context, in *pb.RegisterPublishedTaskRequest) (*pb.Empty, error) {
+	source := p.sourceClient()
+	return source.RPC.RegisterPublishedTask(source.Context(ctx), in)
+}
+func (p *publicationReplyLoss) StageAuthority(ctx context.Context, in *pb.PublishRequest) (*pb.PublicationKey, error) {
+	source := p.sourceClient()
+	key, err := source.RPC.StageAuthority(source.Context(ctx), in)
+	if err != nil {
+		return nil, err
+	}
+	if p.stages.Add(1) == 1 && p.loseStage {
+		return nil, status.Error(codes.Unavailable, "injected reply loss after durable staging")
+	}
+	return key, nil
 }
 func TestProviderControlPublicationReplyLossCannotActivateOrRebase(t *testing.T) {
 	exerciseControlPublicationReplyLoss(t, nil)
 }
 
-func compileControlSource(t testing.TB, path string) config.Bundle {
+func preparedControlBundle(t testing.TB, path string) config.Bundle {
 	t.Helper()
-	artifact := filepath.Join(t.TempDir(), "source.json")
-	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
-	defer cancel()
-	cmd := exec.CommandContext(ctx, os.Getenv("WEAVER_CONTROL_SCHEME_COMPILER"), "-e", "(dump-stack-trace? #f)", path)
-	cmd.Env = append(os.Environ(), "WEAVER_CONTROL_ARTIFACT="+artifact)
-	out, err := cmd.CombinedOutput()
-	if err != nil || ctx.Err() != nil {
-		t.Fatalf("source compilation: %v %v %s", err, ctx.Err(), out)
-	}
-	data, err := os.ReadFile(artifact)
+	data, err := os.ReadFile(path)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -366,6 +471,14 @@ func compileControlSource(t testing.TB, path string) config.Bundle {
 }
 
 func exerciseControlPublicationReplyLoss(t *testing.T, source func(*testing.T, *fixture, config.Bundle) string) {
+	exerciseControlSourceReplyLoss(t, source, false, controlPolicySources{})
+}
+
+func TestProviderControlStagingReplyLossCannotActivateOrLosePending(t *testing.T) {
+	exerciseControlSourceReplyLoss(t, nil, true, controlPolicySources{})
+}
+
+func exerciseControlSourceReplyLoss(t *testing.T, source func(*testing.T, *fixture, config.Bundle) string, loseStage bool, policies controlPolicySources) {
 	t.Helper()
 	f := newFixture(t, completeSSE, false)
 	bundle := controlBundle(t, f)
@@ -373,7 +486,11 @@ func exerciseControlPublicationReplyLoss(t *testing.T, source func(*testing.T, *
 	if source != nil {
 		path = source(t, f, bundle)
 	}
+	if policies.configure != nil {
+		policies.configure(t, f, bundle)
+	}
 	c := newControlProcess(t, f, path)
+	c.useProducer(policies.producer)
 	certificate, err := tls.X509KeyPair(f.pki.serverPEM, f.pki.serverKey)
 	if err != nil {
 		t.Fatal(err)
@@ -383,14 +500,14 @@ func exerciseControlPublicationReplyLoss(t *testing.T, source func(*testing.T, *
 		t.Fatal(err)
 	}
 	server := grpc.NewServer(grpc.Creds(credentials.NewTLS(&tls.Config{Certificates: []tls.Certificate{certificate}, ClientCAs: f.pki.root, ClientAuth: tls.RequireAndVerifyClientCert, MinVersion: tls.VersionTLS13})))
-	proxy := &publicationReplyLoss{source: f.admin}
+	proxy := &publicationReplyLoss{source: f.admin, loseStage: loseStage}
 	pb.RegisterGatewayServer(server, proxy)
 	exited := make(chan error, 1)
 	go func() { exited <- server.Serve(listener) }()
 	t.Cleanup(func() { server.Stop(); <-exited })
+	c.env = append(c.env, "WEAVER_CONTROL_AUTHORITY_SOURCE_ADDRESS="+listener.Addr().String())
 	child := exec.Command(controlBinary)
 	child.Env = append(os.Environ(), c.env...)
-	child.Env = append(child.Env, "WEAVER_CONTROL_AUTHORITY_SOURCE_ADDRESS="+listener.Addr().String())
 	log, err := os.Create(filepath.Join(c.directory, "lost-publication.log"))
 	if err != nil {
 		t.Fatal(err)
@@ -410,16 +527,30 @@ func exerciseControlPublicationReplyLoss(t *testing.T, source func(*testing.T, *
 	case <-time.After(15 * time.Second):
 		child.Process.Kill()
 		<-done
-		t.Error("failed bootstrap did not exit naturally")
+		data, readErr := os.ReadFile(filepath.Join(c.directory, "lost-publication.log"))
+		if len(data) > 8192 {
+			data = data[len(data)-8192:]
+		}
+		t.Errorf("failed bootstrap did not exit naturally: inspect=%d stage=%d final=%d log-error=%v log=%s", proxy.inspections.Load(), proxy.stages.Load(), proxy.calls.Load(), readErr, data)
 	}
 	log.Close()
-	if proxy.calls.Load() != 1 {
-		t.Fatal("bootstrap automatically retried publication")
+	writes := int64(1)
+	if loseStage {
+		writes = 0
+	}
+	views := int64(0)
+	if policies.producer != "" {
+		views = 1
+	}
+	if proxy.calls.Load() != writes || proxy.inspections.Load() != 1 || proxy.stages.Load() != 1 || proxy.sourceViews.Load() != views {
+		data, readErr := os.ReadFile(filepath.Join(c.directory, "lost-publication.log"))
+		t.Fatalf("source protocol count mismatch: authority=%d inspect=%d stage=%d final=%d; expected authority=%d inspect=1 stage=1 final=%d (missing calls do not establish retry); log-error=%v log=%s", proxy.sourceViews.Load(), proxy.inspections.Load(), proxy.stages.Load(), proxy.calls.Load(), views, writes, readErr, data)
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
 	defer cancel()
 	r, err := f.admin.InspectPublication(ctx, bundle.Publication)
-	if err != nil || r.GetOutcome() != pb.PublicationOutcome_COMMITTED || f.primary.Load() != 0 {
+	if (!loseStage && (err != nil || r.GetOutcome() != pb.PublicationOutcome_COMMITTED)) ||
+		(loseStage && status.Code(err) != codes.NotFound) || f.primary.Load() != 0 {
 		t.Fatal("lost reply changed committed outcome or sent", r, err)
 	}
 	connection, err := net.DialTimeout("tcp", c.address, 100*time.Millisecond)
@@ -432,6 +563,7 @@ func exerciseControlPublicationReplyLoss(t *testing.T, source func(*testing.T, *
 	cancel()
 	f.stop(t)
 	f.start(t)
+	proxy.replaceSource(f.admin)
 	c.start(t)
 	ctx, cancel = context.WithTimeout(context.Background(), 12*time.Second)
 	defer cancel()
@@ -441,4 +573,57 @@ func exerciseControlPublicationReplyLoss(t *testing.T, source func(*testing.T, *
 	if f.primary.Load() != 1 {
 		t.Fatal("recovery duplicated provider send")
 	}
+	if proxy.calls.Load() != 1 || proxy.inspections.Load() != 2 || proxy.sourceViews.Load() != 2*views {
+		t.Fatalf("recovery changed source protocol: authority=%d inspect=%d final=%d", proxy.sourceViews.Load(), proxy.inspections.Load(), proxy.calls.Load())
+	}
+	key := &pb.OperationKey{Family: bundle.Plans[0].Family, Node: bundle.Plans[0].Node}
+	before, err := c.client.RPC.Inspect(c.client.Context(ctx), key)
+	if err != nil {
+		t.Fatal(err)
+	}
+	c.stop(t)
+	f.stop(t)
+	f.start(t)
+	proxy.replaceSource(f.admin)
+	c.start(t)
+	cancel()
+	ctx, cancel = context.WithTimeout(context.Background(), 12*time.Second)
+	defer cancel()
+	if _, err := c.client.Execute(ctx, bundle.Plans[0], pb.Encoding_PROTOBUF, 1, func(*pb.Event) error { return nil }); err == nil {
+		t.Fatal("dual restart reopened the consumed claim")
+	}
+	after, err := c.client.RPC.Inspect(c.client.Context(ctx), key)
+	if err != nil || !proto.Equal(before, after) || f.primary.Load() != 1 || proxy.calls.Load() != 1 || proxy.inspections.Load() != 3 || proxy.sourceViews.Load() != 3*views {
+		t.Fatal("observed recovery changed original accounting or submitted publication", err)
+	}
+	c.stop(t)
+	parent := bundle.View().Revision
+	revocation := bundle.Publication
+	revocation.OperationID = "post-recovery-revocation"
+	revocation.ExpectedRevision = &parent
+	revocation.Fence++
+	revocation.Policy = "forbid(principal,action,resource);"
+	if _, err := f.admin.Publish(ctx, revocation); err != nil {
+		t.Fatal(err)
+	}
+	f.stop(t)
+	f.start(t)
+	proxy.replaceSource(f.admin)
+	c.start(t)
+	cancel()
+	ctx, cancel = context.WithTimeout(context.Background(), 12*time.Second)
+	defer cancel()
+	if _, err := c.client.Execute(ctx, bundle.Plans[1], pb.Encoding_PROTOBUF, 1, func(*pb.Event) error { return nil }); err == nil {
+		t.Fatal("historical receipt overrode later revocation")
+	}
+	if f.primary.Load() != 1 || f.backup.Load() != 0 || proxy.calls.Load() != 1 || proxy.inspections.Load() != 4 {
+		t.Fatal("historical recovery sent or republished")
+	}
+}
+
+// Forward independently produced evidence through the existing lost-reply relay.
+// This method neither issues a review nor changes publication reply-loss counts.
+func (p *publicationReplyLoss) RegisterPublicationReview(ctx context.Context, in *pb.DeltaReview) (*pb.ReviewRegistrationReceipt, error) {
+	source := p.sourceClient()
+	return source.RPC.RegisterPublicationReview(source.Context(ctx), in)
 }

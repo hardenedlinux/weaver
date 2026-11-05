@@ -1,0 +1,134 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+#+TITLE: 59.72 Native Read Stages and Independent-Domain Tail Regression
+#+LANGUAGE: en
+#+OPTIONS: toc:2
+
+* SysML review before measurement
+
+=ControlActivation.GovernancePolicyProjection= owns this attribution contract.
+Continue the existing MRR Data tests; do not create another package or change
+dependency pins. Direct shared-Host diagnostics proceed regardless of load.
+Preserve actual available CPUs with a four-worker minimum, FULL, zero retries,
+the 30-second case collection bound, original borrowed callback lifetime,
+accepted-work drain and exact recovery. Unknown exposure cannot become refundable
+because a worker returned or a performance measurement completed.
+
+* Predeclared contrasts and clocks
+
+Retain frozen uninstrumented A/AV/AV/A full-path measurements before drawing
+conclusions from intrusive clocks. A is ready admission; AV adds Condvar. Pair
+matching original mode/domain/round, retain every request, and do not infer an
+AV/O effect. No benchmark task overlaps compilation. Host conditions are
+descriptive and never block execution or justify dropping slow observations.
+
+Test-only read attribution then uses the same original provider transaction and
+the same full verified workload, not another backend. A bounded observer records
+each read only between case admission and completion; setup and recovery are
+excluded. Alternate original Connection.query and explicit prepare + Statement.query
+for three rotated WAL/fresh/reuse rounds in independent domains. Never cache
+statements, answers or authorization. The explicit path is diagnostic; it is not
+a production replacement for the driver's dangling-transaction handling.
+
+| Boundary | Measured meaning | Excluded claim |
+|----------+------------------+----------------|
+| prepare | Driver statement construction / SQL preparation wall and poll duration | Pure compiler CPU |
+| query | Guard/reset/binding/Rows construction; original form also includes prepare | VM execution of the SELECT |
+| next | VM stepping plus SDK row construction and driver I/O processing | Separately measured VM-only cost |
+| get_value | Subsequent owned Blob copy into provider result | All row materialization |
+| Pending-to-repoll | Driver completion plus executor scheduling interval | Device-only latency |
+| poll | Time inside Future.poll including locks, synchronous I/O and preemption | Thread CPU |
+| cleanup / outer residual | Row/Rows teardown, runtime entry and uninstrumented glue | A hidden additive driver-wait estimate |
+
+Stage wall clocks contain poll and Pending-gap clocks. Do not sum them twice.
+Rows.next internally constructs Row; public API clocks cannot separate that first
+materialization from execution. Per-read observer locking/allocation and clocks
+can change full-path contention; compare direct-query instrumentation against
+uninstrumented controls and disclose that limitation. No intrusive result alone
+admits either optimization into production. Reuse SPEC semantics and existing
+Lean/Quint responsibilities; this cost attribution adds no new authority model.
+
+* Core execution design
+
+[[file:59.69-hot-path-cost-boundaries.svg]]
+
+* Results and remaining obligations
+
+Measurement receipts distinguish historical regression, present reproducibility,
+public-driver stage evidence, and unmeasured CPU/device causes. Raw logs and all
+samples remain temporary evidence outside version control.
+
+* Measured outcome
+
+Frozen uninstrumented A/AV/AV/A completes 72 cases and 55296 commits/exact
+recoveries at 12 workers. The independent/reuse AV2/A1 round-1 regression is now
+0.200 TPS and 11.105 P95. Reverse-side matches favor AV by 1.046–2.686 TPS while
+the same A reference also degrades. This reproduces bad tails without proving a
+fixed dispatcher penalty. In the worst pair, mean get rises 42.49 to 113.18 us,
+bridge 183.05 to 1864.47 us/commit, and post-body 230.49 to 1267.14 us/commit.
+The multi-phase slowdown cannot be attributed to native gets alone. These are
+aggregate operation clocks, not a causal decomposition of one P95 request.
+
+The first serialized intrusive block records 495936 reads but exposes observer
+interference: a global sample-lock append reaches 17573.917 us. Its complete
+samples remain retained. The final observer preallocates worker-local slots,
+assigns per-case thread-local identities and atomic sequence numbers, appends
+without cross-worker locking, and merges only after accepted jobs drain. The
+new fixed serialized block completes another 72 cases, 55296 exact recoveries
+and 495936 reads. Every case/read-count join, sequence and clock invariant passes.
+
+The final case-mean append range is 0.042–0.288 us; maximum append is 812.750 us.
+Smaller costs are observed, but Host preemption remains and the two campaigns
+cannot prove a controlled 21.6x benefit. Three earlier pilot legs (54 cases,
+including two overlapping AV processes caused by an orchestration error) remain
+separately retained and excluded from paired attribution. No failed or slow
+sample is silently removed.
+
+| Final independent/reuse split stage | A us | AV us |
+|------------------------------------+------+-------|
+| Read total | 46.040 | 47.090 |
+| Prepare | 25.880 | 27.988 |
+| Bind/query setup | 1.187 | 1.268 |
+| Next: execution plus initial Row construction | 9.110 | 9.936 |
+| Subsequent owned Blob copy | 0.151 | 0.171 |
+| Row/Rows cleanup | 4.251 | 4.984 |
+| Observer append, outside read total | 0.192 | 0.213 |
+
+Values are medians of six case means; component medians need not sum to total.
+Preparation is approximately six tenths of the displayed read cost. All 495936
+final reads return without Pending and have zero measured Pending gap. This
+measured warm metadata workload has no observed asynchronous read-driver wait;
+it does not establish zero I/O or zero suspension for other workloads.
+These later intrusive clocks are not joint traces of the earlier uninstrumented
+bad-tail request; zero Pending here cannot retrospectively rule it out there.
+Result bytes are at most 525; the 65536-byte bound has separate correctness
+controls. WAL serialization and MVCC concurrency create different contention
+contexts, so these measurements are not pure MVCC CPU comparisons.
+
+* Evidence boundary and next decisions
+
+The remaining obligations are per-thread CPU/preemption and process-scoped I/O
+for the original uninstrumented bad tails, plus an SDK-level split of VM step
+from first Row construction if necessary. Public Rows.next cannot provide that
+second split. Evaluate the existing driver prepare_cached API only as a physical
+statement-lifecycle experiment: reset/rebind keys, read current values/schema,
+retain original transaction/guard lifetime and discard unusable sessions. No
+decision/value cache or production change is accepted by these measurements.
+
+The existing SPEC semantics and Lean/Quint obligations remain authoritative;
+no new authorization model is needed for cost clocks. Standard MRR tests own
+borrowed validation, cancellation, lost reply, retired owner, restart and unknown
+exposure. SysML owns responsibility; neither performance numbers nor metadata
+recovery supplies Rust transport release authority.
+
+The complete tables, all-case results, hashes and reproduction command are in
+the immutable [[https://github.com/tao3k/mrr-data/blob/ba292e3ed7f707cb170782b4071af1d737c2b438/docs/benchmarks/shared-backend-read-stages.org][MRR Data measurement record]]. Raw evidence remains under =/private/tmp/=;
+the manifest is
+=/private/tmp/mrr-read-attribution-manifest-20261101.json=. No raw logs are Git
+assets. No dependency pin or production runtime is changed by this review.
+
+Final MRR expanded standard tests pass O/A/AV = 85/85/86, with strict all-target
+Clippy passing for all three. Existing cancellation/restart/Unknown controls
+remain active. Remote CI is a separate receipt and does not block this review.

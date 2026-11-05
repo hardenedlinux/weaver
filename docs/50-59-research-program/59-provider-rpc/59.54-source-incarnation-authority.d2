@@ -1,0 +1,248 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+...@../../../dev/d2/themes/system
+vars: { d2-config: { layout-engine: tala;  pad: 70 } }
+title: SOURCE IDENTITY / CURRENT PUBLICATION AUTHORITY {
+  shape: text
+  near: top-center
+  style.font-size: 34
+  style.bold: true
+}
+source: Source workload and role\nCloud / Kubernetes authentication\nBootstrap and control admission {
+  class: card
+  icon: ../../architecture/diagrams/assets/kubernetes.svg
+  icon.near: top-left
+  left: 0
+  top: 0
+  width: 510
+  height: 220
+  style.fill: "#eef3ef"
+}
+binding: Registrar authority binding\nSubject / incarnation / key\nScope / audience / epoch / serial {
+  class: card
+  left: 750
+  top: 0
+  width: 510
+  height: 220
+  style.fill: "#eef3ef"
+}
+journal: Current authority journal\nAssignment / issuance / revocation\nDurable outcomes and epoch floor {
+  class: card
+  left: 1500
+  top: 0
+  width: 510
+  height: 220
+  style.fill: "#e7edf4"
+}
+evidence: Original publication contract\nRequired parent and Delta artifact\nCanonical claim / budget / history {
+  class: card
+  left: 0
+  top: 480
+  width: 510
+  height: 220
+  style.fill: "#eef3ef"
+}
+use: Bound operation at actual use\nKey possession / exact transcript\nCurrent binding and non-revocation {
+  class: card
+  left: 750
+  top: 480
+  width: 510
+  height: 220
+  style.fill: "#e7edf4"
+}
+cas: Rust authoritative publication CAS\nJoin identity / registry / source cut\nPreserve original consumption and holds {
+  class: card
+  icon: ../../architecture/diagrams/assets/rust.svg
+  icon.near: top-left
+  left: 1500
+  top: 480
+  width: 510
+  height: 220
+  style.fill: "#e7edf4"
+}
+pending: Pending original commands\nLost reply retains exact identity\nSibling intents resolve independently {
+  class: card
+  left: 0
+  top: 990
+  width: 510
+  height: 220
+  style.fill: "#f4f2ec"
+}
+recovery: Exact recovery and handoff\nRead historical outcomes\nFresh qualification before continuation {
+  class: card
+  left: 750
+  top: 990
+  width: 510
+  height: 220
+  style.fill: "#f4f2ec"
+}
+execution: Rust final execution owner\nFresh admission after every wait\nRetain unknown exposure and original scope {
+  class: card
+  icon: ../../architecture/diagrams/assets/rust.svg
+  icon.near: top-left
+  left: 1500
+  top: 990
+  width: 510
+  height: 220
+  style.fill: "#eef3ef"
+}
+source -> binding: Request enrollment { style.font-size: 18 }
+journal -> binding: Issued current binding { style.font-size: 18 }
+binding -> use: Exact identity contract { style.font-size: 18 }
+evidence -> use: Bound operation { style.font-size: 18 }
+use -> cas: Current qualified use { style.font-size: 18 }
+journal -> cas: Final authority join { style.font-size: 18 }
+pending -> recovery: Reconcile exact outcomes { style.font-size: 18 }
+recovery -> use: Recheck before continuation { style.font-size: 18 }
+cas -> execution: Current publication { style.font-size: 18 }
+footer: "One identity meaning · Qualified references cross the boundary\nRole authentication and historical replies never replace current execution authority" {
+  shape: text
+  left: 200
+  top: 1390
+  width: 1650
+  height: 100
+  style.font-size: 26
+  style.font-color: "#5c8b77"
+}
+
+# Project-owned presentation question; not an issued governance Question.
+vars: { d2-config: { data: { figure: |json
+{
+  "title": "54 source incarnation authority",
+  "purpose": "architecture",
+  "kind": "system",
+  "language": "en",
+  "width": 960,
+  "primary": "main",
+  "questions": [
+    {
+      "ref": "main",
+      "text": "Who may establish and rotate source authority?",
+      "focusRefs": [
+        "catalog",
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "catalog": "docs/architecture/08-diagram-catalog.org",
+    "model": "Project.sysml"
+  },
+  "copy": {
+    "takeaway": "Who may establish and rotate source authority?"
+  },
+  "basis": {
+    "captureRef": "docs/50-59-research-program/59-provider-rpc/59.54-source-incarnation-authority.d2#design-view",
+    "modelRefs": [
+      "Project.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "sketchbook",
+    "reading"
+  ],
+  "layout": "model-view",
+  "variants": [],
+  "presentation": {
+    "graph": {
+      "id": "weaver-source-view",
+      "children": [
+        {
+          "id": "title"
+        },
+        {
+          "id": "source"
+        },
+        {
+          "id": "binding"
+        },
+        {
+          "id": "journal"
+        },
+        {
+          "id": "evidence"
+        },
+        {
+          "id": "use"
+        },
+        {
+          "id": "cas"
+        },
+        {
+          "id": "pending"
+        },
+        {
+          "id": "recovery"
+        },
+        {
+          "id": "execution"
+        },
+        {
+          "id": "footer"
+        }
+      ],
+      "layoutOptions": {
+        "elk.direction": "DOWN",
+        "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+        "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+        "elk.layered.layering.coffmanGraham.layerBound": "1",
+        "elk.spacing.nodeNode": "24",
+        "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+        "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+        "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+        "elk.separateConnectedComponents": "false",
+        "elk.aspectRatio": "0.55",
+        "elk.spacing.componentComponent": "24"
+      }
+    },
+    "options": {
+      "elk.direction": "DOWN",
+      "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+      "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+      "elk.layered.layering.coffmanGraham.layerBound": "1",
+      "elk.spacing.nodeNode": "24",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+      "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+      "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+      "elk.separateConnectedComponents": "false",
+      "elk.aspectRatio": "0.55",
+      "elk.spacing.componentComponent": "24"
+    },
+    "icons": {
+      "title": "document",
+      "source": "document",
+      "binding": "capture",
+      "journal": "capture",
+      "evidence": "document",
+      "use": "capture",
+      "cas": "rust",
+      "pending": "document",
+      "recovery": "capture",
+      "execution": "rust",
+      "footer": "capture"
+    },
+    "roles": {
+      "cas": "execution",
+      "execution": "execution",
+      "title": "default",
+      "source": "default",
+      "binding": "default",
+      "journal": "default",
+      "evidence": "default",
+      "use": "default",
+      "pending": "default",
+      "recovery": "default",
+      "footer": "default"
+    }
+  },
+  "icons": [
+    "engineering",
+    "weaver"
+  ]
+}
+|
+} } }

@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Fenced Intent Continuation Validation Evidence
 #+language: en
 #+date: 2026-10-19
@@ -182,3 +186,9 @@ The antirollback storage/HSM and scheduler/availability premises remain unqualif
 Permanent partitions, unavailable evidence/keys, Policy denial and continual
 reset do not imply recovery progress. Unknown budgets stay held even after
 control recovery. No gateway implementation or performance claim is delivered.
+
+* Embedded architecture views
+
+** 35.02-intent-continuation.svg
+
+[[file:35.02-intent-continuation.svg]]

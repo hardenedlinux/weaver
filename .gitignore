@@ -1,12 +1,22 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 /.data/
 /.cache/
 /target/
+/manifest.ss
+/.gerbil/
 /.devenv/
 *.db
 *.db-shm
 *.db-wal
+*.db-log
+*.weaver-owner
 
 **/__pycache__/
 .DS_Store
 /.pre-commit-config.yaml
 /dev/proofs/cedar/.lake/
+# Architecture renderer development dependencies; exports and receipts live in .cache.
+/dev/d2/node_modules/

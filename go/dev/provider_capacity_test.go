@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 //go:build integration && !windows
 
 package dev
@@ -133,6 +137,7 @@ func TestProviderSaturatedExecutionPreservesRevocationAndObservation(t *testing.
 	if err != nil {
 		t.Fatalf("full operation ingress blocked new source session: %v", err)
 	}
+	f.admin.RPC = &fixtureReviewer{GatewayClient: f.admin.RPC, key: f.reviewKey}
 	revision = 1
 	if receipt, err := f.admin.RPC.PublishAuthority(f.admin.Context(ctx), &pb.PublishRequest{OperationId: "load-revoke", ExpectedRevision: &revision, Fence: 3, Policy: "forbid(principal,action,resource);", Schema: f.schema}); err != nil || receipt.GetOutcome() != pb.PublicationOutcome_COMMITTED {
 		t.Fatalf("saturated execution blocked revocation: %v", err)

@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Weaver Agent Protocol Admission, Canonical Identity and Routing
 #+language: en
 #+options: toc:3
@@ -74,7 +78,7 @@ Unknown/custom methods and extensions require an admitted profile or are rejecte
 | AG-UI replay, state patch or frontend tool request | Validate typed event/source and resolve the original root before proposing an effect | Reconnect/UI state cannot publish Policy or manufacture an approval/winner |
 | A2UI artifact/action | Validate the admitted output/content profile; a user action becomes a separately authenticated input | Rendering a component cannot grant execution, widen tool scope or silently downgrade response validation |
 | ASP query/read/expansion/patch proposal | Preserve parser/source fingerprint, exact locator and producer/schema identity | A new packet or provider does not grant write authority; actual mutation takes separate admission |
-| Provider fallback, redirect or SDK retry | Re-evaluate actual target/codec and preserve original intent and budget/history links | New target, connection or nonce cannot repeat an unknown operation or enlarge its original profile |
+| Provider fallback, redirect or provider-client retry | Re-evaluate actual target/codec and preserve original intent and budget/history links | New target, connection or nonce cannot repeat an unknown operation or enlarge its original profile |
 
 A2A's official specification warns that message history and reconnect delivery do
 not guarantee all messages are retained or received. Weaver therefore cannot use
@@ -94,11 +98,11 @@ existing currentness/Policy gates.
 
 Scheme defines operation semantics, same-intent/conflict rules and source/Policy
 projections. Go supplies cloud-native controllers, lifecycle reconciliation,
-service discovery and selected protocol SDK integration. Its adapter may terminate
+service discovery and selected protocol Gerbil toolchain integration. Its adapter may terminate
 wire framing and propose a source-bound operation, but cannot own an independent
 final-send or Policy-publication path. Rust owns durable canonical identity lookup,
 intent-family/winner CAS, consumption, current routing checks and final byte/range
-ownership. A Go SDK that insists on uncontrolled retries or direct egress cannot
+ownership. A Go Gerbil toolchain that insists on uncontrolled retries or direct egress cannot
 be admitted for a protected effect without an explicit mediated design.
 
 Go ingress framing termination is distinct from protected egress. Deployment

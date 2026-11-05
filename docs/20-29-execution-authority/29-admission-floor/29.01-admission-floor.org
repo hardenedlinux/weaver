@@ -1,6 +1,16 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Weaver Independent Admission Floor Publication and Recovery
 #+language: en
 #+options: toc:3
+
+* Reader view
+
+A local manifest cannot stand in for the original control log.
+
+[[file:29.02-admission-floor.svg]]
 
 * The admission minimum is an independently determined result
 
@@ -177,7 +187,7 @@ publication itself cannot cause it.
 |-----------+-----------------------------------------|
 | Scheme | Define canonical original intents, complete images, pending retention and source-bound CAS contracts; pure proposals are not published or durable authority |
 | Cedar | Require all original storage/tenant/recovery layers to allow the exact current operation without errors; authenticate actual Host facts and takeover role |
-| Go | Kubernetes lifecycle, adapter/backend discovery and reconciliation; resolve original outcomes separately from current-head readback; preserve keys across SDK retries |
+| Go | Kubernetes lifecycle, adapter/backend discovery and reconciliation; resolve original outcomes separately from current-head readback; preserve keys across provider-client retries |
 | Rust | Own body retention, protected publication adapter, parent/key/owner CAS, current read qualification, authenticated reconstruction and actual effect-time fencing |
 | Quint | Exercise lost commits, stale parents, mismatched snapshots, missing tail, old worker and historical-result misuse |
 | Lean | Compose actual handoff/WAL/account/source transitions and prove current-floor qualification, retained history, operation-result uniqueness and original budget consequences |

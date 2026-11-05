@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Floor Intent Decision and Context Fence Validation Evidence
 #+language: en
 #+date: 2026-10-19
@@ -159,7 +163,7 @@ retained-intent branch; no version or acceptance data appears in the diagram.
 source snapshots, checker and canonical formal chain. All ten preceding manifests
 remain byte-valid. No earlier receipt or historical source identity was rewritten.
 
-* Native acceptance remains pending
+* Implementation acceptance remains pending
 
 The conditional model assumes nonrollbackable protected owner state, serialized
 commit/fence decisions, current authenticated full-prefix reads and complete
@@ -169,3 +173,9 @@ owner must still be qualified against those contracts. Fenced accepted intents
 remain blocked indefinitely in this conservative profile; safe cancellation and
 unconditional recovery liveness are not proved. No native performance or gateway
 implementation claim follows from these results.
+
+* Embedded architecture views
+
+** 34.02-floor-decision.svg
+
+[[file:34.02-floor-decision.svg]]

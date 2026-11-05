@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+TITLE: Semantic Gateway Qualification and Advantage Evaluation
 #+LANGUAGE: en
 #+OPTIONS: toc:2 num:nil
@@ -31,7 +35,7 @@ conflicting profile; missing registry; changed source closure with equal semanti
 Provider vectors: exact role order; retrieval attribution; strict schema support;
 rejected lossy features; output/context/tokenizer limits; usage rounding; partial
 SSE frame/UTF-8/JSON; oversized fragments; malformed final document; foreign
-citation IDs; unrequested tool proposal; redirect and SDK retry attempts; endpoint
+citation IDs; unrequested tool proposal; redirect and provider-client retry attempts; endpoint
 replacement. Do not present a symbolic wire commitment as byte-codec validation.
 
 * Native fault schedule to qualify later

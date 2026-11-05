@@ -1,3 +1,7 @@
+-- SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+--
+-- SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 import LlmExecutionReconciliation
 namespace Weaver.LlmAccountCommit
 structure Balance where
@@ -257,6 +261,17 @@ theorem unknown_source_retains_original_hold (run : Run o (initial o genesis) s)
     unknown_reconciliation_has_no_account_authority source unknownUsage (binding tx state key ready))
   exact ⟨unapplied,unknown_reservation_hold_is_unchanged run unapplied⟩
 
+/-- Deployment identity and the pinned formula refine the source-ready
+premise. A mismatch leaves both original uniqueness and the hold intact. -/
+theorem incompatible_metering_retains_hold (run : Run o (initial o genesis) s)
+    (expected actual : Nat × Nat)
+    (mismatch : actual ≠ expected)
+    (binds : ∀ tx state, tx.reservation = k → o.sourceReady tx state → actual = expected) :
+    s.authority.reservations k = none ∧ s.authority.holds k = o.bound k := by
+  have unapplied := blocked_reservation_unapplied run (fun tx state key ready =>
+    mismatch (binds tx state key ready))
+  exact ⟨unapplied, unknown_reservation_hold_is_unchanged run unapplied⟩
+
 end Weaver.LlmAccountCommit
 #print axioms Weaver.LlmAccountCommit.initialized_safe
 #print axioms Weaver.LlmAccountCommit.balance_conserved
@@ -281,3 +296,4 @@ end Weaver.LlmAccountCommit
 #print axioms Weaver.LlmAccountCommit.changed_source_generation_blocks_commit
 #print axioms Weaver.LlmAccountCommit.blocked_reservation_unapplied
 #print axioms Weaver.LlmAccountCommit.unknown_source_retains_original_hold
+#print axioms Weaver.LlmAccountCommit.incompatible_metering_retains_hold

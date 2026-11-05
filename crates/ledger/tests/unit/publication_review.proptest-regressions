@@ -1,0 +1,11 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+# Seeds for failure cases proptest has generated in the past. It is
+# automatically read and these particular cases re-run before any
+# novel cases are generated.
+#
+# It is recommended to check this file in to source control so that
+# everyone who runs the test benefits from these saved cases.
+cc 96866c062daa6abdcf1ee2b6c67f827c5432313d6ace3e3b71a77e559dc51373 # shrinks to actions = [(1, 0), (2, 0)]

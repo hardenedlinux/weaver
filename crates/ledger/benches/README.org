@@ -1,15 +1,45 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+TITLE: Durable authorization and publication
 #+LANGUAGE: en
 
 * Workload
 
 Fresh admission; consumption and dispatch burn; idempotent admission; atomic publication commit; exact publication replay; historical outcome lookup.
-Atomic task/profile registration and exact task replay with one or 256 tasks
-sharing the same immutable profile. Nine measured cases belong to this package.
+Atomic task/profile registration and exact task replay use one or 256 tasks
+sharing the same immutable profile. Durable staging plus decision and trusted-host
+review registration plus final CAS are measured separately.
+The named-Policy case includes actual SPEC replay, local review registration and final
+CAS for the complete named-Policy fixture. Its store/stage fixture is outside timing.
+Persistent source-key handoff and source-authenticated publication are also measured.
+Initial empty-store enrollment is outside timing;
+retained key history, actual source checks, atomic receipt and final CAS are timed.
+The parent-bound revision case measures revision replay, registration
+and final CAS. Initial parent publication and staging are outside timing.
+The review case captures its actual parent and stages the requirement outside
+timing; registration persistence, exact artifact validation and final CAS are timed.
+No external producer authentication, solver or independent anchor is measured.
+Two additional cases measure first source enrollment against the actual
+application-table catalog, with zero or 32 empty extension tables. Database
+creation and extension DDL are outside timing; catalog discovery, row-existence
+checks and the atomic initial key/binding commit are inside. This scan is absent
+from already-enrolled source checks and from the provider message/send path.
+The cases do not measure recovery from an empty whole-store rollback image or
+provide evidence of an independent retained root.
 
 * Measurement boundary
 
-SQLite FULL/WAL operations and current authorization. Fresh database setup and object destruction are outside timing. Serial measurements do not establish concurrent throughput or crash recovery.
+=ledger/shared_exposure_dispatch/{1,8,64}= measures consumption, the durable
+dispatch burn and the current final guard with that many retained provider
+reservations in one family. Exact original tasks, plans and reservations are
+created outside timing. The shared projection scans request, message and
+provider reservations and verifies their execution-kind claims and original
+budget. These fixtures expose family-size cost; they do not measure mixed-kind
+throughput, external network IO or an independently anchored recovery protocol.
+
+MRR Data/Turso FULL/WAL operations and current authorization. Fresh database setup and object destruction are outside timing. Serial measurements do not establish concurrent throughput or crash recovery.
 Profile replay includes the retained original-task semantic floor and registry
 join. The one/256 fixtures are populated before timing; they expose history-size
 cost without including setup in the measurement. Index-plan tests verify bounded
@@ -18,7 +48,7 @@ range seeks separately; a query plan is not a latency benchmark.
 * Entrypoints
 
 Run this package with =cargo bench -p weaver-ledger --all-features --bench gateway --locked --offline -- --noplot=.
-Run the complete measured matrix with =go run ./go/cmd/weaver-dev bench=.
+Run the complete measured matrix with =go -C go run ./cmd/weaver-dev bench=.
 Criterion is inherited from the workspace as a development dependency.
 Each case uses thirty samples, one second of warm-up and two seconds of requested measurement.
 Compilation or a smoke invocation alone is not a measured baseline.
@@ -29,3 +59,70 @@ Regression warnings remain evidence even when the benchmark process succeeds;
 these measurements do not establish a production latency or throughput target.
 
 See [[file:../../../docs/50-59-research-program/59-provider-rpc/59.05-benchmarks.org][the workspace benchmark contract]] for the complete matrix and interpretation rules.
+
+* Original reservation bytes
+
+=ledger/original_reservation_bytes/<count>/<bytes>= crosses one, eight and 64
+retained provider plans with 128-byte and 16-KiB prompt content. A single-plan
+512-KiB case covers a larger original record without conflating record count and
+body size. The complete JSON body also contains the fixed provider envelope.
+The guard reads original ceilings from retained JSON; family-size-only fixtures
+cannot characterize that cost.
+
+All original task registration and reservation inserts occur before timing.
+Consumption, durable burn, current final-use authorization and hold observation
+are timed. The callback performs no network IO. These are local durable-path
+measurements, not pure SQL microbenchmarks, provider throughput or evidence of
+snapshot-rollback protection. Report exact build mode and host conditions;
+compare revisions only with a matched source and measurement protocol.
+
+* Multi-message retained manifests
+
+=ledger/stream_manifest_guard/{1,8,64}= retains that many message commitments in
+one stream claim. Source task, manifest, all message rows and custody are created
+outside timing. The timed path consumes one range, evaluates the current exact
+member/digest/ceiling join and calls a local complete-range writer. The entire
+original shared hold remains retained. This measures the deciding path with a
+multi-member root; it does not measure socket throughput, fixture admission,
+refunds or independent rollback recovery. Use the unchanged thirty-sample,
+one-second warm-up and two-second requested measurement configuration.
+
+* Durable range tail
+
+=ledger/range_tail_guard/{0,8,64}= retains that many completed ranges before
+timing. Consumption and final guarded use validate the indexed latest tail
+against the original message cursor. Setup is outside timing; the callback is
+local, with no network IO. All cases use the same MRR Data / Turso driver and
+unchanged thirty-sample protocol. These results do not establish a speedup
+over the retired engine or concurrent throughput.
+
+* Transaction-local provider batches
+
+=ledger/provider_release/{1,8,32}= times actual MRR Data/Turso preparation
+and final release, including a separate fresh deciding scope and per-row Cedar
+evaluation at both boundaries. Each scope reads one common authority/profile/
+domain image. The consumed request and original reservation are prepared outside
+timing; the timed callback is local and does not measure network IO or Arrow
+encoding. These are native stage costs, not a whole-Gateway latency claim.
+Every case retains thirty samples and the original held budget.
+
+=go -C go run ./cmd/weaver-dev bench-execution= also checks the actual provider
+fault suite, three complete published-source samples and six ordered ABBA
+streaming blocks. The latter use one captured optimized server image and the same
+five events, comparing Arrow rows=1 with rows=32. Store/PKI setup is outside timing.
+The batching comparison is not a before/after implementation speedup. Historical
+debug-image observations must not be mixed with release-image measurements.
+
+* Lock-contention observations
+
+The existing =gateway= target also supports a finite =--weaver-contention=
+experiment through the Go-owned =TestContentionPairs= qualification. Five real
+WAL/MVCC profiles each retain six complete ABBA blocks. Go resolves the optimized
+Cargo artifact, captures one read-only image and admits all 120 typed records.
+Per-session observations separate owner-gate acquisition, domain lookup and
+stripe acquisition, native begin, holding, commit/rollback and actual effect
+callbacks. Intervals overlap; begin includes setup as well as writer contention.
+The bounded ten-millisecond callback is a test control, not a production network
+latency. Holds and current guards remain real. No observation is a no-execution,
+settlement or recovery certificate. Normal thirty-sample Criterion cases retain
+their standard entrypoint and unchanged semantics.

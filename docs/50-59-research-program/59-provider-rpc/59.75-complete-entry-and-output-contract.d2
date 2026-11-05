@@ -1,0 +1,146 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+...@../../../dev/d2/themes/flow
+vars: {d2-config: {layout-engine: elk; pad: 50}}
+direction: down
+classes: {card: {style.font-size: 20; style.border-radius: 12; width: 420; height: 100}}
+title: DEVELOPMENT COMPILER OWNER / TERMINAL DRAIN {shape: text; style.font-size: 28}
+input: Declared source capture\nOriginal model / source identity {class: card}
+owner: Owned compiler queue\nAccepted work / bounded lifetime {class: card}
+artifact: Bound SVG and topology\nComplete node and edge coverage {class: card}
+closing: Closing fence\nReject new work / drain accepted work {class: card}
+exit: Natural child exit\nOne shared terminal result {class: card}
+failed: Observed child failure\nPreserve failure / closed IPC {class: card; style.fill: "#f8e9e7"}
+input -> owner: Capture original inputs
+owner -> artifact: Complete compilation
+artifact -> closing: Close
+closing -> exit: Observe actual exit
+owner -> failed: Early exit or error
+failed -> closing: Keep failure
+footer: Compilation observations confer no publication or send authority {shape: text; style.font-size: 20}
+
+vars: {d2-config: {data: {figure: |json
+{
+  "title": "Development compiler ownership and drain",
+  "purpose": "workflow",
+  "kind": "flow",
+  "language": "en",
+  "width": 960,
+  "primary": "main",
+  "questions": [
+    {
+      "ref": "main",
+      "text": "How does an owned compiler drain without reopening failed work?",
+      "focusRefs": [
+        "catalog",
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "catalog": "docs/architecture/08-diagram-catalog.org",
+    "model": "Project.sysml"
+  },
+  "copy": {
+    "takeaway": "Capture exact inputs, preserve original work and observe actual terminal state."
+  },
+  "basis": {
+    "captureRef": "docs/50-59-research-program/59-provider-rpc/59.75-complete-entry-and-output-contract.d2#design-view",
+    "modelRefs": [
+      "Project.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "sketchbook",
+    "reading"
+  ],
+  "layout": "model-view",
+  "variants": [],
+  "presentation": {
+    "graph": {
+      "id": "weaver-source-view",
+      "children": [
+        {
+          "id": "title"
+        },
+        {
+          "id": "input"
+        },
+        {
+          "id": "owner"
+        },
+        {
+          "id": "artifact"
+        },
+        {
+          "id": "closing"
+        },
+        {
+          "id": "exit"
+        },
+        {
+          "id": "failed"
+        },
+        {
+          "id": "footer"
+        }
+      ],
+      "layoutOptions": {
+        "elk.direction": "DOWN",
+        "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+        "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+        "elk.layered.layering.coffmanGraham.layerBound": "1",
+        "elk.spacing.nodeNode": "24",
+        "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+        "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+        "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+        "elk.separateConnectedComponents": "false",
+        "elk.aspectRatio": "0.55",
+        "elk.spacing.componentComponent": "24"
+      }
+    },
+    "options": {
+      "elk.direction": "DOWN",
+      "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+      "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+      "elk.layered.layering.coffmanGraham.layerBound": "1",
+      "elk.spacing.nodeNode": "24",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+      "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+      "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+      "elk.separateConnectedComponents": "false",
+      "elk.aspectRatio": "0.55",
+      "elk.spacing.componentComponent": "24"
+    },
+    "icons": {
+      "title": "capture",
+      "input": "capture",
+      "owner": "capture",
+      "artifact": "capture",
+      "closing": "capture",
+      "exit": "capture",
+      "failed": "capture",
+      "footer": "capture"
+    },
+    "roles": {
+      "title": "default",
+      "input": "default",
+      "owner": "default",
+      "artifact": "default",
+      "closing": "default",
+      "exit": "default",
+      "failed": "default",
+      "footer": "default"
+    }
+  },
+  "icons": [
+    "engineering",
+    "weaver"
+  ]
+}
+|
+}}}

@@ -1,4 +1,8 @@
-...@lib/theme
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+...@../../../dev/d2/themes/state
 # W07: facts about one spent claim, not a replayable send pipeline.
 direction: down
 claimed: DispatchClaimed\nOne possible invocation
@@ -110,3 +114,166 @@ settle.width: 290
 settle.height: 90
 settle.label.near: center-center
 rule.near: bottom-center
+
+# Project-owned presentation question; not an issued governance Question.
+vars: { d2-config: { data: { figure: |json
+{
+  "title": "post claim outcomes",
+  "purpose": "workflow",
+  "kind": "state",
+  "language": "en",
+  "width": 960,
+  "primary": "main",
+  "questions": [
+    {
+      "ref": "main",
+      "text": "Which outcomes retain claims after consumption?",
+      "focusRefs": [
+        "catalog",
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "catalog": "docs/architecture/08-diagram-catalog.org",
+    "model": "Project.sysml"
+  },
+  "copy": {
+    "takeaway": "Which outcomes retain claims after consumption?"
+  },
+  "basis": {
+    "captureRef": "docs/architecture/diagrams/07-post-claim-outcomes.d2#design-view",
+    "modelRefs": [
+      "Project.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "sketchbook",
+    "graphite",
+    "reading"
+  ],
+  "layout": "model-view",
+  "variants": [],
+  "presentation": {
+    "graph": {
+      "id": "weaver-source-view",
+      "children": [
+        {
+          "id": "claimed"
+        },
+        {
+          "id": "final_gate"
+        },
+        {
+          "id": "retire"
+        },
+        {
+          "id": "invoke"
+        },
+        {
+          "id": "emitter"
+        },
+        {
+          "id": "closed"
+        },
+        {
+          "id": "no_submit"
+        },
+        {
+          "id": "unknown"
+        },
+        {
+          "id": "result"
+        },
+        {
+          "id": "exposure"
+        },
+        {
+          "id": "settle"
+        },
+        {
+          "id": "conflict"
+        },
+        {
+          "id": "rule"
+        }
+      ],
+      "layoutOptions": {
+        "elk.direction": "DOWN",
+        "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+        "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+        "elk.layered.layering.coffmanGraham.layerBound": "1",
+        "elk.spacing.nodeNode": "24",
+        "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+        "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+        "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+        "elk.separateConnectedComponents": "false",
+        "elk.aspectRatio": "0.55",
+        "elk.spacing.componentComponent": "24",
+        "elk.partitioning.activate": "true",
+        "elk.layered.nodePlacement.strategy": "SIMPLE",
+        "elk.spacing.edgeEdge": "6",
+        "elk.spacing.edgeNode": "12",
+        "elk.layered.spacing.edgeEdgeBetweenLayers": "6",
+        "elk.layered.spacing.edgeNodeBetweenLayers": "12"
+      }
+    },
+    "options": {
+      "elk.direction": "DOWN",
+      "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+      "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+      "elk.layered.layering.coffmanGraham.layerBound": "1",
+      "elk.spacing.nodeNode": "24",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+      "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+      "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+      "elk.separateConnectedComponents": "false",
+      "elk.aspectRatio": "0.55",
+      "elk.spacing.componentComponent": "24",
+      "elk.partitioning.activate": "true",
+      "elk.layered.nodePlacement.strategy": "SIMPLE",
+      "elk.spacing.edgeEdge": "6",
+      "elk.spacing.edgeNode": "12",
+      "elk.layered.spacing.edgeEdgeBetweenLayers": "6",
+      "elk.layered.spacing.edgeNodeBetweenLayers": "12"
+    },
+    "icons": {
+      "claimed": "capture",
+      "final_gate": "capture",
+      "retire": "capture",
+      "invoke": "capture",
+      "emitter": "capture",
+      "closed": "capture",
+      "no_submit": "capture",
+      "unknown": "pending",
+      "result": "capture",
+      "exposure": "pending",
+      "settle": "capture",
+      "conflict": "capture",
+      "rule": "capture"
+    },
+    "roles": {
+      "invoke": "default",
+      "unknown": "pending",
+      "exposure": "pending",
+      "settle": "default",
+      "claimed": "default",
+      "final_gate": "default",
+      "retire": "default",
+      "emitter": "default",
+      "closed": "default",
+      "no_submit": "default",
+      "result": "default",
+      "conflict": "default",
+      "rule": "default"
+    }
+  },
+  "icons": [
+    "engineering",
+    "weaver"
+  ]
+}
+|
+} } }

@@ -1,0 +1,204 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+...@../../../dev/d2/themes/assurance
+vars: { d2-config: { layout-engine: tala;  pad: 80 } }
+title: RETAINED ROOT / COMPLETE RECOVERY {
+  shape: text
+  near: top-center
+  style.font-size: 36
+  style.bold: true
+}
+root: Independent trust anchor\nExpected authority identity\nRetained generation and continuity {
+  class: card
+  left: 0
+  top: 0
+  width: 550
+  height: 240
+  style.fill: "#e7edf4"
+}
+coverage: Complete retained security image\nRegistry / claims / exposure / history\nOne-use burns and exact outcomes {
+  class: card
+  left: 810
+  top: 0
+  width: 550
+  height: 240
+  style.fill: "#e7edf4"
+}
+publication: Rust registration and publication\nRoot / prefix / observer join\nOriginal artifact and pending intent {
+  class: card
+  icon: ../../architecture/diagrams/assets/rust.svg
+  icon.near: top-left
+  left: 1620
+  top: 0
+  width: 550
+  height: 240
+  style.fill: "#eef3ef"
+}
+restore: Restored worker or database image\nCached receipts and old handles\nLocal absence is not authority {
+  class: card
+  left: 0
+  top: 620
+  width: 550
+  height: 240
+  style.fill: "#f4f2ec"
+}
+reconcile: Uncertain or incomplete recovery\nRetain original intent and exposure\nRecover exact bodies and outcomes {
+  class: card
+  left: 810
+  top: 620
+  width: 550
+  height: 240
+  style.fill: "#f4f2ec"
+}
+execution: Rust final transport owner\nCurrent admission and retained burn\nNo replay or unknown-budget refund {
+  class: card
+  icon: ../../architecture/diagrams/assets/rust.svg
+  icon.near: top-left
+  left: 1620
+  top: 620
+  width: 550
+  height: 240
+  style.fill: "#eef3ef"
+}
+root -> coverage: Authenticate retained cut { style.font-size: 20 }
+coverage -> publication: Current recovery witness { style.font-size: 20 }
+restore -> reconcile: Reconcile before activation { style.font-size: 20 }
+reconcile -> coverage: Verify complete recovery { style.font-size: 20 }
+publication -> execution: Recheck at actual use { style.font-size: 20 }
+footer: "Equal prefix bytes do not prove retained one-use burns or a correct budget projection\nHistorical receipts and restored configuration cannot mint current execution rights" {
+  shape: text
+  left: 140
+  top: 1080
+  width: 1890
+  height: 120
+  style.font-size: 28
+  style.font-color: "#5c8b77"
+}
+
+# Project-owned presentation question; not an issued governance Question.
+vars: { d2-config: { data: { figure: |json
+{
+  "title": "59 retained root and recovery coverage",
+  "purpose": "architecture",
+  "kind": "assurance",
+  "language": "en",
+  "width": 960,
+  "primary": "main",
+  "questions": [
+    {
+      "ref": "main",
+      "text": "Which retained roots cover original unknown exposure?",
+      "focusRefs": [
+        "catalog",
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "catalog": "docs/architecture/08-diagram-catalog.org",
+    "model": "Project.sysml"
+  },
+  "copy": {
+    "takeaway": "Which retained roots cover original unknown exposure?"
+  },
+  "basis": {
+    "captureRef": "docs/50-59-research-program/59-provider-rpc/59.59-retained-root-and-recovery-coverage.d2#design-view",
+    "modelRefs": [
+      "Project.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "sketchbook",
+    "field-notes",
+    "reading"
+  ],
+  "layout": "model-view",
+  "variants": [],
+  "presentation": {
+    "graph": {
+      "id": "weaver-source-view",
+      "children": [
+        {
+          "id": "title"
+        },
+        {
+          "id": "root"
+        },
+        {
+          "id": "coverage"
+        },
+        {
+          "id": "publication"
+        },
+        {
+          "id": "restore"
+        },
+        {
+          "id": "reconcile"
+        },
+        {
+          "id": "execution"
+        },
+        {
+          "id": "footer"
+        }
+      ],
+      "layoutOptions": {
+        "elk.direction": "DOWN",
+        "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+        "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+        "elk.layered.layering.coffmanGraham.layerBound": "1",
+        "elk.spacing.nodeNode": "24",
+        "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+        "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+        "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+        "elk.separateConnectedComponents": "false",
+        "elk.aspectRatio": "0.55",
+        "elk.spacing.componentComponent": "24"
+      }
+    },
+    "options": {
+      "elk.direction": "DOWN",
+      "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+      "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+      "elk.layered.layering.coffmanGraham.layerBound": "1",
+      "elk.spacing.nodeNode": "24",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+      "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+      "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+      "elk.separateConnectedComponents": "false",
+      "elk.aspectRatio": "0.55",
+      "elk.spacing.componentComponent": "24"
+    },
+    "icons": {
+      "title": "capture",
+      "root": "capture",
+      "coverage": "capture",
+      "publication": "rust",
+      "restore": "capture",
+      "reconcile": "pending",
+      "execution": "rust",
+      "footer": "selection"
+    },
+    "roles": {
+      "publication": "execution",
+      "reconcile": "pending",
+      "execution": "execution",
+      "title": "default",
+      "root": "default",
+      "coverage": "default",
+      "restore": "default",
+      "footer": "default"
+    }
+  },
+  "icons": [
+    "engineering",
+    "weaver"
+  ]
+}
+|
+} } }

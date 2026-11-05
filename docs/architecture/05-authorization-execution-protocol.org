@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Weaver Authorization-to-Execution Coordination Protocol
 #+language: en
 #+date: 2026-10-18
@@ -121,7 +125,7 @@ state and authority ownership contract.
 
 No Go controller, Kubernetes leader lease, or status condition grants runtime
 commit authority. The detailed Go rationale is in
-[[file:06-go-cloud-native-role.org][Go's cloud-native and Agent Gateway role]].
+[[file:06-go-control-plane-role.org][Go's cloud-native and Agent Gateway role]].
 
 * Streaming specialization and typed claims
 
@@ -168,11 +172,14 @@ Assign or validate client idempotency keys under authenticated tenant scope.
 
 * State machine
 
-#+caption: W03. Proposed attempt states and conservative recovery.
+#+caption: W03. Durable admission and the claim or abort race.
 [[file:diagrams/03-attempt-state.svg]]
 
-[[file:diagrams/03-attempt-state.d2][D2 source]]. Recovery has no transition
-from an unknown external outcome back to dispatch for the same attempt.
+#+caption: W03a. Observation and recovery after the original claim is spent.
+[[file:diagrams/03a-attempt-observation.svg]]
+
+The claim is the handoff between the views. Recovery has no transition from
+an unknown external outcome back to dispatch for the same attempt.
 
 #+begin_example
 Proposed -> Prepared -> ConsumePending -> SendCommitted -> DispatchClaimed
@@ -401,7 +408,7 @@ resulting dispatch claim or obtain the corresponding credential operation.
 Only the owner that won receives the local unforgeable emission handle. Through
 the constrained transport it validates the frozen bytes/reference and actual
 destination, attaches the bound credential, and invokes one upstream attempt.
-The enforcement boundary is the actual application request start, not one SDK
+The enforcement boundary is the actual application request start, not one Gerbil toolchain
 or HTTP-client method call. Headers/stream-open metadata already count as
 application submission; lower transport retries, redirects, mirrors and mesh
 fanout cannot hide within that call. Multiple socket writes/TCP retransmissions
@@ -632,3 +639,9 @@ range records before external calls. A lost reply or owner restart cannot mint
 a new claim, free an unknown hold, erase restrictive history or replay a possibly
 exposed range. Abort remains sealed in the checked conservative profile; no
 implicit timeout-based reopen or liveness guarantee is introduced.
+
+* Embedded architecture views
+
+** 15-stream-message-authorization.svg
+
+[[file:diagrams/15-stream-message-authorization.svg]]

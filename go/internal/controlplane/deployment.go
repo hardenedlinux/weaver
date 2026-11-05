@@ -1,7 +1,12 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 package controlplane
 
 import (
 	"context"
+	"crypto/sha256"
 	"crypto/tls"
 	"crypto/x509"
 	"encoding/hex"
@@ -11,9 +16,11 @@ import (
 	"github.com/HardenedLinux/weaver/go/internal/gatewayclient"
 	"google.golang.org/grpc"
 	"io"
+	"log/slog"
 	"net"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -29,6 +36,9 @@ func fileSetting(name string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	return readBoundFile(path)
+}
+func readBoundFile(path string) ([]byte, error) {
 	file, err := os.Open(path)
 	if err != nil {
 		return nil, err
@@ -77,6 +87,11 @@ func digest(name string) ([32]byte, error) {
 }
 
 func RunFromEnv(ctx context.Context) error {
+	started := time.Now()
+	trace := func(phase string) {
+		slog.InfoContext(ctx, "Control startup", "phase", phase, "elapsed", time.Since(started))
+	}
+	trace("begin")
 	startup, cancel := context.WithTimeout(ctx, 15*time.Second)
 	defer cancel()
 	serverKey, err := pair("WEAVER_CONTROL_SERVER")
@@ -105,24 +120,25 @@ func RunFromEnv(ctx context.Context) error {
 	}
 	bounded := BoundListener(listener)
 	defer bounded.Close()
-	data, err := fileSetting("WEAVER_CONTROL_CONFIG")
+	input, err := selectDeploymentSource(os.LookupEnv)
 	if err != nil {
 		return err
 	}
-	path, _ := required("WEAVER_CONTROL_CONFIG")
-	format := config.ProfileJSON
-	if ext := filepath.Ext(path); ext == ".yaml" || ext == ".yml" {
-		format = config.ProfileYAML
+	if input.producer == "" {
+		data, err := readBoundFile(input.path)
+		if err != nil {
+			return err
+		}
+		format := config.ProfileJSON
+		if ext := strings.ToLower(filepath.Ext(input.path)); ext == ".yaml" || ext == ".yml" {
+			format = config.ProfileYAML
+		}
+		input.bundle, err = config.DecodeBundle(data, format)
+		if err != nil {
+			return err
+		}
 	}
-	var bundle config.Bundle
-	if ext := filepath.Ext(path); ext == ".ss" || ext == ".scm" {
-		bundle, err = compileScheme(startup, path)
-	} else {
-		bundle, err = config.DecodeBundle(data, format)
-	}
-	if err != nil {
-		return err
-	}
+	trace("configuration-ready")
 	authorityRoots, err := roots("WEAVER_CONTROL_AUTHORITY_CA")
 	if err != nil {
 		return err
@@ -130,6 +146,14 @@ func RunFromEnv(ctx context.Context) error {
 	opKey, err := pair("WEAVER_CONTROL_AUTHORITY_OPERATION")
 	if err != nil {
 		return err
+	}
+	relayMode := os.Getenv("WEAVER_CONTROL_PROVIDER_OAUTH_RELAY")
+	if relayMode != "" && relayMode != "1" {
+		return errors.New("invalid provider OAuth relay mode")
+	}
+	oauthRelay := relayMode == "1"
+	if oauthRelay && sha256.Sum256(opKey.Certificate[0]) == leaf {
+		return errors.New("OAuth relay requires distinct ingress and authority certificates")
 	}
 	sourceKey, err := pair("WEAVER_CONTROL_AUTHORITY_SOURCE")
 	if err != nil {
@@ -160,20 +184,25 @@ func RunFromEnv(ctx context.Context) error {
 		return err
 	}
 	defer operation.Connection.Close()
+	trace("operation-channel-connected")
 	source, err := gatewayclient.Dial(startup, sourceAddress, sourceToken, &tls.Config{RootCAs: authorityRoots, Certificates: []tls.Certificate{sourceKey}, ServerName: name})
 	if err != nil {
 		return err
 	}
 	defer source.Connection.Close()
-	gateway, err := Bootstrap(startup, source, operation, bundle)
+	trace("source-channel-connected")
+	gateway, err := input.bootstrap(startup, source, operation)
 	if err != nil {
 		return err
 	}
+	gateway.oauthRelay = oauthRelay
+	trace("authority-reconciled")
 	server, err := NewServer(gateway, &tls.Config{Certificates: []tls.Certificate{serverKey}, ClientCAs: clientRoots, ClientAuth: tls.RequireAndVerifyClientCert}, leaf, token)
 	if err != nil {
 		return err
 	}
 	serving := make(chan error, 1)
+	trace("serve-starting")
 	go func() { serving <- server.Serve(bounded) }()
 	select {
 	case err := <-serving:

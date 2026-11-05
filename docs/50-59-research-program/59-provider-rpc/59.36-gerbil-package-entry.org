@@ -1,0 +1,77 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+#+title: 59.36 Gerbil Package Build and Test Ownership
+#+language: en
+
+* One project entry
+The public Scheme project commands are =gerbil build= and =gerbil test=.
+The Gerbil toolchain owns command dispatch, test discovery, test assertions and lifecycle.
+Root =build.ss= declares production libraries through Yuanxu's existing
+=defbuild-script=. Governance modules and the Cedar adapter are FFI-loaded
+libraries, not Scheme executables. The temporary development executable package
+has been removed: no =exe:= or =bin:= target is required by this pipeline.
+No handwritten build command parser or phase environment
+switch replaces the standard build dispatcher. Program argument handling stays
+inside an executable module's =main= when that program needs arguments.
+
+Root build specification evaluation is declarative: it does not compile
+dependencies as a side effect of =spec= or =clean=. Gerbil's package manager
+prepares the unchanged full Agentic AI Lab dependency declarations and package
+manifests. Yuanxu's existing =std-make-spec= still selects Weaver's modules.
+The gerbil-scheme-rust build helper prepares Cargo-owned pkg-config metadata and invokes =gerbil build -g=;
+Go orchestrates this preparation and runs =gerbil test -g -v 5 t=.
+The =-g= option selects the explicit isolated =GERBIL_PATH= rather than creating
+a different local package environment. All build concurrency follows available
+host CPUs. Root =build.ss= has the standard Scheme shebang and executable mode.
+
+* Correct the earlier acceptance boundary
+The previous runner invoked =gxi -e= to import and call the test driver and
+required a separate dynamic module inventory before tests. Those were bespoke
+invocations, not the project's package-test entry. They are removed from the
+default acceptance plan. Earlier inventory/gxi failures remain failures of
+those exact historical commands; changing the entry does not turn them into
+passes or prove their performance repaired. Optional image experiments remain
+diagnostic evidence and cannot qualify the package tool.
+
+The historical inventory experiment is not a project build or test prerequisite.
+There is no installed inventory binary in the current package contract. Package qualification
+must execute the actual =gerbil test= command within fifteen seconds and wait
+for natural process completion. An auxiliary binary cannot substitute for that
+package test or for actual FFI integration. There is no early process exit or
+disabled cleanup.
+
+* Results and phase evidence
+The pinned SDK's CLI can exit zero while its test function returns a failing
+result. Go therefore also requires all nineteen original =CASE-OK= reports,
+the standard successful harness report and terminal =OK=. Empty, partial and
+error-reporting zero exits are rejected. Deadline cancellation remains failure.
+Build preparation has separate timing from deadline-bound package testing.
+
+Standard SDK output identifies harness execution and completion. Discovery and
+module loading occur before harness execution; without an SDK boundary event,
+that interval cannot honestly be labeled as discovery-only time. Diagnostic
+stack samples may distinguish importer/loader work from execution and exit
+cleanup, but sampled runs cannot qualify latency. Paired trials must use the
+same source, declarations, compiler, CPU availability and complete case set.
+
+Gerbil owns generated =manifest.ss= version outputs. They are ignored project
+build products, not replacement =gerbil.pkg= inputs. Exact Core/POO root version
+outputs are excluded from handwritten dependency-source hashing. All original
+governance sources, public interfaces, package declarations and pin checks stay
+in the source/currentness contract. Isolated dependency clones prevent package
+build outputs from modifying the existing reference checkouts.
+
+* Model boundary
+=GerbilExitQualification.qnt= adds a counterexample in which a diagnostic
+invocation completes the same abstract checks and cleanup but cannot qualify
+the package entry. =GerbilExitQualification.lean= proves the corresponding
+entry obligation while retaining exact checks, original source, cleanup and
+deadline obligations. The finite model's check count is an abstract fixture;
+the executable package gate still requires nineteen real cases. Neither proof
+establishes runtime speed or substitutes for the actual tool's exit evidence.
+
+This contract and all subsequent results belong to PR 1. Dependency pins and
+the original fifteen-second deadline are unchanged. Historical failure evidence
+in 59.35 remains available; new results must identify their actual entry.

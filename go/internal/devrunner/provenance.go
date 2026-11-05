@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 package devrunner
 
 import (
@@ -16,6 +20,13 @@ import (
 func SourceInputs(root string) (map[string]string, error) {
 	result := map[string]string{}
 	add := func(path string) error {
+		info, err := os.Lstat(path)
+		if err != nil {
+			return err
+		}
+		if !info.Mode().IsRegular() {
+			return fmt.Errorf("verification input must be a regular source file: %s", path)
+		}
 		bytes, err := os.ReadFile(path)
 		if err != nil {
 			return err
@@ -28,40 +39,51 @@ func SourceInputs(root string) (map[string]string, error) {
 		result[filepath.ToSlash(relative)] = hex.EncodeToString(sum[:])
 		return nil
 	}
-	for _, path := range []string{"Project.sysml", "README.org", ".gitignore", "Cargo.toml", "Cargo.lock", "rust-toolchain.toml", "go/go.mod", "go/go.sum", "rustfmt.toml", "clippy.toml", "gerbil.pkg", "build.ss", "init.ss",
-		"docs/50-59-research-program/59-provider-rpc/59.03-provider-rpc-core.d2",
-		"docs/50-59-research-program/59-provider-rpc/59.19-governance-control.org",
-		"docs/50-59-research-program/59-provider-rpc/59.20-project-structure.org",
-		"docs/50-59-research-program/59-provider-rpc/59.21-verification-ownership.org",
-		"docs/50-59-research-program/59-provider-rpc/59.22-parallel-ci.org",
-		"docs/50-59-research-program/59-provider-rpc/59.23-governance-policy-projection.org",
-		"docs/50-59-research-program/59-provider-rpc/59.24-telemetry-service.org",
-		"docs/50-59-research-program/59-provider-rpc/59.30-dynamic-gxi-qualification.org",
-		"dev/scheme/module-observer.c",
-		"devenv.nix", "devenv.lock",
-		"devenv.yaml", ".envrc",
-		"dev/proofs/lean/RuntimeAdmission.lean", "dev/proofs/lean/StreamingExecution.lean", "dev/proofs/lean/ProviderRpc.lean", "dev/proofs/lean/PublicationRecovery.lean",
-		"dev/proofs/quint/RuntimeAdmission.qnt", "dev/proofs/quint/StreamingExecution.qnt", "dev/proofs/quint/RuntimeLifecycle.qnt", "dev/proofs/quint/ProviderRpc.qnt", "dev/proofs/quint/DispatchCancellation.qnt", "dev/proofs/quint/AuthorityAdmission.qnt", "dev/proofs/quint/ConnectionAdmission.qnt", "dev/proofs/quint/SourceIngress.qnt", "dev/proofs/quint/PublicationRecovery.qnt", "dev/proofs/quint/SourceOwner.qnt",
-		"dev/proofs/quint/ReleaseBinding.qnt",
-		"dev/proofs/quint/ProviderProfile.qnt",
-		"dev/proofs/quint/GatewayComposition.qnt",
-		"dev/proofs/quint/AuthorityPublication.qnt",
-		"dev/proofs/cedar/lakefile.toml", "dev/proofs/cedar/lake-manifest.json", "dev/proofs/cedar/lean-toolchain", "dev/proofs/cedar/WeaverPolicyBridge.lean"} {
+	for _, path := range []string{"LICENSE", "LICENSING.org", "REUSE.toml", "LICENSES/LGPL-2.1-or-later.txt", "LICENSES/Apache-2.0.txt", "Project.sysml", "README.org", ".gitignore", "Cargo.toml", "Cargo.lock", "Cargo.lock.license", "rust-toolchain.toml", "go/go.mod", "go/go.sum", "rustfmt.toml", "clippy.toml", "gerbil.pkg", "build.ss", "init.ss",
+		"devenv.nix", "devenv.lock", "devenv.lock.license", "devenv.yaml", ".envrc"} {
 		if err := add(filepath.Join(root, path)); err != nil {
 			return nil, err
 		}
 	}
-	for _, directory := range []string{"crates", "go", "proto", "scheme", "t", "prod", "dev/sysml", "dev/scheme", ".github"} {
+	// Inventory source owners, not a second hand-maintained list of proof roots.
+	// Include Lake manifests/pins, but do not traverse its dependency/build cache.
+	// Cache/toolchain integrity remains a separate qualification prerequisite.
+	// Historical evidence and generated diagrams are not source inputs.
+	for _, directory := range []string{"crates", "go", "proto", "scheme", "t", "prod", "dev/sysml", "dev/d2", ".github", "docs", "dev/proofs/lean", "dev/proofs/quint", "dev/proofs/cedar", "dev/specs/lean", "dev/specs/quint"} {
 		err := filepath.WalkDir(filepath.Join(root, directory), func(path string, entry fs.DirEntry, err error) error {
 			if err != nil {
 				return err
 			}
 			if entry.IsDir() {
+				if entry.Name() == ".lake" || entry.Name() == "node_modules" {
+					return fs.SkipDir
+				}
 				return nil
 			}
-			switch filepath.Ext(path) {
-			case ".go", ".rs", ".h", ".ss", ".pkg", ".toml", ".json", ".yaml", ".yml", ".proto", ".sysml", ".cedar":
+			if entry.Type()&os.ModeSymlink != 0 {
+				return fmt.Errorf("verification source alias is unsupported: %s", path)
+			}
+			if directory == "go" && strings.Contains(filepath.ToSlash(path), "/testdata/fuzz/") {
 				return add(path)
+			}
+			if entry.Name() == "lean-toolchain" || (directory == "dev/d2" && entry.Name() == "pnpm-lock.yaml") {
+				return add(path)
+			}
+			switch filepath.Ext(path) {
+			case ".patch":
+				if directory == "dev/d2" {
+					return add(path)
+				}
+			case ".ts", ".tsx", ".css", ".html":
+				if directory == "dev/d2" {
+					return add(path)
+				}
+			case ".license", ".go", ".rs", ".h", ".ss", ".pkg", ".toml", ".json", ".yaml", ".yml", ".proto", ".sysml", ".cedar", ".lean", ".qnt", ".org", ".d2":
+				return add(path)
+			case ".svg":
+				if directory == "dev/d2" || strings.Contains(filepath.ToSlash(path), "/diagrams/assets/") {
+					return add(path)
+				}
 			}
 			return nil
 		})

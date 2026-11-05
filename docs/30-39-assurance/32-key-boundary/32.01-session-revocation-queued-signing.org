@@ -1,8 +1,18 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Actual Key Boundary Session Revocation, Queued Signing and Final Release
 #+language: en
 #+date: 2026-10-19
 #+property: STATUS conditional-queue-composition-checked-native-device-isolation-pending
 #+options: toc:3
+
+* Reader view
+
+Queue clearing cannot qualify a successor key epoch.
+
+[[file:32.02-key-boundary.svg]]
 
 * Decision and boundary
 
@@ -242,7 +252,7 @@ barrier but is not a runtime oracle available to an implementation. There is no
 extracted model-to-driver proof, Byzantine device theorem or liveness guarantee.
 The sticky profile can keep unresolved work blocked indefinitely.
 
-* Native qualification and performance
+* Runtime qualification and performance
 
 Qualify the actual HSM/provider/driver combination using retained old sessions,
 duplicated FDs, mapped result buffers, callbacks, DMA/shared memory, device queues
@@ -268,3 +278,9 @@ signature repeats still consume physical HSM quota or billable attempts. Bound
 attempt rate, concurrency and cost separately at the owner; conservation of the
 original account reservation does not bound those physical signing costs. No
 throughput or native latency claim is made by these formal checks.
+
+* Embedded architecture views
+
+** 32.02-key-boundary.svg
+
+[[file:32.02-key-boundary.svg]]

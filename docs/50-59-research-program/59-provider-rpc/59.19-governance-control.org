@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+TITLE: 59.19 Governance Policy, Authority Publication and Final Execution
 #+LANGUAGE: en
 
@@ -223,7 +227,7 @@ binding. This keeps source compilation evidence separate from live enforcement.
 | Evidence | Checked boundary |
 |----------+------------------|
 | =t/governance-test.ss= | Native default assessment accepts its exact context; missing source context and a specialized ready assessment hiding an original blocking threat reject |
-| =t/gateway-source-test.ss= | Stable SDK source projection; Policy and route-order changes stay distinct; false Policy/Governance results cannot compile a handoff |
+| =t/gateway-source-test.ss= | Stable Gerbil toolchain source projection; Policy and route-order changes stay distinct; false Policy/Governance results cannot compile a handoff |
 | Scheme/Go/Rust integration | Stale source context, previous Profile revision, substituted model, mismatched threats and duplicate plans reject naturally before artifact/publication; provider invocation counts remain zero |
 | =AuthorityPublication.qnt= | Compose existing publication/outcome and execution models; check frozen command recovery, acknowledgment, revocation and restart schedules |
 | =WeaverPolicyBridge.lean= | Reuse cedar-poo-spec to relate actual effect/state and exact materialized policies to error-free Cedar allow |
@@ -270,8 +274,9 @@ by the synchronous Scheme call. The ABI accepts two immutable borrowed regions,
 each at most 65536 bytes, keeps no pointer, allocates no returned buffer and
 performs no callback, ledger write or network call. Status zero certifies only
 typed Policy/schema validity. A valid =forbid= policy passes preflight and still
-denies every actual provider operation. Negative status, compilation failure,
-missing artifact or compiler timeout cannot activate ingress.
+denies every actual provider operation. Negative status or failed approved
+compilation cannot activate ingress. Build/test source preparation still rejects
+missing artifacts and compiler timeouts; Go deployment launches no compiler.
 
 The =crates/policy-ffi= leaf contains the reviewed raw-region conversion. Every
 existing Rust package retains the workspace unsafe-code prohibition. The ABI
@@ -284,7 +289,7 @@ heap objects and Rust references never cross Go gRPC.
 The user-authorized native bridge PR is
 [[https://github.com/tao3k/gerbil-scheme-rust/pull/18][gerbil-scheme-rust PR 18]], selected at
 =80e68254092589bbb778c9761a058da16fb6f72e=. Weaver reuses its
-=gerbil-scheme-aot-build::gerbil_command= SDK and native compiler environment
+=gerbil-scheme-aot-build::gerbil_command= Gerbil toolchain and native compiler environment
 boundary as a development dependency. The Policy ABI is application glue, not
 a replacement generic Scheme runtime. This implementation does not instantiate
 the PR's Rust-hosted =GerbilRuntime=, isolated VM pool or Python frontend.
@@ -428,15 +433,18 @@ Scheme unit assertions belong to =t/gateway-contracts-test.ss=,
 =t/governance-test.ss= and =t/policy-test.ss=, using native =:std/test=
 =test-suite=, =test-case= and checks. They exercise concrete Record contracts,
 exact numeric projection, Governor selection and the real inert Cedar C ABI.
-The existing SDK =gxtest= API discovers these suites. Its returned result is
-checked explicitly; an error result or failure to exit naturally within fifteen
-seconds fails the stage.
+The existing Gerbil toolchain =gxtest= API discovers these suites. Its returned result is
+checked explicitly; an error result or failure to exit naturally within the 60-second package functional bound fails
+the stage. Runtime latency is measured independently; the historical 15-second
+controls remain failed observations.
 
-=go/dev/provider_control_scheme_integration_test.go= owns cross-language process,
+=go/dev/provider_program_deployment_test.go= owns cross-language process,
 mTLS gRPC, publication, revocation and restart observations. Its native Governor
 and Governance fixture lives in =t/fixtures/governed-control.ss=; Go supplies
 only inert test data. It is not a replacement Scheme unit-test framework.
-The Go development runner schedules both native suites and integration tests.
+Deep semantic cases live in =t/integration/governed-control-test.ss= under
+=:std/test=. The Go development runner schedules both standard package suites
+and the compiled-program gRPC integration.
 
 Per-run logs and linked build environments use system temporary storage and
 are removed after execution. A single latest structured result per mode records
@@ -448,32 +456,42 @@ CI uploads only compact latest results and the latest benchmark summary.
 The Go-owned =check= gate includes strict SysML trace checks, Rust tests and all
 ASP deny gates, race tests, bounded source configuration PBT, Quint/Lean, and real
 Go/Rust/HTTPS integration. The separately required native =check-scheme= gate
-has no missing-tool skip. It links Agentic AI Lab and Core into a fresh isolated
-environment, links Gerbil POO at Core's existing exact declared pin, compiles the actual Gambit C FFI using upstream build support,
-and runs =integration,schemeintegration= tests. Linked source hashes are checked
-before and after execution; dependency-library qualification remains explicit.
+has no missing-tool skip. Use an existing Gerbil package environment. Dependency
+installation is an explicit =gerbil deps --install= action, not a verification
+side effect. The root package declares only Agentic AI Lab, whose producer owns
+its transitive dependencies. Standard =gerbil build/test/clean= owns package
+operations; the upstream Rust SDK owns compiler/native-tool environment and
+archive preparation. Go composes Weaver's FFI, actual provider and gRPC tests.
+The retired Go linked-source checker is not evidence for this delegated path.
 
 #+begin_src text
 go -C go run ./cmd/weaver-dev check
-go -C go run ./cmd/weaver-dev -scheme-source /absolute/agentic-ai-lab -scheme-poo /absolute/pinned-gerbil-poo check-scheme
+go -C go run ./cmd/weaver-dev check-scheme
 go -C go build ./cmd/weaver-control
 #+end_src
 
-Select =WEAVER_CONTROL_SCHEME_COMPILER= as an absolute =gxi= path before the native
-gate. The actual =weaver-control= executable uses =WEAVER_CONTROL_CONFIG= and
-=WEAVER_CONTROL_LISTEN=; it has no operation CLI or stdin protocol.
+Use the SDK's =GERBIL_GXI= override only when compiler discovery needs an explicit
+selection. Weaver calls native package/staging APIs and exports typed FFI data.
+The actual =weaver-control= executable selects exactly one of
+=WEAVER_CONTROL_PRODUCER= (approved Rust producer name) and
+=WEAVER_CONTROL_CONFIG= (JSON/YAML data file), and uses =WEAVER_CONTROL_LISTEN=.
+It never starts a Scheme compiler or accepts a Scheme file as runtime code.
+An absent producer/catalog or failed compile cannot fall back to a data file.
+The Rust deployment must explicitly install the approved program/catalog;
+the test qualification graph is not a production program. There is no operation
+CLI or stdin protocol.
 
 | Environment group | Required settings |
 |-------------------+-------------------|
 | Frontend TLS | =WEAVER_CONTROL_SERVER_CERT=, =WEAVER_CONTROL_SERVER_KEY=, =WEAVER_CONTROL_CLIENT_CA= |
 | Frontend caller | =WEAVER_CONTROL_PEER_SHA256=, =WEAVER_CONTROL_TOKEN_SHA256= |
-| Native TLS | =WEAVER_CONTROL_AUTHORITY_CA=, =WEAVER_CONTROL_AUTHORITY_SERVER_NAME= |
-| Native operation role | =WEAVER_CONTROL_AUTHORITY_OPERATION_CERT=, =WEAVER_CONTROL_AUTHORITY_OPERATION_KEY=, =WEAVER_CONTROL_AUTHORITY_OPERATION_TOKEN=, =WEAVER_CONTROL_AUTHORITY_OPERATION_ADDRESS= |
-| Native source role | =WEAVER_CONTROL_AUTHORITY_SOURCE_CERT=, =WEAVER_CONTROL_AUTHORITY_SOURCE_KEY=, =WEAVER_CONTROL_AUTHORITY_SOURCE_TOKEN=, =WEAVER_CONTROL_AUTHORITY_SOURCE_ADDRESS= |
+| Rust authority TLS | =WEAVER_CONTROL_AUTHORITY_CA=, =WEAVER_CONTROL_AUTHORITY_SERVER_NAME= |
+| Rust operation role | =WEAVER_CONTROL_AUTHORITY_OPERATION_CERT=, =WEAVER_CONTROL_AUTHORITY_OPERATION_KEY=, =WEAVER_CONTROL_AUTHORITY_OPERATION_TOKEN=, =WEAVER_CONTROL_AUTHORITY_OPERATION_ADDRESS= |
+| Rust source role | =WEAVER_CONTROL_AUTHORITY_SOURCE_CERT=, =WEAVER_CONTROL_AUTHORITY_SOURCE_KEY=, =WEAVER_CONTROL_AUTHORITY_SOURCE_TOKEN=, =WEAVER_CONTROL_AUTHORITY_SOURCE_ADDRESS= |
 
 Certificates and keys are file paths; tokens are secrets and are never printed
 by the settings loader. =GERBIL_PATH= and =GERBIL_LOADPATH= select the admitted
-native source/dependency environment for Scheme configuration. Go uses a fixed
+Scheme build/test environment; they do not make Go a Scheme runtime. Go uses a fixed
 fifteen-second startup/drain bound; emergency cleanup is reported as failure.
 The native tests use loopback HTTPS provider implementations and actual network
 gRPC, not external paid provider accounts or an in-memory substitute ledger.

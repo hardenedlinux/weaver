@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 use weaver_contracts::{MessageRule, StreamContract, StreamMessage, Task, body_digest};
 use weaver_policy::{StreamCheck, authorize_stream};
 const POLICY: &str = include_str!(concat!(

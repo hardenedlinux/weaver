@@ -1,6 +1,16 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Weaver Atomic Manifest Switch, WAL Deletion and Crash Recovery
 #+language: en
 #+options: toc:3
+
+* Reader view
+
+A successful local rename does not authorize deletion.
+
+[[file:27.02-manifest-switch.svg]]
 
 * The gap in the earlier truncation abstraction
 
@@ -111,7 +121,7 @@ LLM routing design or a performance result.
 |-----------+----------------+-----------------------------|
 | Scheme | Define complete account/manifest meaning, original claim/profile/source lineage, current fence and coverage constraints; construct typed publish/switch/delete/recover intents | POO contracts and Cedar facts never perform filesystem IO or assert their own durability |
 | Cedar | Evaluate required storage, tenant, data-retention and recovery policy layers for the exact operation and current facts | Missing, denied or erroring layers block; allowance does not make an object durable or replace native atomicity |
-| Go | Kubernetes owner lifecycle, reconciliation, backend discovery and SDK/control-plane timeout handling; report observed outcomes and query the original operation | No independent balance application, fallback root selection, GC worker credentials or provider retry from a storage receipt |
+| Go | Kubernetes owner lifecycle, reconciliation, backend discovery and Gerbil toolchain/control-plane timeout handling; report observed outcomes and query the original operation | No independent balance application, fallback root selection, GC worker credentials or provider retry from a storage receipt |
 | Rust | Own storage gate, durable object publication, manifest CAS, reachability, exact unlink, recovery and actual broker/executor authority checks | Revalidate at the actual storage effect; old handles and buffers do not carry independent logical authority |
 | Quint | Exercise interrupted phases, stale fences, suffix loss, object identity substitution and rollback mutations | Finite controls and sampled traces, not exhaustive native fault injection |
 | Lean | Prove complete-path preservation over arbitrary finite guarded runs and composition into the actual checkpoint/WAL/account/source chain | Durable IO, authenticated facts, exclusive storage ownership and initial complete path are explicit premises |
@@ -119,7 +129,7 @@ LLM routing design or a performance result.
 A current manifest is a storage prerequisite, never a send permit. Neither
 checkpoint publication, root switching, garbage collection nor reconstruction
 calls a provider. Rust broker final consumption/enqueue and executor handoff still
-require their original current Policy/history/owner gates. SDK retries, reconnects
+require their original current Policy/history/owner gates. provider-client retries, reconnects
 and Go restarts retain the original logical message and reservation keys. This
 is an AI Agent Gateway logical execution boundary, without physical isolation or
 an HSM requirement.

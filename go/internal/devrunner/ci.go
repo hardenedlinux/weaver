@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 package devrunner
 
 import (
@@ -44,7 +48,7 @@ func PrepareCITools(ctx context.Context, output io.Writer) error {
 		if err := run("sudo", "apt-get", "-o", "Acquire::http::Timeout=30", "-o", "Acquire::https::Timeout=30", "update"); err != nil {
 			return err
 		}
-		packages := []string{"apt-get", "install", "-y", "--no-install-recommends", "build-essential", "ca-certificates", "pkg-config", "libssl-dev", "libsqlite3-dev", "zlib1g-dev", "protobuf-compiler"}
+		packages := []string{"apt-get", "install", "-y", "--no-install-recommends", "build-essential", "ca-certificates", "pkg-config", "libssl-dev", "zlib1g-dev", "protobuf-compiler"}
 		if suite == "check-policy" {
 			packages = append(packages, "elan")
 		}
@@ -52,7 +56,7 @@ func PrepareCITools(ctx context.Context, output io.Writer) error {
 			return err
 		}
 	case "darwin":
-		packages := []string{"install", "pkg-config", "openssl@3", "sqlite", "zlib", "protobuf"}
+		packages := []string{"install", "pkg-config", "openssl@3", "zlib", "protobuf"}
 		if suite == "check-policy" {
 			packages = append(packages, "elan")
 		}

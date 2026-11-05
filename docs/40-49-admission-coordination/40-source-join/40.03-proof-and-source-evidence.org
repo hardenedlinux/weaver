@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Weaver Source Join Proof and Source Evidence
 #+language: en
 #+options: toc:3
@@ -153,7 +157,7 @@ captured in [[file:../../../dev/proofs/evidence/llm-source-join/P17-working-diff
 The runner compiles Weaver's actual chain; full upstream runtime/proof builds are
 not claimed. No dependency pin or upstream source is changed.
 
-* Native acceptance gates
+* Implementation acceptance gates
 
 | Gate | Required executable evidence |
 |------+------------------------------|
@@ -161,7 +165,7 @@ not claimed. No dependency pin or upstream source is changed.
 | Source invalidation | Deny/allow ABA, Policy/history mutation, source generation/fence and unmapped dependency changes; every relevant mutation participates in current revision qualification |
 | Custody and actual CAS | Pause immediately before remote determining CAS; race source/account mutation and owner takeover; one authenticated serialization order, no queued unfenced continuation |
 | Unknown outcome | Lose commit response across source-owner restart; recover original join intent/custody and determining result before accepting progress or releasing constraints |
-| Original retry | Reconnect/SDK retry resolves one original operation; no duplicate admitted segment, new family, new budget domain or repeated financial application |
+| Original retry | Reconnect/provider-client retry resolves one original operation; no duplicate admitted segment, new family, new budget domain or repeated financial application |
 | Exact attempt | Rebase same original intent with changed before/after image; old ticket rejects and new current validation is required |
 | Retained pending state | Old worker recovery and inconsistent local snapshots retain exact original tails, claim/profile and unknown holds; no inferred abort from local absence |
 | Current native facts | Caller-supplied revision/allow boolean, replica-local old prefix or valid historical signature cannot authenticate current Host input |

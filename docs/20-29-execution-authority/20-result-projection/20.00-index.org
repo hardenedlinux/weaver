@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Weaver Committed Results and Ledger Projection Index
 #+language: en
 #+options: toc:2
@@ -25,3 +29,9 @@ Formal artifacts: [[file:../../../dev/proofs/lean/LlmResultProjection.lean][Lean
 Run the isolated runner (retired Python driver). ASP is an optional code-tool integration example;
 the core authority protocol is independent of ASP. No Gateway implementation,
 upstream source or dependency pin is changed. Earlier sealed artifacts are retained.
+
+* Embedded architecture views
+
+** 20.02-result-projection.svg
+
+[[file:20.02-result-projection.svg]]

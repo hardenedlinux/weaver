@@ -1,14 +1,61 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 syntax = "proto3";
 package weaver.gateway.v1;
 option go_package = "github.com/HardenedLinux/weaver/go/api/gateway/v1;gatewayv1";
 service Gateway {
   rpc ExecuteProvider(ProviderRequest) returns (stream ProviderFrame);
   rpc Inspect(OperationKey) returns (ProviderReceipt);
+  rpc RotateMeterCredential(MeterCredentialRotation) returns (MeterCredentialEpoch);
+  rpc InspectTerminalUsage(OperationKey) returns (MeteringReceipt);
+  rpc ApplyMetering(MeteringReceipt) returns (MeteringApplication);
   rpc RegisterTask(RegisterTaskRequest) returns (Empty);
+  rpc RegisterPublishedTask(RegisterPublishedTaskRequest) returns (Empty);
+  // Source-only admission. Domain roots and the immutable task commit together.
+  rpc RegisterDomainTask(RegisterDomainTaskRequest) returns (Empty);
+  rpc RegisterOriginalTask(RegisterOriginalTaskRequest) returns (TaskAdmissionReceipt);
+  rpc RegisterFamilyAlias(FamilyAliasRequest) returns (DomainView);
+  rpc MigrateExecutionDomains(DomainMigration) returns (DomainMigrationReceipt);
+  rpc InspectExecutionDomains(OperationKey) returns (DomainView);
   rpc PublishAuthority(PublishRequest) returns (PublicationReceipt);
+  // Durably block fresh effects for this exact proposal, or observe its existing decision.
+  // A returned key is not a publication outcome or an execution grant.
+  rpc StageAuthority(PublishRequest) returns (PublicationKey);
   rpc InspectPublication(PublicationKey) returns (PublicationReceipt);
+  rpc StageReviewedAuthority(PublishRequest) returns (PublicationKey);
+  rpc InspectPublicationReview(PublicationKey) returns (PublicationReviewContext);
+  rpc RegisterPublicationReview(DeltaReview) returns (ReviewRegistrationReceipt);
+  rpc InspectSourceAuthority(Empty) returns (SourceAuthorityView);
+  rpc RotateSourceAuthority(SourceRotationRequest) returns (SourceRotationReceipt);
+  // Preparation only. Actual ingress/source state selects an installed original;
+  // request labels cannot supply authority, replacement source or module paths.
+  rpc CompileSource(ProducerRequest) returns (CompiledSource);
+  rpc InspectProviderCatalog(Empty) returns (ProviderCatalogSnapshot);
+  rpc PublishProviderCatalog(ProviderCatalogChange) returns (ProviderCatalogSnapshot);
+  // Statistical process-local counters only; never durable execution evidence.
+  rpc InspectTelemetry(Empty) returns (TelemetrySnapshot);
+  // Source-only. Bearer bytes stay on the operation connection.
+  rpc ChangeProviderOAuth(ProviderOAuthChange) returns (Empty);
+}
+message TelemetrySnapshot {
+  uint64 compilations_succeeded = 1;
+  uint64 compilations_failed = 2;
+  uint64 provider_admitted = 3;
+  uint64 provider_completed = 4;
+  uint64 provider_failed = 5;
+  uint64 response_frames_queued = 6;
+  uint64 queue_wait_failed = 7;
+  uint64 rpc_auth_rejected = 8;
+  uint64 snapshot_reads = 9;
 }
 message Empty {}
+message ProducerRequest { string producer = 1; }
+message GovernanceSelection { string schema = 1; string family = 2; repeated string open_nodes = 3; }
+message SourceArtifact { GovernanceSelection governance = 1; repeated Task tasks = 2; repeated ProviderPlan plans = 3; PublishRequest publication = 4; }
+// Source authority here is knowledge at response admission, never a later permit.
+message CompiledSource { string producer = 1; SourceAuthorityView authority = 2; SourceArtifact artifact = 3; }
 message OperationKey { string family = 1; string node = 2; }
 message Route { string target = 1; string endpoint = 2; }
 message ProviderPlan {
@@ -18,7 +65,9 @@ message ProviderPlan {
   string profile_commitment = 10;
 }
 enum Encoding { PROTOBUF = 0; ARROW_IPC = 1; }
-message ProviderRequest { ProviderPlan plan = 1; Encoding encoding = 2; uint32 batch_rows = 3; }
+message ProviderRequest { ProviderPlan plan = 1; Encoding encoding = 2; uint32 batch_rows = 3; string catalog_version = 4; }
+message ProviderCatalogSnapshot { string version = 1; bytes record = 2; }
+message ProviderCatalogChange { bytes record = 1; }
 message Event { uint64 sequence = 1; string kind = 2; string text = 3; uint64 tokens = 4; }
 message ArrowBatch { bytes ipc = 1; uint64 first_sequence = 2; uint32 rows = 3; }
 message ProviderFrame { string target = 1; string model = 2; oneof payload { Event event = 3; ArrowBatch arrow = 4; } }
@@ -31,7 +80,86 @@ message Task {
 }
 message ProviderProfile { string id = 1; string protocol = 2; uint64 max_output_tokens = 3; uint64 max_messages = 4; uint64 max_body_bytes = 5; }
 message RegisterTaskRequest { Task task = 1; }
+message DomainBinding { string origin = 1; string budget = 2; string history = 3; uint64 budget_limit = 4; }
+message DomainStamp { string origin = 1; string budget_root = 2; string history_root = 3; uint64 budget_epoch = 4; uint64 history_epoch = 5; string task_key = 6; }
+message DomainView { string family = 1; string canonical_family = 2; DomainStamp stamp = 3; uint64 budget_limit = 4; uint64 held = 5; uint64 history_count = 6; }
+message RegisterDomainTaskRequest { Task task = 1; DomainBinding domains = 2; PublicationKey publication = 3; }
+message TaskAdmission { string task_key = 1; string operation_id = 2; uint64 expected_source_epoch = 3; }
+message RegisterOriginalTaskRequest { Task task = 1; DomainBinding domains = 2; TaskAdmission admission = 3; PublicationKey publication = 4; }
+message TaskAdmissionReceipt { string operation_id = 1; string digest = 2; string task_key = 3; string family = 4; string origin = 5; uint64 source_epoch = 6; }
+message FamilyAliasRequest { string family = 1; string origin = 2; }
+message DomainMigration { string operation_id = 1; string budget_from = 2; string budget_to = 3; string history_from = 4; string history_to = 5; uint64 budget_from_epoch = 6; uint64 budget_to_epoch = 7; uint64 history_from_epoch = 8; uint64 history_to_epoch = 9; }
+message DomainMigrationReceipt { string operation_id = 1; string digest = 2; bool committed = 3; string budget_root = 4; string history_root = 5; uint64 budget_epoch = 6; uint64 history_epoch = 7; }
+// Distinct source capability: both fields are required by the server. No fallback.
+message RegisterPublishedTaskRequest { Task task = 1; PublicationKey publication = 2; }
 message PublishRequest { optional uint64 expected_revision = 1; uint64 fence = 2; string policy = 3; string schema = 4; string operation_id = 5; }
 enum PublicationOutcome { PUBLICATION_OUTCOME_UNSPECIFIED = 0; COMMITTED = 1; REJECTED = 2; }
 message PublicationReceipt { string operation_id = 1; string digest = 2; PublicationOutcome outcome = 3; optional uint64 revision = 4; optional uint64 fence = 5; }
 message PublicationKey { string operation_id = 1; string digest = 2; }
+message SourceAuthorityView { uint64 epoch = 1; string identity_digest = 2; }
+// The Rust host derives certificate/SPKI identity from actual DER, never caller labels.
+message SourceRotationRequest { string operation_id = 1; uint64 expected_epoch = 2; bytes next_certificate = 3; string next_credential_sha256 = 4; }
+enum SourceRotationOutcome { SOURCE_ROTATION_OUTCOME_UNSPECIFIED = 0; SOURCE_ROTATED = 1; SOURCE_ROTATION_REJECTED = 2; }
+message SourceRotationReceipt { string operation_id = 1; string digest = 2; SourceRotationOutcome outcome = 3; SourceAuthorityView authority = 4; }
+
+// Review preparation and registration are source-only; none activates Policy.
+message AuthorityParent { uint64 revision = 1; uint64 fence = 2; string policy_digest = 3; optional string schema_digest = 4; }
+message ReviewAuthority { string audience = 1; uint64 epoch = 2; string public_key = 3; bool allow_expansion = 4; optional string qualified_catalog = 5; }
+message PublicationReview { PublicationKey publication = 1; AuthorityParent parent = 2; string artifact = 3; }
+enum DeltaDisposition { DELTA_DISPOSITION_UNSPECIFIED = 0; BOOTSTRAP = 1; NO_EXECUTION_GAIN = 2; EXPLICIT_APPROVAL = 3; }
+message DeltaReview { PublicationReview review = 1; string audience = 2; uint64 reviewer_epoch = 3; uint64 source_epoch = 4; string source_identity_digest = 5; DeltaDisposition disposition = 6; string delta = 7; string signature = 8; }
+message PublicationReviewContext { PublicationKey publication = 1; AuthorityParent parent = 2; ReviewAuthority reviewer = 3; SourceAuthorityView source = 4; }
+message ReviewRegistrationReceipt { PublicationKey publication = 1; string review_digest = 2; }
+
+message MeterCredentialRotation {
+ string tenant = 1; string issuer = 2; uint64 expected_epoch = 3;
+ bytes certificate = 4; string credential_sha256 = 5;
+}
+message MeterCredentialEpoch { uint64 epoch = 1; }
+message MeteringReceipt {
+  string audience = 1;
+  string tenant = 2;
+  string issuer = 3;
+  string application = 4;
+  string family = 5;
+  string node = 6;
+  string origin = 7;
+  string plan_digest = 8;
+  string target = 9;
+  string formula_digest = 10;
+  string terminal_digest = 11;
+  repeated uint64 tokens = 12;
+  string signature = 13;
+}
+message MeteringApplication {
+  string application = 1;
+  uint64 charged = 2;
+  uint64 released = 3;
+}
+
+message ProviderOAuthChange {
+  oneof action {
+    ProviderOAuthGrant grant = 1;
+    string revoke_token_hash = 2;
+    ProviderOAuthIssuerRotation rotate_issuer = 3;
+  }
+}
+message ProviderOAuthGrant {
+  string issuer = 1;
+  string subject = 2;
+  string client = 3;
+  string audience = 4;
+  repeated string scopes = 5;
+  string token_hash = 6;
+  string certificate_sha256 = 7;
+  uint64 not_before = 8;
+  uint64 expires_at = 9;
+  string signature = 10;
+  string parent_token_hash = 11;
+  uint64 issuer_epoch = 12;
+}
+message ProviderOAuthIssuerRotation {
+  uint64 expected_epoch = 1;
+  string public_key = 2;
+  string signature = 3;
+}

@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+TITLE: 59.02 Provider Routing, Streaming and Recovery
 #+LANGUAGE: en
 
@@ -27,11 +31,13 @@ silently implemented by rewriting the body.
 | Queued recovery | Reauthorize only the same source commitment under a current revision/fence, preserving its hold |
 | Consumption | Select an eligible permitted route and mark the original operation unknown |
 | Dispatch burn | Persist the unique dispatch burn before the possible request callback |
+| Request preparation | Build the local HTTP client and immutable request without DNS, connect or provider IO; no send permission |
 | Final invocation | Recheck current Cedar, original binding, selected route and native owner under the deciding lock, then recheck the original output cancellation context immediately before invoking private HTTPS once |
 | Response read | Incrementally decode a bounded SSE stream outside the deciding write lock so publication can proceed |
 | Output capacity | Reserve an outbound queue slot before taking the deciding write lock; timeout/cancellation retains unknown execution |
 | Release burn | Persist the exact batch digest, logical sequence interval and unknown release before possible enqueue; the private affine token also binds the immutable original plan commitment, prepared encoding and ledger session |
-| Final release | Recheck current authority for every row, encode immutable data and consume the reserved slot under the deciding lock |
+| Frame preparation | Encode immutable sequence-bound bytes after the release burn and outside the writer/domain locks; no queue insertion |
+| Final release | Recheck current authority for every row and consume the reserved slot under the deciding lock; prepared bytes grant no permission |
 | Release commit | Record that the bounded queue admission returned; this is not proof of peer receipt |
 | Completion | Require a valid provider finish and DONE, committed releases and current authority; retain the original hold |
 
@@ -99,6 +105,34 @@ filesystem stalls and host scheduling are not covered by a global shutdown proof
 Immutable task/plan facts and their hashes are bound once at consumption. Each
 release reads current authority and evaluates Cedar over small cached facts; it
 does not reparse or rehash the complete request for every token. No permission
-decision is cached. The SQLite deciding lock remains held across initial request
-invocation through response headers and across final bounded queue admission.
+decision is cached. The Turso deciding lock remains held across initial request
+invocation through request write, TLS flush and writer seal, and across final bounded queue admission.
 This serial reference profile is not a qualified high-concurrency shard design.
+
+* Request admission, writer seal and response use
+
+The deciding scope writes one exact request, flushes TLS and receives the affine
+private =SealedRequest=. It permanently rejects later application writes and
+owns the unspawned HTTP driver. Only after scope commit succeeds may the driver
+read headers outside the guard. Body EOF and early response headers cannot create
+this receipt. Write/flush/commit ambiguity drops the driver and retains the
+original burn and reservation. Local drain cannot recall accepted TCP/TLS bytes,
+prove remote non-execution or refund money. Fresh Cedar/profile/shared-domain/
+fence guards still decide every response release. See
+[[file:59.87-spec-upgrade-and-delivery-plan.org][Request-write completion and response-header wait]] for native mappings,
+formal premises and qualification evidence.
+
+The original dispatch burn advances from =1= to =2= in the final guarded callback
+transaction. Both values mean spent; =2= is a callback-transaction observation,
+not a provider receipt, usage record or refund grant. The typed callback must
+succeed before that record or the final native commit window is reached. In the
+production transport its result is the private =SealedRequest=; errors return
+before the commit observer and roll back the final scope, retaining burn =1=.
+The generic ledger API's successful callback result alone is not a seal. No new
+schema or outbox is introduced.
+An applied commit with an unavailable acknowledgment poisons its connection;
+autocommit does not make that worker reusable. A fresh process reads retained
+history but cannot reconstruct the private socket or replay the original request.
+After native commit releases the scope, new authority can commit before a delayed
+acknowledgment arrives. That acknowledgment enables reading only; every response
+row still needs the final current Cedar/profile/shared-domain/fence join.

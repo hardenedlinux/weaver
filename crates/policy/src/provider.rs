@@ -1,19 +1,27 @@
-//! Cache immutable source facts, never authorization decisions or mutable authority.
-use weaver_contracts::{Error, ProviderPlan, ProviderRoute, Result, Task, body_digest};
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
-/// Small immutable projection made only after validating the original task and plan.
+//! Retain immutable source facts, never decisions or mutable authority.
+use crate::{authorize, provider_context::ProviderContext};
+use cedar_policy::EntityUid;
+use weaver_contracts::{Error, ProviderPlan, ProviderRoute, Result, Task};
+
+/// Typed immutable source projection; each use still evaluates current Policy.
 pub struct BoundProviderPolicy {
-    principal: String,
-    target: String,
-    context: serde_json::Value,
+    principal: EntityUid,
+    target: EntityUid,
+    context: ProviderContext,
+    protocol: weaver_contracts::ProviderProtocol,
 }
 /// Current effect coordinates supplied by the deciding owner, not the RPC caller.
 pub struct ProviderCheck<'a> {
     pub action: &'static str,
     pub sequence: u64,
     pub format: &'a str,
+    pub domains: Option<&'a weaver_contracts::DomainView>,
 }
-/// Validate the source commitment once before constructing cached immutable facts.
+/// Validate the original commitment once before constructing inert Cedar literals.
 pub fn bind_provider(
     task: &Task,
     plan: &ProviderPlan,
@@ -23,24 +31,39 @@ pub fn bind_provider(
     if !plan.routes.contains(route) {
         return Err(Error::Denied);
     }
+    let protocol = task
+        .provider_profile
+        .as_ref()
+        .ok_or(Error::Denied)?
+        .adapter()?;
+    if matches!(protocol, weaver_contracts::ProviderProtocol::Anthropic)
+        && route
+            .endpoint
+            .strip_prefix("https://")
+            .and_then(|endpoint| endpoint.split_once('/'))
+            .is_none_or(|(_, path)| path != "v1/messages")
+    {
+        return Err(Error::Denied);
+    }
     Ok(BoundProviderPolicy {
-        principal: task.principal.clone(),
-        target: route.target.clone(),
-        context: serde_json::json!({
-            "family":plan.family,"node":plan.node,"profile":plan.profile,"model":plan.model,
-            "endpoint":route.endpoint,"body_digest":body_digest(&plan.body),"plan_digest":plan.digest()?,
-            "ceiling":plan.ceiling,"revision":plan.revision,"fence":plan.fence
-            ,"profile_digest":plan.profile_commitment,"protocol":task.provider_profile.as_ref().ok_or(Error::Denied)?.protocol,
-            "output_token_limit":facts.output_token_limit,"message_count":facts.message_count
-        }),
+        protocol,
+        principal: authorize::entity("Principal", &task.principal)?,
+        target: authorize::entity("Target", &route.target)?,
+        context: ProviderContext::capture(task, plan, route, &facts)?,
     })
 }
 impl BoundProviderPolicy {
-    /// Evaluate fresh Policy for each effect; cached facts cannot provide an allow decision.
+    pub fn protocol(&self) -> weaver_contracts::ProviderProtocol {
+        self.protocol
+    }
+    /// No current Policy, domains, action, sequence or format survives this call.
     pub fn authorize(&self, source: &str, check: ProviderCheck<'_>) -> Result<()> {
-        let mut context = self.context.clone();
-        context["sequence"] = serde_json::json!(check.sequence);
-        context["format"] = serde_json::json!(check.format);
-        crate::authorize::evaluate(source, &self.principal, &self.target, check.action, context)
+        authorize::evaluate_typed(
+            source,
+            self.principal.clone(),
+            self.target.clone(),
+            check.action,
+            self.context.current(&check)?,
+        )
     }
 }

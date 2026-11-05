@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Key Boundary Queue and Revocation Validation Evidence
 #+language: en
 #+date: 2026-10-19
@@ -186,3 +190,9 @@ export log and do not affect structural export.
 sources, Johnny Decimal artifacts and raw evidence. Native HSM/provider/driver
 isolation, protected-floor durability, canonical signed bytes and final broker
 FD acceptance remain pending. No gateway implementation or pin change is claimed.
+
+* Embedded architecture views
+
+** 32.02-key-boundary.svg
+
+[[file:32.02-key-boundary.svg]]

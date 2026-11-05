@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 package devrunner
 
 import (
@@ -13,38 +17,100 @@ import (
 )
 
 // Every timed case must produce fresh evidence; one case cannot qualify its package.
+var storageBenchmarkCases = []string{"ledger_final_family_pair/wal", "ledger_final_family_pair/mvcc-serial", "ledger_final_family_pair/mvcc-parallel", "ledger_final_family_pair/mvcc-shared-budget", "ledger_final_family_pair/mvcc-shared-history", "ledger_task_origin_registration/fresh", "ledger_task_origin_registration/receipt-replay", "ledger_task_origin_registration/rebind-rejected"}
+
 var rustBenchmarkCases = []string{
+	"telemetry_local/record",
+	"telemetry_local/snapshot",
+	"ledger_task_origin_registration/fresh",
+	"ledger_task_origin_registration/receipt-replay",
+	"ledger_task_origin_registration/rebind-rejected",
+	"governance_owned_source_validate",
+	"governance_original_source_capture_and_bind",
+	"governance_source_lane_roundtrip",
+	"governance_producer_catalog_roundtrip/1",
+	"governance_producer_catalog_roundtrip/64",
+	"governance-build_stage_request",
 	"contracts_provider_commitment/128",
 	"contracts_provider_commitment/16384",
 	"contracts_provider_commitment/524288",
 	"contracts_publication_commitment",
+	"contracts_publication_review_commitment",
+	"contracts_source_rotation_commitment",
 	"contracts_profile_commitment",
 	"contracts_profile_request_validation/128",
 	"contracts_profile_request_validation/16384",
 	"contracts_profile_request_validation/524288",
 	"policy_typed_schema_validation",
+	"policy_context_json_local",
+	"policy_context_literal_local",
+	"policy_context_json_shared",
+	"policy_context_literal_shared",
 	"policy_warm_compilation_current_decision",
 	"policy_compilation_cache_churn",
+	"policy_materialized_json_schema_validation",
+	"policy_spec_schema_bound_candidate_replay",
+	"policy_spec_parent_bound_revision_replay",
 	"policy-ffi_typed_preflight",
+	"ledger_provider_release/1",
+	"ledger_provider_release/8",
+	"ledger_provider_release/32",
 	"ledger_fresh_admission",
+	"ledger_concurrent_family_pair/wal",
+	"ledger_concurrent_family_pair/mvcc",
+	"ledger_final_family_pair/wal",
+	"ledger_final_family_pair/mvcc-serial",
+	"ledger_final_family_pair/mvcc-parallel",
+	"ledger_final_family_pair/mvcc-shared-budget",
+	"ledger_final_family_pair/mvcc-shared-history",
 	"ledger_consume_and_dispatch_burn",
+	"ledger_shared_exposure_dispatch/1",
+	"ledger_shared_exposure_dispatch/8",
+	"ledger_shared_exposure_dispatch/64",
+	"ledger_stream_manifest_guard/1",
+	"ledger_stream_manifest_guard/8",
+	"ledger_stream_manifest_guard/64",
+	"ledger_range_tail_guard/0",
+	"ledger_range_tail_guard/8",
+	"ledger_range_tail_guard/64",
+	"ledger_original_reservation_bytes/1/128",
+	"ledger_original_reservation_bytes/8/128",
+	"ledger_original_reservation_bytes/64/128",
+	"ledger_original_reservation_bytes/1/16384",
+	"ledger_original_reservation_bytes/8/16384",
+	"ledger_original_reservation_bytes/64/16384",
+	"ledger_original_reservation_bytes/1/524288",
 	"ledger_idempotent_admission",
 	"ledger_publication_atomic_commit",
+	"ledger_publication_stage_and_decide",
+	"ledger_reviewed_publication_register_and_commit",
+	"ledger_spec_replay_register_and_commit",
+	"ledger_spec_parent_bound_revision_registration",
+	"ledger_source_key_handoff",
+	"ledger_source_authenticated_publication",
+	"ledger_source_empty_store_enrollment/0",
+	"ledger_source_empty_store_enrollment/32",
 	"ledger_publication_exact_replay",
 	"ledger_publication_historical_lookup",
 	"ledger_profile_task_registration",
 	"ledger_profile_task_replay/1",
 	"ledger_profile_task_replay/256",
-	"execution_https_guarded_sse_three_events",
+	"broker_https_guarded_sse_three_events",
+	"broker_anthropic_sse_64_deltas",
+	"broker_anthropic_buffered_sse_64_deltas",
+	"broker_wif_cached_token",
+	"server_encoding_guard_hold/inside",
+	"server_encoding_guard_hold/outside",
 	"server_response_encoding/protobuf_frames/1",
 	"server_response_encoding/protobuf_frames/32",
 	"server_response_encoding/arrow_batch/1",
 	"server_response_encoding/arrow_batch/32",
+	"server_source_certificate_spki_identity",
 }
 
 // Criterion sanitizes the package/group separator to an underscore on disk.
 func benchmarkPackage(name string) (string, error) {
-	for _, member := range []string{"contracts", "policy", "policy-ffi", "ledger", "execution", "server"} {
+	for _, member := range []string{"contracts", "governance", "governance-build", "policy", "policy-ffi", "ledger", "broker", "server", "telemetry"} {
 		if strings.HasPrefix(name, member+"_") {
 			return "weaver-" + member, nil
 		}
@@ -122,12 +188,23 @@ func positiveFinite(value float64) bool {
 }
 
 // Copy only structured Criterion data; raw stage logs retain Go/Rust environment receipts.
-func collectBenchmarks(root, directory, started string) error {
+func collectBenchmarks(targetDirectory, directory, started string, selected ...string) error {
+	expected := rustBenchmarkCases
+	if len(selected) != 0 {
+		seen := map[string]bool{}
+		for _, name := range selected {
+			if !slices.Contains(rustBenchmarkCases, name) || seen[name] {
+				return fmt.Errorf("invalid selected benchmark: %s", name)
+			}
+			seen[name] = true
+		}
+		expected = selected
+	}
 	begin, err := time.Parse(time.RFC3339Nano, started)
 	if err != nil {
 		return err
 	}
-	source := filepath.Join(root, "target/criterion")
+	source := filepath.Join(targetDirectory, "criterion")
 	measured := map[string]bool{}
 	rows := []string{}
 	err = filepath.WalkDir(source, func(path string, entry fs.DirEntry, err error) error {
@@ -150,6 +227,9 @@ func collectBenchmarks(root, directory, started string) error {
 		relative, err := filepath.Rel(source, path)
 		if err != nil {
 			return err
+		}
+		if len(selected) != 0 && !slices.ContainsFunc(expected, func(name string) bool { return strings.HasPrefix(filepath.ToSlash(relative), name+"/") }) {
+			return nil
 		}
 		bytes, err := os.ReadFile(path)
 		if err != nil {
@@ -202,7 +282,7 @@ func collectBenchmarks(root, directory, started string) error {
 	if err != nil {
 		return err
 	}
-	for _, name := range rustBenchmarkCases {
+	for _, name := range expected {
 		if !measured[name] {
 			return fmt.Errorf("missing fresh Rust benchmark case: %s", name)
 		}

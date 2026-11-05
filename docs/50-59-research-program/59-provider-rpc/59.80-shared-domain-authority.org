@@ -1,0 +1,201 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+#+TITLE: 59.80 Authoritative Origins and Cross-Family Shared Domains
+#+LANGUAGE: en
+#+OPTIONS: toc:2
+
+* Runtime contract
+
+This supersedes the independent-family assumption in [[file:59.79-turso-final-domains.org][59.79]]. The
+implementation reuses the pinned MRR Data public Turso driver, the existing
+source owner, task registration, reservation manifests, durable consumption and
+final effect guards. No dependency pin changes or second storage engine are
+required. WAL remains the default; MVCC retains one process owner.
+
+[[file:59.77-mrr-turso-storage.svg]]
+
+An authenticated source registers an immutable =DomainBinding= together with
+the original task in one native transaction. It names an origin, budget domain,
+history domain and original domain limit. Multiple genuine origins/families may
+share either domain. The effective budget is constrained by both each immutable
+task budget and its current shared domain cap. Providers, generic requests and
+stream messages contribute to the same deciding reservation projection.
+
+An origin has exactly one canonical family. A new protocol/session family may
+be registered as an alias; it observes the original task and roots but cannot
+register another task, reserve another logical member or obtain a send permit.
+Recovery uses the canonical family and original node/message. Body equality is
+not used to guess task identity: identical legitimate tasks remain possible.
+
+Existing trusted =register_task= creates an independent origin only for a genuinely
+new source-admitted task. It reuses an existing binding and rejects registered
+aliases. =RegisterDomainTask= is the explicit source-only gRPC command for shared
+domains. Operation credentials cannot create origins, bind aliases or migrate
+domains. Genuine origin assignment is a source-admission premise: a compromised
+authorized source that deliberately labels the same real task as a new origin is
+not detected by a content hash or by these local proofs. Deployments must publish
+the source-owned canonical association before activating untrusted adapters.
+
+* Final transaction and concurrency
+
+In MVCC the executor takes the shared authority gate, reads the authoritative
+origin and current budget/history roots, sorts and deduplicates their mutex
+stripes, acquires all of them, and only then begins the native snapshot. The
+gate prevents migration between root lookup and the deciding transaction. Root
+lookups are not cached in an adapter or carried as client-authoritative strings.
+Mutex hash collisions may reduce concurrency; they cannot split a domain.
+
+| Relationship | Required behavior |
+|--------------+-------------------|
+| Same origin through a new alias, nonce or SDK attempt | Recover the same canonical claim; no independent execution slot |
+| Different families sharing a budget root | Serialize reservation, consumption and actual use under that root |
+| Different families sharing only a history root | Serialize actual use and history-dependent decisions under that root |
+| Disjoint origins and both roots | May overlap; all global Policy/source changes still drain readers |
+| Root migration or Policy/source publication | Exclusive authority gate; no concurrent final callback |
+| Old request/provider/range/stream owner | Rejoin origin, roots and epochs before possible external bytes |
+
+Every fresh reservation increments the shared root hold in the same transaction
+as its local hold, immutable claim member, outcome row and history entry. Replay
+returns the original row without another charge. Admission and final use validate
+the complete member manifests, exact aggregate exposure, immutable local task
+limits and a bijection between history entries and original reservation members.
+Equal history counts with substituted digests are rejected. The current history
+projection records reservation commitments; it is not authenticated final usage
+or a complete provider conversation transcript.
+
+Provider Cedar context receives fresh =origin=, =budget_domain=, =history_domain=,
+=budget_epoch=, =history_epoch=, =shared_held=, =shared_limit= and =history_count=
+from the deciding transaction. These are optional schema extensions for policy
+authors, not facts copied from the SDK. Existing mandatory native conservation
+and final-use checks apply even when a policy does not reference the new fields.
+
+* Migration and uncertain recovery
+
+Migration is a whole-domain union, never a family detachment. All bindings and
+historical domain aliases pointing to the old root move together. The new cap is
+the minimum of the two effective caps; held amounts add without refund. A union
+whose aggregate exposure exceeds that cap is durably rejected. History sets and
+counters are retained. Budget and history unions can be selected independently;
+an unchanged root is an explicit no-op for that component.
+
+Each command binds its operation ID, exact digest, expected root IDs and epochs
+to a durable committed/rejected receipt. Root updates, all affected bindings,
+counters, epochs and receipt commit in the same native transaction. Reusing an
+operation ID with a different command fails. Replaying the original after a lost
+reply returns its original receipt, without rebasing against a newer parent.
+There is no automatic SQL, SDK or provider retry after uncertain effects.
+
+Merged root epochs exceed both old epochs. Private request, provider, range and
+stream-owner handles retain the consumed stamp. Every final effect checks it
+against current authority; restoring an old worker cannot adopt the new epoch.
+Restart also invalidates the local session. A queued original may be authorized
+under the new view without creating a new reservation; consumed unknown work
+cannot be redispatched. Missing observations, failed result commits and partial
+writes never authorize a refund or fresh consumption.
+
+Registration through an old domain name resolves to its current root, cap,
+aggregate hold and history. It cannot reopen a retired root. A retained task
+missing domain metadata fails closed: there is no automatic independent-domain
+backfill. Old populated database images require explicit authoritative recovery;
+this change does not silently classify their original sharing relationships.
+Coherent rollback of all data and receipts remains outside local SQL detection
+and requires the independent recovery floor described in the recovery design.
+
+* Responsibilities and source reuse
+
+| Owner | Existing mechanism reused | Extension in this change |
+|-------+---------------------------+--------------------------|
+| Scheme Governor / Governance | Source-owned semantics and Cedar source assets | Remains the semantic owner; no new DSL and no authority in route labels |
+| Go control plane | Authenticated source gRPC and explicit publication activation | Typed source commands for domain task registration, aliases, inspection and migration; real service tests |
+| Rust ledger / final broker | Original task records, exact manifests, consume-before-send and bounded callbacks | Persistent origin/domain tables, shared-root CAS, ordered root locks and final stamp checks |
+| MRR Data | Public Turso Database/connection/transaction ownership | Reused directly; no Weaver-owned parallel engine or dependency update |
+| cedar-poo-spec | Generic preparation, context, immutable source and current-final-use contracts | Native refinement obligations remain explicit; no claim that a dependency pin imports unavailable Gateway.ZeroTrust declarations |
+| Quint | Executable failure schedules and deliberate unsafe transitions | Shared-family admission, union, lost reply, old permit, restart and split/reset/refund counterexamples |
+| Lean | Conditional preservation over arbitrary finite claims and arbitrary family pairs | Union cannot split any previously shared pair, conserves holds/history, narrows capacity and fences old epochs |
+
+* Checkable correspondence
+
+| Property / premise | Executable evidence | Lean obligation |
+|--------------------+---------------------+-----------------|
+| Source chooses authentic original origin | Source-role mTLS denial and alias/new-origin rejection tests | Authentic canonical assignment is a refinement premise |
+| No split through a new family | Rust finite-family proptest; Go quick.Check over caps/order; Quint split negative control | =union_cannot_split_any_shared_pair=; =new_nonce_cannot_replace_original= |
+| Original unknown exposure survives union | Native aggregate hold CAS, migration/restart/replay tests | =union_retains_every_hold=; =admitted_union_conserves_capacity= |
+| Original history cannot reset or substitute | Exact reservation-history bijection and same-count wrong-digest fault | =union_retains_history=; Quint history-reset counterexample |
+| Old handles cannot use a new root epoch | Native live-permit denial; real SSE prefix/migration/tail rejection | =union_fences_both_old_permits=; Quint stale-use counterexample |
+| No duplicate completion after lost reply | Native operation/digest receipt and real gRPC restart replay | =committed_receipt_survives_head_change= under durable receipt premise |
+| Atomic native commit and actual effect custody | Go check-storage, Rust tests, real gRPC/provider boundaries | Explicit host premises; these are not compiled-code proofs |
+
+Sources are =dev/proofs/quint/SharedDomains.qnt= and
+=dev/proofs/lean/SharedDomains.lean=. The Go =check-storage= entry executes both,
+existing recovery models, runtime tests, actual gRPC integration and selected
+benchmarks. Model checking is bounded exploration, not exhaustive verification.
+Lean's arbitrary-pair and finite-list theorems do not prove native durability,
+authentic caller identity, transport isolation or the Rust-to-model refinement.
+
+* Performance and acceptance evidence
+
+The existing benchmark owner remains =crates/ledger/benches=. The matched
+two-worker final-use group now includes shared-budget and shared-history
+cross-family cases alongside WAL, MVCC serial control and independent-domain
+MVCC. All use the same bounded callback and original measurement/sample gates;
+setup and reservation remain outside timing, while final guard, durable dispatch
+burn, callback, commit and natural worker drain remain measured. Shared constraints
+must serialize regardless of a faster independent-domain result. Results do not
+establish general throughput, p99 latency or multiprocess MVCC support.
+
+Raw logs and machine receipts remain ignored under =.cache/=. The initial native
+run exposed missing low-level root fixtures and a module-boundary ASP violation;
+socket tests also encountered sandbox denial. These failures are retained rather
+than described as passes. Subsequent acceptance is recorded separately after the
+complete Go entry finishes; no timeout or dependency pins are relaxed.
+
+** Accepted runtime cohort
+
+The clean committed runtime source
+=bbf2642d29adf69aaa3e77ff787744a7fd4d70f9= passed all 21 stages of
+=go -C go run ./cmd/weaver-dev -clean-source check-storage= on the 12-core host.
+The run started at =2026-11-02T05:00:21.478368Z= and retained clean-source checks
+before and after, full workspace type checking, 30 ledger library/ASP tests,
+108 ledger integration/property tests, 15 actual execution tests, Clippy,
+all recovery models and the complete race-enabled provider integration suite.
+The new Quint model passed 13 scenarios, including four deliberate unsafe
+variants, plus 1,000 schedules of up to 60 steps. Lean JSON marks all four
+named =SharedDomainAuthority= trace declarations =CHECKED= against their source
+hash. This status does not discharge the native refinement premises above.
+
+| Matched final pair | Samples | Mean ms | 95% confidence interval ms |
+|--------------------+---------+---------+---------------------------|
+| WAL | 30 | 34.738 | 25.745 to 48.681 |
+| MVCC independent domains, serial control | 30 | 43.057 | 36.849 to 50.365 |
+| MVCC independent domains, parallel | 30 | 22.600 | 16.243 to 30.221 |
+| MVCC cross-family shared budget | 30 | 79.492 | 64.470 to 97.288 |
+| MVCC cross-family shared history | 30 | 68.167 | 59.329 to 76.850 |
+
+The shared cases retain their additional member/history verification and mutual
+exclusion. Their cost is visible and must not be removed by pretending that their
+families are independent. These values include storage and natural owner drain,
+not just the two synthetic 2 ms callbacks. The previous independent-family-only
+cohorts in 59.79 have a different contract workload. No latency SLO, general
+throughput improvement or attribution of all timing differences is claimed;
+profiling is required before making a stronger performance claim.
+
+After this runtime cohort, the only Rust/Go changes add public type documentation
+required by the contracts ASP gate and update the Go proof-owner inventory from
+four to five. The initial failures of those checks remain in ignored evidence.
+The affected contracts, policy and server library/ASP gates pass with 1, 2 and 25
+tests respectively. The server's one existing ignored test is a private observed
+server entry launched by Go integration, not a disabled safety scenario. Runtime
+authorization, SQL, models, pins and benchmark parameters remain the accepted
+cohort above. The full Go race suite and scoped diagram checks are rerun after
+the inventory/documentation correction.
+
+Current binding cardinality is one budget root and one history root per origin,
+with any finite number of registered families. Additional simultaneous quota
+domains require an explicit source/read-set extension, not an adapter-created
+replacement identity. Aggregated reservation history is not evidence that an
+unrelated origin completed a causal predecessor: semantic history predicates
+must retain their source-owned origin/member witnesses. A union fences old
+permits and requires fresh authorization; it does not prove that arbitrary Cedar
+predicates are monotone under history union.

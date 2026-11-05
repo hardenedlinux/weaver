@@ -1,3 +1,7 @@
+;;; SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+;;;
+;;; SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 ;;; Explicit operator-owned Cedar assets; no Scheme or alternate DSL evaluation.
 (import (only-in :clan/poo/object .ref .o)
         (only-in :clan/poo/mop validate)

@@ -1,0 +1,205 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+...@../../../dev/d2/themes/state
+vars: { d2-config: { layout-engine: tala;  pad: 80 } }
+title: TERMINAL RESOURCE OWNER / ORIGINAL OBLIGATION {
+  shape: text
+  near: top-center
+  style.font-size: 36
+  style.bold: true
+}
+original: Scheme semantics / Go ingress\nOriginal claim and authority vector\nReservation / history / unknown exposure {
+  class: card
+  icon: ../../architecture/diagrams/assets/go.svg
+  icon.near: top-left
+  left: 0
+  top: 0
+  width: 550
+  height: 240
+  style.fill: "#eef3ef"
+}
+active: CPU-budgeted exclusive writer lease\nFresh transaction / current authority\nCancellation does not imply rollback {
+  class: card
+  left: 810
+  top: 0
+  width: 550
+  height: 240
+  style.fill: "#e7edf4"
+}
+unknown: Commit outcome reconciliation\nDriver Unknown discards session\nKnown commit / lost reply stays recorded {
+  class: card
+  left: 1620
+  top: 0
+  width: 550
+  height: 240
+  style.fill: "#f4f2ec"
+}
+stopped: Closing is terminal\nDeny checkout / refuse live-lease close\nDiscard late returns / no resurrection {
+  class: card
+  left: 0
+  top: 620
+  width: 550
+  height: 240
+  style.fill: "#f4f2ec"
+}
+recovery: Fresh provider / original database\nRecover original operation and authority\nKeep unknown obligation held {
+  class: card
+  left: 810
+  top: 620
+  width: 550
+  height: 240
+  style.fill: "#e7edf4"
+}
+executor: Rust final transport owner\nCurrent Policy / history / owner fence\nOne-use admission at actual release {
+  class: card
+  icon: ../../architecture/diagrams/assets/rust.svg
+  icon.near: top-left
+  left: 1620
+  top: 620
+  width: 550
+  height: 240
+  style.fill: "#eef3ef"
+}
+original -> active: Same canonical binding { style.font-size: 20 }
+active -> unknown: Turso transaction result { style.font-size: 20 }
+active -> stopped: Begin close / drain accepted work { style.font-size: 20 }
+stopped -> recovery: Complete resource closure { style.font-size: 20 }
+unknown -> recovery: Exact durable reconciliation { style.font-size: 20 }
+recovery -> executor: Separate current-use admission { style.font-size: 20 }
+footer: "Resource closure is not authority revocation · A free slot is not refunded budget\nHistorical replay never recreates a live send capability" {
+  shape: text
+  left: 140
+  top: 1080
+  width: 1890
+  height: 120
+  style.font-size: 28
+  style.font-color: "#5c8b77"
+}
+
+# Project-owned presentation question; not an issued governance Question.
+vars: { d2-config: { data: { figure: |json
+{
+  "title": "67 writer owner lifecycle",
+  "purpose": "workflow",
+  "kind": "state",
+  "language": "en",
+  "width": 960,
+  "primary": "main",
+  "questions": [
+    {
+      "ref": "main",
+      "text": "How do writer ownership and recovery remain fenced?",
+      "focusRefs": [
+        "catalog",
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "catalog": "docs/architecture/08-diagram-catalog.org",
+    "model": "Project.sysml"
+  },
+  "copy": {
+    "takeaway": "How do writer ownership and recovery remain fenced?"
+  },
+  "basis": {
+    "captureRef": "docs/50-59-research-program/59-provider-rpc/59.67-writer-owner-lifecycle.d2#design-view",
+    "modelRefs": [
+      "Project.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "sketchbook",
+    "graphite",
+    "reading"
+  ],
+  "layout": "model-view",
+  "variants": [],
+  "presentation": {
+    "graph": {
+      "id": "weaver-source-view",
+      "children": [
+        {
+          "id": "title"
+        },
+        {
+          "id": "original"
+        },
+        {
+          "id": "active"
+        },
+        {
+          "id": "unknown"
+        },
+        {
+          "id": "stopped"
+        },
+        {
+          "id": "recovery"
+        },
+        {
+          "id": "executor"
+        },
+        {
+          "id": "footer"
+        }
+      ],
+      "layoutOptions": {
+        "elk.direction": "DOWN",
+        "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+        "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+        "elk.layered.layering.coffmanGraham.layerBound": "1",
+        "elk.spacing.nodeNode": "24",
+        "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+        "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+        "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+        "elk.separateConnectedComponents": "false",
+        "elk.aspectRatio": "0.55",
+        "elk.spacing.componentComponent": "24"
+      }
+    },
+    "options": {
+      "elk.direction": "DOWN",
+      "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+      "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+      "elk.layered.layering.coffmanGraham.layerBound": "1",
+      "elk.spacing.nodeNode": "24",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+      "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+      "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+      "elk.separateConnectedComponents": "false",
+      "elk.aspectRatio": "0.55",
+      "elk.spacing.componentComponent": "24"
+    },
+    "icons": {
+      "title": "document",
+      "original": "library",
+      "active": "capture",
+      "unknown": "capture",
+      "stopped": "capture",
+      "recovery": "document",
+      "executor": "rust",
+      "footer": "document"
+    },
+    "roles": {
+      "original": "semantic",
+      "unknown": "default",
+      "recovery": "default",
+      "executor": "execution",
+      "title": "default",
+      "active": "default",
+      "stopped": "default",
+      "footer": "default"
+    }
+  },
+  "icons": [
+    "engineering",
+    "weaver"
+  ]
+}
+|
+} } }

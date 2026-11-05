@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+TITLE: 59.10 Atomic Publication Decisions and Lost-Response Recovery
 #+LANGUAGE: en
 
@@ -60,7 +64,7 @@ over gRPC; no anonymous publication fallback remains.
 Rust keeps the deciding store, immutable result binding and final guards. Go owns
 the retained source request and explicit reconciliation. Scheme/POO remains the
 authority for the original semantic publication intent and any newly approved
-change. An old rejected intent cannot be silently rebased by the SDK. No source
+change. An old rejected intent cannot be silently rebased by the Gerbil toolchain. No source
 publication or result lookup calls provider transport or changes tasks, holds,
 execution claims, dispatch burns or release records. The original final-send
 checks still use the current deciding revision/fence and Cedar Policy.
@@ -135,7 +139,7 @@ actual mTLS lost-result/restart scenario alongside earlier ingress, streaming,
 partial-write, revocation and Arrow cases. PublicationRecovery has ten executable
 Quint controls and a 1000-trace, sixty-step sampled invariant run. Its five Lean
 declarations print only propext, with no sorryAx. The imported Cedar bridge,
-strict in-process SysML SDK, witness map and regenerated Protobuf descriptor also
+strict in-process OpenSysML Go API, witness map and regenerated Protobuf descriptor also
 pass. D2 was rendered to SVG/PNG and visually checked. Resource limits and
 dependency pins were not changed to obtain these results.
 

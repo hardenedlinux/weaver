@@ -1,7 +1,11 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 module LlmAccountCommit {
   import LlmExecutionReconciliation as R from "./LlmExecutionReconciliation"
   type Key={root:int,claim:int,profile:int,budget:int,history:int,reservation:int}
-  type Transaction={id:int,key:Key,bound:int,usage:int,resolution:int,source:int,meter:int}
+  type Transaction={id:int,key:Key,bound:int,usage:int,resolution:int,source:int,meter:int,tenant:int,formula:int}
   type Balance={available:int,held:int,charged:int}
   type Image={revision:int,balance:Balance,applications:Set[Transaction],used:Set[int],holds:int->int}
   type Proposal={transaction:Transaction,before:Image,worker:int,sourceGeneration:int}
@@ -11,8 +15,8 @@ module LlmAccountCommit {
   var a:Account
   pure val key={root:10,claim:11,profile:30,budget:5,history:9,reservation:11}
   pure val otherKey=key.with("root",20).with("claim",12).with("reservation",12)
-  pure val tx0={id:100,key:key,bound:3,usage:2,resolution:1,source:1,meter:1}
-  pure val tx1={id:101,key:otherKey,bound:2,usage:1,resolution:2,source:2,meter:2}
+  pure val tx0={id:100,key:key,bound:3,usage:2,resolution:1,source:1,meter:1,tenant:10,formula:20}
+  pure val tx1={id:101,key:otherKey,bound:2,usage:1,resolution:2,source:2,meter:2,tenant:10,formula:20}
   pure val txFull=tx0.with("usage",3)
   pure val genesis={revision:0,balance:{available:5,held:5,charged:0},applications:Set(),used:Set(),holds:Set(11,12).mapBy(k=>if (k==11) 3 else 2)}
   pure def post(image,tx)=image.with("revision",image.revision+1)
@@ -22,7 +26,7 @@ module LlmAccountCommit {
   pure val p1={transaction:tx1,before:genesis,worker:0,sourceGeneration:0}
   pure val after0=post(genesis,tx0)
   pure val initial={anchor:genesis,local:genesis,journal:List(),epoch:0,qualified:true,prepared:Set(),observed:Set(),everReleased:0,everCharged:0,otherEvidence:true,sourceGeneration:0}
-  def originalEvidence(tx)=if (tx.key==key) R::e.decisions==List(R::executed) and R::e.source.length()==1 and R::e.usage==tx.usage and tx.bound==3 and tx.resolution==1 and tx.source==1 and tx.meter==1
+  def originalEvidence(tx)=if (tx.key==key) R::e.decisions==List(R::executed) and R::e.source.length()==1 and R::e.usage==tx.usage and tx.bound==3 and tx.resolution==1 and tx.source==1 and tx.meter==1 and tx.tenant==10 and tx.formula==20
     else tx==tx1 and a.otherEvidence
   def gate(p)=not(R::e.conflict) and R::e.qualified and p.sourceGeneration==a.sourceGeneration and a.qualified and a.local==a.anchor and p.worker==a.epoch and p.before==a.anchor and
     originalEvidence(p.transaction) and p.transaction.usage>=0 and p.transaction.usage<=p.transaction.bound and
@@ -99,6 +103,8 @@ module LlmAccountCommit {
   run wrongOriginalProfileCannotPrepareTest=init.then(prepare(p0.with("transaction",tx0.with("key",key.with("profile",31)))).fail())
   run wrongSourceApplicationCannotPrepareTest=init.then(prepare(p0.with("transaction",tx0.with("source",2))).fail())
   run wrongUsageApplicationCannotPrepareTest=init.then(prepare(p0.with("transaction",tx0.with("meter",2))).fail())
+  run crossTenantReceiptCannotPrepareTest=init.then(prepare(p0.with("transaction",tx0.with("tenant",11))).fail())
+  run replacementFormulaCannotPrepareTest=init.then(prepare(p0.with("transaction",tx0.with("formula",21))).fail())
   run accountCommitDoesNotApplySourcePaymentTest=committed.expect(safety and R::e.payments.length()==0 and a.journal.length()==1)
   run unknownOriginalCanCoexistWithOtherSettlementTest=all {R::offered,a'=initial}.then(prepare(p1)).then(commit(p1,true,true))
     .expect(safety and a.anchor.holds.get(11)==3 and a.anchor.balance.held==3 and a.everReleased==1)

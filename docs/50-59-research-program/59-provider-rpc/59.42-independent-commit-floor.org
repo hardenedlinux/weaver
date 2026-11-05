@@ -1,0 +1,190 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+#+TITLE: Independent Commit Floor and Recovery
+#+LANGUAGE: en
+
+* Decision and evidence boundary
+
+=Project.sysml= and =WeaverExecution= remain authoritative for responsibilities.
+=PolicyEvidenceDesign.CommitCut= and =FloorDecision= specify target data, not a
+second execution engine. Extend the existing =PublicationRecovery= proof owner;
+reuse existing account, provider, continuation and history validators. No
+dependency pin or production Gateway implementation changes in this review.
+
+The independent floor protects the original assignment and four complete
+prefixes: publication, consumption, account applications and history. A
+publication-only floor cannot detect rollback of an already spent claim. Prefix
+lengths alone cannot detect replacement of an application body at the same
+ordinal. Entries bind ordered canonical identity, body, scope, predecessor and
+domain-owner validation evidence. A production digest representation requires
+domain-separated canonical encoding and an authenticated collision-resistant
+commitment; the models use full values, not a trusted string label.
+
+Independence means a Gateway snapshot cannot restore the authority's decisions,
+epoch or transport burns. Separate files, processes, Kubernetes identities or
+storage labels do not prove this property. If the authority itself rolls back,
+the safety theorem does not apply. Authority quorum, durable-prefix and
+reconfiguration obligations remain with their existing owners. This is a
+logical execution-right boundary for an AI Agent Gateway; no physical-isolation
+or HSM deployment requirement is introduced.
+
+* Commit and recovery protocol
+
+| Stage | Required deciding operation | Crash or lost-response interpretation |
+|-------+-----------------------------+---------------------------------------|
+| Prepare | Durably retain the original command ID/body, original scope, owner epoch and complete expected predecessor cut; candidate WAL is inert | A prepared row cannot publish Policy, release funds, advance Session or send |
+| Decide | Independent authority CAS checks current cut, epoch, source custody, exact command identity and existing domain validation; append the decision and committed record atomically | Both committed and definitive rejected outcomes are immutable; a timeout is neither |
+| Inspect | Authenticate the original outcome and complete canonical command; repeated submission resolves the same original result under the deciding transaction | A committed historical outcome is not the current cut; an absent result remains unknown |
+| Resolve old intent | Serialize a late commit against a durable epoch/fence rejection; preserve original ID and obligation until the result is definitive | Reading absence and allocating a new nonce can race a late commit and is forbidden |
+| Materialize | Fetch recoverable committed bodies and repair all four projections, including account application ID plus delta, claim/reservation consumption and history closure | Incomplete, conflicting or unavailable bodies retain the original holds and deny activation |
+| Activate | Re-read authority and match the full repaired cut, owner epoch, original assignment and resolved intent set | Recovered local active flags and cached receipts grant no authority |
+| Admit effect | Sole Rust transport owner persists a one-use burn, then rechecks the exact current cut/epoch under its final admission lock through the bounded send callback | A cut/fence change between burn and callback omits the send and retains the unknown hold; it does not refund or mint a replacement permit |
+
+Final authority CAS must resolve an existing ID before making another decision,
+inside the same serialization boundary. Exact duplicate workers recover one
+outcome. A stale parent receives a durable rejection; inspection must not rebase
+it. Reauthorization is a new decision linked to the original claim, profile,
+budget and history domains after definitive reconciliation. A new operation ID,
+nonce or Authority identity cannot reset a logical claim or account reservation.
+
+All relevant mutations invalidate activation. Current reads are observations,
+not bearer permits. The actual transport owner must participate in authority
+serialization in the independent recovery domain; otherwise a worker can read a
+current floor, restore an old image or wait through revocation, and send later.
+The production design must establish a linearization boundary spanning actual
+socket admission and floor/epoch changes. An offline token or an ordinary remote
+read followed by a local socket call does not establish that boundary.
+
+The persisted burn and actual network call are separate events. A crash between
+them may produce no call; recovery cannot infer no-execution or reissue the
+ambiguous burn. The live transport-owner continuation binds its original cut,
+epoch, logical key and one-use admission; it is not reconstructible from the
+presence of a persisted burn. Queued provider-client retries and provider redirects remain
+disabled. Stream range release reuses the existing per-release current-state
+guards. Bytes already admitted may drain. A partial write or missing usage
+receipt cannot prove final usage, no-execution, or a refundable reservation.
+
+Floor decision retention and committed body availability are separate duties.
+Retaining a root without reconstructible records safely stops progress; it does
+not authorize activation. Garbage collection/checkpoint truncation must preserve
+the existing manifest and prefix-availability proofs. Lack of a response,
+timeout or temporary absence is never a deletion or budget-release certificate.
+
+* Responsibility and source refinement
+
+| Owner / actual source | Reuse | Remaining extension |
+|-----------------------+-------+---------------------|
+| Scheme AA Session / Workflow / Governor | Higher-order semantic contract and receipt-bound successor proposals | Session advances only after authenticated terminal/history evidence; floor activation alone is not completion |
+| Go control publication and gRPC recovery | Frozen publication identity, exact inspection after lost reply, immutable historical receipt | Carry authenticated target floor/custody contracts; no source-side send or independent refund decision |
+| [[file:../../../crates/ledger/src/publication.rs][Rust publication ledger]] | Atomic authority/schema/outcome transaction; stable command commitment | Independent authority CAS and authenticated outcome recovery across restored projections |
+| [[file:../../../crates/ledger/src/provider.rs][Rust provider ledger]] | Canonical original claim, reservation, durable dispatch burn and fresh final send/release guard | Floor qualification at every deciding effect boundary; actual sole transport ownership in the independent recovery domain |
+| [[file:../../../crates/ledger/src/store.rs][Rust store]] | FULL synchronous WAL, immutable original task and retained unknown hold | WAL durability alone cannot detect whole-store rollback |
+| Existing account / history models | Account conservation, once-only original reservation, WAL activation, terminal history and Session admission laws | Checked projection from four-prefix records to real account/history state; production account settlement is not supplied by this test fixture |
+| Cedar / cedar-poo-spec | Current schema-bound Policy and semantic authorization laws | Storage, authenticated provenance, floor independence and actual send ordering remain Weaver contracts |
+
+No domain-validity Boolean crosses a trusted API as a client assertion. Quint's
+=qualified= and Lean's =DomainValid.assess= denote authenticated validation by the
+existing domain owner at final CAS. They are explicit refinement premises, not
+proof of Cedar evaluation, account arithmetic or semantic history completeness.
+
+* Reused proofs and counterexamples
+
+| Existing owner | Checked extension / reused law | Premise or uncovered refinement |
+|----------------+--------------------------------+---------------------------------|
+| [[file:../../../dev/proofs/quint/PublicationRecovery.qnt][PublicationRecovery Quint]] | Four full prefixes, immutable outcomes, absent/late commits, fenced rejection, exact repair, changed epoch, same-length body replacement, duplicate logical consumption and account application | Finite exploration; full canonical key/scope mapping must be implemented |
+| Same owner | Separate durable burn and actual admission; restart discards live continuation; a fence between them leaves hold unchanged | Atomic admission action represents the sole transport owner; no socket-level consensus is proved |
+| Same owner, unsafe actions outside =step= | Local-only activation and rollback of authority burns violate safety | Authority rollback is an explicit excluded premise, never silently classified as ordinary restart |
+| [[file:../../../dev/proofs/lean/PublicationRecovery.lean][PublicationRecovery Lean, CommitFloor namespace]] | Any finite trace preserves all four ordered prefixes, original outcomes, scope, spent keys and unknown holds; stale cut/epoch/unresolved intent prevents activation | Full values abstract canonical bodies; authority state is non-rollback; no new account evaluator |
+| [[file:../../../dev/proofs/lean/LlmWalActivation.lean][LlmWalActivation]] | Reuse =actual_account_composition=, =original_reservation_once=, =account_conservation=, =committed_prefix_retained= and =unknown_budget_hold_retained= | The concrete floor-account-journal projection and authenticated source-ready binding remain required; prefix preservation alone does not prove balances |
+| Existing =AuthorityPublication= / =ProviderRpc= | Keep current read-to-final-CAS and per-release guards; historical receipts cannot reopen a spent claim | Whole-store rollback remains unsafe until the independent protocol is integrated |
+
+Lean's floor trace is parametric in a domain-validation predicate and, for owner
+replacement, an authentic exact-incarnation stop predicate. Its burn law
+proves preservation of spent status, not that a remote provider executed exactly
+once. The existing account theorem requires the real source reconciliation
+binding before releasing an unknown hold. These premises are not discharged by
+record equality or by retaining a checksum. No claim of a complete machine-to-
+network refinement proof follows from the composition envelope.
+
+* Executable acceptance and current results
+
+The modular [[file:../../../crates/ledger/tests/unit/commit_floor.rs][SQLite protocol reference]] uses actual transactions, durable outcomes,
+separate restorable projections and the real Ledger dispatch API. It is compiled
+only as a test submodule. The fixture deliberately limits restore to the Gateway
+store. It does not establish deployment independence, credential custody,
+authenticated source assignment or a production floor service.
+
+| Scenario | Executed receipt | Safety result / limit |
+|----------+------------------+-----------------------|
+| Committed response lost before projection | Close/reopen authority; inspect each original command; replay historical result | Exact outcomes survive; no rebase to later cut |
+| Partial and substituted projection | Delete history row; replace account body while keeping row count; repair full rows | Activation rejects both incomplete and wrong-body images |
+| Absent, late and old-epoch outcomes | Query absent prepared intent; allow delayed commit; rotate before another delayed commit | Unknown blocks activation; old epoch gets immutable rejection |
+| Concurrent identical workers | Two independent connections submit the same frozen ID after a barrier | One prefix append; both recover exactly the same result |
+| Stale parent / fresh nonce / fresh application ID | Submit competing and freshly named commands for the same original key | Neither claim consumption nor application repeats in the reference protocol |
+| Gateway snapshot and service restart | Restore pre-consumption Gateway DB twice, reopen floor, call actual Ledger dispatch only through floor owner | One callback total, original hold four retained; no actual provider billing asserted |
+| Fence after burn before callback | Inject epoch change between the two transactions; retry with new epoch | Zero callbacks, burn remains spent and hold four retained |
+| Existing production negative control | Keep =whole_database_rollback_requires_an_independent_recovery_floor= | Three callbacks remain possible without this protocol; this is expected unsafe evidence |
+
+Focused results: 25 publication/floor Quint scenarios; fixed exploration of
+1,000 samples by 60 steps; existing authority/provider scenarios; the extended
+Lean file without =sorry=; six protocol reference tests; all 44 ledger tests;
+ledger Clippy deny gate. The companion verification receipt below records final
+commands and any limitations. No deadline, dependency pin or concurrency limit
+was changed to obtain acceptance.
+
+| Verification entry | Observed result |
+|--------------------+-----------------|
+| =quint test PublicationRecovery=, seed 293 | 25 passing, including expected unsafe witnesses |
+| =quint run PublicationRecovery=, invariant =safe=, 1,000 samples, 60 steps, seed 293 | No violation found; bounded exploration, not exhaustive proof |
+| Existing =AuthorityPublication= scenarios | 27 passing |
+| Existing =LlmWalActivation= imported account/reconciliation scenarios | 83 passing; no second account model introduced |
+| Existing configured Lean toolchain on =PublicationRecovery.lean= | Checked; printed axioms contain no =sorryAx=; standard Lean logical axioms are reported |
+| =cargo test -p weaver-ledger --locked --offline= | 44 passing; six protocol reference cases included |
+| =cargo clippy -p weaver-ledger --all-targets --locked --offline -- -D warnings= | Passed |
+| Go =TestProjectArchitecture*= and =TestSysMLSDK*= | Passed strict linked-model analysis, including negative controls |
+| Existing five focused provider integration tests, =-count=1 -race -tags=integration= | Passed with real Rust process, mTLS gRPC relay and controlled HTTPS peer; independent floor is not installed in this service |
+| Org parsing and D2 render/visual inspection | Passed; diagram contains core relationships only |
+
+The existing five Go cases are =PublicationLostReplyRestartAndHistoricalDecision=,
+=HistoricalPublicationReadCannotAuthorizeAfterRestart=,
+=SourceProfileAndCedarBindFinalSendAcrossRestart=,
+=RevocationDuringSSEStopsNextRelease= and
+=PartialRequestAndRestartRetainUnknownClaim=, each with the =TestProvider= prefix.
+Raw process logs remain temporary, outside version control. Negative unsafe
+actions/tests remain in source. An initial strict SysML rejection of a reserved
+field name was corrected to =predecessor= / =resultCut= before acceptance; the
+schema check was retained and rerun rather than weakened.
+
+Full higher-order Governance adapter production acceptance remains 0/13. The
+independent production authority, final transport integration, concrete account/
+history projection refinement, deployment rollback fault injection and real
+usage reconciliation remain open. Reference tests and conditional proofs do
+not increase that count. Remote CI remains nonblocking and must not be described
+as green when a job never started.
+
+* Comparative metric and next implementation boundary
+
+The comparison metric separates specified coverage, executed component evidence
+and production acceptance. This round adds a testable four-prefix recovery
+protocol and six reference tests; integrated adapter acceptance remains 0/13.
+No performance gain, compression ratio or provider cost reduction was measured.
+Previous [[file:59.29-strands-box-cross-review.org][Box]] and [[file:59.25-openshell-and-tao3k-ecosystem.org][OpenShell]] source comparisons remain the baseline;
+their current implementations were not re-audited in this protocol-only round.
+
+| System | Benefit to retain | Weaver gap / resolution |
+|--------+-------------------+--------------------------|
+| Weaver | Higher-order Scheme Governance plus schema-bound Cedar evidence can constrain current execution and recovery | Prove and implement the independent authority-to-transport boundary; preserve unknown holds at every unresolved seam |
+| Box | Reuse the reviewed request-validation and result-recording lessons | Those mechanisms alone do not discharge Weaver's original assignment, shared budget or rollback contracts |
+| OpenShell | Reuse the reviewed isolation and operational observation lessons | Operational observations do not replace authoritative commit outcomes; export telemetry under explicit Policy |
+
+Next production work requires agreement on the actual independent authority and
+transport-owner topology, authenticating source custody, durable record/body
+availability and the concrete account/history refinement. Keep Go's cloud-native
+control role and Scheme's semantic role; Rust remains the sole final executor.
+
+The follow-up [[file:59.43-floor-transport-owner.org][floor-to-transport review]] selects the base target topology and
+defines its actual admission linearization and no-overlap handoff. It also
+strengthens the test reference to compare the proposal's explicit observed cut;
+repairing a shared projection must not silently rebase a queued old proposal.

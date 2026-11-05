@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 package v1
 
 import (
@@ -11,11 +15,12 @@ import (
 
 // Publication is retained unchanged across an ambiguous response and reconciliation.
 type Publication struct {
-	OperationID      string  `json:"operation_id"`
-	ExpectedRevision *uint64 `json:"expected_revision"`
-	Fence            uint64  `json:"fence"`
-	Policy           string  `json:"policy"`
-	Schema           string  `json:"schema"`
+	OperationID      string       `json:"operation_id"`
+	ExpectedRevision *uint64      `json:"expected_revision"`
+	Fence            uint64       `json:"fence"`
+	Policy           string       `json:"policy"`
+	Schema           string       `json:"schema"`
+	Review           *DeltaReview `json:"review,omitempty"`
 }
 
 func (p Publication) Digest() (string, error) {
@@ -34,4 +39,18 @@ func (p Publication) Digest() (string, error) {
 	}
 	digest := sha256.Sum256(data)
 	return hex.EncodeToString(digest[:]), nil
+}
+
+// Clone freezes independently issued evidence along with the original CAS parent.
+// Review is excluded from Digest because it signs that original command digest.
+func (p Publication) Clone() Publication {
+	if p.ExpectedRevision != nil {
+		value := *p.ExpectedRevision
+		p.ExpectedRevision = &value
+	}
+	if p.Review != nil {
+		value := p.Review.Clone()
+		p.Review = &value
+	}
+	return p
 }

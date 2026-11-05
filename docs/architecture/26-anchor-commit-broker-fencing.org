@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Weaver Anchor Commit Confirmation and Final Broker Fencing
 #+language: en
 #+date: 2026-10-19
@@ -169,14 +173,14 @@ cancellation do not qualify this physical barrier.
 | Owner | Specific responsibility |
 |-------+-------------------------|
 | Scheme / POO Flow | Preserve original key, claim, budget/history lineage, pure spent-state transitions and final usage identity; an unchanged semantic root never restores a nonce |
-| Go / cloud-native and Agent adapters | Discover the root/owner endpoint, authenticate workload identity, reconcile exact original status, coordinate handover/readiness and integrate SDK lifecycles without retrying raw effects |
+| Go / cloud-native and Agent adapters | Discover the root/owner endpoint, authenticate workload identity, reconcile exact original status, coordinate handover/readiness and integrate Gerbil toolchain lifecycles without retrying raw effects |
 | Rust / root adapter | Validate complete confirmation/domain/configuration/term/index/body, require qualified durable/current prefix, preserve original response continuations and reject stale proposals |
 | Rust / final broker | Own the affine grant/burn/submission lifecycle and actual writer gate; serialize dispatch with the physical barrier; preserve submitted original I/O across root leadership changes |
 | Qualified store and actual effect owners | Supply durable single-prefix/current-read evidence, actual writer isolation, and atomic original account mutation/receipt; Rust wrappers do not create these physical facts |
 | Cedar / cedar-poo-spec | All required Policy layers allow without errors for the bound actual effect and state; authenticate the actual inputs at the host and preserve evaluation/validation alignment |
 
 Go's cloud-native strengths apply to controller, discovery, Kubernetes identity
-and Agent SDK integration. It cannot convert leader status, retries or SDK
+and Agent Gerbil toolchain integration. It cannot convert leader status, retries or Gerbil toolchain
 reconnects into financial/send authority. Rust owns the capability/FD-sensitive
 boundary; the backing root service need not be implemented in Rust. Scheme
 retains the existing POO semantic advantage. Cedar constrains the actual operation;
@@ -241,7 +245,7 @@ case actually completes an abstract account effect after bypassing the writer
 check; it is not merely an audit flag. The forked-root replay retains historical
 application counters so forgetting rows cannot erase the duplication observation.
 
-* Native acceptance and performance obligations
+* Implementation acceptance and performance obligations
 
 Qualify lost responses and leader death after every durable phase; restore a
 successor from an older replica/checkpoint and require the acknowledged prefix.
@@ -264,3 +268,9 @@ consumption/current-prefix checks and the final writer barrier cannot be replace
 by a cached leader term. Batching/sharding must preserve per-original-key tombstones,
 shared-budget/history identity and durability before executable acknowledgement.
 The full-shard unknown barrier remains conservative and can prevent progress.
+
+* Embedded architecture views
+
+** 27-anchor-commit-broker-fencing.svg
+
+[[file:diagrams/27-anchor-commit-broker-fencing.svg]]

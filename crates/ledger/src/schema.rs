@@ -1,6 +1,53 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 //! Deciding-store constraints; there is no budget release without evidence.
 /// Native owner boundary for `SCHEMA`.
 pub const SCHEMA: &str = r#"
+CREATE TABLE IF NOT EXISTS original_tasks (
+ task_key TEXT PRIMARY KEY, family TEXT NOT NULL UNIQUE, origin TEXT NOT NULL UNIQUE,
+ task_digest TEXT NOT NULL, binding_digest TEXT NOT NULL, publication TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS task_admissions (
+ operation_id TEXT PRIMARY KEY, digest TEXT NOT NULL, receipt TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS budget_domains (
+ id TEXT PRIMARY KEY, root TEXT NOT NULL, declared_limit INTEGER NOT NULL CHECK(declared_limit>0),
+ ceiling INTEGER NOT NULL CHECK(ceiling>0 AND ceiling<=declared_limit), held INTEGER NOT NULL CHECK(held>=0 AND held<=ceiling), epoch INTEGER NOT NULL CHECK(epoch>0));
+CREATE TABLE IF NOT EXISTS history_domains (
+ id TEXT PRIMARY KEY, root TEXT NOT NULL, events INTEGER NOT NULL CHECK(events>=0), epoch INTEGER NOT NULL CHECK(epoch>0));
+CREATE TABLE IF NOT EXISTS execution_origins (
+ id TEXT PRIMARY KEY, canonical_family TEXT NOT NULL UNIQUE, binding TEXT NOT NULL,
+ budget_root TEXT NOT NULL, history_root TEXT NOT NULL);
+CREATE INDEX IF NOT EXISTS origins_budget ON execution_origins(budget_root);
+CREATE INDEX IF NOT EXISTS origins_history ON execution_origins(history_root);
+CREATE TABLE IF NOT EXISTS family_origins (family TEXT PRIMARY KEY, origin TEXT NOT NULL REFERENCES execution_origins(id));
+CREATE TABLE IF NOT EXISTS domain_history (
+ origin TEXT NOT NULL, node TEXT NOT NULL, member TEXT NOT NULL, event TEXT NOT NULL, digest TEXT NOT NULL,
+ PRIMARY KEY(origin,node,member,event));
+CREATE TABLE IF NOT EXISTS domain_migrations (operation_id TEXT PRIMARY KEY, digest TEXT NOT NULL, receipt TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS source_authority (
+ singleton INTEGER PRIMARY KEY CHECK(singleton=1), epoch INTEGER NOT NULL CHECK(epoch>=0), record TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS source_keys (
+ public_key_sha256 TEXT PRIMARY KEY, epoch INTEGER NOT NULL UNIQUE CHECK(epoch>=0), certificate_sha256 TEXT NOT NULL UNIQUE);
+CREATE TABLE IF NOT EXISTS source_rotations (
+ operation_id TEXT PRIMARY KEY, digest TEXT NOT NULL, proposer TEXT NOT NULL, command TEXT NOT NULL, receipt TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS review_deployment (singleton INTEGER PRIMARY KEY CHECK(singleton=1));
+CREATE TABLE IF NOT EXISTS review_keys (epoch INTEGER PRIMARY KEY CHECK(epoch>=0), record TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS review_authority (
+ singleton INTEGER PRIMARY KEY CHECK(singleton=1), epoch INTEGER NOT NULL CHECK(epoch>=0), record TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS authority_pending (
+ operation_id TEXT PRIMARY KEY, digest TEXT NOT NULL, proposal TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS authority_review_requirements (
+ operation_id TEXT PRIMARY KEY, digest TEXT NOT NULL, parent TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS authority_reviews (
+ operation_id TEXT PRIMARY KEY REFERENCES authority_review_requirements(operation_id),
+ digest TEXT NOT NULL, artifact_digest TEXT NOT NULL, record TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS authority_delta_reviews (
+ operation_id TEXT NOT NULL REFERENCES authority_reviews(operation_id), reviewer_epoch INTEGER NOT NULL,
+ source_epoch INTEGER NOT NULL, digest TEXT NOT NULL, record TEXT NOT NULL,
+ PRIMARY KEY(operation_id,reviewer_epoch,source_epoch));
+CREATE TABLE IF NOT EXISTS task_publications (
+ family TEXT PRIMARY KEY REFERENCES tasks(family), operation_id TEXT NOT NULL, digest TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS authority (
  singleton INTEGER PRIMARY KEY CHECK(singleton=1), revision INTEGER NOT NULL,
  fence INTEGER NOT NULL, policy TEXT NOT NULL);
@@ -8,6 +55,10 @@ CREATE TABLE IF NOT EXISTS authority_schema (
  singleton INTEGER PRIMARY KEY CHECK(singleton=1), schema TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS authority_publications (
  operation_id TEXT PRIMARY KEY, digest TEXT NOT NULL, request TEXT NOT NULL, receipt TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS authority_review_heads (
+ singleton INTEGER PRIMARY KEY CHECK(singleton=1), operation_id TEXT NOT NULL REFERENCES authority_publications(operation_id),
+ digest TEXT NOT NULL, revision INTEGER NOT NULL, fence INTEGER NOT NULL, reviewer_epoch INTEGER NOT NULL,
+ source_epoch INTEGER NOT NULL, issuer_record TEXT NOT NULL, review_record TEXT NOT NULL, delta_record TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS tasks (
  family TEXT PRIMARY KEY, record TEXT NOT NULL,
  budget INTEGER NOT NULL CHECK(budget>0), held INTEGER NOT NULL DEFAULT 0 CHECK(held>=0 AND held<=budget));
@@ -26,8 +77,8 @@ CREATE TABLE IF NOT EXISTS operations (
  state TEXT NOT NULL CHECK(state IN ('queued','unknown','response_received')),
  PRIMARY KEY(family,node));
 CREATE TABLE IF NOT EXISTS execution_claims (
- family TEXT NOT NULL, node TEXT NOT NULL, kind TEXT NOT NULL CHECK(kind IN ('request','stream')), PRIMARY KEY(family,node));
-INSERT OR IGNORE INTO execution_claims SELECT family,node,'request' FROM operations;
+ family TEXT NOT NULL, node TEXT NOT NULL, kind TEXT NOT NULL CHECK(kind IN ('request','stream','provider')),
+ reservations TEXT NOT NULL CHECK(json_valid(reservations) AND json_type(reservations)='object'), PRIMARY KEY(family,node));
 CREATE TABLE IF NOT EXISTS streams (
  family TEXT NOT NULL REFERENCES tasks(family), node TEXT NOT NULL, contract TEXT NOT NULL, digest TEXT NOT NULL,
  generation INTEGER NOT NULL DEFAULT 0, owner TEXT, owner_fence INTEGER,
@@ -54,4 +105,45 @@ CREATE TABLE IF NOT EXISTS provider_releases (
  family TEXT NOT NULL, node TEXT NOT NULL, sequence INTEGER NOT NULL, length INTEGER NOT NULL, digest TEXT NOT NULL,
  state TEXT NOT NULL CHECK(state IN ('unknown','released')), PRIMARY KEY(family,node,sequence),
  FOREIGN KEY(family,node) REFERENCES provider_runs(family,node));
+CREATE TABLE IF NOT EXISTS provider_oauth_deployment (
+ singleton INTEGER PRIMARY KEY CHECK(singleton=1), record TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS provider_oauth_grants (
+ token_hash TEXT PRIMARY KEY, record TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS provider_oauth_revocations (token_hash TEXT PRIMARY KEY);
+CREATE TABLE IF NOT EXISTS provider_oauth_issuer_rotations (
+ epoch INTEGER PRIMARY KEY CHECK(epoch>0), public_key TEXT NOT NULL UNIQUE, record TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS provider_oauth_witness (
+ singleton INTEGER PRIMARY KEY CHECK(singleton=1), length INTEGER NOT NULL CHECK(length>0), digest TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS metering_deployment (
+ singleton INTEGER PRIMARY KEY CHECK(singleton=1), record TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS metering_reservations (
+ family TEXT NOT NULL, node TEXT NOT NULL, tenant TEXT NOT NULL, formula_digest TEXT NOT NULL, authority_digest TEXT NOT NULL,
+ PRIMARY KEY(family,node), FOREIGN KEY(family,node) REFERENCES provider_runs(family,node));
+CREATE TABLE IF NOT EXISTS provider_catalog_publications (
+ revision INTEGER PRIMARY KEY, digest TEXT NOT NULL UNIQUE, record TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS provider_catalog_reservations (
+ family TEXT NOT NULL, node TEXT NOT NULL, catalog TEXT NOT NULL REFERENCES provider_catalog_publications(digest),
+ PRIMARY KEY(family,node), FOREIGN KEY(family,node) REFERENCES provider_runs(family,node));
+CREATE TABLE IF NOT EXISTS provider_rate_bindings (
+ family TEXT NOT NULL, node TEXT NOT NULL, quote_digest TEXT NOT NULL,
+ PRIMARY KEY(family,node), FOREIGN KEY(family,node) REFERENCES provider_runs(family,node));
+CREATE TABLE IF NOT EXISTS metering_credentials (
+ tenant TEXT NOT NULL, epoch INTEGER NOT NULL, certificate TEXT NOT NULL UNIQUE,
+ public_key TEXT NOT NULL UNIQUE, credential TEXT NOT NULL UNIQUE, record TEXT NOT NULL, PRIMARY KEY(tenant,epoch));
+CREATE TABLE IF NOT EXISTS provider_terminal_usage (
+ family TEXT NOT NULL, node TEXT NOT NULL, tokens TEXT NOT NULL,
+ PRIMARY KEY(family,node), FOREIGN KEY(family,node) REFERENCES provider_runs(family,node));
+CREATE TABLE IF NOT EXISTS metering_applications (
+ tenant TEXT NOT NULL, application TEXT NOT NULL, family TEXT NOT NULL, node TEXT NOT NULL,
+ receipt TEXT NOT NULL, released INTEGER NOT NULL CHECK(released>=0),
+ PRIMARY KEY(tenant,application), UNIQUE(family,node),
+ FOREIGN KEY(family,node) REFERENCES metering_reservations(family,node));
+CREATE TABLE IF NOT EXISTS provider_quota_totals (
+ kind TEXT NOT NULL, scope TEXT NOT NULL, held INTEGER NOT NULL CHECK(held>=0),
+ PRIMARY KEY(kind,scope));
+CREATE TABLE IF NOT EXISTS provider_quota_reservations (
+ family TEXT NOT NULL, node TEXT NOT NULL, kind TEXT NOT NULL, scope TEXT NOT NULL,
+ PRIMARY KEY(family,node,kind), FOREIGN KEY(family,node) REFERENCES provider_runs(family,node),
+ FOREIGN KEY(kind,scope) REFERENCES provider_quota_totals(kind,scope));
+CREATE INDEX IF NOT EXISTS provider_quota_members ON provider_quota_reservations(kind,scope);
 "#;

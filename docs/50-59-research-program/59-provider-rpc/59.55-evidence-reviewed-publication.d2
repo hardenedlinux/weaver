@@ -1,0 +1,162 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+...@../../../dev/d2/themes/flow
+vars: {d2-config: {layout-engine: tala;  pad: 70}}
+classes: {card: {label.near: center-center; style.font-size: 21; style.border-radius: 12}}
+title: ORIGINAL REVIEW / ONE DECIDING AUTHORITY {shape: text; near: top-center; style.font-size: 32; style.bold: true}
+source: Scheme Governance / AA\nOriginal semantic contracts\nCedar and upstream review evidence\nInert preparation {
+  class: card; left: 0; top: 0; width: 470; height: 210; style.fill: "#eef3ef"
+}
+host: Trusted review host\nAuthenticate evidence producer\nValidate actual semantic approval\nBind original command and parent {
+  class: card; left: 690; top: 0; width: 470; height: 210; style.fill: "#f4f2ec"
+}
+pending: Rust deciding store\nLatch mandatory review\nCapture actual Policy / schema parent\nRetain original pending intent {
+  class: card; left: 1380; top: 0; width: 480; height: 210; style.fill: "#e7edf4"
+  icon: ../../architecture/diagrams/assets/rust.svg; icon.near: top-left
+}
+evidence: Immutable review registration\nExact command and captured parent\nFull upstream artifact retained\nReply loss changes no binding {
+  class: card; left: 0; top: 490; width: 470; height: 210; style.fill: "#f4f2ec"
+}
+cas: Rust final publication CAS\nJoin review and actual parent\nOne transaction / original outcome\nResolve only this pending key {
+  class: card; left: 690; top: 490; width: 470; height: 210; style.fill: "#e7edf4"
+}
+execution: Rust final execution\nCurrent Cedar and committed task\nClaim / budget / history / fence\nUnknown exposure remains held {
+  class: card; left: 1380; top: 490; width: 480; height: 210; style.fill: "#eef3ef"
+}
+source -> host: Evidence requirements {style.font-size: 18}
+host -> pending: Stage exact proposal {style.font-size: 18}
+host -> evidence: Qualified host admission {style.font-size: 18}
+evidence -> cas: Exact retained review {style.font-size: 18}
+pending -> cas: Original parent and intent {style.font-size: 18}
+cas -> execution: Committed origin {style.font-size: 18}
+footer: "Registration is not publication · Publication never sends · Historical success is not current authority" {
+  shape: text; left: 50; top: 870; width: 1760; height: 60; style.font-size: 23; style.font-color: "#5c8b77"
+}
+
+# Project-owned presentation question; not an issued governance Question.
+vars: { d2-config: { data: { figure: |json
+{
+  "title": "55 native reviewed publication",
+  "purpose": "workflow",
+  "kind": "flow",
+  "language": "en",
+  "width": 960,
+  "primary": "main",
+  "questions": [
+    {
+      "ref": "main",
+      "text": "How does reviewed source authority reach final execution?",
+      "focusRefs": [
+        "catalog",
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "catalog": "docs/architecture/08-diagram-catalog.org",
+    "model": "Project.sysml"
+  },
+  "copy": {
+    "takeaway": "How does reviewed source authority reach final execution?"
+  },
+  "basis": {
+    "captureRef": "docs/50-59-research-program/59-provider-rpc/59.55-evidence-reviewed-publication.d2#design-view",
+    "modelRefs": [
+      "Project.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "sketchbook",
+    "node-editor",
+    "reading"
+  ],
+  "layout": "model-view",
+  "variants": [],
+  "presentation": {
+    "graph": {
+      "id": "weaver-source-view",
+      "children": [
+        {
+          "id": "title"
+        },
+        {
+          "id": "source"
+        },
+        {
+          "id": "host"
+        },
+        {
+          "id": "pending"
+        },
+        {
+          "id": "evidence"
+        },
+        {
+          "id": "cas"
+        },
+        {
+          "id": "execution"
+        },
+        {
+          "id": "footer"
+        }
+      ],
+      "layoutOptions": {
+        "elk.direction": "DOWN",
+        "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+        "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+        "elk.layered.layering.coffmanGraham.layerBound": "1",
+        "elk.spacing.nodeNode": "24",
+        "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+        "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+        "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+        "elk.separateConnectedComponents": "false",
+        "elk.aspectRatio": "0.55",
+        "elk.spacing.componentComponent": "24"
+      }
+    },
+    "options": {
+      "elk.direction": "DOWN",
+      "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+      "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+      "elk.layered.layering.coffmanGraham.layerBound": "1",
+      "elk.spacing.nodeNode": "24",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+      "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+      "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+      "elk.separateConnectedComponents": "false",
+      "elk.aspectRatio": "0.55",
+      "elk.spacing.componentComponent": "24"
+    },
+    "icons": {
+      "title": "document",
+      "source": "library",
+      "host": "capture",
+      "pending": "rust",
+      "evidence": "capture",
+      "cas": "rust",
+      "execution": "rust",
+      "footer": "capture"
+    },
+    "roles": {
+      "source": "semantic",
+      "pending": "execution",
+      "cas": "execution",
+      "execution": "execution",
+      "title": "default",
+      "host": "default",
+      "evidence": "default",
+      "footer": "default"
+    }
+  },
+  "icons": [
+    "engineering",
+    "weaver"
+  ]
+}
+|
+} } }

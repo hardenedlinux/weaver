@@ -1,0 +1,242 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+#+TITLE: 59.79 Independent Final Effects and Authority Publication
+#+LANGUAGE: en
+#+OPTIONS: toc:2
+
+* Current implementation
+
+The cross-family limitation described in this cohort is superseded by
+[[file:59.80-shared-domain-authority.org][59.80 authoritative shared domains]]. Its original measurements and failed
+cohorts remain historical evidence. Current lock keys come from persisted origin,
+budget and history roots; family names alone no longer decide independence.
+
+This extends [[file:59.78-turso-mvcc-custody.org][the initial MVCC admission profile]] to actual final use. It uses the
+same pinned MRR Data Turso driver, one process owner, native transactions and
+existing original claims. There is no new provider, runtime scheduler, retry
+engine or Governance DSL. WAL remains the default; this concurrency is selected
+by the existing explicit MVCC profile.
+
+[[file:59.77-mrr-turso-storage.svg]]
+
+* Conflict domains
+
+| Relationship | Execution order | Reason |
+|--------------+-----------------+--------|
+| Same original claim, new SDK attempt/nonce | One durable consumption; no second send | Attempt identity never replaces original logical identity |
+| Different claims/nodes in the same family | Serialize | Original family owns their shared budget and complete history/exposure manifest |
+| Messages/ranges in one stream | Serialize within that family | Owner generation, cursor and unknown tail remain joined to the original stream |
+| Distinct original families with independent budgets/history | Concurrent native final scopes | No mutable claim, exposure or history dependency crosses the family boundary |
+| Policy, source-owner, profile, schema or global history mutation | Exclusive publication after all family scopes drain | Current authorization cannot change between the final check and actual bytes |
+| Future accounting/history domain shared across families | Not eligible for independent-family execution | It must use one authoritative conflict key; new protocol/session/routing keys cannot split it |
+
+The current schema binds claims, budget and projected execution history to the
+original task's family. Concurrency never uses a route, nonce, Authority ID,
+connection or new message ID as its conflict key. The existing hash-stripe mutex
+can conservatively collide distinct families; this reduces throughput but cannot
+weaken ordering. The implementation does not claim maximal parallelism within a
+shared-budget family. Cross-family shared-accounting domains are not currently
+an accepted runtime schema feature; supporting them requires an authoritative
+domain binding, not a new unchecked string selected by an adapter.
+
+* Execution and publication
+
+The existing =begin_family= now owns admission, consumption, dispatch burns,
+provider release preparation/completion, request dispatch and range writes.
+In MVCC it acquires shared database custody and the original-family mutex before
+starting a native concurrent snapshot. Both remain held through callback and
+commit/rollback. Different families can therefore perform actual external calls
+simultaneously, while same-family state remains ordered. All unclassified domain
+mutations continue to use the exclusive global transaction class.
+
+Global publication takes the write side of the same database gate. It cannot
+commit while any family scope is active, including a send whose native result
+record has not yet committed or rolled back. If publication wins first, the
+subsequent scope checks the new Policy/fence and rejects old permits. If a send
+wins first, publication becomes effective after that live scope ends. Future
+streaming releases reacquire custody and check the new fence. Pending/submitted
+publication is not retroactive revocation of previously authorized bytes.
+
+Native snapshot isolation alone does not provide this ordering: publication and
+a send can write different rows and avoid a native write/write conflict. The
+read/write custody gate protects authority; the family mutex protects all shared
+budget/history dependencies. Lean's live-reader theorem states the required
+publication exclusion premise explicitly. Lock fairness and bounded publication
+latency are not proved; current callbacks must remain bounded and nonreentrant.
+
+* Irreversible effects and conflicts
+
+Consumption and provider release/dispatch burns remain durable before possible
+external bytes. Request/range permits are moved once; provider dispatch borrows
+are guarded by the separately committed =dispatched= burn. Final concurrency
+does not weaken these existing one-use boundaries.
+
+A native result transaction can fail after possible bytes because of IO,
+constraints or an unexpected conflict. The physical effect is irreversible;
+rolling back a SQL observation cannot undo it. The original committed consumption
+and hold remain. Failed native commits poison the session. No automatic SQL/SDK
+retry, fallback send, tail replay or refund is allowed. A lost response after
+successful commit is likewise recovered by original identity rather than repeated
+execution. Unknown usage is never inferred from an absent observation record.
+
+Compliant distinct-family mutations do not share mutable domain rows. The native
+conflict fixture still injects overlapping rows deliberately, and the post-effect
+PBT injects a result-update failure or a lost write callback response. Neither
+is silently converted into authorization for another call. Arbitrary privileged
+SQL or filesystem mutation outside the owner remains outside the refinement.
+
+* Connection lifecycle
+
+The review found a second global bottleneck: every new executor connection reran
+schema DDL under exclusive custody. The existing database owner now tracks only
+successful ledger schema initialization during its live MVCC incarnation. It is
+double checked under the exclusive gate, set after native commit, and discarded
+with that owner. New executor connections join the same MRR Database without
+repeating DDL or taking exclusive custody. Every connection still verifies native
+settings and the retained-manifest column; every effect still rechecks actual
+authoritative records. This flag caches no Policy decision, source credential,
+claim, outcome or budget and cannot authorize an effect after restart.
+
+* Verification ownership
+
+| Owner | Concrete checks |
+|-------+-----------------|
+| Scheme / Governor | Original semantics and authoritative source registration; no transport permit |
+| Go | mTLS/gRPC control, routing proposals and the unified storage/test/benchmark entrypoint |
+| Rust | Original-family custody, native consumption, current Cedar checks and private actual IO |
+| Quint | Two families/four logical messages; multiple active final scopes, publication exclusion, post-send conflict and unsafe variants |
+| Lean | Arbitrary-domain framing/commutation, all-budget preservation, shared-reader fence stability and physical-effect/observation separation |
+
+The native scope tests prove overlap by keeping one actual deciding callback
+blocked while another family opens a new executor connection and completes its
+callback. Same-family controls cannot enter the second callback until release.
+Go's real HTTPS test requires both provider handlers to enter before either
+returns response headers; the old global serialization cannot pass this control.
+It also submits revocation while both sends remain live, checks that publication
+does not pass them, then verifies revoked tails and restart retain each original
+hold without new provider calls. Existing MVCC partial-request, SDK duplicate,
+redirect/fallback and lost-publication-response tests remain in the same suite.
+
+Rust proptest covers callback-response loss and a native result-update failure
+after a physical callback, followed by complete owner teardown, a new allow
+Authority and retry. Holds remain and original consumption cannot be minted
+again. The Quint unsafe claim-only lock, stale snapshot send, retry and unknown
+refund traces remain explicit counterexamples. Its physical-call counter is not
+rolled back with an observation; native IO refinement must establish that mapping.
+Lean proofs are conditional laws, not compiled Rust/filesystem verification.
+
+* Benchmark design
+
+The crate-owned Criterion =ledger/final_family_pair= group runs the same two
+original families with WAL, MVCC serial control and MVCC parallel execution.
+Each case uses the same two workers and two bounded two-millisecond synthetic
+callbacks. The serial control holds a benchmark-only mutex outside the same
+dispatch code; there is no production bypass/weakening flag. Fresh provisioning,
+registration and original consumption are outside timing. Timed work includes
+durable dispatch burns, fresh guards, callbacks, worker drain and resource teardown.
+
+The matched MVCC control separates scheduling from journal/engine differences;
+WAL is an additional serial comparison, not an isolated proof of optimization.
+Thirty samples and existing warm-up/measurement settings remain unchanged.
+All outliers and short-measurement warnings remain evidence. These synthetic pair
+times are neither provider throughput nor p99, cold-start or distributed scaling
+measurements. Go =check-storage= now executes this exact release benchmark group
+alongside the existing native, model and integration gates.
+
+* Focused local evidence
+
+The native cohort passed 30 library/ASP tests, 100 integration/property tests and
+15 real TCP/TLS execution tests. Both actual HTTPS independent-family overlap
+and multi-domain revocation controls passed through Go race-enabled mTLS/gRPC,
+including restart and no-redispatch checks. The refined same-family test prepares
+both consumption capabilities before starting the first callback, so it checks
+final-use ordering rather than merely serialized consumption. Quint passed 20
+scenarios and 1,000 sixty-step schedules (seed 293); the shared-reader and
+physical-observation Lean laws compile with only the existing approved axioms.
+
+The first release benchmark cohort, after a ten-minute cold release build on
+this host, retained all thirty samples per case:
+
+| Pair workload | Mean ms | 95 percent interval ms | Outliers retained |
+|---------------+---------+------------------------+-------------------|
+| WAL | 80.581 | 42.574 to 124.208 | 7 high severe |
+| MVCC serial control | 207.730 | 178.215 to 239.836 | 1 high mild |
+| MVCC parallel | 38.926 | 16.333 to 67.131 | 4 high severe |
+
+These intervals are wide; they do not support a general speedup or throughput
+claim. Independent-family overlap is established separately by blocked-handler
+and native-callback controls. Criterion's short-measurement warnings were kept;
+neither sample count nor configured measurement time was changed. The subsequent
+Go-owned complete storage run collects a separate fresh cohort and checks actual
+Criterion JSON, freshness, sample counts and confidence bounds for all three
+cases. Selected measurements cannot qualify the unrelated full workspace suite.
+
+The first seven-component storage image failed the existing eighteen-pixel
+readability gate at GitHub width. A typed SysML =layoutColumns= attribute now
+supplies the public ELK partition preference; the Library still owns layout and
+drawing. The corrected storage view passed TypeScript checks and all five scoped
+capture/vector/icon/opacity tests without reducing the font threshold. This is
+one current storage view, not an acceptance claim for unrelated imported-SPEC
+views. Initial Lean case-pattern errors are retained separately from the corrected
+compiler receipts. Raw failures, metrics and execution logs remain ignored in
+=.cache=; maintained design documents and shrunk regression cases remain tracked.
+
+* Committed-source cohort and retained readiness failure
+
+The first complete Go storage run at =fd6fb5c= passed architecture, native/PBT,
+strict Clippy, all model stages, fresh benchmark admission and source-currentness,
+but failed its provider suite at =TestProviderCompetingCapsCannotReachDispatch=:
+the unchanged three-second startup deadline expired at 3.014 seconds. The process
+entered main about 2.666 seconds after launch and configured/bound listeners
+about fourteen milliseconds later. This identifies a pre-main/readiness delay;
+it does not isolate its OS/client-backoff cause or establish an MVCC regression.
+The structured failure receipt remains separate from passing observations.
+
+A bounded control pair using unchanged runtime sources passed the competing-cap
+case and fresh-image/restart case. Its captured image SHA-256 was
+=126bb578b721280d38369f334285fe0f91d3cd70b3537281da09ba44abea452e=.
+There is no claim that this success repairs the earlier readiness failure.
+Neither startup/drain limits, warm-up behavior nor cleanup changed.
+
+The same complete run produced another independent benchmark cohort, with all
+three thirty-sample results verified by Go from fresh Criterion JSON:
+
+| Pair workload | Mean ms | 95 percent interval ms |
+|---------------+---------+------------------------|
+| WAL | 18.138 | 15.823 to 20.903 |
+| MVCC serial control | 13.576 | 11.703 to 15.927 |
+| MVCC parallel | 6.805 | 6.346 to 7.390 |
+
+Both cohorts remain reported. Their difference is a reason to avoid a general
+speedup/SLO claim, not a reason to discard the first cohort. The model's claim-only
+lock counterexample was subsequently strengthened to start from two legitimately
+consumed claims in the same shared family. The safe second final guard is rejected;
+only the narrower-lock mutation admits both. All twenty-one scenarios and the
+same bounded exploration pass with this stronger negative control.
+
+* Complete acceptance of the final model cohort
+
+At =94586a58018e9731ff7daf7f40c12551beff0e70=, the ordinary Go-owned
+=-clean-source check-storage= entrypoint passes all eighteen stages, including
+the complete race-enabled provider suite, fresh release benchmark admission,
+Quint/Lean, native/PBT/ASP/Clippy and committed-source/currentness checks before
+and after. All Go packages pass the race suite. No dependency pin, startup/drain
+gate or benchmark sample setting changed. This passing cohort does not resolve
+or erase the earlier pre-main/readiness failure.
+
+Its independently collected thirty-sample benchmark cohort is:
+
+| Pair workload | Mean ms | 95 percent interval ms |
+|---------------+---------+------------------------|
+| WAL | 17.610 | 15.565 to 20.199 |
+| MVCC serial control | 16.546 | 14.251 to 19.054 |
+| MVCC parallel | 9.706 | 7.738 to 12.037 |
+
+These remain synthetic two-callback pair measurements, with all outliers retained;
+they are not a general provider speedup, p99 or publication-latency guarantee.
+The following change records acceptance only. Runtime, model, test and generated
+storage-view sources remain those of the admitted revision. Ignored structured
+receipts retain the exact selected benchmark scope and confidence/sample checks;
+a partial benchmark cannot qualify unrelated workspace packages or diagrams.

@@ -1,8 +1,18 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Device Isolation Evidence and Protected Key Floor Recovery
 #+language: en
 #+date: 2026-10-19
 #+property: STATUS conditional-device-recovery-composition-checked-native-evidence-pending
 #+options: toc:3
+
+* Reader view
+
+Recover the durable prefix and qualify the current device separately.
+
+[[file:33.02-device-isolation.svg]]
 
 * Decision
 
@@ -65,7 +75,7 @@ they are included when that successor epoch is retired. This supports ordinary
 new jobs without a whole-device barrier for each allocation.
 
 Exact registered scope does not prove physical inventory completeness. The
-NativeOwner contract must establish that every real FD duplicate, mapping,
+DriverOwner contract must establish that every real FD duplicate, mapping,
 callback and provider job is mediated/registered or otherwise inaccessible.
 An unregistered old alias defeats the premise. The model's alias map and blocked
 facts are specification state, not a discovery oracle available to the driver.
@@ -306,3 +316,9 @@ whole-manifest coverage predicate is not a required per-byte scan. A qualified
 owner can use an immutable coverage witness under exact nonreused context and
 invalidation rules, while rechecking the actual emission boundary. A cache hit
 alone is not that witness. Transport bytes remain on the separate Rust path.
+
+* Embedded architecture views
+
+** 33.02-device-isolation.svg
+
+[[file:33.02-device-isolation.svg]]

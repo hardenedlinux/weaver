@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 //! Source-committed provider routes; observations never confer retry authority.
 use crate::{Error, MAX_BODY_BYTES, MAX_CREDITS, Result, Task, body_digest, identifier};
 use serde::{Deserialize, Serialize};

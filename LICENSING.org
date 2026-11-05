@@ -1,0 +1,55 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+#+title: Weaver Licensing
+#+language: en
+
+* Dual license
+
+Weaver's original contributions are offered under
+=LGPL-2.1-or-later AND Apache-2.0=. Both licenses apply.
+The SPDX expression is a conjunction, not a choice between licenses.
+
+Copyright: 2026 hardenedlinux Linux Team and Contributors.
+
+The complete license texts are retained verbatim:
+
+- [[file:LICENSES/LGPL-2.1-or-later.txt][GNU Lesser General Public License 2.1 or later]]
+- [[file:LICENSES/Apache-2.0.txt][Apache License 2.0]]
+
+* Machine-readable metadata
+
+[[file:REUSE.toml][REUSE.toml]] associates SPDX copyright and license identifiers
+with Weaver-authored code, configuration, tests and design sources. Its closest
+precedence preserves individual file notices. Maintained first-party files carry
+SPDX notices in their own comment syntax. Formats that cannot carry comments use
+adjacent =.license= companions without changing data, dependency pins or images.
+Go fuzz corpus directories use the explicit =go/**/testdata/fuzz/**= REUSE
+annotation: their standard loader treats every sibling file as a seed and rejects
+license companions. The original corpus bytes remain unchanged.
+The Cargo workspace and renderer package declare the same conjunctive dual-license expression.
+
+The Go development gate checks leading notices across maintained source, model,
+document and generated files. Protobuf inherits the proto notice. The existing
+SysML mapping and upstream Library export owners preserve D2 and SVG notices;
+there is no separate license postprocessor or rendering engine.
+
+* Retained third-party and historical material
+
+The project declaration applies to Weaver's original contributions. Dependency
+licenses, embedded fonts and external brand assets retain their own terms;
+no repository annotation grants new rights to those components. Generated SVGs
+and archived evidence are not blanket-relicensed by REUSE.toml. Historical
+snapshots retain their original notices and provenance. This scope is not a
+claim that every archived or generated file has a complete REUSE annotation.
+
+The existing [[file:docs/architecture/diagrams/assets/icon-sources.org][brand asset provenance]]
+identifies the Go, Rust and Kubernetes marks. Fonts embedded by the upstream
+render Library retain that Library's font-license notices and upstream font
+attribution. Dependencies and marks are not relicensed as Weaver source.
+
+The canonical identifiers and annotation format follow
+[[https://spdx.org/licenses/LGPL-2.1-or-later.html][SPDX LGPL-2.1-or-later]],
+[[https://spdx.org/licenses/Apache-2.0.html][SPDX Apache-2.0]] and the
+[[https://reuse.software/spec-3.3/][REUSE specification]].

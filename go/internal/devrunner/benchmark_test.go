@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 package devrunner
 
 import (
@@ -10,7 +14,7 @@ import (
 )
 
 func TestBenchmarkPackagesRequireExactWorkspaceCoverage(t *testing.T) {
-	members := []string{"weaver-contracts", "weaver-policy", "weaver-policy-ffi", "weaver-ledger", "weaver-execution", "weaver-server"}
+	members := []string{"weaver-contracts", "weaver-governance", "weaver-governance-build", "weaver-policy", "weaver-policy-ffi", "weaver-ledger", "weaver-broker", "weaver-server", "weaver-telemetry"}
 	if err := ValidateBenchmarkPackages(members); err != nil {
 		t.Fatal(err)
 	}
@@ -120,7 +124,7 @@ func TestBenchmarkEvidenceRejectsInvalidMeasurements(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if err := collectBenchmarks(root, output, time.Unix(200, 0).UTC().Format(time.RFC3339Nano)); err == nil {
+			if err := collectBenchmarks(filepath.Join(root, "target"), output, time.Unix(200, 0).UTC().Format(time.RFC3339Nano)); err == nil {
 				t.Fatal("invalid measured evidence accepted")
 			}
 			if _, err := os.Stat(filepath.Join(output, "benchmark-summary.org")); !os.IsNotExist(err) {
@@ -139,7 +143,7 @@ func TestBenchmarkEvidenceRequiresEveryCase(t *testing.T) {
 					writeBenchmarkEstimate(t, root, name)
 				}
 			}
-			err := collectBenchmarks(root, output, time.Unix(200, 0).UTC().Format(time.RFC3339Nano))
+			err := collectBenchmarks(filepath.Join(root, "target"), output, time.Unix(200, 0).UTC().Format(time.RFC3339Nano))
 			if omitted != "" {
 				if err == nil || !strings.Contains(err.Error(), omitted) {
 					t.Fatalf("partial package evidence accepted or unexplained: %v", err)
@@ -165,10 +169,29 @@ func TestBenchmarkEvidenceRequiresEveryCase(t *testing.T) {
 	}
 }
 
+func TestFinalSendBenchmarkSubsetCannotQualifyWholeWorkspace(t *testing.T) {
+	root := t.TempDir()
+	for _, name := range storageBenchmarkCases {
+		writeBenchmarkEstimate(t, root, name)
+	}
+	started := time.Unix(200, 0).UTC().Format(time.RFC3339Nano)
+	if err := collectBenchmarks(filepath.Join(root, "target"), t.TempDir(), started, storageBenchmarkCases...); err != nil {
+		t.Fatal(err)
+	}
+	if err := collectBenchmarks(filepath.Join(root, "target"), t.TempDir(), started); err == nil {
+		t.Fatal("selected final-send results qualified unrelated packages")
+	}
+	for _, selected := range [][]string{{"unowned"}, {storageBenchmarkCases[0], storageBenchmarkCases[0]}} {
+		if err := collectBenchmarks(filepath.Join(root, "target"), t.TempDir(), started, selected...); err == nil {
+			t.Fatal("invalid or duplicate selected measurement admitted")
+		}
+	}
+}
+
 func TestBenchmarkEvidenceRejectsUnmappedCase(t *testing.T) {
 	root := t.TempDir()
 	writeBenchmarkEstimate(t, root, "contracts_spoofed")
-	err := collectBenchmarks(root, t.TempDir(), time.Unix(200, 0).UTC().Format(time.RFC3339Nano))
+	err := collectBenchmarks(filepath.Join(root, "target"), t.TempDir(), time.Unix(200, 0).UTC().Format(time.RFC3339Nano))
 	if err == nil || !strings.Contains(err.Error(), "unmapped") {
 		t.Fatalf("unmapped case accepted: %v", err)
 	}

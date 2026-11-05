@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+TITLE: Integrated Audit Evidence and Qualification Boundary
 #+LANGUAGE: en
 #+OPTIONS: toc:2 num:nil
@@ -38,7 +42,7 @@ and after compilation; logs contain no error or =sorryAx= admission.
 
 The compiler was =leanprover/lean4:v4.34.1=. This is evidence metadata, not an
 architecture requirement or a pin change. The deeper identity closure was not
-freshly rebuilt. No Quint model, provider SDK, native Scheme compiler, broker,
+freshly rebuilt. No Quint model, provider Gerbil toolchain, native Scheme compiler, broker,
 storage fault harness, deployment or performance benchmark was rerun here.
 Existing control counts and theorems are not relabeled as fresh native coverage.
 

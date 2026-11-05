@@ -1,0 +1,350 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+#+TITLE: 59.60 Persistent Source Key Custody and Final Transaction Admission
+#+LANGUAGE: en
+
+* Architecture and exact implementation boundary
+
+#+ATTR_HTML: :width 1500
+[[file:59.60-persistent-source-key-custody.svg]]
+
+The Rust source RPC host now binds every administrative call to the actual
+authenticated mTLS leaf certificate, its DER SubjectPublicKeyInfo digest and
+the source-role credential digest. The existing ledger owns a persistent current
+binding and a complete non-reusable key prefix. Restoring an old startup
+certificate pin does not restore source write authority after an explicit durable
+handoff. The static TLS/token configuration remains an additional transport
+prefilter, not the persistent authority record.
+
+This is a local durable key-custody profile. It does not implement independently
+issued subject identity, unique process incarnation, semantic no-gain review or
+an independent rollback-resistant authority. The native consistent-store rollback
+counterexample remains executable. The stronger independent recovery contract in
+[[file:59.58-independent-source-recovery.org][the independent-source recovery chapter]] is a distinct remaining requirement.
+
+* Owners and protocol
+
+| Owner | Responsibility | Authority it does not gain |
+|-------+----------------+----------------------------|
+| Scheme | Existing Governor selection, typed original task and exact Policy/source-assets projection through the existing Agentic AI Lab interfaces | No transport identity issuance, handoff or final-send capability |
+| Go | Inspect the current source binding, submit one explicit exact handoff, reconcile its result, and perform controlled transport configuration rollout | No automatic retry with a new ID, epoch rebase, key restoration or execution |
+| Rust RPC host | Authenticate actual TLS/bearer input, derive leaf/SPKI identity, enforce separate source/operation roles and reject an exact operation certificate or token as successor | No caller-supplied actor labels or cached view as write authority |
+| Rust ledger | Enroll once, serialize actual source checks with each mutation, atomically retain current binding, all used keys and immutable handoff outcomes | No authority outside its durable store or over arbitrary trusted in-process callers |
+| Rust final executor | Keep current Cedar, original task, claim, pending, budget and final-send checks | A source handoff is not business Policy revocation or budget settlement |
+
+An empty, unowned ledger may enroll the first authenticated source once. A ledger
+with existing business records but no source binding rejects automatic enrollment.
+Missing source history is not permission to bootstrap again. Do not clear state
+or discard unknown reservations to force enrollment. Existing unenrolled stores
+need an explicitly designed migration; no migration shim is supplied here.
+
+** Complete durable catalog at first enrollment
+
+A real SQLite regression exposed an incomplete empty-store check. The previous
+query named selected tables but omitted =authority_schema= and other projections.
+An image containing only the production Policy schema and no source binding
+was accepted as empty after restart: a new identity was persisted and its
+callback ran. The retained pre-fix test fails on that exact observation. This
+was a local enrollment defect, not proof of independent rollback protection.
+
+First enrollment now discovers all non-internal application tables from
+=main.sqlite_schema= and checks row existence in each under the same IMMEDIATE
+transaction as the initial key/binding commit. Identifiers are quoted and every
+read is explicitly qualified to =main=; a temporary same-name table cannot hide
+a durable row. SQLite-owned internal tables are excluded with a literal-prefix
+GLOB rule. New application tables participate without a second table manifest
+or a hand-maintained list. An empty extension schema is allowed; a populated
+application table is not an empty store. Read errors reject rather than supplying
+an empty result.
+
+The entry still validates the actual host-supplied identity, rechecks the current
+binding inside the deciding transaction and enrolls only when it is absent.
+An existing binding uses the unchanged current-source path. A populated image
+with no binding rejects before invoking the source callback and leaves the
+original rows and authority prefix unchanged. If enrollment commits but the
+callback fails, the first identity remains durable: restart cannot reinterpret
+the error as permission to issue a replacement identity. Each later source
+mutation still checks its current identity inside its own final transaction.
+
+Scheme continues to supply Governor/Governance and Policy semantics through
+Agentic AI Lab; its assessment keeps =runtime-executed?= at =#f= and is not identity
+issuance or evidence of database emptiness. Go continues to authenticate source
+RPCs and reconcile exact handoffs. Neither language supplies a =storeEmpty=
+flag, catalog or new enrollment permission. Rust derives the predicate from
+the actual deciding store. No new endpoint, Policy DSL, migration path or
+cross-store commit protocol is introduced.
+
+The retained-key uniqueness and source-fencing laws are reused. The new local
+Quint catalog checks add an omitted-projection counterexample, a late-commit
+counterexample, refusal for every sampled retained domain, an empty-store
+positive control and existing-binding preservation. Lean extends the existing
+=PublicationRecovery= owner to any finite catalog. Given complete current
+catalog coverage and an occupied member,
+=complete_catalog_refusal_preserves_original_state= proves exact state equality;
+=source_enrollment_refusal_preserves_unknown_accounting= composes it with the
+existing =Safe= predicate. No source-state field, claim, pending decision or hold
+is reset by the refusal. The new laws use only =propext= and =Quot.sound=.
+
+Catalog completeness, faithful table/row interpretation, the deciding writer
+transaction and caller authentication remain native refinement premises. The
+symbolic catalog is not a caller-provided capability. These are local bootstrap
+laws, not a new proof of SPEC identity issuance, full reviewed-publication
+qualification or the candidate-library Gateway bridge. An entirely restored
+empty store is indistinguishable from a new store in this profile; a consistent
+snapshot with an old source head is also outside this guard. The executable
+whole-store rollback counterexample remains, and the independent retained-root
+requirements in the recovery chapter remain open.
+
+*** Validation and measurement
+
+The native property uses the workspace proptest framework with 64 cases,
+generation and shrinking. It varies populated/empty extension tables, restart,
+existing identity, temporary shadowing and identifiers containing quotes,
+separators, Unicode and SQLite-like prefixes. Independent fixture quoting is
+performed by SQLite. Native tests also serialize another writer's new-table
+DDL and retained-row commit against first enrollment, then recover a failed
+post-enrollment callback after restart.
+The earlier negative =authority_schema= image now rejects without a callback.
+
+The complete ledger suite passed 22 library and 66 integration tests, including
+the existing source handoff, streaming, partial-write and unknown-budget
+properties. ASP Rust deny admission passed. It first rejected a glob import in
+the new property test; explicit imports corrected that failure without changing
+the gate. Strict all-target Clippy and SysML requirement traces passed. The real
+Go race-enabled mTLS/gRPC handoff/lost-response/retired-worker/reissued-key test
+passed in 1.72 seconds; its complete command took 18.392 seconds including build
+work. The residual-image regression is a ledger storage test, not remote RPC
+fault injection. Quint passed 164 tests at seed 293 and the new Lean laws were
+checked with the unchanged project toolchain. The core D2 was rendered and
+visually inspected; it contains ownership/design conditions only.
+
+The package-owned Criterion benchmark measures first enrollment after database
+and optional extension DDL setup. It includes catalog discovery, row-existence
+checks and the FULL/WAL initial binding commit. This thread's verification jobs
+had completed before measurement on the current 12-core host; host background
+activity and OS caches were not controlled. The table uses Criterion's =mean=
+estimate and 95-percent interval, matching the existing Go matrix collector:
+
+| Additional empty application tables | Mean estimate, microseconds | Reported interval, microseconds |
+|------------------------------------+----------------------------------+---------------------------------|
+| 0 | 174.87 | 149.52--216.88 |
+| 32 | 384.93 | 365.67--409.04 |
+
+Both cases retained 30 samples, the existing one-second warm-up and requested
+two-second measurement configuration. Criterion estimated a longer collection
+for the first case to retain those samples; no watchdog or resource limit was
+changed. There were five and four outliers respectively. These are first
+observations for the guarded operation, not a before/after speedup, a tail
+latency bound, concurrent throughput or provider-message/send performance.
+The new scan is absent from already-enrolled source checks and the message
+execution path. Existing key-prefix consistency costs are not measured by this
+empty-store comparison.
+Both cases are registered in the existing Go-owned benchmark matrix. Its
+missing/stale/invalid-evidence tests passed with the expanded case set. Only
+these two new cases were measured here; this is not whole-matrix acceptance.
+
+Raw failures, tests and measurements remain temporary
+=/private/tmp/weaver-source-enrollment-*= artifacts and ignored Criterion output;
+only this bounded summary is tracked. The earlier Gerbil fresh-prefix failures,
+Apple linker failure and executable cold-start failures remain independent
+unresolved qualification evidence. No dependency pin or timeout was changed.
+
+The caller submits an immutable SourceRotation containing an operation ID,
+expected current epoch and exact successor identity. The successor identity is
+derived from its actual certificate bytes and credential digest, not an asserted
+subject string. The deciding IMMEDIATE transaction does the following:
+
+1. Read the current binding and check its complete contiguous key-history prefix.
+2. Reconcile an existing exact operation result without changing authority.
+3. For a new operation, require the actual caller to equal the current binding.
+4. Compare the expected epoch and reject every previously used SPKI or leaf
+   certificate. A certificate reissue with the old SPKI is still the old key.
+5. Atomically append the key, replace the current binding and retain the original
+   command, proposer and committed/rejected outcome in the same SQLite transaction.
+6. Return only after commit; loss of the reply does not undo the handoff.
+
+The original proposer may retrieve its exact result after retirement. This is
+historical observation, not a current source permit. The current successor may
+also reconcile it. An unauthorized third party cannot create or observe a new
+decision merely by guessing an operation ID. A changed command under the original
+ID conflicts; rejection is immutable rather than an implicit epoch rebase.
+
+Every ordinary source mutator rechecks the actual caller inside its own deciding
+transaction. A preauthenticated connection, earlier InspectSourceAuthority result
+or successful channel admission cannot bypass a handoff by another ledger
+connection. The source context is scoped and removed during both normal return
+and panic unwinding. The native trusted-host API remains explicit: arbitrary
+in-process code is outside the RPC identity boundary.
+
+After a committed handoff, the successor needs a controlled update of the static
+transport certificate/token pins and a server restart. Until then the old source
+is fenced locally and the new source may be blocked by the old transport pin.
+This deliberate administrative availability gap cannot be repaired by accepting
+the retired source. The operation data plane retains its existing authority.
+
+* Failures and recovery
+
+| Schedule | Required native behavior |
+|----------+--------------------------|
+| Commit reply lost | Exact replay returns the original result; no second epoch change |
+| Old source already passed TLS authentication | Transaction-local source check rejects its new mutation |
+| Old source configuration restored after restart | Transport may authenticate, but the durable key floor denies source mutation |
+| Receipt insert fails after binding update | The entire transaction rolls back; original exact retry remains possible |
+| Key-prefix row or current head missing | Reject prefix mismatch or occupied-store enrollment; never recreate ownership |
+| Old certificate reissued using the same key | SPKI non-reuse rejects the handoff and preserves the epoch |
+| Policy publication reply lost before handoff | The successor reconciles that original command; unknown send exposure remains held |
+| Whole ledger restored to a consistent old snapshot | Local floor can roll back; retained executable counterexample, not an admitted recovery profile |
+
+Identity uses the exact DER SPKI representation accepted by the TLS parser. A
+canonical issuer/key representation is a premise: this implementation does not
+prove equivalence of every mathematical-key encoding. Successor parsing checks
+certificate structure, not independent enrollment or successor possession.
+Possession and certificate-chain validation occur when that successor establishes
+the actual mTLS connection. Per-use PKI expiry, CA revocation, session lifetime
+and issuer/realm provenance remain separate obligations. Exact role aliases are
+rejected; the system does not infer unique subjects from a shared Kubernetes
+service account or from differently issued certificates.
+
+* Native code, PBT and formal correspondence
+
+| Contract | Maintained source / evidence |
+|----------+------------------------------|
+| Typed identity and exact command commitment | =crates/contracts/src/source_authority.rs= and its native unit/proptest suite |
+| Atomic binding, key prefix and handoff outcome | =crates/ledger/src/source_authority.rs= and =source_rotation.rs= |
+| Source check after a stale precheck | Native ledger test using a second connection to hand off before mutation |
+| SQL partial-commit protection and damaged prefix | =crates/ledger/tests/unit/source_authority_storage.rs= fault injection |
+| Unknown exposure and original command retention | Native stateful proptest with independent scalar/map/key-set oracle, 64 generated schedules |
+| Actual mTLS identity and no provider effect | Real Go/Rust RPC test in =go/dev/provider_source_authority_test.go= |
+| Restored old pin denied, historical lost result retained | =go/dev/provider_policy_pending_test.go= and source handoff integration |
+| Logical source key non-reuse and old-worker denial | Existing Quint =PublicationRecovery= source transitions and witnesses |
+| Arbitrary finite-run epoch/key-prefix preservation | Existing Lean =PublicationRecovery.Step= / =Run= composition |
+
+Quint extends the existing source decision with an actual-key reference. A
+handoff requires the current source and a fresh key; publication requires the
+current source cut. Historical observation is inert. Concrete witnesses cover
+an old preauthenticated worker, lost handoff reply, reissued old key and successor
+continuation of an original pending command without resetting its budget.
+This abstract reference must refine actual authenticated SPKI in the host; Quint
+does not parse X509 or supply a second identity semantic evaluator.
+
+Lean extends the existing Step relation with a fresh-key handoff and proves that
+source epochs are monotone and the complete source-key list is retained across
+arbitrary finite runs. A retained key cannot satisfy the fresh-key premise. The
+existing original-outcome and pending-intent preservation theorems compose through
+the added constructor. These are conditional protocol proofs. SQLite atomicity,
+TLS possession, parser/hash assumptions and native refinement are premises; the
+proof does not turn local storage into independent anti-rollback authority.
+
+Native PBT remains package-owned through workspace proptest. Go integration uses
+the ordinary testing framework and actual Rust gRPC service. The Go runner only
+orchestrates; no script-owned random generator or second property engine exists.
+
+* Focused evidence and retained failures
+
+Before merging concurrent work, the full native Rust workspace passed 130 tests
+with one intentionally ignored process helper. Affected all-target Clippy passed
+with warnings denied and ASP deny gates retained. The real provider integration
+suite passed in 82.862 seconds; the later expanded source-handoff test passed in
+11.726 seconds. PublicationRecovery passed 105 Quint witnesses and 1000 sampled
+60-step runs with fixed seed 293. These are focused source-checkout observations;
+the final merged source still requires its own standard verification receipt.
+
+Development failures were corrected without weakening the properties: an
+ambiguous PBT oracle map needed explicit types; ASP required contract documentation
+and a smaller named publication helper; a shared unused source fixture tripped
+Clippy and was moved to its owning support module; the Go reissue fixture treated
+DER as PEM and panicked; a Quint seed omitted its new key field; Lean rejected a
+reserved binder name. A sandboxed Go socket check was denied by the environment;
+it is not a passing runtime result. Historical failed runs are not overwritten
+as passes by subsequent successful tests.
+
+| Package-owned benchmark | Observed interval | Scope |
+|-------------------------+-------------------+-------|
+| contracts/source_rotation_commitment | 4.8696–7.3904 microseconds | Exact command hashing |
+| ledger/source_key_handoff | 288.77–413.59 microseconds | Local durable key/outcome transaction |
+| ledger/source_authenticated_publication | 1.3063–1.8696 milliseconds | Existing publication with actual-source context |
+| server/source_certificate_spki_identity | 3.3850–7.2385 microseconds | Pure certificate/SPKI fact extraction |
+
+These thirty-sample unreserved-host observations include outliers. They are not
+matched speedup evidence, TLS handshake benchmarks or production latency
+acceptance. Existing benchmark admission now includes all four owned cases.
+
+* Remaining architecture work
+
+The required reviewed-publication RPC, producer authentication, actual semantic
+no-gain qualification, independent authority prefix recovery and independently
+issued subject/incarnation remain open. Do not replace those requirements with
+the local source floor. In particular, an authorized raw source publication is
+still a trusted administrative profile; a source credential is not Cedar proof.
+
+* Merged-source verification and diagnostic correction
+
+The merge at =2ad2c7e= retains the independent-source, registry-qualification and
+retained-root work, including real rollback counterexamples. On that source the
+host Rust workspace passed 134 tests with one intentionally ignored helper;
+all-target workspace Clippy passed with warnings denied. The initial sandboxed
+Rust attempt failed ten real transport tests at socket binding; those failures
+remain environmental failures, not passing transport evidence.
+
+The merged PublicationRecovery module passed 136 named witnesses. Its ordinary
+and retained-source recovery schedules each sampled 1000 traces of 60 steps with
+seed 293. Lean checked the existing composition and retained-key theorems without
+admitting sorryAx. These results include expected unsafe counterexamples and do
+not establish that the independent root has been deployed.
+
+The first clean-source Go gate on this merge passed nineteen of twenty stages.
+The complete provider suite failed its PROTOBUF slow-consumer capacity-wake
+subcase in 14.62 seconds; its suite output hash was
+=dde6cc60d079a6a95cc79ba61a3eee63c8c5ec5eb5523da8473ba718913ea1ed=.
+The bounded summary retained the FAIL marker but lost its preceding assertion.
+The focused case then passed, and ten diagnostic repetitions passed both wire
+encodings in 25.979 seconds. Those passes do not explain the original failure.
+Keep its causal status unresolved rather than infer host noise or a runtime fix.
+
+The diagnostic correction retains a bounded window before the first failure
+marker as well as final status, still within the existing 4096-byte receipt cap.
+Native Go fuzzing checks that preceding diagnostics survive arbitrary bounded
+passing prefixes/suffixes: 249261 executions with twelve workers passed in a
+three-second workload. Actual reserve expiry is now reported by the test-build
+Rust observer, and the Go waiter fails immediately if its required wake instead
+expires or cancels. Production behavior, the one-second capacity deadline and
+the twelve-second scenario deadline are unchanged. The desired ready event and
+all original authorization/accounting assertions remain required.
+
+The initial proof gate failed only because the network sandbox could not resolve
+GitHub while fetching the existing locked SPEC dependency. Standard host proof
+preparation fetched and built the unchanged dependency graph. Its full receipt
+failed source-currentness because diagnostic source was edited while preparation
+was active; that receipt is not a successful clean-source qualification. Run
+the final gates after committing these diagnostic changes. No lock or dependency
+pin is changed to address either failure.
+
+At committed source =0f5e9a5=, the final standard clean-source Rust gate passed
+all ten stages, the Go gate passed all twenty-one stages, and the complete Policy
+gate passed after the pinned proof dependencies were prepared. The installed
+Scheme Governance/source-assets to Cedar FFI, Go publication and Rust execution
+lost-reply/restart test passed in 50.383 seconds. This is installed-prefix runtime
+evidence, not a new cold Scheme Gerbil toolchain qualification. The successful complete Go
+run does not retroactively explain the earlier backpressure failure.
+
+A subsequent coverage audit found that the earlier source recovery samples
+checked =safe=, which does not include source-key uniqueness. They therefore
+cannot qualify that property. The standard Policy plan now explicitly checks
+=sourceDecisionSafe= over both existing source recovery schedules, with actual
+key handoff and attempted reuse of the bootstrap key included as choices. Each
+retains 1000 samples, 60 steps and seed 293. Existing named negative witnesses
+still cover retired callers and reissued keys. No new identity evaluator or
+parallel temporal model is introduced. Native refinement must map the complete
+initial retained key prefix, including the enrolled bootstrap key, to Lean's
+=sourceKeys=; list non-reuse theorems do not supply that initialization premise.
+The added finite-run uniqueness theorem preserves =List.Nodup= from that explicit
+initial-prefix premise through the same existing Step relation. This connects the
+native fresh-key guard to the stronger sampled =sourceDecisionSafe= condition;
+it does not certify bootstrap provenance or independent storage retention.
+
+The stronger standard clean-source Policy gate passed all 44 stages at
+=431d385=, including both source-key recovery schedules and the new Lean
+uniqueness theorem. Runtime and integration-test source is unchanged from
+=0f5e9a5=; that earlier Rust/Go receipt remains labeled with its actual commit.

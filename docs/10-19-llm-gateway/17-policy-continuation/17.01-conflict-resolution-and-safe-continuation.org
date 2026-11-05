@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Weaver Concurrent Policy Conflicts and Safe Intent Continuation
 #+language: en
 #+options: toc:3
@@ -134,7 +138,7 @@ proved by the safety model.
 The composition preserves original claim uniqueness, profile interpretation,
 budget/history domains and allowance. Continuation and alias admission do not
 consume. Unknown usage retains the original hold; no conflict status or protocol
-completion implies refund. New messages, SDK retries and streamed ranges remain
+completion implies refund. New messages, provider-client retries and streamed ranges remain
 subject to the earlier final execution gates.
 
 Keep immutable profiles and canonical alias records cacheable. Final owner

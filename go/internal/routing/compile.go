@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 // Package routing refines original routine/node constraints into a proposal.
 // It has no provider client, credential access, ledger mutation or send permit.
 package routing

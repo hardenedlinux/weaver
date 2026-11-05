@@ -1,4 +1,8 @@
-;;; Local development links resolve these package identities in an isolated environment.
+;;; SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+;;;
+;;; SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+;;; Agentic AI Lab owns its transitive package dependencies.
 (package: hardenedlinux/weaver
  prelude: :yuanxu/module-system/source/module-prelude
- depend: ("github.com/tao3k/agentic-ai-lab"))
+ depend: ("github.com/tao3k/agentic-ai-lab@aeac4f4c12b1722f992da9354695b611d3e0851f"))

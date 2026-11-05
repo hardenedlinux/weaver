@@ -1,6 +1,16 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Weaver Account Checkpoint Publication and Safe WAL Truncation
 #+language: en
 #+options: toc:3
+
+* Reader view
+
+Pruning local bytes performs no financial transaction.
+
+[[file:26.02-checkpoint-truncation.svg]]
 
 * Decision and scope
 

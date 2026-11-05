@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+TITLE: Dynamic gxi Paired Startup and Attribution
 #+LANGUAGE: en
 #+OPTIONS: toc:2 num:nil
@@ -12,7 +16,7 @@ checks, return naturally and finish resource cleanup.
 - [[file:55.01-experiment-and-root-cause.org][Experiment, coldness and root-cause boundary]].
 - [[file:55.02-proof-and-execution-contract.org][Proof premises and language responsibilities]].
 - [[file:55.03-results-and-reproduction.org][Results, failed evidence and reproduction]].
-- [[file:55.04-native-boundary.d2][Core D2 source]] and [[file:55.04-native-boundary.svg][rendered core architecture]].
+- [[file:55.04-runtime-boundary.d2][Core D2 source]] and [[file:55.04-runtime-boundary.svg][rendered core architecture]].
 - [[file:../../../dev/proofs/lean/DynamicPairedEvidence.lean][Lean composition]] and [[file:../../../dev/proofs/quint/DynamicPairedEvidence.qnt][Quint executable controls]].
 
 * Evidence lineage
@@ -22,3 +26,9 @@ scope; its timing observations are not relabeled as cold paired evidence.
 This checkpoint uses a fresh isolated native rebuild and retains every scheduled
 sample, including late natural termination. No Gateway code or dependency pin is
 changed. New artifacts are verification and research inputs only.
+
+* Embedded architecture views
+
+** 55.04-runtime-boundary.svg
+
+[[file:55.04-runtime-boundary.svg]]

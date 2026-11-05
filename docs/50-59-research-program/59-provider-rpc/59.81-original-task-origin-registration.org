@@ -1,0 +1,212 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+#+TITLE: 59.81 Authoritative Original Task Registration and Source Handoff
+#+LANGUAGE: en
+#+OPTIONS: toc:2
+
+* Identity contract
+
+[[file:59.80-shared-domain-authority.org][Shared domains]] now retain an additional durable original-task registry.
+The source-owned task key is independent of origin, runtime family, registration
+operation and source epoch. One key binds one canonical family, origin, canonical
+task digest and immutable original domain-binding digest. Family and origin are
+also unique in the registry. Source rotation inherits this registry rather than
+allocating a new identity namespace.
+
+[[file:59.77-mrr-turso-storage.svg]]
+
+=RegisterOriginalTask= is a source-only typed gRPC command. It carries the exact
+task, domain binding, stable task key, operation ID, expected source epoch and
+optional original publication key. Existing source task APIs join the same
+registry and retain their immutable source family as the initial task key; they
+do not bypass it. An already explicitly registered task retains its original key
+through those APIs. An execution/protocol alias cannot create a task row.
+
+The current authenticated source is rechecked under the exclusive native deciding
+transaction. Fresh commands compare the expected source epoch inside that same
+transaction. The key assignment, task, origin, budget/history roots, profile and
+publication linkage, and durable admission receipt commit atomically through the
+existing MRR Data Turso driver. Registration performs no provider IO.
+
+* Replay, concurrent registration and restoration
+
+The operation digest binds the complete command and original publication key.
+Reusing an operation ID for a different command fails. An identical committed
+command returns the original receipt after current source authentication, even
+after a source handoff; this is observation, not a new admission or execution
+permission. A fresh operation must match the current source epoch. An old worker
+cannot silently rebase its command or rewrite its original task key.
+
+The stable task key is also part of private final-use stamps and fresh Cedar
+context. A key mismatch between consumption, registry and historical decision is
+rejected; receipt metadata is not a replacement permission for current execution.
+
+Source rotation revokes source mutation credentials, not the meaning of every
+already valid execution grant. An existing original operation still requires
+current Policy/fence, original scope and consumption. Revoking those effects uses
+the existing Policy/fencing protocol; source epoch alone is not an execution
+revocation signal.
+
+Concurrent registrations serialize through the existing deciding writer. A task
+key already assigned to an origin rejects a different origin/family/body/scope.
+A new key cannot acquire an already owned family or origin. The exact same
+assignment may be observed under a new operation, but never creates another task,
+claim, reservation or history entry. A failed or uncertain native commit follows
+the existing poisoned-session/unknown-outcome contract; it never triggers send.
+
+Final admission and execution now verify the original task/domain commitments
+while checking shared-domain exposure and history. A surviving task whose
+registry row disappeared cannot be automatically registered anew. A missing or
+inconsistent original registration denies final use and retains unknown budget.
+Canonicalization decodes the typed task before hashing, so map key order does not
+change its meaning. Domain migration keeps the immutable declared binding and
+its current root lineage; it does not replace the original commitment.
+
+The registry also seals the original publication linkage. An unbound local task
+may acquire its first publication as an additional constraint in the same source
+transaction; an already sealed birth cannot be removed or replaced. Missing task
+or birth projections fail registration recovery as well as final use, rather than
+being silently rebuilt with a zero hold or an unrelated allowing Policy.
+
+* Explicit issuer-trust counterexample
+
+The first native property run found the triple relabel case: a trusted issuer
+changes the source task key, family and origin together. A local registry cannot
+infer that two equal task bodies represent the same real task. Identical genuine
+independent tasks must remain possible. The minimized seed is retained in
+=crates/ledger/tests/unit/task_origins.proptest-regressions= and has an explicit
+native negative-control test and Quint issuer-trust counterexample.
+
+The no-rebinding property therefore holds for the authoritative original key,
+or a retained family/origin, not for arbitrary relabeling by a compromised issuer.
+The source compiler/admission authority must carry the original upstream task
+key across aliases and source handoff. Runtime adapters cannot publish source
+identity or assign those keys through operation credentials. Source-owned family
+keys in existing configuration paths are original declarations, not SDK session
+names. This work mechanizes persistent binding and recovery; it does not prove
+the truth of an external issuer's identity claims or implement content deduplication.
+Coherent rollback of all durable copies still requires the independent recovery
+floor; local registry equality cannot replace that deployment premise.
+
+* Ownership and checkable correspondence
+
+| Owner | Responsibility |
+|-------+----------------|
+| Scheme / Agentic AI Lab source | Original semantics and stable source task declaration; no new governance DSL |
+| Go source control | Typed original registration, source lifecycle and exact-decision recovery; no automatic epoch rebasing |
+| Rust source owner and ledger | Current caller/epoch CAS, immutable registry, atomic receipt and original commitment validation |
+| Rust final broker | Existing private permits, durable consumption and current final-use guards; no IO from registration |
+| MRR Data | Existing public Turso transaction, durability and physical owner boundary; unchanged pin |
+| Quint | Concurrent/fault transition schedules, stale epoch, lost reply, rebind/refund and issuer-trust counterexamples |
+| Lean | Arbitrary-key assignment preservation and source-epoch separation under native atomicity and authentic-key premises |
+
+| Obligation | Runtime witness | Model / proof |
+|------------+-----------------+---------------|
+| Original task cannot acquire another origin | Registry primary/unique constraints and typed digest equality | =TaskOrigin.originalTaskCannotChangeOriginTest=; =Weaver.TaskOrigin.assigned_task_cannot_rebind= |
+| Source handoff cannot reset scope | Durable source key prefix and transaction-local epoch comparison | =sourceSwitchPreservesClaimTest=; =source_epoch_does_not_change_task_scope= |
+| Old fresh command is denied | Source authentication plus expected source epoch | =oldWorkerCannotUseNewSourceEpochTest=; =stale_source_command_cannot_commit= |
+| Lost response is observational | Native admission receipt replay and real gRPC post-commit reply-loss injection | =historicalReplyAfterSourceSwitchTest= |
+| Unknown consumption stays held | Original claim, shared budget/history and final registry join | Native missing-registry fault and existing final-send models |
+| Arbitrary issuer relabel is not proved safe | Explicit minimized native counterexample | =issuerTrustCounterexampleTest=; authentic key is a Lean premise |
+
+Lean declarations extend =dev/proofs/lean/SharedDomains.lean=; Quint lives in
+=dev/proofs/quint/TaskOrigin.qnt=. Existing source rotation, publication activation,
+transport fencing and shared-budget models remain enabled. Named SysML traces
+bind these declarations to source-hashed Lean JSON; derived D2 is generated from
+SysML through Go/OpenSysML and the locked upstream rendering Library.
+
+* Validation and performance protocol
+
+Native proptest generates task/family/origin replacement attempts while retaining
+an authoritative original identity; the all-label issuer case is tested separately
+as a trust limitation. Existing Go quick.Check generated-cap/order tests now use
+the actual original-task registration RPC. The new real mTLS/HTTPS test loses the
+registration reply after commit, executes once, rotates source, rejects the old
+live caller, restarts, observes the original receipt and rejects stale-epoch and
+replacement-origin commands. The original hold/history and sole provider call
+remain unchanged.
+
+Crate-owned =ledger/task_origin_registration= benchmarks measure fresh source
+admission, exact receipt replay and rebind rejection with the same pinned engine
+and natural drain. Authentication and deciding SQL are measured; provisioning is
+outside timing. This is the native source identity join, not TLS handshake timing.
+The existing five final-use cases remain mandatory. Go validates
+all eight fresh cases and the unchanged thirty-sample confidence-bound gates.
+The ordinary =-clean-source check-storage= entry includes the new Quint tests and
+1,000 sixty-step schedules, existing recovery models, Lean, full native/PBT and
+real provider tests. No dependency pin, timeout or deny gate is relaxed.
+
+Raw build/runtime failures and structured evidence remain ignored under =.cache=;
+the minimized property seed is a reproducible test asset, not an execution log.
+Initial compilation and needless-borrow failures are retained. Acceptance results
+are recorded separately after verification of committed source.
+
+The first complete cohort at =25ed70e= failed the unchanged ledger ASP gate:
+the public registration function combined too many algorithm steps. Its passing
+provider/model/benchmark stages do not qualify that failed cohort, and the full
+native integration target did not run after the library gate failed. Recovery,
+command validation and fresh installation were split into named private steps;
+the focused ledger gate then passed all 30 library checks. The public API, native
+transaction ordering and failure rules are preserved. Lean additionally separates
+immutable task assignment from the monotone first-publication seal: adding that
+constraint cannot broaden authorization, and a sealed birth cannot be replaced.
+
+| First cohort measurement, not acceptance | Samples | Mean ms | 95% interval ms |
+|-----------------------------------------+---------+---------+-----------------|
+| Fresh registration | 30 | 1.688 | 1.567 to 1.850 |
+| Receipt replay | 30 | 0.999 | 0.938 to 1.086 |
+| Rebind rejection | 30 | 0.919 | 0.855 to 0.998 |
+| WAL final pair | 30 | 19.182 | 17.982 to 20.481 |
+| MVCC serial final pair | 30 | 15.465 | 14.424 to 17.051 |
+| MVCC parallel final pair | 30 | 10.178 | 9.547 to 10.937 |
+| MVCC shared-budget pair | 30 | 17.974 | 16.715 to 19.496 |
+| MVCC shared-history pair | 30 | 21.532 | 17.921 to 26.239 |
+
+These are synthetic native measurements including natural owner drain, not a
+provider latency SLO or TLS benchmark. Differences from 59.80 do not establish
+that the additional registry checks improved performance; the workloads and host
+cohorts differ. Every measured cohort remains visible.
+
+** Accepted committed cohort
+
+The unchanged =-clean-source check-storage= entry passed all 23 stages at
+=405930789442806ecd60e1a9022f309dec15d4f6=, starting
+=2026-11-02T05:53:03.80401Z= on the 12-core host. Before/after committed-source
+checks and source currentness pass. Native evidence includes all 30 ledger
+library/ASP checks, 113 integration/property tests and 15 execution tests, plus
+Clippy and the complete race-enabled real provider suite. TaskOrigin passes 12
+scenarios including deliberate unsafe variants and 1,000 sixty-step schedules.
+All five named =OriginalTaskBinding= Lean trace declarations are =CHECKED= against
+the accepted source hash. Existing shared-domain and recovery checks remain active.
+
+The affected contracts/policy/server library gates separately passed 1, 2 and 25
+tests; the server's one existing ignored private observation entry is launched
+by Go integration. The full Go race suite and all five scoped Library diagram
+checks pass. The final algorithm refactor changes Rust helper boundaries and the
+birth-seal proof; it does not change protocol pins, source semantics or resource
+gates. This record is a subsequent documentation change, not a new runtime cohort.
+
+| Accepted cohort | Samples | Mean ms | 95% interval ms |
+|-----------------+---------+---------+-----------------|
+| Fresh registration | 30 | 1.981 | 1.793 to 2.225 |
+| Receipt replay | 30 | 1.147 | 1.081 to 1.218 |
+| Rebind rejection | 30 | 1.090 | 1.024 to 1.169 |
+| WAL final pair | 30 | 26.749 | 24.809 to 28.861 |
+| MVCC serial final pair | 30 | 24.933 | 22.811 to 27.349 |
+| MVCC parallel final pair | 30 | 16.610 | 14.497 to 19.218 |
+| MVCC shared-budget pair | 30 | 40.060 | 36.331 to 44.330 |
+| MVCC shared-history pair | 30 | 39.972 | 35.004 to 45.595 |
+
+The accepted cohort is slower than the preceding measurements in several cases;
+no best-cohort selection or general speedup claim is made. Shared constraints
+remain serialized and verified. Profiling, not weakened binding or history checks,
+is required before attributing or optimizing this cost.
+
+An admission receipt records successful registration. Pre-decision validation
+errors are not a durable rejected-intent protocol. An error or absent acknowledgment
+does not prove abort: recovery retains the original command and observes its
+decision under current source authority. There is no automatic parent/epoch
+rebasing or unknown-budget release. Authentic key issuance and independent
+all-copy rollback protection remain explicit premises.

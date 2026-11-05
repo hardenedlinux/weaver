@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Weaver Range Completion and Driver Recovery Contract
 #+language: en
 #+date: 2026-10-19
@@ -239,7 +243,7 @@ for durable publication or authorize runtime completion.
 Go owns cloud-native agent/session orchestration, SDK adapters, Kubernetes
 identity/lifecycle integration, backpressure and read-only recovery/status
 coordination. It retains original operation IDs across RPC retries, suppresses
-SDK retry/redirect/reconnect behavior that would enqueue a protected effect and
+provider-client retry/redirect/reconnect behavior that would enqueue a protected effect and
 passes immutable complete-message proposals into the Rust broker. A Pod restart,
 new controller leader or SDK success cannot release a stream, retag a tail or
 settle provider usage. Go needs no raw protected egress handle to perform these
@@ -285,3 +289,9 @@ These are acceptance requirements, not executed runtime receipts. Abstract
 quiescence/fence constructors are trusted event boundaries. Complete physical
 source/storage/driver refinement, authentic billing evidence, native acceptance
 and deployed behavior remain pending. No gateway code or dependency pin changes.
+
+* Embedded architecture views
+
+** 23-driver-completion-recovery.svg
+
+[[file:diagrams/23-driver-completion-recovery.svg]]

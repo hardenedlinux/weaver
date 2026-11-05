@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Weaver Source-to-Execution Assurance Review
 #+language: en
 #+date: 2026-10-18
@@ -44,7 +48,7 @@ into Weaver. The integration lemmas named by their purpose are future work.
 
 P18/P19/P20/P33/P34/P35 were inspected, not compiled in this review. The local
 P30 axiom-check run cannot qualify their transitive imports. The subsequent
-[[file:12-fm1-baseline-and-native-qualification.org][FM1 owner builds]] compile the pinned POO aggregate with its actual parent
+[[file:12-fm1-baseline-and-runtime-qualification.org][FM1 owner builds]] compile the pinned POO aggregate with its actual parent
 Core, but do not instantiate those theorems with concrete physical premises. The existing
 pure Scheme P12/P13 token/nonce transitions also need a persistence and
 serialization refinement; repeated evaluation of the same immutable input is
@@ -62,6 +66,10 @@ digest and listed names only, not this missing scope or invariant completeness.
 
 #+caption: W12. Proposed event correspondence; existing owner laws are partial foundations.
 [[file:diagrams/12-execution-correspondence.svg]]
+
+Read each row across the concrete event, its Quint schedule and the evidence
+obligation. The vertical event track separates consumption, ledger commit,
+handle delivery, transport entry and outcome observation.
 
 [[file:diagrams/12-execution-correspondence.d2][D2 source]]. Every arrow below requires an admitted relation. The diagram does
 not claim an executable translator, an existing Weaver transition model, or a
@@ -416,7 +424,7 @@ validation and protobuf round trips. Do not silently accept a new constructor,
 drop it during export, or assume unchanged outer authorizer code makes changed
 imported evaluation equivalent. Select one owner-qualified semantic
 closure for the new framework and port/requalify its consumers directly. A
-legacy adapter is not required. [[file:12-fm1-baseline-and-native-qualification.org][The subsequent FM1 investigation]] records this
+legacy adapter is not required. [[file:12-fm1-baseline-and-runtime-qualification.org][The subsequent FM1 investigation]] records this
 greenfield decision and actual isolated build/native evidence without pin changes.
 
 ** Limited read-only proof and freshness receipt

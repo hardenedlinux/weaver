@@ -1,0 +1,245 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+...@../../../dev/d2/themes/data
+vars: { d2-config: { layout-engine: tala;  pad: 70 } }
+title: ARTIFACT REGISTRATION / AUTHORITATIVE RECOVERY {
+  shape: text
+  near: top-center
+  style.font-size: 34
+  style.bold: true
+}
+proposal: Governed evidence proposal\nOriginal parent / command / source cut\nExact Delta and replay artifact {
+  class: card
+  left: 0
+  top: 0
+  width: 510
+  height: 220
+  style.fill: "#eef3ef"
+}
+registration: Independent commit authority\nImmutable registration journal\nExact original outcome after reply loss {
+  class: card
+  left: 750
+  top: 0
+  width: 510
+  height: 220
+  style.fill: "#e7edf4"
+}
+registrar: Authenticated registrar custody\nCurrent incarnation and term\nHistorical reply grants no new authority {
+  class: card
+  left: 1500
+  top: 0
+  width: 510
+  height: 220
+  style.fill: "#eef3ef"
+}
+projection: Recoverable local projection\nRebuild the exact authoritative prefix\nRollback cannot replace evidence {
+  class: card
+  left: 0
+  top: 480
+  width: 510
+  height: 220
+  style.fill: "#f4f2ec"
+}
+cas: Authoritative publication CAS\nJoin registry / parent / cut / caller\nOne authority order for final decision {
+  class: card
+  left: 750
+  top: 480
+  width: 510
+  height: 220
+  style.fill: "#e7edf4"
+}
+outcome: Durable publication outcome\nResolve only the original pending key\nSibling intents and holds survive {
+  class: card
+  left: 1500
+  top: 480
+  width: 510
+  height: 220
+  style.fill: "#e7edf4"
+}
+blocked: Divergent image or stale worker\nRefuse new publication admission\nRepair or hand off without rebasing {
+  class: card
+  left: 0
+  top: 990
+  width: 510
+  height: 220
+  style.fill: "#f4f2ec"
+}
+execution: Rust final execution owner\nFresh authorization after every wait\nPublication never sends by itself {
+  class: card
+  icon: ../../architecture/diagrams/assets/rust.svg
+  icon.near: top-left
+  left: 750
+  top: 990
+  width: 510
+  height: 220
+  style.fill: "#eef3ef"
+}
+original: Original semantic constraints\nCanonical claim / budget / history\nConsumed prefix and unknown exposure {
+  class: card
+  left: 1500
+  top: 990
+  width: 510
+  height: 220
+  style.fill: "#eef3ef"
+}
+proposal -> registration: Register exact evidence { style.font-size: 18 }
+registration -> projection: Read / recover { style.font-size: 18 }
+registration -> cas: Authoritative registration { style.font-size: 18 }
+registrar -> cas: Current caller fence { style.font-size: 18 }
+projection -> cas: Exact prefix join { style.font-size: 18 }
+cas -> outcome: Commit or reject { style.font-size: 18 }
+cas -> blocked: Failed final join { style.font-size: 18; style.stroke-dash: 5 }
+cas -> execution: Current publication { style.font-size: 18 }
+original -> execution: Retained obligations { style.font-size: 18 }
+footer: "Registration is not a send permit · A role credential is not an incarnation\nUnknown outcomes preserve the original intent, claim, budget and history" {
+  shape: text
+  left: 200
+  top: 1390
+  width: 1650
+  height: 100
+  style.font-size: 26
+  style.font-color: "#5c8b77"
+}
+
+# Project-owned presentation question; not an issued governance Question.
+vars: { d2-config: { data: { figure: |json
+{
+  "title": "53 artifact registry recovery",
+  "purpose": "architecture",
+  "kind": "data",
+  "language": "en",
+  "width": 960,
+  "primary": "main",
+  "questions": [
+    {
+      "ref": "main",
+      "text": "How does recovery preserve original registry identity?",
+      "focusRefs": [
+        "catalog",
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "catalog": "docs/architecture/08-diagram-catalog.org",
+    "model": "Project.sysml"
+  },
+  "copy": {
+    "takeaway": "How does recovery preserve original registry identity?"
+  },
+  "basis": {
+    "captureRef": "docs/50-59-research-program/59-provider-rpc/59.53-artifact-registry-recovery.d2#design-view",
+    "modelRefs": [
+      "Project.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "sketchbook",
+    "blueprint",
+    "reading"
+  ],
+  "layout": "model-view",
+  "variants": [],
+  "presentation": {
+    "graph": {
+      "id": "weaver-source-view",
+      "children": [
+        {
+          "id": "title"
+        },
+        {
+          "id": "proposal"
+        },
+        {
+          "id": "registration"
+        },
+        {
+          "id": "registrar"
+        },
+        {
+          "id": "projection"
+        },
+        {
+          "id": "cas"
+        },
+        {
+          "id": "outcome"
+        },
+        {
+          "id": "blocked"
+        },
+        {
+          "id": "execution"
+        },
+        {
+          "id": "original"
+        },
+        {
+          "id": "footer"
+        }
+      ],
+      "layoutOptions": {
+        "elk.direction": "DOWN",
+        "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+        "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+        "elk.layered.layering.coffmanGraham.layerBound": "1",
+        "elk.spacing.nodeNode": "24",
+        "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+        "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+        "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+        "elk.separateConnectedComponents": "false",
+        "elk.aspectRatio": "0.55",
+        "elk.spacing.componentComponent": "24"
+      }
+    },
+    "options": {
+      "elk.direction": "DOWN",
+      "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+      "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+      "elk.layered.layering.coffmanGraham.layerBound": "1",
+      "elk.spacing.nodeNode": "24",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+      "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+      "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+      "elk.separateConnectedComponents": "false",
+      "elk.aspectRatio": "0.55",
+      "elk.spacing.componentComponent": "24"
+    },
+    "icons": {
+      "title": "capture",
+      "proposal": "capture",
+      "registration": "capture",
+      "registrar": "capture",
+      "projection": "selection",
+      "cas": "capture",
+      "outcome": "capture",
+      "blocked": "capture",
+      "execution": "rust",
+      "original": "document",
+      "footer": "capture"
+    },
+    "roles": {
+      "cas": "default",
+      "execution": "execution",
+      "original": "default",
+      "footer": "default",
+      "title": "default",
+      "proposal": "default",
+      "registration": "default",
+      "registrar": "default",
+      "projection": "default",
+      "outcome": "default",
+      "blocked": "default"
+    }
+  },
+  "icons": [
+    "engineering",
+    "weaver"
+  ]
+}
+|
+} } }

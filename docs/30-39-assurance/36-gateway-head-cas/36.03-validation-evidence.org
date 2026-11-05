@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: AI Agent Gateway Head CAS Validation Evidence
 #+language: en
 #+date: 2026-10-19
@@ -167,7 +171,7 @@ Qualify actual broker queue admission, authoritative conditional writes and
 currentness publication ordering with a provider/SDK adapter. Crash between
 authority/projection commits and their replies, restore obsolete clients and
 projection snapshots, race head/Policy updates with queued sends, and exercise
-SDK retry/redirect and partial-stream outcomes. Check actual canonical requests,
+provider-client retry/redirect and partial-stream outcomes. Check actual canonical requests,
 logical offers and retained original budgets, not merely successful callbacks.
 
 The model's send is an irreversible logical offer, not remote provider delivery
@@ -176,3 +180,9 @@ resume theorem, immediate global revocation from an asynchronous policy cache,
 complete authority-rollback detection, unconditional recovery liveness or
 performance improvement is claimed. There is no hardware-isolation requirement
 in this core profile. No Gateway implementation or dependency pin is changed.
+
+* Embedded architecture views
+
+** 36.02-gateway-head-cas.svg
+
+[[file:36.02-gateway-head-cas.svg]]

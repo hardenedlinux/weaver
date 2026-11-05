@@ -1,14 +1,127 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+TITLE: 59.00 Default gRPC Provider Gateway
 #+LANGUAGE: en
 
+[[file:59.87-spec-upgrade-and-delivery-plan.org][Current SPEC upgrade and ordered delivery gates]] aligns Rust and Lean on
+the retained owner review and prioritizes standard Scheme-to-provider acceptance
+before optimization or broader protocol coverage.
+
+[[file:59.86-release-zero-trust-integration.org][Release closure and Gateway Zero Trust integration]] follows the released POO
+owners through standard Scheme qualification, the maintained SPEC dependency,
+actual compiler RPC, authority publication and final provider execution.
+
 * Current implementation
+
+[[file:59.85-source-preparation-admission.org][Source preparation admission and failure retention]] moves preparation into the
+existing verification receipt, retains the original metadata/asset cut and
+refuses inconsistent dependency identities before application compilation.
+
+[[file:59.83-spec-source-closure-and-architecture-admission.org][SPEC source closure and architecture admission]] records the actual missing
+modules, isolated producer closure and the still-separate whole-entry gate.
+
+[[file:59.84-quint-preparation-and-completion.org][Quint preparation and package-owned tooling]] separates repeated frontend cost,
+original checks, terminal completion and the unchanged CI limits.
+
+[[file:59.82-semantic-responsibility-allocation.org][Model-first semantic responsibility allocation]] defines Scheme, Cedar/SPEC,
+Go and Rust ownership in the existing SysML parts and typed actions. It separates
+the implemented original-binding checks from the remaining authentic-key issuance gap.
+
+[[file:59.81-original-task-origin-registration.org][Original task registration and source handoff]] binds the stable source task key
+to one original origin, scope and durable receipt across source epochs. Final
+use rejects missing original registration; issuer identity truth remains explicit.
+
+[[file:59.80-shared-domain-authority.org][Authoritative origins and cross-family shared domains]] supersedes the
+independent-family assumption below. New aliases retain the original claim;
+shared budget or history roots serialize use, and whole-domain unions preserve
+exposure while fencing old permits. Disjoint domains retain concurrent final use.
+
+[[file:59.79-turso-final-domains.org][Independent final-effect domains]] extends the single-process MVCC profile
+to simultaneous final sends. Original shared-budget/history families retain one
+order; global Policy/owner publication drains all live family scopes.
+
+[[file:59.77-mrr-turso-storage.org][MRR Data Backend / Turso storage]] is the current implementation.
+Runtime, PBT, recovery fault injection and benchmarks share one driver and
+immediate transaction boundary. Earlier SQLite measurements and opt-in storage
+proposals below remain historical evidence, not qualification of this cohort.
+
+[[file:59.76-embedded-tooling-and-darwin-io.org][Embedded tooling and Darwin I/O ownership]] separates the required upstream
+C ABI build/test API from proven process-path counterexamples and remaining image qualification.
+
+[[file:59.75-complete-entry-and-output-contract.org][Complete entry, output progress and compiler drain]] records the unchanged
+full-entry gates, paired evidence, CI failure attribution and remaining strict linker obligation.
+
+[[file:59.74-commit-io-and-notification-origin.org][COMMIT IO and notification origin]] distinguishes delegated synchronous
+file calls, shared driver progress and notification/resumption without new authority.
 
 The root [[file:../../../Project.sysml][Project.sysml]] controls package and asset ownership through
 [[file:59.20-project-structure.org][the executable project architecture gate]].
 Maintained native and formal checks follow [[file:59.21-verification-ownership.org][the verification ownership contract]].
+[[file:59.71-host-envelope-and-retest.org][Host envelope and direct retest]] predeclares evidence grades and acceptance
+standards, separates admission and conditional-validator effects, and retains all samples.
+[[file:59.72-turso-read-stage-attribution.org][Native-read stage attribution]] separates preparation, binding, VM/row
+construction, owned-value copying and driver/scheduler waits in original transactions.
+[[file:59.73-bridge-commit-cpu-and-ci.org][Bridge/commit CPU and CI recovery]] separates synchronous thread CPU,
+notification/resumption, COMMIT driver states and missing kernel I/O evidence.
+[[file:59.70-borrowed-validation-dispatch.org][Borrowed validation and dispatch review]] retains both existing runtime paths
+and records rejected optimization experiments alongside native guard acceptance.
+[[file:59.69-hot-path-cost-boundaries.org][Hot-path cost attribution]] separates canonical-home wait, borrowed-validator
+rendezvous, metadata execution and FULL completion; it retains reproduced regressions.
+[[file:59.68-cpu-matched-writer-review.org][CPU-matched writer requalification]] retains both complete paired campaigns,
+the hot-domain regression and actual-CPU lifecycle recovery evidence.
+[[file:59.67-writer-owner-lifecycle.org][Writer owner lifecycle]] closes cancellation, terminal ownership, retirement
+and exact original-operation recovery under a four-worker test minimum.
+[[file:59.66-bounded-writer-reuse.org][Bounded writer reuse]] reviews private connection ownership,
+hot-domain lifecycle costs and MRR-owned real-validation benchmarks.
+[[file:59.65-turso-concurrent-admission.org][Turso concurrent admission]] records the SysML-led
+storage review, MRR-owned benchmarks, recovery evidence and opt-in activation boundary.
 [[file:59.22-parallel-ci.org][Parallel language and contract suites]] run independently on OS-installed CI tools.
 [[file:59.23-governance-policy-projection.org][Governance Policy/source-asset projection]] defines the source-to-authority contract.
 [[file:59.24-telemetry-service.org][Default telemetry service]] defines the target observation boundary and OpenShell comparison.
+[[file:59.25-openshell-and-tao3k-ecosystem.org][OpenShell and the TAO3K ecosystem]] defines Scheme's programmable role,
+Cedar proof reuse and the complete routine-to-effect delivery sequence.
+The [[file:59.26-semantic-execution-ecosystem.svg][semantic execution diagram]] shows the target ecosystem relationships.
+[[file:59.27-policy-evidence-architecture.org][Policy evidence architecture]] fixes the publication, actual-schema and MRR
+boundaries before implementation; verification ownership is declared once in Project SysML.
+[[file:59.28-ascent-mrr-and-fact-review.org][The next cross-review]] selects inherited AA/Ascent first, keeps MRR optional,
+and reviews hard-fact barriers and receipt-driven Session progression. Its single
+R2-01--R2-13 ledger separates source inspection, conditional proof reuse, executed
+baseline checks and missing bridge acceptance; all thirteen integrated obligations
+remain open. Barrier confirmation, projection readiness and accounting application
+have distinct target contracts.
+All thirteen obligations now have bounded executable witnesses in the existing
+Quint owner; concrete integrated acceptance remains 0/13. The existing Cedar Lean
+bridge checks successor and fact-context evidence eligibility. Scheme also owns
+higher-order Governance assessment, evidence and strategy composition through
+AA generic methods and Workflow/Funflow, beyond Policy/configuration generation.
+[[file:59.29-strands-box-cross-review.org][Strands Box source review]] adds schema-bound request, durable-history,
+temporal-accounting and embedding lessons without adopting a second Policy engine.
+Its per-round comparison metric records benefits, disadvantages, mitigations and
+evidence progress against both Box and OpenShell; design coverage is separate
+from concrete integrated acceptance.
+[[file:59.30-governance-adapter-acceptance.org][Governance adapter acceptance]] maps all thirteen obligations to concrete
+fault-injection receipts, closes the target borrow/owned-data and VM callback
+contracts, and defines JSON plus high-order Scheme profiles through inherited
+JsonSchema/AA capabilities. The [[file:59.30-governance-adapter-acceptance.svg][adapter diagram]] keeps schemas and authority
+boundaries distinct. These acceptance scenarios are specified, not executed.
+[[file:59.40-core-gateway-library.org][The core Gateway Lean library]] fixes the upstream Authorization Delta/admission
+boundary and keeps scenario-specific Rust execution in Weaver.
+[[file:59.41-authority-read-final-cas.org][Authority reads and final CAS]] maps actual SQLite/gRPC recovery to reused
+Lean/Quint laws and records the independent recovery-floor implementation gap.
+[[file:59.42-independent-commit-floor.org][Independent commit floor and recovery]] defines the four-prefix decision,
+unknown-outcome reconciliation and transport-owner admission protocol, with
+executable protocol references and explicit production refinement gaps.
+[[file:59.43-floor-transport-owner.org][Floor to final transport owner]] fixes the target deployment, credential
+custody, admission linearization and fail-closed owner handoff. Its
+[[file:59.43-floor-transport-owner.svg][core topology diagram]] shows execution authority outside worker restoration.
+[[file:59.44-cloud-rpc-arrow-boundaries.org][Cloud ingress, RPC and Arrow boundaries]] joins that topology to batch,
+backpressure, cancellation and reconnect obligations using the existing provider
+proof owners. The [[file:59.44-cloud-rpc-arrow-boundaries.svg][core data/control flow]] distinguishes capacity from authority.
+[[file:59.49-policy-proposal-barrier.org][Durable Policy proposal staging]] implements the single-store pending barrier,
+exact outcome recovery and final-effect guards. Its [[file:59.49-policy-proposal-barrier.svg][core protocol diagram]]
+separates proposal acknowledgment, historical decision and execution authority.
 
 Go and Rust communicate through the shared typed gRPC service in
 [[file:../../../proto/gateway/v1/gateway.proto][gateway.proto]]. The Rust server executable starts this service by default.
@@ -28,20 +141,20 @@ It does not introduce another permission or transport owner.
 | Component | Placement and responsibility |
 |-----------+------------------------------|
 | Go routing | =go/internal/routing=: source-bound request and ordered route proposal |
-| Native source authoring | =scheme/=: existing Agentic AI Lab Governance/Governor POO values, inert Rust Policy C FFI and exact task/plan artifact |
+| Scheme semantics | =scheme/=: reusable functions and Agentic AI Lab Governance/Governor POO values; current delivery freezes a task/plan artifact through inert Rust Policy C FFI |
 | Go control service | =go/cmd/weaver-control=: acknowledged source activation, frozen routing and authenticated streaming proxy |
 | Go RPC client | =go/internal/gatewayclient=: explicit mTLS, no application retry, sequence and receipt checks |
 | Shared wire contract | =proto/gateway/v1/gateway.proto=: typed proposals, roles, observations and encoding choice |
 | Rust contracts | =crates/contracts=: immutable provider commitments and closed native event/outcome types |
 | Rust Policy | =crates/policy=: original-fact binding and fresh error-free Cedar decisions |
 | Rust ledger | =crates/ledger=: shared holds, canonical consumption and affine dispatch/release records |
-| Rust execution | =crates/execution=: private HTTPS/SSE owner, bounded decoding and guarded publication |
+| Rust execution | =crates/broker=: private HTTPS/SSE owner, bounded decoding and guarded publication |
 | Rust server | =crates/server=: default mTLS gRPC ingress, caller binding, roles, tracked work and encoding |
 | Development assurance | =dev=: SysML, Cedar fixtures, Quint, Lean, benchmark fixtures and retained evidence |
 
 * Reading order
 
-- [[file:59.19-governance-control.org][Native Governor/Governance, Scheme C FFI and complete Go control service]]
+- [[file:59.19-governance-control.org][Governor/Governance, Scheme C FFI and Go control service]]
 
 - [[file:59.01-rpc-security.org][gRPC security and ownership]]
 - [[file:59.02-provider-stream-protocol.org][Provider routing, streaming and recovery protocol]]
@@ -62,6 +175,35 @@ It does not introduce another permission or transport owner.
 - [[file:59.17-source-provider-profiles.org][Immutable source provider profiles, closed request semantics and recovery floors]]
 - [[file:59.18-transport-setup.org][Deadline-bound transport setup and original execution authority]]
 
+* Gateway Runtime performance
+
+- [[file:59.45-slow-consumer-zero-trust.org][Zero Trust and deterministic slow-consumer races]]
+- [[file:59.46-functional-security-frameworks.org][POO-owned functional security framework boundaries]]
+- [[file:59.47-property-testing-framework.org][Framework-owned properties, typed models, shrinking and replay]]
+- [[file:59.48-runtime-baseline.org][Gateway Runtime baseline, evidence boundaries and optimization priorities]]
+- [[file:59.50-parent-contract-and-replay.org][Retained POO parent contracts, CVC5 replay and final-use evidence]]
+- [[file:59.51-zero-trust-architecture.org][Zero Trust architecture completeness, UCON and concrete Weaver integration]]
+- [[file:59.52-reviewed-publication-cas.org][Authoritative parent and immutable Delta evidence at final publication CAS]]
+- [[file:59.53-artifact-registry-recovery.org][Durable artifact registration, independent recovery and registrar fencing]]
+- [[file:59.54-source-incarnation-authority.org][Source-role credentials, registrar identity and authoritative revocation]]
+- [[file:59.55-evidence-reviewed-publication.org][Native local review latch, exact parent and final CAS implementation]]
+- [[file:59.56-runtime-assets-and-authority-floor.org][Production artifact ownership and persistent source-authority joins]]
+- [[file:59.57-schema-bound-candidate-replay.org][Actual SPEC replay, named Policy identity and deciding parent join]]
+- [[file:59.58-independent-source-recovery.org][Independent source authority recovery, stale acknowledgments and snapshot counterexamples]]
+- [[file:59.59-retained-root-and-recovery-coverage.org][Retained trust root, complete recovery coverage and whole-store restore counterexamples]]
+- [[file:59.60-persistent-source-key-custody.org][Persistent source key handoff and actual final-transaction identity checks]]
+- [[file:59.61-authority-bound-replay-pair.org][Authority-captured predecessor and exact before/after replay admission]]
+- [[file:59.62-burn-exposure-recovery.org][One-use burn and original exposure in the retained admission prefix]]
+- [[file:59.63-mrr-admission-contract.org][MRR storage admission and final-use recovery contract]]
+- [[file:59.64-governance-capture-ownership.org][Independent original Governance data capture and framework-owned Scheme PBT]]
+
+* Standard Scheme package entry
+
+- [[file:59.36-gerbil-package-entry.org][Gerbil build/test ownership and FFI library declarations]]
+- [[file:59.37-gerbil-entry-local-results.org][Local public-entry evidence and retained failures]]
+- [[file:59.38-ffi-check-scheme.org][FFI-loaded libraries and complete Scheme Governance qualification]]
+- [[file:59.39-ffi-local-results.org][FFI-only local results and retained cold-prefix failure]]
+
 * Development commands
 
 #+begin_example
@@ -77,6 +219,33 @@ packages inherit dependencies from the Cargo workspace; Criterion and ASP Rust
 remain development-only. Every current Rust package declares a =gateway=
 benchmark target.
 
-Use the declared Nix development environment for these commands. In CI, the
-=ci= profile retains the same language SDKs and validation tools, and each mode
-uses =-clean-source= to admit only committed input bytes.
+Use the installed language SDKs and declared dependencies. The local Nix
+environment is optional; CI installs host dependencies through apt/Homebrew as
+described in [[file:59.22-parallel-ci.org][the CI contract]]. Each CI mode uses =-clean-source= to admit
+only committed input bytes.
+
+* Embedded architecture views
+
+** 59.26-semantic-execution-ecosystem.svg
+
+[[file:59.26-semantic-execution-ecosystem.svg]]
+
+** 59.30-governance-adapter-acceptance.svg
+
+[[file:59.30-governance-adapter-acceptance.svg]]
+
+** 59.43-floor-transport-owner.svg
+
+[[file:59.43-floor-transport-owner.svg]]
+
+** 59.44-cloud-rpc-arrow-boundaries.svg
+
+[[file:59.44-cloud-rpc-arrow-boundaries.svg]]
+
+** 59.49-policy-proposal-barrier.svg
+
+[[file:59.49-policy-proposal-barrier.svg]]
+
+** 59.03-provider-rpc-core.svg
+
+[[file:59.03-provider-rpc-core.svg]]

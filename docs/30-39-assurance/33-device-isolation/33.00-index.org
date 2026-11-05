@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Device Isolation and Floor Recovery Index
 #+language: en
 #+options: toc:2
@@ -36,3 +40,9 @@ python3 dev/proofs/check_device_isolation.py
 [[file:../32-key-boundary/32.01-session-revocation-queued-signing.org][32.01 Key boundary]], [[file:../32-key-boundary/32.03-validation-evidence.org][its unchanged evidence receipt]] and
 [[file:../31-protected-signer/31.01-durable-commit-release-recovery.org][31.01 Protected signer]] remain the preceding layers. Historical artifacts and
 byte manifests retain their original paths and identities.
+
+* Embedded architecture views
+
+** 33.02-device-isolation.svg
+
+[[file:33.02-device-isolation.svg]]

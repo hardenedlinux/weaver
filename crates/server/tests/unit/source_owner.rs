@@ -1,11 +1,21 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 use super::{SourceOwner, answer};
 use crate::runtime::RuntimeOwner;
+use crate::test_fixtures as fixtures;
 use std::{sync::Arc, time::Duration};
 use tokio::sync::{Semaphore, oneshot};
 use weaver_contracts::{Publication, PublicationKey, PublicationOutcome};
 use weaver_ledger::Ledger;
-#[path = "../../../contracts/benches/support/fixtures.rs"]
-mod fixtures;
+fn caller() -> weaver_contracts::SourceIdentity {
+    weaver_contracts::SourceIdentity {
+        certificate_sha256: weaver_contracts::body_digest("source certificate"),
+        public_key_sha256: weaver_contracts::body_digest("source SPKI"),
+        credential_sha256: weaver_contracts::body_digest("source credential"),
+    }
+}
 
 const POLICY: &str = include_str!("../../../../prod/policies/provider/provider.cedar");
 const SCHEMA: &str = include_str!("../../../../prod/policies/provider/schema.json");
@@ -36,7 +46,10 @@ async fn reused_source_connection_observes_other_writer_and_preserves_historical
         .expect("start");
     let owner = worker.client.clone();
     let original = change("original", None);
-    let receipt = owner.publish(original.clone()).await.expect("commit");
+    let receipt = owner
+        .publish(caller(), original.clone())
+        .await
+        .expect("commit");
     let mut other = Ledger::open(&path).expect("other owner");
     assert_eq!(
         other
@@ -45,24 +58,35 @@ async fn reused_source_connection_observes_other_writer_and_preserves_historical
         1
     );
     let stale = owner
-        .publish(change("stale", Some(0)))
+        .publish(caller(), change("stale", Some(0)))
         .await
         .expect("decision");
     assert_eq!(stale.outcome, PublicationOutcome::Rejected);
     assert_eq!(stale.revision, Some(1));
     assert_eq!(stale.fence, Some(2));
     let observed = owner
-        .inspect(PublicationKey {
-            operation_id: original.operation_id.clone(),
-            digest: original.digest().expect("digest"),
-        })
+        .inspect(
+            caller(),
+            PublicationKey {
+                operation_id: original.operation_id.clone(),
+                digest: original.digest().expect("digest"),
+            },
+        )
         .await
         .expect("query");
     assert_eq!(observed, Some(receipt.clone()));
-    assert_eq!(owner.publish(original).await.expect("replay"), receipt);
+    assert_eq!(
+        owner.publish(caller(), original).await.expect("replay"),
+        receipt
+    );
     runtime.drain().await;
     worker.finish().await.expect("successful source close");
-    assert!(owner.publish(change("after-close", Some(1))).await.is_err());
+    assert!(
+        owner
+            .publish(caller(), change("after-close", Some(1)))
+            .await
+            .is_err()
+    );
     let reopened = Ledger::open(&path).expect("reopen");
     reopened
         .require_quiescent()
@@ -129,11 +153,11 @@ async fn disconnected_source_caller_keeps_capacity_until_original_sql_work_finis
         .expect("start");
     let owner = worker.client.clone();
     owner
-        .publish(change("bootstrap", None))
+        .publish(caller(), change("bootstrap", None))
         .await
         .expect("bootstrap");
     let (task, plan) = fixtures::task_plan(16, "https://provider.invalid/v1/chat/completions");
-    owner.register(task).await.expect("task");
+    owner.register(caller(), task, None).await.expect("task");
     let mut writer = Ledger::open(&path).expect("writer");
     writer.enqueue_provider(&plan).expect("queue");
     let permit = writer
@@ -148,12 +172,13 @@ async fn disconnected_source_caller_keeps_capacity_until_original_sql_work_finis
                 blocked
                     .recv_timeout(Duration::from_secs(3))
                     .expect("release writer");
+                Ok(())
             })
             .expect("guarded writer")
     });
     started.await.expect("writer entered");
     let proposal = change("original", Some(0));
-    let mut publishing = Box::pin(owner.publish(proposal.clone()));
+    let mut publishing = Box::pin(owner.publish(caller(), proposal.clone()));
     std::future::poll_fn(|cx| {
         assert!(matches!(publishing.as_mut().poll(cx), Poll::Pending));
         Poll::Ready(())
@@ -166,7 +191,7 @@ async fn disconnected_source_caller_keeps_capacity_until_original_sql_work_finis
     };
     assert_eq!(
         owner
-            .inspect(key.clone())
+            .inspect(caller(), key.clone())
             .await
             .expect_err("capacity still occupied")
             .code(),
@@ -176,7 +201,7 @@ async fn disconnected_source_caller_keeps_capacity_until_original_sql_work_finis
     writing.join().expect("writer completed");
     let result = tokio::time::timeout(Duration::from_secs(3), async {
         loop {
-            match owner.inspect(key.clone()).await {
+            match owner.inspect(caller(), key.clone()).await {
                 Err(error) if error.code() == tonic::Code::ResourceExhausted => {
                     tokio::time::sleep(Duration::from_millis(1)).await
                 }
@@ -199,4 +224,46 @@ async fn disconnected_source_caller_keeps_capacity_until_original_sql_work_finis
             .expect("held"),
         4
     );
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn review_context_uses_provisioned_metadata_and_does_not_publish() {
+    let directory = tempfile::tempdir().expect("dir");
+    let path = directory.path().join("review.db");
+    let mut ledger = Ledger::open(&path).expect("store");
+    ledger
+        .install_review_authority(&weaver_contracts::ReviewAuthority {
+            audience: "test-gateway".into(),
+            epoch: 0,
+            public_key: "4".repeat(64),
+            allow_expansion: false,
+            qualified_catalog: None,
+        })
+        .expect("native provision");
+    drop(ledger);
+    let runtime = RuntimeOwner::new();
+    let worker = SourceOwner::start(runtime.clone(), slot(), path.clone())
+        .await
+        .expect("start");
+    let p = change("reviewed", None);
+    let key = worker
+        .client
+        .stage_reviewed(caller(), p)
+        .await
+        .expect("stage");
+    let context = worker
+        .client
+        .review_context(caller(), key.clone())
+        .await
+        .expect("owned context");
+    assert_eq!(context.parent, None);
+    assert_eq!(context.publication, key);
+    assert_eq!(context.reviewer.audience, "test-gateway");
+    assert_eq!(context.source.identity, caller());
+    assert_eq!(
+        worker.client.inspect(caller(), key).await.expect("observe"),
+        None
+    );
+    runtime.drain().await;
+    worker.finish().await.expect("natural drain");
 }

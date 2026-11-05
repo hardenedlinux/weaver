@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Weaver Canonical Registry Proofs and Recovery Evidence
 #+language: en
 #+options: toc:3
@@ -106,7 +110,7 @@ Old-resolution controls must show actual prior issuance. Fresh-resolution positi
 controls must establish the new receipt passes identity currentness before checking
 that original spent/history constraints still reject the actual use.
 
-* Native acceptance
+* Implementation acceptance
 
 Lose replies after origin/alias CAS; query exact authoritative keys and full bodies.
 Race concurrent registration/binding with identity/source restart, Policy/history

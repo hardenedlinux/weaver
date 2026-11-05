@@ -1,9 +1,13 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 //! Read bounded process configuration outside the async I/O executor.
 use crate::rpc_security::{GrpcConfig, GrpcListeners, RpcSecurity};
 use std::{collections::BTreeMap, io::Read};
 use tonic::transport::{Certificate, Identity, ServerTlsConfig};
+use weaver_broker::ProviderTransport;
 use weaver_contracts::{Error, Result};
-use weaver_execution::ProviderTransport;
 fn required(name: &str) -> Result<String> {
     std::env::var(name).map_err(|_| Error::Invalid("required gRPC configuration missing"))
 }
@@ -42,8 +46,16 @@ fn load_security() -> Result<RpcSecurity> {
     })
 }
 fn load_transport() -> Result<ProviderTransport> {
-    let names: BTreeMap<String, String> =
-        weaver_contracts::decode(required("WEAVER_PROVIDER_CREDENTIAL_ENVS")?.as_bytes())?;
+    let names: BTreeMap<String, String> = match std::env::var("WEAVER_PROVIDER_CREDENTIAL_ENVS") {
+        Ok(value) => weaver_contracts::decode(value.as_bytes())?,
+        Err(std::env::VarError::NotPresent) => BTreeMap::new(),
+        Err(_) => return Err(Error::Invalid("provider credential encoding")),
+    };
+    let federation = match std::env::var("WEAVER_ANTHROPIC_WIF") {
+        Ok(value) => weaver_contracts::decode(value.as_bytes())?,
+        Err(std::env::VarError::NotPresent) => BTreeMap::new(),
+        Err(_) => return Err(Error::Invalid("WIF configuration encoding")),
+    };
     if names.len() > 8 {
         return Err(Error::Invalid("provider configuration bound"));
     }
@@ -55,7 +67,34 @@ fn load_transport() -> Result<ProviderTransport> {
         .ok()
         .map(read_path)
         .transpose()?;
-    ProviderTransport::new(credentials, root.as_deref())
+    #[cfg(test)]
+    if let Ok(peer) = std::env::var("WEAVER_TEST_WIF_PEER") {
+        if !credentials.is_empty() {
+            return Err(Error::Invalid("WIF test credentials"));
+        }
+        return ProviderTransport::with_wif_loopback(
+            federation,
+            root.as_deref().ok_or(Error::Invalid("WIF test root"))?,
+            tokio::runtime::Handle::current(),
+            peer.parse()
+                .map_err(|_| Error::Invalid("WIF test address"))?,
+        );
+    }
+    ProviderTransport::with_anthropic_wif(
+        credentials,
+        federation,
+        root.as_deref(),
+        tokio::runtime::Handle::current(),
+    )
+}
+
+#[cfg(test)]
+#[tokio::test(flavor = "multi_thread")]
+#[ignore = "started as a child by the Go WIF fixture"]
+async fn serve_wif_gateway() {
+    crate::entrypoint::run_on_runtime()
+        .await
+        .expect("WIF test gateway");
 }
 struct ListenAddresses {
     operation: std::net::SocketAddr,
@@ -85,6 +124,19 @@ fn load() -> Result<(GrpcConfig, ListenAddresses)> {
     }
     Ok((
         GrpcConfig {
+            review_authority: weaver_contracts::decode(
+                required("WEAVER_REVIEW_AUTHORITY")?.as_bytes(),
+            )?,
+            metering: match std::env::var("WEAVER_METERING") {
+                Ok(config) => Some(weaver_contracts::decode(config.as_bytes())?),
+                Err(std::env::VarError::NotPresent) => None,
+                Err(_) => return Err(Error::Invalid("metering deployment encoding")),
+            },
+            provider_oauth: match std::env::var("WEAVER_PROVIDER_OAUTH") {
+                Ok(config) => Some(weaver_contracts::decode(config.as_bytes())?),
+                Err(std::env::VarError::NotPresent) => None,
+                Err(_) => return Err(Error::Invalid("provider OAuth deployment encoding")),
+            },
             owner,
             security: load_security()?,
             provider: load_transport()?,
@@ -94,13 +146,29 @@ fn load() -> Result<(GrpcConfig, ListenAddresses)> {
 }
 /// Start the default mTLS RPC service; no command/stdio request protocol exists.
 pub async fn run_from_env() -> Result<()> {
+    let runtime = crate::ServiceRuntime::new();
+    let result = run_owned(runtime.clone()).await;
+    runtime.drain().await;
+    result
+}
+async fn run_owned(runtime: crate::ServiceRuntime) -> Result<()> {
+    let _lifetime = runtime.shutdown_guard();
     let started = std::time::Instant::now();
     eprintln!(
         "weaver startup stage=runtime-entered clock={:?}",
         std::time::SystemTime::now()
     );
     let shutdown = crate::shutdown::signal()?;
-    let (settings, addresses) = crate::runtime::RuntimeOwner::initialize(load).await?;
+    let (settings, addresses, catalog) = crate::runtime::RuntimeOwner::initialize(|| {
+        let (settings, addresses) = load()?;
+        Ok((
+            settings,
+            addresses,
+            crate::governance_deployment::load_catalog()?,
+        ))
+    })
+    .await?;
+    let worker = crate::governance_deployment::start(&runtime, catalog).await?;
     eprintln!(
         "weaver startup stage=configured elapsed={:?}",
         started.elapsed()
@@ -114,5 +182,15 @@ pub async fn run_from_env() -> Result<()> {
         "weaver startup stage=listeners-bound elapsed={:?}",
         started.elapsed()
     );
-    crate::grpc::serve_grpc(GrpcListeners { operation, source }, settings, shutdown).await
+    let result = crate::grpc::serve_grpc_with_runtime(
+        GrpcListeners { operation, source },
+        settings,
+        runtime,
+        shutdown,
+    )
+    .await;
+    if let Some(worker) = worker {
+        worker.finish().await?;
+    }
+    result
 }

@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 //! Bounded, inert Cedar source validation shared by the safe and C ABI entries.
 /// Maximum borrowed UTF-8 source length for each Policy C ABI input.
 pub const MAX_SOURCE_BYTES: usize = 65_536;

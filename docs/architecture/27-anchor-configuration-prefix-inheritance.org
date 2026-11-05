@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Weaver Anchor Configuration Changes and Committed Prefix Inheritance
 #+language: en
 #+date: 2026-10-19
@@ -242,7 +246,7 @@ Rust validates complete membership envelopes, installation/prefix joins and the
 actual broker barrier/activation contract. Qualified storage/effect owners supply
 the physical facts. No language implementation is changed by this review.
 
-* Native acceptance and performance boundary
+* Implementation acceptance and performance boundary
 
 Exercise disjoint rosters, old-only/new-only partitions, learner promotion before
 copy completion, old snapshots omitting control entries or burns, old leader
@@ -260,3 +264,9 @@ qualified equivalent receipts before making performance claims. Original shared
 budget/history domains cannot be split to create capacity. No benchmark, native
 consensus acceptance or gateway implementation is claimed; dependency pins stay
 unchanged.
+
+* Embedded architecture views
+
+** 28-anchor-configuration-prefix.svg
+
+[[file:diagrams/28-anchor-configuration-prefix.svg]]

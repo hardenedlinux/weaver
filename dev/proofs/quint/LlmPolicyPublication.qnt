@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 // One admitted original task; native source setup and transitions are composed in Lean.
 module LlmPolicyPublication {
   type Subject={claim:int,commitment:int,budget:int,history:int}

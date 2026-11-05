@@ -1,6 +1,16 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Weaver Caller Binding at Protected Publication
 #+language: en
 #+options: toc:3
+
+* Reader view
+
+Proof of possession and current custody are checked together.
+
+[[file:43.02-caller-custody.svg]]
 
 * Finding and decision
 
@@ -128,7 +138,7 @@ is false. This is a logical Gateway boundary with explicit credential assumption
 |-------+----------------|
 | Scheme / POO Flow | Own canonical original task, claim/profile commitment, policy input semantics, history and budget-domain identity; derive typed publication intent and recovery duties; preserve pending unknown outcomes |
 | Cedar / Code as Policy | Decide whether this exact principal, operation, domain and recovery purpose are permitted using authentic current facts; an allow decision cannot invent those facts or replace final atomic mediation |
-| Go / cloud native adapter | Kubernetes enrollment integration, reconnection and lifecycle orchestration, protocol conversion and SDK control; resolve original operations after lost replies; never remint a family, broaden scope, auto-renew a grant or send during commit |
+| Go / cloud native adapter | Kubernetes enrollment integration, reconnection and lifecycle orchestration, protocol conversion and Gerbil toolchain control; resolve original operations after lost replies; never remint a family, broaden scope, auto-renew a grant or send during commit |
 | Rust / determining broker | Verify peer/key context, compare exact current grant, parent and join; serialize capability changes with custody outcome publication; retain durable spent-state and reject stale queued work; enforce separate final-send gates |
 | Quint | Exercise shared-principal impersonation, expiry races, lost replies, rotation, handoff, restart and deliberate boundary mutations over the inherited actual floor/account fixture |
 | Lean | Prove finite-run refinement to actual custody/account transitions, final permit requirement, scope/non-reuse properties and conditional original-result/budget preservation |

@@ -1,0 +1,84 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+#+title: 59.35 Control Recovery: Local Evidence and Outstanding Discovery Gate
+#+language: en
+
+* Qualified implementation and scope
+The recovery implementation is =06c14a6837fb4255b4b9e186a0a2060fbee5ecff=,
+now included in [[https://github.com/hardenedlinux/weaver/pull/1][PR 1]]. PR 2 was automatically marked merged when its
+head was fast-forwarded into PR 1; its local and remote feature branches were
+removed. This document is derived evidence, not a change to execution inputs.
+
+All checks ran on the actual twelve-CPU Darwin host. The complete source gate
+unset =CC=, =CXX= and =COMPILER_PATH=, selected the installed gxi through the
+environment, used a task-owned Cargo target and rebuilt the isolated Scheme
+libraries. The fifteen-second gxi and inventory deadlines remain unchanged.
+Dependency pins did not change.
+
+* Passing recovery evidence
+| Check | Result |
+|-------+--------|
+| Go gatewayclient/config race tests | PASS |
+| Actual Go/Rust mTLS lost-publication recovery test | PASS, 9.224 s |
+| Strict Project/SysML checks with prepared dependencies | PASS, 2.504 s |
+| Quint named authority scenarios and counterexamples | PASS, 17 |
+| Quint safety exploration | PASS, 1,000 samples / 60 steps / seed 293 |
+| Lean publication recovery composition | PASS on pinned Lean 4.34.1 |
+| Complete Scheme/CFFI/Go control and stream integration | PASS, 282.624 s |
+
+The actual source-assets response-loss/restart case passed in 30.53 seconds
+within the integration suite. The relay continued to drop every successful
+publication response. Recovery observed the original committed decision;
+publication count stayed at one across restarts. Retrying the consumed node
+did not invoke the provider again and retained its canonical receipt. A later
+revocation rejected a different unused node after another restart.
+
+The suite also passed actual Cedar FFI validation, Governor revocation/restart,
+unselected-plan rejection, streaming partial writes, budget sharing and retry
+checks. This is an actual local transport/storage/CFFI integration with fixture
+providers, not evidence of production-provider availability or exactly-once
+remote execution. Lean checks the abstract immutable-decision/accounting
+composition; authentication, SQLite durability and digest binding remain
+explicit implementation premises.
+
+* Complete gate: failure retained
+The same committed-source =check-scheme= run finished with =FAIL=: thirteen of
+sixteen stages passed. It must not be reported as a fully passing source gate.
+
+| Stage | Result | Evidence |
+|-------+--------+----------|
+| Project architecture | FAIL | The original 30-second package enumeration expired while downloading unprepared Arrow-related Go modules |
+| Policy FFI, build capacity, POO, Core, Agentic AI Lab, project Scheme modules | PASS | Isolated source builds; available-process-cpus=12 |
+| Build-environment/pkg-config tests | PASS | Actual environment and metadata consumers |
+| Dynamic image preparation | FAIL | Module inventory exceeded its 15-second deadline; =module inventory: signal: killed=; 15.019 s |
+| Ordinary dynamic gxi suites | FAIL | Deadline cancellation at 15.029 s; no output and no successful natural-exit receipt |
+| Scheme/CFFI/Go stream integration | PASS | Exit 0; output SHA-256 =066800898863228d3e0d6926061bdae286f3fc38aa57f86fa2c6039335d9f6c3= |
+| Before/after committed and linked source checks | PASS | Same committed inputs and dependency snapshot |
+
+Official =go mod download= completed the locked module preparation. Repeating
+the architecture checks then passed under the unchanged child deadline. That
+focused recheck does not rewrite the complete run's failure.
+
+Inventory failed before coalesced image activation. Consequently the following
+unit stage had no successfully prepared image environment. Both deadline
+failures remain failures: watchdog cancellation is not natural cleanup.
+This run does not establish whether host contention or the discovery/loading
+path caused the inventory overrun. Earlier successful coalesced runs in 59.33
+are separate observations and cannot substitute for this source/host receipt.
+The outstanding work is a reproducible discovery/loading diagnosis that keeps
+the original deadline, rather than retrying until a passing sample appears.
+
+* Historical evidence ownership
+The retired source flags and compiler override are not current reproduction
+instructions. Current package operations use standard gerbil build/test and the
+Cargo-selected SDK's native package APIs; see
+[[file:59.87-spec-upgrade-and-delivery-plan.org][the current delivery and Runtime acceptance plan]].
+The original source identities and output digests belong to the ignored result
+receipt, not a duplicate package lock in this Org document.
+
+The ignored fixed =latest-check-scheme.json= retains the stage errors, output
+commitments, source hashes and durations. The runner removed raw stage logs
+and its isolated Scheme prefix after finalization. No raw logs enter Git.
+Remote GitHub CI is outside this local acceptance record and is not awaited.

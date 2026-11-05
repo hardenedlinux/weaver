@@ -1,0 +1,111 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+#+TITLE: 59.68 CPU-Matched Writer Requalification
+#+LANGUAGE: en
+#+OPTIONS: toc:2
+
+* SysML review before native changes
+
+[[file:../../../Project.sysml][Project SysML]] and the existing
+=ControlActivation.GovernancePolicyProjection= retain ownership. Refine
+[[file:59.67-writer-owner-lifecycle.org][writer lifecycle acceptance]] with max(4, available Host CPUs) for the
+native lifecycle runtime, write/shared budgets and reusable capacity. A resource
+count does not change the original authority, claim, reservation or history domain.
+SPEC semantics and existing Lean/Quint responsibility remain unchanged.
+
+Use MRR Data's existing Cargo benchmark and standard tests. The representative
+benchmark verifies actual durable local bodies, typed original obligations and
+enrolled authority. Rotate WAL, fresh MVCC and reused MVCC across three rounds
+for independent original homes and the original hot home. Preserve all matching
+samples, latency, phase timing, failure counts and exact recovery. Keep FULL,
+zero implicit retries, full resource cleanup and the 30-second collection bound.
+Do not overlap this task's builds/tests with timed measurements. Fresh paths do
+not imply a cold OS cache or dedicated machine.
+
+Recheck cancellation before/after validation, known-commit reply loss, effective
+retirement and pending retirement conflict at actual Host parallelism. Require
+original operation/authority recovery and retained unknown exposure. Reuse the
+existing process-death tests separately; same-process provider reconstruction
+does not establish process-death or independent anti-rollback protection.
+
+#+CAPTION: CPU-budgeted resource ownership preserves the original obligation and separate final-use gate.
+#+ATTR_ORG: :width 1600
+#+ATTR_HTML: :width 100% :alt CPU-budgeted leases, terminal ownership, original-operation recovery and final Rust admission
+[[file:59.67-writer-owner-lifecycle.svg]]
+
+Reuse the existing core D2/SVG rather than creating a competing architecture.
+Measurement versions and acceptance counts belong in the evidence below, not
+inside that diagram.
+
+* Native results and retained regression
+
+The later [[file:59.69-hot-path-cost-boundaries.org][cost-boundary review]] traces new reproductions without retroactively assigning
+their exact phase percentages to this historical 0.74 sample.
+
+MRR Data [[https://github.com/tao3k/mrr-data/pull/12][PR 12]] commit =b305f22= owns the native target updates and
+[[https://github.com/tao3k/mrr-data/blob/b305f22/docs/benchmarks/shared-backend-cpu-matched-reuse.org][complete sample table, component timings and reproduction commands]]. Weaver consumes that
+record; it does not maintain another benchmark implementation or storage backend.
+
+The current Host reports 12 available CPUs. Both paired campaigns use 12 runtime,
+write/shared workers and reusable capacity, with 16 blocking threads. The native
+lifecycle target now uses that allocation and 12 concurrent shutdown callers.
+Other standard test runtimes retain their existing four-worker minimum.
+
+Each campaign completes 18 cases and 13,824 commits with exact recovery, no
+refusal, Unknown or unexpected failure. Combined: 36 cases and 27,648 original
+operation recoveries. A single fixed additional campaign checks stability after
+the first showed latency variation; neither replaces the other. The compiled
+benchmark binary is unchanged between campaigns. Task-owned builds/tests do not
+overlap timed measurement; the Host remains shared and OS caches uncontrolled.
+
+| Domain | All six reuse/fresh TPS ratios | All six reuse/WAL TPS ratios |
+|--------+-------------------------------+-----------------------------|
+| Independent original homes | 4.87, 2.39, 3.18, 4.77, 2.26, 3.48 | 4.06, 2.26, 5.23, 3.50, 2.31, 3.77 |
+| Original hot home | 2.50, 3.53, 3.36, 3.57, 2.57, 3.81 | 1.76, 1.68, 1.75, 1.72, 0.74, 1.06 |
+
+Campaign B round 1 retains a hot-domain throughput regression: reuse/WAL=0.74;
+P95=11.45 versus 5.96 ms; P99=65.97 versus 9.48 ms. Independent-home round 1
+in both campaigns also has a worse reuse P95 despite higher TPS. The record
+must not summarize these results as a universal WAL replacement or tail win.
+
+The regressing hot pair's mean physical envelope is 95.96 microseconds for reuse
+versus 102.18 for WAL. Its get cost is 155.81 versus 120.55 microseconds; other
+transaction-body cost is 145.75 versus 85.39. Body and scheduling/validation delay
+remain relevant. These observations do not identify a Host-jitter, fsync or
+pager cause. The separate native phase diagnostic supports the existing fresh
+connection first-BEGIN/disposal cost, but does not explain the reused hot tail.
+
+Keep reuse explicit and WAL available for ordered hot domains. Next causal
+acceptance requires a dedicated-Host trace separating queue/validator/native/I/O
+delay under the same original identities and fixed workload. Do not weaken FULL,
+split original obligations, retry implicitly or switch storage modes automatically.
+No production provider change occurred in this round; differences from historical
+measurements cannot be attributed to another optimization.
+
+* Recovery evidence and open Host obligations
+
+Five CPU-matched lifecycle tests cover six schedules using native transactions:
+cancel before validation, cancel before COMMIT after validation, cancel after a
+known commit with lost delivery, exact historical replay while delivery remains
+pending, effective retirement before seal and competing pending retirement.
+Shutdown drains accepted work and closes once. Reconstruction retains original
+operation/authority/outbox bindings and held=4; retired authority cannot use a
+new nonce. Driver Unknown disposal and late lease returns retain their existing
+unit controls. A free slot never implies a budget refund.
+
+The reusable standard Arrow/query + graph/publication suite passes 78 tests,
+including existing independent-process crash/partial-tuple recovery and ASP deny
+checks. Strict all-target Clippy passes. CPU-matched provider reconstruction
+and the separate existing process-death controls are different evidence classes.
+The WAL-control and fresh-MVCC standard configurations also pass 63 tests each
+with this CPU-matched lifecycle target. Opt-in measurements are counted separately.
+Timeouts and full cleanup remain unchanged; remote CI is not inferred from local
+success. No production Weaver code, dependency pin or qualification package changes.
+
+SPEC semantics and existing Lean/Quint roles remain authoritative. Physical
+power loss, whole-store rollback, independent retained roots, external authority
+effectiveness and actual Rust transport currentAtUse remain Host/executor proof
+obligations. These fixtures preserve an immutable unknown-exposure body; they
+exercise neither an account-refund algorithm nor external sending.

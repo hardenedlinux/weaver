@@ -1,0 +1,312 @@
+diff --git a/src/compiler-process.ts b/src/compiler-process.ts
+index fa872db..552c096 100644
+--- a/src/compiler-process.ts
++++ b/src/compiler-process.ts
+@@ -6,16 +6,16 @@ import {Worker} from 'node:worker_threads';
+ import type {ModelRequest,ModelResponse} from './worker';
+ /** The process owns the compiler worker's native allocation domain. Bun may
+  * retain terminated worker heaps until process exit; wait for natural exit. */
++// Keep IPC referenced until the worker is joined and the send callback completes.
+ process.on('message',async(request:ModelRequest)=>{
+- let worker:Worker|undefined;
+  let response:ModelResponse;
+  try{
+-  worker=new Worker(new URL('./worker.ts',import.meta.url),{workerData:request});
+-  response=await new Promise<ModelResponse>((resolve,reject)=>{
+-   worker!.once('message',resolve);worker!.once('error',reject);
+-   worker!.once('exit',code=>reject(new Error('Compiler worker exited before result: '+code)));
+-  });
++  const worker=new Worker(new URL('./worker.ts',import.meta.url),{workerData:request});
++  try{response=await new Promise<ModelResponse>((resolve,reject)=>{
++   worker.once('message',resolve);worker.once('error',reject);
++   worker.once('exit',code=>reject(new Error('Compiler worker exited before result: '+code)));
++  });}finally{await worker.terminate();}
+  }catch(error:unknown){response={error:error instanceof Error?error.message:String(error)};}
+- finally{if(worker)await worker.terminate();}
+- process.send!(response,error=>{if(error)process.exitCode=1;process.disconnect?.();});
++ if(!process.connected){process.exitCode=1;return;}
++ process.send!(response,error=>{if(error)process.exitCode=1;if(process.connected)process.disconnect?.();});
+ });
+diff --git a/src/diagram.ts b/src/diagram.ts
+index 97f8934..5edc537 100644
+--- a/src/diagram.ts
++++ b/src/diagram.ts
+@@ -5,17 +5,20 @@
+ import type {ElkNode} from 'elkjs/lib/elk-api';
+ import type {FigureContext, FigureComposition, FigureModel} from './figure';
+ import {digest} from './source/catalog';
++import {wrapDiagramText} from './text';
+ export interface DiagramSpec {
+   readonly graph: ElkNode;
+   readonly icons?: Readonly<Record<string,string>>;
+   readonly edgeLabels?: boolean;
+   readonly roles?: Readonly<Record<string,string>>;
++  readonly textColumns?:number;
+ }
+-export type DiagramNodeComposer = (node: FigureModel['subjects'][number], context: FigureContext) => string;
+-const defaultNode: DiagramNodeComposer = (node, {text,theme,evidence,model}) => {
+-  const lines=[node.label ?? node.id,...(node.columns??[]).map(column=>[column.name.label,column.type.label,...(column.constraint??[])].filter(Boolean).join(' · ')),...(node.fields??[]).map(field=>`${field.visibility} ${field.name}: ${field.type}`),...(node.methods??[]).map(method=>`${method.visibility} ${method.name}: ${method.return}`)].join('\n').split('\n');
++export type DiagramNodeComposer = (node: FigureModel['subjects'][number], context: FigureContext, textColumns?:number) => string;
++const defaultNode: DiagramNodeComposer = (node, {text,theme,evidence,model}, columns) => {
++  const lines=wrapDiagramText([node.label ?? node.id,...(node.columns??[]).map(column=>[column.name.label,column.type.label,...(column.constraint??[])].filter(Boolean).join(' · ')),...(node.fields??[]).map(field=>`${field.visibility} ${field.name}: ${field.type}`),...(node.methods??[]).map(method=>`${method.visibility} ${method.name}: ${method.return}`)].join('\n'),columns);
+   const observations=evidence.filter(item=>item.state!=='supported' && (item.subjectRefs.includes(node.id)||item.relationRefs.some(id=>model?.relations.some(relation=>relation.id===id&&(relation.src===node.id||relation.dst===node.id)))));
+-  return `<text class="scene-node-text">${lines.map((line,index)=>`<tspan data-text-line class="${index?'scene-detail':'scene-title'}" x="0" dy="${index?theme.typography.lineHeight:'0'}">${text(line)}</tspan>`).join('')}${observations.map(item=>`<tspan data-text-line data-evidence-ref="${text(item.sourceRef)}" class="scene-detail" x="0" dy="${theme.typography.lineHeight}">${text(item.state+' · '+item.sourceRef)}</tspan>`).join('')}</text>`;
++  if(lines.every(line=>line==='')&&!observations.length)return '';
++  return `<text class="scene-node-text" xml:space="preserve">${lines.map((line,index)=>`<tspan data-text-line class="${index?'scene-detail':'scene-title'}" x="0" dy="${index?theme.typography.lineHeight:'0'}">${text(line)}</tspan>`).join('')}${observations.map(item=>wrapDiagramText(item.state+' · '+item.sourceRef,columns).map(line=>`<tspan data-text-line data-evidence-ref="${text(item.sourceRef)}" class="scene-detail" x="0" dy="${theme.typography.lineHeight}">${text(line)}</tspan>`).join('')).join('')}</text>`;
+ };
+ /** Project declares the ELK graph projection; labels/relations stay in the captured model. */
+ export function composeDiagram(context: FigureContext, specification: DiagramSpec, nodeComposer: DiagramNodeComposer = defaultNode): FigureComposition {
+@@ -39,7 +42,7 @@ export function composeDiagram(context: FigureContext, specification: DiagramSpe
+     const role = specification.roles?.[node.id] ?? 'default';
+     const surface = context.theme.surfaces?.[role] ?? context.theme.surfaces?.['default'];
+     if (surface && (!surface.svg.trim().startsWith('<svg') || !surface.label.trim())) throw new Error('Invalid declared scene surface');
+-    const content = group ? `<text class="scene-group-title">${context.text(subject.label ?? subject.id)}</text>` : nodeComposer(subject, context);
++    const content = group ? `<text class="scene-group-title" xml:space="preserve">${wrapDiagramText(subject.label ?? subject.id,specification.textColumns).map((line,i)=>`<tspan x="0" dy="${i?context.theme.typography.lineHeight:0}">${context.text(line)}</tspan>`).join('')}</text>` : nodeComposer(subject, context,specification.textColumns);
+     bodies.push(`<g data-scene-node="${context.text(node.id)}" data-scene-group="${group}"${owner?` data-scene-owner="${context.text(owner)}"`:""} data-focal="${context.design?.focalSubjects.includes(node.id)??false}" data-role="${context.text(role)}"><rect class="scene-frame"${surface ? ' opacity="0" data-custom-surface' : ''}/>${surface ? `<g class="scene-surface">${surface.svg}</g>` : ''}<g class="scene-content">${icon ? `<g class="scene-glyph">${context.glyph(icon)}</g>` : ''}<g class="scene-copy" transform="translate(${icon ? 44 : 0} 18)">${content}</g></g></g>`);
+     if (group) node.children!.forEach(child=>walk(child,node.id));
+   };
+@@ -55,7 +58,7 @@ export function composeDiagram(context: FigureContext, specification: DiagramSpe
+   const edges = graph.edges.map(edge => {
+     const relation = relations.find(relation => relation.id === edge.id)!;
+     for(const arrow of [relation.srcArrow??'none',relation.dstArrow??'arrow'])if(!['none','arrow','triangle','unfilled-triangle'].includes(arrow))throw new Error('Unsupported SVG arrowhead: '+arrow);
+-    return `<g data-scene-edge="${context.text(edge.id)}" data-source-id="${context.text(relation.src)}" data-target-id="${context.text(relation.dst)}" data-crosses-boundary="${owners.get(relation.src)!==owners.get(relation.dst)}"><path class="scene-edge" data-source-arrow="${relation.srcArrow??'none'}" data-target-arrow="${relation.dstArrow??'arrow'}"/><g class="scene-label"><rect/>${specification.edgeLabels === false ? '' : `<text>${context.text(relation.label)}</text>`}</g></g>`;
++    return `<g data-scene-edge="${context.text(edge.id)}" data-source-id="${context.text(relation.src)}" data-target-id="${context.text(relation.dst)}" data-crosses-boundary="${owners.get(relation.src)!==owners.get(relation.dst)}"><path class="scene-edge" data-source-arrow="${relation.srcArrow??'none'}" data-target-arrow="${relation.dstArrow??'arrow'}"/><g class="scene-label"><rect/>${specification.edgeLabels === false ? '' : `<text xml:space="preserve">${wrapDiagramText(relation.label,specification.textColumns).map((line,i)=>`<tspan x="0" dy="${i?context.theme.typography.lineHeight:0}">${context.text(line)}</tspan>`).join('')}</text>`}</g></g>`;
+   }).join('');
+   const id = 'arrow-'+digest(context.view.source+graph.id).slice(0,12);
+   const encoded = context.text(JSON.stringify({graph,marker:id}));
+diff --git a/src/export.ts b/src/export.ts
+index d366954..9f71c73 100644
+--- a/src/export.ts
++++ b/src/export.ts
+@@ -88,6 +88,20 @@ export async function exportFigure(figure: ComposedFigure, browser: Browser, opt
+           let cursor=0;
+           for(const part of content.querySelectorAll<SVGGElement>('[data-annotation-part]')){
+             if(part.dataset.annotationPart==='ordinal'){const label=part.querySelector('text')!,circle=part.querySelector('circle')!,box=label.getBBox();const radius=Math.max(markerSize/2,Math.max(box.width,box.height)/2+markerPadding);circle.setAttribute('r',String(radius));label.setAttribute('transform',`translate(${-box.x-box.width/2} ${-box.y-box.height/2})`);}
++            if(part.dataset.annotationPart==='label'){
++              const label=part.querySelector('text')!,source=label.textContent??'',available=svg.getBoundingClientRect().width-cursor-padding*2;
++              if(available<=0)throw new Error('Heading has no available reading width');
++              const scalars=Array.from(source),lines:string[]=[];
++              while(scalars.length){
++                let low=1,high=scalars.length,best=0;
++                while(low<=high){const middle=Math.floor((low+high)/2);label.textContent=scalars.slice(0,middle).join('');if(label.getComputedTextLength()<=available){best=middle;low=middle+1;}else high=middle-1;}
++                if(best===0)throw new Error('Heading scalar exceeds available width');
++                if(best<scalars.length)for(let i=best;i>Math.floor(best/2);i--)if(/\s/u.test(scalars[i-1]!)){best=i;break;}
++                lines.push(scalars.splice(0,best).join(''));
++              }
++              label.textContent='';label.setAttribute('xml:space','preserve');
++              for(const[line,index]of lines.map((line,index)=>[line,index] as const)){const span=document.createElementNS('http://www.w3.org/2000/svg','tspan');span.setAttribute('x','0');span.setAttribute('dy',index?'1.4em':'0');span.textContent=line;label.append(span);}
++            }
+             const box=part.getBBox();part.setAttribute('transform',`translate(${cursor-box.x} ${-box.y-box.height/2})`);cursor+=box.width+gap;
+           }
+           const box=content.getBBox();content.setAttribute('transform',`translate(${-box.x} ${padding-box.y})`);svg.setAttribute('height',String(Math.ceil(box.height+padding*2)));
+diff --git a/src/index.ts b/src/index.ts
+index 6d59f95..fba7f5b 100644
+--- a/src/index.ts
++++ b/src/index.ts
+@@ -10,7 +10,6 @@ export {composeHeading,type HeadingSpec} from './heading';
+ export {composeModelView,graphFromModel,modelDiagram} from './model-view';
+ import {isDeepStrictEqual} from 'node:util';
+ import {fork} from 'node:child_process';
+-import {fileURLToPath} from 'node:url';
+ import type {CompileOptions} from '@terrastruct/d2';
+ import {relativeSource} from './source/catalog';
+ import {readD2Figure,type FigureResources} from './d2-figure';
+@@ -18,6 +17,7 @@ import type {FigureInput,FigureModel} from './figure';
+ export {composeFigure,selectFigureVariant} from './figure';
+ export type {FigureInput,FigureModel,FigureQuestion,FigureContext,FigureComposer,ComposedFigure,ModelSource} from './figure';
+ export {composeDiagram} from './diagram';
++export {wrapDiagramText} from './text';
+ export type {DiagramSpec,DiagramNodeComposer} from './diagram';
+ export {readD2Figure} from './d2-figure';
+ export type {FigureResources} from './d2-figure';
+@@ -28,27 +28,46 @@ export interface CompiledModel {
+ }
+ /** D2 supplies language/model observations only. Its old geometry/SVG is not a renderer path. */
+ export async function compileModel(sources:Readonly<Record<string,string>>,inputPath:string,options:CompileOptions={}):Promise<CompiledModel> {
+-  relativeSource(inputPath);
+-  if(!Object.hasOwn(sources,inputPath))throw new Error('Missing model source');
++  return (await compileModels(sources,[inputPath],options))[0]!;
++}
++async function compileModels(sources:Readonly<Record<string,string>>,inputPaths:readonly string[],options:CompileOptions):Promise<readonly CompiledModel[]> {
++  if(inputPaths.length<1||inputPaths.length>16||new Set(inputPaths).size!==inputPaths.length)throw new Error('Invalid compiler batch');
++  const captured={...sources},requested=[...inputPaths];
++  for(const inputPath of requested){
++    relativeSource(inputPath);
++    if(!Object.hasOwn(captured,inputPath))throw new Error('Missing model source');
++  }
+   for(const[file,text]of Object.entries(sources)){relativeSource(file);if(typeof text!=='string')throw new Error('Invalid model source');}
+-  const child=fork(fileURLToPath(new URL('./compiler-process.ts',import.meta.url)),[],{execPath:process.execPath,stdio:['ignore','inherit','inherit','ipc']});
+-  return await new Promise<CompiledModel>((resolve,reject)=>{
++  const child=fork(new URL('./compiler-process.ts',import.meta.url),[],{execPath:process.execPath,stdio:['ignore','inherit','inherit','ipc']});
++  return await new Promise<readonly CompiledModel[]>((resolve,reject)=>{
+     let response:import('./worker').ModelResponse|undefined;
+-    child.once('error',reject);
++    let failure:Error|undefined;
++    const fail=(error:Error)=>{failure??=error;if(child.connected)child.disconnect();};
++    child.on('error',fail);
+     child.on('message',(value:import('./worker').ModelResponse)=>{if(response){response={error:'Duplicate compiler result'};}else response=value;});
+-    child.once('exit',(code,signal)=>{
++    child.once('close',(code,signal)=>{
++      if(failure)return reject(failure);
+       if(code!==0||signal)return reject(new Error('Compiler process exit: '+code+'/'+signal));
+       if(!response)return reject(new Error('Compiler process exited without result'));
+       if('error' in response)return reject(new Error(response.error));
+-      resolve(response.capture);
++      if(response.captures.length!==requested.length||response.captures.some((item,index)=>item.inputPath!==requested[index]))
++        return reject(new Error('Compiler batch differs from requested source order'));
++      resolve(response.captures.map(item=>({...item,fs:{...captured}})));
+     });
+-    child.send({fs:{...sources},inputPath,options} satisfies import('./worker').ModelRequest,error=>{if(error)reject(error);});
++    try{child.send({fs:captured,inputPaths:requested,options} satisfies import('./worker').ModelRequest,error=>{if(error)fail(error);});}
++    catch(error:unknown){fail(error instanceof Error?error:new Error(String(error)));}
+   });
+ }
+ export async function compileFigureSource(sources:Readonly<Record<string,string>>,inputPath:string,resources:FigureResources={},options:CompileOptions={}):Promise<FigureInput> {
+-  const captured={...sources};
+-  const capture=await compileModel(captured,inputPath,options);
+-  const input=readD2Figure(capture,captured,resources);
++  return (await compileFigureSources(sources,[inputPath],resources,options))[0]!;
++}
++/** Capture a small, ordered source set within one compiler allocation domain. */
++export async function compileFigureSources(sources:Readonly<Record<string,string>>,inputPaths:readonly string[],resources:FigureResources={},options:CompileOptions={}):Promise<readonly FigureInput[]> {
++  const captures=await compileModels(sources,inputPaths,options);
++  return Promise.all(captures.map(capture=>bindFigure(capture,resources)));
++}
++async function bindFigure(capture:CompiledModel,resources:FigureResources):Promise<FigureInput> {
++  const input=readD2Figure(capture,capture.fs,resources);
+   if(!input.modelSource)return input;
+   const selected=resources.sysmlViews && Object.hasOwn(resources.sysmlViews,input.modelSource.view) ? structuredClone(resources.sysmlViews[input.modelSource.view]) : undefined;
+   if(!selected || selected.requestedView!==input.modelSource.view || selected.modelHash!==input.modelSource.modelHash)
+diff --git a/src/model-view.ts b/src/model-view.ts
+index 6e5aab5..2d9e878 100644
+--- a/src/model-view.ts
++++ b/src/model-view.ts
+@@ -6,6 +6,7 @@ import type {ElkNode} from 'elkjs/lib/elk-api';
+ import {composeHeading} from './heading';
+ import {composeDiagram} from './diagram';
+ import type {FigureComposer,FigureModel} from './figure';
++import {wrapDiagramText} from './text';
+ 
+ /** Pure hierarchy projection. Model ownership stays with D2/OpenSysML. */
+ export function graphFromModel(model:FigureModel,options:ElkNode['layoutOptions']={}):ElkNode {
+@@ -48,7 +49,8 @@ export function modelDiagram(model:FigureModel,valueInput:unknown):import('./dia
+  const graph=data.graph===undefined?graphFromModel(model,options):structuredClone(data.graph) as ElkNode;
+  if(!graph||typeof graph!=='object'||Array.isArray(graph))throw new Error('Invalid declared ELK graph');
+  graph.layoutOptions={...options,...graph.layoutOptions};
+- return {graph,roles,icons:select(data.icons),edgeLabels:data.edgeLabels!==false};
++ if(data.textColumns!==undefined){if(typeof data.textColumns!=='number')throw new Error('Invalid declared text columns');wrapDiagramText('',data.textColumns);}
++ return {graph,roles,icons:select(data.icons),edgeLabels:data.edgeLabels!==false,textColumns:data.textColumns as number|undefined};
+ }
+ export const composeModelView:FigureComposer=context=>{
+  if(!context.model)throw new Error('Model view requires captured model semantics');
+diff --git a/src/scene-export.ts b/src/scene-export.ts
+index d9ca209..ece6894 100644
+--- a/src/scene-export.ts
++++ b/src/scene-export.ts
+@@ -7,6 +7,48 @@ import {fileURLToPath} from 'node:url';
+ import type {Page} from 'playwright';
+ import {digest} from './source/catalog';
+ export interface SceneLayoutReceipt {readonly inputSHA256:string; readonly layoutSHA256:string; readonly nodes:number; readonly edges:number; readonly milliseconds:number;}
++
++/** Keep independent annotations and subgraphs from widening the main diagram. */
++async function layoutGraph(elk:InstanceType<typeof ELK>,graph:ElkNode,stack:boolean):Promise<ElkNode> {
++  if(!stack)return elk.layout(graph);
++  const roots=new Map<string,string>();
++  const assign=(node:ElkNode,root:string)=>{roots.set(node.id,root);node.children?.forEach(child=>assign(child,root));};
++  for(const node of graph.children??[])assign(node,node.id);
++  const parents=new Map([...new Set(roots.values())].map(id=>[id,id]));
++  const find=(id:string):string=>{const parent=parents.get(id)!;return parent===id?id:find(parent);};
++  for(const edge of graph.edges??[]){
++    const from=roots.get(edge.sources[0]!),to=roots.get(edge.targets[0]!);
++    if(from===undefined||to===undefined)throw new Error('Unbound layout endpoint');
++    parents.set(find(from),find(to));
++  }
++  const components=new Map<string,ElkNode>();
++  for(const node of graph.children??[]){
++    const root=find(node.id);
++    if(!components.has(root))components.set(root,{...graph,children:[],edges:[]});
++    components.get(root)!.children!.push(node);
++  }
++  for(const edge of graph.edges??[])components.get(find(roots.get(edge.sources[0]!)!))!.edges!.push(edge);
++  if(components.size<=1)return elk.layout(graph);
++  const children:ElkNode[]=[],edges:NonNullable<ElkNode['edges']>=[];
++  let width=0,height=0;
++  for(const component of components.values()){
++    const result=await elk.layout(component);
++    for(const node of result.children??[]){node.y=(node.y??0)+height;children.push(node);}
++    for(const edge of result.edges??[]){
++      const output=edge as typeof edge & {container?:string};
++      if(!output.container||output.container===graph.id){
++        for(const section of output.sections??[]){
++          section.startPoint.y+=height;section.endPoint.y+=height;
++          for(const point of section.bendPoints??[])point.y+=height;
++        }
++        for(const label of output.labels??[])label.y=(label.y??0)+height;
++      }
++      edges.push(edge);
++    }
++    width=Math.max(width,result.width??0);height+=(result.height??0)+24;
++  }
++  return {...graph,children,edges,width,height:height-24};
++}
+ /** Actual font boxes go to the mature layout engine. No coordinates from the old D2 SVG are reused. */
+ export async function layoutScenes(page: Page): Promise<readonly SceneLayoutReceipt[]> {
+   const scenes = page.locator('svg[data-scene]'), count = await scenes.count();
+@@ -49,7 +91,9 @@ export async function layoutScenes(page: Page): Promise<readonly SceneLayoutRece
+       };
+       graph.children!.forEach(size);
+       for (const edge of graph.edges ?? []) {const label=input.labels[edge.id]!; if (label.width) edge.labels=[{id:edge.id+'-label',text:' ',width:label.width,height:label.height}];}
+-      const start=performance.now(), result=await elk.layout(graph);
++      const stack=graph.layoutOptions['render.componentPacking']==='stack';
++      delete graph.layoutOptions['render.componentPacking'];
++      const start=performance.now(), result=await layoutGraph(elk,graph,stack);
+       receipts.push({inputSHA256:digest(JSON.stringify({graph,measurements:input.nodes,labels:input.labels})),layoutSHA256:digest(JSON.stringify(result)),nodes:Object.keys(input.nodes).length,edges:graph.edges?.length??0,milliseconds:performance.now()-start});
+       await scene.evaluate((svg, {result,input}) => {
+         const nodes=Array.from(svg.querySelectorAll<SVGGElement>('[data-scene-node]'));
+diff --git a/src/text.ts b/src/text.ts
+new file mode 100644
+index 0000000..2a33d79
+--- /dev/null
++++ b/src/text.ts
+@@ -0,0 +1,18 @@
++// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
++//
++// SPDX-License-Identifier: LGPL-2.1-or-later
++
++/** Lossless scalar wrapping. Breaks are presentation; captured text is unchanged. */
++export function wrapDiagramText(value:string,columns?:number):readonly string[] {
++ if(columns!==undefined&&(!Number.isInteger(columns)||columns<8||columns>120))throw new Error('Invalid declared text columns');
++ return value.split('\n').flatMap(line=>{
++  if(columns===undefined)return [line];
++  const scalars=Array.from(line),lines:string[]=[];
++  while(scalars.length>columns){
++   let cut=columns;
++   for(let i=columns;i>Math.floor(columns/2);i--)if(/\s/u.test(scalars[i-1]!)){cut=i;break;}
++   lines.push(scalars.splice(0,cut).join(''));
++  }
++  lines.push(scalars.join(''));return lines;
++ });
++}
+diff --git a/src/worker.ts b/src/worker.ts
+index dcd9753..5c12951 100644
+--- a/src/worker.ts
++++ b/src/worker.ts
+@@ -6,10 +6,14 @@ import {parentPort,workerData} from 'node:worker_threads';
+ import {D2,type CompileOptions} from '@terrastruct/d2';
+ import {modelFromDiagram} from './d2-figure';
+ import type {CompiledModel} from './index';
+-export interface ModelRequest {readonly fs:Readonly<Record<string,string>>;readonly inputPath:string;readonly options:CompileOptions;}
+-export type ModelResponse={readonly capture:CompiledModel}|{readonly error:string};
++export interface ModelRequest {readonly fs:Readonly<Record<string,string>>;readonly inputPaths:readonly string[];readonly options:CompileOptions;}
++export type ModelResponse={readonly captures:readonly Omit<CompiledModel,'fs'>[]}|{readonly error:string};
+ const input=workerData as ModelRequest;
+ try {
+-  const engine=new D2(),compiled=await engine.compile({fs:{...input.fs},inputPath:input.inputPath,options:input.options});
+-  parentPort!.postMessage({capture:{data:compiled.graph.data as unknown,inputPath:compiled.inputPath,fs:input.fs,model:modelFromDiagram(compiled.diagram),options:input.options}}satisfies ModelResponse);
++  const engine=new D2(),captures:Omit<CompiledModel,'fs'>[]=[];
++  for(const inputPath of input.inputPaths){
++    const compiled=await engine.compile({fs:{...input.fs},inputPath,options:input.options});
++    captures.push({data:compiled.graph.data as unknown,inputPath:compiled.inputPath,model:modelFromDiagram(compiled.diagram),options:input.options});
++  }
++  parentPort!.postMessage({captures} satisfies ModelResponse);
+ }catch(error:unknown){parentPort!.postMessage({error:error instanceof Error?error.message:String(error)}satisfies ModelResponse);}

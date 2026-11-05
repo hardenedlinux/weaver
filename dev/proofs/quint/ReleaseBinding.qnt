@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 module ReleaseBinding {
   // Three already consumed original plans share a held budget. Their response
   // batches intentionally have identical payload digests and sequence intervals.

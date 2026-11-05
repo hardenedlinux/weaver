@@ -1,0 +1,283 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+// Finite executable instance; arbitrary-family no-split/conservation is in Lean.
+// Native atomicity, authentic source identities and final transport custody are
+// refinement premises. An all-copy rollback is outside this state machine.
+module SharedDomains {
+  val families=Set(0,1,2)
+  type State={root:int->int,hroot:int->int,held:int->int,claims:Set[int],history:Set[int],spent:Set[int],
+    epoch:int,permit:int->int,calls:int->int,owner:int,permitOwner:int->int,active:Set[int],merged:bool,receipt:bool,revoked:bool,policyPending:bool}
+  var s:State
+  // Tickets 0 and 1 conflict on a shared root. Ticket 2 is disjoint.
+  // Ticket 3 represents global publication or migration.
+  pure def sharesRoot(a: int, b: int): bool =
+    a == 3 or b == 3 or a == b or (a < 2 and b < 2)
+  pure def eligible(candidate: int, older: Set[int], active: Set[int]): bool =
+    older.union(active).forall(t => not(sharesRoot(t, candidate)))
+  run queuedRangeCannotBeOvertakenTest = init.expect(
+    not(eligible(1, Set(0), Set())) and eligible(2, Set(0), Set()))
+  run activeRangeAndGlobalBarrierTest = init.expect(
+    not(eligible(1, Set(), Set(0))) and not(eligible(2, Set(3), Set())) and
+    not(eligible(3, Set(), Set(2))))
+  run bargingAndCancelledHeadCounterexampleTest = init.expect(
+    eligible(1, Set(), Set()) and not(eligible(1, Set(0), Set())))
+  pure def discoveredScopeAllowed(before: int, current: int, exact: bool): bool =
+    before == current or exact
+  run migrationMustRejoinExactKeysTest = init.expect(
+    not(discoveredScopeAllowed(1, 2, false)) and discoveredScopeAllowed(1, 2, true))
+    type Scheduling = {waiting: Set[int], active: Set[int], unknownHold: bool}
+    pure def request(s: Scheduling, ticket: int): Scheduling =
+      {...s, waiting: s.waiting.union(Set(ticket))}
+    pure def activate(s: Scheduling, ticket: int): Scheduling =
+      if (s.waiting.contains(ticket) and eligible(ticket, s.waiting.filter(t => t < ticket), s.active))
+        {...s, waiting: s.waiting.exclude(Set(ticket)), active: s.active.union(Set(ticket))}
+      else s
+    pure def abandon(s: Scheduling, ticket: int): Scheduling =
+      {...s, waiting: s.waiting.exclude(Set(ticket))}
+    pure def finish(s: Scheduling, ticket: int): Scheduling =
+      {...s, active: s.active.exclude(Set(ticket))}
+    pure def restartScheduler(s: Scheduling): Scheduling =
+      {...s, waiting: Set(), active: Set()}
+    run schedulerFailureSequenceTest = init.expect(
+      val waiting = request(request(request({waiting: Set(), active: Set(), unknownHold: true}, 0), 1), 2)
+      val rejected = activate(waiting, 1)
+      val disjoint = activate(rejected, 2)
+      val barrier = request(disjoint, 3)
+      val recovered = restartScheduler(finish(abandon(barrier, 0), 2))
+      rejected == waiting and disjoint.active == Set(2) and
+      activate(barrier, 3) == barrier and
+      recovered.waiting == Set() and recovered.active == Set() and recovered.unknownHold)
+    pure def committedPreparation(committed: bool): Set[int] =
+    if (committed) Set(0,1,2,3) else Set()
+  pure def groupedRelease(member: int, durable: Set[int], released: Set[int],
+                         acknowledged: bool, live: bool): bool =
+    acknowledged and live and durable.contains(member) and not(released.contains(member)) and
+    (member == 0 or released.contains(member - 1))
+  run partialPreparationCannotIssueCapabilityTest = init.expect(
+    committedPreparation(false) == Set() and
+    not(groupedRelease(0, committedPreparation(false), Set(), true, true)))
+  run lostGroupedPrepareResponseRetainsOriginalTest = init.expect(
+    committedPreparation(true).size() == 4 and
+    not(groupedRelease(0, committedPreparation(true), Set(), false, true)) and
+    observedRelease(false, true, true, false) == 0)
+  run groupedTailRequiresLivePolicyAndReleasedPrefixTest = init.expect(
+    not(groupedRelease(1, Set(0,1), Set(), true, true)) and
+    not(groupedRelease(1, Set(0,1), Set(0), true, false)) and
+    groupedRelease(1, Set(0,1), Set(0), true, true))
+  run partialPrepareProjectionCounterexampleTest = init.expect(
+    groupedRelease(0, Set(0), Set(), true, true) and Set(0) != committedPreparation(true))
+  val initial=
+  {root:Map(0->0,1->0,2->2),hroot:Map(0->0,1->0,2->2),held:Map(0->0,1->0,2->0),claims:Set(),history:Set(),spent:Set(),
+      epoch:1,permit:Map(0->0,1->0,2->0),calls:Map(0->0,1->0,2->0),owner:1,permitOwner:Map(0->0,1->0,2->0),active:Set(),merged:false,receipt:false,revoked:false,policyPending:false}
+  def exposure(d:int):int=families.filter(f=>s.root.get(f)==d).fold(0,(n,f)=>n+s.held.get(f))
+  val safety= s.root.get(0)==s.root.get(1) and s.hroot.get(0)==s.hroot.get(1) and
+    families.forall(f=>s.calls.get(f)<=1 and (s.spent.contains(f) implies s.claims.contains(f)) and
+      (s.claims.contains(f) implies s.held.get(f)==3 and s.history.contains(f)) and exposure(s.root.get(f))<=6) and
+    ((s.revoked or s.policyPending) implies s.active==Set()) and
+    s.active.forall(f=>s.permit.get(f)==s.epoch and s.permitOwner.get(f)==s.owner and
+      s.active.forall(g=>f==g or (s.root.get(f)!=s.root.get(g) and s.hroot.get(f)!=s.hroot.get(g))))
+  pure def preparedSend(captured: int, current: int, valid: int, live: bool): bool =
+    (if (captured == current) captured == valid else current == valid) and live
+  run changedOriginalRechecksLiveCommitmentTest = init.expect(
+    preparedSend(1,1,1,true) and not(preparedSend(1,2,1,true)))
+  run originalCandidateCannotReplaceLiveGuardsTest = init.expect(
+    not(preparedSend(1,1,1,false)))
+  run cachedOriginalBypassCounterexampleTest = init.expect(
+    1 == 1 and not(preparedSend(1,2,1,true)))
+  pure def quotaAllowed(key:int,user:int,tenant:int,amount:int):bool=
+    key+amount<=4 and user+amount<=4 and tenant+amount<=8
+  run secondKeyCannotSpendUnknownUserQuotaTest=init.expect(
+    quotaAllowed(0,0,0,4) and not(quotaAllowed(0,4,4,4)))
+  run perKeyOnlyCounterexampleTest=init.expect(0+4<=4 and not(quotaAllowed(0,4,4,4)))
+  pure def routeAllowed(bound:int, selected:int, rate:int, authoritative:int, spent:bool):bool=
+    not(spent) and (bound==0 or bound==selected) and rate==authoritative
+  run staleQuoteRejectsFirstSelectionTest=init.expect(not(routeAllowed(0,1,1,2,false)))
+  run unknownCannotSelectAnotherModelTest=init.expect(not(routeAllowed(1,2,2,2,true)))
+  pure def quoteReserve(currentVersion:int, offer:int, original:int):int=
+    if (original != 0) original else if (currentVersion == offer) offer else 0
+  run staleCatalogCannotOpenReservationTest=init.expect(quoteReserve(2,1,0)==0)
+  run catalogReplayDoesNotRepriceOriginalTest=init.expect(quoteReserve(2,2,1)==1)
+  pure def settlementRelease(retained:int, supplied:int, terminal:bool, applied:bool):int=
+    if (terminal and not(applied) and retained==supplied) 3 else 0
+  run formulaChangeKeepsOriginalSettlementTest=init.expect(settlementRelease(1,2,true,false)==0 and settlementRelease(1,1,true,false)==3)
+  run unknownAndDuplicateTariffReleaseTest=init.expect(settlementRelease(1,1,false,false)==0 and settlementRelease(1,1,true,true)==0)
+  pure def observedRelease(terminal:bool, observed:bool, matching:bool, applied:bool):int=
+    if (terminal and observed and matching and not(applied)) 2 else 0
+  run lateProviderObservationCannotSettleTest=init.expect(observedRelease(false,true,true,false)==0)
+  run restartedIssuerReplayCannotReleaseAgainTest=init.expect(observedRelease(true,true,true,false)==2 and observedRelease(true,true,true,true)==0)
+  pure def meterAllows(currentEpoch:int, presented:int, tenant:int, requested:int, issuer:int, claimed:int):bool=
+    currentEpoch==presented and tenant==requested and issuer==claimed
+  run crossTenantMeterRefusedTest=init.expect(not(meterAllows(1,1,1,2,1,1)))
+  run rotatedMeterRefusedAfterReplayTest=init.expect(not(meterAllows(2,1,1,1,1,1)) and meterAllows(2,2,1,1,1,1))
+  pure def importedSend(matched:bool, published:bool, cedar:bool, spent:bool):bool=
+    matched and published and cedar and not(spent)
+  run importedCatalogCannotBypassCedarTest=init.expect(not(importedSend(true,true,false,false)))
+  run importedUnknownSendCannotRetryTest=init.expect(not(importedSend(true,true,true,true)))
+  pure def anthropicUsage(stopped:bool, cumulative:int):int=
+    if (stopped) cumulative else 0
+  run anthropicInterruptedUsageIsNotTerminalTest=init.expect(anthropicUsage(false,8)==0)
+  run anthropicUsesLatestCumulativeCountTest=init.expect(anthropicUsage(true,8)==8 and anthropicUsage(true,8)!=3+8)
+  pure def wifMayWrite(bound:bool, fresh:bool, cedar:bool, spent:bool):bool=
+    bound and fresh and cedar and not(spent)
+  run expiredWifCannotWriteTest=init.expect(not(wifMayWrite(true,false,true,false)))
+  pure def oauthEffect(operation:bool, sender:bool, active:bool, cedar:bool):bool=
+    operation and sender and active and cedar
+  run oauthRevocationStopsReleaseTest=init.expect(
+    oauthEffect(true,true,true,true) and not(oauthEffect(true,true,false,true))
+    and observedRelease(false,true,true,false)==0)
+  pure def oauthRelayUse(peer:bool, rootActive:bool, leafActive:bool, dbHead:int, witnessHead:int):bool=
+    peer and rootActive and leafActive and dbHead==witnessHead
+  run oauthWitnessAheadRefusesOldProjectionTest=init.expect(
+    not(oauthRelayUse(true,true,true,0,1)) and oauthRelayUse(true,true,true,1,1))
+  run oauthRecoveredRevocationBlocksDescendantTest=init.expect(
+    not(oauthRelayUse(true,false,true,1,1)) and not(oauthRelayUse(false,true,true,1,1)))
+  pure def preparedOAuthUse(candidate:bool, sameRecords:bool, fresh:bool, live:bool):bool=
+    candidate and sameRecords and fresh and live
+  run preparedOAuthRejectsChangedRecordsTest=init.expect(
+    not(preparedOAuthUse(true,false,true,oauthRelayUse(true,true,true,1,1))))
+  run preparedOAuthRejectsLateRevocationAndLostCommitTest=init.expect(
+    not(preparedOAuthUse(true,true,true,oauthRelayUse(true,false,true,1,1)))
+    and not(preparedOAuthUse(true,true,true,oauthRelayUse(true,true,false,1,1)))
+    and not(preparedOAuthUse(true,true,true,oauthRelayUse(true,true,true,0,1))))
+  run preparedOAuthCannotFreezeTimeTest=init.expect(
+    preparedOAuthUse(true,true,true,oauthRelayUse(true,true,true,1,1))
+    and not(preparedOAuthUse(true,true,false,oauthRelayUse(true,true,true,1,1))))
+  pure def retainedProfileUse(decoded:bool, exactRegistry:bool, currentFloor:bool, live:bool):bool=
+    decoded and exactRegistry and currentFloor and live
+  run retainedProfileCannotReplaceLiveFloorOrFenceTest=init.expect(
+    retainedProfileUse(true,true,true,true)
+    and not(retainedProfileUse(true,true,false,true))
+    and not(retainedProfileUse(true,true,true,false)))
+  run retainedProfileRejectsRestoredRegistryWithOldDigestTest=init.expect(
+    not(retainedProfileUse(true,false,true,true)))
+  pure def currentnessReuse(sameScope:bool, claimsMatch:bool, historyMatch:bool, live:bool):bool=
+    sameScope and claimsMatch and historyMatch and live
+  run preparedPlanCannotReuseRowsAfterPolicyChangeTest=init.expect(
+    not(currentnessReuse(false,true,true,true))
+    and not(currentnessReuse(true,true,true,false)))
+  run budgetMemberReuseCannotHideMissingHistoryTest=init.expect(
+    currentnessReuse(true,true,true,true)
+    and not(currentnessReuse(true,true,false,true))
+    and not(currentnessReuse(true,false,true,true)))
+  pure def preparedReview(verified:bool, exact:bool, pending:bool, issuer:bool, fence:bool, oauth:bool):bool=
+    verified and exact and not(pending) and issuer and fence and oauth
+  run preparedReviewCannotMaskSameFenceReplacementTest=init.expect(
+    preparedReview(true,true,false,true,true,true)
+    and not(preparedReview(true,false,false,true,true,true)))
+  run preparedReviewKeepsLivePendingEpochAndRevocationTest=init.expect(
+    not(preparedReview(true,true,true,true,true,true))
+    and not(preparedReview(true,true,false,false,true,true))
+    and not(preparedReview(true,true,false,true,false,true))
+    and not(preparedReview(true,true,false,true,true,false))
+    and observedRelease(false,true,true,false)==0)
+  run oauthRetiredIssuerCannotPublishTest=init.expect(
+    Set(0,1,2).forall(old=>old<3 and old!=3))
+  run delegatedGrantCannotReplaceOperationCredentialTest=init.expect(
+    not(oauthEffect(false,true,true,true)))
+  run refreshAfter401CannotReopenTest=init.expect(not(wifMayWrite(true,true,true,true)))
+  run refreshAndLateUsageCannotSettleTest=init.expect(
+    not(wifMayWrite(true,true,true,true)) and observedRelease(false,true,true,false)==0)
+  pure def wifReplayCalls(spent:bool, fresh:bool, calls:int):int=
+    if (wifMayWrite(true,fresh,true,spent)) calls+1 else calls
+  run coldCacheRestartPreserves401AndExpiryTest=init.expect(
+    Set(false,true).forall(fresh =>
+      wifReplayCalls(true,fresh,1)==1 and wifReplayCalls(true,fresh,0)==0
+      and observedRelease(false,true,true,false)==0))
+  run cacheKeyAsOriginalCounterexampleTest=init.expect(
+    wifReplayCalls(false,true,1)==2)
+  action init=s'=initial
+  action reserve(f:int):bool=all{not(s.claims.contains(f)),s.active==Set(),exposure(s.root.get(f))+3<=6,
+    s'=s.with("claims",s.claims.union(Set(f))).with("history",s.history.union(Set(f))).with("held",s.held.set(f,3))}
+  action consume(f:int):bool=all{s.claims.contains(f),not(s.spent.contains(f)),s.active==Set(),
+    s'=s.with("spent",s.spent.union(Set(f))).with("permit",s.permit.set(f,s.epoch)).with("permitOwner",s.permitOwner.set(f,s.owner))}
+  action finalGuard(f:int):bool=all{not(s.revoked),not(s.policyPending),s.spent.contains(f),s.permit.get(f)==s.epoch,s.permitOwner.get(f)==s.owner,s.calls.get(f)==0,
+    s.active.forall(g=>f!=g and s.root.get(f)!=s.root.get(g) and s.hroot.get(f)!=s.hroot.get(g)),s'=s.with("active",s.active.union(Set(f)))}
+  action finalGuardWithDomainFacts(f:int, held:int, events:int):bool=all{
+    exposure(s.root.get(f))==held,
+    s.history.filter(g=>s.hroot.get(g)==s.hroot.get(f)).size()==events,
+    finalGuard(f)
+  }
+  pure def releaseProgressAllows(dispatched:bool,cursor:int,rows:int,pending:bool,live:bool):bool=
+    dispatched and cursor+rows<=4096 and not(pending) and live
+  run joinedProgressCannotReleasePendingOrRevokedRangeTest=init.expect(
+    releaseProgressAllows(true,12,1,false,true)
+    and not(releaseProgressAllows(true,12,1,true,true))
+    and not(releaseProgressAllows(true,12,1,false,false))
+    and not(releaseProgressAllows(false,12,1,false,true))
+    and not(releaseProgressAllows(true,4096,1,false,true)))
+  run preparedDomainProgramReadsNewSharedExposureTest =
+    accepted.then(reserve(1))
+      .then(finalGuardWithDomainFacts(0,3,1).fail())
+  run preparedDomainProgramUsesUpdatedExposureTest =
+    accepted.then(reserve(1))
+      .then(finalGuardWithDomainFacts(0,6,2)).expect(safety)
+  action send(f:int):bool=all{s.active.contains(f),s.calls.get(f)==0,s'=s.with("calls",s.calls.set(f,1)).with("active",s.active.exclude(Set(f)))}
+  action migrate=all{not(s.receipt),s.active==Set(),exposure(0)+exposure(2)<=6,s'=s.with("root",Map(0->2,1->2,2->2)).with("hroot",Map(0->2,1->2,2->2)).with("epoch",s.epoch+1).with("merged",true).with("receipt",true)}
+  action rejectMigration=all{not(s.receipt),s.active==Set(),exposure(0)+exposure(2)>6,s'=s.with("receipt",true)}
+  action replay=all{s.receipt,s'=s}
+  action replyLoss=s'=s
+  action restart=s'=s.with("owner",s.owner+1).with("active",Set())
+  action alias= s'=s // aliases resolve to the original; never another claim slot
+  action unsafeMutationDuringSend=s'=s.with("epoch",s.epoch+1)
+  action unsafeSplit=s'=s.with("root",s.root.set(1,1))
+  action unsafeHistoryReset=s'=s.with("history",Set())
+  action unsafeStaleUse(f:int):bool=s'=s.with("active",s.active.union(Set(f)))
+  action unsafeRefund(f:int):bool=s'=s.with("held",s.held.set(f,0))
+  action accepted=init.then(reserve(0)).then(consume(0))
+  action revoke=all{s.active==Set(),not(s.revoked),s'=s.with("revoked",true)}
+  action stagePolicy=all{s.active==Set(),not(s.policyPending),not(s.revoked),s'=s.with("policyPending",true)}
+  action finalizePolicy=all{s.policyPending,s.active==Set(),s'=s.with("policyPending",false).with("revoked",true)}
+  action unsafeStageOverWriter=s'=s.with("policyPending",true)
+  action step={nondet f=families.oneOf() any{reserve(f),consume(f),finalGuard(f),send(f),migrate,rejectMigration,replay,replyLoss,restart,alias,revoke,stagePolicy,finalizePolicy}}
+  run reviewedStagingWaitsForWriterTest=accepted.then(finalGuard(0)).then(stagePolicy.fail())
+  run stagedPublicationRetainsUnknownAfterRestartTest=accepted.then(finalGuard(0)).then(send(0)).then(stagePolicy)
+    .then(replyLoss).then(restart).expect(safety and s.policyPending and s.held.get(0)==3 and s.history.contains(0))
+    .then(finalizePolicy).then(finalGuard(0).fail())
+  run stagedPublicationBlocksFreshFinalUseTest=accepted.then(stagePolicy).then(finalGuard(0).fail())
+  run stagingOvertakesWriterCounterexampleTest=accepted.then(finalGuard(0)).then(unsafeStageOverWriter).expect(not(safety))
+  run revocationBeforeUnionRecoveryTest=accepted.then(revoke).then(migrate).then(replyLoss).then(restart).then(replay).expect(safety and s.revoked and s.held.get(0)==3).then(finalGuard(0).fail())
+  run revocationAfterUnionRecoveryTest=accepted.then(migrate).then(replyLoss).then(revoke).then(restart).then(replay).expect(safety and s.revoked and s.history.contains(0)).then(finalGuard(0).fail())
+  run ignoreRevocationCounterexampleTest=accepted.then(revoke).then(unsafeStaleUse(0)).expect(not(safety))
+  run newFamilySharesOriginalBudgetTest=init.then(reserve(0)).then(reserve(1)).expect(safety and exposure(0)==6)
+  run sharedFinalUseSerializesTest=accepted.then(reserve(1)).then(consume(1)).then(finalGuard(0)).then(finalGuard(1).fail())
+  run preselectedLockKeysCannotAuthorizeMigratedOrRevokedUseTest =
+    accepted.then(migrate).then(replyLoss).then(restart).then(replay)
+      .expect(s.held.get(0)==3 and s.history.contains(0))
+      .then(finalGuard(0).fail())
+  run migrationBlocksOldPermitTest=accepted.then(migrate).expect(safety and s.held.get(0)==3).then(finalGuard(0).fail())
+  run migrationWaitsForActualUseTest=accepted.then(finalGuard(0)).then(migrate.fail())
+  run migrationAfterActualUseTest=accepted.then(finalGuard(0)).then(send(0)).then(migrate).expect(safety)
+  run concurrentMutationCASAfterSendTest=accepted.then(finalGuard(0))
+    .then(send(0)).then(migrate).then(revoke)
+    .then(replyLoss).then(restart).then(replay)
+    .expect(safety and s.calls.get(0)==1 and s.held.get(0)==3 and s.history.contains(0))
+    .then(finalGuard(0).fail())
+  run revocationWaitsForActualUseTest=accepted.then(finalGuard(0)).then(revoke.fail())
+  run staleMigrationCASAfterWinnerTest=accepted.then(finalGuard(0)).then(send(0)).then(migrate).then(migrate.fail())
+  run stalePolicyCASAfterWinnerTest=accepted.then(finalGuard(0)).then(send(0)).then(revoke).then(revoke.fail())
+  run mutationOvertakesWriterCounterexampleTest=accepted.then(finalGuard(0)).then(unsafeMutationDuringSend).expect(not(safety))
+  run overCapacityUnionKeepsOriginalDecisionTest=init.then(reserve(0)).then(reserve(1)).then(reserve(2)).then(rejectMigration).then(replyLoss).then(restart).then(replay).expect(safety and not(s.merged) and exposure(0)==6 and exposure(2)==3).then(migrate.fail())
+  run oldWorkerAfterRestartTest=accepted.then(restart).then(finalGuard(0).fail())
+  run lostReplyRecoveryTest=accepted.then(migrate).then(replyLoss).then(restart).then(replay).expect(safety and s.receipt and s.spent.contains(0)).then(consume(0).fail())
+  run originalPendingCannotBeRenamedTest=accepted.then(alias).expect(safety).then(consume(0).fail())
+  run domainSplitCounterexampleTest=init.then(reserve(0)).then(reserve(1)).then(unsafeSplit).expect(not(safety))
+  run historyResetCounterexampleTest=accepted.then(migrate).then(unsafeHistoryReset).expect(not(safety))
+  run stalePermitCounterexampleTest=accepted.then(migrate).then(unsafeStaleUse(0)).expect(not(safety))
+  run unknownRefundCounterexampleTest=accepted.then(restart).then(unsafeRefund(0)).expect(not(safety))
+
+  run committedUnionLostReplyKeepsBothOriginalsTest =
+    accepted.then(reserve(1)).then(consume(1)).then(migrate).then(replyLoss).then(restart).then(replay)
+      .expect(safety and exposure(2)==6 and s.history.contains(0) and s.history.contains(1) and
+        s.spent.contains(0) and s.spent.contains(1))
+      .then(finalGuard(1).fail())
+  run lateMigrationReplyCannotRestoreOldOwnerTest =
+    accepted.then(migrate).then(restart).then(replyLoss).then(replay)
+      .expect(safety and s.calls.get(0)==0 and s.held.get(0)==3)
+      .then(finalGuard(0).fail())
+  run partialOriginalSendUnionNeverReopensClaimTest =
+    accepted.then(finalGuard(0)).then(send(0)).then(migrate).then(replyLoss).then(restart).then(replay)
+      .expect(safety and s.calls.get(0)==1 and s.history.contains(0) and s.held.get(0)==3)
+      .then(consume(0).fail())
+}

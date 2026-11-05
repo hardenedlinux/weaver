@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 //! Finite source-owned stream manifest and immutable message proposals.
 use crate::{Error, MAX_BODY_BYTES, MAX_CREDITS, Result, Task, body_digest, identifier};
 use serde::{Deserialize, Serialize};
@@ -128,7 +132,7 @@ impl StreamMessage {
     }
 }
 
-/// Small persistent commitment; SQLite immutability binds its separately stored payload BLOB.
+/// Small persistent commitment; Turso immutability binds its separately stored payload BLOB.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct MessageBinding {

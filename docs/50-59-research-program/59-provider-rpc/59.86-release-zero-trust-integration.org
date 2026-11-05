@@ -1,0 +1,159 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+#+TITLE: 59.86 Release Closure and Gateway Zero Trust Integration
+#+LANGUAGE: en
+
+The maintained dependency is now upgraded to the latest inspected owner-review
+head under [[file:59.87-spec-upgrade-and-delivery-plan.org][59.87 SPEC Upgrade and Gateway Delivery Plan]]. Historical failure
+and source-cohort records below retain their original qualification scope.
+
+The subsequent SDK ownership correction retires the Go package installer and
+linked-source checker below. Gerbil owns package operations; the upstream Rust
+SDK owns native tooling. The explicit-package model and its remaining acceptance
+gate are described in the current delivery plan. No previous Go preparation
+receipt establishes native acceptance for that path.
+
+* Dependency ownership
+
+SPEC and Core inherit the published LeanPoo and Gerbil POO releases through
+their own package declarations. A successful local
+checkout of a retired branch commit does not establish ordinary clone/install
+availability. Initial standard preparation failed during checkout, before any
+Weaver package test; it was not a runtime timeout. The former Ascent/Core
+conflict and retired-commit checkout are distinct failures.
+
+Rust resolves dependencies through [[file:../../../Cargo.toml][Cargo.toml]] and [[file:../../../Cargo.lock][Cargo.lock]].
+Lean resolves its closure through [[file:../../../dev/proofs/cedar/lakefile.toml][lakefile.toml]] and [[file:../../../dev/proofs/cedar/lake-manifest.json][lake-manifest.json]].
+Scheme uses [[file:../../../gerbil.pkg][gerbil.pkg]] and the upstream producers' own package declarations
+and gitlinks. Exact resolved identities belong to these mechanisms and retained
+verification receipts, not a second package inventory in architecture documents.
+
+Owner fixes are retained in the existing owner reviews listed below. The five
+temporary Scheme alignment branches have been deleted after fetching each
+published review head and checking ancestry of the exact selected commit.
+The redundant SPEC alignment branch has also been removed and duplicate
+PR 13 closed after retaining its commit in the existing PR 12.
+These are source-cohort commits, not new releases of those owners. Existing
+tags are unchanged. No downstream Zero Trust model or governance DSL
+is substituted. The SPEC producer test and Gateway.ZeroTrust build complete 386
+jobs against the release. The maintained Weaver Lake build completes 391 jobs,
+including ZeroTrustEnrichment and ZeroTrustArchitecture. The earlier isolated
+candidate is not the maintained dependency source.
+
+| Owner | Active review | Retention of selected source |
+|-------+---------------+------------------------------|
+| Core | [[https://github.com/tao3k/gebril-yuanxu/pull/19][PR 19]] | Selected cohort retained by ordinary merge |
+| Parser | [[https://github.com/tao3k/gerbil-parser/pull/13][PR 13]] | Repair fast-forwarded into the existing review |
+| Ascent | [[https://github.com/tao3k/gerbil-ascent/pull/1][PR 1]] | Selected cohort retained by ordinary merge |
+| Orgize | [[https://github.com/tao3k/orgize/pull/18][PR 18]] | Repair fast-forwarded into the existing review |
+| Agentic AI Lab | [[https://github.com/tao3k/agentic-ai-lab/pull/34][PR 34]] | Repair fast-forwarded into the existing review |
+| SPEC | [[https://github.com/hardenedlinux/cedar-poo-spec/pull/12][PR 12]] | Previous selection retained; duplicate PR 13 closed |
+
+Core and Ascent had subsequent peer changes. Their ordinary merges preserve
+those changes, including the active Core dependency and matching replay-proof
+binding. Their latest review heads are not substituted for Weaver's frozen
+release cohort. Ancestry retains the selected cohort without claiming that
+the newer review heads have passed this cohort's qualification. SPEC PR 12
+already contained the same release metadata; its retention merge changes no
+files relative to its preceding head. The later upgrade selects PR 12's inspected
+head in both downstream locks while preserving the former commit's ancestry.
+Weaver continues exclusively in its existing PR 1. No PR is merged into main.
+
+* Tag resolution and source admission
+
+The existing Go preparation owner accepts an exact SHA or inherited release
+tag, resolves only refs/tags/<tag> to its peeled commit, and compares that commit
+with the supplied POO checkout. It rechecks after preparation and in subsequent
+source-currentness validation. A same-name branch, missing tag or retargeted tag
+cannot substitute for the retained source cut. Package metadata and Policy
+assets remain included in its independent pre-call source hash. Tags do not
+prove arbitrary filesystem immutability, compiler fidelity or runtime authority.
+
+The native entry remains gerbil build/test. Twelve host cores are used through
+the existing resource policy. Dependency build budgets belong to their upstream
+owners; the original Weaver runtime/startup/drain gates are unchanged. Neither
+an AOT-only result nor a manually fetched old object establishes standard
+package acceptance. No package uninstall is used.
+
+* Authorization to execution
+
+Scheme composes admitted Agentic AI Lab Governor/Governance modules, typed
+Profile and source-assets. Each complete Cedar document and the exact aggregate
+are validated through the existing Rust C ABI under the publication schema.
+Typed objects cross the rooted Scheme/Rust SDK boundary; the production Go
+control plane obtains compiled source through authenticated gRPC. Source
+compilation and publication commit perform no provider send.
+
+Rust compares replay schemas with the immutable schema source supplied by the
+current SPEC API. Candidate and authoritative predecessor equality checks remain
+mandatory. Test fixtures serialize through the upstream source-identity API,
+not a replacement schema representation. Rust evaluates actual Cedar requests,
+persists the existing Turso consumption and current fence, and mediates dispatch
+and each stream release. An old approval, successful preflight, historical
+publication or released dependency label supplies no send capability.
+
+Go keeps publication operation identity and exact outcome recovery. Unknown
+staging/publication outcomes cannot activate ingress by guessing success.
+Provider exposure after any partial request or response retains the original
+claim and reservation; retries and dual restart cannot redispatch or refund it.
+This is logical execution ownership in an AI Agent Gateway, not physical
+isolation or an exactly-once delivery promise.
+
+* Proof and executable correspondence
+
+The maintained Lake targets import the actual Gateway.ZeroTrust framework and
+apply its final-use, continuing-consumption and required-parent laws. Existing
+PublicationRecovery and ProviderRpc modules supply the recovery/accounting
+composition. No definitions are copied and no compatibility namespace is added.
+The public Authorization.Compound namespace replaces the retired producer name.
+
+Quint retains schedules and counterexamples. A release-label-preserving source
+replacement is modeled as a changed cut under the existing boundary relation.
+Lean's changed_preparation_cut_cannot_rebase_boundary is reused; native Git tests
+establish tag resolution and retargeting refusal. Those laws assume faithful
+native facts; they are not a compiler or Git authentication proof.
+
+Compiled-program integration uses the real installed Scheme producer and actual
+CompileSource RPC, including through the existing reply-loss relay. The relay
+forwards compilation and only loses the selected staging/publication response.
+It does not synthesize a Governance result. Cases cover revocation after a
+response prefix, lost staging/final replies, provider prefix-read/disconnect,
+SDK retry and dual-process restart. Assertions inspect provider call counts and
+the original unknown hold, not merely an error status.
+
+* Qualification record
+
+The first complete standard attempt passes dependency preparation, common
+Core/POO admission, Rust preflight, package capacity and build-environment
+checks. Weaver's module build then rejects a role reversal: Governance types,
+functions and objects imported the aggregate interface rather than their
+exporting upstream roles. These imports are corrected to the public types,
+funs and objects owners. The role rule is unchanged. A test also imported the
+unavailable std/srfi/13 module; it now uses Gerbil's existing runtime string join.
+
+That attempt reaches the unchanged fifteen-second package-test watchdog with
+missing compiled FFI modules and a module-import failure. It is not natural
+package acceptance, and it does not by itself isolate a remaining runtime
+performance cause. SDK/integration compilation also cannot find the unbuilt
+source-bytes unit. The complete failure and timing remain in
+.cache/zerotrust-first-complete-check-scheme-failure.json. Concurrent working-tree
+changes invalidate its source-currentness stage; no successful sibling stage
+promotes that run. A fresh, stable-source standard run is required after fixes.
+
+On the preceding frozen source cut, the complete clean-source check-policy passes all 61
+stages. The subsequent standard check-scheme attempt fails in dependency
+preparation: the ordinary Ascent clone reports a connection reset, early EOF
+and invalid index-pack output. Package tests do not start. The preserved receipt
+is .cache/zerotrust-stable-preparation-network-failure.json. This network failure
+neither qualifies the corrected module imports nor diagnoses a runtime timeout.
+
+Native package and full integration qualification remain in progress. Passing
+producer/consumer Lean builds and source resolution do not count as a passing
+gerbil test or provider integration result. Raw failures and stage receipts stay
+under ignored .cache. The retained initial checkout failure is
+.cache/zerotrust-retired-sha-failure.json; it precedes any package tests.
+
+#+CAPTION: The imported security contract is interpreted at the actual Gateway execution boundary.
+[[file:../../architecture/diagrams/00d-zero-trust-overview.svg]]

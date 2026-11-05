@@ -1,0 +1,31 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+version = 1
+
+# SPDX metadata for Weaver-authored source, configuration, tests and design text.
+# Local file notices take priority. Historical evidence, generated images and
+# external brand/font assets are not assigned a new license by this annotation.
+[[annotations]]
+path = [
+  "*.toml", "*.org", "*.pkg", "*.ss", "*.sysml", "*.nix",
+  ".envrc", ".gitignore", ".pre-commit-config.yaml", "flake.lock",
+  ".github/**", "crates/**", "go/**", "scheme/**", "t/**", "proto/**",
+  "prod/**", "examples/**", "dev/README.org", "dev/sysml/**", "dev/specs/README.org", "dev/specs/lean/**", "dev/specs/quint/**",
+  "dev/proofs/lean/**", "dev/proofs/quint/**", "dev/proofs/cedar/**",
+  "dev/d2/*.json", "dev/d2/*.yaml", "dev/d2/README.org",
+  "dev/d2/src/**", "dev/d2/test/**", "dev/d2/themes/**",
+  "docs/**/*.org", "docs/**/*.d2", "docs/**/*.sysml"
+]
+precedence = "closest"
+SPDX-FileCopyrightText = "2026 hardenedlinux Linux Team and Contributors"
+SPDX-License-Identifier = "LGPL-2.1-or-later AND Apache-2.0"
+
+# Go fuzz treats every sibling file as a corpus seed; adjacent .license files
+# are invalid inputs. Keep the exact corpus format and annotate this scope here.
+[[annotations]]
+path = ["go/**/testdata/fuzz/**"]
+precedence = "closest"
+SPDX-FileCopyrightText = "2026 hardenedlinux Linux Team and Contributors"
+SPDX-License-Identifier = "LGPL-2.1-or-later AND Apache-2.0"

@@ -1,0 +1,232 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+...@../../../dev/d2/themes/flow
+vars: { d2-config: { layout-engine: tala;  pad: 70 } }
+title: REVIEWED PUBLICATION / CURRENT AUTHORITY {
+  shape: text
+  near: top-center
+  style.font-size: 34
+  style.bold: true
+}
+parent: Independent parent authority\nExact source / Contract / profile\nRetain required parent Sessions {
+  class: card
+  left: 0
+  top: 0
+  width: 510
+  height: 220
+  style.fill: "#eef3ef"
+}
+review: Approved Delta evidence\nExact parent / candidate / schema\nBound analysis and replay artifact {
+  class: card
+  left: 750
+  top: 0
+  width: 510
+  height: 220
+  style.fill: "#eef3ef"
+}
+pending: Original pending intent\nImmutable command and review binding\nUnknown reply preserves the barrier {
+  class: card
+  left: 1500
+  top: 0
+  width: 510
+  height: 220
+  style.fill: "#f4f2ec"
+}
+binding: LeanPoo evidence-bound Contract\nPreserve original invocation rule\nMatch independent deciding references {
+  class: card
+  left: 0
+  top: 470
+  width: 510
+  height: 220
+  style.fill: "#e7edf4"
+}
+cas: Rust authoritative publication CAS\nCurrent parent / artifact / cut / fence\nCommit phase performs no external send {
+  class: card
+  icon: ../../architecture/diagrams/assets/rust.svg
+  icon.near: top-left
+  left: 750
+  top: 470
+  width: 510
+  height: 220
+  style.fill: "#e7edf4"
+}
+outcome: Durable original outcome\nCommitted or rejected / exact identity\nResolve only the original pending key {
+  class: card
+  left: 1500
+  top: 470
+  width: 510
+  height: 220
+  style.fill: "#e7edf4"
+}
+use: Rust final execution owner\nFresh authorization at actual use\nPreserve consumption and unknown holds {
+  class: card
+  icon: ../../architecture/diagrams/assets/rust.svg
+  icon.near: top-left
+  left: 750
+  top: 970
+  width: 510
+  height: 220
+  style.fill: "#eef3ef"
+}
+recovery: Exact recovery and observation\nRetain outcome / review / pending\nHistorical success is not current authority {
+  class: card
+  left: 1500
+  top: 970
+  width: 510
+  height: 220
+  style.fill: "#f4f2ec"
+}
+parent -> binding: Authoritative reference { style.font-size: 18 }
+review -> binding: Approved evidence { style.font-size: 18 }
+binding -> cas: Bound original contract { style.font-size: 18 }
+pending -> cas: Exact final join { style.font-size: 18 }
+cas -> outcome: Atomic decision { style.font-size: 18 }
+cas -> use: Current publication { style.font-size: 18 }
+outcome -> recovery: Lost reply / restart { style.font-size: 18 }
+footer: "Evidence is not an execution permit · Publication is not a provider send\nStale or unresolved authority cannot erase the original claim, budget or history" {
+  shape: text
+  left: 200
+  top: 1370
+  width: 1650
+  height: 100
+  style.font-size: 26
+  style.font-color: "#5c8b77"
+}
+
+# Project-owned presentation question; not an issued governance Question.
+vars: { d2-config: { data: { figure: |json
+{
+  "title": "52 reviewed publication cas",
+  "purpose": "workflow",
+  "kind": "flow",
+  "language": "en",
+  "width": 960,
+  "primary": "main",
+  "questions": [
+    {
+      "ref": "main",
+      "text": "What must be joined before reviewed publication commits?",
+      "focusRefs": [
+        "catalog",
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "catalog": "docs/architecture/08-diagram-catalog.org",
+    "model": "Project.sysml"
+  },
+  "copy": {
+    "takeaway": "What must be joined before reviewed publication commits?"
+  },
+  "basis": {
+    "captureRef": "docs/50-59-research-program/59-provider-rpc/59.52-reviewed-publication-cas.d2#design-view",
+    "modelRefs": [
+      "Project.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "sketchbook",
+    "node-editor",
+    "reading"
+  ],
+  "layout": "model-view",
+  "variants": [],
+  "presentation": {
+    "graph": {
+      "id": "weaver-source-view",
+      "children": [
+        {
+          "id": "title"
+        },
+        {
+          "id": "parent"
+        },
+        {
+          "id": "review"
+        },
+        {
+          "id": "pending"
+        },
+        {
+          "id": "binding"
+        },
+        {
+          "id": "cas"
+        },
+        {
+          "id": "outcome"
+        },
+        {
+          "id": "use"
+        },
+        {
+          "id": "recovery"
+        },
+        {
+          "id": "footer"
+        }
+      ],
+      "layoutOptions": {
+        "elk.direction": "DOWN",
+        "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+        "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+        "elk.layered.layering.coffmanGraham.layerBound": "1",
+        "elk.spacing.nodeNode": "24",
+        "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+        "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+        "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+        "elk.separateConnectedComponents": "false",
+        "elk.aspectRatio": "0.55",
+        "elk.spacing.componentComponent": "24"
+      }
+    },
+    "options": {
+      "elk.direction": "DOWN",
+      "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+      "elk.layered.layering.strategy": "COFFMAN_GRAHAM",
+      "elk.layered.layering.coffmanGraham.layerBound": "1",
+      "elk.spacing.nodeNode": "24",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "36",
+      "elk.layered.cycleBreaking.strategy": "MODEL_ORDER",
+      "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+      "elk.separateConnectedComponents": "false",
+      "elk.aspectRatio": "0.55",
+      "elk.spacing.componentComponent": "24"
+    },
+    "icons": {
+      "title": "capture",
+      "parent": "capture",
+      "review": "capture",
+      "pending": "document",
+      "binding": "obligation",
+      "cas": "rust",
+      "outcome": "document",
+      "use": "rust",
+      "recovery": "capture",
+      "footer": "model"
+    },
+    "roles": {
+      "pending": "default",
+      "cas": "execution",
+      "use": "execution",
+      "title": "default",
+      "parent": "default",
+      "review": "default",
+      "binding": "default",
+      "outcome": "default",
+      "recovery": "default",
+      "footer": "default"
+    }
+  },
+  "icons": [
+    "engineering",
+    "weaver"
+  ]
+}
+|
+} } }

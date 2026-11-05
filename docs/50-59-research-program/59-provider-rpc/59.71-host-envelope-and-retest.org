@@ -1,0 +1,155 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+#+TITLE: 59.71 Host Envelope, Acceptance and Diagnostic Retest
+#+LANGUAGE: en
+#+OPTIONS: toc:2
+
+* SysML decision before measurement
+
+The existing =ControlActivation.GovernancePolicyProjection= owns this refinement
+of [[file:59.70-borrowed-validation-dispatch.org][the borrowed-validation review]]. Runtime authority and measurement quality
+remain separate. The current task explicitly permits direct diagnostic retesting
+on the shared Host; a busy or battery-powered Host does not block those runs.
+It also does not become controlled evidence by permission or by a favorable ratio.
+Do not stop unrelated work, change power settings, shrink worker counts or wait
+for repeated favorable samples.
+
+* Predeclared evidence grades
+
+| Grade | Conditions and permitted conclusion |
+|-------+-------------------------------------|
+| Shared-Host diagnostic | Record all observable conditions and missing fields; compare only descriptive matching samples; no default/runtime promotion |
+| Controlled profile | Attested exclusive window plus stable physical/available CPU, power and thermal profile; AC and low-power mode off; 30-second preflight with idle >=90%, load1 <=0.5 times logical CPUs, normal memory pressure and zero swap-out growth; repeat before/after each leg |
+| Intrinsic native CPU or device attribution | Additionally requires thread-CPU/scheduler and process-scoped kernel I/O evidence; wall-clock gets or FULL completion alone do not establish it |
+
+An operator reservation label is an attestation reference, not independently
+verified exclusivity. Missing CPU/power/thermal observations cannot count as a
+controlled pass. A profile with dynamic frequency must disclose that fact and
+retain stable native sentinels; no pure instruction-cost claim follows. A Linux
+runner is another profile, not a substitute for Darwin regression acceptance.
+
+* Fixed comparison and acceptance
+
+Use actual available CPUs with a four-worker minimum for runtime/write/shared
+budgets and reusable capacity; record physical/logical/available counts separately.
+Keep the existing blocking budget, FULL, real bounded body/CID verification,
+strict typed decoding and enrolled-authority checks,
+original claim/reservation/history identities, zero retries and 30-second per-case
+collection bound. Preparation/compilation is outside timing; accepted work drains
+and fresh owners recover every original operation. Reporting/monitoring overhead
+and shared-Host cache effects remain disclosed.
+
+Freeze original O, ready-only A and Condvar-plus-ready AV binary identities with
+the same workload/compiler/SDK/profile. Admission uses fixed O/A/A/O; validator
+uses fixed A/AV/AV/A. The latter isolates validator replacement conditional on
+ready admission; comparing AV directly to O would confound two changes. Preserve
+all WAL/fresh/reuse rounds and hot/independent domains. Match treatment leg 2 to
+reference leg 1 and treatment leg 3 to reference leg 4. Retain every operation,
+failure and slow case. Combined production promotion would additionally require
+a direct AV/O confirmation; conditional medians cannot simply be multiplied.
+Do not treat operations within a leg as independent statistical replications.
+
+Safety is a hard gate regardless of Host grade: unexpected failure/Unknown/refusal
+or inexact recovery rejects a clean-run performance pass. Native once-only and
+clock invariants stay active. Borrowed callback stays on its caller through the
+native completion contract; rejection/panic/cancellation must retain original
+unknown exposure and accepted-work cleanup. Historical replay creates no permit.
+Fault-injection Unknown outcomes retain their existing expected interpretation;
+they are not ordinary clean-run throughput failures.
+
+For controlled engineering acceptance, each declared mode/domain stratum needs
+no paired TPS ratio <0.95 and no paired P95/P99 >1.05 baseline. Predeclare
+hot/reuse and independent/reuse as primary strata: median paired successful TPS
+>=1.10 overall and >=1.05 in each of three fixed ABBA blocks. Diagnostic retesting
+uses one block per candidate; it cannot qualify that controlled replication gate.
+Boundaries are inclusive, fixed before this
+retest, and are engineering thresholds rather than a confidence theorem. Require
+native-control get and FULL-post-body mean max/min <=1.10 within each compared
+profile/variant; larger drift makes causal attribution inconclusive. Unchanged
+native-path controls separate common Host/context drift from dispatcher changes,
+but cannot identify a kernel or MVCC routine without direct evidence.
+
+The diagnostic retest remains useful even when these quality conditions fail;
+it cannot waive safety, erase regressions or admit a candidate into production.
+SPEC semantics and existing Lean/Quint responsibilities remain unchanged.
+
+* Source-currentness before the retest
+
+Both candidates are reconstructed at MRR PR 12 base =895a06c3= in separate
+temporary worktrees, keeping manifest/lockfile identity. The initial shared
+target attempt reused a stale leaf: the Condvar unit-test list lacked its new
+close-order test. That attempt is provenance-invalid, not candidate acceptance.
+Before switching source, clean only the backend package or use an isolated
+target directory, record the actual compile path and candidate-specific test
+witness, then freeze and hash the executable. Byte-identical dependency artifacts
+may be reused; an unchecked cached backend result may not. No compilation/test
+overlaps a timed leg. Candidates remain unmerged research variants.
+
+#+CAPTION: Measurement quality remains separate from borrowed runtime authority and the Rust final-use gate.
+#+ATTR_ORG: :width 1600
+#+ATTR_HTML: :width 100% :alt Borrowed validation, original claim and budget constraints and separate final execution authority
+[[file:59.69-hot-path-cost-boundaries.svg]]
+
+* Direct retest results
+
+MRR Data [[https://github.com/tao3k/mrr-data/pull/12][PR 12]] commit =87900243= owns the
+[[https://github.com/tao3k/mrr-data/blob/87900243/docs/benchmarks/shared-backend-host-envelope.org][complete sample tables, source-currentness record, native controls and acceptance criteria]].
+Weaver consumes this record instead of duplicating the MRR benchmark or backend.
+
+The explicitly requested shared-Host retest completes eight full-path legs and
+three native controls: 171 cases, 131,328 commits and exact original-operation
+recoveries. No unexpected failure, refusal or Unknown occurs. All 11 processes
+exit naturally and their executable hashes remain unchanged. Frozen artifacts
+are independently rebuilt from current base plus candidate source; source/pin
+identity and native safety are not waived with Host quality.
+
+| Contrast | Primary stratum | All six paired TPS ratios | Median | Worst paired P95/P99 |
+|----------+-----------------+---------------------------+--------+----------------------|
+| Admission A/O | Hot/reuse | 1.407, 1.053, 0.843, 1.108, 0.826, 1.052 | 1.052 | 1.621 / 2.123 |
+| Admission A/O | Independent/reuse | 1.541, 1.224, 0.614, 0.532, 0.904, 0.699 | 0.802 | 3.571 / 3.898 |
+| Validator AV/A | Hot/reuse | 0.980, 1.184, 1.052, 3.900, 2.881, 3.854 | 2.033 | 0.995 / 0.697 |
+| Validator AV/A | Independent/reuse | 1.117, 1.494, 1.449, 2.088, 0.936, 0.475 | 1.283 | 3.371 / 3.027 |
+
+Raw values determine medians; displayed ratios are rounded. No candidate passes
+the full nonregression requirements. The validator primary hot number is a
+conditional diagnostic observation, not a general twofold speedup or proof of
+combined AV/O benefit.
+
+The same A executable's validator-reference hot reads change from
+136.55--149.04 microseconds in leg 1 to 309.86--419.88 in leg 4; bridge residual
+changes from 10.18--12.46 to 131.43--311.90. The late reference makes the second
+half of AV/A look much larger. In the earlier lower-latency pair, median bridge
+residual is 10.66 versus 8.50 microseconds, a descriptive 2.16-microsecond saving;
+unchanged native stages vary too. Do not assign all observed changes to either
+the protocol or Host CPU contention alone.
+
+Native controls bypass both dispatch and ProfilePort rendezvous in their timed
+loops. Original reuse gets and FULL-post-body max/min are 2.223 and 4.252;
+AV reuse is 1.108 and 1.227. The 10-percent sentinel gate is exceeded. AV control
+reuse/WAL get ratios 1.157, 1.063, 1.207 retain a modest lower-layer read-cost
+tradeoff; query/materialization and driver wait still need separate attribution.
+There is no new proof of pure native CPU cost, kernel fsync time or a fixed
+intrinsic MVCC penalty.
+
+Every leg-boundary observation reports 12 physical/logical CPUs, normal memory
+pressure and AC power; all executables use 12 runtime/write/shared workers,
+reuse capacity 12 and 16 blocking threads. Load1 ranges 16.60--45.68. The initial
+battery discovery sample is not the power state of the timed retest. Exclusive
+ownership, idle/thermal trajectory and cumulative swap-out remain unestablished;
+the result is diagnostic, as requested, rather than a blocked experiment or a
+controlled-profile pass.
+
+Forced candidate safety passes 82 tests for A and 83 for AV, including real
+borrowed guard, typed rejection, panic, cancellation and restart checks. AV's
+new close-order witness actually runs after the stale leaf is removed. Both
+candidates and the original runtime pass strict Clippy; original standard reuse
+safety passes 82. Original operation/authority/claim/history and typed held=4
+remain bound. Existing SPEC and Lean/Quint responsibilities remain unchanged.
+
+Neither candidate is promoted, and no production path or dependency pin changes.
+Keep every sample and provenance-invalid receipt separate. Subsequent native
+attribution should distinguish query preparation, stepping/materialization and
+driver wait before adding caches or weakening borrowed semantics. Benchmark
+readiness never supplies execution authority or releases unknown exposure.

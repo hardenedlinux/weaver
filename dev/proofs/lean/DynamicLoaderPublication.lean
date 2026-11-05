@@ -1,4 +1,8 @@
-import NativeExitQualification
+-- SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+--
+-- SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+import GerbilExitQualification
 namespace Weaver.DynamicLoaderPublication
 
 -- This AST is the closed recognizer language, not arbitrary Scheme.
@@ -67,17 +71,17 @@ theorem repeated_import_does_not_duplicate (m : Nat) (loaded : List Nat) :
     acquireOnce m (acquireOnce m loaded) = acquireOnce m loaded := by
   by_cases h : m ∈ loaded <;> simp [acquireOnce,h]
 
-theorem native_completion_still_needs_cleanup
-    (pass : NativeExitQualification.Qualified c receipt) :
+theorem loader_completion_still_needs_cleanup
+    (pass : GerbilExitQualification.Qualified c receipt) :
     receipt.returned = true ∧ receipt.handles = [] :=
-  NativeExitQualification.qualification_preserves_cleanup pass
+  GerbilExitQualification.qualification_preserves_cleanup pass
 
 theorem dynamic_pass_still_needs_gateway_policy
-    (_pass : NativeExitQualification.Qualified c receipt)
+    (_pass : GerbilExitQualification.Qualified c receipt)
     (event : LlmRouting.Step router owner before after)
     (changed : after.dispatches ≠ before.dispatches) :
     ∃ p, owner.wireValid p ∧ owner.finalPolicyValid p (LlmRouting.view before) :=
-  NativeExitQualification.natural_pass_still_needs_gateway_policy _pass event changed
+  GerbilExitQualification.natural_pass_still_needs_gateway_policy _pass event changed
 
 #print axioms erasure_preserves_body_order
 #print axioms source_dependency_composition
@@ -85,6 +89,6 @@ theorem dynamic_pass_still_needs_gateway_policy
 #print axioms publication_preserves_interface_identity
 #print axioms publication_preserves_body_identity
 #print axioms repeated_import_does_not_duplicate
-#print axioms native_completion_still_needs_cleanup
+#print axioms loader_completion_still_needs_cleanup
 #print axioms dynamic_pass_still_needs_gateway_policy
 end Weaver.DynamicLoaderPublication

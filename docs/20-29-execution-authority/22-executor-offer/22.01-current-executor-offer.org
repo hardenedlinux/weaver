@@ -1,6 +1,16 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Weaver Current Executor Offer and Partial-Write Safety
 #+language: en
 #+options: toc:3
+
+* Reader view
+
+Dequeue permits lookup. Current authority controls possible submission.
+
+[[file:22.02-executor-offer.svg]]
 
 * Decision and threat boundary
 
@@ -188,7 +198,7 @@ all of those separate conditions.
 |-------+---------------|
 | Scheme / POO Flow | Immutable source intent and scope, pure state transitions, action classification, current offer context and valid manifest/domain rules |
 | Cedar / cedar-poo-spec | Separate reserve/offer actions on authenticated complete current input; all required nonempty layers allow without errors |
-| Go | Cloud-native/protocol/SDK proposals and outcome lookup; no direct provider-send handle, self-assigned lane generation or autonomous reconnect resend |
+| Go | Cloud-native/protocol/Gerbil toolchain proposals and outcome lookup; no direct provider-send handle, self-assigned lane generation or autonomous reconnect resend |
 | Rust broker | Durable original operation/slot lookup, dispatch prefix and burn/submission deduplication; qualified executor recovery |
 | Rust final transport owner | Current last-handoff gate, logical global/lane fencing, one affine original offer and attributable callbacks |
 | Rust receipt/settlement owners | Verify original partial/full evidence and separate terminal/usage/account application; no callback-triggered budget release |

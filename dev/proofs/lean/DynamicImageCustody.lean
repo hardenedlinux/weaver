@@ -1,4 +1,8 @@
-import NativeDynamicImportBoundary
+-- SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+--
+-- SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+import DynamicImportBoundary
 namespace Weaver.DynamicImageCustody
 
 -- Reference IDs denote successful load acquisitions, not module names.
@@ -84,11 +88,11 @@ theorem released_image_blocks_late_initialization (released : owner ref ∈ s.un
 
 theorem image_packing_does_not_grant_policy
     (_safe : Safe imageOwner images)
-    (native : NativeExitQualification.Qualified clock receipt)
+    (native : GerbilExitQualification.Qualified clock receipt)
     (event : LlmRouting.Step router owner before after)
     (changed : after.dispatches ≠ before.dispatches) :
     ∃ p, owner.wireValid p ∧ owner.finalPolicyValid p (LlmRouting.view before) :=
-  NativeDynamicImportBoundary.dynamic_pass_still_requires_final_policy native event changed
+  DynamicImportBoundary.dynamic_pass_still_requires_final_policy native event changed
 
 #print axioms shared_image_step_preserves_custody
 #print axioms initialized_shared_image_custody

@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 // External journal, transport owner and receiver are distinct failure domains.
 // The rollbackable host holds correlation/status and an opaque old-range handle.
 module AnchoredRecoveryAndEgress {

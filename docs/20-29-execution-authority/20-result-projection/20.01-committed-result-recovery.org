@@ -1,6 +1,16 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Weaver Committed Result Recovery and Source Projection CAS
 #+language: en
 #+options: toc:3
+
+* Reader view
+
+One decision feeds both stores. Replaying it never calls a provider.
+
+[[file:20.02-result-projection.svg]]
 
 * The missing result boundary
 
@@ -55,7 +65,7 @@ separate success semantics. Provider I/O is outside this transaction.
 A commit response may be lost before either participant applies anything. The
 original nonce is already spent and exposure remains reserved/charged at authority.
 The recovery path queries the exact transaction/body and returns the original
-result. A new transaction ID, new alias, SDK retry or reconnect cannot consume the
+result. A new transaction ID, new alias, provider-client retry or reconnect cannot consume the
 same original claim again. Pending entries and outcome tombstones retain their
 original meaning after owner handover and compaction.
 

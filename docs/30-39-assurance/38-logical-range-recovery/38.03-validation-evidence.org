@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Logical Range Recovery Validation Evidence
 #+language: en
 #+date: 2026-10-19
@@ -148,3 +152,9 @@ idempotency service is implemented or executed. Qualification must instrument
 actual application invocation identities and run the failure matrix in 38.01.
 The result is conditional software authority proof and bounded model evidence;
 it is not a remote exactly-once or throughput claim.
+
+* Embedded architecture views
+
+** 38.02-logical-range-recovery.svg
+
+[[file:38.02-logical-range-recovery.svg]]

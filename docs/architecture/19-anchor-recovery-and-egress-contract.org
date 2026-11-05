@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Weaver Anti-Rollback Anchor, Durable Recovery and Final Egress Contract
 #+language: en
 #+date: 2026-10-19
@@ -148,7 +152,7 @@ API that might accept it. This mark means offered/possibly accepted, not remote
 success. If it crashes before or after the API call, the range remains consumed
 and unknown; no automatic redispatch. An independently durable delegation record
 and non-replay recovery are required. They do not make the kernel write atomic
-with the journal. A hidden SDK retry, redirect or second callback violates the
+with the journal. A hidden provider-client retry, redirect or second callback violates the
 single qualified delegation contract unless separately mediated and budgeted.
 
 Treat the full async buffer as possibly submitted unless the transport proves

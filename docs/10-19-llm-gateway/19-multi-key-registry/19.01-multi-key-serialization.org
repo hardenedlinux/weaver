@@ -1,6 +1,16 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Weaver Multi-Key Registry and Source-Ledger Serialization
 #+language: en
 #+options: toc:3
+
+* Reader view
+
+An owner change must not turn a partial projection into authority.
+
+[[file:19.02-multi-key-registry.svg]]
 
 * Defect and design decision
 
@@ -140,7 +150,7 @@ broker: participants accept only authority-certified decisions at exact position
 and their mutation interfaces have no independent grant path. A late committed
 result can still be observed and materialized under the new owner; this cannot
 create another consumption. All old-owner effect-capable queues must remain behind
-the logical Rust broker fence. Go SDK retries, redirects and stream reconnects
+the logical Rust broker fence. Go provider-client retries, redirects and stream reconnects
 cannot open a direct provider connection around it.
 
 Whole-authority rollback or two independent primaries violate the qualification

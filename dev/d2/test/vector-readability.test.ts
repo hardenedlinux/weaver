@@ -1,0 +1,129 @@
+// SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+import {test,expect} from 'bun:test';
+import {chromium} from 'playwright';
+import {cpus} from 'node:os';
+import {fileURLToPath} from 'node:url';
+import {readFile,writeFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+const root=fileURLToPath(new URL('../../../',import.meta.url));
+const hash=(value:string)=>createHash('sha256').update(value).digest('hex');
+const traceTiming=process.env.WEAVER_VECTOR_TIMING==='1';
+test('all Library model SVGs retain legible fonts, vector icons and complete text at GitHub width',async()=>{
+ const receipt:{status:string;report:{selection?:string[];modelCaptureSHA256:string;images:{source:string;layout:string;sourceSHA256:string;svgSHA256:string}[]}}=JSON.parse(await readFile(root+'.cache/d2/latest-render.json','utf8'));
+ const modelDigest=process.env.WEAVER_DIAGRAM_MODEL_SHA256;
+ if(!modelDigest)throw new Error('Standalone vector admission requires the Go-owned SDK capture');
+ expect(receipt.status).toBe('PASS');
+ expect(receipt.report.modelCaptureSHA256).toBe(modelDigest);
+ const images=receipt.report.images.filter(image=>image.layout==='model-view'||image.layout==='sequence-view');
+ if(receipt.report.selection){expect(images.map(image=>image.source).sort()).toEqual([...receipt.report.selection].sort());expect(images.length).toBeGreaterThan(0);}
+ else expect(images.length).toBeGreaterThan(3);
+ const browser=await chromium.launch();
+ const failures:string[]=[];
+ let cursor=0;
+ try{
+  const checks=await Promise.allSettled(Array.from({length:Math.min(cpus().length,images.length)},async()=>{
+   const page=await browser.newPage({viewport:{width:830,height:1000}});
+   try{
+    const protocol=await page.context().newCDPSession(page);
+    while(true){
+     const image=images[cursor++];if(!image)return;
+   let checkpoint=performance.now();
+   const timed=(phase:string)=>{
+    if(!traceTiming)return;
+    const now=performance.now();
+    console.error(JSON.stringify({source:image.source,phase,milliseconds:Math.round(now-checkpoint)}));
+    checkpoint=now;
+   };
+   const name=image.source.split('/').at(-1)!.slice(0,-3);
+   const body=await readFile(root+image.source.slice(0,-3)+'.svg','utf8');
+   expect(createHash('sha256').update(body).digest('hex')).toBe(image.svgSHA256);
+    const cache=root+'.cache/d2/images/'+image.source.slice(0,-3);
+    const html=await readFile(cache+'.html','utf8');
+    const exported:{htmlSHA256:string;inputSHA256:string}=JSON.parse(await readFile(cache+'.json','utf8'));
+    expect(hash(html)).toBe(exported.htmlSHA256);
+    // Provenance is data-only. Parse it without creating a browser document.
+    // SVG fonts, geometry, screenshots and decoding retain live checks below.
+    let metadata='',documents=0;
+    await new HTMLRewriter().on('script#figure-provenance',{
+     element(){documents++;},text(chunk){metadata+=chunk.text;},
+    }).transform(new Response(html)).text();
+    expect(documents).toBe(1);
+    const provenance:{inputSHA256:string;sourceSHA256:Record<string,string>}=JSON.parse(metadata);
+    expect(provenance.inputSHA256).toBe(exported.inputSHA256);
+    expect(provenance.sourceSHA256[image.source]).toBe(image.sourceSHA256);
+    timed('provenance');
+    await page.setContent('<style>body{margin:0;background:#0d1117}body>svg{width:830px;height:auto}</style>'+body);
+    await page.evaluate(()=>document.fonts.ready);
+    const issues=await page.evaluate(()=>{
+     const problems:string[]=[],root=document.querySelector('body>svg')!.getBoundingClientRect();
+     const canvas=document.querySelector('body>svg>rect');
+     if(!canvas||getComputedStyle(canvas).fill==='rgba(0, 0, 0, 0)'||getComputedStyle(canvas).fill==='none')problems.push('Transparent standalone canvas');
+     for(const text of document.querySelectorAll<SVGTextElement>('svg text')){
+      const box=text.getBoundingClientRect();
+      if(box.left<root.left-1||box.right>root.right+1||box.top<root.top-1||box.bottom>root.bottom+1)problems.push('Out of image: '+text.textContent);
+     }
+     for(const text of document.querySelectorAll<SVGGraphicsElement>('svg[data-vector-surface=sequence] text:not(.sequence-index):not(.sequence-note-title),.scene-title,.scene-detail,.scene-label text,[data-heading-role=question] [data-annotation-part=label] text,[data-heading-role=answer] [data-annotation-part=label] text,[data-heading-role=note] text')){
+      const matrix=text.getScreenCTM()!,size=parseFloat(getComputedStyle(text).fontSize)*Math.hypot(matrix.a,matrix.b);
+      if(size<18)problems.push('Small model label: '+text.textContent+' '+size.toFixed(2));
+     }
+     // Preserve the original ordered-sequence line-overlap check in this
+     // single full-inventory browser owner, including all four sequence views.
+     for(const message of document.querySelectorAll('.sequence-message')){
+      const lines=[...message.querySelectorAll<SVGTextElement>('text[data-line]')].map(text=>text.getBoundingClientRect());
+      for(let index=1;index<lines.length;index++)if(lines[index]!.top<lines[index-1]!.bottom)problems.push('Overlapping message lines');
+     }
+     for(const annotation of document.querySelectorAll<SVGSVGElement>('svg[data-vector-annotation]')){
+      const role=annotation.dataset.headingRole;
+      if(role==='question'||role==='answer'){
+       const parts=[...annotation.querySelectorAll<SVGGraphicsElement>('[data-annotation-part]')].map(part=>part.getBoundingClientRect());
+       for(let i=1;i<parts.length;i++){
+        const a=parts[i-1]!,b=parts[i]!;
+        if(Math.abs((a.top+a.bottom-b.top-b.bottom)/2)>1)problems.push('Semantic heading misalignment');
+        if(a.right+8>b.left)problems.push('Semantic heading crowding');
+       }
+       if(role==='question'&&(annotation.querySelector('[data-annotation-part=glyph]')||annotation.querySelector('[data-annotation-part=ordinal] text')?.textContent!=='?'))problems.push('Question lost its inquiry marker');
+       if(role==='answer'&&(!annotation.querySelector('[data-annotation-part=glyph]')||annotation.querySelector('[data-annotation-part=ordinal]')))problems.push('Answer lost its domain glyph distinction');
+      }
+      const texts=[...annotation.querySelectorAll<SVGTextElement>('text')];
+      for(let i=0;i<texts.length;i++)for(let j=i+1;j<texts.length;j++){
+       const a=texts[i]!.getBoundingClientRect(),b=texts[j]!.getBoundingClientRect();
+       if(Math.min(a.right,b.right)-Math.max(a.left,b.left)>1&&Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top)>1)problems.push('Overlapping text: '+texts[i]!.textContent);
+      }
+     }
+     return problems;
+    });
+    failures.push(...issues.map(issue=>image.source+': '+issue));
+    timed('layout');
+    expect(body).not.toContain('<foreignObject');expect(body).toContain('data-scene-node=');
+    const figure=await page.locator('body>svg').boundingBox();
+    if(!figure||Math.abs(figure.width-830)>0.1)throw new Error('Unexpected standalone SVG viewport');
+    // The source checks above admit the complete figure. Capture its entire
+    // painted extent with Chromium's lossless, speed-optimized PNG encoder.
+    const {data}=await protocol.send('Page.captureScreenshot',{
+     format:'png',captureBeyondViewport:true,optimizeForSpeed:true,
+     clip:{x:figure.x,y:figure.y,width:figure.width,height:Math.ceil(figure.height),scale:1},
+    });
+    await writeFile(root+'.cache/d2/'+name+'-830.png',Buffer.from(data,'base64'));
+    timed('screenshot');
+    // Decode the exported SVG through the real image decoder. An off-DOM
+    // Image avoids a second page layout/paint while preserving image and pixel
+    // checks; the complete standalone SVG screenshot above is unchanged.
+    const decoded=await page.evaluate(async url=>{
+     const image=new Image();image.src=url;await image.decode();
+     const canvas=document.createElement('canvas');canvas.width=canvas.height=4;
+     const context=canvas.getContext('2d')!;context.drawImage(image,0,0,4,4);
+     return {valid:image.naturalWidth>0,opaque:[[0,0],[3,0],[0,3],[3,3]].every(([x,y])=>context.getImageData(x!,y!,1,1).data[3]===255)};
+    },'data:image/svg+xml;base64,'+Buffer.from(body).toString('base64'));
+    expect(decoded.valid).toBe(true);expect(decoded.opaque).toBe(true);
+    timed('decode');
+    }
+   }finally{await page.close();}
+  }));
+  const rejected=checks.filter((check):check is PromiseRejectedResult=>check.status==='rejected');
+  if(rejected.length)throw new AggregateError(rejected.map(check=>check.reason),'Vector admission failed');
+ }finally{await browser.close();}
+ expect(failures).toEqual([]);
+},30000);

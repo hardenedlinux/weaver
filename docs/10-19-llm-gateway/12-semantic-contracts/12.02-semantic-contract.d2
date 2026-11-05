@@ -1,5 +1,9 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+...@../../../dev/d2/themes/flow
 # Core LLM design; source identities and verification receipts stay in Org.
-...@../../architecture/diagrams/lib/theme
 title: WEAVER / GOVERNED LLM INTEROPERABILITY / SEMANTIC CONTRACTS {
   class: title
   near: top-center
@@ -190,3 +194,149 @@ broker.stream -> tools.assembly
 broker.validation -> tools.proposal { style.stroke-dash: 4 }
 tools.assembly -> tools.proposal
 tools.proposal -> tools.execution { style.stroke-dash: 4 }
+
+# Project-owned presentation question; not an issued governance Question.
+vars: { d2-config: { data: { figure: |json
+{
+  "title": "02 semantic contract",
+  "purpose": "workflow",
+  "kind": "flow",
+  "language": "en",
+  "width": 1600,
+  "primary": "main",
+  "questions": [
+    {
+      "ref": "main",
+      "text": "Which progression and failure boundaries govern 02 semantic contract?",
+      "focusRefs": [
+        "catalog",
+        "model"
+      ]
+    }
+  ],
+  "references": {
+    "catalog": "docs/architecture/08-diagram-catalog.org",
+    "model": "Project.sysml"
+  },
+  "copy": {
+    "takeaway": "The declared source relationships define this view; presentation does not grant execution authority."
+  },
+  "basis": {
+    "captureRef": "docs/10-19-llm-gateway/12-semantic-contracts/12.02-semantic-contract.d2#design-view",
+    "modelRefs": [
+      "Project.sysml"
+    ],
+    "obligationRefs": [],
+    "evidenceRefs": []
+  },
+  "themes": [
+    "sketchbook",
+    "blueprint",
+    "reading"
+  ],
+  "layout": "model-view",
+  "variants": [],
+  "presentation": {
+    "graph": {
+      "id": "weaver-source-view",
+      "children": [
+        {
+          "id": "title"
+        },
+        {
+          "id": "contract",
+          "children": [
+            {
+              "id": "contract.request"
+            },
+            {
+              "id": "contract.semantics"
+            },
+            {
+              "id": "contract.policy"
+            }
+          ]
+        },
+        {
+          "id": "adapter",
+          "children": [
+            {
+              "id": "adapter.catalog"
+            },
+            {
+              "id": "adapter.codec"
+            },
+            {
+              "id": "adapter.seal"
+            },
+            {
+              "id": "adapter.goBrand"
+            },
+            {
+              "id": "adapter.kubernetesBrand"
+            }
+          ]
+        },
+        {
+          "id": "broker",
+          "children": [
+            {
+              "id": "broker.admit"
+            },
+            {
+              "id": "broker.stream"
+            },
+            {
+              "id": "broker.validation"
+            },
+            {
+              "id": "broker.rustBrand"
+            }
+          ]
+        },
+        {
+          "id": "tools",
+          "children": [
+            {
+              "id": "tools.assembly"
+            },
+            {
+              "id": "tools.proposal"
+            },
+            {
+              "id": "tools.execution"
+            }
+          ]
+        },
+        {
+          "id": "quint"
+        },
+        {
+          "id": "lean"
+        }
+      ],
+      "layoutOptions": {
+        "elk.algorithm": "layered",
+        "elk.direction": "DOWN",
+        "elk.edgeRouting": "ORTHOGONAL"
+      }
+    },
+    "options": {
+      "elk.algorithm": "layered",
+      "elk.direction": "DOWN",
+      "elk.edgeRouting": "ORTHOGONAL"
+    },
+    "icons": {
+      "adapter.goBrand": "go",
+      "adapter.kubernetesBrand": "kubernetes",
+      "broker.rustBrand": "rust"
+    },
+    "roles": {}
+  },
+  "icons": [
+    "engineering",
+    "weaver"
+  ]
+}
+|
+} } }

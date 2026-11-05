@@ -1,0 +1,129 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+#+title: 59.37 Standard Gerbil Entry: Local Build and Test Evidence
+#+language: en
+
+* Fixed source and public commands
+This record describes the historical source below. Its auxiliary executable
+declaration has since been removed because the Gateway consumes FFI libraries.
+See 59.38 for the current complete gate. Historical build failures and successes
+remain unchanged here; they do not require a binary in the current architecture.
+
+The implementation qualified here is =09a3fed92aa0fc8cfcea5be96a6a54f573fdee5c=.
+The actual host reports twelve CPUs. Dependency pins did not change.
+This is evidence for =gerbil build= and =gerbil test=; it is not a new passing
+receipt for the historical direct-gxi commands in 59.35.
+
+Root =build.ss= declares production libraries through init's =std-make-spec=.
+Development =dev/build.ss= declares the inventory =exe:= with its =bin:= name
+through the same init's existing =tests.for-files= demand. Both use generated
+standard command dispatch. The executable module exports its real =main=;
+that program's input-file arguments are distinct from build command dispatch.
+There is no manually implemented =compile/dependencies/clean= parser.
+
+* Actual preparation and build results
+The official =gerbil deps --install= completed in a task-owned prefix. Its
+Core and POO dependencies resolved to the original =79a5526= and =98fcce3=
+commits. Parser, Orgize, Scheme/Rust and Ascent retained the versions declared
+by the original Agentic AI Lab package. No package was uninstalled.
+
+| Command / check | Result |
+|-----------------+--------|
+| =gerbil build -g github.com/tao3k/agentic-ai-lab= | PASS, natural exit 0 |
+| Root =gerbil build -g= | PASS; production gateway, governance and policy libraries generated |
+| Development =gerbil build -g= | PASS; init-owned =exe:= compilation, linking and artifact issuance |
+| Go development-tool and project race tests | PASS |
+| gerbil-scheme-rust build-helper Clippy, warnings denied | PASS |
+| Quint qualification scenarios / counterexamples | PASS, 13 |
+| Quint audit exploration | PASS, 1,000 samples, 60 steps, seed 293, init =boot= |
+| Lean qualification and its dependency closure | PASS, 14 modules, pinned Lean 4.34.1 |
+| Actual Scheme/Cedar CFFI / Go / Rust response-loss and restart test | PASS, 44.262 s |
+
+Dependency downloading, parser generation and package compilation are build
+preparation, not fifteen-second runtime trials. They are not included in the
+runtime timing below. SDK compilation and the Root declarations preserve their
+existing resource/watchdog contracts; the root/development builds use twelve
+available build CPUs.
+
+* Fixed fifteen-second package test
+The Go-owned check executes the unmodified =gerbil test -g -v 5 t= command in
+four independent processes against the prepared environment. Every run checks
+all nineteen original successful Case reports, the standard successful Harness
+report, terminal =OK=, exit zero, the original deadline and stable source inputs.
+
+| Fixed-source trial | Whole process duration | Result |
+|--------------------+------------------------+--------|
+| 0 | 4.718139459 s | PASS |
+| 1 | 4.651833500 s | PASS |
+| 2 | 5.862972834 s | PASS |
+| 3 | 4.948103709 s | PASS |
+
+All four standard outputs have SHA-256
+=755f076aace8000951cdf39774ea994dfc4be4cbca19ee076483af64a5f4ae37=.
+No success path forces process exit or omits the SDK's cleanup. The test result
+guard also rejects empty, partial and failing zero-exit driver output.
+
+An earlier source-stable exploratory series completed in 10.246461041,
+4.755754167, 4.713423375 and 4.649157667 seconds. That series preceded the final
+development-ownership declaration and is not substituted for the fixed-source
+result. First use of a prepared prefix is not an OS-wide cold boot. The complete
+dependency/library environment also differs from the earlier selected-source
+gxi experiment, so these results do not isolate an entry-only speedup or prove
+host contention caused the earlier failure.
+
+SDK Harness messages delimit execution and completion. The pre-Harness interval
+contains tool startup, discovery and module loading; this receipt does not
+fabricate separate latency values for boundaries the SDK did not expose.
+Natural process completion includes the post-result shutdown interval. Detailed
+loader/closer attribution from older instrumented experiments remains historical
+and is not silently transferred to this uninstrumented package-tool receipt.
+
+* Failures that led to the final declarations
+The first new-entry preparation attempt failed: links alone lacked the
+package-manager dependency manifests. Core and project builds failed, and the
+following test stage timed out. The static ownership check still expected the
+old root parser, and development inputs changed during that diagnostic run.
+That complete =check-scheme= receipt remains =FAIL=, not a sixteen-stage pass.
+
+The next standard-build controls retained these distinct failures:
+
+- Putting an =exe:= into a production Module spec was refused with
+  =native programs require an explicit init-owned test demand=. The final
+  development declaration uses that existing demand rather than bypassing it.
+- The program initially omitted =export main=; the native linker correctly
+  refused it. The final module exports its executable entry.
+- The installed SDK retained a stale OpenSSL Cellar link path. Environment
+  pkg-config metadata supplies the existing OpenSSL 3 ABI; the executable
+  declaration requires =libcrypto < 4= and rejects the host's default OpenSSL 4.
+- The inventory imported the test tool without using it. Native linking exposed
+  missing installed static tool objects. Removing that unused import leaves
+  the actual SDK expander dependency; no runtime or test assertion is removed.
+
+The final production and development commands then completed naturally. The
+earlier image-inventory and gxi fifteen-second failures remain recorded in
+59.35 and are not reclassified. This evidence qualifies the corrected public
+entry, not a newly successful complete fresh-prefix =check-scheme= cohort.
+
+* Reproduction and evidence ownership
+Use the original package pins and a caller-owned standard Gerbil prefix. Prepare
+dependencies with =gerbil deps --install=, build the linked upstream package,
+provide the Cargo-produced Cedar FFI pkg-config metadata, then run root and
+development =gerbil build -g=. Select the installed OpenSSL 3 pkg-config location
+through =PKG_CONFIG_PATH= for the development program; no Cellar version is
+embedded in project code.
+
+Run the Go check with the prepared prefix in =WEAVER_SCHEME_TEST_PREFIX= and
+the selected tool in =WEAVER_SCHEME_TOOL=:
+
+#+begin_src text
+go -C go test -count=1 -tags=schemeintegration ./internal/devrunner \
+  -run '^TestGerbilPackageEntryNaturalExit$' -v
+#+end_src
+
+The fixed ignored =latest-scheme-package.json= stores the four result vectors,
+durations, output commitments, CPU count, deadline and source stability. The
+failed preparation =latest-check-scheme.json= remains distinct. Raw build/test
+logs and derived object files are temporary or ignored, never committed as
+acceptance artifacts. All changes and curated English evidence remain in PR 1.

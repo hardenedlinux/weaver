@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
 #+title: Weaver D2 Diagram Catalog and Maintenance Contract
 #+language: en
 #+date: 2026-10-18
@@ -12,7 +16,7 @@ format; =.d2= sources and generated =.svg= previews are diagram assets. Diagrams
 make guards and ownership reviewable. They do not implement or prove the
 protocol, establish process isolation, or qualify the physical data path.
 
-All twenty-eight views describe the proposed Weaver design. Existing mechanisms and
+The architecture views describe Weaver's design. Existing mechanisms and
 required extensions are distinguished by the source register and X1-X10 map
 in [[file:07-source-admission-ledger-fencing.org][Source admission, durable ledger, and fencing]].
 The root, Core, and Lambda Aitia revisions in
@@ -20,7 +24,7 @@ The root, Core, and Lambda Aitia revisions in
 
 * Canonical views
 
-| ID | View | D2 source | SVG preview | Semantic owner |
+| ID | View | D2 source | Preview | Semantic owner |
 |----+------+-----------+-------------+----------------|
 | W01 | Logical language and authority boundaries | [[file:diagrams/01-system-boundaries.d2][Source]] | [[file:diagrams/01-system-boundaries.svg][Preview]] | [[file:00-system-design.org][System design]] |
 | W02 | S1-S3 preparation, evaluation and consumption | [[file:diagrams/02-admission-sequence.d2][Source]] | [[file:diagrams/02-admission-sequence.svg][Preview]] | [[file:05-authorization-execution-protocol.org][Coordination protocol]] |
@@ -151,66 +155,93 @@ actual effect. A test receipt is not a component of the target architecture.
 
 * Enterprise presentation conventions
 
+Reader views use explicit SysML questions, selected subjects and typed
+relationships. The full diagram gate measures the resulting standalone SVGs
+in Chromium at 830 CSS pixels. The individual Org contracts retain the
+proof premises and detailed failure branches.
+
 The visual references are D2/Terrastruct's [[https://terrastruct.com/examples/1/][architecture example library]] and
-[[https://d2lang.com/examples/tala/][official TALA gallery]]. This is Weaver's own presentation system, not a claim
-to use a vendor-certified Enterprise template or a paid feature. The installed
-D2 v0.9.0 bundles the [[https://d2lang.com/tour/tala/][TALA architecture layout engine]].
+[[https://d2lang.com/examples/tala/][official TALA gallery]]. The shared render Library supplies the engine and visual layers; this is not a claim
+to use a vendor-certified Enterprise template or a paid feature.
 
-Use compact responsibility panels, aligned nodes, readable labels, white
-component surfaces, thin borders, restrained role accents and orthogonal
-connectors. Keep the success route readable and distinguish refusal/unknown
-outcomes by both labels and colors. W01, W03, W06, W07, W08, W11, W12, W13, W14, W15 and W16 explicitly place
-nodes to preserve reading order. Coordinates have no protocol meaning.
+Choose a visual grammar for the subject. Responsibility maps use ownership
+zones; routing shows candidates and one selected provider; state views emphasize
+irreversible transitions; sequence views use native actors and messages; data
+views show records and joins; assurance views separate independent obligations.
+Readable type, deliberate spacing, semantic status accents and local technology
+marks provide continuity without forcing every view into identical panels.
+Keep refusal/unknown outcomes recognizable by labels as well as colors.
+Coordinates have no protocol meaning.
 
-Use brand marks only to identify the actual technology in architecture headers.
-The Go wordmark replaces the rejected mascot treatment. Go, Rust and Kubernetes
-assets are bundled locally with [[file:diagrams/assets/icon-sources.org][sources and byte digests]]. Native D2 geometry,
-including ledger cylinders, identifies generic components. Do not mix flat
-illustration packs, mascots and oversized status icons into the same view.
-Shared classes live in [[file:diagrams/lib/theme.d2][the presentation theme]]. That file is an imported
-style library, not an independent diagram or policy implementation.
+Use brand marks to identify the actual technology, functional symbols to identify
+responsibilities, and conceptual illustrations to explain an example. These are
+separate source declarations. Go identifies an implementation language; it does
+not identify LLM routing. The routing symbol shows a path choice, not a physical
+network router. Telemetry uses an activity symbol, not a model-catalog picture.
+Identity authentication and effect authorization use different symbols.
+Go, Rust and Kubernetes marks remain bundled locally with
+[[file:diagrams/assets/icon-sources.org][asset provenance and permitted uses]]. A mark does not establish a deployed component.
+An illustration of a gate is a permission metaphor, not physical isolation.
+Presentation ownership lives under [[file:../../dev/d2/README.org][dev/d2]], with distinct imported
+profiles in =dev/d2/themes=. The shared base only supplies typography and semantic
+status conventions; each view chooses its own profile and layout grammar.
+
+W02, W04, W09 and W10 use the Library's theme, font and vector-export
+interfaces with a source-bound sequence notation. Participant lanes, ordered
+messages, self-calls and constraint ownership remain distinct. The captured
+message inventories are 17, 11, 15 and 16 respectively. Explicit source refs
+cover every relationship, including D2's synthetic lifelines; a missing,
+duplicated or reordered message refuses composition. These are presentation
+checks and do not introduce a second authorization or temporal model.
+
+Use natural English action sentences on arrows. Keep exact state names where
+they identify a protocol transition, and place qualifying conditions on their
+own lines. Emphasize a complete action rather than its first wrapped line.
+The =sequence-reading= layer separates page titles, participant headers,
+messages and safety rules. Measure actual embedded-font line boxes, including
+at GitHub width, instead of assuming the nominal font size gives safe leading.
+The exported SVGs below are embedded directly in this Org document.
 
 W02 and W10 split one long sequence at its positive consumption observation.
 They are the same original attempt, source lease and synchronous callback.
 W08 folds invalid/stale/missing/error/deny branches into one labeled evaluation
 boundary exit; the predicate and CX cases retain the individual failure causes.
-A full-resolution [[file:diagrams/01-system-boundaries.png][PNG overview]] accompanies the SVG for convenient preview.
+A full-resolution [[file:diagrams/01-system-boundaries.svg][PNG overview]] accompanies the SVG for convenient preview.
 
 * Authoring and reproducible rendering
 
-Keep one canonical D2 source per view. Org embeds the generated SVG and links
-the source; do not maintain an independent Mermaid copy of the same view.
+Keep one D2 artifact per view. README D2 is generated from the SDK's SysML
+interpretation and Lean references through Go; edit the source contracts rather
+than its generated semantic copy. Other corpus views retain their declared
+source ownership until migrated. Org embeds the generated SVG and links the D2;
+do not maintain an independent Mermaid copy of the same view.
 Change semantic prose, source labels, state guards, and acceptance references
 in the same revision. Generated previews must be refreshed after source changes.
 
-The current rendering profile uses D2 =v0.9.0=, bundled =tala= layout with seeds
-=1,2,3=, theme =3=, padding =40=, bundling and a stable per-file salt. All icons
-are local assets; rendering and viewing require no remote icon request.
-The commands below require an installed D2 CLI; they add no gateway runtime
-dependency. D2's [[https://d2lang.com/tour/install/][installation documentation]],
-[[https://d2lang.com/tour/sequence-diagrams/][sequence diagram syntax]], and
-[[https://d2lang.com/tour/containers/][container syntax]] are the language references.
+The default TypeScript entrypoint consumes the local shared render Library.
+D2 retains visual choices; the README projection's questions, responsibilities
+and relationships come from SysML and the source-bound proof mapping. Public library APIs own declaration
+reading, standard D2 rendering, composed styles and HTML/PNG export. Weaver adds
+question-specific responsibility, relationship-matrix and proof compositions,
+captured local assets and graph-binding verification. Generic layout, font
+outlining and card-renderer implementations have been removed from Weaver.
 
 Run from the Weaver repository root:
 
-#+begin_src sh
-d2 version
-d2 fmt --check docs/architecture/diagrams/*.d2 docs/architecture/diagrams/lib/*.d2
-for source in docs/architecture/diagrams/*.d2; do
-  d2 validate "$source" || exit 1
-  stem="$(basename "$source" .d2)"
-  d2 --layout tala --tala-seeds 1,2,3 --theme 3 --pad 40 --bundle \
-    --salt "weaver-$stem" \
-    "$source" "${source%.d2}.svg" || exit 1
-done
-# Optional PNG convenience preview; requires librsvg's rsvg-convert.
-rsvg-convert --width 1800 --keep-aspect-ratio \
-  docs/architecture/diagrams/01-system-boundaries.svg \
-  -o docs/architecture/diagrams/01-system-boundaries.png
+#+begin_src text
+go -C go run ./cmd/weaver-dev render-diagrams
 #+end_src
 
-When changing the renderer version, record the version and inspect all regenerated
-views. Rendering success establishes syntax and layout availability only.
+The Go owner uses the current host CPU count, validates source-selected profiles,
+publishes library-driven PNGs and full model SVG references, and retains
+source/output identities in =.cache/d2=. A changed source image or failed render
+cannot produce a passing receipt. No Python, Bash or extra runtime service is used.
+
+When updating the local library, record the captured package integrity and review
+regenerated views. Export checks reject declared region clipping and figure
+overflow; graph checks reject lost source identities and rebound endpoints.
+These checks do not establish that every label pair is separated. Visual
+inspection remains necessary for hierarchy, reading order and readable size.
 
 * Review and validation obligations
 
@@ -384,3 +415,196 @@ restorable replicas, cloud-native orchestration, actual broker fencing and the
 original account obligation. [[file:28-quorum-durable-promises-prefix-recovery.org][The dossier]] explains the conservative prefix
 profile and native trust assumptions; proof/acceptance detail stays outside the
 core diagram.
+
+* Question-led responsibility and relationship views
+
+[[file:diagrams/01-system-boundaries.svg][Responsibility map]] answers who defines meaning, integrates cloud state and
+controls the final send. [[file:diagrams/01-system-relationships.svg][The relationship matrix]] answers how declared owners
+connect, using a separate layout rather than recoloring the responsibility map.
+Both consume canonical D2 Questions and the shared render Library. Handwritten
+and node-editor variants are visual choices independent of that layout.
+Detailed premises remain in Org; the main images carry essential content at
+readable sizes without explanatory footer microtext. Full SVG links remain
+technical model references during the broader corpus review.
+
+* README architecture entrypoints
+
+The repository README directly embeds three readable SVG views. They consume
+the Library's measured scenes and vector export, independently of the older
+technical D2 SVG references. The overview uses the Library's hand-drawn engine;
+the Zero Trust view uses an execution corridor with explicit retry, stream and
+unknown-outcome constraints; the assurance view keeps Quint exploration, Lean
+proofs and concrete tests distinct. OpenSysML views supply the subjects
+and relationships. For mapped views, SysML Design attributes also supply the
+reader Question, contextual captions, functional glyphs, reading groups and
+theme choices. Generated D2 transports these declarations to the Library.
+
+The three README figures share the Library's paper-and-handwriting visual
+language. Question markers, Answer glyphs and declared hand-drawn surfaces use
+the Library's functional components and export contract. Different model
+layouts remain appropriate to overview, execution and assurance; the execution
+corridor uses ELK wrapping rather than shrinking its text into a wide row.
+
+[[file:diagrams/00a-readme-overview.d2][Overview source]]
+
+[[file:diagrams/00a-readme-overview.svg]]
+
+[[file:diagrams/00d-zero-trust-overview.d2][Zero Trust source]]
+
+[[file:diagrams/00d-zero-trust-overview.svg]]
+
+[[file:diagrams/00c-gateway-runtime.d2][Gateway request and routine source]]
+
+[[file:diagrams/00c-gateway-runtime.svg]]
+
+Engineering responsibility and SPEC-refinement references are development/design
+views. They are not the product runtime architecture displayed in README.
+
+[[file:../50-59-research-program/59-provider-rpc/59.21-verification-ownership.svg]]
+
+[[file:../50-59-research-program/59-provider-rpc/59.51-zero-trust-contract-refinement.svg]]
+
+* Embedded architecture views
+
+The public Library model-view compositor consumes native SDK models and explicit
+source-owned graph projections. Weaver has no alternate raw SVG path, custom
+caption-partition engine or compiler-process pool. Go validates Library provenance
+and visible model coverage directly; unsupported notation refuses instead of
+being silently converted. Rendering capability and standalone readability remain
+separate admission checks.
+
+** 01-system-boundaries.svg
+
+[[file:diagrams/01-system-boundaries.svg]]
+
+** 02-admission-sequence.svg
+
+[[file:diagrams/02-admission-sequence.svg]]
+
+** 03-attempt-state.svg
+
+[[file:diagrams/03-attempt-state.svg]]
+
+** 03a-attempt-observation.svg
+
+[[file:diagrams/03a-attempt-observation.svg]]
+
+** 04-consume-timeout.svg
+
+[[file:diagrams/04-consume-timeout.svg]]
+
+** 05-fencing-boundaries.svg
+
+[[file:diagrams/05-fencing-boundaries.svg]]
+
+** 06-source-admission.svg
+
+[[file:diagrams/06-source-admission.svg]]
+
+** 07-post-claim-outcomes.svg
+
+[[file:diagrams/07-post-claim-outcomes.svg]]
+
+** 08-code-as-policy.svg
+
+[[file:diagrams/08-code-as-policy.svg]]
+
+** 09-claim-wins-race.svg
+
+[[file:diagrams/09-claim-wins-race.svg]]
+
+** 10-commit-dispatch-sequence.svg
+
+[[file:diagrams/10-commit-dispatch-sequence.svg]]
+
+** 11-zero-trust-assurance.svg
+
+[[file:diagrams/11-zero-trust-assurance.svg]]
+
+** 12-execution-correspondence.svg
+
+[[file:diagrams/12-execution-correspondence.svg]]
+
+** 13-policy-to-execution.svg
+
+[[file:diagrams/13-policy-to-execution.svg]]
+
+** 14-adapter-broker-boundary.svg
+
+[[file:diagrams/14-adapter-broker-boundary.svg]]
+
+** 15-stream-message-authorization.svg
+
+[[file:diagrams/15-stream-message-authorization.svg]]
+
+** 16-authoritative-spent-state.svg
+
+[[file:diagrams/16-authoritative-spent-state.svg]]
+
+** 17-logical-message-observation.svg
+
+[[file:diagrams/17-logical-message-observation.svg]]
+
+** 18-shared-identity-budget.svg
+
+[[file:diagrams/18-shared-identity-budget.svg]]
+
+** 19-finite-domains-and-migration.svg
+
+[[file:diagrams/19-finite-domains-and-migration.svg]]
+
+** 20-anchor-recovery-and-egress.svg
+
+[[file:diagrams/20-anchor-recovery-and-egress.svg]]
+
+** 21-composed-journal-transport-lifecycle.svg
+
+[[file:diagrams/21-composed-journal-transport-lifecycle.svg]]
+
+** 22-finite-stream-manifest.svg
+
+[[file:diagrams/22-finite-stream-manifest.svg]]
+
+** 23-driver-completion-recovery.svg
+
+[[file:diagrams/23-driver-completion-recovery.svg]]
+
+** 24-writer-settlement-closure.svg
+
+[[file:diagrams/24-writer-settlement-closure.svg]]
+
+** 25-settlement-anchor-recovery.svg
+
+[[file:diagrams/25-settlement-anchor-recovery.svg]]
+
+** 26-gate-consumption-persistence.svg
+
+[[file:diagrams/26-gate-consumption-persistence.svg]]
+
+** 27-anchor-commit-broker-fencing.svg
+
+[[file:diagrams/27-anchor-commit-broker-fencing.svg]]
+
+** 28-anchor-configuration-prefix.svg
+
+[[file:diagrams/28-anchor-configuration-prefix.svg]]
+
+** 29-quorum-durable-promises.svg
+
+[[file:diagrams/29-quorum-durable-promises.svg]]
+
+** 01-system-relationships.svg
+
+[[file:diagrams/01-system-relationships.svg]]
+
+** Development compiler ownership and drain
+
+[[file:../50-59-research-program/59-provider-rpc/59.75-complete-entry-and-output-contract.svg]]
+
+** Package-managed Scheme and Rust linkage
+
+[[file:../50-59-research-program/59-provider-rpc/59.75-package-linkage.svg]]
+
+** Embedded Gerbil tooling ownership
+
+[[file:../50-59-research-program/59-provider-rpc/59.76-embedded-tooling-and-darwin-io.svg]]
