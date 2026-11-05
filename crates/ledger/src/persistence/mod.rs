@@ -12,6 +12,10 @@ pub(crate) use catalog::engine_metadata;
 pub mod commit_observer;
 mod query;
 mod scope;
+#[cfg(feature = "commit-observer")]
+mod scope_trace;
+#[cfg(feature = "commit-observer")]
+pub use scope_trace::ProviderScopeSample;
 mod session;
 mod timing;
 pub use mrr_data_backend::turso_driver::{self as driver, Error, Result, Row, params};
@@ -20,6 +24,10 @@ pub use owner::Journal;
 pub use query::use_cached_currentness_plans;
 pub use query::{exec, maybe, one, read_all, script};
 pub(crate) use query::{maybe_current, one_current, read_all_current};
+#[cfg(feature = "commit-observer")]
+pub use scope::ProviderScopePhase;
+#[cfg(not(feature = "commit-observer"))]
+pub(crate) use scope::ProviderScopePhase;
 pub use scope::{WriteScope, begin};
 pub(crate) use scope::{begin_family, begin_provider_use};
 pub use session::Session;

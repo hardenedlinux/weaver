@@ -29,6 +29,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"slices"
 	"strings"
 	"sync/atomic"
 	"syscall"
@@ -373,7 +374,9 @@ func (f *fixture) start(t testing.TB) {
 	}
 	f.child = exec.Command(f.binary, f.arguments...)
 	f.child.Env = append(os.Environ(), f.env...)
-	f.child.Stdout = log
+	if !slices.Contains(f.env, "WEAVER_TEST_PROVIDER_SCOPE_TRACE=1") {
+		f.child.Stdout = log
+	}
 	f.child.Stderr = log
 	if err := f.child.Start(); err != nil {
 		log.Close()

@@ -165,6 +165,52 @@ theorem joined_release_progress_preserves_gate
       (liveAuthorization current ∧ progressAllows (separate current)) := by
   rw [same]
 
+/-- Experimental pre-queue marker. Exactly one conditional write means the
+    pending row matched. Scheduling order supplies no authority premise. -/
+theorem conditional_range_mark_refines_queue_gate
+    {rowMatches live oauthAtQueue : Prop} {affected : Nat}
+    (exact : affected = 1 ↔ rowMatches) :
+    (live ∧ affected = 1 ∧ oauthAtQueue) ↔
+      (live ∧ rowMatches ∧ oauthAtQueue) := by
+  rw [exact]
+
+/-- The conditional marker is transaction-local. Independent observers
+    see the original row through callback failure and native rollback. -/
+theorem range_marker_rollback_preserves_durable
+    {State : Type} (original staged : State) (committed : Bool)
+    (rollback : committed = false) :
+    (if committed then staged else original) = original := by
+  simp [rollback]
+
+/-- The order statistic counts a later instrumented arrival granted first.
+    FIFO, when provided by a scheduler, rules out this inversion. -/
+theorem fifo_excludes_arrival_grant_inversion
+    {olderArrival youngerArrival olderGrant youngerGrant : Nat}
+    (fifo : olderArrival < youngerArrival → olderGrant ≤ youngerGrant)
+    (arrived : olderArrival < youngerArrival) :
+    ¬ youngerGrant < olderGrant :=
+  Nat.not_lt_of_ge (fifo arrived)
+
+/-- Compatible programs execute the same lookup and post-queue update
+    against the deciding image. The authorization and queue-time premises
+    are independent of native program preparation. -/
+theorem cached_release_programs_preserve_ordered_effect
+    {Image Key Digest : Type}
+    (readFresh readCached : Image → Key → Option Digest)
+    (markFresh markCached : Image → Key → Image)
+    (readAgrees : ∀ image key, readCached image key = readFresh image key)
+    (markAgrees : ∀ image key, markCached image key = markFresh image key)
+    (before after : Image) (key : Key) (expected : Digest) (live queueAccepted : Prop) :
+    (live ∧ readCached before key = some expected ∧ queueAccepted ∧
+      markCached before key = after) ↔
+    (live ∧ readFresh before key = some expected ∧ queueAccepted ∧
+      markFresh before key = after) := by
+  rw [readAgrees, markAgrees]
+
+#print axioms cached_release_programs_preserve_ordered_effect
+#print axioms conditional_range_mark_refines_queue_gate
+#print axioms range_marker_rollback_preserves_durable
+#print axioms fifo_excludes_arrival_grant_inversion
 #print axioms joined_release_progress_preserves_gate
 #print axioms prepared_domain_program_preserves_live_decision
 #print axioms retained_stamp_selects_live_keys

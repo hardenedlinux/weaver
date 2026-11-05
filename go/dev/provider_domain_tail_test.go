@@ -211,16 +211,28 @@ type providerTailArm struct {
 }
 
 func BenchmarkProviderSharedLongTail(b *testing.B) {
+	benchmarkProviderSharedLongTail(b, false)
+}
+
+func benchmarkProviderSharedLongTail(b *testing.B, rangeScopes bool) {
+	b.Helper()
 	b.StopTimer()
 	const ranges, parallel, samples, blockWaves = 13, 4, 128, 8
 	image := wifImage(b, true)
+	names := [2]string{"separate", "joined"}
+	if rangeScopes {
+		names = [2]string{"fresh-programs", "cached-programs"}
+	}
 	var arms [2][2]providerTailArm
 	for pressure := range arms {
 		for algorithm := range arms[pressure] {
 			env := []string{"WEAVER_STORAGE_JOURNAL=mvcc", "WEAVER_TEST_PROVIDER_TAIL=1",
 				"WEAVER_TEST_CACHE_CURRENTNESS_PLANS=0", "WEAVER_TEST_LOCKED_PUBLICATION_REVIEW=0",
 				"WEAVER_TEST_LOCKED_ORIGINAL_EVIDENCE=0", "WEAVER_TEST_FRESH_PROVIDER_DOMAIN_PLAN=0",
-				fmt.Sprintf("WEAVER_TEST_SEPARATE_RELEASE_READS=%d", 1-algorithm)}
+				"WEAVER_TEST_CACHED_RELEASE_PROGRAMS=0", fmt.Sprintf("WEAVER_TEST_SEPARATE_RELEASE_READS=%d", 1-algorithm)}
+			if rangeScopes {
+				env = append(env, "WEAVER_TEST_SEPARATE_RELEASE_READS=0", "WEAVER_TEST_PROVIDER_SCOPE_TRACE=1", fmt.Sprintf("WEAVER_TEST_CACHED_RELEASE_PROGRAMS=%d", algorithm))
+			}
 			arms[pressure][algorithm].fixture = newDomainBenchmarkFixture(b, image, ranges, env)
 		}
 	}
@@ -262,8 +274,14 @@ func BenchmarkProviderSharedLongTail(b *testing.B) {
 			b.Fatal("missing host timer samples")
 		}
 		b.ReportMetric(tailMillis(probe[pressure], 99), load+"-host-timer-p99-ms")
-		for algorithm, name := range []string{"separate", "joined"} {
-			reportProviderTailArm(b, &arms[pressure][algorithm], load+"-"+name)
+		for algorithm, name := range names {
+			arm := &arms[pressure][algorithm]
+			label := load + "-" + name
+			reportProviderTailArm(b, arm, label)
+			if rangeScopes {
+				reportProviderRangeScopes(b, arm, label, ranges, parallel)
+			}
+			arm.fixture.stop(b)
 		}
 	}
 }
@@ -301,7 +319,6 @@ func reportProviderTailArm(b *testing.B, arm *providerTailArm, name string) {
 	b.ReportMetric(millis(p99.latency), name+"-stream-p99-ms")
 	b.ReportMetric(float64(total)/arm.wall.Seconds(), name+"-complete/s")
 	b.ReportMetric(float64(total), name+"-completed")
-	arm.fixture.stop(b)
 }
 
 func tailRank(n, percentile int) int { return (percentile*n+99)/100 - 1 }

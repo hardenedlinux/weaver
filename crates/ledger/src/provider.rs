@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 //! One canonical provider invocation and affine response releases; no retry reset exists.
-use crate::persistence::WriteScope;
+use crate::persistence::{ProviderScopePhase, WriteScope};
 use crate::{
     Ledger,
     store::{db, integer},
@@ -67,6 +67,17 @@ impl ProviderRelease {
     }
 }
 impl Ledger {
+    /// Enable bounded diagnostic observations for this ledger only.
+    #[cfg(feature = "commit-observer")]
+    pub fn trace_provider_scopes(&mut self) {
+        self.connection.trace_provider_scopes();
+    }
+
+    /// Recorded scopes in this ledger's session.
+    #[cfg(feature = "commit-observer")]
+    pub fn provider_scope_samples(&self) -> &[crate::persistence::ProviderScopeSample] {
+        self.connection.provider_scope_samples()
+    }
     pub fn enqueue_provider(&mut self, plan: &ProviderPlan) -> Result<ProviderReceipt> {
         self.enqueue_catalog_provider(plan, "")
     }
@@ -175,6 +186,8 @@ impl Ledger {
             .prepare_provider_oauth(oauth, "provider:execute")?;
         let publication = self.connection.prepare_provider_publication(family)?;
         let original = self.connection.prepare_provider_original(family);
+        #[cfg(feature = "commit-observer")]
+        warm_release_programs(&self.connection);
         self.connection.prepare_provider_domain();
         let tx = crate::persistence::begin_family(&mut self.connection, family).map_err(db)?;
         let oauth_expires = tx.check_provider_oauth(prepared.as_ref())?;
@@ -238,7 +251,8 @@ impl Ledger {
     ) -> Result<T> {
         self.check_provider_session(permit)?;
         burn_dispatch(&mut self.connection, permit)?;
-        let (mut tx, domains) = begin_provider_effect(&mut self.connection, permit)?;
+        let (mut tx, domains) =
+            begin_provider_effect(&mut self.connection, permit, ProviderScopePhase::Other)?;
         guard_live(&tx, permit, &domains, "invokeProvider", 0, "protobuf")?;
         let result = tx.request_effect(send)?;
         record_dispatch_callback(&tx, permit)?;
@@ -256,7 +270,11 @@ impl Ledger {
             return Err(Error::Invalid("provider release rows"));
         }
         self.check_provider_session(permit)?;
-        let (tx, domains) = begin_provider_effect(&mut self.connection, permit)?;
+        let (tx, domains) = begin_provider_effect(
+            &mut self.connection,
+            permit,
+            ProviderScopePhase::PrepareRange,
+        )?;
         let progress = release_progress(&tx, permit)?;
         let seq = progress.next;
         guard_live_range(
@@ -316,7 +334,8 @@ impl Ledger {
         if release.plan_digest != permit.digest || release.format != format {
             return Err(Error::Conflict("foreign provider release binding"));
         }
-        let (mut tx, domains) = begin_provider_effect(&mut self.connection, permit)?;
+        let (mut tx, domains) =
+            begin_provider_effect(&mut self.connection, permit, ProviderScopePhase::FinalQueue)?;
         guard_live_range(
             &tx,
             permit,
@@ -325,15 +344,14 @@ impl Ledger {
             release.sequence..release.sequence + release.length,
             format,
         )?;
-        let digest:Option<String>=crate::persistence::maybe(&tx, "SELECT digest FROM provider_releases WHERE family=?1 AND node=?2 AND sequence=?3 AND length=?4 AND state='unknown'", crate::persistence::params![(permit.plan.family).to_owned(),(permit.plan.node).to_owned(),(release.sequence as i64).to_owned(),(release.length as i64).to_owned()], |r|r.get(0)).map_err(db)?;
-        if digest.as_deref() != Some(&release.digest) {
+        if release_digest(&tx, permit, &release)?.as_deref() != Some(&release.digest) {
             return Err(Error::Conflict("provider release binding"));
         }
         let output = tx.queue_effect(|| {
             permit.require_oauth_time()?;
             send(release.sequence)
         })?;
-        crate::persistence::exec(&tx, "UPDATE provider_releases SET state='released' WHERE family=?1 AND node=?2 AND sequence=?3", crate::persistence::params![(permit.plan.family).to_owned(),(permit.plan.node).to_owned(),(release.sequence as i64).to_owned()]).map_err(db)?;
+        mark_release(&tx, permit, &release)?;
         tx.commit().map_err(db)?;
         Ok(output)
     }
@@ -348,7 +366,8 @@ impl Ledger {
         tokens: Option<[u64; 4]>,
     ) -> Result<()> {
         self.check_provider_session(permit)?;
-        let (tx, domains) = begin_provider_effect(&mut self.connection, permit)?;
+        let (tx, domains) =
+            begin_provider_effect(&mut self.connection, permit, ProviderScopePhase::Other)?;
         let progress = release_progress(&tx, permit)?;
         guard_live(&tx, permit, &domains, "emitProvider", 0, format)?;
         if progress.pending {
@@ -390,7 +409,7 @@ fn burn_dispatch(
     session: &mut crate::persistence::Session,
     permit: &ProviderDispatch,
 ) -> Result<()> {
-    let (tx, domains) = begin_provider_effect(session, permit)?;
+    let (tx, domains) = begin_provider_effect(session, permit, ProviderScopePhase::Other)?;
     guard_live(&tx, permit, &domains, "invokeProvider", 0, "protobuf")?;
     // Persist a separate affine dispatch burn: borrowing a handle cannot repeat this callback.
     let burn = crate::persistence::exec(
@@ -423,9 +442,10 @@ fn record_dispatch_callback(tx: &WriteScope<'_>, permit: &ProviderDispatch) -> R
 fn begin_provider_effect<'a>(
     session: &'a mut crate::persistence::Session,
     p: &ProviderDispatch,
+    phase: ProviderScopePhase,
 ) -> Result<(WriteScope<'a>, DomainView)> {
-    let tx =
-        crate::persistence::begin_provider_use(session, &p.plan.family, &p.domains).map_err(db)?;
+    let tx = crate::persistence::begin_provider_use(session, &p.plan.family, &p.domains, phase)
+        .map_err(db)?;
     // A retired stamp may name old lock keys. Before any mutation or
     // callback, require the live stamp to identify exactly those keys.
     let actual = tx.provider_domain(|| crate::domains::provider_view(&tx, &p.plan.family))?;
@@ -448,6 +468,7 @@ fn begin_provider_effect<'a>(
 }
 #[cfg(feature = "commit-observer")]
 thread_local! {
+    static CACHED_RELEASE_PROGRAMS: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
     static SEPARATE_RELEASE_READS: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
 }
 
@@ -455,6 +476,71 @@ thread_local! {
 #[cfg(feature = "commit-observer")]
 pub fn use_separate_release_reads(separate: bool) {
     SEPARATE_RELEASE_READS.set(separate);
+}
+
+/// Same-image diagnostic with compatible prewarmed release programs.
+#[cfg(feature = "commit-observer")]
+pub fn use_cached_release_programs(cached: bool) {
+    CACHED_RELEASE_PROGRAMS.set(cached);
+}
+
+const RELEASE_LOOKUP: &str = "SELECT digest FROM provider_releases
+    WHERE family=?1 AND node=?2 AND sequence=?3 AND length=?4 AND state='unknown'";
+const RELEASE_MARK: &str = "UPDATE provider_releases SET state='released'
+    WHERE family=?1 AND node=?2 AND sequence=?3";
+
+#[cfg(feature = "commit-observer")]
+fn warm_release_programs(connection: &crate::persistence::driver::Connection) {
+    if CACHED_RELEASE_PROGRAMS.get() {
+        for sql in [RELEASE_LOOKUP, RELEASE_MARK] {
+            let _ = futures_executor::block_on(connection.prepare_cached(sql));
+        }
+    }
+}
+
+fn release_digest(
+    tx: &WriteScope<'_>,
+    permit: &ProviderDispatch,
+    release: &ProviderRelease,
+) -> Result<Option<String>> {
+    let params = crate::persistence::params![
+        permit.plan.family.as_str(),
+        permit.plan.node.as_str(),
+        release.sequence as i64,
+        release.length as i64
+    ];
+    #[cfg(feature = "commit-observer")]
+    if CACHED_RELEASE_PROGRAMS.get() {
+        return futures_executor::block_on(async {
+            let mut program = tx.prepare_cached(RELEASE_LOOKUP).await?;
+            let mut cursor = program.query(params).await?;
+            cursor.next().await?.as_ref().map(|r| r.get(0)).transpose()
+        })
+        .map_err(db);
+    }
+    crate::persistence::maybe(tx, RELEASE_LOOKUP, params, |r| r.get(0)).map_err(db)
+}
+
+fn mark_release(
+    tx: &WriteScope<'_>,
+    permit: &ProviderDispatch,
+    release: &ProviderRelease,
+) -> Result<()> {
+    let params = crate::persistence::params![
+        permit.plan.family.as_str(),
+        permit.plan.node.as_str(),
+        release.sequence as i64
+    ];
+    #[cfg(feature = "commit-observer")]
+    if CACHED_RELEASE_PROGRAMS.get() {
+        futures_executor::block_on(async {
+            tx.prepare_cached(RELEASE_MARK).await?.execute(params).await
+        })
+        .map_err(db)?;
+        return Ok(());
+    }
+    crate::persistence::exec(tx, RELEASE_MARK, params).map_err(db)?;
+    Ok(())
 }
 
 struct ReleaseProgress {

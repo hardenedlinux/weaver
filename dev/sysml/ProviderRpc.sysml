@@ -67,6 +67,37 @@ package ProviderRpc {
     requirement def AffineProviderAttempt {
         doc /* Durable consume and dispatch burn precede the only possible provider request. RPC retry, redirect, fallback, restart and cancellation never reopen a consumed root. */
     }
+    requirement def TransportAndExecutionLatencySeparation {
+        doc /* Go forwards authenticated Protobuf request envelopes over
+           gRPC. The streaming response carries either a Protobuf event
+           or an Arrow IPC batch inside each Protobuf frame. The Go relay
+           forwards frames unchanged. The Go client decodes Arrow only
+           when consuming a batch. Rust's SSE decoder belongs to the
+           separate provider HTTPS hop. */
+        doc /* Measure warm gRPC transport and encoding per frame and per
+           row. Compare equal row counts and equal batch shapes to isolate
+           codec cost. Compare different batch sizes separately to measure
+           fewer frames and deciding scopes. Track queue, native commit,
+           upstream wait and terminal wall time as execution intervals. */
+    }
+    requirement def ProviderSchedulerOwnership {
+        doc /* Go owns verified ingress, local admission limits, relay
+           backpressure and cancellation propagation. Rust owns provider
+           worker admission, authoritative domain contention, resource
+           lifetime and every deciding scope. Go has no authority to
+           order requests by a cached domain root or revive a durable burn. */
+        doc /* Current Rust execution uses sorted domain stripes under
+           the shared owner gate. A scheduling grant is transient and
+           each subsequent effect rejoins live authority. Queue waiting
+           must be distinct from the scope holding budget and publication
+           exclusion. A future queue policy needs an explicit fairness
+           and cancellation contract and separate measurements. Waiting tickets
+           identify candidate lock sets and own no execution authority. A
+           grant must rejoin the owner generation and live roots before
+           any mutation or callback. Cancelled or stale tickets are discarded.
+           Disjoint tickets may advance independently. Overlapping tickets
+           need an explicit order and maximum wait policy. */
+    }
     requirement def EncodingAuthorityEquivalence {
         doc /* Protobuf events and optional Arrow IPC batches use the same row-by-row current Cedar and fence guard before bounded queue admission. */
         doc /* Fix encoding for each live RPC: one Protobuf event or at most 32

@@ -5,7 +5,7 @@
 module ProviderRpc {
   type S={stage:int,held:int,burned:bool,token:bool,calls:int,route:int,revision:int,fence:int,observedRevision:int,observedFence:int,
     closing:bool,caller:int,credential:bool,allow:bool,modern:int,legacy:int,next:int,queued:Set[int],delivered:Set[int],allowedRows:Set[int],
-    domainCut:int,observedCut:int,encoding:int,frames:int,slot:bool,session:int,pending:bool,releaseToken:bool,commitPending:bool,
+    domainCut:int,observedCut:int,encoding:int,frames:int,slot:bool,session:int,pending:bool,releaseToken:bool,commitPending:bool,releaseStaged:bool,
     preparedFirst:int,preparedRows:int,preparedEncoding:int,preparedSession:int,dropped:Set[int],
     releases:List[{rows:Set[int],permitted:Set[int],guardRevision:int,currentRevision:int,guardCut:int,currentCut:int,encoding:int,requested:int,cancelled:bool}],invocations:List[{cancelled:bool,guardRevision:int,currentRevision:int}]}
   var s:S
@@ -48,6 +48,7 @@ module ProviderRpc {
   val safe=s.calls<=1 and s.held<=8 and (s.stage>0 implies s.held==4) and
     (s.stage>0 implies boundedCaps(s.modern,s.legacy)) and
     s.frames>=0 and s.frames+(if(s.slot)1 else 0)<=2 and s.next<=4 and
+    (s.releaseStaged implies s.pending and s.releaseToken and not(s.commitPending)) and
     (s.releaseToken implies s.pending and s.preparedSession==s.session) and
     s.releases.indices().forall(i=>{val r=s.releases.nth(i)
       r.rows.subseteq(r.permitted) and r.guardRevision==r.currentRevision and r.guardCut==r.currentCut and
@@ -57,7 +58,7 @@ module ProviderRpc {
     s.invocations.indices().forall(i=>not(s.invocations.nth(i).cancelled) and s.invocations.nth(i).guardRevision==s.invocations.nth(i).currentRevision)
   action init=s'={stage:0,held:0,burned:false,token:false,calls:0,route: -1,revision:0,fence:1,observedRevision:0,observedFence:1,
     closing:false,caller:1,credential:true,allow:true,modern:32,legacy:0,next:0,queued:Set(),delivered:Set(),allowedRows:Set(0,1,2,3),
-    domainCut:0,observedCut:0,encoding:0,frames:0,slot:false,session:0,pending:false,releaseToken:false,commitPending:false,
+    domainCut:0,observedCut:0,encoding:0,frames:0,slot:false,session:0,pending:false,releaseToken:false,commitPending:false,releaseStaged:false,
     preparedFirst:0,preparedRows:0,preparedEncoding:0,preparedSession:0,dropped:Set(),releases:List(),invocations:[]}
   // Proposal fields are immutable after admission; no reconnect action resets them.
   action proposeCaps(modern:int,legacy:int):bool=all {s.stage==0,s'=s.with("modern",modern).with("legacy",legacy)}
@@ -93,19 +94,33 @@ module ProviderRpc {
       .with("next",s.next+rows).with("pending",true).with("releaseToken",true)}
   action emitPrepared(encoding:int):bool=all {s.slot,s.pending,s.releaseToken,s.preparedSession==s.session,encoding==s.preparedEncoding,
     rowGate(s,s.preparedFirst,s.preparedRows,encoding),
-    s'=appendFrame(s,s.preparedFirst,s.preparedRows,encoding).with("releaseToken",false).with("commitPending",true)}
+    s'=appendFrame(s,s.preparedFirst,s.preparedRows,encoding).with("releaseToken",false).with("commitPending",true).with("releaseStaged",false)}
+  // Candidate protocol. The performance experiment retains this trace as a counterexample
+  // to adopting an earlier marker write for latency. Production uses emitPrepared.
+  action stageConditionalRange(encoding:int,exact:bool):bool=all {
+    exact,s.slot,s.pending,s.releaseToken,s.preparedSession==s.session,encoding==s.preparedEncoding,
+    not(s.releaseStaged),rowGate(s,s.preparedFirst,s.preparedRows,encoding),
+    s'=s.with("releaseStaged",true)
+  }
+  action enqueueStagedRange(encoding:int):bool=all {s.releaseStaged,emitPrepared(encoding)}
+  action rollbackStagedRange=all {
+    s.releaseStaged,s'=s.with("releaseStaged",false).with("releaseToken",false).with("slot",false)
+  }
+  action schedulingOvertake=s'=s
+  pure def observedOvertake(olderArrival:int,youngerArrival:int,olderGrant:int,youngerGrant:int):bool =
+    olderArrival<youngerArrival and youngerGrant<olderGrant
   action commitRelease=all {s.commitPending,s'=s.with("pending",false).with("commitPending",false)}
   // Draining previously admitted gRPC buffers is distinct from granting a fresh release.
   action deliver=all {s.queued!=Set(),s'=s.with("delivered",s.delivered.union(s.queued)).with("queued",Set()).with("frames",0)}
   action discardQueued=s'=s.with("dropped",s.dropped.union(s.queued)).with("queued",Set()).with("frames",0)
-  action publish=s'=s.with("revision",s.revision+1).with("fence",s.fence+1).with("allow",false)
+  action publish=all {not(s.releaseStaged),not(s.commitPending),s'=s.with("revision",s.revision+1).with("fence",s.fence+1).with("allow",false)}
   // Restoring Allow is a new authority generation, never an ABA reset of the
   // consumed plan's observed generation or the original operation ledger.
-  action restorePolicy=s'=s.with("revision",s.revision+1).with("fence",s.fence+1).with("allow",true)
-  action advanceDomainCut=s'=s.with("domainCut",s.domainCut+1)
+  action restorePolicy=all {not(s.releaseStaged),not(s.commitPending),s'=s.with("revision",s.revision+1).with("fence",s.fence+1).with("allow",true)}
+  action advanceDomainCut=all {not(s.releaseStaged),not(s.commitPending),s'=s.with("domainCut",s.domainCut+1)}
   action reauthorize=all {s.stage==1,s'=s.with("observedRevision",s.revision).with("observedFence",s.fence).with("observedCut",s.domainCut).with("allow",true)}
   action cancel=s'=s.with("closing",true)
-  action crash=s'=s.with("token",false).with("slot",false).with("releaseToken",false).with("commitPending",false).with("session",s.session+1)
+  action crash=s'=s.with("token",false).with("slot",false).with("releaseToken",false).with("commitPending",false).with("releaseStaged",false).with("session",s.session+1)
   // Reconnection sets up a channel only; it cannot un-cancel the original RPC,
   // clear its pending interval or transfer its affine release continuation.
   action reconnect=s'=s
@@ -122,14 +137,14 @@ module ProviderRpc {
   // This unsafe action is excluded from the ordinary durable-restart relation.
   action unsafeRestoreQueuedImage=all {s.stage>=2,s'=s.with("stage",1).with("burned",false).with("token",false)
     .with("calls",0).with("route",-1).with("next",0).with("queued",Set()).with("delivered",Set()).with("frames",0).with("slot",false)
-    .with("pending",false).with("releaseToken",false).with("commitPending",false).with("releases",List()).with("invocations",List())}
+    .with("pending",false).with("releaseToken",false).with("commitPending",false).with("releaseStaged",false).with("releases",List()).with("invocations",List())}
   action restrictRows=s'=s.with("allowedRows",Set(0))
   action unsafeEncodingBypass=all {s.allowedRows.contains(s.next),s'=appendFrame(s,s.next,2,s.encoding)}
   action unsafeStaleRelease=s'=appendFrame(s,0,1,s.encoding)
   action unsafeCreditAsAuthority=s'=appendFrame(s,s.next,1,s.encoding).with("next",s.next+1)
   action unsafeReplayPrepared=s'=appendFrame(s,s.preparedFirst,s.preparedRows,s.preparedEncoding)
   action unsafeRefund=s'=s.with("held",0)
-  action step={nondet nonce=Set(0,1,2).oneOf() any {observeCurrentProposal,proposeCaps(32,0),proposeCaps(0,4096),proposeCaps(32,5000),proposeCaps(0,0),proposeCaps(-1,0),selectEncoding(0),selectEncoding(1),admit(nonce),replay,consume(0),consume(1),burn,invoke,batch(1,0),batch(1,1),batch(2,1),reserveSlot,dropSlot,prepareBatch(1,0),prepareBatch(2,1),emitPrepared(0),emitPrepared(1),commitRelease,deliver,discardQueued,publish,restorePolicy,advanceDomainCut,reauthorize,cancel,crash,reconnect,capacityWait,prepareRequest,encodePreparedFrame,observeEOF,badPeer,wrongCredential,complete,restrictRows}}
+  action step={nondet nonce=Set(0,1,2).oneOf() any {observeCurrentProposal,proposeCaps(32,0),proposeCaps(0,4096),proposeCaps(32,5000),proposeCaps(0,0),proposeCaps(-1,0),selectEncoding(0),selectEncoding(1),admit(nonce),replay,consume(0),consume(1),burn,invoke,batch(1,0),batch(1,1),batch(2,1),reserveSlot,dropSlot,prepareBatch(1,0),prepareBatch(2,1),emitPrepared(0),emitPrepared(1),stageConditionalRange(1,true),enqueueStagedRange(1),rollbackStagedRange,commitRelease,deliver,discardQueued,publish,restorePolicy,advanceDomainCut,reauthorize,cancel,crash,reconnect,capacityWait,prepareRequest,encodePreparedFrame,observeEOF,badPeer,wrongCredential,complete,restrictRows}}
   action spent=init.then(admit(0)).then(consume(0)).then(burn).then(invoke)
   run defaultRpcCredentialRequiredTest=init.then(wrongCredential).then(admit(0).fail())
   run sameSubjectDifferentKeyRejectedTest=init.then(badPeer).then(admit(1).fail())
@@ -165,6 +180,23 @@ module ProviderRpc {
   run cancelAfterPrepareRetainsUnknownRangeTest=arrowSpent.then(reserveSlot).then(prepareBatch(2,1)).then(cancel).expect(safe and s.pending and s.held==4).then(emitPrepared(1).fail())
   run policyChangeAfterPrepareRejectsAllRowsTest=arrowSpent.then(reserveSlot).then(prepareBatch(2,1)).then(publish).expect(safe).then(emitPrepared(1).fail())
   run domainChangeAfterPrepareRejectsAllRowsTest=arrowSpent.then(reserveSlot).then(prepareBatch(2,1)).then(advanceDomainCut).expect(safe).then(emitPrepared(1).fail())
+  action exactConditionalRange=arrowSpent.then(reserveSlot).then(prepareBatch(2,1))
+  run conditionalRangeMismatchNeverQueuesTest=exactConditionalRange.then(stageConditionalRange(1,false).fail())
+  run conditionalRangeCrashPreservesUnknownTest=exactConditionalRange.then(stageConditionalRange(1,true))
+    .then(crash).expect(safe and s.pending and s.held==4 and s.releases.length()==0)
+    .then(enqueueStagedRange(1).fail())
+  run conditionalRangeRollbackPreservesUnknownTest=exactConditionalRange.then(stageConditionalRange(1,true))
+    .then(cancel).then(rollbackStagedRange).expect(safe and s.pending and s.held==4 and s.releases.length()==0)
+  run conditionalRangePublicationWaitsForCommitTest=exactConditionalRange.then(stageConditionalRange(1,true))
+    .then(publish.fail())
+  run conditionalRangeDurableAfterQueueAndCommitTest=exactConditionalRange.then(stageConditionalRange(1,true))
+    .then(enqueueStagedRange(1)).expect(safe and s.pending and s.commitPending)
+    .then(commitRelease).expect(safe and not(s.pending) and s.held==4)
+  run arrivalOvertakeCannotAuthorizeRevokedRangeTest=exactConditionalRange.then(publish).then(schedulingOvertake)
+    .expect(observedOvertake(1,2,4,3) and safe and s.held==4).then(stageConditionalRange(1,true).fail())
+  run cachedQueueProgramKeepsPendingUntilCommitTest=exactConditionalRange
+    .then(emitPrepared(1)).expect(safe and s.pending and s.commitPending)
+    .then(commitRelease).expect(safe and not(s.pending) and s.held==4)
   run preparedEncodingCannotSwitchTest=arrowSpent.then(reserveSlot).then(prepareBatch(2,1)).expect(safe).then(emitPrepared(0).fail())
   run reconnectCannotUncancelOriginalStreamTest=arrowSpent.then(cancel).then(reconnect).expect(safe).then(batch(2,1).fail())
   run restartCannotReconstituteUnknownReleaseTest=arrowSpent.then(reserveSlot).then(prepareBatch(2,1)).then(crash).then(reconnect).then(reserveSlot)

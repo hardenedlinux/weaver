@@ -707,6 +707,51 @@ fn final_release_keeps_current_guard_and_unknown_commit_in_one_transaction() {
     recovered.close().expect("close recovered owner");
 }
 
+#[test]
+fn final_queue_rejects_mismatched_durable_range_before_callback() {
+    for corruption in ["digest='wrong'", "length=2", "state='released'"] {
+        let temp = tempfile::tempdir().expect("temp");
+        let path = temp.path().join("mismatched-release.db");
+        let storage = weaver_ledger::persistence::Session::open_with_journal(
+            &path,
+            weaver_ledger::persistence::Journal::Mvcc,
+        )
+        .expect("MVCC");
+        let (mut ledger, plan) = fixture(&path);
+        ledger.enqueue_provider(&plan).expect("reserve");
+        let owner = ledger
+            .consume_provider("f", "infer", &BTreeSet::from(["primary".into()]))
+            .expect("consume");
+        ledger
+            .dispatch_provider(&owner, || Ok(()))
+            .expect("dispatch");
+        let range = ledger
+            .prepare_provider_release(&owner, "digest", "protobuf", 1)
+            .expect("reserve range");
+        weaver_ledger::persistence::exec(
+            &storage,
+            &format!("UPDATE provider_releases SET {corruption}"),
+            (),
+        )
+        .expect("inject stale durable range");
+        let refused = ledger.release_provider::<()>(&owner, range, "protobuf", |_| {
+            panic!("mismatched range reached the queue")
+        });
+        assert!(matches!(
+            refused,
+            Err(weaver_contracts::Error::Conflict(
+                "provider release binding"
+            ))
+        ));
+        let retained = ledger
+            .provider_receipt("f", "infer")
+            .expect("read")
+            .expect("original");
+        assert_eq!((retained.held, retained.events), (4, 1));
+        assert_eq!(retained.state, weaver_contracts::ProviderState::Unknown);
+    }
+}
+
 /// Expected coverage gap: typed, fenced publication is not a native
 /// Authorization Delta/no-gain evidence admission protocol.
 #[test]

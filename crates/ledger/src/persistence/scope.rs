@@ -13,6 +13,14 @@ use std::{
     time::Instant,
 };
 
+/// Provider range phase used to label diagnostic scope observations.
+#[derive(Clone, Copy)]
+pub enum ProviderScopePhase {
+    Other,
+    PrepareRange,
+    FinalQueue,
+}
+
 /// Exclusive native transaction; final guarded callbacks keep this scope alive.
 pub struct WriteScope<'a> {
     connection: &'a driver::Connection,
@@ -33,6 +41,8 @@ pub struct WriteScope<'a> {
     cedar: Cell<super::Timing>,
     owner_entered: Option<Instant>,
     domains_entered: Option<Instant>,
+    #[cfg(feature = "commit-observer")]
+    scope_trace: Option<super::scope_trace::Granted<'a>>,
     _exclusive: Option<RwLockWriteGuard<'a, ()>>,
     _shared: Option<RwLockReadGuard<'a, ()>>,
     _domains: Vec<MutexGuard<'a, ()>>,
@@ -41,28 +51,34 @@ pub struct WriteScope<'a> {
 }
 /// Acquire an immediate write transaction with exclusive Rust session custody.
 pub fn begin(session: &mut Session) -> driver::Result<WriteScope<'_>> {
-    start(session, None, None)
+    start(session, None, None, ProviderScopePhase::Other)
 }
 /// Parallel MVCC admission or final use for one original claim/budget/history family.
 /// Global mutations use `begin`, excluding every live family scope through commit.
 pub fn begin_family<'a>(session: &'a mut Session, family: &str) -> driver::Result<WriteScope<'a>> {
-    start(session, Some(family), None)
+    start(session, Some(family), None, ProviderScopePhase::Other)
 }
 /// The caller must rejoin the live stamp in this scope before any effect.
 pub(crate) fn begin_provider_use<'a>(
     session: &'a mut Session,
     family: &str,
     expected: &weaver_contracts::DomainStamp,
+    phase: ProviderScopePhase,
 ) -> driver::Result<WriteScope<'a>> {
     let expected = (!crate::task_origins::locked_original_evidence()).then_some(expected);
-    start(session, Some(family), expected)
+    start(session, Some(family), expected, phase)
 }
 
 fn start<'a>(
     session: &'a mut Session,
     family: Option<&str>,
     expected: Option<&weaver_contracts::DomainStamp>,
+    phase: ProviderScopePhase,
 ) -> driver::Result<WriteScope<'a>> {
+    #[cfg(not(feature = "commit-observer"))]
+    let _ = phase;
+    #[cfg(feature = "commit-observer")]
+    let mut arrival = None;
     session.require_quiescent()?;
     let concurrent = session.owner.journal == super::Journal::Mvcc;
     let parallel = concurrent && family.is_some();
@@ -95,6 +111,10 @@ fn start<'a>(
         let mut stripes: Vec<usize> = keys.iter().map(|key| super::owner::stripe(key)).collect();
         stripes.sort_unstable();
         stripes.dedup();
+        #[cfg(feature = "commit-observer")]
+        if session.scope_trace.is_some() {
+            arrival = Some(super::scope_trace::Arrival::capture(phase));
+        }
         super::timing::measure(&mut session.timings.domain_wait, || {
             stripes
                 .into_iter()
@@ -109,6 +129,10 @@ fn start<'a>(
         Vec::new()
     };
     let domains_entered = parallel.then(Instant::now);
+    #[cfg(feature = "commit-observer")]
+    let scope_trace = arrival
+        .zip(session.scope_trace.as_mut())
+        .map(|(start, trace)| start.granted(trace));
     // The mutable Session borrow provides exclusive custody for the whole scope.
     let native = super::timing::measure(&mut session.timings.transaction_begin, || {
         block_on(driver::transaction::Transaction::new_unchecked(
@@ -139,6 +163,8 @@ fn start<'a>(
         cedar: Cell::default(),
         owner_entered,
         domains_entered,
+        #[cfg(feature = "commit-observer")]
+        scope_trace,
         _exclusive: exclusive,
         _shared: shared,
         _domains: domains,
@@ -312,6 +338,10 @@ impl Drop for WriteScope<'_> {
             total.nanos = total.nanos.saturating_add(sample.nanos);
         }
         self._domains.clear();
+        #[cfg(feature = "commit-observer")]
+        if let Some(trace) = self.scope_trace.take() {
+            trace.record();
+        }
         if let Some(entered) = self.domains_entered {
             self.timings.domain_hold.record(entered.elapsed());
         }

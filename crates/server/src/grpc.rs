@@ -800,6 +800,16 @@ impl pb::gateway_server::Gateway for Gateway {
                     weaver_ledger::use_separate_release_reads(
                         std::env::var("WEAVER_TEST_SEPARATE_RELEASE_READS").as_deref() == Ok("1"),
                     );
+                    #[cfg(test)]
+                    let trace_scopes = std::env::var_os("WEAVER_TEST_PROVIDER_SCOPE_TRACE").is_some();
+                    #[cfg(test)]
+                    if trace_scopes {
+                        ledger.trace_provider_scopes();
+                    }
+                    #[cfg(test)]
+                    weaver_ledger::use_cached_release_programs(
+                        std::env::var("WEAVER_TEST_CACHED_RELEASE_PROGRAMS").as_deref() == Ok("1"),
+                    );
                     let execution = weaver_broker::execute_catalog_provider_with_oauth(
 
                         &mut ledger,
@@ -822,6 +832,7 @@ impl pb::gateway_server::Gateway for Gateway {
                         weaver_ledger::use_locked_original_evidence(false);
                         weaver_ledger::use_fresh_provider_domain_plan(false);
                         weaver_ledger::use_separate_release_reads(false);
+                        weaver_ledger::use_cached_release_programs(false);
                     }
                     #[cfg(test)]
                     if std::env::var_os("WEAVER_TEST_PROVIDER_TIMINGS").is_some() {
@@ -870,6 +881,21 @@ impl pb::gateway_server::Gateway for Gateway {
                             t.commit.nanos,
                             t.provider_domain.nanos,
                         );
+                    }
+                    #[cfg(test)]
+                    if trace_scopes {
+                        use std::fmt::Write;
+                        use weaver_ledger::persistence::ProviderScopePhase;
+                        let mut line = format!("weaver-provider-scope {}", plan.family);
+                        for sample in ledger.provider_scope_samples() {
+                            let phase = match sample.phase {
+                                ProviderScopePhase::Other => "other",
+                                ProviderScopePhase::PrepareRange => "prepare",
+                                ProviderScopePhase::FinalQueue => "queue",
+                            };
+                            let _ = write!(line, " {phase}:{}:{}:{}:{}", sample.arrival, sample.grant, sample.wait.as_nanos(), sample.hold.as_nanos());
+                        }
+                        eprintln!("{line}");
                     }
                     execution
                 })();

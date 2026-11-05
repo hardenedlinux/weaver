@@ -20,6 +20,8 @@ pub struct Session {
     pub(super) owner: Arc<super::owner::Owner>,
     pub(super) poisoned: AtomicBool,
     pub(super) timings: super::TransactionTimings,
+    #[cfg(feature = "commit-observer")]
+    pub(super) scope_trace: Option<Vec<super::ProviderScopeSample>>,
     #[cfg(any(test, feature = "commit-observer"))]
     pub(super) commit_observer: Option<Arc<dyn super::commit_observer::Observer>>,
 }
@@ -60,6 +62,8 @@ impl Session {
             owner,
             poisoned: AtomicBool::new(false),
             timings: super::TransactionTimings::default(),
+            #[cfg(feature = "commit-observer")]
+            scope_trace: None,
             #[cfg(any(test, feature = "commit-observer"))]
             commit_observer: None,
         })
@@ -67,6 +71,15 @@ impl Session {
     /// Read-only session statistics; not a currentness or completion observation.
     pub fn timings(&self) -> super::TransactionTimings {
         self.timings
+    }
+    #[cfg(feature = "commit-observer")]
+    pub(crate) fn trace_provider_scopes(&mut self) {
+        self.scope_trace = Some(Vec::with_capacity(super::scope_trace::CAPACITY));
+    }
+
+    #[cfg(feature = "commit-observer")]
+    pub(crate) fn provider_scope_samples(&self) -> &[super::ProviderScopeSample] {
+        self.scope_trace.as_deref().unwrap_or_default()
     }
     pub(crate) fn prepare_provider_domain(&mut self) {
         super::timing::measure(&mut self.timings.provider_domain_prepare, || {

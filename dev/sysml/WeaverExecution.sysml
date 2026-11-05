@@ -196,6 +196,47 @@ package WeaverExecution {
         assert constraint { decidingScopes == lifecycle.fixedDecidingScopes + lifecycle.decidingScopesPerResponseRange * responseRanges }
     }
 
+    part def ProviderTransportBatchExample {
+        doc /* Thirteen response events yield thirteen ranges when each
+           Protobuf frame carries one event. Four-row Arrow capacity
+           yields three full ranges and one terminal range for the same
+           event stream. Row authorization stays per event. Scope counts
+           describe this example before any timing measurement. */
+        part lifecycle : ProviderStorageLifecycle;
+        attribute responseEvents : Integer = 13;
+        attribute protobufRanges : Integer = 13;
+        attribute arrowRowsPerBatch : Integer = 4;
+        attribute arrowRanges : Integer = 4;
+        attribute protobufScopes : Integer = 31;
+        attribute arrowScopes : Integer = 13;
+        assert constraint { (arrowRanges - 1) * arrowRowsPerBatch < responseEvents and responseEvents <= arrowRanges * arrowRowsPerBatch }
+        assert constraint { protobufScopes == lifecycle.fixedDecidingScopes + lifecycle.decidingScopesPerResponseRange * protobufRanges }
+        assert constraint { arrowScopes == lifecycle.fixedDecidingScopes + lifecycle.decidingScopesPerResponseRange * arrowRanges }
+    }
+
+    part def ProviderRangeScopeFairness {
+        doc /* Observe a process-local arrival ordinal before the first
+           sorted stripe acquisition and a grant ordinal after the last.
+           A later arrival granted before an older waiter is an observed
+           inversion. Compare within one shared-root wave and across
+           families. Measure wait and hold per prepare and final queue,
+           plus the spread of accumulated waits across concurrent flows.
+           Scheduler pauses and multiple stripes affect inversion counts.
+           The current mutex protocol provides no FIFO or bounded-wait contract. */
+        doc /* After the live gate, read the exact pending range and check
+           digest and queue-time authority. Queue acceptance precedes the
+           release-marker write and native commit. Rollback retains the
+           durable pending marker and original reservation. Early-marker
+           and prewarmed-program experiments are isolated diagnostics
+           until repeatable throughput and tail measurements justify a change. */
+        part lifecycle : ProviderStorageLifecycle;
+        attribute responseRanges : Integer = 13;
+        attribute concurrency : Integer = 4;
+        attribute prepareScopesPerRange : Integer = 1;
+        attribute queueScopesPerRange : Integer = 1;
+        assert constraint { prepareScopesPerRange + queueScopesPerRange == lifecycle.decidingScopesPerResponseRange }
+    }
+
     part def ProviderCurrentnessBudget {
         doc /* Proposed allocation for mean locked read time per completed stream
            in the five-range local MVCC fixture. The long-range matrix measures scaling.

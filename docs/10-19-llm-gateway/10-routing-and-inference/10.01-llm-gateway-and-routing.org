@@ -1081,6 +1081,135 @@ the stream P99 changes direction across repeats.
 go -C go test -mod=readonly -tags integration ./dev -run '^$' -bench '^BenchmarkProviderSharedLongTail$' -benchtime=1x -count=2
 #+end_src
 
+** Range queue ownership, scheduling and transport
+
+Go's control service authenticates ingress, bounds
+concurrent calls, projects routing inputs and propagates cancellation.
+It relays Rust response frames without decoding them. Rust owns the
+durable admission, provider worker and transaction lifetime. It
+resolves shared roots, acquires the sorted stripe set, checks current
+authority and ends each deciding scope before the next capacity wait.
+Current stripe mutexes establish mutual exclusion and lock ordering.
+Fairness and a bound on waiting require a separate scheduling contract.
+The shared owner read gate currently spans stripe acquisition and
+transaction use, so waiter delay can contribute to publication latency.
+
+Range preparation commits an unknown release before any queue
+insertion. The final scope rejoins live authority and checks the
+exact pending row and digest. Queue acceptance follows the
+transport-time guard. The release-marker write and native commit
+follow the queue callback. Private queue capacity and frame encoding
+stay outside this scope. Rollback preserves the pending range and
+reservation, and the affine continuation prevents replay.
+
+The same-image early-marker candidate conditionally updated the
+pending row before calling the queue. Under the two pressure
+repetitions, terminal P99 changed from 451.70 to 524.70 ms and from
+409.80 to 358.10 ms. In the no-injection arms, it changed from
+337.30 to 503.70 ms and from 273.50 to 297.60 ms. The exact-match and
+rollback properties of this candidate remain in the Lean and Quint
+evidence.
+
+The prewarmed-program candidate keeps the queue-then-mark order.
+=cached_release_programs_preserve_ordered_effect= states its
+refinement given compatible SQL programs and fresh parameters on the
+same deciding image. Under pressure, both repeats show lower
+throughput with prewarming, and terminal P99 changes in opposite
+directions. Production keeps the original order and fresh release
+programs. The compatible prewarm remains a test-only comparison.
+
+The range-scope experiment records a process-local ordinal before the
+first sorted stripe acquisition and after the last. It counts a later
+arrival from another family that receives the full set before an
+earlier waiter in the same shared-root wave. This measures observed
+overtaking across scheduler and stripe acquisition. It reports
+per-stage wait and hold, the P95 within-wave spread of accumulated
+range waits, and the exact stage values of the terminal P99 sample.
+The trace is bounded and emitted after the deciding scopes.
+
+Go-to-Rust uses authenticated gRPC. A request carries a Protobuf plan.
+Its response carries a Protobuf event or a bounded Arrow IPC payload
+inside each gRPC frame. Rust parses SSE on the separate provider HTTPS
+hop. The Go SDK decodes Arrow when consuming an Arrow response. For
+thirteen events, one-row Protobuf gives thirteen ranges and thirty-one
+deciding scopes. With four-row Arrow batches, the same event stream
+gives four ranges and thirteen deciding scopes. Cedar still checks
+each row. This is a modeled batching example. Warm transport, codec
+cost, batching amortization and governed execution have separate
+performance budgets. The range-scope benchmark is a direct Go driver
+to Rust with a synthetic TLS provider. The Go control relay is outside
+this measurement.
+
+Agentgateway gives a useful comparison. Its Go Kubernetes controller
+translates resource changes into typed configuration and sends them
+over gRPC delta xDS. The Rust proxy subscribes and handles request
+traffic directly. The controller coalesces pending configuration pushes
+per connection and bounds push concurrency. Typed resources preserve
+useful update granularity. Weaver separates policy publication from the
+request and response paths and keeps durable execution authority in
+Rust. Configuration push acknowledgments and queue scheduling carry
+distinct meanings from durable policy publication and final release.
+[[https://github.com/agentgateway/agentgateway/blob/main/architecture/configuration.md][Agentgateway configuration design]]
+[[https://github.com/agentgateway/agentgateway/blob/main/controller/pkg/syncer/krtxds/pushqueue.go][Agentgateway configuration push queue]]
+[[https://github.com/agentgateway/agentgateway/blob/main/crates/xds/src/client.rs][Agentgateway Rust xDS client]]
+
+Two same-image repetitions retain 128 successful streams per arm. The
+pressure process realized 4.20 and 3.65 CPU equivalents. The one-minute
+host load samples ranged from 13.85 to 23.16 on 12 logical CPUs.
+The no-injection controls share the host's background activity. The
+strict low-background start gate was one-minute load at or below the
+logical CPU count. The host missed that gate. These results qualify
+the injected pressure comparison on the measured host.
+
+| Repeat | Pressure | Release programs | Streams/s | Stream P95 ms | Stream P99 ms | Domain mean ms |
+|-
+| 1 | None injected | fresh-programs | 19.35 | 343.90 | 552.10 | 1.99 |
+| 1 | None injected | cached-programs | 19.83 | 341.00 | 392.50 | 2.02 |
+| 1 | Six workers | fresh-programs | 15.52 | 366.80 | 453.60 | 2.38 |
+| 1 | Six workers | cached-programs | 14.51 | 384.50 | 408.90 | 3.04 |
+| 2 | None injected | fresh-programs | 19.62 | 328.80 | 365.30 | 2.02 |
+| 2 | None injected | cached-programs | 23.01 | 264.90 | 410.70 | 1.64 |
+| 2 | Six workers | fresh-programs | 14.13 | 402.20 | 450.30 | 2.88 |
+| 2 | Six workers | cached-programs | 11.58 | 512.60 | 587.20 | 3.43 |
+
+| Repeat | Pressure | Release programs | Prepare wait / hold P99 ms | Queue wait / hold P99 ms | Prepare / queue overtaken % | Flow wait spread P95 ms |
+|-
+| 1 | None injected | fresh-programs | 57.64 / 5.51 | 21.79 / 5.20 | 53.37 / 25.00 | 134.30 |
+| 1 | None injected | cached-programs | 50.82 / 5.02 | 22.09 / 4.38 | 56.43 / 25.96 | 116.60 |
+| 1 | Six workers | fresh-programs | 69.90 / 6.07 | 23.52 / 6.81 | 41.17 / 7.63 | 151.20 |
+| 1 | Six workers | cached-programs | 86.27 / 7.75 | 27.07 / 8.12 | 39.30 / 10.82 | 179.50 |
+| 2 | None injected | fresh-programs | 54.20 / 6.71 | 28.78 / 6.51 | 60.52 / 24.70 | 121.10 |
+| 2 | None injected | cached-programs | 31.03 / 3.93 | 20.33 / 3.78 | 61.54 / 25.06 | 80.87 |
+| 2 | Six workers | fresh-programs | 95.79 / 11.95 | 40.57 / 10.67 | 44.29 / 7.33 | 204.50 |
+| 2 | Six workers | cached-programs | 103.20 / 14.21 | 61.55 / 12.08 | 36.96 / 11.66 | 262.20 |
+
+| Repeat | Pressure | Release programs | Prepare wait / hold at stream P99 ms | Queue wait / hold at stream P99 ms |
+|-
+| 1 | None injected | fresh-programs | 111.90 / 79.10 | 56.88 / 51.99 |
+| 1 | None injected | cached-programs | 196.00 / 32.33 | 58.18 / 31.04 |
+| 1 | Six workers | fresh-programs | 149.00 / 28.47 | 56.97 / 54.62 |
+| 1 | Six workers | cached-programs | 207.20 / 31.64 | 63.47 / 44.26 |
+| 2 | None injected | fresh-programs | 73.01 / 23.66 | 14.29 / 21.02 |
+| 2 | None injected | cached-programs | 215.30 / 38.64 | 40.23 / 33.39 |
+| 2 | Six workers | fresh-programs | 106.90 / 25.09 | 58.39 / 35.96 |
+| 2 | Six workers | cached-programs | 242.40 / 46.96 | 106.80 / 66.42 |
+
+Wait and hold percentiles in the second table describe individual
+range scopes. The third table joins accumulated phase values to the
+same stream as the terminal P99. The largest observed overtake count
+for a single range waiter was 75. The counts reflect the whole
+stripe acquisition and scheduler timing. FIFO needs an explicit
+runtime contract and an independently qualified workload.
+
+The separate warm mutual-TLS Inspect reference averaged 1.863 ms
+per call over 1,000 calls. It includes Rust authentication and a ledger
+read. It observes a different boundary from codec-only and stream-tail
+measurements.
+
+#+begin_src sh
+go -C go test -mod=readonly -tags integration ./dev -run '^$' -bench '^BenchmarkProviderSharedRangeScopes$' -benchtime=1x -count=2
+#+end_src
+
 ** Independent OAuth witness activation
 
 An existing direct deployment can enable its independent witness once

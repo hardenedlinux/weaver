@@ -39,9 +39,9 @@ mod snapshot;
 mod source_authority;
 mod source_rotation;
 mod task_origins;
-#[cfg(feature = "commit-observer")]
-pub use provider::use_separate_release_reads;
 pub use provider::{ProviderDispatch, ProviderRelease};
+#[cfg(feature = "commit-observer")]
+pub use provider::{use_cached_release_programs, use_separate_release_reads};
 mod store;
 mod stream_catalog;
 mod stream_custody;
