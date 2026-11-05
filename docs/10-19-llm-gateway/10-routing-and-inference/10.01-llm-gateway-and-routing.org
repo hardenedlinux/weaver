@@ -791,6 +791,28 @@ begin and hold, commit, provider write and response queue. These intervals
 overlap. In particular, the difference in domain hold includes work beyond
 the OAuth check, and the paired control is necessary on each image.
 
+The queue encodes the immutable plan before locking and observes the existing
+receipt once in the deciding transaction. Consumption verifies the profile
+registry and derives the semantic index key. Later effects reuse those static
+facts, match the registry identity, digest and exact record, and recheck the
+live task floor. The registry match does not replace the floor, the domain
+stamp or the current policy decision. Lean composes these premises in
+=retained_profile_refines_current=. Quint checks a stale registry, a changed
+floor and a stale live guard.
+
+=BenchmarkProviderOAuthDomainContention= starts two original operations
+together through identical Go relay processes and one optimized Rust MVCC
+image. Each image supplies four paired arms with OAuth off and on for
+shared and independent roots. Both arms have distinct origins. The shared
+arm joins the budget and history roots before timing. Boot, publication,
+migration and credential setup are outside the timed wave. Throughput
+counts terminal receipts per wave wall time, including the inspection RPC.
+The benchmark reports completions and provider calls per attempt alongside
+the overlapping per-attempt intervals. Currentness covers guarded domain
+and original-exposure reads and publication, authority and profile reads.
+Cedar reports actual evaluation separately. An MVCC conflict counts as a
+failed attempt and does not grant an automatic resend.
+
 An existing direct deployment can enable its independent witness once
 while preserving the same issuer key, subject, client and audience.
 Activation seeds previously committed revocations before confirmation.

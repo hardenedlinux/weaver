@@ -77,6 +77,14 @@ module SharedDomains {
   run preparedOAuthCannotFreezeTimeTest=init.expect(
     preparedOAuthUse(true,true,true,oauthRelayUse(true,true,true,1,1))
     and not(preparedOAuthUse(true,true,false,oauthRelayUse(true,true,true,1,1))))
+  pure def retainedProfileUse(decoded:bool, exactRegistry:bool, currentFloor:bool, live:bool):bool=
+    decoded and exactRegistry and currentFloor and live
+  run retainedProfileCannotReplaceLiveFloorOrFenceTest=init.expect(
+    retainedProfileUse(true,true,true,true)
+    and not(retainedProfileUse(true,true,false,true))
+    and not(retainedProfileUse(true,true,true,false)))
+  run retainedProfileRejectsRestoredRegistryWithOldDigestTest=init.expect(
+    not(retainedProfileUse(true,false,true,true)))
   run oauthRetiredIssuerCannotPublishTest=init.expect(
     Set(0,1,2).forall(old=>old<3 and old!=3))
   run delegatedGrantCannotReplaceOperationCredentialTest=init.expect(

@@ -35,6 +35,8 @@ pub struct TransactionTimings {
     pub rollback: Timing,
     pub provider_oauth_prepare: Timing,
     pub provider_oauth_check: Timing,
+    pub provider_currentness: Timing,
+    pub provider_cedar: Timing,
     pub provider_request: Timing,
     pub provider_queue: Timing,
 }
@@ -81,6 +83,8 @@ impl TransactionTimings {
                 earlier.provider_oauth_prepare,
             ),
             provider_oauth_check: delta(self.provider_oauth_check, earlier.provider_oauth_check),
+            provider_currentness: delta(self.provider_currentness, earlier.provider_currentness),
+            provider_cedar: delta(self.provider_cedar, earlier.provider_cedar),
             provider_request: delta(self.provider_request, earlier.provider_request),
             provider_queue: delta(self.provider_queue, earlier.provider_queue),
         }

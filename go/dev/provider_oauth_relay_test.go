@@ -24,8 +24,11 @@ import (
 
 	pb "github.com/HardenedLinux/weaver/go/api/gateway/v1"
 	v1 "github.com/HardenedLinux/weaver/go/api/v1"
+	"github.com/HardenedLinux/weaver/go/internal/config"
 	"github.com/HardenedLinux/weaver/go/internal/gatewayclient"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 )
 
 const relayRoot = "synthetic-oauth-ingress-root-token"
@@ -46,6 +49,31 @@ type oauthRelayFixture struct {
 }
 
 func newOAuthRelayFixture(t testing.TB, handler http.HandlerFunc, enabled bool, observedImage ...string) *oauthRelayFixture {
+	t.Helper()
+	pair, ingress := newOAuthRelayOwner(t, handler, enabled, observedImage...)
+	bundle := controlBundle(t, pair.rust)
+	pair.plans = bundle.Plans
+	pair.goServer = pair.startControl(t, ingress, bundle, enabled)
+	return pair
+}
+
+func (p *oauthRelayFixture) startControl(t testing.TB, ingress *testPKI, bundle config.Bundle, enabled bool) *controlProcess {
+	t.Helper()
+	control := newControlProcess(t, p.rust, writeControlBundle(t, p.rust, bundle, "json"))
+	control.ingress = ingress
+	ingressCA := filepath.Join(control.directory, "ingress-ca.pem")
+	if err := os.WriteFile(ingressCA, ingress.ca, 0600); err != nil {
+		t.Fatal(err)
+	}
+	control.env = append(control.env, "WEAVER_CONTROL_CLIENT_CA="+ingressCA, "WEAVER_CONTROL_PEER_SHA256="+p.peer)
+	if enabled {
+		control.env = append(control.env, "WEAVER_CONTROL_PROVIDER_OAUTH_RELAY=1")
+	}
+	control.start(t)
+	return control
+}
+
+func newOAuthRelayOwner(t testing.TB, handler http.HandlerFunc, enabled bool, observedImage ...string) (*oauthRelayFixture, *testPKI) {
 	t.Helper()
 	first, second := pki(t), pki(t)
 	public, key, err := ed25519.GenerateKey(rand.Reader)
@@ -77,20 +105,7 @@ func newOAuthRelayFixture(t testing.TB, handler http.HandlerFunc, enabled bool, 
 		env = append(env, "WEAVER_TEST_PROVIDER_TIMINGS=1")
 	}
 	pair.rust = providerFixture(t, handler, false, image, args, env, providerProfile(), nil, second)
-	bundle := controlBundle(t, pair.rust)
-	pair.plans = bundle.Plans
-	pair.goServer = newControlProcess(t, pair.rust, writeControlBundle(t, pair.rust, bundle, "json"))
-	pair.goServer.ingress = first
-	ingressCA := filepath.Join(pair.goServer.directory, "ingress-ca.pem")
-	if err := os.WriteFile(ingressCA, first.ca, 0600); err != nil {
-		t.Fatal(err)
-	}
-	pair.goServer.env = append(pair.goServer.env, "WEAVER_CONTROL_CLIENT_CA="+ingressCA, "WEAVER_CONTROL_PEER_SHA256="+pair.peer)
-	if enabled {
-		pair.goServer.env = append(pair.goServer.env, "WEAVER_CONTROL_PROVIDER_OAUTH_RELAY=1")
-	}
-	pair.goServer.start(t)
-	return pair
+	return pair, first
 }
 
 func (p *oauthRelayFixture) grant(t testing.TB, token, cert, parent string, scopes ...string) *pb.ProviderOAuthChange {
@@ -327,8 +342,7 @@ func TestProviderOAuthIndependentWitnessRejectsRollback(t *testing.T) {
 // Boot, source publication and credential provisioning are outside the sample.
 func BenchmarkProviderOAuthRelayPair(b *testing.B) {
 	image := wifImage(b, true)
-	labels := [...]string{"first", "terminal", "grant-check", "domain-hold", "txn-hold", "write", "queue", "grant-prepare", "txn-begin", "commit", "domain-wait", "domain-keys"}
-	var totals [2][len(labels)]float64
+	var totals [2][len(providerTimingLabels) + 2]float64
 	b.StopTimer()
 	for range b.N {
 		for _, arm := range []int{0, 1, 1, 0} {
@@ -353,30 +367,7 @@ func BenchmarkProviderOAuthRelayPair(b *testing.B) {
 			if err != nil || receipt.GetState() != "complete" || first == 0 || p.rust.primary.Load() != 1 {
 				b.Fatalf("timed operation did not complete exactly once: %v %v", receipt, err)
 			}
-			log, err := os.ReadFile(filepath.Join(p.rust.directory, "server.log"))
-			if err != nil {
-				b.Fatal(err)
-			}
-			var times [len(labels) - 2]uint64
-			count := 0
-			for _, line := range strings.Split(string(log), "\n") {
-				if strings.HasPrefix(line, "weaver-oauth-timing ") {
-					fields := strings.Fields(strings.TrimPrefix(line, "weaver-oauth-timing "))
-					if len(fields) != len(times) {
-						b.Fatalf("unexpected timing field count: %d", len(fields))
-					}
-					for i, field := range fields {
-						times[i], err = strconv.ParseUint(field, 10, 64)
-						if err != nil {
-							b.Fatal(err)
-						}
-					}
-					count++
-				}
-			}
-			if count != 1 || times[0] == 0 || times[1] == 0 {
-				b.Fatalf("missing live transaction timings: %d %v", count, times)
-			}
+			times := providerTimingTotals(b, p.rust, 1)
 			totals[arm][0] += float64(first.Nanoseconds())
 			totals[arm][1] += float64(terminal.Nanoseconds())
 			for i, value := range times {
@@ -388,8 +379,190 @@ func BenchmarkProviderOAuthRelayPair(b *testing.B) {
 	}
 	b.ReportMetric(0, "ns/op")
 	for arm, name := range []string{"baseline", "oauth"} {
-		for i, label := range labels {
+		for i, label := range append([]string{"first", "terminal"}, providerTimingLabels[:]...) {
 			b.ReportMetric(totals[arm][i]/float64(2*b.N), name+"-"+label+"-ns/stream")
+		}
+	}
+}
+
+var providerTimingLabels = [...]string{"grant-check", "domain-hold", "txn-hold", "write", "queue", "grant-prepare", "txn-begin", "commit", "domain-wait", "domain-keys", "currentness", "cedar", "rollback"}
+
+func providerTimingTotals(t testing.TB, f *fixture, want int) [len(providerTimingLabels)]uint64 {
+	t.Helper()
+	log, err := os.ReadFile(filepath.Join(f.directory, "server.log"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	const prefix = "weaver-oauth-timing "
+	var total [len(providerTimingLabels)]uint64
+	count := 0
+	for _, line := range strings.Split(string(log), "\n") {
+		row, ok := strings.CutPrefix(line, prefix)
+		if !ok {
+			continue
+		}
+		fields := strings.Fields(row)
+		if len(fields) != len(total) {
+			t.Fatalf("unexpected timing field count: %d", len(fields))
+		}
+		for i, field := range fields {
+			value, err := strconv.ParseUint(field, 10, 64)
+			if err != nil {
+				t.Fatal(err)
+			}
+			total[i] += value
+		}
+		count++
+	}
+	if count != want || total[0] == 0 || total[1] == 0 || total[10] == 0 || total[11] == 0 {
+		t.Fatalf("missing live MVCC timings: %d %v", count, total)
+	}
+	return total
+}
+
+func contentionRelayBundle(t testing.TB, f *fixture, family string) config.Bundle {
+	t.Helper()
+	bundle := controlBundle(t, f)
+	plan := bundle.Plans[0]
+	plan.Family = family
+	bundle.Governance.Family = family
+	bundle.Governance.OpenNodes = []string{plan.Node}
+	bundle.Tasks = []v1.Task{profileTask(t, plan, *providerProfile())}
+	bundle.Plans = []v1.ProviderPlan{plan}
+	bundle.Publication.Policy = strings.Replace(bundle.Publication.Policy, `context.family == "control"`, `["left", "right"].contains(context.family)`, 1)
+	if err := bundle.Validate(); err != nil {
+		t.Fatal(err)
+	}
+	return bundle
+}
+
+type relayContentionSample struct {
+	wall        time.Duration
+	done, calls uint64
+	timing      [len(providerTimingLabels)]uint64
+}
+
+func relayContentionWave(t *testing.B, image string, shared, oauth bool) relayContentionSample {
+	t.Helper()
+	p, ingress := newOAuthRelayOwner(t, completeSSE, oauth, image)
+	left, right := contentionRelayBundle(t, p.rust, "left"), contentionRelayBundle(t, p.rust, "right")
+	a, b := p.startControl(t, ingress, left, oauth), p.startControl(t, ingress, right, oauth)
+	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
+	defer cancel()
+	if shared {
+		merged, err := p.rust.admin.RPC.MigrateExecutionDomains(p.rust.admin.Context(ctx), &pb.DomainMigration{
+			OperationId: "bench-share-domains", BudgetFrom: "left", BudgetTo: "right", HistoryFrom: "left", HistoryTo: "right",
+			BudgetFromEpoch: 1, BudgetToEpoch: 1, HistoryFromEpoch: 1, HistoryToEpoch: 1,
+		})
+		if err != nil || !merged.GetCommitted() {
+			t.Fatalf("shared authority domains were not installed: %v %v", merged, err)
+		}
+	}
+	if oauth {
+		p.tokens(t, ctx)
+		ctx = gatewayclient.WithProviderOAuth(ctx, relayLeaf)
+	}
+	type result struct {
+		receipt *pb.ProviderReceipt
+		events  int
+		err     error
+	}
+	results := make(chan result, 2)
+	ready, start := make(chan struct{}, 2), make(chan struct{})
+	for _, operation := range []struct {
+		client *gatewayclient.Client
+		plan   v1.ProviderPlan
+	}{{a.client, left.Plans[0]}, {b.client, right.Plans[0]}} {
+		go func() {
+			ready <- struct{}{}
+			<-start
+			var r result
+			r.receipt, r.err = operation.client.Execute(ctx, operation.plan, pb.Encoding_PROTOBUF, 1, func(*pb.Event) error {
+				r.events++
+				return nil
+			})
+			results <- r
+		}()
+	}
+	<-ready
+	<-ready
+	t.StartTimer()
+	started := time.Now()
+	close(start)
+	first, second := <-results, <-results
+	wall := time.Since(started)
+	t.StopTimer()
+	sample := relayContentionSample{wall: wall, calls: uint64(p.rust.primary.Load())}
+	for _, r := range []result{first, second} {
+		switch {
+		case r.err == nil && r.receipt.GetState() == "complete" && r.events == 5:
+			sample.done++
+		case status.Code(r.err) == codes.FailedPrecondition:
+			if shared {
+				t.Fatalf("shared-domain operation failed: %v", r.err)
+			}
+		default:
+			t.Fatalf("invalid contention result: %+v", r)
+		}
+	}
+	if sample.done == 0 || sample.calls < sample.done || sample.calls > 2 || p.rust.backup.Load() != 0 {
+		t.Fatalf("invalid completion or provider counts: %+v", sample)
+	}
+	// Check real authoritative roots and retained exposure after the timed wave.
+	var views [2]*pb.DomainView
+	for i, family := range []string{"left", "right"} {
+		view, err := p.rust.admin.RPC.InspectExecutionDomains(p.rust.admin.Context(ctx), &pb.OperationKey{Family: family})
+		if err != nil {
+			t.Fatal(err)
+		}
+		views[i] = view
+	}
+	if views[0].GetStamp().GetOrigin() == views[1].GetStamp().GetOrigin() ||
+		(views[0].GetStamp().GetBudgetRoot() == views[1].GetStamp().GetBudgetRoot()) != shared ||
+		(views[0].GetStamp().GetHistoryRoot() == views[1].GetStamp().GetHistoryRoot()) != shared {
+		t.Fatal("authoritative domains differ from benchmark arm")
+	}
+	held := views[0].GetHeld()
+	if !shared {
+		held += views[1].GetHeld()
+	}
+	if held < 4*sample.calls || held > 8 {
+		t.Fatalf("provider attempts lost original holds: calls=%d held=%d", sample.calls, held)
+	}
+	sample.timing = providerTimingTotals(t, p.rust, 2)
+	a.stop(t)
+	b.stop(t)
+	p.rust.stop(t)
+	return sample
+}
+
+// Each arm launches two canonical originals through two identical relay processes.
+// Shared mode joins budget/history before measurement; cross mode leaves them independent.
+func BenchmarkProviderOAuthDomainContention(b *testing.B) {
+	image := wifImage(b, true)
+	b.StopTimer()
+	var totals [4]relayContentionSample
+	for range b.N {
+		for _, arm := range []int{0, 1, 2, 3, 3, 2, 1, 0} {
+			sample := relayContentionWave(b, image, arm < 2, arm%2 == 1)
+			total := &totals[arm]
+			total.wall += sample.wall
+			total.done += sample.done
+			total.calls += sample.calls
+			for i, value := range sample.timing {
+				total.timing[i] += value
+			}
+		}
+	}
+	b.ReportMetric(0, "ns/op")
+	for arm, name := range []string{"shared-base", "shared-oauth", "cross-base", "cross-oauth"} {
+		total := totals[arm]
+		attempts := float64(4 * b.N)
+		b.ReportMetric(float64(total.done)/total.wall.Seconds(), name+"-complete/s")
+		b.ReportMetric(float64(total.done)/attempts, name+"-complete/attempt")
+		b.ReportMetric(float64(total.calls)/attempts, name+"-sends/attempt")
+		for i, label := range providerTimingLabels {
+			b.ReportMetric(float64(total.timing[i])/attempts, name+"-"+label+"-ns/attempt")
 		}
 	}
 }

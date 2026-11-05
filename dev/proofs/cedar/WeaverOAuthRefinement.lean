@@ -81,6 +81,17 @@ theorem prepared_use_refines_current
       (starts ≤ now ∧ now < expires) ∧ projectedLength = witnessLength := by
   exact ⟨same.symm ▸ checked, active, fresh, reconciled⟩
 
+/-- Reusing a decoded profile requires the same record in the deciding scope.
+    The task floor and the other live execution predicates are independent. -/
+theorem retained_profile_refines_current
+    {Record : Type} {checked actual : Record} {valid : Record → Prop}
+    {floorCurrent otherLiveGuards : Prop}
+    (decoded : valid checked) (same : actual = checked)
+    (floor : floorCurrent) (live : otherLiveGuards) :
+    valid actual ∧ floorCurrent ∧ otherLiveGuards := by
+  exact ⟨same.symm ▸ decoded, floor, live⟩
+
+#print axioms retained_profile_refines_current
 #print axioms prepared_use_refines_current
 #print axioms retained_root_revocation_blocks_child
 #print axioms retained_epoch_rejects_retired_signer

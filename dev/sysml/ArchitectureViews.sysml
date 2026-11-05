@@ -249,7 +249,7 @@ package WeaverViews {
         attribute readerQuestion : String = "What can authorize actual provider use?";
         attribute designAudience : String = "Gateway developers and operators";
         attribute designMedium : String = "GitHub at 830 CSS pixels";
-        attribute designMessage : String = "Rust prepares the relay grant before locking.\nFinal use checks the live grant, witness and Cedar.";
+        attribute designMessage : String = "Rust prepares the relay grant before locking.\nFinal use rechecks grant, profile, witness and Cedar.";
         attribute designFocus : String = "execution";
         attribute captionContext : String = "journey";
         attribute visualThemes : String = "sketchbook,ember,compact,reading";

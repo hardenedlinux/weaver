@@ -790,7 +790,7 @@ impl pb::gateway_server::Gateway for Gateway {
                     if std::env::var_os("WEAVER_TEST_PROVIDER_TIMINGS").is_some() {
                         let t = ledger.transaction_timings();
                         eprintln!(
-                            "weaver-oauth-timing {} {} {} {} {} {} {} {} {} {}",
+                            "weaver-oauth-timing {} {} {} {} {} {} {} {} {} {} {} {} {}",
                             t.provider_oauth_check.nanos,
                             t.domain_hold.nanos,
                             t.transaction_hold.nanos,
@@ -800,7 +800,10 @@ impl pb::gateway_server::Gateway for Gateway {
                             t.transaction_begin.nanos,
                             t.commit.nanos,
                             t.domain_wait.nanos,
-                            t.domain_keys.nanos
+                            t.domain_keys.nanos,
+                            t.provider_currentness.nanos,
+                            t.provider_cedar.nanos,
+                            t.rollback.nanos
                         );
                     }
                     execution

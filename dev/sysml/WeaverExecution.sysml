@@ -99,6 +99,10 @@ package WeaverExecution {
            A rejected parent or epoch cannot rebase an original command. The
            deployment-qualified review uses the same staging and final-use gate.
            Lost source and transport acknowledgments preserve separate outcomes. */
+        doc /* Provider queue encoding precedes the domain lock. Consume retains
+           verified profile bytes and their semantic key. Every effect rereads
+           the registry identity, digest and bytes and the current task floor
+           under the deciding scope, alongside live OAuth, Cedar and fencing. */
     }
     requirement def UnknownRetainsHold {
         doc /* Crashes, lost replies and partial writes cannot prove no execution or refund capacity. */

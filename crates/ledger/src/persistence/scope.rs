@@ -21,6 +21,8 @@ pub struct WriteScope<'a> {
     timings: &'a mut super::TransactionTimings,
     entered: Instant,
     oauth_check: Cell<super::Timing>,
+    currentness: Cell<super::Timing>,
+    cedar: Cell<super::Timing>,
     owner_entered: Option<Instant>,
     domains_entered: Option<Instant>,
     _exclusive: Option<RwLockWriteGuard<'a, ()>>,
@@ -101,7 +103,9 @@ fn start<'a>(session: &'a mut Session, family: Option<&str>) -> driver::Result<W
         poisoned: &session.poisoned,
         timings: &mut session.timings,
         entered: Instant::now(),
-        oauth_check: Cell::new(super::Timing::default()),
+        oauth_check: Cell::default(),
+        currentness: Cell::default(),
+        cedar: Cell::default(),
         owner_entered,
         domains_entered,
         _exclusive: exclusive,
@@ -152,12 +156,15 @@ impl WriteScope<'_> {
         &self,
         evidence: Option<&crate::provider_oauth::PreparedUse>,
     ) -> weaver_contracts::Result<Option<u64>> {
-        let started = Instant::now();
-        let result = crate::provider_oauth::require(self, evidence);
-        let mut timing = self.oauth_check.get();
-        timing.record(started.elapsed());
-        self.oauth_check.set(timing);
-        result
+        observe(&self.oauth_check, || {
+            crate::provider_oauth::require(self, evidence)
+        })
+    }
+    pub(crate) fn provider_currentness<T>(&self, run: impl FnOnce() -> T) -> T {
+        observe(&self.currentness, run)
+    }
+    pub(crate) fn provider_cedar<T>(&self, run: impl FnOnce() -> T) -> T {
+        observe(&self.cedar, run)
     }
 
     pub(crate) fn request_effect<T>(&mut self, run: impl FnOnce() -> T) -> T {
@@ -187,6 +194,12 @@ impl WriteScope<'_> {
         }
     }
 }
+fn observe<T>(timing: &Cell<super::Timing>, run: impl FnOnce() -> T) -> T {
+    let mut sample = timing.get();
+    let result = super::timing::measure(&mut sample, run);
+    timing.set(sample);
+    result
+}
 impl Deref for WriteScope<'_> {
     type Target = driver::Connection;
     fn deref(&self) -> &Self::Target {
@@ -209,10 +222,20 @@ impl Drop for WriteScope<'_> {
             let _ = release_failed_transaction(self.connection);
         }
         self.timings.transaction_hold.record(self.entered.elapsed());
-        let sample = self.oauth_check.get();
-        let total = &mut self.timings.provider_oauth_check;
-        total.attempts = total.attempts.saturating_add(sample.attempts);
-        total.nanos = total.nanos.saturating_add(sample.nanos);
+        for (total, sample) in [
+            (
+                &mut self.timings.provider_oauth_check,
+                self.oauth_check.get(),
+            ),
+            (
+                &mut self.timings.provider_currentness,
+                self.currentness.get(),
+            ),
+            (&mut self.timings.provider_cedar, self.cedar.get()),
+        ] {
+            total.attempts = total.attempts.saturating_add(sample.attempts);
+            total.nanos = total.nanos.saturating_add(sample.nanos);
+        }
         self._domains.clear();
         if let Some(entered) = self.domains_entered {
             self.timings.domain_hold.record(entered.elapsed());
