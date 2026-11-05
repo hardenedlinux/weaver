@@ -6,6 +6,7 @@ import CedarPooSpec.Gateway.ZeroTrust
 import GatewayHeadCAS
 import SharedDomains
 import PublicationRecovery
+import ProviderEgressWindow
 
 /-! Strengthen the existing SPEC final-use framework with the existing finite
 domain execution model on the SAME deciding view. No duplicate state machine,
@@ -40,6 +41,26 @@ theorem gateway_final_use_preserves_domain_contract
   exact ⟨strengthened, fun account => finite_budget_bound reachable account,
     fun key => per_message_affinity reachable key,
     (Gateway.ZeroTrust.specialization_preserves_core_and_original proposal strengthened).2⟩
+
+/-- Compose the acknowledged receiver certificate with SPEC's existing final-use
+contract on exactly the same view. Equality is the Host projection obligation;
+this theorem does not assume arbitrary SQL or an unmediated writer is verified. -/
+theorem acknowledged_delivery_preserves_same_actual_view
+    (use : Gateway.ZeroTrust.FinalUse proposal)
+    (events : GatewayHeadCAS.Run c owner GatewayHeadCAS.initial use.actual)
+    (delivered : GatewayHeadCAS.State) (same : delivered = use.actual)
+    (receipt : Weaver.ProviderEgressWindow.DeliveryJoin.Receipt)
+    (revision incarnation pending orphaned : Nat) (failed : Bool)
+    (current : Weaver.ProviderEgressWindow.DeliveryJoin.Current receipt revision incarnation pending orphaned failed) :
+    Weaver.ProviderEgressWindow.DeliveryJoin.Current receipt revision incarnation pending orphaned failed ∧
+    (Gateway.ZeroTrust.specialize proposal (reachableDomain c)).required effect delivered ∧
+    (∀ account, booked c delivered.base account ≤ c.capacity account) ∧
+    (∀ key, (delivered.base.messages key).claims ≤ 1 ∧ (delivered.base.messages key).sends ≤ 1) ∧
+    original.Refines prepared.profile := by
+  refine ⟨current, ?_⟩
+  simpa only [same] using gateway_final_use_preserves_domain_contract use events
+
+#print axioms acknowledged_delivery_preserves_same_actual_view
 
 theorem head_cas_preserves_original_obligations
     (step : GatewayHeadCAS.Step c owner before after)

@@ -14,7 +14,7 @@ use std::{
 };
 
 fn scope(roots: [u8; 3]) -> Scope {
-    Scope::Domains(roots.map(|id| id.to_string()))
+    Scope::Domains(roots.map(|id| id.to_string()).into())
 }
 
 proptest! {

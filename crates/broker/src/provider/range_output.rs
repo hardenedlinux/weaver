@@ -82,7 +82,7 @@ fn release_ranges<O: ProviderOutput>(
     format: &str,
     ready: &mut [Vec<ProviderEvent>],
 ) -> Result<()> {
-    let mut first_slot = Some(output.reserve()?);
+    let mut first_slot = Some(output.reserve_for_delivery(ledger, permit, format)?);
     let digests = ready
         .iter()
         .map(|rows| Ok(body_digest(&serde_json::to_string(rows)?)))
@@ -95,7 +95,7 @@ fn release_ranges<O: ProviderOutput>(
     match ledger.prepare_provider_releases(permit, &specs, format) {
         Ok(releases) => {
             for (rows, release) in ready.iter_mut().zip(releases) {
-                let slot = take_slot(output, &mut first_slot)?;
+                let slot = take_slot(ledger, permit, format, output, &mut first_slot)?;
                 queue_range(ledger, permit, output, format, rows, release, slot)?;
             }
         }
@@ -103,7 +103,7 @@ fn release_ranges<O: ProviderOutput>(
         // authorized prefix by making new single-range decisions in order.
         Err(Error::Denied) if ready.len() > 1 => {
             for (rows, (digest, length)) in ready.iter_mut().zip(specs) {
-                let slot = take_slot(output, &mut first_slot)?;
+                let slot = take_slot(ledger, permit, format, output, &mut first_slot)?;
                 let release = ledger.prepare_provider_release(permit, digest, format, length)?;
                 queue_range(ledger, permit, output, format, rows, release, slot)?;
             }
@@ -113,10 +113,16 @@ fn release_ranges<O: ProviderOutput>(
     Ok(())
 }
 
-fn take_slot<O: ProviderOutput>(output: &mut O, first: &mut Option<O::Slot>) -> Result<O::Slot> {
+fn take_slot<O: ProviderOutput>(
+    ledger: &mut Ledger,
+    permit: &ProviderDispatch,
+    format: &str,
+    output: &mut O,
+    first: &mut Option<O::Slot>,
+) -> Result<O::Slot> {
     match first.take() {
         Some(slot) => Ok(slot),
-        None => output.reserve(),
+        None => output.reserve_for_delivery(ledger, permit, format),
     }
 }
 
@@ -137,10 +143,11 @@ fn queue_range<O: ProviderOutput>(
         event.sequence = first + offset as u64;
     }
     let frame = O::prepare(permit.route(), &permit.plan().model, events, format)?;
-    ledger.release_provider(permit, release, format, |actual| {
+    ledger.release_provider_for_delivery(permit, release, format, |actual, receipt| {
         if actual != first || output.stopped() {
             return Err(Error::Conflict("provider release cancelled or rebound"));
         }
-        output.emit(slot, frame)
-    })
+        output.emit(slot, frame, receipt)
+    })?;
+    output.finish_delivery(ledger, permit, format)
 }

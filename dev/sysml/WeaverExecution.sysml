@@ -169,9 +169,32 @@ package WeaverExecution {
            A successful new stream has five fixed scopes for admission, consume,
            dispatch burn, request write and terminal commit. Every output
            range requires one final queue scope. Preparation adds one scope
-           per group. A single-range group yields two scopes per range. */
+           per group. A single-range group yields two scopes per range.
+           These are base deciding scopes. Receiver invalidation adds an
+           observed variable number of read-only requalification scopes;
+           they must be reported separately and included in total latency. */
         attribute fixedDecidingScopes : Integer = 5;
         attribute decidingScopesPerResponseRange : Integer = 2;
+    }
+
+    part def ProviderDeliveryLifecycle {
+        doc /* One real MPSC reservation future owns capacity waiting. The
+           producer keeps acknowledged inert frames while servicing the oldest
+           receiver's exact-view refresh. No transaction survives a capacity
+           wait, and terminal completion joins every pending handoff. */
+        doc /* Diagnostic scope traces retain at most sixty-four records.
+           Flush indexed chunks only after SQL, authority and scheduler custody
+           end. A final marker and contiguous offsets are required before any
+           throughput or fairness result can be accepted. Requalification scopes
+           cannot silently displace terminal or admission records. */
+        attribute diagnosticChunkRecords : Integer = 64;
+        attribute queueSlots : Integer = 2;
+        attribute stagedReceiverFrames : Integer = 1;
+        attribute maximumUnacceptedFrames : Integer = 3;
+        attribute originalDeliveryDeadlineMicros : Integer = 1000000;
+        attribute finalTurnP99TargetMicros : Integer = 1000;
+        attribute readyToGoP99TargetMicros : Integer = 1000;
+        assert constraint { maximumUnacceptedFrames == queueSlots + stagedReceiverFrames }
     }
 
     part def ProviderDomainReadMatrix {
@@ -277,6 +300,30 @@ package WeaverExecution {
            reopen only on the exact fenced image and outcome. */
     }
 
+    requirement def ProviderDeliveryJoin {
+        doc /* Every production writer enters WriteScope: close a unique ticket
+           before scheduler or database waiting, commit one Turso outcome, then
+           activate its exact revision. Unknown native outcomes seal the owner;
+           witness append uncertainty remains pending until exact-path durable
+           reconciliation. Known empty rollback may reopen only after the old
+           exclusive transaction is definitively joined and cannot commit late. */
+        doc /* All journal profiles retain one logical Rust execution owner.
+           Conflict identity contains original origin, shared budget/history,
+           API key, user and tenant in distinct namespaces. Metering projection
+           is immutable and installed only after acknowledged configuration commit.
+           Production exposes no raw Session or SQL execution surface.
+           Arc-held frame roles retain process custody through their lifetime.
+           After engine and last role retirement, explicitly unlock the lease;
+           a duplicated custody-file descriptor is not an execution role. */
+        doc /* Queue frames are inert until acknowledged release commit. One
+           noncloneable receiver cursor consumes exact owner/session/plan/span
+           under the same mutex as writer closure. Compare the live revision;
+           a changed view reruns existing Cedar, claim, domain and OAuth guards
+           outside that mutex without another send, range burn or reservation.
+           Check real OAuth expiry and the original monotonic delivery deadline
+           in the deciding turn. Keep at most one staged receiver frame plus\n           two real MPSC slots. Service requalification while polling the same\n           capacity future; join all pending handoffs before terminal completion.\n           Tonic acceptance is not client acknowledgment. */
+    }
+
     requirement def ProviderEgressPromotion {
         doc /* Promotion requires every Policy, OAuth witness, original claim,
            shared budget, history, domain, profile and fence writer to close
@@ -356,6 +403,35 @@ package WeaverExecution {
         attribute glyph : String = "stream";
         attribute visualRole : String = "execution";
         port acceptedBytes : ~EgressWindowPort;
+    }
+
+    part def DeliveryValidation {
+        attribute displayName : String = "Turso / validate";
+        attribute responsibility : String = "Cedar + claim + hold\nAcknowledge exact commit";
+        attribute glyph : String = "ledger";
+        attribute visualRole : String = "ledger";
+        port closed : ~EgressWindowPort;
+        port validated : EgressWindowPort;
+    }
+    part def DeliveryReceiver {
+        attribute displayName : String = "Rust / consume once";
+        attribute responsibility : String = "Live cut + owner + expiry\nOne next cursor";
+        attribute glyph : String = "authorization";
+        attribute visualRole : String = "execution";
+        port validated : ~EgressWindowPort;
+        port staged : ~EgressWindowPort;
+        port offer : EgressWindowPort;
+    }
+    part providerDeliveryJoin {
+        part changes : EgressMutationBarrier;
+        part validated : DeliveryValidation;
+        part staged : InertProviderFrame;
+        part receiver : DeliveryReceiver;
+        part tonic : ProviderEgressTransport;
+        connection closeBeforeWrite connect changes.closed to validated.closed;
+        connection exactRevision connect validated.validated to receiver.validated;
+        connection inertOnly connect staged.stagedBytes to receiver.staged;
+        connection oneOffer connect receiver.offer to tonic.acceptedBytes;
     }
 
     part providerEgressWindow {

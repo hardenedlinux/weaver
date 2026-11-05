@@ -95,6 +95,7 @@ pub(crate) fn apply(
             )),
         };
     };
+    tx.witness_started(path).map_err(db)?;
     if !std::fs::symlink_metadata(path).map_err(storage)?.is_file() {
         return Err(Error::Invalid(
             "OAuth witness must be a provisioned regular file",
@@ -174,7 +175,8 @@ pub(crate) fn apply(
     {
         append(&mut file, &mut image, &change)?;
     }
-    retain(tx, &image)
+    retain(tx, &image)?;
+    tx.witness_reconciled(path).map_err(db)
 }
 
 pub(super) fn issuer_key(

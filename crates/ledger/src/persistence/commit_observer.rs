@@ -11,6 +11,8 @@ pub enum Cut {
     AfterCommit,
     BeforeRangePrepareCommit,
     AfterRangePrepareCommit,
+    BeforeDeliveryCommit,
+    AfterDeliveryCommit,
 }
 /// Test decision; an unavailable result always poisons the session.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

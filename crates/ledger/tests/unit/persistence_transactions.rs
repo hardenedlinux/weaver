@@ -100,36 +100,55 @@ fn mvcc_second_process_probe() {
         return;
     };
     assert!(
-        Session::open_with_journal(path, persistence::Journal::Mvcc).is_err(),
-        "second process acquired live MVCC custody"
+        Session::open_with_journal(
+            path,
+            if std::env::var_os("WEAVER_TEST_WAL_CUSTODY").is_some() {
+                persistence::Journal::Wal
+            } else {
+                persistence::Journal::Mvcc
+            }
+        )
+        .is_err(),
+        "second process acquired live execution custody"
     );
 }
 
 #[test]
 fn mvcc_process_custody_refuses_a_second_process() {
-    let directory = tempfile::tempdir().expect("directory");
-    let path = directory.path().join("owner.db");
-    let storage = Session::open_with_journal(&path, persistence::Journal::Mvcc).expect("owner");
-    let output = std::process::Command::new(std::env::current_exe().expect("test image"))
-        .args([
-            "--exact",
-            "persistence::scope::tests::mvcc_second_process_probe",
-            "--nocapture",
-        ])
-        .env("WEAVER_MVCC_CUSTODY_PROBE", &path)
-        .output()
-        .expect("natural child exit");
-    assert!(
-        output.status.success(),
-        "{}",
-        String::from_utf8_lossy(&output.stderr)
-    );
-    assert!(String::from_utf8_lossy(&output.stdout).contains("1 passed"));
-    storage.close().expect("owner drains");
-    Session::open_with_journal(&path, persistence::Journal::Mvcc)
-        .expect("new owner after release")
-        .close()
-        .expect("close");
+    for journal in [persistence::Journal::Wal, persistence::Journal::Mvcc] {
+        let directory = tempfile::tempdir().expect("directory");
+        let path = directory.path().join("owner.db");
+        let storage = Session::open_with_journal(&path, journal).expect("owner");
+        let retained_owner = storage.execution_owner();
+        storage
+            .close()
+            .expect("session retired, logical role retained");
+        let output = std::process::Command::new(std::env::current_exe().expect("test image"))
+            .args([
+                "--exact",
+                "persistence::scope::tests::mvcc_second_process_probe",
+                "--nocapture",
+            ])
+            .env("WEAVER_MVCC_CUSTODY_PROBE", &path)
+            .envs(if journal == persistence::Journal::Wal {
+                vec![("WEAVER_TEST_WAL_CUSTODY", "1")]
+            } else {
+                vec![]
+            })
+            .output()
+            .expect("natural child exit");
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        assert!(String::from_utf8_lossy(&output.stdout).contains("1 passed"));
+        drop(retained_owner);
+        Session::open_with_journal(&path, journal)
+            .expect("new owner after release")
+            .close()
+            .expect("close");
+    }
 }
 
 #[test]

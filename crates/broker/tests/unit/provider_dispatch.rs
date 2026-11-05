@@ -148,6 +148,15 @@ struct Cancellation {
     checkpoint: Mutex<Option<mpsc::Sender<()>>>,
 }
 impl ProviderOutput for Cancellation {
+    fn finish_delivery(
+        &mut self,
+        _: &mut weaver_ledger::Ledger,
+        _: &weaver_ledger::ProviderDispatch,
+        _: &str,
+    ) -> Result<()> {
+        Ok(())
+    }
+
     type Slot = ();
     type PreparedFrame = ();
     fn stopped(&self) -> bool {
@@ -163,7 +172,7 @@ impl ProviderOutput for Cancellation {
     fn prepare(_: &ProviderRoute, _: &str, _: &[ProviderEvent], _: &str) -> Result<()> {
         panic!("no response preparation expected")
     }
-    fn emit(&mut self, _: (), _: ()) -> Result<()> {
+    fn emit(&mut self, _: (), _: (), _: weaver_ledger::ProviderDelivery) -> Result<()> {
         panic!("no response release expected")
     }
 }

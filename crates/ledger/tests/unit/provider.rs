@@ -879,3 +879,6 @@ fn whole_database_rollback_requires_an_independent_recovery_floor() {
     );
     inspection.close().expect("close inspection");
 }
+
+#[path = "provider_delivery.rs"]
+mod delivery;

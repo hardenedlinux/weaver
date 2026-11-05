@@ -22,11 +22,15 @@ pub struct Session {
     pub(super) timings: super::TransactionTimings,
     pub(crate) range_cancelled: Option<Arc<dyn Fn() -> bool + Send + Sync>>,
     #[cfg(feature = "commit-observer")]
-    pub(super) scope_trace: Option<Vec<super::ProviderScopeSample>>,
+    pub(super) scope_trace: Option<super::scope_trace::Trace>,
     #[cfg(any(test, feature = "commit-observer"))]
     pub(super) commit_observer: Option<Arc<dyn super::commit_observer::Observer>>,
 }
 impl Session {
+    pub(crate) fn execution_owner(&self) -> Arc<super::owner::Owner> {
+        self.owner.clone()
+    }
+
     /// Open through MRR Data and read back the required durability settings.
     pub fn open(path: impl AsRef<Path>) -> driver::Result<Self> {
         Self::connect(path.as_ref(), None)
@@ -75,13 +79,14 @@ impl Session {
         self.timings
     }
     #[cfg(feature = "commit-observer")]
-    pub(crate) fn trace_provider_scopes(&mut self) {
-        self.scope_trace = Some(Vec::with_capacity(super::scope_trace::CAPACITY));
+    pub(crate) fn trace_provider_scopes(&mut self, family: &str) {
+        self.scope_trace = Some(super::scope_trace::Trace::new(family));
     }
-
     #[cfg(feature = "commit-observer")]
-    pub(crate) fn provider_scope_samples(&self) -> &[super::ProviderScopeSample] {
-        self.scope_trace.as_deref().unwrap_or_default()
+    pub(crate) fn finish_provider_scope_trace(&mut self) {
+        if let Some(mut trace) = self.scope_trace.take() {
+            trace.flush(true);
+        }
     }
     pub(crate) fn prepare_provider_domain(&mut self) {
         super::timing::measure(&mut self.timings.provider_domain_prepare, || {
@@ -120,13 +125,15 @@ impl Session {
     pub(crate) fn initialize_ledger(&mut self) -> driver::Result<()> {
         self.require_quiescent()?;
         let owner = self.owner.clone();
-        let mvcc = owner.journal == super::Journal::Mvcc;
-        if mvcc && owner.ledger_initialized.load(Ordering::Acquire) {
+        if owner.ledger_initialized.load(Ordering::Acquire) {
             return Ok(());
         }
-        let transaction = super::begin(self)?;
-        if !mvcc || !owner.ledger_initialized.load(Ordering::Acquire) {
+        let mut transaction = super::begin(self)?;
+        if !owner.ledger_initialized.load(Ordering::Acquire) {
             script(&transaction, crate::schema::SCHEMA)?;
+            let deployment =
+                crate::metering::deployment(&transaction).map_err(super::owner::error)?;
+            transaction.project_metering(deployment);
         }
         transaction.commit()?;
         owner.ledger_initialized.store(true, Ordering::Release);
@@ -150,5 +157,24 @@ impl Deref for Session {
     type Target = driver::Connection;
     fn deref(&self) -> &Self::Target {
         &self.connection
+    }
+}
+
+/// Opaque process custody for a production server. It exposes no raw connection,
+/// SQL execution or Deref; all production mutations enter Ledger WriteScope.
+pub struct LedgerCustody {
+    session: Session,
+}
+impl LedgerCustody {
+    pub fn open_with_journal(
+        path: impl AsRef<Path>,
+        journal: super::Journal,
+    ) -> driver::Result<Self> {
+        Ok(Self {
+            session: Session::open_with_journal(path, journal)?,
+        })
+    }
+    pub fn close(self) -> driver::Result<()> {
+        self.session.close()
     }
 }

@@ -8,7 +8,7 @@
 
 [[file:10.00-index.org][Routing and inference index]]
 
-See [[file:10.08-send-window-promotion.org][the writer audit and receiver promotion contract]]
+See [[file:10.08-send-window-promotion.org][the implemented writer mediation and receiver join]]
 for current source gaps, concurrent pending operations and final-handoff obligations.
 
 * Decision under review
@@ -151,7 +151,7 @@ actual amount calculation.
 | [[file:../../../crates/ledger/src/provider_publication.rs][Policy publication join]] and [[file:../../../crates/ledger/src/reviewed_head.rs][reviewed head]] | The new projection represents the reviewed publication, exact Policy and schema, reviewer state, task birth and pending barrier as one cut. A cached PolicySet can be compiled before activation, but each offer evaluates it with the live request. |
 | [[file:../../../crates/ledger/src/execution_exposure.rs][Original provider exposure]] and [[file:../../../crates/ledger/src/domains/evidence.rs][domain evidence]] | Validate the original run, route, metering binding, shared manifest and history on the closed projection path. The current check traverses shared roots and verifies their retained claims. A ready offer uses bounded lookup into the fully qualified current projection. |
 | [[file:../../../crates/ledger/src/provider_oauth.rs][OAuth live binding]] and [[file:../../../crates/ledger/src/provider_oauth_witness.rs][independent witness]] | Fresh expiry stays in the deciding turn. A witness ahead of the database must close every affected lane. Require a close-before-append handshake with every witness writer, qualified witness and database outcome, and retirement of stale incarnations. |
-| [[file:../../../crates/server/src/grpc_output.rs][Bounded gRPC output]] | The existing channel insertion is not evidence of final transport acceptance. Qualify the exact receiver-owned handoff, exclusive incarnation and no duplicate offer under old buffers and retries. |
+| [[file:../../../crates/server/src/grpc_delivery.rs][Final gRPC receiver]] | Queue entries are inert. The current receiver joins acknowledged release, exact authority revision and one owner/session/cursor. The bounded-window candidate must retain this boundary when replacing per-range SQL. |
 
 A deployment with an independent writer that can mutate a currentness
 input outside the close protocol is ineligible for this profile. A

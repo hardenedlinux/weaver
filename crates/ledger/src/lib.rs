@@ -6,7 +6,11 @@
 //! Whole-image rollback and network filesystems remain outside this profile.
 /// Trusted host persistence utilities backed only by MRR Data's Turso driver.
 /// This is not a Gateway request surface or an authorization capability.
+#[cfg(any(test, feature = "commit-observer"))]
 pub mod persistence;
+#[cfg(not(any(test, feature = "commit-observer")))]
+mod persistence;
+pub use persistence::{Journal, LedgerCustody, Timing, TransactionTimings};
 #[cfg(test)]
 extern crate self as weaver_ledger;
 mod delta_registration;
@@ -16,6 +20,13 @@ mod exposure_manifest;
 mod metering;
 mod metering_credentials;
 mod provider;
+mod provider_delivery;
+#[cfg(feature = "commit-observer")]
+pub use provider_delivery::DeliveryObservation;
+pub use provider_delivery::{
+    DeliveryCursor, DeliveryFrame, DeliveryInterval, DeliveryProducer, DeliveryWait,
+    ProviderDelivery,
+};
 mod provider_catalog;
 mod provider_oauth;
 mod provider_oauth_witness;

@@ -445,3 +445,102 @@ theorem expired_clock_blocks_receiver (cut : Cut) (owner : Custody) (frame : Fra
 #print axioms queue_is_not_delivery_evidence
 
 end Weaver.ProviderEgressWindow.Promotion
+
+namespace Weaver.ProviderEgressWindow.DeliveryJoin
+
+/-- The existing Turso range guard supplies the complete same-view check.
+    A staged frame has no authority until that scope's acknowledgment; the
+    receiver compares its validation revision inside the final owner turn. -/
+structure Receipt where
+  validatedRevision : Nat
+  acknowledged : Bool
+  consumed : Bool
+  incarnation : Nat
+
+def Current (receipt : Receipt) (revision incarnation pending orphaned : Nat)
+    (failed : Bool) : Prop :=
+  receipt.acknowledged = true ∧ receipt.consumed = false ∧ failed = false ∧
+    receipt.validatedRevision = revision ∧ receipt.incarnation = incarnation ∧
+    pending = 0 ∧ orphaned = 0
+
+theorem staged_frame_is_not_permission (receipt : Receipt) (revision incarnation pending orphaned : Nat)
+    (failed : Bool) (unconfirmed : receipt.acknowledged = false) :
+    ¬ Current receipt revision incarnation pending orphaned failed := by
+  intro current
+  exact Bool.noConfusion (unconfirmed.symm.trans current.1)
+
+theorem changed_view_requires_requalification (receipt : Receipt) (revision incarnation pending orphaned : Nat)
+    (failed : Bool) (changed : receipt.validatedRevision ≠ revision) :
+    ¬ Current receipt revision incarnation pending orphaned failed := fun current => changed current.2.2.2.1
+
+theorem orphaned_witness_cannot_activate (receipt : Receipt) (revision incarnation pending orphaned : Nat)
+    (failed : Bool) (unknown : orphaned ≠ 0) :
+    ¬ Current receipt revision incarnation pending orphaned failed := fun current => unknown current.2.2.2.2.2.2
+
+theorem consumed_receipt_cannot_be_requalified (receipt : Receipt)
+    (revision incarnation pending orphaned : Nat) (failed : Bool) :
+    ¬ Current {receipt with consumed := true} revision incarnation pending orphaned failed := by
+  intro current
+  exact Bool.noConfusion current.2.1
+
+#print axioms staged_frame_is_not_permission
+#print axioms changed_view_requires_requalification
+#print axioms orphaned_witness_cannot_activate
+#print axioms consumed_receipt_cannot_be_requalified
+
+/-- Aborting a known empty exclusive transaction preserves the certificate only
+when the driver has definitively joined rollback and cannot later commit.
+An unchanged idle read or an independent witness effect supplies no such premise. -/
+theorem known_absent_transaction_preserves_certificate (receipt : Receipt)
+    (before after incarnation : Nat) (same : after = before)
+    (current : Current receipt before incarnation 0 0 false) :
+    Current receipt after incarnation 0 0 false := by
+  simpa only [same] using current
+
+/-- The final turn also checks a clock and cancellation deadline that may change
+without a storage write. Currentness alone does not authorize an expired offer. -/
+def TimelyOffer (current clock deadline : Prop) : Prop := current ∧ clock ∧ deadline
+
+theorem elapsed_deadline_blocks_current_receipt (current clock deadline : Prop)
+    (expired : ¬ deadline) : ¬ TimelyOffer current clock deadline :=
+  fun offer => expired offer.2.2
+
+theorem replacement_owner_cannot_use_receipt (receipt : Receipt)
+    (revision incarnation pending orphaned : Nat) (failed : Bool)
+    (replaced : receipt.incarnation ≠ incarnation) :
+    ¬ Current receipt revision incarnation pending orphaned failed :=
+  fun current => replaced current.2.2.2.2.1
+
+#print axioms known_absent_transaction_preserves_certificate
+#print axioms elapsed_deadline_blocks_current_receipt
+#print axioms replacement_owner_cannot_use_receipt
+
+/-- Logical Rust roles retain the lease; inherited custody-file descriptors do
+not mint an execution role. Reference accounting and engine-drain ordering are
+Host premises exercised by the real descriptor and subprocess controls. -/
+structure OwnerLease where
+  roles : Nat
+  descriptorCopies : Nat
+  held : Bool
+
+def retireLease (lease : OwnerLease) : OwnerLease :=
+  if lease.roles = 0 then {lease with held := false} else lease
+
+theorem retained_role_blocks_custody_retirement (lease : OwnerLease)
+    (retained : lease.roles ≠ 0) : retireLease lease = lease := by
+  simp [retireLease, retained]
+
+theorem retired_roles_release_lease_despite_descriptor_copies (lease : OwnerLease)
+    (retired : lease.roles = 0) : (retireLease lease).held = false := by
+  simp [retireLease, retired]
+
+theorem descriptor_copy_cannot_change_role_count (lease : OwnerLease) (copies : Nat) :
+    (retireLease {lease with descriptorCopies := copies}).roles = lease.roles := by
+  simp [retireLease]
+  split <;> rfl
+
+#print axioms retained_role_blocks_custody_retirement
+#print axioms retired_roles_release_lease_despite_descriptor_copies
+#print axioms descriptor_copy_cannot_change_role_count
+
+end Weaver.ProviderEgressWindow.DeliveryJoin

@@ -216,6 +216,25 @@ pub trait ProviderOutput {
     type PreparedFrame;
     fn stopped(&self) -> bool;
     fn reserve(&mut self) -> Result<Self::Slot>;
+    /// Reconcile bounded inert deliveries before waiting for actual output credit.
+    fn reserve_for_delivery(
+        &mut self,
+        _ledger: &mut Ledger,
+        _permit: &ProviderDispatch,
+        _format: &str,
+    ) -> Result<Self::Slot> {
+        self.reserve()
+    }
+    /// Join every pending local handoff before declaring a terminal stream.
+    fn drain_delivery(
+        &mut self,
+        _ledger: &mut Ledger,
+        _permit: &ProviderDispatch,
+        _format: &str,
+    ) -> Result<()> {
+        Ok(())
+    }
+
     /// Diagnostic single-range preparation on the explicit test-loopback host.
     #[cfg(feature = "test-loopback")]
     fn prepare_ranges_separately(&self) -> bool {
@@ -229,7 +248,19 @@ pub trait ProviderOutput {
         format: &str,
     ) -> Result<Self::PreparedFrame>;
     /// Only this callback may publish the already prepared frame.
-    fn emit(&mut self, slot: Self::Slot, frame: Self::PreparedFrame) -> Result<()>;
+    fn emit(
+        &mut self,
+        slot: Self::Slot,
+        frame: Self::PreparedFrame,
+        receipt: weaver_ledger::ProviderDelivery,
+    ) -> Result<()>;
+    /// Acknowledge a committed inert frame outside the deciding scope.
+    fn finish_delivery(
+        &mut self,
+        ledger: &mut Ledger,
+        permit: &weaver_ledger::ProviderDispatch,
+        format: &str,
+    ) -> Result<()>;
 }
 /// Named execution inputs keep route authority distinct from output queue custody.
 pub struct ProviderExecution<'a> {
@@ -317,6 +348,7 @@ pub fn execute_catalog_provider_with_oauth<O: ProviderOutput>(
         }
     };
     super::range_output::relay(ledger, &permit, output, &mut reader, format, batch_rows)?;
+    output.drain_delivery(ledger, &permit, format)?;
     ledger.complete_provider_with_usage(&permit, format, reader.terminal_tokens())
 }
 

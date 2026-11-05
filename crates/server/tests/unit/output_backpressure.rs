@@ -6,7 +6,6 @@
 //! is compiled into a production server. Pending is observed by polling the real
 //! reserve_owned future, not inferred from sleep or an unchanged receipt count.
 use super::Output;
-use crate::pb;
 use crate::test_fixtures as fixtures;
 use std::{
     future::{Future, poll_fn},
@@ -22,7 +21,7 @@ use tokio::sync::mpsc;
 use tokio_util::sync::CancellationToken;
 use weaver_broker::ProviderOutput;
 use weaver_ledger::Ledger;
-type FrameMessage = Result<pb::ProviderFrame, tonic::Status>;
+type FrameMessage = Result<crate::grpc_output::InertFrame, tonic::Status>;
 type QueueSender = mpsc::Sender<FrameMessage>;
 type QueueReceiver = mpsc::Receiver<FrameMessage>;
 
@@ -84,13 +83,13 @@ pub(super) fn enqueued(first: u64, rows: usize) {
     }
 }
 
-pub(super) fn cancelled() {
+pub(crate) fn cancelled() {
     if let Some(observer) = OBSERVER.get() {
         observer.record("cancelled", observer.next.load(Ordering::SeqCst) - 1, 0, 0);
     }
 }
 
-pub(super) fn expired() {
+pub(crate) fn expired() {
     if let Some(observer) = OBSERVER.get() {
         observer.record("expired", observer.next.load(Ordering::SeqCst) - 1, 0, 0);
     }
@@ -123,11 +122,13 @@ fn full_output() -> (Output, QueueReceiver, QueueSender) {
     let (sender, receiver) = mpsc::channel(2);
     for _ in 0..2 {
         sender
-            .try_send(Ok(pb::ProviderFrame::default()))
+            .try_send(Err(tonic::Status::unavailable("inert capacity fixture")))
             .expect("fill actual queue");
     }
     (
         Output {
+            pending: None,
+            deliveries: Default::default(),
             telemetry: std::sync::Arc::new(weaver_telemetry::Metrics::default()),
             sender: sender.clone(),
             cancelled: CancellationToken::new(),
@@ -181,7 +182,7 @@ async fn waiting_capacity_does_not_hold_sql_or_authorize_after_publication() {
     receiver
         .try_recv()
         .expect("return capacity after committed revoke")
-        .expect("seed frame");
+        .expect_err("inert capacity fixture");
     let slot = task
         .await
         .expect("worker")
@@ -210,7 +211,7 @@ async fn pending_range_history_created_during_capacity_wait_cannot_be_replayed()
     receiver
         .try_recv()
         .expect("return capacity")
-        .expect("seed frame");
+        .expect_err("inert capacity fixture");
     drop(task.await.expect("worker").expect("capacity"));
     assert!(
         ledger
@@ -256,8 +257,8 @@ proptest::proptest! {
         let path=directory.path().join("prepared.db");
         let (mut ledger,permit)=prepared_ledger(&path);
         let (mut output,mut receiver,_sender)=full_output();
-        receiver.try_recv().expect("first fixture frame").expect("frame");
-        receiver.try_recv().expect("second fixture frame").expect("frame");
+        receiver.try_recv().expect("first fixture frame").expect_err("inert capacity fixture");
+        receiver.try_recv().expect("second fixture frame").expect_err("inert capacity fixture");
         let slot=output.reserve().expect("capacity outside writer");
         let release=ledger.prepare_provider_release(&permit,"source-events","arrow",rows as u64).expect("durable burn");
         let first=release.first_sequence();
@@ -271,14 +272,14 @@ proptest::proptest! {
             2 => output.cancelled.cancel(),
             _ => {}
         }
-        let send=move |_:u64| {
-            output.emit(slot,frame)?;
+        let send=move |_:u64, receipt: weaver_ledger::ProviderDelivery| {
+            output.emit(slot,frame,receipt)?;
             if fault==4 {Err(weaver_contracts::Error::Conflict("queue outcome unknown"))}else{Ok(())}
         };
         let result=if fault==3 {
             let mut recovered=Ledger::open(&path).expect("replacement session");
-            recovered.release_provider(&permit,release,"arrow",send)
-        }else{ledger.release_provider(&permit,release,"arrow",send)};
+            recovered.release_provider_for_delivery(&permit,release,"arrow",send)
+        }else{ledger.release_provider_for_delivery(&permit,release,"arrow",send)};
         proptest::prop_assert_eq!(result.is_ok(),fault==0);
         proptest::prop_assert_eq!(receiver.try_recv().is_ok(),fault==0||fault==4);
         proptest::prop_assert_eq!(ledger.held("f").expect("original hold"),4);

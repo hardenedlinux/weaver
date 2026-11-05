@@ -247,7 +247,7 @@ impl Ledger {
     /// Trusted startup only. An existing store keeps its exact metering contract.
     pub fn install_metering(&mut self, config: &MeteringDeployment) -> Result<()> {
         config.validate()?;
-        let tx = persistence::begin(&mut self.connection).map_err(db)?;
+        let mut tx = persistence::begin(&mut self.connection).map_err(db)?;
         match deployment(&tx)? {
             Some(previous) if previous != *config => {
                 return Err(Error::Conflict(
@@ -272,6 +272,7 @@ impl Ledger {
                 .map_err(db)?;
             }
         }
+        tx.project_metering(Some(config.clone()));
         tx.commit().map_err(db)
     }
 

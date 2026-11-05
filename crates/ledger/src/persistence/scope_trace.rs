@@ -14,7 +14,7 @@ pub(super) struct Arrival {
 }
 
 pub(super) struct Granted<'a> {
-    trace: &'a mut Vec<ProviderScopeSample>,
+    trace: &'a mut Trace,
     arrival: Arrival,
     order: u64,
     at: Instant,
@@ -33,7 +33,7 @@ impl Arrival {
     pub(super) fn capture(phase: ProviderScopePhase, order: u64, at: Instant) -> Self {
         Self { phase, order, at }
     }
-    pub(super) fn granted(self, trace: &mut Vec<ProviderScopeSample>, order: u64) -> Granted<'_> {
+    pub(super) fn granted(self, trace: &mut Trace, order: u64) -> Granted<'_> {
         Granted {
             trace,
             arrival: self,
@@ -43,16 +43,69 @@ impl Arrival {
     }
 }
 
-impl Granted<'_> {
-    pub(super) fn record(self) {
-        if self.trace.len() < CAPACITY {
-            self.trace.push(ProviderScopeSample {
-                phase: self.arrival.phase,
-                arrival: self.arrival.order,
-                grant: self.order,
-                wait: self.at.duration_since(self.arrival.at),
-                hold: self.at.elapsed(),
-            });
+pub(super) struct Trace {
+    family: String,
+    samples: Vec<ProviderScopeSample>,
+    flushed: usize,
+}
+impl Trace {
+    pub(super) fn new(family: &str) -> Self {
+        Self {
+            family: family.to_owned(),
+            samples: Vec::with_capacity(CAPACITY),
+            flushed: 0,
         }
     }
+    pub(super) fn flush(&mut self, final_chunk: bool) {
+        use std::fmt::Write;
+        let mut line = format!(
+            "weaver-provider-scope {} {}:{}",
+            self.family,
+            self.flushed,
+            u8::from(final_chunk)
+        );
+        for sample in &self.samples {
+            let phase = match sample.phase {
+                ProviderScopePhase::Other => "other",
+                ProviderScopePhase::PrepareRange => "prepare",
+                ProviderScopePhase::FinalQueue => "queue",
+                ProviderScopePhase::RevalidateDelivery => "revalidate",
+            };
+            let _ = write!(
+                line,
+                " {phase}:{}:{}:{}:{}",
+                sample.arrival,
+                sample.grant,
+                sample.wait.as_nanos(),
+                sample.hold.as_nanos()
+            );
+        }
+        eprintln!("{line}");
+        self.flushed = self
+            .flushed
+            .checked_add(self.samples.len())
+            .expect("diagnostic ordinal exhausted");
+        self.samples.clear();
+    }
+    fn record(&mut self, sample: ProviderScopeSample) {
+        if self.samples.len() == CAPACITY {
+            self.flush(false);
+        }
+        self.samples.push(sample);
+    }
 }
+impl Granted<'_> {
+    pub(super) fn record(self) {
+        self.trace.record(ProviderScopeSample {
+            phase: self.arrival.phase,
+            arrival: self.arrival.order,
+            grant: self.order,
+            wait: self.at.duration_since(self.arrival.at),
+            hold: self.at.elapsed(),
+        });
+    }
+}
+
+#[cfg(test)]
+#[path = "../../tests/unit/scope_trace.rs"]
+mod tests;

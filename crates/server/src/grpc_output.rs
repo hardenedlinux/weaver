@@ -14,6 +14,7 @@ use weaver_contracts::{Error, ProviderEvent, ProviderRoute, Result};
 #[cfg(test)]
 thread_local! {
     static HANDOFFS: std::cell::RefCell<Vec<(u64, u128)>> = const { std::cell::RefCell::new(Vec::new()) };
+    static DELIVERIES: std::cell::RefCell<Vec<weaver_ledger::DeliveryObservation>> = const { std::cell::RefCell::new(Vec::new()) };
     static ENCODING_NANOS: std::cell::Cell<u128> = const { std::cell::Cell::new(0) };
 }
 
@@ -27,23 +28,55 @@ pub(crate) fn take_handoffs() -> Vec<(u64, u128)> {
     HANDOFFS.with(|handoffs| std::mem::take(&mut *handoffs.borrow_mut()))
 }
 
+#[cfg(test)]
+pub(crate) fn take_deliveries() -> Vec<weaver_ledger::DeliveryObservation> {
+    DELIVERIES.with(|rows| std::mem::take(&mut *rows.borrow_mut()))
+}
+
+/// Only Output constructs the packet. Other server owners cannot inspect or
+/// modify its bytes before the deciding receiver consumes the proof.
+pub(crate) struct InertFrame {
+    frame: Option<pb::ProviderFrame>,
+    proof: weaver_ledger::DeliveryFrame,
+}
+impl InertFrame {
+    pub(crate) fn poll(
+        &mut self,
+        cursor: &mut weaver_ledger::DeliveryCursor,
+        cx: &std::task::Context<'_>,
+    ) -> std::task::Poll<Result<pb::ProviderFrame>> {
+        cursor.poll(&self.proof, cx, &mut self.frame)
+    }
+    #[cfg(all(test, unix))]
+    pub(crate) fn acknowledged(&self) -> bool {
+        self.proof.acknowledged()
+    }
+}
+impl std::fmt::Debug for InertFrame {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        formatter.debug_struct("InertFrame").finish_non_exhaustive()
+    }
+}
+pub(crate) const DELIVERY_QUEUE_CAPACITY: usize = 2;
+type Sender = mpsc::Sender<std::result::Result<InertFrame, tonic::Status>>;
+
 pub(crate) struct Output {
     pub telemetry: std::sync::Arc<weaver_telemetry::Metrics>,
-    pub sender: mpsc::Sender<std::result::Result<pb::ProviderFrame, tonic::Status>>,
+    pub sender: Sender,
+    pub pending: Option<weaver_ledger::DeliveryProducer>,
+    pub deliveries: std::collections::VecDeque<crate::grpc_delivery_producer::PendingDelivery>,
     pub cancelled: CancellationToken,
     pub shutdown: CancellationToken,
     pub runtime: tokio::runtime::Handle,
 }
 pub(crate) struct PreparedFrame {
     frame: pb::ProviderFrame,
-    #[cfg(test)]
     first: u64,
-    #[cfg(all(test, unix))]
     rows: usize,
 }
 impl ProviderOutput for Output {
     type PreparedFrame = PreparedFrame;
-    type Slot = mpsc::OwnedPermit<std::result::Result<pb::ProviderFrame, tonic::Status>>;
+    type Slot = mpsc::OwnedPermit<std::result::Result<InertFrame, tonic::Status>>;
     #[cfg(test)]
     fn prepare_ranges_separately(&self) -> bool {
         std::env::var_os("WEAVER_TEST_SINGLE_RANGE_PREPARE").is_some()
@@ -80,6 +113,22 @@ impl ProviderOutput for Output {
                     .record(weaver_telemetry::Signal::QueueWaitFailed)
             })
     }
+    fn reserve_for_delivery(
+        &mut self,
+        ledger: &mut weaver_ledger::Ledger,
+        permit: &weaver_ledger::ProviderDispatch,
+        format: &str,
+    ) -> Result<Self::Slot> {
+        self.reserve_guarded(ledger, permit, format)
+    }
+    fn drain_delivery(
+        &mut self,
+        ledger: &mut weaver_ledger::Ledger,
+        permit: &weaver_ledger::ProviderDispatch,
+        format: &str,
+    ) -> Result<()> {
+        self.drain_deliveries(ledger, permit, format)
+    }
     fn prepare(
         route: &ProviderRoute,
         model: &str,
@@ -102,36 +151,96 @@ impl ProviderOutput for Output {
         ENCODING_NANOS.with(|total| total.set(total.get() + started.elapsed().as_nanos()));
         Ok(PreparedFrame {
             frame,
-            #[cfg(test)]
             first: events[0].sequence,
-            #[cfg(all(test, unix))]
             rows: events.len(),
         })
     }
-    fn emit(&mut self, slot: Self::Slot, prepared: PreparedFrame) -> Result<()> {
-        if self.stopped() {
-            return Err(Error::Conflict("RPC cancelled before release"));
+    fn emit(
+        &mut self,
+        slot: Self::Slot,
+        prepared: PreparedFrame,
+        receipt: weaver_ledger::ProviderDelivery,
+    ) -> Result<()> {
+        if self.stopped()
+            || self.pending.is_some()
+            || self.deliveries.len() > DELIVERY_QUEUE_CAPACITY
+            || receipt.interval()
+                != (weaver_ledger::DeliveryInterval {
+                    first: prepared.first,
+                    rows: prepared.rows as u64,
+                })
+        {
+            return Err(Error::Conflict("RPC cancelled or foreign delivery frame"));
         }
+        let (producer, proof) = receipt.split();
+        self.pending = Some(producer);
         #[cfg(test)]
         if std::env::var_os("WEAVER_TEST_PROVIDER_SCOPE_TRACE").is_some()
-            && let Ok(instant) = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH)
+            && let Ok(time) = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH)
         {
-            HANDOFFS.with(|handoffs| {
-                let mut handoffs = handoffs.borrow_mut();
-                if handoffs.len() < 64 {
-                    handoffs.push((prepared.first, instant.as_nanos()));
+            HANDOFFS.with(|rows| {
+                let mut rows = rows.borrow_mut();
+                if rows.len() < 64 {
+                    rows.push((prepared.first, time.as_nanos()));
                 }
             });
         }
-        slot.send(Ok(prepared.frame));
+        slot.send(Ok(InertFrame {
+            frame: Some(prepared.frame),
+            proof,
+        }));
         self.telemetry
             .record(weaver_telemetry::Signal::ResponseFramesQueued);
         #[cfg(all(test, unix))]
         backpressure_tests::enqueued(prepared.first, prepared.rows);
         Ok(())
     }
+    fn finish_delivery(
+        &mut self,
+        ledger: &mut weaver_ledger::Ledger,
+        permit: &weaver_ledger::ProviderDispatch,
+        format: &str,
+    ) -> Result<()> {
+        let receipt = self
+            .pending
+            .take()
+            .ok_or(Error::Conflict("delivery not staged"))?;
+        let deadline = std::time::Instant::now() + std::time::Duration::from_secs(1);
+        #[cfg(test)]
+        if std::env::var_os("WEAVER_TEST_FORCE_DELIVERY_REFRESH").is_some() {
+            ledger.refresh_provider_delivery(permit, &receipt, format)?;
+        }
+        receipt.acknowledge(deadline)?;
+        self.deliveries
+            .push_back(crate::grpc_delivery_producer::PendingDelivery::new(
+                receipt, deadline,
+            ));
+        self.progress_deliveries(ledger, permit, format)
+    }
 }
 
 #[cfg(all(test, unix))]
 #[path = "../tests/unit/output_backpressure.rs"]
-mod backpressure_tests;
+pub(crate) mod backpressure_tests;
+
+pub(crate) async fn observe_reservation<F: std::future::Future>(future: F) -> F::Output {
+    #[cfg(all(test, unix))]
+    {
+        backpressure_tests::observe(future).await
+    }
+    #[cfg(not(all(test, unix)))]
+    {
+        future.await
+    }
+}
+#[cfg(test)]
+pub(crate) fn record_delivery(receipt: &weaver_ledger::DeliveryProducer) {
+    if let Some(observation) = receipt.observation() {
+        DELIVERIES.with(|rows| {
+            let mut rows = rows.borrow_mut();
+            if rows.len() < 64 {
+                rows.push(observation);
+            }
+        });
+    }
+}

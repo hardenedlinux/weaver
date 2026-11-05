@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 //! Explicit commit and eager rollback of one native `Turso` write transaction.
-use super::{Session, driver};
+use super::{Session, authority::Outcome, driver};
 use futures_executor::block_on;
 use std::{
     cell::Cell,
@@ -18,11 +18,16 @@ pub enum ProviderScopePhase {
     Other,
     PrepareRange,
     FinalQueue,
+    RevalidateDelivery,
 }
 
 /// Exclusive native transaction; final guarded callbacks keep this scope alive.
 pub struct WriteScope<'a> {
     connection: &'a driver::Connection,
+    authority: super::authority::Close<'a>,
+    quota_projection:
+        &'a std::sync::Mutex<Option<std::sync::Arc<weaver_contracts::MeteringDeployment>>>,
+    quota_update: Option<std::sync::Arc<weaver_contracts::MeteringDeployment>>,
     native: Option<driver::transaction::Transaction<'a>>,
     poisoned: &'a AtomicBool,
     timings: &'a mut super::TransactionTimings,
@@ -75,26 +80,37 @@ fn start<'a>(
     session.require_quiescent()?;
     let concurrent = session.owner.journal == super::Journal::Mvcc;
     let scheduler = &session.owner.scheduler;
+    // Capture discovery generation BEFORE the hint query. A migration between
+    // key discovery and grant must never look like a current scheduler image.
+    let discovered = (concurrent && family.is_some())
+        .then(|| scheduler.generation())
+        .transpose()?;
+    let keys = match (concurrent, family) {
+        (true, Some(family)) => Some(session.owner.scope_roots(
+            super::timing::measure(&mut session.timings.domain_keys, || match expected {
+                Some(stamp) => Ok(crate::domains::stamp_keys(stamp)),
+                None => crate::domains::lock_keys(&session.connection, family),
+            })?,
+            family,
+        )?),
+        _ => None,
+    };
+    let close_scope = keys.as_ref().map_or(super::scheduler::Scope::All, |keys| {
+        super::scheduler::Scope::Domains(keys.clone())
+    });
+    // Close before waiting for either the scheduler or native writer.
+    let authority = session.owner.authority.close(close_scope)?;
     let mut owner_entered = None;
     let mut domains_entered = None;
     #[cfg(feature = "commit-observer")]
     let mut scope_trace = None;
     let grant = match (concurrent, family) {
         (true, Some(family)) => {
-            let discovered = if expected.is_none() {
-                Some(scheduler.generation()?)
-            } else {
-                None
-            };
-            let keys =
-                super::timing::measure(&mut session.timings.domain_keys, || match expected {
-                    Some(stamp) => Ok(crate::domains::stamp_keys(stamp)),
-                    None => crate::domains::lock_keys(&session.connection, family),
-                })?;
+            let keys = keys.expect("family scheduler keys");
             let cancelled = match phase {
-                ProviderScopePhase::PrepareRange | ProviderScopePhase::FinalQueue => {
-                    session.range_cancelled.as_deref()
-                }
+                ProviderScopePhase::PrepareRange
+                | ProviderScopePhase::FinalQueue
+                | ProviderScopePhase::RevalidateDelivery => session.range_cancelled.as_deref(),
                 ProviderScopePhase::Other => None,
             };
             #[cfg(feature = "commit-observer")]
@@ -112,8 +128,10 @@ fn start<'a>(
             }
             // Key discovery is a hint. An intervening global scope may have migrated roots.
             if discovered.is_some_and(|generation| generation != grant.generation)
-                && !grant
-                    .matches_domains(&crate::domains::lock_keys(&session.connection, family)?)?
+                && !grant.matches_domains(&session.owner.scope_roots(
+                    crate::domains::lock_keys(&session.connection, family)?,
+                    family,
+                )?)?
             {
                 return Err(super::owner::error(
                     "execution domains changed before scheduler grant",
@@ -144,6 +162,9 @@ fn start<'a>(
     })?;
     Ok(WriteScope {
         connection: &session.connection,
+        authority,
+        quota_projection: &session.owner.quota_projection,
+        quota_update: None,
         native: Some(native),
         poisoned: &session.poisoned,
         timings: &mut session.timings,
@@ -169,23 +190,57 @@ fn start<'a>(
     })
 }
 impl WriteScope<'_> {
+    pub(crate) fn project_metering(
+        &mut self,
+        config: Option<weaver_contracts::MeteringDeployment>,
+    ) {
+        self.quota_update = config.map(std::sync::Arc::new);
+    }
+
+    pub(crate) fn delivery_scope(&self) -> super::scheduler::Scope {
+        self.authority.scope()
+    }
+    pub(crate) fn refresh_delivery_receipt(
+        &mut self,
+        receipt: std::sync::Arc<super::authority::Completion>,
+    ) {
+        self.authority.replace_receipt(receipt);
+    }
+    pub(crate) fn commit_delivery_refresh(self) -> driver::Result<()> {
+        self.commit_turso(false)
+    }
+    pub(crate) fn witness_started(&self, path: &str) -> driver::Result<()> {
+        self.authority.external(path, false)
+    }
+    pub(crate) fn witness_reconciled(&self, path: &str) -> driver::Result<()> {
+        self.authority.external(path, true)
+    }
+    pub(crate) fn delivery_receipt(
+        &mut self,
+    ) -> driver::Result<std::sync::Arc<super::authority::Completion>> {
+        self.authority.receipt()
+    }
     pub(crate) fn commit_provider(self) -> driver::Result<()> {
-        self.commit_observed::<false>()
+        self.commit_observed::<0>()
     }
 
     pub(crate) fn commit_range_prepare(self) -> driver::Result<()> {
-        self.commit_observed::<true>()
+        self.commit_observed::<1>()
     }
 
-    fn commit_observed<const RANGE: bool>(self) -> driver::Result<()> {
+    pub(crate) fn commit_delivery(self) -> driver::Result<()> {
+        self.commit_observed::<2>()
+    }
+
+    fn commit_observed<const PHASE: u8>(self) -> driver::Result<()> {
         #[cfg(any(test, feature = "commit-observer"))]
         {
             use super::commit_observer::{Cut, Decision};
             let observer = self.observer.clone();
-            let (before, after) = if RANGE {
-                (Cut::BeforeRangePrepareCommit, Cut::AfterRangePrepareCommit)
-            } else {
-                (Cut::BeforeCommit, Cut::AfterCommit)
+            let (before, after) = match PHASE {
+                1 => (Cut::BeforeRangePrepareCommit, Cut::AfterRangePrepareCommit),
+                2 => (Cut::BeforeDeliveryCommit, Cut::AfterDeliveryCommit),
+                _ => (Cut::BeforeCommit, Cut::AfterCommit),
             };
             let poisoned = self.poisoned;
             if let Some(observer) = &observer
@@ -197,7 +252,9 @@ impl WriteScope<'_> {
                     .native
                     .take()
                     .ok_or_else(|| driver::Error::Misuse("transaction ended".into()))?;
+                scope.authority.committing();
                 block_on(native.rollback())?;
+                scope.authority.finish(Outcome::Absent)?;
                 return Err(driver::Error::Misuse(
                     "injected native rollback before provider commit".into(),
                 ));
@@ -264,16 +321,35 @@ impl WriteScope<'_> {
         super::timing::measure(&mut self.timings.provider_queue, run)
     }
     /// Commit once; any failed result poisons this session against new writes.
-    pub fn commit(mut self) -> driver::Result<()> {
+    pub fn commit(self) -> driver::Result<()> {
+        self.commit_turso(true)
+    }
+    fn commit_turso(mut self, modified: bool) -> driver::Result<()> {
+        self.authority.committing();
         let native = self
             .native
             .take()
             .ok_or_else(|| driver::Error::Misuse("transaction already ended".into()))?;
         match super::timing::measure(&mut self.timings.commit, || block_on(native.commit())) {
-            Ok(()) => Ok(()),
+            Ok(()) => {
+                if let Some(config) = self.quota_update.take() {
+                    *self.quota_projection.lock().map_err(super::owner::error)? = Some(config);
+                }
+                self.authority.finish(Outcome::Committed { modified })
+            }
             Err(error) => {
                 self.poisoned.store(true, Ordering::Release);
-                if let Err(rollback_error) = release_failed_transaction(self.connection) {
+                // An exclusive connection still inside the original native
+                // transaction plus successful rollback proves DB absence.
+                // An idle connection proves neither commit nor absence.
+                let active = matches!(self.connection.is_autocommit(), Ok(false));
+                let cleanup = release_failed_transaction(self.connection);
+                let _ = self.authority.finish(if active && cleanup.is_ok() {
+                    Outcome::Absent
+                } else {
+                    Outcome::Unknown
+                });
+                if let Err(rollback_error) = cleanup {
                     return Err(driver::Error::BatchRollbackFailed {
                         error: Box::new(error),
                         rollback_error: Box::new(rollback_error),
@@ -304,6 +380,9 @@ impl Drop for WriteScope<'_> {
             {
                 self.poisoned.store(true, Ordering::Release);
                 let _ = release_failed_transaction(self.connection);
+                let _ = self.authority.finish(Outcome::Unknown);
+            } else {
+                let _ = self.authority.finish(Outcome::Absent);
             }
         } else if !matches!(self.connection.is_autocommit(), Ok(true)) {
             // Also cover unwinding while the native commit future owned the
@@ -346,16 +425,17 @@ impl Drop for WriteScope<'_> {
             total.attempts = total.attempts.saturating_add(sample.attempts);
             total.nanos = total.nanos.saturating_add(sample.nanos);
         }
+        self.authority.settle_drop();
         drop(self.grant.take());
-        #[cfg(feature = "commit-observer")]
-        if let Some(trace) = self.scope_trace.take() {
-            trace.record();
-        }
         if let Some(entered) = self.domains_entered {
             self.timings.domain_hold.record(entered.elapsed());
         }
         if let Some(entered) = self.owner_entered {
             self.timings.owner_gate_hold.record(entered.elapsed());
+        }
+        #[cfg(feature = "commit-observer")]
+        if let Some(trace) = self.scope_trace.take() {
+            trace.record();
         }
     }
 }

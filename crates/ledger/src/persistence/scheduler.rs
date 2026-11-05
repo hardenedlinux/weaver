@@ -10,18 +10,17 @@ use std::{
     time::Duration,
 };
 
-pub(super) enum Scope {
+#[derive(Clone, PartialEq, Eq)]
+pub(crate) enum Scope {
     All,
-    // Positional namespaces are origin, budget and history.
-    Domains([String; 3]),
+    // Distinct namespaces bind origin, budget, history, API key, user and tenant.
+    Domains(super::scope_keys::Roots),
 }
 
 impl Scope {
-    fn overlaps(&self, other: &Self) -> bool {
+    pub(super) fn overlaps(&self, other: &Self) -> bool {
         match (self, other) {
-            (Self::Domains(left), Self::Domains(right)) => {
-                left.iter().zip(right).any(|(a, b)| a == b)
-            }
+            (Self::Domains(left), Self::Domains(right)) => left.overlaps(right),
             _ => true,
         }
     }
@@ -128,7 +127,7 @@ impl Scheduler {
 }
 
 impl Grant<'_> {
-    pub fn matches_domains(&self, keys: &[String; 3]) -> driver::Result<bool> {
+    pub fn matches_domains(&self, keys: &super::scope_keys::Roots) -> driver::Result<bool> {
         let state = self.scheduler.state.lock().map_err(error)?;
         Ok(state.active.iter().any(|ticket| {
             ticket.id == self.id

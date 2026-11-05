@@ -17,17 +17,17 @@ use weaver_contracts::{
 
 /// Affine deciding-owner custody for one selected original provider invocation.
 pub struct ProviderDispatch {
-    plan: ProviderPlan,
-    route: ProviderRoute,
-    session: String,
-    digest: String,
-    binding: weaver_policy::BoundProviderPolicy,
-    profile: crate::provider_profiles::CheckedProfile,
-    publication: crate::provider_publication::Prepared,
-    domains: weaver_contracts::DomainStamp,
-    original: Option<crate::task_origins::PreparedOriginal>,
-    oauth: Option<crate::provider_oauth::PreparedUse>,
-    oauth_expires: Option<u64>,
+    pub(super) plan: ProviderPlan,
+    pub(super) route: ProviderRoute,
+    pub(super) session: String,
+    pub(super) digest: String,
+    pub(super) binding: weaver_policy::BoundProviderPolicy,
+    pub(super) profile: crate::provider_profiles::CheckedProfile,
+    pub(super) publication: crate::provider_publication::Prepared,
+    pub(super) domains: weaver_contracts::DomainStamp,
+    pub(super) original: Option<crate::task_origins::PreparedOriginal>,
+    pub(super) oauth: Option<crate::provider_oauth::PreparedUse>,
+    pub(super) oauth_expires: Option<u64>,
 }
 impl ProviderDispatch {
     pub fn plan(&self) -> &ProviderPlan {
@@ -54,13 +54,13 @@ impl ProviderDispatch {
 }
 /// Single-use response release burned before possible gRPC queue insertion.
 pub struct ProviderRelease {
-    sequence: u64,
-    length: u64,
-    predecessor: Option<u64>,
-    digest: String,
-    session: String,
-    plan_digest: String,
-    format: String,
+    pub(super) sequence: u64,
+    pub(super) length: u64,
+    pub(super) predecessor: Option<u64>,
+    pub(super) digest: String,
+    pub(super) session: String,
+    pub(super) plan_digest: String,
+    pub(super) format: String,
 }
 impl ProviderRelease {
     /// Inert sequence metadata for pure frame encoding, never send permission.
@@ -80,14 +80,14 @@ impl Ledger {
     }
     /// Enable bounded diagnostic observations for this ledger only.
     #[cfg(feature = "commit-observer")]
-    pub fn trace_provider_scopes(&mut self) {
-        self.connection.trace_provider_scopes();
+    pub fn trace_provider_scopes(&mut self, family: &str) {
+        self.connection.trace_provider_scopes(family);
     }
 
-    /// Recorded scopes in this ledger's session.
+    /// Finish the complete bounded diagnostic stream after all deciding scopes.
     #[cfg(feature = "commit-observer")]
-    pub fn provider_scope_samples(&self) -> &[crate::persistence::ProviderScopeSample] {
-        self.connection.provider_scope_samples()
+    pub fn finish_provider_scope_trace(&mut self) {
+        self.connection.finish_provider_scope_trace();
     }
     pub fn enqueue_provider(&mut self, plan: &ProviderPlan) -> Result<ProviderReceipt> {
         self.enqueue_catalog_provider(plan, "")
@@ -221,12 +221,24 @@ impl Ledger {
             .pop()
             .ok_or(Error::Conflict("missing prepared provider range"))
     }
+    /// Trusted synchronous effect profile. The gRPC owner uses inert staging.
     pub fn release_provider<T>(
         &mut self,
         permit: &ProviderDispatch,
         release: ProviderRelease,
         format: &str,
         send: impl FnOnce(u64) -> Result<T>,
+    ) -> Result<T> {
+        self.release_provider_for_delivery(permit, release, format, |sequence, _receipt| {
+            send(sequence)
+        })
+    }
+    pub fn release_provider_for_delivery<T>(
+        &mut self,
+        permit: &ProviderDispatch,
+        release: ProviderRelease,
+        format: &str,
+        send: impl FnOnce(u64, crate::ProviderDelivery) -> Result<T>,
     ) -> Result<T> {
         self.check_provider_session(permit)?;
         if release.session != self.session {
@@ -235,6 +247,7 @@ impl Ledger {
         if release.plan_digest != permit.digest || release.format != format {
             return Err(Error::Conflict("foreign provider release binding"));
         }
+        let owner = self.connection.execution_owner();
         let (mut tx, domains) =
             begin_provider_effect(&mut self.connection, permit, ProviderScopePhase::FinalQueue)?;
         guard_live_range(
@@ -248,12 +261,20 @@ impl Ledger {
         if release_digest(&tx, permit, &release)?.as_deref() != Some(&release.digest) {
             return Err(Error::Conflict("provider release binding"));
         }
+        let delivery = crate::ProviderDelivery::new(
+            owner,
+            tx.delivery_receipt().map_err(db)?,
+            tx.delivery_scope(),
+            permit,
+            &release,
+            format,
+        );
         let output = tx.queue_effect(|| {
             permit.require_oauth_time()?;
-            send(release.sequence)
+            send(release.sequence, delivery)
         })?;
         mark_release(&tx, permit, &release)?;
-        tx.commit().map_err(db)?;
+        tx.commit_delivery().map_err(db)?;
         Ok(output)
     }
     pub fn complete_provider(&mut self, permit: &ProviderDispatch, format: &str) -> Result<()> {
@@ -298,7 +319,7 @@ impl Ledger {
     pub fn provider_receipt(&self, family: &str, node: &str) -> Result<Option<ProviderReceipt>> {
         receipt(&self.connection, family, node)
     }
-    fn check_provider_session(&self, p: &ProviderDispatch) -> Result<()> {
+    pub(super) fn check_provider_session(&self, p: &ProviderDispatch) -> Result<()> {
         if p.session != self.session {
             Err(Error::Conflict("foreign provider owner"))
         } else {
@@ -446,7 +467,7 @@ fn mark_provider_consumed(
     Ok(())
 }
 
-fn begin_provider_effect<'a>(
+pub(super) fn begin_provider_effect<'a>(
     session: &'a mut crate::persistence::Session,
     p: &ProviderDispatch,
     phase: ProviderScopePhase,
@@ -690,7 +711,7 @@ fn guard_live(
 // State is read after the deciding lock is acquired, and cannot escape this
 // call. No SQL write, wait, or external callback occurs between row decisions.
 // Each row still receives a distinct Cedar request for its actual sequence.
-fn guard_live_range(
+pub(super) fn guard_live_range(
     tx: &WriteScope<'_>,
     p: &ProviderDispatch,
     domains: &weaver_contracts::DomainView,

@@ -20,12 +20,20 @@ use weaver_ledger::{
 struct CommitObserver {
     path: String,
     selected: Cut,
+    delivery_used: std::sync::atomic::AtomicBool,
 }
 static OBSERVER: OnceLock<Arc<CommitObserver>> = OnceLock::new();
 
 impl Observer for CommitObserver {
     fn observe(&self, cut: Cut) -> Decision {
         if cut != self.selected {
+            return Decision::Continue;
+        }
+        if matches!(cut, Cut::BeforeDeliveryCommit | Cut::AfterDeliveryCommit)
+            && self
+                .delivery_used
+                .swap(true, std::sync::atomic::Ordering::SeqCst)
+        {
             return Decision::Continue;
         }
         let mut socket = UnixStream::connect(&self.path).expect("private commit observer");
@@ -39,6 +47,7 @@ impl Observer for CommitObserver {
         // value on the writer. This query cannot grant execution or settle usage.
         let marker = match cut {
             Cut::BeforeRangePrepareCommit | Cut::AfterRangePrepareCommit => durable_range_marker(),
+            Cut::BeforeDeliveryCommit | Cut::AfterDeliveryCommit => durable_delivery_marker(),
             _ => durable_marker(),
         };
         socket
@@ -73,6 +82,28 @@ fn durable_range_marker() -> i64 {
     .expect("atomic pending range group and cursor")
 }
 
+fn durable_delivery_marker() -> i64 {
+    if durable_marker() == 0 {
+        return 0;
+    }
+    let journal = if std::env::var("WEAVER_STORAGE_JOURNAL").as_deref() == Ok("mvcc") {
+        persistence::Journal::Mvcc
+    } else {
+        persistence::Journal::Wal
+    };
+    let session = persistence::Session::open_with_journal(
+        std::env::var("WEAVER_DB").expect("fixture database"),
+        journal,
+    )
+    .expect("independent delivery reader");
+    persistence::one(
+        &session,
+        "SELECT COUNT(*) FROM provider_releases WHERE state='released'",
+        (),
+        |row| row.get(0),
+    )
+    .expect("durable released ranges")
+}
 fn durable_marker() -> i64 {
     let path = std::env::var("WEAVER_DB").expect("fixture database");
     if !std::path::Path::new(&path).exists() {
@@ -131,6 +162,8 @@ fn serve_observed_gateway() {
         Ok("after") => Cut::AfterCommit,
         Ok("prepare-before") => Cut::BeforeRangePrepareCommit,
         Ok("prepare-after") => Cut::AfterRangePrepareCommit,
+        Ok("delivery-before") => Cut::BeforeDeliveryCommit,
+        Ok("delivery-after") => Cut::AfterDeliveryCommit,
         _ => panic!("explicit commit cut required"),
     };
     // Restart reads the recovered store before any provider RPC can modify it.
@@ -142,6 +175,8 @@ fn serve_observed_gateway() {
                 match selected {
                     Cut::BeforeRangePrepareCommit | Cut::AfterRangePrepareCommit =>
                         durable_range_marker(),
+                    Cut::BeforeDeliveryCommit | Cut::AfterDeliveryCommit =>
+                        durable_delivery_marker(),
                     _ => durable_marker(),
                 }
             )
@@ -150,7 +185,11 @@ fn serve_observed_gateway() {
         .expect("recovery observation");
     assert!(
         OBSERVER
-            .set(Arc::new(CommitObserver { path, selected }))
+            .set(Arc::new(CommitObserver {
+                path,
+                selected,
+                delivery_used: std::sync::atomic::AtomicBool::new(false)
+            }))
             .is_ok()
     );
     crate::entrypoint::run().expect("natural observed server shutdown");

@@ -3,62 +3,38 @@
 // SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 //! Default Go-to-Rust RPC boundary. Agent credentials cannot publish original authority.
+use crate::grpc_contracts::{
+    compilation_status, domain_view, publication_receipt, status, task_contract,
+};
+use crate::grpc_listeners::{MeterMethod, MeterPaths, validate_listeners};
 use crate::{
     ServerConfig,
     admission::Admission,
-    connections,
-    grpc_output::Output,
-    pb,
+    connections, pb,
     rpc_security::{GrpcConfig, GrpcListeners, RpcRole},
     runtime::RuntimeOwner,
     source_owner::SourceOwner,
 };
 use sha2::{Digest, Sha256};
-use std::{
-    future::Future,
-    pin::Pin,
-    task::{Context, Poll},
-};
+use std::future::Future;
 use subtle::ConstantTimeEq;
-use tokio::{
-    net::TcpListener,
-    sync::{Semaphore, mpsc},
-};
-use tokio_stream::{Stream, wrappers::ReceiverStream};
-use tokio_util::sync::CancellationToken;
+use tokio::{net::TcpListener, sync::Semaphore};
 use tonic::{Request, Response, Status};
 use weaver_broker::ProviderTransport;
-use weaver_contracts::{Error, ProviderPlan, ProviderRoute, Task};
+use weaver_contracts::Error;
 use weaver_ledger::Ledger;
-fn domain_view(v: weaver_contracts::DomainView) -> pb::DomainView {
-    pb::DomainView {
-        family: v.family,
-        canonical_family: v.canonical_family,
-        stamp: Some(pb::DomainStamp {
-            task_key: v.stamp.task_key,
-            origin: v.stamp.origin,
-            budget_root: v.stamp.budget_root,
-            history_root: v.stamp.history_root,
-            budget_epoch: v.stamp.budget_epoch,
-            history_epoch: v.stamp.history_epoch,
-        }),
-        budget_limit: v.budget_limit,
-        held: v.held,
-        history_count: v.history_count,
-    }
-}
 #[derive(Clone)]
-struct Gateway {
-    config: ServerConfig,
+pub(crate) struct Gateway {
+    pub(crate) config: ServerConfig,
     credential: [u8; 32],
     ingress: Ingress,
     peer: [u8; 32],
     operation_peer: [u8; 32],
-    transport: ProviderTransport,
-    admission: Admission,
-    runtime: RuntimeOwner,
-    metering_enabled: bool,
-    provider_oauth_enabled: bool,
+    pub(crate) transport: ProviderTransport,
+    pub(crate) admission: Admission,
+    pub(crate) runtime: RuntimeOwner,
+    pub(crate) metering_enabled: bool,
+    pub(crate) provider_oauth_enabled: bool,
 }
 #[derive(Clone)]
 enum Ingress {
@@ -81,28 +57,7 @@ impl Ingress {
         }
     }
 }
-/// Bounded RPC output whose destruction cancels its still-tracked native producer.
-pub struct ResponseStream {
-    receiver: ReceiverStream<std::result::Result<pb::ProviderFrame, Status>>,
-    cancelled: CancellationToken,
-    shutdown: Pin<Box<tokio_util::sync::WaitForCancellationFutureOwned>>,
-}
-impl Stream for ResponseStream {
-    type Item = std::result::Result<pb::ProviderFrame, Status>;
-    fn poll_next(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
-        if self.shutdown.as_mut().poll(cx).is_ready() {
-            self.cancelled.cancel();
-            self.receiver.close();
-            return Poll::Ready(None);
-        }
-        Pin::new(&mut self.receiver).poll_next(cx)
-    }
-}
-impl Drop for ResponseStream {
-    fn drop(&mut self) {
-        self.cancelled.cancel();
-    }
-}
+pub use crate::grpc_delivery::ResponseStream;
 
 /// Serve the default authenticated RPC profile and acknowledge shutdown only after drain.
 pub async fn serve_grpc(
@@ -183,100 +138,6 @@ async fn serve_owned(
         },
     };
     result.and(source_worker.finish().await)
-}
-fn validate_listeners(
-    listeners: &GrpcListeners,
-    settings: &GrpcConfig,
-) -> weaver_contracts::Result<()> {
-    settings.owner.validate()?;
-    settings.review_authority.validate()?;
-    if let Some(oauth) = &settings.provider_oauth {
-        oauth.validate()?;
-        if oauth.subject != settings.owner.principal
-            || oauth
-                .relay_certificate_sha256
-                .as_ref()
-                .is_some_and(|relay| relay != &hex::encode(settings.security.peer_sha256))
-            || oauth.public_key == settings.review_authority.public_key
-            || settings.metering.as_ref().is_some_and(|metering| {
-                metering
-                    .tenants
-                    .values()
-                    .any(|tenant| tenant.public_key == oauth.public_key)
-            })
-        {
-            return Err(Error::Invalid(
-                "provider OAuth principal or issuer separation",
-            ));
-        }
-    }
-    if let Some(metering) = &settings.metering {
-        metering.validate()?;
-        if metering
-            .tenants
-            .values()
-            .any(|tenant| tenant.public_key == settings.review_authority.public_key)
-        {
-            return Err(Error::Invalid(
-                "metering and review keys must be independent",
-            ));
-        }
-    }
-    let operation = listeners
-        .operation
-        .local_addr()
-        .map_err(|e| Error::Storage(e.to_string()))?;
-    let source = listeners
-        .source
-        .local_addr()
-        .map_err(|e| Error::Storage(e.to_string()))?;
-    if settings.security.admin_sha256 == [0; 32]
-        || settings.security.peer_sha256 == [0; 32]
-        || settings.security.source_peer_sha256 == [0; 32]
-        || settings.security.source_peer_sha256 == settings.security.peer_sha256
-        || settings.security.admin_sha256 == settings.owner.token_sha256
-        || !operation.ip().is_loopback()
-        || !source.ip().is_loopback()
-        || operation == source
-    {
-        return Err(Error::Invalid("RPC identity or loopback profile"));
-    }
-    Ok(())
-}
-// Tonic interceptors cannot see the HTTP path. Classify the exact wire
-// methods before the interceptor strips it, using a server-local extension.
-#[derive(Clone)]
-struct MeterPaths<S>(S);
-
-#[derive(Clone)]
-struct MeterMethod;
-
-impl<S: tonic::server::NamedService> tonic::server::NamedService for MeterPaths<S> {
-    const NAME: &'static str = S::NAME;
-}
-
-impl<S, B> tonic::codegen::Service<tonic::codegen::http::Request<B>> for MeterPaths<S>
-where
-    S: tonic::codegen::Service<tonic::codegen::http::Request<B>>,
-{
-    type Response = S::Response;
-    type Error = S::Error;
-    type Future = S::Future;
-
-    fn poll_ready(&mut self, cx: &mut Context<'_>) -> Poll<std::result::Result<(), Self::Error>> {
-        self.0.poll_ready(cx)
-    }
-
-    fn call(&mut self, mut request: tonic::codegen::http::Request<B>) -> Self::Future {
-        if matches!(
-            request.uri().path(),
-            "/weaver.gateway.v1.Gateway/InspectTerminalUsage"
-                | "/weaver.gateway.v1.Gateway/ApplyMetering"
-        ) {
-            request.extensions_mut().insert(MeterMethod);
-        }
-        self.0.call(request)
-    }
 }
 
 async fn serve_listener(
@@ -394,7 +255,7 @@ impl Gateway {
             provider_oauth_enabled: settings.provider_oauth.is_some(),
         }
     }
-    fn authenticate<T>(
+    pub(crate) fn authenticate<T>(
         &self,
         request: &Request<T>,
         role: RpcRole,
@@ -731,210 +592,7 @@ impl pb::gateway_server::Gateway for Gateway {
         &self,
         request: Request<pb::ProviderRequest>,
     ) -> std::result::Result<Response<Self::ExecuteProviderStream>, Status> {
-        self.authenticate(&request, RpcRole::Operation)?;
-        let oauth = crate::provider_oauth::observe(self.provider_oauth_enabled, &request)?;
-        if !cfg!(feature = "llm-provider") {
-            return Err(Status::unimplemented("LLM provider feature disabled"));
-        }
-        let slot = self.admission.execution()?;
-        let request = request.into_inner();
-        let arrow = match pb::Encoding::try_from(request.encoding) {
-            Ok(pb::Encoding::Protobuf) => false,
-            Ok(pb::Encoding::ArrowIpc) if cfg!(feature = "arrow") => true,
-            _ => return Err(Status::unimplemented("response encoding unavailable")),
-        };
-        if request.batch_rows == 0 || request.batch_rows > 32 || (!arrow && request.batch_rows != 1)
-        {
-            return Err(Status::invalid_argument("response batch bound"));
-        }
-        let plan = plan(
-            request
-                .plan
-                .ok_or(Status::invalid_argument("plan missing"))?,
-        )?;
-        let (sender, receiver) = mpsc::channel(2);
-        let cancelled = CancellationToken::new();
-        let mut output = Output {
-            telemetry: self.runtime.telemetry().clone(),
-            sender: sender.clone(),
-            cancelled: cancelled.clone(),
-            shutdown: CancellationToken::new(),
-            runtime: tokio::runtime::Handle::current(),
-        };
-        let config = self.config.clone();
-        let transport = self.transport.clone();
-        #[cfg(test)]
-        let queued_at = std::time::Instant::now();
-        let job = self
-            .runtime
-            .spawn_blocking(slot, move |shutdown| {
-                #[cfg(test)]
-                let worker_started = std::time::Instant::now();
-                output.shutdown = shutdown;
-                let result = (|| {
-                    #[cfg(test)]
-                    let open_started = std::time::Instant::now();
-                    let mut ledger = Ledger::open(&config.database)?;
-                    let client = output.cancelled.clone();
-                    let server = output.shutdown.clone();
-                    ledger.set_provider_range_cancellation(move || client.is_cancelled() || server.is_cancelled());
-                    #[cfg(test)]
-                    let open_nanos = open_started.elapsed().as_nanos();
-                    #[cfg(all(test, unix))]
-                    crate::provider_commit_tests::attach(&mut ledger);
-                    ledger.require_principal(&config.principal, &plan.family)?;
-                    #[cfg(test)]
-                    weaver_ledger::persistence::use_cached_currentness_plans(
-                        std::env::var("WEAVER_TEST_CACHE_CURRENTNESS_PLANS").as_deref() == Ok("1"),
-                    );
-                    #[cfg(test)]
-                    weaver_ledger::use_locked_publication_review(
-                        std::env::var("WEAVER_TEST_LOCKED_PUBLICATION_REVIEW").as_deref() == Ok("1"),
-                    );
-                    #[cfg(test)]
-                    weaver_ledger::use_locked_original_evidence(
-                        std::env::var("WEAVER_TEST_LOCKED_ORIGINAL_EVIDENCE").as_deref() == Ok("1"),
-                    );
-                    #[cfg(test)]
-                    weaver_ledger::use_fresh_provider_domain_plan(
-                        std::env::var("WEAVER_TEST_FRESH_PROVIDER_DOMAIN_PLAN").as_deref() == Ok("1"),
-                    );
-                    #[cfg(test)]
-                    weaver_ledger::use_separate_release_reads(
-                        std::env::var("WEAVER_TEST_SEPARATE_RELEASE_READS").as_deref() == Ok("1"),
-                    );
-                    #[cfg(test)]
-                    let trace_scopes = std::env::var_os("WEAVER_TEST_PROVIDER_SCOPE_TRACE").is_some();
-                    #[cfg(test)]
-                    if trace_scopes {
-                        ledger.trace_provider_scopes();
-                    }
-                    #[cfg(test)]
-                    weaver_ledger::use_cached_release_programs(
-                        std::env::var("WEAVER_TEST_CACHED_RELEASE_PROGRAMS").as_deref() == Ok("1"),
-                    );
-                    #[cfg(test)]
-                    {
-                        crate::grpc_output::take_encoding_nanos();
-                        crate::grpc_output::take_handoffs();
-                    }
-                    let execution = weaver_broker::execute_catalog_provider_with_oauth(
-
-                        &mut ledger,
-                        weaver_broker::ProviderExecution {
-                            plan: &plan,
-                            transport: &transport,
-                            format: if arrow { "arrow" } else { "protobuf" },
-                            batch_rows: request.batch_rows as usize,
-                        },
-                        &mut output,
-                        weaver_broker::ProviderExecutionAuthority {
-                            catalog: &request.catalog_version,
-                            oauth: oauth.as_ref(),
-                        },
-                    );
-                    #[cfg(test)]
-                    {
-                        weaver_ledger::persistence::use_cached_currentness_plans(false);
-                        weaver_ledger::use_locked_publication_review(false);
-                        weaver_ledger::use_locked_original_evidence(false);
-                        weaver_ledger::use_fresh_provider_domain_plan(false);
-                        weaver_ledger::use_separate_release_reads(false);
-                        weaver_ledger::use_cached_release_programs(false);
-                    }
-                    #[cfg(test)]
-                    if std::env::var_os("WEAVER_TEST_PROVIDER_TIMINGS").is_some() {
-                        let t = ledger.transaction_timings();
-                        eprintln!(
-                            "weaver-oauth-timing {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}",
-                            t.provider_oauth_check.nanos,
-                            t.domain_hold.nanos,
-                            t.transaction_hold.nanos,
-                            t.provider_request.nanos,
-                            t.provider_queue.nanos,
-                            t.provider_oauth_prepare.nanos,
-                            t.transaction_begin.nanos,
-                            t.commit.nanos,
-                            t.domain_wait.nanos,
-                            t.domain_keys.nanos,
-                            t.provider_domain.nanos,
-                            t.provider_pending.nanos.saturating_add(t.provider_review.nanos).saturating_add(t.provider_birth.nanos),
-                            t.provider_profile.nanos,
-                            t.provider_claim.nanos,
-                            t.provider_cedar.nanos,
-                            t.rollback.nanos,
-                            t.provider_pending.nanos,
-                            t.provider_review.nanos,
-                            t.provider_birth.nanos,
-                            t.provider_publication_prepare.nanos,
-                            t.provider_original.nanos,
-                            t.provider_manifest.nanos,
-                            t.provider_history.nanos,
-                            t.provider_original_prepare.nanos,
-                            open_nanos,
-                            t.provider_domain_prepare.nanos,
-                            t.provider_domain.attempts
-                        );
-                    }
-                    #[cfg(test)]
-                    if std::env::var_os("WEAVER_TEST_PROVIDER_TAIL").is_some() {
-                        let t = ledger.transaction_timings();
-                        eprintln!(
-                            "weaver-provider-tail {} {} {} {} {} {} {}",
-                            plan.family,
-                            worker_started.duration_since(queued_at).as_nanos(),
-                            worker_started.elapsed().as_nanos(),
-                            t.domain_wait.nanos,
-                            t.domain_hold.nanos,
-                            t.commit.nanos,
-                            t.provider_domain.nanos,
-                        );
-                    }
-                    #[cfg(test)]
-                    if trace_scopes {
-                        eprintln!("weaver-provider-encode {} {}", plan.family, crate::grpc_output::take_encoding_nanos());
-                        use std::fmt::Write;
-                        use weaver_ledger::persistence::ProviderScopePhase;
-                        let mut line = format!("weaver-provider-scope {}", plan.family);
-                        for sample in ledger.provider_scope_samples() {
-                            let phase = match sample.phase {
-                                ProviderScopePhase::Other => "other",
-                                ProviderScopePhase::PrepareRange => "prepare",
-                                ProviderScopePhase::FinalQueue => "queue",
-                            };
-                            let _ = write!(line, " {phase}:{}:{}:{}:{}", sample.arrival, sample.grant, sample.wait.as_nanos(), sample.hold.as_nanos());
-                        }
-                        eprintln!("{line}");
-                        let mut handoff = format!("weaver-provider-handoff {}", plan.family);
-                        for (sequence, time) in crate::grpc_output::take_handoffs() {
-                            let _ = write!(handoff, " {sequence}:{time}");
-                        }
-                        eprintln!("{handoff}");
-                    }
-                    execution
-                })();
-                output.telemetry.record(if result.is_ok() {
-                    weaver_telemetry::Signal::ProviderCompleted
-                } else {
-                    weaver_telemetry::Signal::ProviderFailed
-                });
-                if result.is_err() {
-                    let _ = sender.try_send(Err(Status::failed_precondition(
-                        "provider execution not completed; inspect original operation",
-                    )));
-                }
-                result
-            })
-            .map_err(|_| Status::unavailable("native admission closed"))?;
-        self.runtime
-            .telemetry()
-            .record(weaver_telemetry::Signal::ProviderAdmitted);
-        drop(job); // The runtime tracker, not the disconnected caller, owns completion.
-        Ok(Response::new(ResponseStream {
-            receiver: ReceiverStream::new(receiver),
-            cancelled,
-            shutdown: Box::pin(self.runtime.cancellation()),
-        }))
+        self.execute_provider_stream(request).await
     }
     async fn inspect(
         &self,
@@ -1250,88 +908,6 @@ impl pb::gateway_server::Gateway for Gateway {
             },
             authority: Some(crate::source_identity::view(receipt.authority)?),
         }))
-    }
-}
-fn compilation_status(error: weaver_governance::CatalogError) -> Status {
-    use weaver_governance::{CatalogError, SourceJobError};
-    match error {
-        CatalogError::Denied => Status::permission_denied("producer/source binding rejected"),
-        CatalogError::Invalid => Status::failed_precondition("producer catalog invalid"),
-        CatalogError::Schedule(SourceJobError::Busy) => {
-            Status::resource_exhausted("source compilation lane full")
-        }
-        CatalogError::Schedule(SourceJobError::Source(_)) => {
-            Status::failed_precondition("source compiler rejected original")
-        }
-        CatalogError::Schedule(_) => Status::unavailable("source compiler unavailable"),
-    }
-}
-fn publication_receipt(receipt: weaver_contracts::PublicationReceipt) -> pb::PublicationReceipt {
-    pb::PublicationReceipt {
-        operation_id: receipt.operation_id,
-        digest: receipt.digest,
-        outcome: match receipt.outcome {
-            weaver_contracts::PublicationOutcome::Committed => {
-                pb::PublicationOutcome::Committed as i32
-            }
-            weaver_contracts::PublicationOutcome::Rejected => {
-                pb::PublicationOutcome::Rejected as i32
-            }
-        },
-        revision: receipt.revision,
-        fence: receipt.fence,
-    }
-}
-fn status(_: Error) -> Status {
-    Status::failed_precondition("native authority or state rejected")
-}
-fn plan(p: pb::ProviderPlan) -> std::result::Result<ProviderPlan, Status> {
-    let body = String::from_utf8(p.body)
-        .map_err(|_| Status::invalid_argument("UTF-8 provider body required"))?;
-    let plan = ProviderPlan {
-        family: p.family,
-        node: p.node,
-        profile: p.profile,
-        profile_commitment: p.profile_commitment,
-        model: p.model,
-        body,
-        routes: p
-            .routes
-            .into_iter()
-            .map(|r| ProviderRoute {
-                target: r.target,
-                endpoint: r.endpoint,
-            })
-            .collect(),
-        ceiling: p.ceiling,
-        revision: p.revision,
-        fence: p.fence,
-    };
-    plan.validate().map_err(status)?;
-    Ok(plan)
-}
-fn task_contract(t: pb::Task) -> Task {
-    Task {
-        provider_profile: t
-            .provider_profile
-            .map(|profile| weaver_contracts::ProviderProfile {
-                id: profile.id,
-                protocol: profile.protocol,
-                max_output_tokens: profile.max_output_tokens,
-                max_messages: profile.max_messages,
-                max_body_bytes: profile.max_body_bytes,
-            }),
-        family: t.family,
-        principal: t.principal,
-        profile: t.profile,
-        nodes: t.nodes,
-        targets: t.targets,
-        endpoints: t.endpoints.into_iter().collect(),
-        body_digests: t.body_digests.into_iter().collect(),
-        node_cost_bounds: t.node_cost_bounds.into_iter().collect(),
-        stream_contracts: t.stream_contracts.into_iter().collect(),
-        models: t.models,
-        budget: t.budget,
     }
 }
 

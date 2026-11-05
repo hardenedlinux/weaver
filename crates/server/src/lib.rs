@@ -13,7 +13,12 @@ mod governance_deployment;
 mod governance_owner;
 mod grpc;
 mod grpc_config;
+mod grpc_contracts;
+mod grpc_delivery;
+mod grpc_delivery_producer;
+mod grpc_listeners;
 mod grpc_output;
+mod grpc_provider;
 pub mod pb;
 #[cfg(all(test, unix))]
 #[path = "../tests/unit/provider_commit.rs"]

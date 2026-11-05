@@ -105,6 +105,10 @@ fn oauth_witness_survives_both_uncertain_native_commit_cuts() {
                 Some(now + 60)
             );
         }
+        // This barrier probe carries no payload and cannot send. Keeping the
+        // owner alive covers orphan reconciliation across session replacement.
+        let owner = ledger.connection.execution_owner();
+        let probe = barrier_probe(&mut ledger.connection);
         ledger.observe_provider_commit(Arc::new(Fault(cut)));
         assert!(
             ledger
@@ -112,6 +116,25 @@ fn oauth_witness_survives_both_uncertain_native_commit_cuts() {
                     .revoke_provider_oauth(&digest))
                 .is_err()
         );
+        assert!(
+            owner
+                .authority
+                .current(
+                    &crate::persistence::scheduler::Scope::All,
+                    &probe,
+                    std::task::Waker::noop(),
+                    |_| Ok(())
+                )
+                .expect("owner gate")
+                .is_none(),
+            "uncertain witness admitted a previous receiver certificate"
+        );
+        if cut == Cut::BeforeCommit {
+            assert!(
+                !probe.state.lock().expect("probe").refresh,
+                "orphan must block before the unchanged SQL revision is reused"
+            );
+        }
         assert!(
             ledger.close().is_err(),
             "uncertain session cannot attest a clean close"
@@ -142,7 +165,22 @@ fn oauth_witness_survives_both_uncertain_native_commit_cuts() {
         assert!(
             provider_oauth::revoked(&ledger.connection, &digest).expect("recovered revocation")
         );
+        let reconciled = barrier_probe(&mut ledger.connection);
+        assert!(
+            owner
+                .authority
+                .current(
+                    &crate::persistence::scheduler::Scope::All,
+                    &reconciled,
+                    std::task::Waker::noop(),
+                    |_| Ok(())
+                )
+                .expect("reconciled gate")
+                .is_some(),
+            "successful exact-path witness reconciliation failed to activate"
+        );
         let before = std::fs::read(&witness).expect("retained journal");
+
         ledger
             .with_authenticated_source(&identity, |ledger| ledger.revoke_provider_oauth(&digest))
             .expect("exact retry");
@@ -195,4 +233,16 @@ fn oauth_witness_activation_retains_existing_direct_tombstones() {
         .configure_provider_oauth(Some(&protected))
         .expect("witness recovery");
     assert!(provider_oauth::revoked(&restored.connection, &hash).expect("seed retained"));
+}
+
+fn barrier_probe(
+    session: &mut crate::persistence::Session,
+) -> Arc<crate::persistence::authority::Completion> {
+    let mut scope = crate::persistence::begin(session).expect("probe transaction");
+    let probe = scope.delivery_receipt().expect("probe receipt");
+    scope
+        .commit_delivery_refresh()
+        .expect("known read-only result");
+    probe.state.lock().expect("probe").acknowledged = true;
+    probe
 }

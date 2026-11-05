@@ -27,6 +27,15 @@ struct Sink {
     events: usize,
 }
 impl ProviderOutput for Sink {
+    fn finish_delivery(
+        &mut self,
+        _: &mut weaver_ledger::Ledger,
+        _: &weaver_ledger::ProviderDispatch,
+        _: &str,
+    ) -> Result<()> {
+        Ok(())
+    }
+
     type Slot = ();
     type PreparedFrame = usize;
     fn stopped(&self) -> bool {
@@ -38,7 +47,7 @@ impl ProviderOutput for Sink {
     fn prepare(_: &ProviderRoute, _: &str, events: &[ProviderEvent], _: &str) -> Result<usize> {
         Ok(events.len())
     }
-    fn emit(&mut self, _: (), count: usize) -> Result<()> {
+    fn emit(&mut self, _: (), count: usize, _: weaver_ledger::ProviderDelivery) -> Result<()> {
         self.events += count;
         Ok(())
     }

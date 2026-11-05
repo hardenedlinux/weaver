@@ -5,14 +5,16 @@
 //! One physical engine, exported by MRR Data. Weaver retains its domain schema.
 //! Synchronous Gateway workers drive native futures with the standard executor;
 //! there is no second runtime, database provider, ORM or SQLite fallback.
+pub(crate) mod authority;
 mod catalog;
-mod owner;
-mod scheduler;
+pub(crate) mod owner;
+pub(crate) mod scheduler;
 pub(crate) use catalog::engine_metadata;
 #[cfg(any(test, feature = "commit-observer"))]
 pub mod commit_observer;
 mod query;
 mod scope;
+mod scope_keys;
 #[cfg(feature = "commit-observer")]
 mod scope_trace;
 #[cfg(feature = "commit-observer")]
@@ -31,5 +33,5 @@ pub use scope::ProviderScopePhase;
 pub(crate) use scope::ProviderScopePhase;
 pub use scope::{WriteScope, begin};
 pub(crate) use scope::{begin_family, begin_provider_use};
-pub use session::Session;
+pub use session::{LedgerCustody, Session};
 pub use timing::{Timing, TransactionTimings};

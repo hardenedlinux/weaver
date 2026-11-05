@@ -98,7 +98,7 @@ func TestPublishedPipelineKeepsSchemeOutsideExecutionQualification(t *testing.T)
 		"execution-benchmark-target": true, "execution-policy-tests": true,
 		"execution-backend-tests": true, "execution-policy-benchmark": true,
 		"execution-ledger-benchmark": true, "execution-provider-benchmark": true,
-		"execution-encoding-benchmark": true, "execution-range-prepare-pair": true,
+		"execution-delivery-join-pair": true, "execution-encoding-benchmark": true, "execution-range-prepare-pair": true,
 		"execution-scheduled-encoding-pair": true, "execution-contention-pair": true,
 		"execution-provider-integration": true, "published-pipeline-benchmark": true,
 		"execution-header-seal-pair": true, "execution-header-wait-pair": true,
