@@ -62,6 +62,120 @@ impl Ledger {
     }
 }
 
+impl Ledger {
+    /// Burn an exact bounded manifest in one transaction, then publish its
+    /// shared qualification. Only the first inert frame is staged before the
+    /// native outcome; each individual frame still needs acknowledgment/use.
+    pub fn release_provider_group_for_delivery<T>(
+        &mut self,
+        permit: &ProviderDispatch,
+        releases: Vec<ProviderRelease>,
+        format: &str,
+        stage_first: impl FnOnce(u64, crate::ProviderDelivery) -> Result<T>,
+    ) -> Result<(T, Vec<crate::ProviderDelivery>)> {
+        self.check_provider_session(permit)?;
+        validate_manifest(permit, &releases, format, &self.session)?;
+        let owner = self.connection.execution_owner();
+        let (mut tx, domains) = begin_progress_effect(
+            &mut self.connection,
+            permit,
+            ProviderScopePhase::FinalQueue,
+            &RangeProgress { _sealed: () },
+        )?;
+        guard_manifest(&tx, permit, &domains, &releases, format)?;
+        let staged = stage_snapshot(&mut tx, owner, permit, &releases, format, stage_first)?;
+        tx.commit_delivery().map_err(db)?;
+        Ok(staged)
+    }
+}
+
+fn guard_manifest(
+    tx: &WriteScope<'_>,
+    p: &ProviderDispatch,
+    domains: &weaver_contracts::DomainView,
+    releases: &[ProviderRelease],
+    format: &str,
+) -> Result<()> {
+    let first = releases.first().ok_or(Error::Conflict("empty snapshot"))?;
+    let last = releases.last().ok_or(Error::Conflict("empty snapshot"))?;
+    guard_live_range(
+        tx,
+        p,
+        domains,
+        "emitProvider",
+        first.sequence..last.sequence + last.length,
+        format,
+    )?;
+    for (index, release) in releases.iter().enumerate() {
+        let digest = if index == 0 {
+            super::release_digest(tx, p, release)?
+        } else {
+            super::exact_release_digest(tx, p, release)?
+        };
+        if digest.as_deref() != Some(release.digest.as_str()) {
+            return Err(Error::Conflict("provider release binding"));
+        }
+    }
+    Ok(())
+}
+
+fn stage_snapshot<T>(
+    tx: &mut WriteScope<'_>,
+    owner: std::sync::Arc<crate::persistence::owner::Owner>,
+    p: &ProviderDispatch,
+    releases: &[ProviderRelease],
+    format: &str,
+    stage_first: impl FnOnce(u64, crate::ProviderDelivery) -> Result<T>,
+) -> Result<(T, Vec<crate::ProviderDelivery>)> {
+    let receipt = tx.delivery_receipt().map_err(db)?;
+    let mut deliveries =
+        crate::ProviderDelivery::group(owner, receipt, tx.delivery_scope(), p, releases, format)
+            .into_iter();
+    let first = deliveries
+        .next()
+        .ok_or(Error::Conflict("empty provider snapshot"))?;
+    let result = tx.queue_effect(|| {
+        p.require_oauth_time()?;
+        stage_first(releases[0].sequence, first)
+    })?;
+    for release in releases {
+        super::mark_release(tx, p, release)?;
+    }
+    Ok((result, deliveries.collect()))
+}
+
+fn validate_manifest(
+    p: &ProviderDispatch,
+    releases: &[ProviderRelease],
+    format: &str,
+    session: &str,
+) -> Result<()> {
+    let specs: Vec<_> = releases
+        .iter()
+        .map(|r| (r.digest.as_str(), r.length))
+        .collect();
+    group_length(&specs)?;
+    for (index, r) in releases.iter().enumerate() {
+        if r.session != session
+            || r.plan_digest != p.digest
+            || r.format != format
+            || r.sequence
+                .checked_add(r.length)
+                .is_none_or(|end| end > 4096)
+        {
+            return Err(Error::Conflict("foreign provider snapshot manifest"));
+        }
+        if index > 0 {
+            let prior = &releases[index - 1];
+            if r.sequence != prior.sequence + prior.length || r.predecessor != Some(prior.sequence)
+            {
+                return Err(Error::Conflict("unordered provider snapshot manifest"));
+            }
+        }
+    }
+    Ok(())
+}
+
 fn group_length(ranges: &[(&str, u64)]) -> Result<u64> {
     if ranges.is_empty()
         || ranges.len() > MAX_PROVIDER_PREPARATION_RANGES

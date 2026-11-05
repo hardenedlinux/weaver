@@ -168,8 +168,10 @@ package WeaverExecution {
            may span scopes. A writer seal cannot turn unknown into a refund.
            A successful new stream has five fixed scopes for admission, consume,
            dispatch burn, request write and terminal commit. Every output
-           range requires one final queue scope. Preparation adds one scope
-           per group. A single-range group yields two scopes per range.
+           range belongs to an exact final-queue manifest. Preparation and
+           final queue each add one scope per buffered group. The single-range
+           control yields two scopes per range; its historical matrices below
+           retain that baseline, not the current bounded-snapshot count.
            These are base deciding scopes. Receiver invalidation adds an
            observed variable number of read-only requalification scopes;
            they must be reported separately and included in total latency. */
@@ -272,8 +274,8 @@ package WeaverExecution {
            records and the cursor advance commit together. The worker
            receives affine capabilities only after commit acknowledgment. */
         doc /* Transport capacity and codec work stay outside the deciding
-           transaction. Every final queue insertion rechecks the current
-           policy, original claim, fence and exact pending range. A later
+           transaction. Every deciding manifest rechecks current policy,
+           original claim, fence and every exact pending range. A later
            member requires its immediate predecessor to be released. A
            failed insert, lost commit response or restart issues no new
            capability. Unknown ranges retain their original budget hold. */
@@ -300,11 +302,58 @@ package WeaverExecution {
            reopen only on the exact fenced image and outcome. */
     }
 
+    requirement def ProviderSnapshotPublication {
+        doc /* Existing ready ranges form a bounded immutable manifest. A native
+           transaction rechecks Cedar for every actual row, original claim,
+           shared hold/history, profile, OAuth and fence, then atomically burns
+           that exact group. Publish its qualification only on known commit.
+           Its first frame may be staged inert before commit; no commit emits
+           external bytes. Never delay a live token to fill a batch. */
+        doc /* The one receiver still joins semantic closure/cut, owner/session,
+           plan, exact interval, expiry and an affine receipt at each offer.
+           Per-frame acknowledgment and cursor are separate from the shared
+           qualification. Source change invalidates the snapshot; one deciding
+           read-only transaction requalifies its exact manifest without closing already-current peers or creating another request,
+           hold or range burn. Unknown results seal; restart cannot adopt a
+           snapshot or refund any unsent tail. Queue capacity is unchanged.
+           A semantic pending barrier already visible at refresh scheduling
+           defers that read; outcome notification lets the receiver request
+           the new cut. A close racing later still blocks the final owner gate. */
+    }
+
+    part def ProviderSnapshotExperiment {
+        doc /* Cost model for the unchanged thirteen one-row burst fixture.
+           Both arms prepare groups of at most four already buffered ranges.
+           The control commits thirteen individual releases; publication commits
+           four manifests. Only qualification is shared: thirteen exact cursor
+           offers and current owner turns remain. Native admitted tail is not
+           queue occupancy, external acknowledgment or refund authority. */
+        part lifecycle : ProviderStorageLifecycle;
+        attribute responseRanges : Integer = 13;
+        attribute maximumRangesPerGroup : Integer = 4;
+        attribute preparationGroups : Integer = 4;
+        attribute snapshotQueueGroups : Integer = 4;
+        attribute controlQueueGroups : Integer = 13;
+        attribute snapshotBaseScopes : Integer = 13;
+        attribute controlBaseScopes : Integer = 22;
+        assert constraint { (preparationGroups - 1) * maximumRangesPerGroup < responseRanges and responseRanges <= preparationGroups * maximumRangesPerGroup }
+        assert constraint { snapshotBaseScopes == lifecycle.fixedDecidingScopes + preparationGroups + snapshotQueueGroups }
+        assert constraint { controlBaseScopes == lifecycle.fixedDecidingScopes + preparationGroups + controlQueueGroups }
+        doc /* Requalification adds observed native scopes; slow provider input
+           may produce width-one groups. Do not wait to fill a batch or infer
+           submillisecond tails from the count equation. Measure ready-to-Tonic,
+           Tonic-to-Go, waiting, per-stream commit sum and throughput separately.
+           Partition confirmed-to-Tonic observations by actual native renewal;
+           a no-renewal frame may still wait behind a semantic pending barrier. */
+    }
+
     requirement def ProviderSemanticProgress {
         doc /* The complete authorization image excludes provider_runs.next_event
            and provider_releases progress. Only fresh exact range insertion with
            cursor CAS, and exact unknown-to-released CAS preserve that image.
-           A sealed Rust token is available only to these two audited paths.
+           These are the only audited preserving writes. Exact read-only
+           snapshot requalification uses the same sealed ticket class and
+           publishes no new burn or semantic input.
            They still register and settle a unique close/commit/activate ticket,
            but neither advance the semantic revision nor block an older,
            acknowledged range. They never authorize their own uncommitted frame. */
@@ -425,41 +474,41 @@ package WeaverExecution {
     }
 
     part def DeliveryValidation {
-        attribute displayName : String = "Turso / validate";
-        attribute responsibility : String = "Cedar + claim + hold\nKeep the semantic cut";
-        attribute glyph : String = "ledger";
-        attribute visualRole : String = "ledger";
+        attribute displayName : String = "Rust / qualify group";
+        attribute responsibility : String = "Pending clear; each row\nCedar + claim + domains";
+        attribute glyph : String = "authorization";
+        attribute visualRole : String = "governance";
         port closed : ~EgressWindowPort;
         port validated : EgressWindowPort;
     }
-    part def CertifiedRangeProgress {
-        attribute displayName : String = "Turso / range progress";
-        attribute responsibility : String = "Append or release exactly\nKeep prior permission";
+    part def PublishedRangeSnapshot {
+        attribute displayName : String = "Turso / commit group";
+        attribute responsibility : String = "Burn the bounded group\nPublish one qualified cut";
         attribute glyph : String = "ledger";
         attribute visualRole : String = "ledger";
+        port qualified : ~EgressWindowPort;
         port preserved : EgressWindowPort;
     }
     part def DeliveryReceiver {
         attribute displayName : String = "Rust / consume once";
-        attribute responsibility : String = "Live cut + owner + expiry\nOne next cursor";
-        attribute glyph : String = "authorization";
+        attribute responsibility : String = "Live cut + owner + expiry\nOne-use frame cursor";
+        attribute glyph : String = "writer";
         attribute visualRole : String = "execution";
         port validated : ~EgressWindowPort;
         port staged : ~EgressWindowPort;
-        port progress : ~EgressWindowPort;
         port offer : EgressWindowPort;
     }
     part providerDeliveryJoin {
         part changes : EgressMutationBarrier;
         part validated : DeliveryValidation;
-        part progress : CertifiedRangeProgress;
+        part publication : PublishedRangeSnapshot;
         part staged : InertProviderFrame;
         part receiver : DeliveryReceiver;
         part tonic : ProviderEgressTransport;
         connection closeBeforeWrite connect changes.closed to validated.closed;
-        connection exactRevision connect validated.validated to receiver.validated;
+        connection exactRevision connect publication.preserved to receiver.validated;
         connection inertOnly connect staged.stagedBytes to receiver.staged;
-        connection unchangedMeaning connect progress.preserved to receiver.progress;
+        connection qualifiedManifest connect validated.validated to publication.qualified;
         connection oneOffer connect receiver.offer to tonic.acceptedBytes;
     }
 

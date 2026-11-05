@@ -71,11 +71,7 @@ func checkProviderDeliveryJoin(t *testing.T, journal, mode string) {
 		_, err := f.client.Execute(ctx, f.plan, pb.Encoding_PROTOBUF, 1, func(*pb.Event) error { frames.Add(1); return nil })
 		done <- err
 	}()
-	marker := 1
-	if before {
-		marker = 0
-	}
-	event := awaitDeliveryCuts(t, ctx, controller, phase, marker)
+	event := awaitDeliveryCuts(t, ctx, controller, phase, before)
 	if frames.Load() != 0 {
 		t.Fatal("an unacknowledged queued frame reached Go", frames.Load())
 	}
@@ -157,30 +153,7 @@ func checkProviderDeliveryJoin(t *testing.T, journal, mode string) {
 		f.stop(t)
 	}
 	f.start(t)
-	recoveredRanges := 1
-	if before {
-		recoveredRanges = 0
-	}
-	if mode == "control" {
-		recoveredRanges = 5
-	}
-	if mode == "revoke-receiver" || mode == "late-same-policy" || mode == "crash-receiver" || mode == "migrate-receiver" {
-		// The paused sole receiver owns one staged frame and the real queue
-		// holds two more. Native releases may commit concurrently, but none
-		// may cross the paused receiver or become permission after restart.
-		select {
-		case event := <-controller.events:
-			if event.phase != "Boot" || event.marker < 1 || event.marker > 3 {
-				t.Fatal("recovery escaped the bounded inert pipeline", event.phase, event.marker)
-			}
-			recoveredRanges = event.marker
-			t.Logf("exact recovered inert prefix=%d", recoveredRanges)
-		case <-ctx.Done():
-			t.Fatal("missing authoritative recovery prefix")
-		}
-	} else {
-		controller.await(t, ctx, "Boot", recoveredRanges)
-	}
+	recoveredRanges := awaitSnapshotRecovery(t, ctx, controller, event.marker, mode == "control")
 
 	if _, err := f.client.Execute(ctx, f.plan, pb.Encoding_PROTOBUF, 1, func(*pb.Event) error { t.Error("restarted original emitted a frame"); return nil }); err == nil {
 		t.Fatal("restart reopened original consumption")
@@ -193,19 +166,33 @@ func checkProviderDeliveryJoin(t *testing.T, journal, mode string) {
 }
 
 // Native commit and asynchronous receiver observation are independent.
-func awaitDeliveryCuts(t testing.TB, ctx context.Context, controller *commitController, phase string, marker int) commitCut {
+func awaitDeliveryCuts(t testing.TB, ctx context.Context, controller *commitController, phase string, before bool) commitCut {
 	t.Helper()
 	var commit commitCut
 	blocked := false
-	for range 2 {
+	prepared := 0
+	published := 0
+	for commit.socket == nil || !blocked || prepared == 0 {
 		select {
 		case event := <-controller.events:
 			switch event.phase {
 			case phase:
-				if commit.socket != nil || event.marker != marker {
+				if commit.socket != nil {
 					t.Fatal("wrong or duplicate durable release cut", event.phase, event.marker)
 				}
 				commit = event
+			case "SnapshotBurned":
+				if published != 0 {
+					t.Fatal("duplicate first publication")
+				}
+				published = event.marker
+				event.socket.Close()
+			case "PreparedRanges":
+				if prepared != 0 || event.marker < 1 || event.marker > 4 {
+					t.Fatal("invalid native manifest width", event.marker)
+				}
+				prepared = event.marker
+				event.socket.Close()
 			case "InertFrameBlocked":
 				if blocked || event.marker != 0 {
 					t.Fatal("wrong or duplicate inert receiver cut", event.phase, event.marker)
@@ -219,10 +206,47 @@ func awaitDeliveryCuts(t testing.TB, ctx context.Context, controller *commitCont
 			t.Fatal("actual commit/receiver cuts not observed within original window")
 		}
 	}
-	if commit.socket == nil || !blocked {
+	if commit.socket == nil || !blocked || prepared == 0 {
 		t.Fatal("incomplete real delivery evidence")
 	}
+	expected := prepared
+	if before {
+		expected = 0
+	}
+	if commit.marker != expected || published != expected {
+		t.Fatal("partial native snapshot outcome", commit.marker, expected)
+	}
+	commit.prepared = prepared
 	return commit
+}
+
+// Every observed native group must advance a complete bounded prefix. A paused
+// receiver can have committed metadata for an unqueued tail; that is never a
+// transport credit or a terminal/settlement receipt.
+func awaitSnapshotRecovery(t testing.TB, ctx context.Context, controller *commitController, known int, complete bool) int {
+	t.Helper()
+	for {
+		select {
+		case event := <-controller.events:
+			switch event.phase {
+			case "SnapshotBurned":
+				if event.marker <= known || event.marker-known > 4 || event.marker > 5 {
+					t.Fatal("non-atomic snapshot prefix", event.marker, known)
+				}
+				known = event.marker
+				event.socket.Close()
+			case "Boot":
+				if event.marker != known || (complete && known != 5) {
+					t.Fatal("recovery did not match native publication", event.marker, known)
+				}
+				return known
+			default:
+				t.Fatal("unexpected snapshot recovery evidence", event.phase)
+			}
+		case <-ctx.Done():
+			t.Fatal("native snapshot recovery evidence missing")
+		}
+	}
 }
 
 // Exercise the real TLS/Tonic producer and consumer with variable finite
@@ -257,6 +281,17 @@ func TestProviderSemanticProgressProperty(t *testing.T) {
 		for _, sample := range samples {
 			if sample.refresh != 0 {
 				t.Fatal("progress write invalidated an unchanged authorization image", sample.first, sample.refresh)
+			}
+		}
+		// Domain-ticket diagnostics belong to MVCC. WAL has no domain scheduler;
+		// its native atomic group outcomes are checked by the recovery matrix.
+		if mvcc {
+			counts := make(map[string]int)
+			for _, scope := range readRangeScopes(t, f)[f.plan.Family] {
+				counts[scope.phase]++
+			}
+			if counts["prepare"] < ((rows+3)/4) || counts["prepare"] > rows || counts["queue"] != counts["prepare"] || counts["revalidate"] != 0 || counts["other"] != 5 {
+				t.Fatal("native decisions did not match exact opportunistic manifests", counts, rows)
 			}
 		}
 		return true

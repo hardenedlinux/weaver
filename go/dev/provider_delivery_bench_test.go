@@ -18,8 +18,8 @@ import (
 )
 
 // Both arms use one image, the same durable guards and the same 128-stream
-// workload. The control invalidates on every progress write; the candidate
-// uses a sealed progress lane. Both keep the exact same final receiver guard.
+// workload. The control commits each range; the candidate publishes one
+// bounded snapshot. Both retain semantic invalidation and the final owner gate.
 func BenchmarkProviderDeliveryJoin(b *testing.B) {
 	image := wifImage(b, true)
 	for _, shared := range []bool{true, false} {
@@ -39,7 +39,7 @@ func benchmarkProviderDeliveryJoin(b *testing.B, image string, shared, loaded bo
 	for i := range arms {
 		env := []string{"WEAVER_STORAGE_JOURNAL=mvcc", "WEAVER_TEST_PROVIDER_TAIL=1", "WEAVER_TEST_PROVIDER_SCOPE_TRACE=1"}
 		if i == 0 {
-			env = append(env, "WEAVER_TEST_CONSERVATIVE_RANGE_INVALIDATION=1")
+			env = append(env, "WEAVER_TEST_SINGLE_RANGE_COMMIT=1")
 		}
 		arms[i].fixture = domainBenchmarkFixture(b, image, env, burstProviderSSE(ranges))
 	}
@@ -63,10 +63,14 @@ func benchmarkProviderDeliveryJoin(b *testing.B, image string, shared, loaded bo
 		b.ReportMetric(cpu.Seconds()/wall.Seconds(), "pressure-cpu-equivalents")
 	}
 	b.ReportMetric(0, "ns/op")
-	for i, label := range []string{"all-writes", "semantic-cut"} {
+	for i, label := range []string{"single-range", "published-snapshot"} {
 		arm := &arms[i]
 		reportProviderTailArm(b, arm, label)
-		reportScheduledEncoding(b, arm, label, ranges, (ranges+3)/4, shared)
+		queues := ranges
+		if i == 1 {
+			queues = (ranges + 3) / 4
+		}
+		reportScheduledEncoding(b, arm, label, ranges, (ranges+3)/4, queues, shared)
 		reportDeliveryJoin(b, arm, label)
 		arm.fixture.stop(b)
 	}
@@ -123,6 +127,7 @@ func reportDeliveryJoin(b *testing.B, arm *providerTailArm, label string) {
 	b.Helper()
 	samples := readDeliverySamples(b, arm.fixture)
 	var wait, turn, ackToTonic, tonicToGo []time.Duration
+	var unchanged, requalified []time.Duration
 	var refreshed uint64
 	for _, stream := range arm.streams {
 		rows := samples[stream.family]
@@ -136,7 +141,13 @@ func reportDeliveryJoin(b *testing.B, arm *providerTailArm, label string) {
 			}
 			wait = append(wait, row.wait)
 			turn = append(turn, row.turn)
-			ackToTonic = append(ackToTonic, time.Duration(row.accepted-row.acknowledged))
+			ack := time.Duration(row.accepted - row.acknowledged)
+			ackToTonic = append(ackToTonic, ack)
+			if row.refresh == 0 {
+				unchanged = append(unchanged, ack)
+			} else {
+				requalified = append(requalified, ack)
+			}
 			tonicToGo = append(tonicToGo, time.Duration(received-row.accepted))
 			refreshed += row.refresh
 		}
@@ -146,4 +157,13 @@ func reportDeliveryJoin(b *testing.B, arm *providerTailArm, label string) {
 	b.ReportMetric(tailMillis(ackToTonic, 99)*1000, label+"-ack-to-tonic-p99-us/frame")
 	b.ReportMetric(tailMillis(tonicToGo, 99)*1000, label+"-tonic-to-go-p99-us/frame")
 	b.ReportMetric(float64(refreshed)/float64(len(turn)), label+"-rechecks/frame")
+	b.ReportMetric(float64(len(requalified)), label+"-requalified-frames")
+	for _, bin := range []struct {
+		name string
+		rows []time.Duration
+	}{{"no-requalification", unchanged}, {"requalified", requalified}} {
+		if len(bin.rows) > 0 {
+			b.ReportMetric(tailMillis(bin.rows, 99)*1000, label+"-"+bin.name+"-ack-to-tonic-p99-us/frame")
+		}
+	}
 }

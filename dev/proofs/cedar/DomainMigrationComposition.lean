@@ -2,6 +2,7 @@
 --
 -- SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
+import ProviderSnapshotPublication
 import ProviderSemanticProgress
 import CedarPooSpec.Gateway.ZeroTrust
 import GatewayHeadCAS
@@ -84,6 +85,31 @@ theorem range_progress_preserves_spec_final_use
   simpa only [same] using gateway_final_use_preserves_domain_contract use events
 
 #print axioms range_progress_preserves_spec_final_use
+
+/-- Each manifest member joins the qualified snapshot with the actual cut.
+    SPEC final use and finite shared-domain obligations remain the semantic
+    dependency; the host supplies the exact cut-to-actual-view projection. -/
+theorem published_snapshot_preserves_spec_final_use
+    (use : Gateway.ZeroTrust.FinalUse proposal)
+    (events : GatewayHeadCAS.Run c owner GatewayHeadCAS.initial use.actual)
+    (snapshot : Weaver.ProviderSnapshotPublication.Snapshot)
+    (gate : Weaver.ProviderSnapshotPublication.Gate)
+    (row : Weaver.ProviderSnapshotPublication.Range)
+    (acknowledged unexpired : Prop)
+    (current : Weaver.ProviderSnapshotPublication.Ready snapshot gate row acknowledged unexpired)
+    (projection : Nat → GatewayHeadCAS.State)
+    (qualified : ∀ member ∈ snapshot.manifest, projection snapshot.cut = use.actual) :
+    (Gateway.ZeroTrust.specialize proposal (reachableDomain c)).required effect (projection gate.cut) ∧
+    (∀ account, booked c (projection gate.cut).base account ≤ c.capacity account) ∧
+    (∀ key, ((projection gate.cut).base.messages key).claims ≤ 1 ∧
+      ((projection gate.cut).base.messages key).sends ≤ 1) ∧
+    original.Refines prepared.profile := by
+  have joined : projection gate.cut = use.actual :=
+    Weaver.ProviderSnapshotPublication.final_use_joins_snapshot snapshot gate row acknowledged unexpired
+      (fun cut _ => projection cut = use.actual) qualified current
+  simpa only [joined] using gateway_final_use_preserves_domain_contract use events
+
+#print axioms published_snapshot_preserves_spec_final_use
 
 theorem head_cas_preserves_original_obligations
     (step : GatewayHeadCAS.Step c owner before after)

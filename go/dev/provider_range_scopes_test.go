@@ -32,7 +32,7 @@ func BenchmarkProviderSharedRangeScopes(b *testing.B) {
 
 const providerScopeTraceChunkRows = 64
 
-func readRangeScopes(b *testing.B, f *fixture) map[string][]rangeScopeSample {
+func readRangeScopes(b testing.TB, f *fixture) map[string][]rangeScopeSample {
 	b.Helper()
 	log, err := os.ReadFile(filepath.Join(f.directory, "server.log"))
 	if err != nil {

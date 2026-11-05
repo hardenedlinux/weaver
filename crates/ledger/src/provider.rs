@@ -69,8 +69,8 @@ impl ProviderDispatch {
         self.oauth_expires
     }
     fn require_oauth_time(&self) -> Result<()> {
-        if let Some(expires) = self.oauth_expires
-            && crate::provider_oauth::now()? >= expires
+        if let Some(grant) = &self.oauth
+            && !grant.validity().contains(&crate::provider_oauth::now()?)
         {
             return Err(Error::Denied);
         }
@@ -265,46 +265,10 @@ impl Ledger {
         format: &str,
         send: impl FnOnce(u64, crate::ProviderDelivery) -> Result<T>,
     ) -> Result<T> {
-        self.check_provider_session(permit)?;
-        if release.session != self.session {
-            return Err(Error::Conflict("foreign release owner"));
-        }
-        if release.plan_digest != permit.digest || release.format != format {
-            return Err(Error::Conflict("foreign provider release binding"));
-        }
-        let owner = self.connection.execution_owner();
-        let (mut tx, domains) = begin_progress_effect(
-            &mut self.connection,
-            permit,
-            ProviderScopePhase::FinalQueue,
-            &RangeProgress { _sealed: () },
-        )?;
-        guard_live_range(
-            &tx,
-            permit,
-            &domains,
-            "emitProvider",
-            release.sequence..release.sequence + release.length,
-            format,
-        )?;
-        if release_digest(&tx, permit, &release)?.as_deref() != Some(&release.digest) {
-            return Err(Error::Conflict("provider release binding"));
-        }
-        let delivery = crate::ProviderDelivery::new(
-            owner,
-            tx.delivery_receipt().map_err(db)?,
-            tx.delivery_scope(),
-            permit,
-            &release,
-            format,
-        );
-        let output = tx.queue_effect(|| {
-            permit.require_oauth_time()?;
-            send(release.sequence, delivery)
-        })?;
-        mark_release(&tx, permit, &release)?;
-        tx.commit_delivery().map_err(db)?;
-        Ok(output)
+        let (result, remaining) =
+            self.release_provider_group_for_delivery(permit, vec![release], format, send)?;
+        debug_assert!(remaining.is_empty());
+        Ok(result)
     }
     pub fn complete_provider(&mut self, permit: &ProviderDispatch, format: &str) -> Result<()> {
         self.complete_provider_with_usage(permit, format, None)
@@ -523,6 +487,20 @@ fn begin_progress_effect<'a>(
     require_provider_effect(tx, p)
 }
 
+/// Read-only requalification publishes a new snapshot certificate, never a
+/// semantic mutation. Preserve already-current peer snapshots while waiting.
+pub(crate) fn begin_snapshot_validation<'a>(
+    session: &'a mut crate::persistence::Session,
+    p: &ProviderDispatch,
+) -> Result<(WriteScope<'a>, DomainView)> {
+    begin_progress_effect(
+        session,
+        p,
+        ProviderScopePhase::RevalidateDelivery,
+        &RangeProgress { _sealed: () },
+    )
+}
+
 fn require_provider_effect<'a>(
     tx: WriteScope<'a>,
     p: &ProviderDispatch,
@@ -587,6 +565,14 @@ fn release_digest(
     if let Some(predecessor) = release.predecessor {
         return release_group::ordered_release_digest(tx, permit, release, predecessor);
     }
+    exact_release_digest(tx, permit, release)
+}
+
+fn exact_release_digest(
+    tx: &WriteScope<'_>,
+    permit: &ProviderDispatch,
+    release: &ProviderRelease,
+) -> Result<Option<String>> {
     let params = crate::persistence::params![
         permit.plan.family.as_str(),
         permit.plan.node.as_str(),

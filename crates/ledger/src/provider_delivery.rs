@@ -14,17 +14,26 @@ use std::{
 };
 use weaver_contracts::{Error, ProviderPlan, Result};
 
+struct SnapshotRange {
+    first: u64,
+    rows: u64,
+    digest: String,
+}
+struct Snapshot {
+    completion: Arc<Completion>,
+    manifest: Vec<SnapshotRange>,
+}
 struct Binding {
+    snapshot: Arc<Snapshot>,
     owner: Arc<Owner>,
     completion: Arc<Completion>,
     scope: Scope,
     session: String,
     plan: String,
     format: String,
-    digest: String,
     first: u64,
     rows: u64,
-    expires: Option<u64>,
+    validity: Option<std::ops::Range<u64>>,
 }
 /// Issued only from the existing live range guard; not permission to send.
 pub struct ProviderDelivery(Arc<Binding>);
@@ -52,26 +61,50 @@ pub struct DeliveryInterval {
     pub rows: u64,
 }
 impl ProviderDelivery {
-    pub(crate) fn new(
+    pub(crate) fn group(
         owner: Arc<Owner>,
         completion: Arc<Completion>,
         scope: Scope,
         permit: &ProviderDispatch,
-        release: &crate::ProviderRelease,
+        releases: &[crate::ProviderRelease],
         format: &str,
-    ) -> Self {
-        Self(Arc::new(Binding {
-            owner,
-            completion,
-            scope,
-            session: permit.session.clone(),
-            plan: permit.digest.clone(),
-            format: format.to_owned(),
-            digest: release.digest.clone(),
-            first: release.sequence,
-            rows: release.length,
-            expires: permit.oauth_expires,
-        }))
+    ) -> Vec<Self> {
+        let snapshot = Arc::new(Snapshot {
+            completion: completion.clone(),
+            manifest: releases
+                .iter()
+                .map(|release| SnapshotRange {
+                    first: release.sequence,
+                    rows: release.length,
+                    digest: release.digest.clone(),
+                })
+                .collect(),
+        });
+        releases
+            .iter()
+            .enumerate()
+            .map(|(index, release)| {
+                Self(Arc::new(Binding {
+                    snapshot: snapshot.clone(),
+                    owner: owner.clone(),
+                    completion: if index == 0 {
+                        completion.clone()
+                    } else {
+                        Arc::new(completion.share_qualification())
+                    },
+                    scope: scope.clone(),
+                    session: permit.session.clone(),
+                    plan: permit.digest.clone(),
+                    format: format.to_owned(),
+                    first: release.sequence,
+                    rows: release.length,
+                    validity: permit
+                        .oauth
+                        .as_ref()
+                        .map(crate::provider_oauth::PreparedUse::validity),
+                }))
+            })
+            .collect()
     }
     pub fn split(self) -> (DeliveryProducer, DeliveryFrame) {
         (DeliveryProducer(self.0.clone()), DeliveryFrame(self.0))
@@ -91,7 +124,7 @@ impl DeliveryProducer {
             .state
             .lock()
             .map_err(|_| Error::Conflict("delivery poisoned"))?;
-        if receipt.rejected || receipt.stamp.is_none() {
+        if receipt.rejected || !self.0.completion.confirmed().map_err(db)? {
             return Err(Error::Conflict("delivery commit unconfirmed"));
         }
         receipt.deadline.get_or_insert(deadline);
@@ -110,7 +143,7 @@ impl DeliveryProducer {
     /// Nonblocking producer progress. A refresh requests the existing live guard;
     /// it neither grants a transfer nor changes the original deadline.
     pub fn progress(&self) -> Result<Option<DeliveryWait>> {
-        let mut receipt = self
+        let receipt = self
             .0
             .completion
             .state
@@ -127,33 +160,38 @@ impl DeliveryProducer {
             return Err(Error::Conflict("delivery cancelled or expired"));
         }
         if receipt.refresh {
-            receipt.refresh = false;
-            return Ok(Some(DeliveryWait::Refresh));
+            drop(receipt);
+            return Ok(self
+                .0
+                .owner
+                .authority
+                .take_refresh(&self.0.scope, &self.0.completion)?
+                .then_some(DeliveryWait::Refresh));
         }
         Ok(None)
     }
     /// No engine lock is retained across this bounded blocking producer wait.
     pub fn wait(&self, cancelled: impl Fn() -> bool, deadline: Instant) -> Result<DeliveryWait> {
         let completion = &self.0.completion;
-        let mut receipt = completion
-            .state
-            .lock()
-            .map_err(|_| Error::Conflict("delivery poisoned"))?;
         loop {
-            if receipt.consumed {
-                return Ok(DeliveryWait::Accepted);
+            if let Some(progress) = self.progress()? {
+                return Ok(progress);
             }
-            if receipt.rejected || cancelled() || Instant::now() >= deadline {
+            let receipt = completion
+                .state
+                .lock()
+                .map_err(|_| Error::Conflict("delivery poisoned"))?;
+            if receipt.consumed || receipt.refresh || receipt.rejected {
+                continue;
+            }
+            if cancelled() || Instant::now() >= deadline {
                 return Err(Error::Conflict("delivery cancelled or unavailable"));
             }
-            if receipt.refresh {
-                receipt.refresh = false;
-                return Ok(DeliveryWait::Refresh);
-            }
-            (receipt, _) = completion
+            let (receipt, _) = completion
                 .changed
                 .wait_timeout(receipt, Duration::from_millis(5))
                 .map_err(|_| Error::Conflict("delivery poisoned"))?;
+            drop(receipt);
         }
     }
 }
@@ -222,8 +260,8 @@ impl DeliveryCursor {
                     return Err(Error::Conflict("delivery owner, interval or grant expired"));
                 }
                 // Fail closed on a clock error as well as expiration.
-                if let Some(expires) = binding.expires
-                    && crate::provider_oauth::now()? >= expires
+                if let Some(validity) = &binding.validity
+                    && !validity.contains(&crate::provider_oauth::now()?)
                 {
                     return Err(Error::Denied);
                 }
@@ -289,33 +327,42 @@ impl Ledger {
                 .map_err(|_| Error::Conflict("delivery poisoned"))?;
             receipt.refresh_count += 1;
         }
-        let (mut tx, domains) = crate::provider::begin_provider_effect(
-            &mut self.connection,
-            permit,
-            crate::persistence::ProviderScopePhase::RevalidateDelivery,
-        )?;
+        let (mut tx, domains) =
+            crate::provider::begin_snapshot_validation(&mut self.connection, permit)?;
         if tx.delivery_scope() != binding.scope {
             return Err(Error::Conflict(
                 "delivery conflict roots changed; old receipt retired",
             ));
         }
+        let first = binding
+            .snapshot
+            .manifest
+            .first()
+            .ok_or(Error::Conflict("snapshot absent"))?;
+        let last = binding
+            .snapshot
+            .manifest
+            .last()
+            .ok_or(Error::Conflict("snapshot absent"))?;
         crate::provider::guard_live_range(
             &tx,
             permit,
             &domains,
             "emitProvider",
-            binding.first..binding.first + binding.rows,
+            first.first..last.first + last.rows,
             format,
         )?;
-        require_release(&tx, permit, binding)?;
-        tx.refresh_delivery_receipt(binding.completion.clone());
+        for range in &binding.snapshot.manifest {
+            require_release(&tx, permit, range)?;
+        }
+        tx.refresh_delivery_receipt(binding.snapshot.completion.clone());
         tx.commit_delivery_refresh().map_err(db)
     }
 }
 fn require_release(
     tx: &crate::persistence::WriteScope<'_>,
     permit: &ProviderDispatch,
-    binding: &Binding,
+    binding: &SnapshotRange,
 ) -> Result<()> {
     let digest: Option<String> = crate::persistence::maybe(tx,
         "SELECT digest FROM provider_releases WHERE family=?1 AND node=?2 AND sequence=?3 AND length=?4 AND state='released'",

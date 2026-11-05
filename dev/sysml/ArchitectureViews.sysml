@@ -241,31 +241,32 @@ package WeaverViews {
 
     view providerDeliveryJoin {
         attribute mappedFile : String = "docs/10-19-llm-gateway/10-routing-and-inference/10.09-provider-delivery-join.d2";
-        attribute displayTitle : String = "A queued frame is not permission.";
-        attribute displaySubtitle : String = "Authority changes close the lane. Exact range progress keeps prior permission.";
+        attribute displayTitle : String = "Commit a group. Gate every frame.";
+        attribute displaySubtitle : String = "Publish an exact manifest after commit. Rejoin the current cut at final use.";
         attribute displayEyebrow : String = "WEAVER / FINAL DELIVERY";
-        attribute readerQuestion : String = "Can an old queued frame cross a new Policy cut?";
+        attribute readerQuestion : String = "How can a shared snapshot stay safe during revocation?";
         attribute designAudience : String = "Gateway developers and security reviewers";
         attribute designMedium : String = "GitHub at 830 CSS pixels";
-        attribute designMessage : String = "New authority requires fresh checks.\nProgress keeps the cut; unknown keeps the hold.";
+        attribute designMessage : String = "One native outcome qualifies the group.\nRevocation closes delivery; unknown retains the hold.";
         attribute designFocus : String = "receiver";
         attribute visualNotation : String = "objects";
-        attribute visualBands : String = "[[\"changes\",\"validated\",\"progress\"],[\"staged\",\"receiver\",\"tonic\"]]";
+        attribute visualBands : String = "[[\"changes\",\"validated\",\"publication\"],[\"staged\",\"receiver\",\"tonic\"]]";
         attribute visualThemes : String = "sketchbook,ocean,comfortable,reading";
         attribute visualOptions : String = "{\"elk.algorithm\":\"layered\",\"elk.direction\":\"DOWN\",\"elk.edgeRouting\":\"ORTHOGONAL\"}";
         attribute visualWidth : Integer = 980;
         requirement delivery : WeaverExecution::ProviderDeliveryJoin;
         requirement semanticProgress : WeaverExecution::ProviderSemanticProgress;
+        requirement publicationContract : WeaverExecution::ProviderSnapshotPublication;
         expose WeaverExecution::providerDeliveryJoin::changes;
         expose WeaverExecution::providerDeliveryJoin::validated;
-        expose WeaverExecution::providerDeliveryJoin::progress;
+        expose WeaverExecution::providerDeliveryJoin::publication;
         expose WeaverExecution::providerDeliveryJoin::staged;
         expose WeaverExecution::providerDeliveryJoin::receiver;
         expose WeaverExecution::providerDeliveryJoin::tonic;
         expose WeaverExecution::providerDeliveryJoin::closeBeforeWrite;
         expose WeaverExecution::providerDeliveryJoin::exactRevision;
         expose WeaverExecution::providerDeliveryJoin::inertOnly;
-        expose WeaverExecution::providerDeliveryJoin::unchangedMeaning;
+        expose WeaverExecution::providerDeliveryJoin::qualifiedManifest;
         expose WeaverExecution::providerDeliveryJoin::oneOffer;
         render asInterconnectionDiagram;
     }

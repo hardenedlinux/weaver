@@ -36,12 +36,30 @@ struct Mutation {
 }
 #[derive(Default)]
 pub(crate) struct Completion {
+    qualification: Arc<Mutex<Qualification>>,
     pub state: Mutex<Receipt>,
     pub changed: Condvar,
 }
 #[derive(Default)]
+struct Qualification {
+    stamp: Option<Stamp>,
+    rejected: bool,
+}
+impl Completion {
+    pub(crate) fn share_qualification(&self) -> Self {
+        Self {
+            qualification: self.qualification.clone(),
+            state: Mutex::default(),
+            changed: Condvar::default(),
+        }
+    }
+    pub(crate) fn confirmed(&self) -> driver::Result<bool> {
+        let qualification = self.qualification.lock().map_err(error)?;
+        Ok(qualification.stamp.is_some() && !qualification.rejected)
+    }
+}
+#[derive(Default)]
 pub(crate) struct Receipt {
-    pub stamp: Option<Stamp>,
     pub acknowledged: bool,
     pub refresh: bool,
     pub consumed: bool,
@@ -155,6 +173,40 @@ impl Authority {
             committing: false,
         })
     }
+    /// A receiver can request refresh again while a native read is in flight.
+    /// Consume only unsatisfied demand at the actual cut, under publication's
+    /// mutex; a stale boolean must not create another native transaction.
+    pub(crate) fn take_refresh(
+        &self,
+        scope: &Scope,
+        completion: &Completion,
+    ) -> weaver_contracts::Result<bool> {
+        let state = self
+            .state
+            .lock()
+            .map_err(|_| weaver_contracts::Error::Conflict("authority poisoned"))?;
+        let mut receipt = completion
+            .state
+            .lock()
+            .map_err(|_| weaver_contracts::Error::Conflict("delivery poisoned"))?;
+        if receipt.consumed {
+            return Ok(false);
+        }
+        let qualification = completion
+            .qualification
+            .lock()
+            .map_err(|_| weaver_contracts::Error::Conflict("snapshot poisoned"))?;
+        if state.failed || receipt.rejected || qualification.rejected {
+            return Err(weaver_contracts::Error::Conflict("snapshot sealed"));
+        }
+        // A visible semantic barrier will supersede this read. Its outcome
+        // wakes the receiver, which requests the then-current cut again.
+        let requested = receipt.refresh
+            && !state.closed(scope)
+            && qualification.stamp.as_ref() != Some(&state.stamp(scope));
+        receipt.refresh = false;
+        Ok(requested)
+    }
     /// The caller constructs the returned Poll::Ready item inside this turn.
     pub(crate) fn current<T>(
         &self,
@@ -187,11 +239,24 @@ impl Authority {
             }
             return Ok(None);
         }
-        if receipt.stamp.as_ref() != Some(&state.stamp(scope)) {
+        let qualification = completion
+            .qualification
+            .lock()
+            .map_err(|_| weaver_contracts::Error::Conflict("snapshot poisoned"))?;
+        if qualification.rejected {
+            return Err(weaver_contracts::Error::Conflict(
+                "snapshot commit unconfirmed",
+            ));
+        }
+        if qualification.stamp.as_ref() != Some(&state.stamp(scope)) {
+            if !state.waiters.iter().any(|old| old.will_wake(waker)) {
+                state.waiters.push(waker.clone());
+            }
             receipt.refresh = true;
             completion.changed.notify_all();
             return Ok(None);
         }
+        drop(qualification);
         let accepted = accept(&mut receipt);
         #[cfg(any(test, feature = "commit-observer"))]
         if accepted.is_ok() {
@@ -283,11 +348,14 @@ impl Close<'_> {
         }
         if let Some(completion) = &self.receipt {
             let mut receipt = completion.state.lock().map_err(error)?;
+            let mut qualification = completion.qualification.lock().map_err(error)?;
             if committed && known && !state.failed {
-                receipt.stamp = Some(state.stamp(&self.scope));
+                qualification.stamp = Some(state.stamp(&self.scope));
             } else {
+                qualification.rejected = true;
                 receipt.rejected = true;
             }
+            drop(qualification);
             completion.changed.notify_all();
             if let Some(waker) = receipt.waker.take() {
                 state.waiters.push(waker);

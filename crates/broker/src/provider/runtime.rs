@@ -240,6 +240,12 @@ pub trait ProviderOutput {
     fn prepare_ranges_separately(&self) -> bool {
         false
     }
+    /// Safe same-image diagnostic: commit each range through the same group
+    /// implementation with width one, without changing collection width.
+    #[cfg(feature = "test-loopback")]
+    fn release_ranges_separately(&self) -> bool {
+        false
+    }
     /// Pure bounded encoding. It cannot insert a frame or grant send authority.
     fn prepare(
         route: &ProviderRoute,

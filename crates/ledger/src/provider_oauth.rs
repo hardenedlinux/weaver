@@ -104,6 +104,13 @@ pub(crate) struct PreparedUse {
     expires: u64,
 }
 
+impl PreparedUse {
+    /// Effective root/leaf time interval, checked independently of revisions.
+    pub(crate) fn validity(&self) -> std::ops::Range<u64> {
+        self.not_before..self.expires
+    }
+}
+
 pub(crate) fn prepare(
     connection: &Connection,
     request: Option<&ProviderOAuthUse>,

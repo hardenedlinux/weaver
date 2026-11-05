@@ -226,7 +226,7 @@ impl WriteScope<'_> {
         self.authority.replace_receipt(receipt);
     }
     pub(crate) fn commit_delivery_refresh(self) -> driver::Result<()> {
-        self.commit_turso(false)
+        self.commit_observed::<3>()
     }
     pub(crate) fn witness_started(&self, path: &str) -> driver::Result<()> {
         self.authority.external(path, false)
@@ -259,6 +259,10 @@ impl WriteScope<'_> {
             let (before, after) = match PHASE {
                 1 => (Cut::BeforeRangePrepareCommit, Cut::AfterRangePrepareCommit),
                 2 => (Cut::BeforeDeliveryCommit, Cut::AfterDeliveryCommit),
+                3 => (
+                    Cut::BeforeSnapshotPublication,
+                    Cut::AfterSnapshotPublication,
+                ),
                 _ => (Cut::BeforeCommit, Cut::AfterCommit),
             };
             let poisoned = self.poisoned;
@@ -280,7 +284,7 @@ impl WriteScope<'_> {
             }
             // commit consumes the scope and releases every owner/domain lock BEFORE
             // the acknowledgment observation. A new fence may commit during this gap.
-            self.commit()?;
+            self.commit_turso(PHASE != 3)?;
             if let Some(observer) = observer
                 && observer.observe(after) != Decision::Continue
             {
@@ -292,7 +296,7 @@ impl WriteScope<'_> {
             Ok(())
         }
         #[cfg(not(any(test, feature = "commit-observer")))]
-        self.commit()
+        self.commit_turso(PHASE != 3)
     }
     pub(crate) fn check_provider_oauth(
         &self,

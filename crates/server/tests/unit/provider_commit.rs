@@ -26,6 +26,21 @@ static OBSERVER: OnceLock<Arc<CommitObserver>> = OnceLock::new();
 
 impl Observer for CommitObserver {
     fn observe(&self, cut: Cut) -> Decision {
+        if cut == Cut::AfterDeliveryCommit
+            && matches!(
+                self.selected,
+                Cut::BeforeDeliveryCommit | Cut::AfterDeliveryCommit
+            )
+        {
+            let mut published =
+                UnixStream::connect(&self.path).expect("snapshot publication observer");
+            published
+                .set_write_timeout(Some(Duration::from_secs(3)))
+                .expect("bounded publication observation");
+            published
+                .write_all(format!("SnapshotBurned {}\n", durable_delivery_marker()).as_bytes())
+                .expect("known native prefix");
+        }
         if cut != self.selected {
             return Decision::Continue;
         }
@@ -45,6 +60,16 @@ impl Observer for CommitObserver {
             .expect("bounded delivery");
         // A different native connection observes committed bytes, never the staged
         // value on the writer. This query cannot grant execution or settle usage.
+        if matches!(cut, Cut::BeforeDeliveryCommit | Cut::AfterDeliveryCommit) {
+            let mut manifest = UnixStream::connect(&self.path).expect("manifest observer");
+            manifest
+                .set_write_timeout(Some(Duration::from_secs(3)))
+                .expect("bounded manifest observation");
+            let prepared = delivery_manifest_marker();
+            manifest
+                .write_all(format!("PreparedRanges {prepared}\n").as_bytes())
+                .expect("native manifest width");
+        }
         let marker = match cut {
             Cut::BeforeRangePrepareCommit | Cut::AfterRangePrepareCommit => durable_range_marker(),
             Cut::BeforeDeliveryCommit | Cut::AfterDeliveryCommit => durable_delivery_marker(),
@@ -80,6 +105,26 @@ fn durable_range_marker() -> i64 {
         |row| row.get(0),
     )
     .expect("atomic pending range group and cursor")
+}
+
+fn delivery_manifest_marker() -> i64 {
+    let journal = if std::env::var("WEAVER_STORAGE_JOURNAL").as_deref() == Ok("mvcc") {
+        persistence::Journal::Mvcc
+    } else {
+        persistence::Journal::Wal
+    };
+    let session = persistence::Session::open_with_journal(
+        std::env::var("WEAVER_DB").expect("fixture database"),
+        journal,
+    )
+    .expect("independent manifest reader");
+    persistence::one(
+        &session,
+        "SELECT COUNT(*) FROM provider_releases",
+        (),
+        |row| row.get(0),
+    )
+    .expect("durable prepared manifest")
 }
 
 fn durable_delivery_marker() -> i64 {

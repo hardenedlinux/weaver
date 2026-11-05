@@ -458,3 +458,12 @@ is changed to turn this result into a pass. The separate bounded-window
 candidate remains unpromoted. Remaining work is deciding-snapshot publication,
 per-range transaction cost and transport scheduling with their own safety and
 measurement evidence; this change establishes the range-preservation premise.
+
+* Subsequent snapshot publication
+
+The measurements above describe the earlier semantic-cut comparison and remain
+unchanged evidence. The runtime now qualifies a complete bounded manifest once
+per known native group commit, with independent acknowledgments and the same
+final owner gate. Read-only renewal also shares that qualification. See
+[[file:10.10-snapshot-publication.org][the source-led design, models and separate paired acceptance]] for the new
+comparison; the earlier numbers are not results for this implementation.

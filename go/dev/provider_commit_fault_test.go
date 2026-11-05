@@ -25,9 +25,10 @@ import (
 )
 
 type commitCut struct {
-	phase  string
-	marker int
-	socket net.Conn
+	phase    string
+	marker   int
+	prepared int
+	socket   net.Conn
 }
 type commitController struct {
 	path   string

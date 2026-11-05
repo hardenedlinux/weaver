@@ -81,6 +81,10 @@ impl ProviderOutput for Output {
     fn prepare_ranges_separately(&self) -> bool {
         std::env::var_os("WEAVER_TEST_SINGLE_RANGE_PREPARE").is_some()
     }
+    #[cfg(test)]
+    fn release_ranges_separately(&self) -> bool {
+        std::env::var_os("WEAVER_TEST_SINGLE_RANGE_COMMIT").is_some()
+    }
     fn stopped(&self) -> bool {
         self.cancelled.is_cancelled() || self.shutdown.is_cancelled() || self.sender.is_closed()
     }

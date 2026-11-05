@@ -93,6 +93,12 @@ fn release_ranges<O: ProviderOutput>(
         .map(|(rows, digest)| (digest.as_str(), rows.len() as u64))
         .collect();
     match ledger.prepare_provider_releases(permit, &specs, format) {
+        Ok(releases) if snapshot_enabled(output) => {
+            let slot = first_slot
+                .take()
+                .ok_or(Error::Conflict("snapshot credit missing"))?;
+            queue_snapshot(ledger, permit, output, format, ready, releases, slot)?;
+        }
         Ok(releases) => {
             for (rows, release) in ready.iter_mut().zip(releases) {
                 let slot = take_slot(ledger, permit, format, output, &mut first_slot)?;
@@ -111,6 +117,64 @@ fn release_ranges<O: ProviderOutput>(
         Err(error) => return Err(error),
     }
     Ok(())
+}
+
+fn snapshot_enabled<O: ProviderOutput>(_output: &O) -> bool {
+    #[cfg(feature = "test-loopback")]
+    if _output.release_ranges_separately() {
+        return false;
+    }
+    true
+}
+
+fn queue_snapshot<O: ProviderOutput>(
+    ledger: &mut Ledger,
+    permit: &ProviderDispatch,
+    output: &mut O,
+    format: &str,
+    ready: &mut [Vec<ProviderEvent>],
+    releases: Vec<ProviderRelease>,
+    slot: O::Slot,
+) -> Result<()> {
+    let first = releases
+        .first()
+        .ok_or(Error::Conflict("empty response snapshot"))?
+        .first_sequence();
+    let first_frame = prepare_range::<O>(permit, &mut ready[0], format, first)?;
+    let (_, remaining) = ledger.release_provider_group_for_delivery(
+        permit,
+        releases,
+        format,
+        |actual, receipt| {
+            if actual != first || output.stopped() {
+                return Err(Error::Conflict("snapshot cancelled or rebound"));
+            }
+            output.emit(slot, first_frame, receipt)
+        },
+    )?;
+    output.finish_delivery(ledger, permit, format)?;
+    for (events, receipt) in ready.iter_mut().skip(1).zip(remaining) {
+        let slot = output.reserve_for_delivery(ledger, permit, format)?;
+        if output.stopped() {
+            return Err(Error::Conflict("provider snapshot cancelled"));
+        }
+        let frame = prepare_range::<O>(permit, events, format, receipt.interval().first)?;
+        output.emit(slot, frame, receipt)?;
+        output.finish_delivery(ledger, permit, format)?;
+    }
+    Ok(())
+}
+
+fn prepare_range<O: ProviderOutput>(
+    permit: &ProviderDispatch,
+    events: &mut [ProviderEvent],
+    format: &str,
+    first: u64,
+) -> Result<O::PreparedFrame> {
+    for (offset, event) in events.iter_mut().enumerate() {
+        event.sequence = first + offset as u64;
+    }
+    O::prepare(permit.route(), &permit.plan().model, events, format)
 }
 
 fn take_slot<O: ProviderOutput>(

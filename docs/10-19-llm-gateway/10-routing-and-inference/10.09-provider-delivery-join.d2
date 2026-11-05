@@ -9,7 +9,7 @@ vars: { d2-config: { data: { figure: |json
   "design": {
     "audience": "Gateway developers and security reviewers",
     "medium": "GitHub at 830 CSS pixels",
-    "message": "New authority requires fresh checks.\nProgress keeps the cut; unknown keeps the hold.",
+    "message": "One native outcome qualifies the group.\nRevocation closes delivery; unknown retains the hold.",
     "questionRefs": [
       "q1"
     ],
@@ -31,7 +31,7 @@ vars: { d2-config: { data: { figure: |json
     "weaver",
     "components"
   ],
-  "title": "A queued frame is not permission.",
+  "title": "Commit a group. Gate every frame.",
   "purpose": "workflow",
   "kind": "routing",
   "language": "en",
@@ -40,7 +40,7 @@ vars: { d2-config: { data: { figure: |json
   "questions": [
     {
       "ref": "q1",
-      "text": "Can an old queued frame cross a new Policy cut?",
+      "text": "How can a shared snapshot stay safe during revocation?",
       "focusRefs": [
         "model"
       ],
@@ -74,6 +74,7 @@ vars: { d2-config: { data: { figure: |json
     "proof0": "dev/proofs/cedar/DomainMigrationComposition.lean",
     "proof1": "dev/proofs/lean/ProviderEgressWindow.lean",
     "proof2": "dev/proofs/lean/ProviderSemanticProgress.lean",
+    "proof3": "dev/proofs/lean/ProviderSnapshotPublication.lean",
     "sdkCapture": "dev/sysml/captures/WeaverViews-providerDeliveryJoin.json"
   },
   "copy": {},
@@ -104,7 +105,8 @@ vars: { d2-config: { data: { figure: |json
     "obligationRefs": [
       "proof0",
       "proof1",
-      "proof2"
+      "proof2",
+      "proof3"
     ],
     "evidenceRefs": []
   },
@@ -137,15 +139,15 @@ vars: { d2-config: { data: { figure: |json
     },
     "icons": {
       "n0": "policy",
-      "n1": "ledger",
+      "n1": "authorization",
       "n2": "ledger",
       "n3": "stream",
-      "n4": "authorization",
+      "n4": "writer",
       "n5": "stream"
     },
     "roles": {
       "n0": "governance",
-      "n1": "ledger",
+      "n1": "governance",
       "n2": "ledger",
       "n3": "semantic",
       "n4": "execution",
@@ -203,14 +205,14 @@ vars: { d2-config: { data: { figure: |json
   "modelSource": {
     "ref": "sdkCapture",
     "view": "WeaverViews::providerDeliveryJoin",
-    "modelHash": "f093c6efe8daeed664e7b7177131130e0904cf025ca6ec7eac22899796586224",
+    "modelHash": "0552676290a45913aa8d582f27f7a5d97b1650520252987d5fb202cafe8a7423",
     "portProjection": "owner",
     "labels": {
       "n0": "Rust / close\nPolicy + OAuth + domains\nKeep every pending ID",
-      "n1": "Turso / validate\nCedar + claim + hold\nKeep the semantic cut",
-      "n2": "Turso / range progress\nAppend or release exactly\nKeep prior permission",
+      "n1": "Rust / qualify group\nPending clear; each row\nCedar + claim + domains",
+      "n2": "Turso / commit group\nBurn the bounded group\nPublish one qualified cut",
       "n3": "Rust / prepare frame\nExact bytes and next span\nReserve transport credit",
-      "n4": "Rust / consume once\nLive cut + owner + expiry\nOne next cursor",
+      "n4": "Rust / consume once\nLive cut + owner + expiry\nOne-use frame cursor",
       "n5": "Tonic / accept once\nOne current Rust owner\nObserve delivery later"
     }
   }

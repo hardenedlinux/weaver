@@ -131,7 +131,7 @@ func benchmarkRangePreparationGroup(b *testing.B, image string, paced, loaded bo
 	const ranges, parallel, samples = 13, 4, 128
 	var arms [2]providerTailArm
 	for i := range arms {
-		env := []string{"WEAVER_STORAGE_JOURNAL=mvcc", "WEAVER_TEST_PROVIDER_TAIL=1", "WEAVER_TEST_PROVIDER_SCOPE_TRACE=1"}
+		env := []string{"WEAVER_STORAGE_JOURNAL=mvcc", "WEAVER_TEST_PROVIDER_TAIL=1", "WEAVER_TEST_PROVIDER_SCOPE_TRACE=1", "WEAVER_TEST_SINGLE_RANGE_COMMIT=1"}
 		if i == 0 {
 			env = append(env, "WEAVER_TEST_SINGLE_RANGE_PREPARE=1")
 		}
@@ -171,7 +171,7 @@ func benchmarkRangePreparationGroup(b *testing.B, image string, paced, loaded bo
 				prepares = 0 // Measure the opportunistic window without assuming TLS chunk alignment.
 			}
 		}
-		reportScheduledEncoding(b, arm, mode, ranges, prepares, true)
+		reportScheduledEncoding(b, arm, mode, ranges, prepares, ranges, true)
 		arm.fixture.stop(b)
 	}
 }

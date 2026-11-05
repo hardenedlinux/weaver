@@ -79,13 +79,14 @@ func benchmarkProviderScheduledEncoding(b *testing.B, image string, shared, load
 		if shared {
 			reportProviderRangeScopes(b, arm, mode.label, ranges, parallel)
 		}
-		reportScheduledEncoding(b, arm, mode.label, ranges, ranges, shared)
+		reportScheduledEncoding(b, arm, mode.label, ranges, ranges, ranges, shared)
 		arm.fixture.stop(b)
 	}
 }
 
-func reportScheduledEncoding(b *testing.B, arm *providerTailArm, label string, ranges, preparations int, shared bool) {
+func reportScheduledEncoding(b *testing.B, arm *providerTailArm, label string, ranges, preparations, queues int, shared bool) {
 	b.Helper()
+	b.ReportMetric(float64(queues), label+"-queue-transactions/stream")
 	encodes := providerEncodingObservations(b, arm.fixture)
 	handoffs := providerHandoffs(b, arm.fixture)
 	scopes := readRangeScopes(b, arm.fixture)
@@ -106,7 +107,7 @@ func reportScheduledEncoding(b *testing.B, arm *providerTailArm, label string, r
 			}
 		}
 		prepared := counts["prepare"]
-		if counts["other"] != 5 || counts["queue"] != ranges || prepared < (ranges+3)/4 || prepared > ranges ||
+		if counts["other"] != 5 || counts["queue"] != queues || prepared < (ranges+3)/4 || prepared > ranges ||
 			(preparations > 0 && prepared != preparations) {
 			b.Fatalf("%s unexpected phases for %s: %v", label, stream.family, counts)
 		}

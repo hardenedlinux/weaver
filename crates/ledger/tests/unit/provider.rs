@@ -882,3 +882,6 @@ fn whole_database_rollback_requires_an_independent_recovery_floor() {
 
 #[path = "provider_delivery.rs"]
 mod delivery;
+
+#[path = "provider_snapshot.rs"]
+mod snapshot_delivery;
