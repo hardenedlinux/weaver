@@ -934,6 +934,89 @@ Domain-view reads still exceed their 2 ms suballocation, and the
 numbers apply to local fixture means. Tail latency and external provider
 latency need separate measurements.
 
+** Provider domain query program
+
+The domain query joins the original registration, origin membership,
+budget and history roots, and both original domain bindings. Its SQL
+program is invariant across provider scopes. The provider asks Turso to
+prepare that single program before the deciding lock. Turso checks
+compatibility when borrowing the program from the connection cache.
+Each decision binds the current family and opens a cursor on the active
+write transaction. The cursor is discarded within the scope. Cedar gets
+the current epochs, capacity, held balance and history count. A consumed
+stamp still fences migrated roots. Pending publication, OAuth and original
+exposure reconciliation remain independent live guards.
+
+=prepared_domain_program_preserves_live_decision= in Lean states the
+refinement under the engine premise that both programs evaluate the same
+family and current image. The Quint exposure schedule changes shared
+held balance and history without replacing the permit. The Go/TLS fault
+test warms one provider session, adds a second reservation on the same
+roots while its response is paused, and checks that Cedar denies the
+first stream's next range while both original reservations remain held.
+
+=BenchmarkProviderDomainProgram= pairs a freshly compiled domain query
+and the compatible cached program on one optimized Rust image. Each
+topology runs 128 originals per arm for 5 and 13 ranges and 1 and 4
+concurrent streams. The same-domain and independent-domain arms each
+use new authoritative roots per wave. The model counts 15 and 31
+scopes per completed stream. Per-stream P95 and P99 use nearest-rank
+elapsed time through authenticated gRPC stream EOF. Durable receipt and
+hold checks run serially after timing because Inspect uses a separate
+two-slot observation lane. The benchmark checks every retained receipt
+and requires one upstream call per original.
+
+Results are paired means and empirical percentiles from the local MVCC
+fixture. Each cell shows fresh compilation followed by program reuse.
+
+| Ranges | Concurrency | Roots | Domain read mean (ms) | Streams/s | Stream P95 (ms) | Stream P99 (ms) |
+|-
+| 5 | 1 | Independent | 4.42 to 0.81 | 43.96 to 50.21 | 34.50 to 32.11 | 41.35 to 40.71 |
+| 5 | 1 | Shared | 4.23 to 0.77 | 45.19 to 51.67 | 31.57 to 29.87 | 38.00 to 33.05 |
+| 5 | 4 | Independent | 5.26 to 1.00 | 100.40 to 121.70 | 54.74 to 43.47 | 70.15 to 48.04 |
+| 5 | 4 | Shared | 4.31 to 0.78 | 40.23 to 47.84 | 142.40 to 103.90 | 173.00 to 144.30 |
+| 13 | 1 | Independent | 8.53 to 1.34 | 26.08 to 32.26 | 62.99 to 56.27 | 104.90 to 85.23 |
+| 13 | 1 | Shared | 8.68 to 1.29 | 26.17 to 32.79 | 66.58 to 42.58 | 92.25 to 83.18 |
+| 13 | 4 | Independent | 10.21 to 1.50 | 61.62 to 73.02 | 122.70 to 89.31 | 159.80 to 95.95 |
+| 13 | 4 | Shared | 10.08 to 1.75 | 18.31 to 20.82 | 339.00 to 312.90 | 428.20 to 345.40 |
+
+All eight cached mean domain read results are below 2 ms. Preparation
+moves 0.44 to 0.63 ms per stream outside the deciding scope. At four
+concurrent streams, the shared-root 13-range case retains a 345.4 ms
+stream P99 and a 5.53 ms domain-read P99. These are separate from the
+mean allocation. Shared-root wait costs remain visible in the benchmark.
+The fixture measures local gRPC and TLS streaming with a synthetic
+provider. The single-stream topology arms control for root layout with
+no contention. Independent roots can share a lock stripe.
+
+The same-image repeat used the finalized Go benchmark timer. Other
+compilation jobs were active during this run. One host load observation
+was 33.55 on 12 logical CPUs. The paired cases retained 128 completions
+per arm. These wall-clock values include scheduler and storage effects.
+
+| Ranges | Concurrency | Roots | Domain read mean (ms) | Streams/s | Stream P95 (ms) | Stream P99 (ms) |
+|-
+| 5 | 1 | Independent | 5.52 to 0.99 | 20.98 to 27.04 | 107.30 to 89.43 | 158.80 to 110.40 |
+| 5 | 1 | Shared | 8.20 to 1.54 | 16.68 to 23.76 | 141.60 to 83.87 | 297.70 to 109.60 |
+| 5 | 4 | Independent | 9.57 to 2.35 | 40.64 to 46.28 | 172.40 to 191.30 | 228.10 to 247.10 |
+| 5 | 4 | Shared | 11.14 to 3.56 | 14.38 to 14.15 | 461.20 to 527.60 | 812.60 to 683.80 |
+| 13 | 1 | Independent | 18.74 to 3.58 | 8.87 to 11.48 | 267.80 to 193.30 | 373.50 to 345.00 |
+| 13 | 1 | Shared | 22.52 to 5.41 | 6.86 to 8.74 | 376.40 to 260.30 | 509.30 to 357.60 |
+| 13 | 4 | Independent | 40.17 to 6.01 | 10.81 to 16.01 | 855.00 to 874.10 | 1863.00 to 1069.00 |
+| 13 | 4 | Shared | 40.54 to 8.32 | 4.65 to 5.91 | 1395.00 to 1080.00 | 1901.00 to 1621.00 |
+
+The repeat confirms lower mean domain-read time from program reuse
+under the observed load. Some cells exceed the 2 ms mean allocation,
+and some stream percentiles regress. Both runs measure the same Rust
+binary with the same fixture controls. Report the 2 ms result together
+with the run conditions and keep the tail data for shared roots.
+
+#+begin_src sh
+go -C go test -mod=readonly -tags integration ./dev -run '^$' -bench '^BenchmarkProviderDomainProgram$' -benchtime=1x -count=1
+#+end_src
+
+** Independent OAuth witness activation
+
 An existing direct deployment can enable its independent witness once
 while preserving the same issuer key, subject, client and audience.
 Activation seeds previously committed revocations before confirmation.

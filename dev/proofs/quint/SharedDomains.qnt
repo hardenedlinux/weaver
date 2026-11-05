@@ -135,6 +135,17 @@ module SharedDomains {
     s'=s.with("spent",s.spent.union(Set(f))).with("permit",s.permit.set(f,s.epoch)).with("permitOwner",s.permitOwner.set(f,s.owner))}
   action finalGuard(f:int):bool=all{not(s.revoked),not(s.policyPending),s.spent.contains(f),s.permit.get(f)==s.epoch,s.permitOwner.get(f)==s.owner,s.calls.get(f)==0,
     s.active.forall(g=>f!=g and s.root.get(f)!=s.root.get(g) and s.hroot.get(f)!=s.hroot.get(g)),s'=s.with("active",s.active.union(Set(f)))}
+  action finalGuardWithDomainFacts(f:int, held:int, events:int):bool=all{
+    exposure(s.root.get(f))==held,
+    s.history.filter(g=>s.hroot.get(g)==s.hroot.get(f)).size()==events,
+    finalGuard(f)
+  }
+  run preparedDomainProgramReadsNewSharedExposureTest =
+    accepted.then(reserve(1))
+      .then(finalGuardWithDomainFacts(0,3,1).fail())
+  run preparedDomainProgramUsesUpdatedExposureTest =
+    accepted.then(reserve(1))
+      .then(finalGuardWithDomainFacts(0,6,2)).expect(safety)
   action send(f:int):bool=all{s.active.contains(f),s.calls.get(f)==0,s'=s.with("calls",s.calls.set(f,1)).with("active",s.active.exclude(Set(f)))}
   action migrate=all{not(s.receipt),s.active==Set(),exposure(0)+exposure(2)<=6,s'=s.with("root",Map(0->2,1->2,2->2)).with("hroot",Map(0->2,1->2,2->2)).with("epoch",s.epoch+1).with("merged",true).with("receipt",true)}
   action rejectMigration=all{not(s.receipt),s.active==Set(),exposure(0)+exposure(2)>6,s'=s.with("receipt",true)}

@@ -68,6 +68,11 @@ impl Session {
     pub fn timings(&self) -> super::TransactionTimings {
         self.timings
     }
+    pub(crate) fn prepare_provider_domain(&mut self) {
+        super::timing::measure(&mut self.timings.provider_domain_prepare, || {
+            crate::domains::warm_provider_domain_plan(&self.connection);
+        });
+    }
     pub(crate) fn prepare_provider_original(
         &mut self,
         family: &str,

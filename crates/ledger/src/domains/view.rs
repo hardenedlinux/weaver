@@ -29,6 +29,39 @@ pub(crate) fn view_current(tx: &WriteScope<'_>, family: &str) -> Result<DomainVi
     ))
 }
 
+#[cfg(feature = "commit-observer")]
+thread_local! {
+    static FRESH_PROVIDER_DOMAIN_PLAN: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
+}
+
+/// Same-image diagnostic that recompiles the domain query in each scope.
+#[cfg(feature = "commit-observer")]
+pub fn use_fresh_provider_domain_plan(fresh: bool) {
+    FRESH_PROVIDER_DOMAIN_PLAN.set(fresh);
+}
+
+pub(crate) fn warm_provider_domain_plan(connection: &driver::Connection) {
+    #[cfg(feature = "commit-observer")]
+    if FRESH_PROVIDER_DOMAIN_PLAN.get() {
+        return;
+    }
+    // Turso caches the compatible SQL program, never an open cursor.
+    // Admission still requires the deciding read if prewarming fails.
+    let _ = futures_executor::block_on(connection.prepare_cached(DOMAIN_VIEW));
+}
+
+pub(crate) fn provider_view(tx: &WriteScope<'_>, family: &str) -> Result<DomainView> {
+    #[cfg(feature = "commit-observer")]
+    if FRESH_PROVIDER_DOMAIN_PLAN.get() {
+        return view_current(tx, family);
+    }
+    require_view(futures_executor::block_on(async {
+        let mut statement = tx.prepare_cached(DOMAIN_VIEW).await?;
+        let mut rows = statement.query([family]).await?;
+        rows.next().await?.as_ref().map(decode(family)).transpose()
+    }))
+}
+
 fn require_view(view: driver::Result<Option<DomainView>>) -> Result<DomainView> {
     view.map_err(db)?
         .ok_or(Error::Conflict("authoritative execution domain missing"))

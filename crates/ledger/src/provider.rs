@@ -93,6 +93,7 @@ impl Ledger {
             .prepare_provider_oauth(oauth, "provider:execute")?;
         let publication = self.connection.prepare_provider_publication(&plan.family);
         let original = self.connection.prepare_provider_original(&plan.family);
+        self.connection.prepare_provider_domain();
         let tx =
             crate::persistence::begin_family(&mut self.connection, &plan.family).map_err(db)?;
         tx.check_provider_oauth(prepared.as_ref())?;
@@ -174,6 +175,7 @@ impl Ledger {
             .prepare_provider_oauth(oauth, "provider:execute")?;
         let publication = self.connection.prepare_provider_publication(family)?;
         let original = self.connection.prepare_provider_original(family);
+        self.connection.prepare_provider_domain();
         let tx = crate::persistence::begin_family(&mut self.connection, family).map_err(db)?;
         let oauth_expires = tx.check_provider_oauth(prepared.as_ref())?;
         let record: Option<String> = crate::persistence::maybe(
@@ -434,7 +436,7 @@ fn begin_provider_effect<'a>(
         crate::persistence::begin_provider_use(session, &p.plan.family, &p.domains).map_err(db)?;
     // A retired stamp may name old lock keys. Before any mutation or
     // callback, require the live stamp to identify exactly those keys.
-    let actual = tx.provider_domain(|| crate::domains::view_current(&tx, &p.plan.family))?;
+    let actual = tx.provider_domain(|| crate::domains::provider_view(&tx, &p.plan.family))?;
     if actual.canonical_family != p.plan.family || actual.stamp != p.domains {
         return Err(Error::Conflict(
             "execution domain migrated; old permit fenced",
@@ -480,7 +482,7 @@ fn any_authorized(
     eligible: Option<&BTreeSet<String>>,
     publication: &crate::provider_publication::Prepared,
 ) -> Result<AuthorizedRoute> {
-    let domains = tx.provider_domain(|| crate::domains::view_current(tx, &p.family))?;
+    let domains = tx.provider_domain(|| crate::domains::provider_view(tx, &p.family))?;
     if domains.canonical_family != p.family {
         return Err(Error::Conflict("family alias is not an executable origin"));
     }

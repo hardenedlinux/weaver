@@ -114,11 +114,10 @@ package WeaverExecution {
            Domain lock wait, native begin and commit, Cedar and provider effects
            have separate observations. Throughput is terminal receipts divided
            by elapsed wave time, with completion and send counts retained. */
-        doc /* SQL preparation may be reused per Turso connection. Every cursor
-           binds and reads the current transaction. New plan reuse is diagnostic
-       until it meets the performance admission gate. The provider may reuse the
-           checked domain view and the validated reservation members between
-           budget and history checks only within that unchanged transaction.
+        doc /* The provider warms a single Turso SQL program before locking.
+           Every deciding scope binds its family and opens a fresh cursor on
+           that transaction. Program reuse preserves the full domain join.
+           The domain view and reservation reconciliation are scope-local.
            History equality, capacity, revocation, Policy and fence remain live. */
         doc /* Shared roots serialize. Independent roots may overlap under MVCC.
            Qualify both with the same binary, ingress, original workload, provider,
@@ -156,9 +155,29 @@ package WeaverExecution {
         attribute decidingScopesPerResponseRange : Integer = 2;
     }
 
+    part def ProviderDomainReadMatrix {
+        doc /* Run paired fresh and cached SQL programs on the same image.
+           Vary response ranges, concurrency and shared or independent roots.
+           Count scopes and retained sends. Measure locked domain read cost,
+           prewarm, native begin and commit, domain wait and terminal wall
+           time separately. P95 and P99 use completed-stream observations.
+           Shared-root waves serialize their conflicting scopes. Independent
+           roots may overlap subject to native IO and lock stripe collisions. */
+        part lifecycle : ProviderStorageLifecycle;
+        attribute shortRanges : Integer = 5;
+        attribute longRanges : Integer = 13;
+        attribute lowConcurrency : Integer = 1;
+        attribute highConcurrency : Integer = 4;
+        attribute shortScopes : Integer = 15;
+        attribute longScopes : Integer = 31;
+        attribute streamsPerArm : Integer = 128;
+        assert constraint { shortScopes == lifecycle.fixedDecidingScopes + lifecycle.decidingScopesPerResponseRange * shortRanges }
+        assert constraint { longScopes == lifecycle.fixedDecidingScopes + lifecycle.decidingScopesPerResponseRange * longRanges }
+    }
+
     part def ProviderCurrentnessBudget {
         doc /* Proposed allocation for mean locked read time per completed stream
-           in the two-original local MVCC fixture. These targets guide profiling.
+           in the five-range local MVCC fixture. The long-range matrix measures scaling.
            Admit a performance claim only after controlled, repeatable evidence.
            Full recovery reconciliation grows with the union of domain origins
            and retained claims. A bounded transactional projection is a future

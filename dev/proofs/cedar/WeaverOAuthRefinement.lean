@@ -141,6 +141,20 @@ theorem retained_stamp_selects_live_keys
     select expected = select current :=
   congrArg select matched.symm
 
+/-- Program compatibility is an engine premise. The query is rebound to
+    the requested family and evaluated on the deciding transaction.
+    No equality between earlier and current domain rows is assumed. -/
+theorem prepared_domain_program_preserves_live_decision
+    {Image Family View : Type}
+    (readFresh runProgram : Image → Family → Option View)
+    (agrees : ∀ image family, runProgram image family = readFresh image family)
+    (decide : Image → Option View → Prop)
+    (current : Image) (family : Family) :
+    decide current (runProgram current family) ↔
+      decide current (readFresh current family) := by
+  rw [agrees]
+
+#print axioms prepared_domain_program_preserves_live_decision
 #print axioms retained_stamp_selects_live_keys
 #print axioms prepared_original_refines_live
 #print axioms retained_domain_identity_preserves_mutation_target

@@ -788,7 +788,12 @@ impl pb::gateway_server::Gateway for Gateway {
                     weaver_ledger::use_locked_original_evidence(
                         std::env::var("WEAVER_TEST_LOCKED_ORIGINAL_EVIDENCE").as_deref() == Ok("1"),
                     );
+                    #[cfg(test)]
+                    weaver_ledger::use_fresh_provider_domain_plan(
+                        std::env::var("WEAVER_TEST_FRESH_PROVIDER_DOMAIN_PLAN").as_deref() == Ok("1"),
+                    );
                     let execution = weaver_broker::execute_catalog_provider_with_oauth(
+
                         &mut ledger,
                         weaver_broker::ProviderExecution {
                             plan: &plan,
@@ -807,12 +812,13 @@ impl pb::gateway_server::Gateway for Gateway {
                         weaver_ledger::persistence::use_cached_currentness_plans(false);
                         weaver_ledger::use_locked_publication_review(false);
                         weaver_ledger::use_locked_original_evidence(false);
+                        weaver_ledger::use_fresh_provider_domain_plan(false);
                     }
                     #[cfg(test)]
                     if std::env::var_os("WEAVER_TEST_PROVIDER_TIMINGS").is_some() {
                         let t = ledger.transaction_timings();
                         eprintln!(
-                            "weaver-oauth-timing {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}",
+                            "weaver-oauth-timing {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}",
                             t.provider_oauth_check.nanos,
                             t.domain_hold.nanos,
                             t.transaction_hold.nanos,
@@ -837,7 +843,9 @@ impl pb::gateway_server::Gateway for Gateway {
                             t.provider_manifest.nanos,
                             t.provider_history.nanos,
                             t.provider_original_prepare.nanos,
-                            open_nanos
+                            open_nanos,
+                            t.provider_domain_prepare.nanos,
+                            t.provider_domain.attempts
                         );
                     }
                     execution

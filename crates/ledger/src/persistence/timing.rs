@@ -36,6 +36,7 @@ pub struct TransactionTimings {
     pub provider_oauth_prepare: Timing,
     pub provider_oauth_check: Timing,
     pub provider_domain: Timing,
+    pub provider_domain_prepare: Timing,
     pub provider_pending: Timing,
     pub provider_review: Timing,
     pub provider_birth: Timing,
@@ -94,6 +95,10 @@ impl TransactionTimings {
             ),
             provider_oauth_check: delta(self.provider_oauth_check, earlier.provider_oauth_check),
             provider_domain: delta(self.provider_domain, earlier.provider_domain),
+            provider_domain_prepare: delta(
+                self.provider_domain_prepare,
+                earlier.provider_domain_prepare,
+            ),
             provider_pending: delta(self.provider_pending, earlier.provider_pending),
             provider_review: delta(self.provider_review, earlier.provider_review),
             provider_birth: delta(self.provider_birth, earlier.provider_birth),

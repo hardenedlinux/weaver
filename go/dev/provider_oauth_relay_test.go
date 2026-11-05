@@ -392,14 +392,24 @@ func BenchmarkProviderOAuthRelayPair(b *testing.B) {
 	b.ReportMetric(0, "ns/op")
 	for arm, name := range []string{"baseline", "oauth"} {
 		for i, label := range append([]string{"first", "terminal"}, providerTimingLabels[:]...) {
-			b.ReportMetric(totals[arm][i]/float64(2*b.N), name+"-"+label+"-ns/stream")
+			unit := "-ns/stream"
+			if label == "domain-scopes" {
+				unit = "/stream"
+			}
+			b.ReportMetric(totals[arm][i]/float64(2*b.N), name+"-"+label+unit)
 		}
 	}
 }
 
-var providerTimingLabels = [...]string{"grant-check", "domain-hold", "txn-hold", "write", "queue", "grant-prepare", "txn-begin", "commit", "domain-wait", "domain-keys", "domain-read", "publication-read", "profile-read", "claim-read", "cedar", "rollback", "pending-read", "review-read", "birth-read", "publication-prepare", "original-read", "manifest-read", "history-read", "original-prepare", "ledger-open"}
+var providerTimingLabels = [...]string{"grant-check", "domain-hold", "txn-hold", "write", "queue", "grant-prepare", "txn-begin", "commit", "domain-wait", "domain-keys", "domain-read", "publication-read", "profile-read", "claim-read", "cedar", "rollback", "pending-read", "review-read", "birth-read", "publication-prepare", "original-read", "manifest-read", "history-read", "original-prepare", "ledger-open", "domain-prepare", "domain-scopes"}
 
 func providerTimingTotals(t testing.TB, f *fixture, want int) [len(providerTimingLabels)]uint64 {
+	t.Helper()
+	total, _ := providerTimingSamples(t, f, want)
+	return total
+}
+
+func providerTimingSamples(t testing.TB, f *fixture, want int) ([len(providerTimingLabels)]uint64, []time.Duration) {
 	t.Helper()
 	log, err := os.ReadFile(filepath.Join(f.directory, "server.log"))
 	if err != nil {
@@ -407,7 +417,7 @@ func providerTimingTotals(t testing.TB, f *fixture, want int) [len(providerTimin
 	}
 	const prefix = "weaver-oauth-timing "
 	var total [len(providerTimingLabels)]uint64
-	count := 0
+	var domainReads []time.Duration
 	for _, line := range strings.Split(string(log), "\n") {
 		row, ok := strings.CutPrefix(line, prefix)
 		if !ok {
@@ -423,13 +433,15 @@ func providerTimingTotals(t testing.TB, f *fixture, want int) [len(providerTimin
 				t.Fatal(err)
 			}
 			total[i] += value
+			if providerTimingLabels[i] == "domain-read" {
+				domainReads = append(domainReads, time.Duration(value))
+			}
 		}
-		count++
 	}
-	if count != want || total[0] == 0 || total[1] == 0 || total[10] == 0 || total[11] == 0 || total[12] == 0 || total[13] == 0 || total[14] == 0 {
-		t.Fatalf("missing live MVCC timings: %d %v", count, total)
+	if len(domainReads) != want || total[0] == 0 || total[1] == 0 || total[10] == 0 || total[11] == 0 || total[12] == 0 || total[13] == 0 || total[14] == 0 {
+		t.Fatalf("missing live MVCC timings: %d %v", len(domainReads), total)
 	}
-	return total
+	return total, domainReads
 }
 
 func contentionRelayBundle(t testing.TB, f *fixture, family string) config.Bundle {
@@ -619,7 +631,11 @@ func benchmarkRelayContention(b *testing.B, arms [4]relayContentionArm) {
 		b.ReportMetric(float64(total.calls)/attempts, name+"-sends/attempt")
 		var currentness uint64
 		for i, label := range providerTimingLabels {
-			b.ReportMetric(float64(total.timing[i])/attempts, name+"-"+label+"-ns/attempt")
+			unit := "-ns/attempt"
+			if label == "domain-scopes" {
+				unit = "/attempt"
+			}
+			b.ReportMetric(float64(total.timing[i])/attempts, name+"-"+label+unit)
 			switch label {
 			case "domain-read", "publication-read", "profile-read", "claim-read":
 				currentness += total.timing[i]

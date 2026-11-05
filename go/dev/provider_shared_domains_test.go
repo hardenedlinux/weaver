@@ -301,3 +301,78 @@ func providerDomainMigrationRecovery(t *testing.T, useControl bool, revokeOrder 
 		t.Fatal("migration duplicated send")
 	}
 }
+
+// The first request keeps its session and warm query while a second original
+// commits a reservation on the same roots. Its next range must see that change.
+func TestProviderDomainProgramRebindsLiveSharedView(t *testing.T) {
+	t.Setenv("WEAVER_STORAGE_JOURNAL", "mvcc")
+	resume := make(chan struct{})
+	var unblock sync.Once
+	defer unblock.Do(func() { close(resume) })
+	f := newFixture(t, func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/event-stream")
+		emitChunk(w, "first", false)
+		select {
+		case <-resume:
+			completeSSE(w, r)
+		case <-r.Context().Done():
+		}
+	}, false)
+	plans := boundProviderPlans(t, f, 8)
+	ctx, cancel := context.WithTimeout(t.Context(), 12*time.Second)
+	defer cancel()
+	parent := uint64(1)
+	policy := strings.Replace(f.policy, `context.family == "f"`, `["left", "right"].contains(context.family)`, 1) + `
+forbid(principal, action == Weaver::Action::"invokeProvider", resource)
+when { context.family == "right" };
+forbid(principal, action == Weaver::Action::"emitProvider", resource)
+when { context.family == "left" &&
+ !(context has shared_held && context.shared_held == 4 &&
+   context has history_count && context.history_count == 1) };
+`
+	published, err := f.admin.RPC.PublishAuthority(f.admin.Context(ctx), &pb.PublishRequest{
+		OperationId: "live-domain-program", ExpectedRevision: &parent, Fence: 3, Policy: policy, Schema: f.schema,
+	})
+	if err != nil || published.GetOutcome() != pb.PublicationOutcome_COMMITTED {
+		t.Fatalf("publish live-view policy: %v %v", published, err)
+	}
+	for i := range plans {
+		plans[i].Revision, plans[i].Fence = 2, 3
+	}
+	first := make(chan struct{})
+	finished := make(chan error, 1)
+	var events int
+	go func() {
+		_, err := f.client.Execute(ctx, plans[0], pb.Encoding_PROTOBUF, 1, func(*pb.Event) error {
+			events++
+			if events == 1 {
+				close(first)
+			}
+			return nil
+		})
+		finished <- err
+	}()
+	select {
+	case <-first:
+	case err := <-finished:
+		t.Fatalf("first range did not arrive: %v", err)
+	case <-ctx.Done():
+		t.Fatal(ctx.Err())
+	}
+	_, err = f.client.Execute(ctx, plans[1], pb.Encoding_PROTOBUF, 1, func(*pb.Event) error { return nil })
+	if status.Code(err) != codes.FailedPrecondition {
+		t.Fatalf("peer should reserve but not invoke: %v", err)
+	}
+	view, err := f.admin.RPC.InspectExecutionDomains(f.admin.Context(ctx), &pb.OperationKey{Family: "left"})
+	if err != nil || view.GetHeld() != 8 || view.GetHistoryCount() != 2 {
+		t.Fatalf("peer did not commit shared exposure: %v %v", view, err)
+	}
+	unblock.Do(func() { close(resume) })
+	if err := <-finished; status.Code(err) != codes.FailedPrecondition || events != 1 || f.primary.Load() != 1 {
+		t.Fatalf("stale view released a tail or duplicated execution: %v, %d events, %d sends", err, events, f.primary.Load())
+	}
+	retained, err := f.admin.RPC.InspectExecutionDomains(f.admin.Context(ctx), &pb.OperationKey{Family: "left"})
+	if err != nil || !proto.Equal(view, retained) {
+		t.Fatalf("failed tail changed shared exposure: %v %v", retained, err)
+	}
+}

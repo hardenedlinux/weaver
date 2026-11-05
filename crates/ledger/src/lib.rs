@@ -56,3 +56,6 @@ asp_rust::asp_rust_cargo_test_gate!(mode = deny, config = asp_rust::default_asp_
 
 #[cfg(feature = "commit-observer")]
 pub use task_origins::use_locked_original_evidence;
+
+#[cfg(feature = "commit-observer")]
+pub use domains::use_fresh_provider_domain_plan;
