@@ -175,6 +175,27 @@ package WeaverExecution {
         assert constraint { longScopes == lifecycle.fixedDecidingScopes + lifecycle.decidingScopesPerResponseRange * longRanges }
     }
 
+    part def ProviderSharedTailExperiment {
+        doc /* Interleave no-injection and controlled CPU pressure blocks
+           on one image. Compare separate and joined progress reads in
+           alternating order within each block. For each completed stream,
+           correlate terminal latency with worker scheduling delay, domain
+           stripe wait, domain hold, native commit and domain read time.
+           Native commit and domain read intervals lie inside lock hold.
+           A host timer probe measures wake-up delay independently. Native
+           wall intervals can include scheduler pauses. */
+        doc /* Read dispatch state, next sequence and pending release in one
+           deciding image. Check the same live authorization and range
+           conditions before reservation or completion. The final send
+           still requires its own authority check and commit protocol. */
+        part lifecycle : ProviderStorageLifecycle;
+        attribute responseRanges : Integer = 13;
+        attribute concurrency : Integer = 4;
+        attribute streamsPerArm : Integer = 128;
+        attribute decidingScopes : Integer = 31;
+        assert constraint { decidingScopes == lifecycle.fixedDecidingScopes + lifecycle.decidingScopesPerResponseRange * responseRanges }
+    }
+
     part def ProviderCurrentnessBudget {
         doc /* Proposed allocation for mean locked read time per completed stream
            in the five-range local MVCC fixture. The long-range matrix measures scaling.

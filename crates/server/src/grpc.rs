@@ -763,9 +763,13 @@ impl pb::gateway_server::Gateway for Gateway {
         };
         let config = self.config.clone();
         let transport = self.transport.clone();
+        #[cfg(test)]
+        let queued_at = std::time::Instant::now();
         let job = self
             .runtime
             .spawn_blocking(slot, move |shutdown| {
+                #[cfg(test)]
+                let worker_started = std::time::Instant::now();
                 output.shutdown = shutdown;
                 let result = (|| {
                     #[cfg(test)]
@@ -792,6 +796,10 @@ impl pb::gateway_server::Gateway for Gateway {
                     weaver_ledger::use_fresh_provider_domain_plan(
                         std::env::var("WEAVER_TEST_FRESH_PROVIDER_DOMAIN_PLAN").as_deref() == Ok("1"),
                     );
+                    #[cfg(test)]
+                    weaver_ledger::use_separate_release_reads(
+                        std::env::var("WEAVER_TEST_SEPARATE_RELEASE_READS").as_deref() == Ok("1"),
+                    );
                     let execution = weaver_broker::execute_catalog_provider_with_oauth(
 
                         &mut ledger,
@@ -813,6 +821,7 @@ impl pb::gateway_server::Gateway for Gateway {
                         weaver_ledger::use_locked_publication_review(false);
                         weaver_ledger::use_locked_original_evidence(false);
                         weaver_ledger::use_fresh_provider_domain_plan(false);
+                        weaver_ledger::use_separate_release_reads(false);
                     }
                     #[cfg(test)]
                     if std::env::var_os("WEAVER_TEST_PROVIDER_TIMINGS").is_some() {
@@ -846,6 +855,20 @@ impl pb::gateway_server::Gateway for Gateway {
                             open_nanos,
                             t.provider_domain_prepare.nanos,
                             t.provider_domain.attempts
+                        );
+                    }
+                    #[cfg(test)]
+                    if std::env::var_os("WEAVER_TEST_PROVIDER_TAIL").is_some() {
+                        let t = ledger.transaction_timings();
+                        eprintln!(
+                            "weaver-provider-tail {} {} {} {} {} {} {}",
+                            plan.family,
+                            worker_started.duration_since(queued_at).as_nanos(),
+                            worker_started.elapsed().as_nanos(),
+                            t.domain_wait.nanos,
+                            t.domain_hold.nanos,
+                            t.commit.nanos,
+                            t.provider_domain.nanos,
                         );
                     }
                     execution

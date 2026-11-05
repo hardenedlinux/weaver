@@ -140,6 +140,14 @@ module SharedDomains {
     s.history.filter(g=>s.hroot.get(g)==s.hroot.get(f)).size()==events,
     finalGuard(f)
   }
+  pure def releaseProgressAllows(dispatched:bool,cursor:int,rows:int,pending:bool,live:bool):bool=
+    dispatched and cursor+rows<=4096 and not(pending) and live
+  run joinedProgressCannotReleasePendingOrRevokedRangeTest=init.expect(
+    releaseProgressAllows(true,12,1,false,true)
+    and not(releaseProgressAllows(true,12,1,true,true))
+    and not(releaseProgressAllows(true,12,1,false,false))
+    and not(releaseProgressAllows(false,12,1,false,true))
+    and not(releaseProgressAllows(true,4096,1,false,true)))
   run preparedDomainProgramReadsNewSharedExposureTest =
     accepted.then(reserve(1))
       .then(finalGuardWithDomainFacts(0,3,1).fail())

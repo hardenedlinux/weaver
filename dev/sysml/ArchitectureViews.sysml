@@ -249,7 +249,7 @@ package WeaverViews {
         attribute readerQuestion : String = "What can authorize actual provider use?";
         attribute designAudience : String = "Gateway developers and operators";
         attribute designMedium : String = "GitHub at 830 CSS pixels";
-        attribute designMessage : String = "Prepare SQL and policy evidence before locking.\nRead live authority and roots inside each effect scope.";
+        attribute designMessage : String = "Prepare SQL and policy evidence before locking.\nCheck live authority and range progress before release.";
         attribute designFocus : String = "execution";
         attribute captionContext : String = "journey";
         attribute visualThemes : String = "sketchbook,ember,compact,reading";

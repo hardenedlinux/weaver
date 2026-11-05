@@ -40,14 +40,6 @@ func BenchmarkProviderDomainProgram(b *testing.B) {
 func benchmarkDomainPrograms(b *testing.B, image string, ranges, parallel int, shared bool) {
 	b.Helper()
 	b.StopTimer()
-	handler := func(w http.ResponseWriter, _ *http.Request) {
-		w.Header().Set("Content-Type", "text/event-stream")
-		for range ranges - 3 {
-			emitChunk(w, "delta", false)
-		}
-		emitChunk(w, "", true)
-		fmt.Fprint(w, "data: {\"id\":\"stream-1\",\"object\":\"chat.completion.chunk\",\"model\":\"model-a\",\"choices\":[],\"usage\":{\"total_tokens\":7}}\n\ndata: [DONE]\n\n")
-	}
 	const samples = 128
 	var arms [2]struct {
 		fixture *fixture
@@ -59,18 +51,7 @@ func benchmarkDomainPrograms(b *testing.B, image string, ranges, parallel int, s
 		if name == "fresh" {
 			env = append(env, "WEAVER_TEST_FRESH_PROVIDER_DOMAIN_PLAN=1")
 		}
-		args := []string{"--exact", "grpc_config::serve_wif_gateway", "--ignored", "--nocapture"}
-		f := providerFixture(b, handler, false, image, args, env, providerProfile(), nil, nil)
-		ctx, cancel := context.WithTimeout(b.Context(), 5*time.Second)
-		parent := uint64(0)
-		policy := strings.Replace(f.policy, `context.family == "f"`, `context.family != "f"`, 1)
-		receipt, err := f.admin.RPC.PublishAuthority(f.admin.Context(ctx), &pb.PublishRequest{
-			OperationId: "domain-program-benchmark", ExpectedRevision: &parent, Fence: 2, Policy: policy, Schema: f.schema,
-		})
-		cancel()
-		if err != nil || receipt.GetOutcome() != pb.PublicationOutcome_COMMITTED {
-			b.Fatalf("benchmark policy %v %v", receipt, err)
-		}
+		f := newDomainBenchmarkFixture(b, image, ranges, env)
 		arms[i].fixture = f
 	}
 	b.StartTimer()
@@ -78,8 +59,10 @@ func benchmarkDomainPrograms(b *testing.B, image string, ranges, parallel int, s
 		for _, i := range []int{wave % 2, 1 - wave%2} {
 			arm := &arms[i]
 			plans := registerDomainProgramWave(b, arm.fixture, wave, parallel, shared)
-			latency, wall := measureDomainProgramWave(b, arm.fixture, plans, ranges, shared)
-			arm.latency = append(arm.latency, latency...)
+			samples, wall := measureDomainProgramWave(b, arm.fixture, plans, ranges, shared)
+			for _, sample := range samples {
+				arm.latency = append(arm.latency, sample.latency)
+			}
 			arm.wall += wall
 		}
 	}
@@ -112,6 +95,31 @@ func benchmarkDomainPrograms(b *testing.B, image string, ranges, parallel int, s
 	}
 }
 
+func newDomainBenchmarkFixture(b *testing.B, image string, ranges int, env []string) *fixture {
+	b.Helper()
+	handler := func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "text/event-stream")
+		for range ranges - 3 {
+			emitChunk(w, "delta", false)
+		}
+		emitChunk(w, "", true)
+		fmt.Fprint(w, "data: {\"id\":\"stream-1\",\"object\":\"chat.completion.chunk\",\"model\":\"model-a\",\"choices\":[],\"usage\":{\"total_tokens\":7}}\n\ndata: [DONE]\n\n")
+	}
+	args := []string{"--exact", "grpc_config::serve_wif_gateway", "--ignored", "--nocapture"}
+	f := providerFixture(b, handler, false, image, args, env, providerProfile(), nil, nil)
+	ctx, cancel := context.WithTimeout(b.Context(), 5*time.Second)
+	parent := uint64(0)
+	policy := strings.Replace(f.policy, `context.family == "f"`, `context.family != "f"`, 1)
+	receipt, err := f.admin.RPC.PublishAuthority(f.admin.Context(ctx), &pb.PublishRequest{
+		OperationId: "domain-program-benchmark", ExpectedRevision: &parent, Fence: 2, Policy: policy, Schema: f.schema,
+	})
+	cancel()
+	if err != nil || receipt.GetOutcome() != pb.PublicationOutcome_COMMITTED {
+		b.Fatalf("benchmark policy %v %v", receipt, err)
+	}
+	return f
+}
+
 func registerDomainProgramWave(b *testing.B, f *fixture, wave, parallel int, shared bool) []v1.ProviderPlan {
 	b.Helper()
 	ctx, cancel := context.WithTimeout(b.Context(), 5*time.Second)
@@ -137,14 +145,19 @@ func registerDomainProgramWave(b *testing.B, f *fixture, wave, parallel int, sha
 	return plans
 }
 
-func measureDomainProgramWave(b *testing.B, f *fixture, plans []v1.ProviderPlan, ranges int, shared bool) ([]time.Duration, time.Duration) {
+type domainStreamSample struct {
+	family  string
+	latency time.Duration
+}
+
+func measureDomainProgramWave(b *testing.B, f *fixture, plans []v1.ProviderPlan, ranges int, shared bool) ([]domainStreamSample, time.Duration) {
 	b.Helper()
 	ctx, cancel := context.WithTimeout(b.Context(), 12*time.Second)
 	defer cancel()
 	type result struct {
-		latency time.Duration
-		events  int
-		err     error
+		domainStreamSample
+		events int
+		err    error
 	}
 	ready, start := make(chan struct{}, len(plans)), make(chan struct{})
 	results := make(chan result, len(plans))
@@ -153,7 +166,7 @@ func measureDomainProgramWave(b *testing.B, f *fixture, plans []v1.ProviderPlan,
 			ready <- struct{}{}
 			<-start
 			began := time.Now()
-			var r result
+			r := result{domainStreamSample: domainStreamSample{family: plan.Family}}
 			r.events, r.err = readDomainProgramStream(ctx, f, plan)
 			r.latency = time.Since(began)
 			results <- r
@@ -164,13 +177,13 @@ func measureDomainProgramWave(b *testing.B, f *fixture, plans []v1.ProviderPlan,
 	}
 	began := time.Now()
 	close(start)
-	latencies := make([]time.Duration, 0, len(plans))
+	latencies := make([]domainStreamSample, 0, len(plans))
 	for range plans {
 		r := <-results
 		if r.err != nil || r.events != ranges {
 			b.Fatalf("invalid stream completion with %d events: %v", r.events, r.err)
 		}
-		latencies = append(latencies, r.latency)
+		latencies = append(latencies, r.domainStreamSample)
 	}
 	wall := time.Since(began)
 	// Inspect uses its own bounded observation lane. Verify all receipts

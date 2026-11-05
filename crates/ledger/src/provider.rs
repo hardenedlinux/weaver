@@ -257,14 +257,8 @@ impl Ledger {
         }
         self.check_provider_session(permit)?;
         let (tx, domains) = begin_provider_effect(&mut self.connection, permit)?;
-        started(&tx, permit)?;
-        let seq: u64 = crate::persistence::one(
-            &tx,
-            "SELECT next_event FROM provider_runs WHERE family=?1 AND node=?2",
-            crate::persistence::params![permit.plan.family.to_owned(), permit.plan.node.to_owned()],
-            |r| integer(r, 0),
-        )
-        .map_err(db)?;
+        let progress = release_progress(&tx, permit)?;
+        let seq = progress.next;
         guard_live_range(
             &tx,
             permit,
@@ -273,8 +267,7 @@ impl Ledger {
             seq..seq + length,
             format,
         )?;
-        let uncertain:bool=crate::persistence::one(&tx, "SELECT EXISTS(SELECT 1 FROM provider_releases WHERE family=?1 AND node=?2 AND state='unknown')", crate::persistence::params![permit.plan.family.to_owned(),permit.plan.node.to_owned()], |r|r.get(0)).map_err(db)?;
-        if uncertain || seq + length > 4096 {
+        if progress.pending || seq + length > 4096 {
             return Err(Error::Conflict("unknown or oversized provider response"));
         }
         crate::persistence::exec(
@@ -356,10 +349,9 @@ impl Ledger {
     ) -> Result<()> {
         self.check_provider_session(permit)?;
         let (tx, domains) = begin_provider_effect(&mut self.connection, permit)?;
-        started(&tx, permit)?;
+        let progress = release_progress(&tx, permit)?;
         guard_live(&tx, permit, &domains, "emitProvider", 0, format)?;
-        let pending:bool=crate::persistence::one(&tx, "SELECT EXISTS(SELECT 1 FROM provider_releases WHERE family=?1 AND node=?2 AND state='unknown')", crate::persistence::params![permit.plan.family.to_owned(),permit.plan.node.to_owned()], |r|r.get(0)).map_err(db)?;
-        if pending {
+        if progress.pending {
             return Err(Error::Conflict("response release unresolved"));
         }
         crate::persistence::exec(
@@ -454,19 +446,71 @@ fn begin_provider_effect<'a>(
     })?;
     Ok((tx, actual))
 }
-fn started(tx: &WriteScope<'_>, p: &ProviderDispatch) -> Result<()> {
-    let burned: bool = crate::persistence::one(
+#[cfg(feature = "commit-observer")]
+thread_local! {
+    static SEPARATE_RELEASE_READS: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
+}
+
+/// Same-image comparison with individual progress probes.
+#[cfg(feature = "commit-observer")]
+pub fn use_separate_release_reads(separate: bool) {
+    SEPARATE_RELEASE_READS.set(separate);
+}
+
+struct ReleaseProgress {
+    next: u64,
+    pending: bool,
+}
+
+fn release_progress(tx: &WriteScope<'_>, p: &ProviderDispatch) -> Result<ReleaseProgress> {
+    let key = [p.plan.family.as_str(), p.plan.node.as_str()];
+    #[cfg(feature = "commit-observer")]
+    if SEPARATE_RELEASE_READS.get() {
+        let burned: bool = crate::persistence::one(
+            tx,
+            "SELECT dispatched<>0 FROM provider_runs WHERE family=?1 AND node=?2",
+            key,
+            |r| r.get(0),
+        )
+        .map_err(db)?;
+        if !burned {
+            return Err(Error::Conflict("provider request not dispatched"));
+        }
+        let next = crate::persistence::one(
+            tx,
+            "SELECT next_event FROM provider_runs WHERE family=?1 AND node=?2",
+            key,
+            |r| integer(r, 0),
+        )
+        .map_err(db)?;
+        let pending = crate::persistence::one(tx,
+            "SELECT EXISTS(SELECT 1 FROM provider_releases WHERE family=?1 AND node=?2 AND state='unknown')",
+            key, |r| r.get(0)).map_err(db)?;
+        return Ok(ReleaseProgress { next, pending });
+    }
+    // Same transaction and held domain stripes as the effect guard.
+    // This is a projection of current progress, never an authority receipt.
+    let (burned, progress) = crate::persistence::one_current(
         tx,
-        "SELECT dispatched<>0 FROM provider_runs WHERE family=?1 AND node=?2",
-        crate::persistence::params![p.plan.family.to_owned(), p.plan.node.to_owned()],
-        |r| r.get(0),
+        "SELECT dispatched<>0,next_event,EXISTS(
+            SELECT 1 FROM provider_releases WHERE family=?1 AND node=?2 AND state='unknown'
+         ) FROM provider_runs WHERE family=?1 AND node=?2",
+        key,
+        |r| {
+            Ok((
+                r.get::<bool>(0)?,
+                ReleaseProgress {
+                    next: integer(r, 1)?,
+                    pending: r.get(2)?,
+                },
+            ))
+        },
     )
     .map_err(db)?;
-    if burned {
-        Ok(())
-    } else {
-        Err(Error::Conflict("provider request not dispatched"))
+    if !burned {
+        return Err(Error::Conflict("provider request not dispatched"));
     }
+    Ok(progress)
 }
 struct AuthorizedRoute {
     route: ProviderRoute,

@@ -154,6 +154,18 @@ theorem prepared_domain_program_preserves_live_decision
       decide current (readFresh current family) := by
   rw [agrees]
 
+/-- One deciding image supplies dispatch, cursor and pending-range facts.
+    The live authorization premise remains independent of the projection. -/
+theorem joined_release_progress_preserves_gate
+    {Image Progress : Type} (separate joined : Image → Progress)
+    (same : ∀ image, joined image = separate image)
+    (liveAuthorization : Image → Prop) (progressAllows : Progress → Prop)
+    (current : Image) :
+    (liveAuthorization current ∧ progressAllows (joined current)) ↔
+      (liveAuthorization current ∧ progressAllows (separate current)) := by
+  rw [same]
+
+#print axioms joined_release_progress_preserves_gate
 #print axioms prepared_domain_program_preserves_live_decision
 #print axioms retained_stamp_selects_live_keys
 #print axioms prepared_original_refines_live

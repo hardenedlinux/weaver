@@ -49,6 +49,9 @@ var controlBinary string
 
 func TestMain(m *testing.M) {
 	flag.Parse()
+	if os.Getenv(pressureChild) == "1" && flag.Lookup("test.run").Value.String() == "^TestProviderCPUPressureWorker$" {
+		os.Exit(m.Run())
+	}
 	benchmark := flag.Lookup("test.bench").Value.String()
 	profile := "dev"
 	if benchmark != "" {
