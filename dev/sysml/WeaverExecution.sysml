@@ -302,6 +302,23 @@ package WeaverExecution {
            reopen only on the exact fenced image and outcome. */
     }
 
+    requirement def ProviderLifecycleFootprint {
+        doc /* Read custody and invalidation are different footprints. Admission
+           appends original claims and changes held/history/quota projections,
+           so it still closes all sharing origins. Settlement, migration,
+           Policy, OAuth/witness and unclassified writes remain broad. */
+        doc /* Exact consumed state/target, dispatch markers and terminal state
+           or usage observations change only the original origin's live view.
+           Cross-origin exposure reads digest/reserved/plan ceiling, original
+           claims and holds, never a peer's run state, target or raw usage.
+           Close and advance that origin lane only, retaining the full native
+           read/scheduler set. Same-origin frames still retire. Unknown outcomes
+           seal the whole owner; no lifecycle transition releases unknown hold.
+           Whole-store readers use a separate aggregate revision advanced by
+           every semantic commit; domain readers retain shared plus origin
+           revisions. WAL retains its conservative global profile. */
+    }
+
     requirement def ProviderSnapshotPublication {
         doc /* Existing ready ranges form a bounded immutable manifest. A native
            transaction rechecks Cedar for every actual row, original claim,
@@ -435,7 +452,7 @@ package WeaverExecution {
     }
     part def EgressMutationBarrier {
         attribute displayName : String = "Rust / close";
-        attribute responsibility : String = "Policy + OAuth + domains\nKeep every pending ID";
+        attribute responsibility : String = "Run edits / origin cut\nShared edits / shared cut";
         attribute glyph : String = "policy";
         attribute visualRole : String = "governance";
         port closed : EgressWindowPort;

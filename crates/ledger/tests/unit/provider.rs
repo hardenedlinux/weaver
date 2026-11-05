@@ -885,3 +885,6 @@ mod delivery;
 
 #[path = "provider_snapshot.rs"]
 mod snapshot_delivery;
+
+#[path = "provider_lifecycle.rs"]
+mod lifecycle;

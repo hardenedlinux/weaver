@@ -44,10 +44,17 @@ impl Observer for CommitObserver {
         if cut != self.selected {
             return Decision::Continue;
         }
-        if matches!(cut, Cut::BeforeDeliveryCommit | Cut::AfterDeliveryCommit)
-            && self
-                .delivery_used
-                .swap(true, std::sync::atomic::Ordering::SeqCst)
+        if matches!(
+            cut,
+            Cut::BeforeDeliveryCommit
+                | Cut::AfterDeliveryCommit
+                | Cut::BeforeLifecycleCommit
+                | Cut::AfterLifecycleCommit
+                | Cut::BeforeAdmissionCommit
+                | Cut::AfterAdmissionCommit
+        ) && self
+            .delivery_used
+            .swap(true, std::sync::atomic::Ordering::SeqCst)
         {
             return Decision::Continue;
         }
@@ -73,6 +80,8 @@ impl Observer for CommitObserver {
         let marker = match cut {
             Cut::BeforeRangePrepareCommit | Cut::AfterRangePrepareCommit => durable_range_marker(),
             Cut::BeforeDeliveryCommit | Cut::AfterDeliveryCommit => durable_delivery_marker(),
+            Cut::BeforeLifecycleCommit | Cut::AfterLifecycleCommit => lifecycle_marker(),
+            Cut::BeforeAdmissionCommit | Cut::AfterAdmissionCommit => admission_marker(),
             _ => durable_marker(),
         };
         socket
@@ -89,6 +98,36 @@ impl Observer for CommitObserver {
             _ => panic!("unknown test decision"),
         }
     }
+}
+fn admission_marker() -> i64 {
+    run_marker("SELECT COUNT(*) FROM provider_runs")
+}
+fn lifecycle_marker() -> i64 {
+    run_marker("SELECT COUNT(*) FROM provider_runs WHERE state!='queued'")
+}
+fn run_marker(query: &str) -> i64 {
+    let path = std::env::var("WEAVER_DB").expect("database");
+    if !std::path::Path::new(&path).exists() {
+        return 0;
+    }
+    let journal = if std::env::var("WEAVER_STORAGE_JOURNAL").as_deref() == Ok("mvcc") {
+        persistence::Journal::Mvcc
+    } else {
+        persistence::Journal::Wal
+    };
+    let session = persistence::Session::open_with_journal(path, journal)
+        .expect("independent lifecycle reader");
+    let table: bool = persistence::one(
+        &session,
+        "SELECT EXISTS(SELECT 1 FROM sqlite_master WHERE name='provider_runs')",
+        (),
+        |r| r.get(0),
+    )
+    .expect("schema read");
+    if !table {
+        return 0;
+    }
+    persistence::one(&session, query, (), |r| r.get(0)).expect("committed native state")
 }
 fn durable_range_marker() -> i64 {
     if durable_marker() == 0 {
@@ -150,34 +189,7 @@ fn durable_delivery_marker() -> i64 {
     .expect("durable released ranges")
 }
 fn durable_marker() -> i64 {
-    let path = std::env::var("WEAVER_DB").expect("fixture database");
-    if !std::path::Path::new(&path).exists() {
-        return 0;
-    }
-    let journal = if std::env::var("WEAVER_STORAGE_JOURNAL").as_deref() == Ok("mvcc") {
-        persistence::Journal::Mvcc
-    } else {
-        persistence::Journal::Wal
-    };
-    let session =
-        persistence::Session::open_with_journal(path, journal).expect("independent native reader");
-    let table: bool = persistence::one(
-        &session,
-        "SELECT EXISTS(SELECT 1 FROM sqlite_master WHERE name='provider_runs')",
-        (),
-        |r| r.get(0),
-    )
-    .expect("schema read");
-    if !table {
-        return 0;
-    }
-    persistence::one(
-        &session,
-        "SELECT COALESCE(MAX(dispatched),0) FROM provider_runs",
-        (),
-        |r| r.get(0),
-    )
-    .expect("persisted dispatch marker")
+    run_marker("SELECT COALESCE(MAX(dispatched),0) FROM provider_runs")
 }
 pub(crate) fn mutation_started(operation: &str, phase: &str) {
     if operation == "racing-a"
@@ -207,6 +219,10 @@ fn serve_observed_gateway() {
         Ok("after") => Cut::AfterCommit,
         Ok("prepare-before") => Cut::BeforeRangePrepareCommit,
         Ok("prepare-after") => Cut::AfterRangePrepareCommit,
+        Ok("lifecycle-before") => Cut::BeforeLifecycleCommit,
+        Ok("lifecycle-after") => Cut::AfterLifecycleCommit,
+        Ok("admission-before") => Cut::BeforeAdmissionCommit,
+        Ok("admission-after") => Cut::AfterAdmissionCommit,
         Ok("delivery-before") => Cut::BeforeDeliveryCommit,
         Ok("delivery-after") => Cut::AfterDeliveryCommit,
         _ => panic!("explicit commit cut required"),
@@ -222,6 +238,8 @@ fn serve_observed_gateway() {
                         durable_range_marker(),
                     Cut::BeforeDeliveryCommit | Cut::AfterDeliveryCommit =>
                         durable_delivery_marker(),
+                    Cut::BeforeLifecycleCommit | Cut::AfterLifecycleCommit => lifecycle_marker(),
+                    Cut::BeforeAdmissionCommit | Cut::AfterAdmissionCommit => admission_marker(),
                     _ => durable_marker(),
                 }
             )

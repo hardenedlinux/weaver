@@ -22,6 +22,32 @@ use weaver_contracts::{
 pub(crate) struct RangeProgress {
     _sealed: (),
 }
+/// Sealed write-set obligation: only run state/target, dispatch marker or raw
+/// terminal usage changes; no reservation, history, quota or publication write.
+pub(crate) struct OriginLifecycle {
+    _sealed: (),
+}
+#[cfg(feature = "commit-observer")]
+thread_local! {
+    static FULL_LIFECYCLE_INVALIDATION: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
+}
+#[cfg(feature = "commit-observer")]
+/// Safe same-image test control: retain broad lifecycle invalidation.
+pub fn use_full_lifecycle_invalidation(full: bool) {
+    FULL_LIFECYCLE_INVALIDATION.set(full);
+}
+impl OriginLifecycle {
+    pub(crate) fn origin_only(&self) -> bool {
+        #[cfg(feature = "commit-observer")]
+        {
+            !FULL_LIFECYCLE_INVALIDATION.get()
+        }
+        #[cfg(not(feature = "commit-observer"))]
+        {
+            true
+        }
+    }
+}
 #[cfg(feature = "commit-observer")]
 thread_local! {
     static CONSERVATIVE_RANGE_INVALIDATION: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
@@ -161,7 +187,7 @@ impl Ledger {
             &publication?,
             original.as_ref(),
         )?;
-        tx.commit().map_err(db)?;
+        tx.commit_provider_admission().map_err(db)?;
         self.provider_receipt(&plan.family, &plan.node)?
             .ok_or(Error::Conflict("provider receipt missing"))
     }
@@ -191,7 +217,14 @@ impl Ledger {
         #[cfg(feature = "commit-observer")]
         warm_release_programs(&self.connection);
         self.connection.prepare_provider_domain();
-        let tx = crate::persistence::begin_family(&mut self.connection, family).map_err(db)?;
+        let tx = crate::persistence::begin_provider_lifecycle(
+            &mut self.connection,
+            family,
+            None,
+            ProviderScopePhase::Other,
+            &OriginLifecycle { _sealed: () },
+        )
+        .map_err(db)?;
         let oauth_expires = tx.check_provider_oauth(prepared.as_ref())?;
         let (plan, selected, digest) = authorize_provider_consumption(
             &tx,
@@ -202,7 +235,7 @@ impl Ledger {
             original.as_ref(),
         )?;
         mark_provider_consumed(&tx, family, node, &selected.route.target)?;
-        tx.commit().map_err(db)?;
+        tx.commit_lifecycle().map_err(db)?;
         Ok(ProviderDispatch {
             plan,
             route: selected.route,
@@ -228,7 +261,7 @@ impl Ledger {
         self.check_provider_session(permit)?;
         burn_dispatch(&mut self.connection, permit)?;
         let (mut tx, domains) =
-            begin_provider_effect(&mut self.connection, permit, ProviderScopePhase::Other)?;
+            begin_lifecycle_effect(&mut self.connection, permit, ProviderScopePhase::Other)?;
         guard_live(&tx, permit, &domains, "invokeProvider", 0, "protobuf")?;
         let result = tx.request_effect(send)?;
         record_dispatch_callback(&tx, permit)?;
@@ -282,7 +315,7 @@ impl Ledger {
     ) -> Result<()> {
         self.check_provider_session(permit)?;
         let (tx, domains) =
-            begin_provider_effect(&mut self.connection, permit, ProviderScopePhase::Other)?;
+            begin_lifecycle_effect(&mut self.connection, permit, ProviderScopePhase::Other)?;
         let progress = release_progress(&tx, permit)?;
         guard_live(&tx, permit, &domains, "emitProvider", 0, format)?;
         if progress.pending {
@@ -306,7 +339,7 @@ impl Ledger {
             )
             .map_err(db)?;
         }
-        tx.commit().map_err(db)?;
+        tx.commit_lifecycle().map_err(db)?;
         Ok(())
     }
     pub fn provider_receipt(&self, family: &str, node: &str) -> Result<Option<ProviderReceipt>> {
@@ -324,7 +357,7 @@ fn burn_dispatch(
     session: &mut crate::persistence::Session,
     permit: &ProviderDispatch,
 ) -> Result<()> {
-    let (tx, domains) = begin_provider_effect(session, permit, ProviderScopePhase::Other)?;
+    let (tx, domains) = begin_lifecycle_effect(session, permit, ProviderScopePhase::Other)?;
     guard_live(&tx, permit, &domains, "invokeProvider", 0, "protobuf")?;
     // Persist a separate affine dispatch burn: borrowing a handle cannot repeat this callback.
     let burn = crate::persistence::exec(
@@ -336,7 +369,7 @@ fn burn_dispatch(
     if burn != 1 {
         return Err(Error::Conflict("provider dispatch already burned"));
     }
-    tx.commit().map_err(db)?;
+    tx.commit_lifecycle().map_err(db)?;
     Ok(())
 }
 fn record_dispatch_callback(tx: &WriteScope<'_>, permit: &ProviderDispatch) -> Result<()> {
@@ -460,13 +493,19 @@ fn mark_provider_consumed(
     Ok(())
 }
 
-pub(super) fn begin_provider_effect<'a>(
+fn begin_lifecycle_effect<'a>(
     session: &'a mut crate::persistence::Session,
     p: &ProviderDispatch,
     phase: ProviderScopePhase,
 ) -> Result<(WriteScope<'a>, DomainView)> {
-    let tx = crate::persistence::begin_provider_use(session, &p.plan.family, &p.domains, phase)
-        .map_err(db)?;
+    let tx = crate::persistence::begin_provider_lifecycle(
+        session,
+        &p.plan.family,
+        Some(&p.domains),
+        phase,
+        &OriginLifecycle { _sealed: () },
+    )
+    .map_err(db)?;
     require_provider_effect(tx, p)
 }
 

@@ -32,6 +32,6 @@ pub use scope::ProviderScopePhase;
 #[cfg(not(feature = "commit-observer"))]
 pub(crate) use scope::ProviderScopePhase;
 pub use scope::{WriteScope, begin};
-pub(crate) use scope::{begin_family, begin_provider_progress, begin_provider_use};
+pub(crate) use scope::{begin_family, begin_provider_lifecycle, begin_provider_progress};
 pub use session::{LedgerCustody, Session};
 pub use timing::{Timing, TransactionTimings};

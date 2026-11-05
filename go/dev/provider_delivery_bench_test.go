@@ -32,15 +32,37 @@ func BenchmarkProviderDeliveryJoin(b *testing.B) {
 }
 
 func benchmarkProviderDeliveryJoin(b *testing.B, image string, shared, loaded bool) {
+	benchmarkProviderDeliveryComparison(b, image, shared, loaded, deliveryComparison{
+		labels:   [2]string{"single-range", "published-snapshot"},
+		controls: [2][]string{{"WEAVER_TEST_SINGLE_RANGE_COMMIT=1"}, nil}, queues: [2]int{13, 4},
+	})
+}
+
+type deliveryComparison struct {
+	labels   [2]string
+	controls [2][]string
+	queues   [2]int
+}
+
+func BenchmarkProviderLifecycleFootprint(b *testing.B) {
+	image := wifImage(b, true)
+	comparison := deliveryComparison{labels: [2]string{"full-domain", "origin-cut"},
+		controls: [2][]string{{"WEAVER_TEST_FULL_LIFECYCLE_INVALIDATION=1"}, nil}, queues: [2]int{4, 4}}
+	for _, shared := range []bool{true, false} {
+		for _, loaded := range []bool{false, true} {
+			b.Run(fmt.Sprintf("shared=%t/pressure=%t", shared, loaded), func(b *testing.B) { benchmarkProviderDeliveryComparison(b, image, shared, loaded, comparison) })
+		}
+	}
+}
+
+func benchmarkProviderDeliveryComparison(b *testing.B, image string, shared, loaded bool, comparison deliveryComparison) {
 	b.Helper()
 	b.StopTimer()
 	const ranges, parallel, samples = 13, 4, 128
 	var arms [2]providerTailArm
 	for i := range arms {
 		env := []string{"WEAVER_STORAGE_JOURNAL=mvcc", "WEAVER_TEST_PROVIDER_TAIL=1", "WEAVER_TEST_PROVIDER_SCOPE_TRACE=1"}
-		if i == 0 {
-			env = append(env, "WEAVER_TEST_SINGLE_RANGE_COMMIT=1")
-		}
+		env = append(env, comparison.controls[i]...)
 		arms[i].fixture = domainBenchmarkFixture(b, image, env, burstProviderSSE(ranges))
 	}
 	var stopPressure func() (time.Duration, time.Duration)
@@ -63,13 +85,10 @@ func benchmarkProviderDeliveryJoin(b *testing.B, image string, shared, loaded bo
 		b.ReportMetric(cpu.Seconds()/wall.Seconds(), "pressure-cpu-equivalents")
 	}
 	b.ReportMetric(0, "ns/op")
-	for i, label := range []string{"single-range", "published-snapshot"} {
+	for i, label := range comparison.labels {
 		arm := &arms[i]
 		reportProviderTailArm(b, arm, label)
-		queues := ranges
-		if i == 1 {
-			queues = (ranges + 3) / 4
-		}
+		queues := comparison.queues[i]
 		reportScheduledEncoding(b, arm, label, ranges, (ranges+3)/4, queues, shared)
 		reportDeliveryJoin(b, arm, label)
 		arm.fixture.stop(b)

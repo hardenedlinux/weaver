@@ -2,6 +2,7 @@
 --
 -- SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
+import ProviderLifecycleFootprint
 import ProviderSnapshotPublication
 import ProviderSemanticProgress
 import CedarPooSpec.Gateway.ZeroTrust
@@ -110,6 +111,31 @@ theorem published_snapshot_preserves_spec_final_use
   simpa only [joined] using gateway_final_use_preserves_domain_contract use events
 
 #print axioms published_snapshot_preserves_spec_final_use
+
+/-- Preserve the observer's cached predicate, then bind it to the CURRENT SPEC
+    actual state. Other origins may change the whole world; global invariants
+    come from the current reachable run, never equality with an old world. -/
+theorem peer_lifecycle_preserves_spec_final_use [DecidableEq Family]
+    (use : Gateway.ZeroTrust.FinalUse proposal)
+    (events : GatewayHeadCAS.Run c owner GatewayHeadCAS.initial use.actual)
+    (store : Weaver.ProviderLifecycleFootprint.Store Family)
+    (writer observer : Family) (next : Weaver.ProviderLifecycleFootprint.Local)
+    (distinct : observer ≠ writer)
+    (observe : GatewayHeadCAS.State → Weaver.ProviderLifecycleFootprint.View Family)
+    (current : observe use.actual = Weaver.ProviderLifecycleFootprint.view
+      (Weaver.ProviderLifecycleFootprint.transition store writer next) observer)
+    (allow : Weaver.ProviderLifecycleFootprint.View Family → Prop)
+    (qualified : allow (Weaver.ProviderLifecycleFootprint.view store observer)) :
+    allow (observe use.actual) ∧
+    (Gateway.ZeroTrust.specialize proposal (reachableDomain c)).required effect use.actual ∧
+    (∀ account, booked c use.actual.base account ≤ c.capacity account) ∧
+    (∀ key, (use.actual.base.messages key).claims ≤ 1 ∧
+      (use.actual.base.messages key).sends ≤ 1) ∧ original.Refines prepared.profile := by
+  refine ⟨?_, gateway_final_use_preserves_domain_contract use events⟩
+  rw [current, Weaver.ProviderLifecycleFootprint.different_origin_preserves_complete_view store writer observer next distinct]
+  exact qualified
+
+#print axioms peer_lifecycle_preserves_spec_final_use
 
 theorem head_cas_preserves_original_obligations
     (step : GatewayHeadCAS.Step c owner before after)

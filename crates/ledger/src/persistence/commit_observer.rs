@@ -13,6 +13,10 @@ pub enum Cut {
     AfterRangePrepareCommit,
     BeforeDeliveryCommit,
     AfterDeliveryCommit,
+    BeforeAdmissionCommit,
+    AfterAdmissionCommit,
+    BeforeLifecycleCommit,
+    AfterLifecycleCommit,
     BeforeSnapshotPublication,
     AfterSnapshotPublication,
 }

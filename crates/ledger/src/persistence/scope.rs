@@ -21,6 +21,11 @@ pub enum ProviderScopePhase {
     RevalidateDelivery,
 }
 
+enum Change<'a> {
+    Semantic,
+    Progress(&'a crate::provider::RangeProgress),
+    Lifecycle(&'a crate::provider::OriginLifecycle),
+}
 /// Exclusive native transaction; final guarded callbacks keep this scope alive.
 pub struct WriteScope<'a> {
     connection: &'a driver::Connection,
@@ -53,22 +58,42 @@ pub struct WriteScope<'a> {
 }
 /// Acquire an immediate write transaction with exclusive Rust session custody.
 pub fn begin(session: &mut Session) -> driver::Result<WriteScope<'_>> {
-    start(session, None, None, ProviderScopePhase::Other, None)
+    start(
+        session,
+        None,
+        None,
+        ProviderScopePhase::Other,
+        Change::Semantic,
+    )
 }
 /// Parallel MVCC admission or final use for one original claim/budget/history family.
 /// Global mutations use `begin`, excluding every live family scope through commit.
 pub fn begin_family<'a>(session: &'a mut Session, family: &str) -> driver::Result<WriteScope<'a>> {
-    start(session, Some(family), None, ProviderScopePhase::Other, None)
+    start(
+        session,
+        Some(family),
+        None,
+        ProviderScopePhase::Other,
+        Change::Semantic,
+    )
 }
-/// The caller must rejoin the live stamp in this scope before any effect.
-pub(crate) fn begin_provider_use<'a>(
+/// Read custody remains the complete domain set. Only the sealed provider
+/// lifecycle write set may invalidate its origin lane alone in MVCC.
+pub(crate) fn begin_provider_lifecycle<'a>(
     session: &'a mut Session,
     family: &str,
-    expected: &weaver_contracts::DomainStamp,
+    expected: Option<&weaver_contracts::DomainStamp>,
     phase: ProviderScopePhase,
+    proof: &crate::provider::OriginLifecycle,
 ) -> driver::Result<WriteScope<'a>> {
-    let expected = (!crate::task_origins::locked_original_evidence()).then_some(expected);
-    start(session, Some(family), expected, phase, None)
+    let expected = expected.filter(|_| !crate::task_origins::locked_original_evidence());
+    start(
+        session,
+        Some(family),
+        expected,
+        phase,
+        Change::Lifecycle(proof),
+    )
 }
 
 /// The sealed token is constructed only in provider's exact progress paths.
@@ -80,7 +105,13 @@ pub(crate) fn begin_provider_progress<'a>(
     progress: &crate::provider::RangeProgress,
 ) -> driver::Result<WriteScope<'a>> {
     let expected = (!crate::task_origins::locked_original_evidence()).then_some(expected);
-    start(session, Some(family), expected, phase, Some(progress))
+    start(
+        session,
+        Some(family),
+        expected,
+        phase,
+        Change::Progress(progress),
+    )
 }
 
 fn start<'a>(
@@ -88,7 +119,7 @@ fn start<'a>(
     family: Option<&str>,
     expected: Option<&weaver_contracts::DomainStamp>,
     phase: ProviderScopePhase,
-    progress: Option<&crate::provider::RangeProgress>,
+    change: Change<'_>,
 ) -> driver::Result<WriteScope<'a>> {
     session.require_quiescent()?;
     let concurrent = session.owner.journal == super::Journal::Mvcc;
@@ -112,12 +143,16 @@ fn start<'a>(
         super::scheduler::Scope::Domains(keys.clone())
     });
     // Close before waiting for either the scheduler or native writer.
-    let authority = match progress {
-        Some(progress) => session
+    let authority = match change {
+        Change::Progress(progress) => session
             .owner
             .authority
             .close_progress(close_scope, progress)?,
-        None => session.owner.authority.close(close_scope)?,
+        Change::Lifecycle(proof) => session
+            .owner
+            .authority
+            .close_lifecycle(close_scope, proof)?,
+        Change::Semantic => session.owner.authority.close(close_scope)?,
     };
     let mut owner_entered = None;
     let mut domains_entered = None;
@@ -225,6 +260,12 @@ impl WriteScope<'_> {
     ) {
         self.authority.replace_receipt(receipt);
     }
+    pub(crate) fn commit_provider_admission(self) -> driver::Result<()> {
+        self.commit_observed::<5>()
+    }
+    pub(crate) fn commit_lifecycle(self) -> driver::Result<()> {
+        self.commit_observed::<4>()
+    }
     pub(crate) fn commit_delivery_refresh(self) -> driver::Result<()> {
         self.commit_observed::<3>()
     }
@@ -259,6 +300,8 @@ impl WriteScope<'_> {
             let (before, after) = match PHASE {
                 1 => (Cut::BeforeRangePrepareCommit, Cut::AfterRangePrepareCommit),
                 2 => (Cut::BeforeDeliveryCommit, Cut::AfterDeliveryCommit),
+                5 => (Cut::BeforeAdmissionCommit, Cut::AfterAdmissionCommit),
+                4 => (Cut::BeforeLifecycleCommit, Cut::AfterLifecycleCommit),
                 3 => (
                     Cut::BeforeSnapshotPublication,
                     Cut::AfterSnapshotPublication,

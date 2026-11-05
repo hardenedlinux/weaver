@@ -209,11 +209,16 @@ func drainStream(stream grpc.ServerStreamingClient[pb.ProviderFrame], encoding p
 }
 func originalStillSpent(t *testing.T, f *fixture, before *pb.ProviderReceipt) {
 	t.Helper()
+	originalStillSpentWithCalls(t, f, before, 1)
+}
+
+func originalStillSpentWithCalls(t *testing.T, f *fixture, before *pb.ProviderReceipt, calls int64) {
+	t.Helper()
 	if _, _, err := execute(t, f, pb.Encoding_ARROW_IPC, 2); err == nil {
 		t.Fatal("reconnected RPC reopened original claim")
 	}
 	after := inspect(t, f)
-	if after.Digest != before.Digest || after.Events != before.Events || after.Held != 4 || f.primary.Load() != 1 || f.backup.Load() != 0 {
+	if after.Digest != before.Digest || after.Events != before.Events || after.Held != 4 || after.State != before.State || after.Reserved != before.Reserved || after.Target != before.Target || f.primary.Load() != calls || f.backup.Load() != 0 {
 		t.Fatalf("original outcome changed: before=%v after=%v calls=%d", before, after, f.primary.Load())
 	}
 }

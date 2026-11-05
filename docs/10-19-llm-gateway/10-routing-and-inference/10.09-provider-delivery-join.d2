@@ -73,8 +73,9 @@ vars: { d2-config: { data: { figure: |json
     "model9": "dev/sysml/ExecutionReaderViews.sysml",
     "proof0": "dev/proofs/cedar/DomainMigrationComposition.lean",
     "proof1": "dev/proofs/lean/ProviderEgressWindow.lean",
-    "proof2": "dev/proofs/lean/ProviderSemanticProgress.lean",
-    "proof3": "dev/proofs/lean/ProviderSnapshotPublication.lean",
+    "proof2": "dev/proofs/lean/ProviderLifecycleFootprint.lean",
+    "proof3": "dev/proofs/lean/ProviderSemanticProgress.lean",
+    "proof4": "dev/proofs/lean/ProviderSnapshotPublication.lean",
     "sdkCapture": "dev/sysml/captures/WeaverViews-providerDeliveryJoin.json"
   },
   "copy": {},
@@ -106,7 +107,8 @@ vars: { d2-config: { data: { figure: |json
       "proof0",
       "proof1",
       "proof2",
-      "proof3"
+      "proof3",
+      "proof4"
     ],
     "evidenceRefs": []
   },
@@ -205,10 +207,10 @@ vars: { d2-config: { data: { figure: |json
   "modelSource": {
     "ref": "sdkCapture",
     "view": "WeaverViews::providerDeliveryJoin",
-    "modelHash": "0552676290a45913aa8d582f27f7a5d97b1650520252987d5fb202cafe8a7423",
+    "modelHash": "3c45556818345c7270d26e7d40d6ad5d25bd2b585713bf03143e9a14a5387ed2",
     "portProjection": "owner",
     "labels": {
-      "n0": "Rust / close\nPolicy + OAuth + domains\nKeep every pending ID",
+      "n0": "Rust / close\nRun edits / origin cut\nShared edits / shared cut",
       "n1": "Rust / qualify group\nPending clear; each row\nCedar + claim + domains",
       "n2": "Turso / commit group\nBurn the bounded group\nPublish one qualified cut",
       "n3": "Rust / prepare frame\nExact bytes and next span\nReserve transport credit",
