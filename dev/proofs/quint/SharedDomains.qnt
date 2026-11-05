@@ -10,8 +10,48 @@ module SharedDomains {
   type State={root:int->int,hroot:int->int,held:int->int,claims:Set[int],history:Set[int],spent:Set[int],
     epoch:int,permit:int->int,calls:int->int,owner:int,permitOwner:int->int,active:Set[int],merged:bool,receipt:bool,revoked:bool,policyPending:bool}
   var s:State
-  val initial={root:Map(0->0,1->0,2->2),hroot:Map(0->0,1->0,2->2),held:Map(0->0,1->0,2->0),claims:Set(),history:Set(),spent:Set(),
-    epoch:1,permit:Map(0->0,1->0,2->0),calls:Map(0->0,1->0,2->0),owner:1,permitOwner:Map(0->0,1->0,2->0),active:Set(),merged:false,receipt:false,revoked:false,policyPending:false}
+  // Tickets 0 and 1 conflict on a shared root. Ticket 2 is disjoint.
+  // Ticket 3 represents global publication or migration.
+  pure def sharesRoot(a: int, b: int): bool =
+    a == 3 or b == 3 or a == b or (a < 2 and b < 2)
+  pure def eligible(candidate: int, older: Set[int], active: Set[int]): bool =
+    older.union(active).forall(t => not(sharesRoot(t, candidate)))
+  run queuedRangeCannotBeOvertakenTest = init.expect(
+    not(eligible(1, Set(0), Set())) and eligible(2, Set(0), Set()))
+  run activeRangeAndGlobalBarrierTest = init.expect(
+    not(eligible(1, Set(), Set(0))) and not(eligible(2, Set(3), Set())) and
+    not(eligible(3, Set(), Set(2))))
+  run bargingAndCancelledHeadCounterexampleTest = init.expect(
+    eligible(1, Set(), Set()) and not(eligible(1, Set(0), Set())))
+  pure def discoveredScopeAllowed(before: int, current: int, exact: bool): bool =
+    before == current or exact
+  run migrationMustRejoinExactKeysTest = init.expect(
+    not(discoveredScopeAllowed(1, 2, false)) and discoveredScopeAllowed(1, 2, true))
+    type Scheduling = {waiting: Set[int], active: Set[int], unknownHold: bool}
+    pure def request(s: Scheduling, ticket: int): Scheduling =
+      {...s, waiting: s.waiting.union(Set(ticket))}
+    pure def activate(s: Scheduling, ticket: int): Scheduling =
+      if (s.waiting.contains(ticket) and eligible(ticket, s.waiting.filter(t => t < ticket), s.active))
+        {...s, waiting: s.waiting.exclude(Set(ticket)), active: s.active.union(Set(ticket))}
+      else s
+    pure def abandon(s: Scheduling, ticket: int): Scheduling =
+      {...s, waiting: s.waiting.exclude(Set(ticket))}
+    pure def finish(s: Scheduling, ticket: int): Scheduling =
+      {...s, active: s.active.exclude(Set(ticket))}
+    pure def restartScheduler(s: Scheduling): Scheduling =
+      {...s, waiting: Set(), active: Set()}
+    run schedulerFailureSequenceTest = init.expect(
+      val waiting = request(request(request({waiting: Set(), active: Set(), unknownHold: true}, 0), 1), 2)
+      val rejected = activate(waiting, 1)
+      val disjoint = activate(rejected, 2)
+      val barrier = request(disjoint, 3)
+      val recovered = restartScheduler(finish(abandon(barrier, 0), 2))
+      rejected == waiting and disjoint.active == Set(2) and
+      activate(barrier, 3) == barrier and
+      recovered.waiting == Set() and recovered.active == Set() and recovered.unknownHold)
+    val initial=
+  {root:Map(0->0,1->0,2->2),hroot:Map(0->0,1->0,2->2),held:Map(0->0,1->0,2->0),claims:Set(),history:Set(),spent:Set(),
+      epoch:1,permit:Map(0->0,1->0,2->0),calls:Map(0->0,1->0,2->0),owner:1,permitOwner:Map(0->0,1->0,2->0),active:Set(),merged:false,receipt:false,revoked:false,policyPending:false}
   def exposure(d:int):int=families.filter(f=>s.root.get(f)==d).fold(0,(n,f)=>n+s.held.get(f))
   val safety= s.root.get(0)==s.root.get(1) and s.hroot.get(0)==s.hroot.get(1) and
     families.forall(f=>s.calls.get(f)<=1 and (s.spent.contains(f) implies s.claims.contains(f)) and

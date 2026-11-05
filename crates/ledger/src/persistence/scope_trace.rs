@@ -4,12 +4,7 @@
 
 //! Bounded, observed-server timing records. No admission decisions use them.
 use super::ProviderScopePhase;
-use std::{
-    sync::atomic::{AtomicU64, Ordering},
-    time::{Duration, Instant},
-};
-
-static ORDINAL: AtomicU64 = AtomicU64::new(1);
+use std::time::{Duration, Instant};
 pub(super) const CAPACITY: usize = 64;
 
 pub(super) struct Arrival {
@@ -25,7 +20,7 @@ pub(super) struct Granted<'a> {
     at: Instant,
 }
 
-/// Process-local observations before the first and after the last stripe acquisition.
+/// Process-local observations of atomic domain admission.
 pub struct ProviderScopeSample {
     pub phase: ProviderScopePhase,
     pub arrival: u64,
@@ -35,18 +30,14 @@ pub struct ProviderScopeSample {
 }
 
 impl Arrival {
-    pub(super) fn capture(phase: ProviderScopePhase) -> Self {
-        Self {
-            phase,
-            order: ORDINAL.fetch_add(1, Ordering::Relaxed),
-            at: Instant::now(),
-        }
+    pub(super) fn capture(phase: ProviderScopePhase, order: u64, at: Instant) -> Self {
+        Self { phase, order, at }
     }
-    pub(super) fn granted(self, trace: &mut Vec<ProviderScopeSample>) -> Granted<'_> {
+    pub(super) fn granted(self, trace: &mut Vec<ProviderScopeSample>, order: u64) -> Granted<'_> {
         Granted {
             trace,
             arrival: self,
-            order: ORDINAL.fetch_add(1, Ordering::Relaxed),
+            order,
             at: Instant::now(),
         }
     }

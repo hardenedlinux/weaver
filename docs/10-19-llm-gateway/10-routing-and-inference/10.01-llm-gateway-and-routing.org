@@ -1087,12 +1087,25 @@ Go's control service authenticates ingress, bounds
 concurrent calls, projects routing inputs and propagates cancellation.
 It relays Rust response frames without decoding them. Rust owns the
 durable admission, provider worker and transaction lifetime. It
-resolves shared roots, acquires the sorted stripe set, checks current
-authority and ends each deciding scope before the next capacity wait.
-Current stripe mutexes establish mutual exclusion and lock ordering.
-Fairness and a bound on waiting require a separate scheduling contract.
-The shared owner read gate currently spans stripe acquisition and
-transaction use, so waiter delay can contribute to publication latency.
+registers a single ticket for the exact origin, shared budget and
+shared history roots. Each root uses its own namespace. Rust grants
+custody only when no active scope and no older queued ticket shares
+a root. A disjoint ticket can proceed even when string labels happen
+to match in different namespaces. Publication and migration take a
+global ticket, so later arrivals cannot postpone that barrier. A
+waiting ticket opens no deciding transaction, owns no partial set of
+roots and carries no execution authority.
+
+Root lookup before admission is advisory. For unconsumed operations,
+a completed global ticket changes the scheduler generation and forces
+an exact root rejoin before opening the transaction. For a consumed
+provider operation, the retained stamp selects the mask and the
+deciding transaction checks that exact stamp before any effect.
+Cedar still evaluates the live policy and fence inside the deciding
+scope. Client cancellation or owner shutdown can abandon a pending
+range ticket. A granted scope completes or rolls back normally.
+Restart discards the process-local queue. It preserves durable
+consumption and unknown holds and cannot restore an old release.
 
 Range preparation commits an unknown release before any queue
 insertion. The final scope rejoins live authority and checks the
@@ -1118,7 +1131,7 @@ throughput with prewarming, and terminal P99 changes in opposite
 directions. Production keeps the original order and fresh release
 programs. The compatible prewarm remains a test-only comparison.
 
-The range-scope experiment records a process-local ordinal before the
+The historical stripe-lock experiment recorded a process-local ordinal before the
 first sorted stripe acquisition and after the last. It counts a later
 arrival from another family that receives the full set before an
 earlier waiter in the same shared-root wave. This measures observed
@@ -1197,9 +1210,10 @@ the injected pressure comparison on the measured host.
 Wait and hold percentiles in the second table describe individual
 range scopes. The third table joins accumulated phase values to the
 same stream as the terminal P99. The largest observed overtake count
-for a single range waiter was 75. The counts reflect the whole
-stripe acquisition and scheduler timing. FIFO needs an explicit
-runtime contract and an independently qualified workload.
+for a single range waiter was 75. Those historical counts reflect
+stripe acquisition and scheduler timing together. The current trace
+assigns arrival and grant ordinals under the scheduler mutex, so
+overtaking now measures actual registered ticket order.
 
 The separate warm mutual-TLS Inspect reference averaged 1.863 ms
 per call over 1,000 calls. It includes Rust authentication and a ledger
@@ -1210,7 +1224,101 @@ measurements.
 go -C go test -mod=readonly -tags integration ./dev -run '^$' -bench '^BenchmarkProviderSharedRangeScopes$' -benchtime=1x -count=2
 #+end_src
 
+** Scheduled MVCC transport comparison
+
+The experiment reuses one optimized Rust image with real mutual TLS,
+a loopback TLS provider and separate MVCC files per arm. A wave starts
+four streams, each with thirteen identical provider events. Every
+arm verifies original receipts, usage of the expected target,
+held capacity and history. A full same-root wave rejects a single
+registered-ticket inversion. The bounded Rust test trace joins each
+frame's queue handoff to the Go SDK receive timestamp on the same
+host. The interval includes queue drain, gRPC envelope processing,
+HTTP/2 and TLS, and receiving goroutine scheduling. Network transit
+alone cannot be inferred from it. Payload codec timings are separate
+and the reported Protobuf message size excludes HTTP/2 and TLS
+framing. Full stream latency includes provider and storage work.
+
+Protobuf remains the single-event default. A four-row Arrow batch
+uses thirteen deciding scopes per thirteen events, compared with
+thirty-one for either one-row arm. That changes the frequency of
+durable transitions. It still checks every row, retains the current
+guard at queue time and holds unknown budget on interruption.
+
+Each row covers 128 completed streams. The injected workers realized
+3.52 and 2.75 CPU equivalents in the shared and independent
+cohorts. None injected describes the driver setup. The host still ran
+other workloads. No same-root wave recorded a registered-ticket
+inversion in range preparation or final queue insertion.
+
+| Roots | Pressure | Encoding | Stream P95 ms | Stream P99 ms | Streams/s | Domain read mean ms | Ticket wait P99 ms/scope | Commit P99 ms/stream |
+|-
+| Shared | None injected | protobuf-1 | 699.900 | 792.100 | 13.240 | 2.833 | 33.170 | 109.000 |
+| Shared | None injected | arrow-1 | 757.100 | 767.900 | 13.380 | 2.559 | 26.430 | 103.000 |
+| Shared | None injected | arrow-4 | 319.400 | 330.400 | 28.150 | 1.253 | 29.610 | 41.810 |
+| Shared | Six workers | protobuf-1 | 425.700 | 661.700 | 12.220 | 3.325 | 26.350 | 17.010 |
+| Shared | Six workers | arrow-1 | 580.900 | 621.000 | 11.340 | 3.339 | 31.590 | 41.710 |
+| Shared | Six workers | arrow-4 | 237.200 | 247.100 | 26.090 | 1.546 | 25.620 | 15.460 |
+| Independent | None injected | protobuf-1 | 80.390 | 111.000 | 68.830 | 2.386 | 0.002 | 22.390 |
+| Independent | None injected | arrow-1 | 82.370 | 87.050 | 68.920 | 2.522 | 0.002 | 20.060 |
+| Independent | None injected | arrow-4 | 57.520 | 82.010 | 109.300 | 1.598 | 0.002 | 19.020 |
+| Independent | Six workers | protobuf-1 | 91.890 | 108.000 | 56.360 | 2.475 | 0.002 | 14.000 |
+| Independent | Six workers | arrow-1 | 137.600 | 420.100 | 44.080 | 2.777 | 0.002 | 34.360 |
+| Independent | Six workers | arrow-4 | 45.270 | 51.850 | 102.800 | 1.154 | 0.002 | 8.600 |
+
+| Roots | Pressure | Encoding | Queue to Go P99 ms/frame | Rust encode P99 ms/stream | Go decode P99 ms/stream | Recv wait P99 ms/stream | Message bytes/stream |
+|-
+| Shared | None injected | protobuf-1 | 2.864 | 0.248 | 0.023 | 792.000 | 447.000 |
+| Shared | None injected | arrow-1 | 2.785 | 3.550 | 0.795 | 767.300 | 16914.000 |
+| Shared | None injected | arrow-4 | 2.114 | 0.540 | 0.486 | 330.200 | 5198.000 |
+| Shared | Six workers | protobuf-1 | 5.690 | 0.011 | 0.013 | 661.700 | 447.000 |
+| Shared | Six workers | arrow-1 | 6.048 | 4.593 | 1.570 | 620.500 | 16914.000 |
+| Shared | Six workers | arrow-4 | 3.251 | 0.524 | 1.512 | 246.900 | 5198.000 |
+| Independent | None injected | protobuf-1 | 1.837 | 0.009 | 0.012 | 111.000 | 447.000 |
+| Independent | None injected | arrow-1 | 2.652 | 3.956 | 1.041 | 86.580 | 16914.000 |
+| Independent | None injected | arrow-4 | 2.562 | 0.582 | 0.486 | 81.790 | 5198.000 |
+| Independent | Six workers | protobuf-1 | 2.105 | 0.009 | 0.024 | 108.000 | 447.000 |
+| Independent | Six workers | arrow-1 | 3.430 | 1.262 | 0.758 | 419.400 | 16914.000 |
+| Independent | Six workers | arrow-4 | 2.409 | 0.484 | 0.244 | 51.680 | 5198.000 |
+
+Fixed-width stripes were tested first. In that comparison, different
+root tuples collided in ten of thirty-two independent waves. The
+shipped scheduler compares exact typed roots. These two executions
+used different Rust images, so cross-image tail differences do not
+establish a paired speedup. Compare encodings within each cohort of
+the final matrix. Arrow single-row controls for codec choice at the
+same durable cadence. A follow-up comparison should hold batch size
+and transaction cadence fixed when comparing batched encodings.
+
+Exact independent-root ticket admission stayed between 1.7 and
+2.5 microseconds at P99 per scope. Shared-root admission still
+spent 25.6 to 33.2 ms at P99 per scope. Four-row Arrow met the
+2 ms mean locked-domain-read allocation in all four cohorts.
+Both one-row arms exceeded it. The frame handoff stayed between
+1.84 and 6.05 ms at P99, above the sub-millisecond target in all
+cohorts. Full-stream P99 ranged from 51.85 to 792.10 ms. The
+baseline host load average exceeded its twelve logical CPUs.
+Absolute P99 differs even across injected and uninjected
+cohorts, so the matrix supports same-cohort comparisons.
+
+The sub-millisecond target is tracked separately for local scheduling
+and for the Rust-to-Go handoff. The 2 ms locked-domain-read budget
+remains a distinct stream allocation. End-to-end stream P99 and
+completed streams per second expose contention and durable work
+outside either local budget. An architecture candidate for reducing
+the tail is to coalesce durable pending-range preparation at the
+Rust owner, while retaining each range's exact claim, digest and
+uncertain hold. It requires proof that a partial or ambiguous batch
+commit cannot issue release authority. Each final queue insertion
+would still rejoin the current policy, history and fence. Transport
+codec selection cannot substitute for this storage boundary.
+
+#+begin_src sh
+go -C go test -mod=readonly -tags integration ./dev -run '^$' -bench '^BenchmarkProviderScheduledEncoding$' -benchtime=1x -count=1 -v
+#+end_src
+
 ** Independent OAuth witness activation
+
 
 An existing direct deployment can enable its independent witness once
 while preserving the same issuer key, subject, client and audience.

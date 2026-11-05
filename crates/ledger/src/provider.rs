@@ -67,6 +67,15 @@ impl ProviderRelease {
     }
 }
 impl Ledger {
+    /// Cancel pending provider range admission when the client or server leaves.
+    /// The predicate must be nonblocking. Granted transactions still complete
+    /// or roll back through their existing guarded effect paths.
+    pub fn set_provider_range_cancellation(
+        &mut self,
+        cancelled: impl Fn() -> bool + Send + Sync + 'static,
+    ) {
+        self.connection.range_cancelled = Some(std::sync::Arc::new(cancelled));
+    }
     /// Enable bounded diagnostic observations for this ledger only.
     #[cfg(feature = "commit-observer")]
     pub fn trace_provider_scopes(&mut self) {
@@ -116,49 +125,15 @@ impl Ledger {
             Some(_) => false,
             None => true,
         };
-        let selected = any_authorized(&tx, plan, "admitProvider", None, &publication?)?;
-        tx.provider_claim(|| {
-            crate::domains::require_view(&tx, &selected.domains, original.as_ref())
-        })?;
-        if new_claim {
-            crate::execution_exposure::retain_in_view(
-                &tx,
-                crate::execution_exposure::ReservationClaim {
-                    family: &plan.family,
-                    node: &plan.node,
-                    kind: crate::execution_exposure::ClaimKind::Provider,
-                    member: "",
-                    digest: &digest,
-                    ceiling: plan.ceiling,
-                },
-                &selected.domains,
-            )?;
-            let held = crate::persistence::exec(
-                &tx,
-                "UPDATE tasks SET held=held+?1 WHERE family=?2 AND ?1<=budget-held",
-                crate::persistence::params![
-                    (plan.ceiling as i64).to_owned(),
-                    (plan.family).to_owned()
-                ],
-            )
-            .map_err(db)?;
-            if held != 1 {
-                return Err(Error::Conflict("shared provider budget exhausted"));
-            }
-            crate::persistence::exec(&tx, "INSERT INTO provider_runs(family,node,digest,plan,reserved,state) VALUES(?1,?2,?3,?4,?5,'queued')", crate::persistence::params![(plan.family).to_owned(),(plan.node).to_owned(),(digest).to_owned(),encoded,(plan.ceiling as i64).to_owned()]).map_err(db)?;
-            crate::metering::bind(&tx, plan, &digest, catalog)?;
-        } else {
-            crate::persistence::exec(
-                &tx,
-                "UPDATE provider_runs SET plan=?1 WHERE family=?2 AND node=?3",
-                crate::persistence::params![
-                    encoded,
-                    (plan.family).to_owned(),
-                    (plan.node).to_owned()
-                ],
-            )
-            .map_err(db)?;
-        }
+        store_authorized_provider_plan(
+            &tx,
+            plan,
+            (&digest, encoded),
+            catalog,
+            new_claim,
+            &publication?,
+            original.as_ref(),
+        )?;
         tx.commit().map_err(db)?;
         self.provider_receipt(&plan.family, &plan.node)?
             .ok_or(Error::Conflict("provider receipt missing"))
@@ -191,41 +166,15 @@ impl Ledger {
         self.connection.prepare_provider_domain();
         let tx = crate::persistence::begin_family(&mut self.connection, family).map_err(db)?;
         let oauth_expires = tx.check_provider_oauth(prepared.as_ref())?;
-        let record: Option<String> = crate::persistence::maybe(
+        let (plan, selected, digest) = authorize_provider_consumption(
             &tx,
-            "SELECT plan FROM provider_runs WHERE family=?1 AND node=?2 AND state='queued'",
-            crate::persistence::params![(family).to_owned(), (node).to_owned()],
-            |r| r.get(0),
-        )
-        .map_err(db)?;
-        let plan: ProviderPlan = serde_json::from_str(
-            &record.ok_or(Error::Conflict("provider not queued or already consumed"))?,
+            family,
+            node,
+            eligible,
+            &publication,
+            original.as_ref(),
         )?;
-        let selected = any_authorized(&tx, &plan, "invokeProvider", Some(eligible), &publication)?;
-        let digest = plan.digest()?;
-        tx.provider_claim(|| {
-            crate::execution_exposure::provider(
-                &tx,
-                &plan,
-                &digest,
-                &selected.domains,
-                original.as_ref(),
-                None,
-            )
-        })?;
-        let consumed = crate::persistence::exec(
-            &tx,
-            "UPDATE provider_runs SET state='unknown',target=?1 WHERE family=?2 AND node=?3 AND state='queued'",
-            crate::persistence::params![
-                selected.route.target.as_str(),
-                (family).to_owned(),
-                (node).to_owned()
-            ],
-        )
-        .map_err(db)?;
-        if consumed != 1 {
-            return Err(Error::Conflict("provider consumption lost queued row"));
-        }
+        mark_provider_consumed(&tx, family, node, &selected.route.target)?;
         tx.commit().map_err(db)?;
         Ok(ProviderDispatch {
             plan,
@@ -439,6 +388,112 @@ fn record_dispatch_callback(tx: &WriteScope<'_>, permit: &ProviderDispatch) -> R
     }
     Ok(())
 }
+fn store_authorized_provider_plan(
+    tx: &WriteScope<'_>,
+    plan: &ProviderPlan,
+    (digest, encoded): (&str, String),
+    catalog: &str,
+    new_claim: bool,
+    publication: &crate::provider_publication::Prepared,
+    original: Option<&crate::task_origins::PreparedOriginal>,
+) -> Result<()> {
+    let selected = any_authorized(tx, plan, "admitProvider", None, publication)?;
+    tx.provider_claim(|| crate::domains::require_view(tx, &selected.domains, original))?;
+    if new_claim {
+        reserve_provider_claim(tx, plan, digest, encoded, catalog, &selected.domains)?;
+    } else {
+        crate::persistence::exec(
+            tx,
+            "UPDATE provider_runs SET plan=?1 WHERE family=?2 AND node=?3",
+            crate::persistence::params![encoded, (plan.family).to_owned(), (plan.node).to_owned()],
+        )
+        .map_err(db)?;
+    }
+    Ok(())
+}
+
+fn reserve_provider_claim(
+    tx: &WriteScope<'_>,
+    plan: &ProviderPlan,
+    digest: &str,
+    encoded: String,
+    catalog: &str,
+    domains: &DomainView,
+) -> Result<()> {
+    crate::execution_exposure::retain_in_view(
+        tx,
+        crate::execution_exposure::ReservationClaim {
+            family: &plan.family,
+            node: &plan.node,
+            kind: crate::execution_exposure::ClaimKind::Provider,
+            member: "",
+            digest,
+            ceiling: plan.ceiling,
+        },
+        domains,
+    )?;
+    let held = crate::persistence::exec(
+        tx,
+        "UPDATE tasks SET held=held+?1 WHERE family=?2 AND ?1<=budget-held",
+        crate::persistence::params![(plan.ceiling as i64).to_owned(), (plan.family).to_owned()],
+    )
+    .map_err(db)?;
+    if held != 1 {
+        return Err(Error::Conflict("shared provider budget exhausted"));
+    }
+    crate::persistence::exec(tx, "INSERT INTO provider_runs(family,node,digest,plan,reserved,state) VALUES(?1,?2,?3,?4,?5,'queued')", crate::persistence::params![(plan.family).to_owned(),(plan.node).to_owned(),digest.to_owned(),encoded,(plan.ceiling as i64).to_owned()]).map_err(db)?;
+    crate::metering::bind(tx, plan, digest, catalog)?;
+    Ok(())
+}
+
+fn authorize_provider_consumption(
+    tx: &WriteScope<'_>,
+    family: &str,
+    node: &str,
+    eligible: &BTreeSet<String>,
+    publication: &crate::provider_publication::Prepared,
+    original: Option<&crate::task_origins::PreparedOriginal>,
+) -> Result<(ProviderPlan, AuthorizedRoute, String)> {
+    let record: Option<String> = crate::persistence::maybe(
+        tx,
+        "SELECT plan FROM provider_runs WHERE family=?1 AND node=?2 AND state='queued'",
+        crate::persistence::params![(family).to_owned(), (node).to_owned()],
+        |r| r.get(0),
+    )
+    .map_err(db)?;
+    let plan: ProviderPlan = serde_json::from_str(
+        &record.ok_or(Error::Conflict("provider not queued or already consumed"))?,
+    )?;
+    let selected = any_authorized(tx, &plan, "invokeProvider", Some(eligible), publication)?;
+    let digest = plan.digest()?;
+    tx.provider_claim(|| {
+        crate::execution_exposure::provider(tx, &plan, &digest, &selected.domains, original, None)
+    })?;
+    Ok((plan, selected, digest))
+}
+
+fn mark_provider_consumed(
+    tx: &WriteScope<'_>,
+    family: &str,
+    node: &str,
+    target: &str,
+) -> Result<()> {
+    let consumed = crate::persistence::exec(
+        tx,
+        "UPDATE provider_runs SET state='unknown',target=?1 WHERE family=?2 AND node=?3 AND state='queued'",
+        crate::persistence::params![
+            target,
+            (family).to_owned(),
+            (node).to_owned()
+        ],
+    )
+    .map_err(db)?;
+    if consumed != 1 {
+        return Err(Error::Conflict("provider consumption lost queued row"));
+    }
+    Ok(())
+}
+
 fn begin_provider_effect<'a>(
     session: &'a mut crate::persistence::Session,
     p: &ProviderDispatch,

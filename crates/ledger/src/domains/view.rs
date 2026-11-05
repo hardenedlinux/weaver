@@ -111,7 +111,7 @@ pub(crate) fn require_stamp(
 pub(crate) fn lock_keys(
     connection: &driver::Connection,
     family: &str,
-) -> driver::Result<Vec<String>> {
+) -> driver::Result<[String; 3]> {
     let current = view(connection, family).map_err(|e| driver::Error::Misuse(e.to_string()))?;
     if current.canonical_family != family {
         return Err(driver::Error::Misuse(
@@ -120,11 +120,11 @@ pub(crate) fn lock_keys(
     }
     Ok(stamp_keys(&current.stamp))
 }
-pub(crate) fn stamp_keys(stamp: &DomainStamp) -> Vec<String> {
-    vec![
-        format!("origin:{}", stamp.origin),
-        format!("budget:{}", stamp.budget_root),
-        format!("history:{}", stamp.history_root),
+pub(crate) fn stamp_keys(stamp: &DomainStamp) -> [String; 3] {
+    [
+        stamp.origin.clone(),
+        stamp.budget_root.clone(),
+        stamp.history_root.clone(),
     ]
 }
 impl crate::Ledger {

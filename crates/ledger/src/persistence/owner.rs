@@ -9,7 +9,7 @@ use std::{
     collections::BTreeMap,
     fs::{File, OpenOptions},
     path::{Path, PathBuf},
-    sync::{Arc, Mutex, OnceLock, RwLock, Weak, atomic::AtomicBool},
+    sync::{Arc, Mutex, OnceLock, Weak, atomic::AtomicBool},
 };
 
 /// Explicit storage profile. Existing nonempty databases are never converted.
@@ -21,8 +21,7 @@ pub enum Journal {
 pub(super) struct Owner {
     pub database: driver::Database,
     pub journal: Journal,
-    pub gate: RwLock<()>,
-    pub families: [Mutex<()>; 64],
+    pub scheduler: super::scheduler::Scheduler,
     pub ledger_initialized: AtomicBool,
     // Drop the engine before releasing process custody. Never unlink this file.
     _custody: File,
@@ -107,18 +106,10 @@ pub(super) fn open(path: &Path, requested: Option<Journal>) -> driver::Result<Ar
     let owner = Arc::new(Owner {
         database,
         journal,
-        gate: RwLock::new(()),
-        families: std::array::from_fn(|_| Mutex::new(())),
+        scheduler: super::scheduler::Scheduler::default(),
         ledger_initialized: AtomicBool::new(false),
         _custody: custody,
     });
     owners.insert(path, Arc::downgrade(&owner));
     Ok(owner)
-}
-
-pub(super) fn stripe(family: &str) -> usize {
-    // Collisions only reduce concurrency; canonical family identity is unchanged.
-    family.bytes().fold(0usize, |hash, byte| {
-        hash.wrapping_mul(31).wrapping_add(usize::from(byte))
-    }) % 64
 }

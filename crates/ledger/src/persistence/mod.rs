@@ -7,6 +7,7 @@
 //! there is no second runtime, database provider, ORM or SQLite fallback.
 mod catalog;
 mod owner;
+mod scheduler;
 pub(crate) use catalog::engine_metadata;
 #[cfg(any(test, feature = "commit-observer"))]
 pub mod commit_observer;

@@ -775,6 +775,9 @@ impl pb::gateway_server::Gateway for Gateway {
                     #[cfg(test)]
                     let open_started = std::time::Instant::now();
                     let mut ledger = Ledger::open(&config.database)?;
+                    let client = output.cancelled.clone();
+                    let server = output.shutdown.clone();
+                    ledger.set_provider_range_cancellation(move || client.is_cancelled() || server.is_cancelled());
                     #[cfg(test)]
                     let open_nanos = open_started.elapsed().as_nanos();
                     #[cfg(all(test, unix))]
@@ -810,6 +813,11 @@ impl pb::gateway_server::Gateway for Gateway {
                     weaver_ledger::use_cached_release_programs(
                         std::env::var("WEAVER_TEST_CACHED_RELEASE_PROGRAMS").as_deref() == Ok("1"),
                     );
+                    #[cfg(test)]
+                    {
+                        crate::grpc_output::take_encoding_nanos();
+                        crate::grpc_output::take_handoffs();
+                    }
                     let execution = weaver_broker::execute_catalog_provider_with_oauth(
 
                         &mut ledger,
@@ -884,6 +892,7 @@ impl pb::gateway_server::Gateway for Gateway {
                     }
                     #[cfg(test)]
                     if trace_scopes {
+                        eprintln!("weaver-provider-encode {} {}", plan.family, crate::grpc_output::take_encoding_nanos());
                         use std::fmt::Write;
                         use weaver_ledger::persistence::ProviderScopePhase;
                         let mut line = format!("weaver-provider-scope {}", plan.family);
@@ -896,6 +905,11 @@ impl pb::gateway_server::Gateway for Gateway {
                             let _ = write!(line, " {phase}:{}:{}:{}:{}", sample.arrival, sample.grant, sample.wait.as_nanos(), sample.hold.as_nanos());
                         }
                         eprintln!("{line}");
+                        let mut handoff = format!("weaver-provider-handoff {}", plan.family);
+                        for (sequence, time) in crate::grpc_output::take_handoffs() {
+                            let _ = write!(handoff, " {sequence}:{time}");
+                        }
+                        eprintln!("{handoff}");
                     }
                     execution
                 })();

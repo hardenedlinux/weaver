@@ -207,7 +207,57 @@ theorem cached_release_programs_preserve_ordered_effect
       markFresh before key = after) := by
   rw [readAgrees, markAgrees]
 
+/-- A ticket is eligible only when every earlier live ticket is disjoint
+    and no active ticket occupies any of its stripes. -/
+def ticketEligible {Ticket : Type} (overlaps : Ticket → Ticket → Prop)
+    (older waitingActive : List Ticket) (candidate : Ticket) : Prop :=
+  (∀ earlier ∈ older, ¬ overlaps earlier candidate) ∧
+  (∀ active ∈ waitingActive, ¬ overlaps active candidate)
+
+theorem scheduled_conflict_cannot_overtake {Ticket : Type}
+    (overlaps : Ticket → Ticket → Prop) (older active : List Ticket)
+    (first next : Ticket) (queued : first ∈ older) (shared : overlaps first next) :
+    ¬ ticketEligible overlaps older active next :=
+  fun grant => grant.1 first queued shared
+
+theorem scheduled_grant_excludes_active_conflict {Ticket : Type}
+    (overlaps : Ticket → Ticket → Prop) (older active : List Ticket)
+    (running next : Ticket) (held : running ∈ active)
+    (grant : ticketEligible overlaps older active next) :
+    ¬ overlaps running next :=
+  grant.2 running held
+
+/-- A generation change needs a fresh exact match before a scope may
+    proceed. The unchanged-generation case assumes global root writers
+    release their ticket only after their transaction ends. -/
+theorem scheduled_scope_uses_live_keys {Keys : Type} (selected live : Keys)
+    (before after : Nat) (unchanged : before = after → selected = live)
+    (joined : before = after ∨ selected = live) : selected = live :=
+  joined.elim unchanged id
+
+/-- Canonical root namespaces are compared independently. -/
+structure SchedulingRoots (Key : Type) where
+  origin : Key
+  budget : Key
+  history : Key
+
+def sharedSchedulingRoot {Key : Type} (a b : SchedulingRoots Key) : Prop :=
+  a.origin = b.origin ∨ a.budget = b.budget ∨ a.history = b.history
+
+theorem scheduled_disjoint_roots_remain_eligible {Key : Type}
+    (older active : List (SchedulingRoots Key)) (next : SchedulingRoots Key)
+    (pendingIndependent : ∀ t ∈ older, ¬ sharedSchedulingRoot t next)
+    (activeIndependent : ∀ t ∈ active, ¬ sharedSchedulingRoot t next) :
+    ticketEligible sharedSchedulingRoot older active next :=
+  ⟨pendingIndependent, activeIndependent⟩
+
+#print axioms scheduled_disjoint_roots_remain_eligible
+#print axioms scheduled_conflict_cannot_overtake
+
+#print axioms scheduled_grant_excludes_active_conflict
+#print axioms scheduled_scope_uses_live_keys
 #print axioms cached_release_programs_preserve_ordered_effect
+
 #print axioms conditional_range_mark_refines_queue_gate
 #print axioms range_marker_rollback_preserves_durable
 #print axioms fifo_excludes_arrival_grant_inversion

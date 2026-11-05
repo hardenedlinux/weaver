@@ -207,6 +207,7 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 			{"execution-ledger-benchmark", "cargo", []string{"bench", "-p", "weaver-ledger", "--bench", "gateway", "--locked", "--offline", "--", "ledger/provider_release/", "--noplot"}},
 			{"execution-provider-benchmark", "cargo", []string{"bench", "-p", "weaver-broker", "--bench", "gateway", "--locked", "--offline", "--", "broker/https_guarded_sse_three_events", "--noplot"}},
 			{"execution-encoding-benchmark", "cargo", []string{"bench", "-p", "weaver-server", "--features", "arrow", "--bench", "gateway", "--locked", "--offline", "--", "server/encoding_guard_hold", "--noplot"}},
+			{"execution-scheduled-encoding-pair", goBinary, []string{"-C", "go", "test", "-mod=readonly", "-tags=integration", "./dev", "-run", "^$", "-bench", "^BenchmarkProviderScheduledEncoding$", "-benchtime=1x", "-count=1", "-v"}},
 			{"execution-contention-pair", goBinary, []string{"-C", "go", "test", "-count=1", "-tags=integration", "./dev", "-run", "^TestContentionPairs$", "-v"}},
 			{"execution-provider-integration", goBinary, []string{"-C", "go", "test", "-count=1", "-race", "-tags=integration", "./dev", "-run", "^TestProvider", "-v"}},
 			{"published-pipeline-benchmark", goBinary, []string{"-C", "go", "test", "-tags=integration", "./dev", "-run", "^$", "-bench", "^BenchmarkGatewayPublishedPipeline$", "-benchtime=1x", "-count=3", "-benchmem"}},

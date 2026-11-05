@@ -16,6 +16,8 @@ import (
 	"testing"
 	"time"
 
+	"google.golang.org/protobuf/proto"
+
 	pb "github.com/HardenedLinux/weaver/go/api/gateway/v1"
 	v1 "github.com/HardenedLinux/weaver/go/api/v1"
 	"github.com/HardenedLinux/weaver/go/internal/gatewayclient"
@@ -146,11 +148,16 @@ func registerDomainProgramWave(b *testing.B, f *fixture, wave, parallel int, sha
 }
 
 type domainStreamSample struct {
-	family  string
-	latency time.Duration
+	family    string
+	latency   time.Duration
+	transport domainStreamTransport
 }
 
 func measureDomainProgramWave(b *testing.B, f *fixture, plans []v1.ProviderPlan, ranges int, shared bool) ([]domainStreamSample, time.Duration) {
+	return measureDomainEncodingWave(b, f, plans, ranges, shared, pb.Encoding_PROTOBUF, 1)
+}
+
+func measureDomainEncodingWave(b *testing.B, f *fixture, plans []v1.ProviderPlan, ranges int, shared bool, encoding pb.Encoding, rows uint32) ([]domainStreamSample, time.Duration) {
 	b.Helper()
 	ctx, cancel := context.WithTimeout(b.Context(), 12*time.Second)
 	defer cancel()
@@ -167,7 +174,7 @@ func measureDomainProgramWave(b *testing.B, f *fixture, plans []v1.ProviderPlan,
 			<-start
 			began := time.Now()
 			r := result{domainStreamSample: domainStreamSample{family: plan.Family}}
-			r.events, r.err = readDomainProgramStream(ctx, f, plan)
+			r.events, r.transport, r.err = readDomainProgramStream(ctx, f, plan, encoding, rows)
 			r.latency = time.Since(began)
 			results <- r
 		}()
@@ -180,7 +187,7 @@ func measureDomainProgramWave(b *testing.B, f *fixture, plans []v1.ProviderPlan,
 	latencies := make([]domainStreamSample, 0, len(plans))
 	for range plans {
 		r := <-results
-		if r.err != nil || r.events != ranges {
+		if r.err != nil || r.events != ranges || r.transport.frames != (ranges+int(rows)-1)/int(rows) {
 			b.Fatalf("invalid stream completion with %d events: %v", r.events, r.err)
 		}
 		latencies = append(latencies, r.domainStreamSample)
@@ -210,31 +217,51 @@ func measureDomainProgramWave(b *testing.B, f *fixture, plans []v1.ProviderPlan,
 	return latencies, wall
 }
 
-func readDomainProgramStream(ctx context.Context, f *fixture, plan v1.ProviderPlan) (int, error) {
+type domainStreamTransport struct {
+	frames, messageBytes int
+	recv, decode         time.Duration
+	received             map[uint64]int64
+}
+
+func readDomainProgramStream(ctx context.Context, f *fixture, plan v1.ProviderPlan, encoding pb.Encoding, rows uint32) (int, domainStreamTransport, error) {
+	timing := domainStreamTransport{received: make(map[uint64]int64)}
 	stream, err := f.client.RPC.ExecuteProvider(f.client.Context(ctx), &pb.ProviderRequest{
-		Plan: gatewayclient.Plan(plan), Encoding: pb.Encoding_PROTOBUF, BatchRows: 1,
+		Plan: gatewayclient.Plan(plan), Encoding: encoding, BatchRows: rows,
 	})
 	if err != nil {
-		return 0, err
+		return 0, timing, err
 	}
 	next, done := 0, false
 	for {
+		started := time.Now()
 		frame, err := stream.Recv()
+		received := time.Now()
+		timing.recv += received.Sub(started)
 		if err == io.EOF && done {
-			return next, nil
+			return next, timing, nil
 		}
 		if err != nil {
-			return next, err
+			return next, timing, err
 		}
-		events, err := gatewayclient.Events(frame, pb.Encoding_PROTOBUF)
+		started = time.Now()
+		events, err := gatewayclient.Events(frame, encoding)
+		timing.decode += time.Since(started)
 		if err != nil {
-			return next, err
+			return next, timing, err
 		}
-		if len(events) != 1 || done || events[0].GetSequence() != uint64(next) ||
+		timing.frames++
+		timing.messageBytes += proto.Size(frame)
+		if len(events) == 0 || len(events) > int(rows) ||
 			frame.GetTarget() != "primary" || frame.GetModel() != plan.Model {
-			return next, fmt.Errorf("invalid benchmark frame at %d", next)
+			return next, timing, fmt.Errorf("invalid benchmark frame at %d", next)
 		}
-		done = events[0].GetKind() == "done"
-		next++
+		timing.received[events[0].GetSequence()] = received.UnixNano()
+		for _, event := range events {
+			if done || event.GetSequence() != uint64(next) {
+				return next, timing, fmt.Errorf("invalid benchmark event at %d", next)
+			}
+			done = event.GetKind() == "done"
+			next++
+		}
 	}
 }

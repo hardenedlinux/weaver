@@ -84,35 +84,47 @@ impl Ledger {
                 Err(Error::Conflict("meter credential epoch already bound"))
             };
         }
-        let current = persistence::one(
-            &tx,
-            "SELECT COALESCE(MAX(epoch),0) FROM metering_credentials WHERE tenant=?1",
-            [tenant],
-            |row| integer(row, 0),
-        )
-        .map_err(db)?;
-        if current != expected {
-            return Err(Error::Conflict("stale meter credential epoch"));
-        }
-        let reused: bool = persistence::one(&tx, "SELECT EXISTS(SELECT 1 FROM source_keys WHERE certificate_sha256=?1 OR public_key_sha256=?3) OR EXISTS(SELECT 1 FROM metering_credentials WHERE certificate=?1 OR credential=?2 OR public_key=?3)",
-            [next.certificate_sha256.as_str(), next.credential_sha256.as_str(), next.public_key_sha256.as_str()], |row| row.get(0)).map_err(db)?;
-        if reused {
-            return Err(Error::Denied);
-        }
-        persistence::exec(
-            &tx,
-            "INSERT INTO metering_credentials VALUES(?1,?2,?3,?4,?5,?6)",
-            persistence::params![
-                tenant.to_owned(),
-                epoch as i64,
-                next.certificate_sha256.clone(),
-                next.public_key_sha256.clone(),
-                next.credential_sha256.clone(),
-                record
-            ],
-        )
-        .map_err(db)?;
+        install_meter_credential(&tx, tenant, expected, epoch, next, record)?;
         tx.commit().map_err(db)?;
         Ok(epoch)
     }
+}
+
+fn install_meter_credential(
+    tx: &persistence::WriteScope<'_>,
+    tenant: &str,
+    expected: u64,
+    epoch: u64,
+    next: &SourceIdentity,
+    record: String,
+) -> Result<()> {
+    let current = persistence::one(
+        tx,
+        "SELECT COALESCE(MAX(epoch),0) FROM metering_credentials WHERE tenant=?1",
+        [tenant],
+        |row| integer(row, 0),
+    )
+    .map_err(db)?;
+    if current != expected {
+        return Err(Error::Conflict("stale meter credential epoch"));
+    }
+    let reused: bool = persistence::one(tx, "SELECT EXISTS(SELECT 1 FROM source_keys WHERE certificate_sha256=?1 OR public_key_sha256=?3) OR EXISTS(SELECT 1 FROM metering_credentials WHERE certificate=?1 OR credential=?2 OR public_key=?3)",
+        [next.certificate_sha256.as_str(), next.credential_sha256.as_str(), next.public_key_sha256.as_str()], |row| row.get(0)).map_err(db)?;
+    if reused {
+        return Err(Error::Denied);
+    }
+    persistence::exec(
+        tx,
+        "INSERT INTO metering_credentials VALUES(?1,?2,?3,?4,?5,?6)",
+        persistence::params![
+            tenant.to_owned(),
+            epoch as i64,
+            next.certificate_sha256.clone(),
+            next.public_key_sha256.clone(),
+            next.credential_sha256.clone(),
+            record
+        ],
+    )
+    .map_err(db)?;
+    Ok(())
 }

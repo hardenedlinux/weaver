@@ -249,7 +249,7 @@ package WeaverViews {
         attribute readerQuestion : String = "What can authorize actual provider use?";
         attribute designAudience : String = "Gateway developers and operators";
         attribute designMedium : String = "GitHub at 830 CSS pixels";
-        attribute designMessage : String = "Prepare each range durably.\nRecheck authority before queueing and committing.";
+        attribute designMessage : String = "Rust orders overlapping domains.\nRecheck authority before queueing each range.";
         attribute designFocus : String = "execution";
         attribute captionContext : String = "journey";
         attribute visualThemes : String = "sketchbook,ember,compact,reading";

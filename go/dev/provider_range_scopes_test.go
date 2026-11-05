@@ -72,9 +72,8 @@ func readRangeScopes(b *testing.B, f *fixture) map[string][]rangeScopeSample {
 	return result
 }
 
-// Observed inversion relative to the pre-lock instrumentation point.
-// A task may be descheduled before it reaches the mutex, and acquisition
-// can span multiple stripes. This is not a FIFO mutex conformance test.
+// A later conflicting ticket receives custody before an older registered one.
+// This statistic is evaluated only within a shared-root wave.
 func rangeScopeOvertakes(wave []rangeScopeSample, older rangeScopeSample) int {
 	count := 0
 	for _, younger := range wave {

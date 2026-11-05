@@ -9,7 +9,6 @@ use std::{
     cell::Cell,
     ops::Deref,
     sync::atomic::{AtomicBool, Ordering},
-    sync::{MutexGuard, RwLockReadGuard, RwLockWriteGuard},
     time::Instant,
 };
 
@@ -43,9 +42,7 @@ pub struct WriteScope<'a> {
     domains_entered: Option<Instant>,
     #[cfg(feature = "commit-observer")]
     scope_trace: Option<super::scope_trace::Granted<'a>>,
-    _exclusive: Option<RwLockWriteGuard<'a, ()>>,
-    _shared: Option<RwLockReadGuard<'a, ()>>,
-    _domains: Vec<MutexGuard<'a, ()>>,
+    grant: Option<super::scheduler::Grant<'a>>,
     #[cfg(any(test, feature = "commit-observer"))]
     observer: Option<std::sync::Arc<dyn super::commit_observer::Observer>>,
 }
@@ -75,64 +72,65 @@ fn start<'a>(
     expected: Option<&weaver_contracts::DomainStamp>,
     phase: ProviderScopePhase,
 ) -> driver::Result<WriteScope<'a>> {
-    #[cfg(not(feature = "commit-observer"))]
-    let _ = phase;
-    #[cfg(feature = "commit-observer")]
-    let mut arrival = None;
     session.require_quiescent()?;
     let concurrent = session.owner.journal == super::Journal::Mvcc;
-    let parallel = concurrent && family.is_some();
-    let exclusive = if parallel || !concurrent {
-        None
-    } else {
-        Some(
-            super::timing::measure(&mut session.timings.owner_gate_wait, || {
-                session.owner.gate.write()
-            })
-            .map_err(super::owner::error)?,
-        )
-    };
-    let shared = if parallel {
-        Some(
-            super::timing::measure(&mut session.timings.owner_gate_wait, || {
-                session.owner.gate.read()
-            })
-            .map_err(super::owner::error)?,
-        )
-    } else {
-        None
-    };
-    let owner_entered = (exclusive.is_some() || shared.is_some()).then(Instant::now);
-    let domains = if parallel {
-        let keys = super::timing::measure(&mut session.timings.domain_keys, || match expected {
-            Some(stamp) => Ok(crate::domains::stamp_keys(stamp)),
-            None => crate::domains::lock_keys(&session.connection, family.unwrap_or_default()),
-        })?;
-        let mut stripes: Vec<usize> = keys.iter().map(|key| super::owner::stripe(key)).collect();
-        stripes.sort_unstable();
-        stripes.dedup();
-        #[cfg(feature = "commit-observer")]
-        if session.scope_trace.is_some() {
-            arrival = Some(super::scope_trace::Arrival::capture(phase));
-        }
-        super::timing::measure(&mut session.timings.domain_wait, || {
-            stripes
-                .into_iter()
-                .map(|index| {
-                    session.owner.families[index]
-                        .lock()
-                        .map_err(super::owner::error)
-                })
-                .collect::<driver::Result<Vec<_>>>()
-        })?
-    } else {
-        Vec::new()
-    };
-    let domains_entered = parallel.then(Instant::now);
+    let scheduler = &session.owner.scheduler;
+    let mut owner_entered = None;
+    let mut domains_entered = None;
     #[cfg(feature = "commit-observer")]
-    let scope_trace = arrival
-        .zip(session.scope_trace.as_mut())
-        .map(|(start, trace)| start.granted(trace));
+    let mut scope_trace = None;
+    let grant = match (concurrent, family) {
+        (true, Some(family)) => {
+            let discovered = if expected.is_none() {
+                Some(scheduler.generation()?)
+            } else {
+                None
+            };
+            let keys =
+                super::timing::measure(&mut session.timings.domain_keys, || match expected {
+                    Some(stamp) => Ok(crate::domains::stamp_keys(stamp)),
+                    None => crate::domains::lock_keys(&session.connection, family),
+                })?;
+            let cancelled = match phase {
+                ProviderScopePhase::PrepareRange | ProviderScopePhase::FinalQueue => {
+                    session.range_cancelled.as_deref()
+                }
+                ProviderScopePhase::Other => None,
+            };
+            #[cfg(feature = "commit-observer")]
+            let arrived = Instant::now();
+            let grant = super::timing::measure(&mut session.timings.domain_wait, || {
+                scheduler.acquire(super::scheduler::Scope::Domains(keys), cancelled)
+            })?;
+            domains_entered = Some(Instant::now());
+            #[cfg(feature = "commit-observer")]
+            if let Some(trace) = session.scope_trace.as_mut() {
+                scope_trace = Some(
+                    super::scope_trace::Arrival::capture(phase, grant.arrival, arrived)
+                        .granted(trace, grant.granted),
+                );
+            }
+            // Key discovery is a hint. An intervening global scope may have migrated roots.
+            if discovered.is_some_and(|generation| generation != grant.generation)
+                && !grant
+                    .matches_domains(&crate::domains::lock_keys(&session.connection, family)?)?
+            {
+                return Err(super::owner::error(
+                    "execution domains changed before scheduler grant",
+                ));
+            }
+            Some(grant)
+        }
+        (true, None) => {
+            let grant = super::timing::measure(&mut session.timings.owner_gate_wait, || {
+                scheduler.acquire(super::scheduler::Scope::All, None)
+            })?;
+            owner_entered = Some(Instant::now());
+            Some(grant)
+        }
+        (false, _) => None,
+    };
+    let parallel = concurrent && family.is_some();
     // The mutable Session borrow provides exclusive custody for the whole scope.
     let native = super::timing::measure(&mut session.timings.transaction_begin, || {
         block_on(driver::transaction::Transaction::new_unchecked(
@@ -165,9 +163,7 @@ fn start<'a>(
         domains_entered,
         #[cfg(feature = "commit-observer")]
         scope_trace,
-        _exclusive: exclusive,
-        _shared: shared,
-        _domains: domains,
+        grant,
         #[cfg(any(test, feature = "commit-observer"))]
         observer: session.commit_observer.clone(),
     })
@@ -337,7 +333,7 @@ impl Drop for WriteScope<'_> {
             total.attempts = total.attempts.saturating_add(sample.attempts);
             total.nanos = total.nanos.saturating_add(sample.nanos);
         }
-        self._domains.clear();
+        drop(self.grant.take());
         #[cfg(feature = "commit-observer")]
         if let Some(trace) = self.scope_trace.take() {
             trace.record();
@@ -345,8 +341,6 @@ impl Drop for WriteScope<'_> {
         if let Some(entered) = self.domains_entered {
             self.timings.domain_hold.record(entered.elapsed());
         }
-        drop(self._shared.take());
-        drop(self._exclusive.take());
         if let Some(entered) = self.owner_entered {
             self.timings.owner_gate_hold.record(entered.elapsed());
         }

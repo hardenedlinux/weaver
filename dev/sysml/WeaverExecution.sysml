@@ -129,7 +129,25 @@ package WeaverExecution {
            carries no authority and does not establish a production SLO. */
     }
 
+    part def SharedDomainScheduler {
+        doc /* Rust registers one ticket for the exact origin, budget and
+           history roots in separate namespaces. The oldest conflicting
+           ticket precedes later conflicts even while waiting on another root.
+           Disjoint tickets can run together. Publication and migration
+           use a global ticket. Queue admission grants transaction
+           custody only. The live authorization remains in the transaction. */
+        doc /* Root discovery without a consumed stamp must rejoin exact
+           keys if a global ticket completed during discovery or waiting.
+           A cancelled waiter acquires no custody. Once granted, the
+           deciding scope retains custody through commit or rollback. */
+        doc /* Go limits admission, publishes configuration and propagates
+           cancellation. Rust owns the queue and all effect lifetimes.
+           An uncertain effect retains the original claim and budget. */
+        attribute localSchedulingP99LimitMicros : Integer = 1000;
+    }
+
     part def ProviderStorageLifecycle {
+        part scheduler : SharedDomainScheduler;
         doc /* The database owner lives with the server and owns the process
            custody and MVCC gates. A blocking provider operation opens one
            verified Turso session and holds it through completion or failure.
@@ -141,7 +159,7 @@ package WeaverExecution {
            The domain lookup joins live roots, epochs and original membership.
            Admission reuses that scope's keys for capacity and history writes.
            Later scopes can select stripes from the consumed stamp. Before any
-           effect the current stamp must name the same keys under the owner gate.
+           effect the current stamp must name the same keys under the domain grant.
            A stale selection can only reach validation and rollback. The stamp
            cannot stand in for live claims, history, policy or fencing. */
         doc /* Admission, consume, final request write and each response
@@ -162,7 +180,7 @@ package WeaverExecution {
            prewarm, native begin and commit, domain wait and terminal wall
            time separately. P95 and P99 use completed-stream observations.
            Shared-root waves serialize their conflicting scopes. Independent
-           roots may overlap subject to native IO and lock stripe collisions. */
+           roots may overlap subject to native IO and global barriers. */
         part lifecycle : ProviderStorageLifecycle;
         attribute shortRanges : Integer = 5;
         attribute longRanges : Integer = 13;
@@ -202,6 +220,13 @@ package WeaverExecution {
            yields three full ranges and one terminal range for the same
            event stream. Row authorization stays per event. Scope counts
            describe this example before any timing measurement. */
+        doc /* Run four parallel streams on one image. Compare Protobuf and
+           Arrow one-row arms with Arrow four-row batches. Vary shared roots
+           and CPU pressure. Separate Rust queue to Go receive time, payload
+           codec, ticket wait and commit. Record whole-stream P95 and P99
+           and completed-stream throughput. */
+        attribute concurrency : Integer = 4;
+        attribute queueToGoP99LimitMicros : Integer = 1000;
         part lifecycle : ProviderStorageLifecycle;
         attribute responseEvents : Integer = 13;
         attribute protobufRanges : Integer = 13;
@@ -215,14 +240,13 @@ package WeaverExecution {
     }
 
     part def ProviderRangeScopeFairness {
-        doc /* Observe a process-local arrival ordinal before the first
-           sorted stripe acquisition and a grant ordinal after the last.
-           A later arrival granted before an older waiter is an observed
-           inversion. Compare within one shared-root wave and across
+        doc /* A later ticket granted before an older conflicting
+           waiter is an inversion. Compare within one shared-root wave and across
            families. Measure wait and hold per prepare and final queue,
            plus the spread of accumulated waits across concurrent flows.
-           Scheduler pauses and multiple stripes affect inversion counts.
-           The current mutex protocol provides no FIFO or bounded-wait contract. */
+           Ordinals come from the scheduler registration and grant events.
+           Same-root waves require zero conflicting inversions. FIFO orders
+           conflicting tickets. Native IO and earlier scopes still bound latency. */
         doc /* After the live gate, read the exact pending range and check
            digest and queue-time authority. Queue acceptance precedes the
            release-marker write and native commit. Rollback retains the

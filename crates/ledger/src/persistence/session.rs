@@ -20,6 +20,7 @@ pub struct Session {
     pub(super) owner: Arc<super::owner::Owner>,
     pub(super) poisoned: AtomicBool,
     pub(super) timings: super::TransactionTimings,
+    pub(crate) range_cancelled: Option<Arc<dyn Fn() -> bool + Send + Sync>>,
     #[cfg(feature = "commit-observer")]
     pub(super) scope_trace: Option<Vec<super::ProviderScopeSample>>,
     #[cfg(any(test, feature = "commit-observer"))]
@@ -62,6 +63,7 @@ impl Session {
             owner,
             poisoned: AtomicBool::new(false),
             timings: super::TransactionTimings::default(),
+            range_cancelled: None,
             #[cfg(feature = "commit-observer")]
             scope_trace: None,
             #[cfg(any(test, feature = "commit-observer"))]

@@ -289,19 +289,8 @@ impl Ledger {
         // the family scope; the deciding transaction still verifies the full join.
         require_meter_family(&self.connection, &evidence.family)?;
         let tx = persistence::begin_family(&mut self.connection, &evidence.family).map_err(db)?;
-        crate::source_authority::require(&tx, self.source.as_ref())?;
-        let config = deployment(&tx)?.ok_or(Error::Denied)?;
-        if let Some(caller) = caller {
-            crate::metering_credentials::require(
-                &tx,
-                &config,
-                caller,
-                &evidence.tenant,
-                &evidence.issuer,
-            )?;
-        }
+        let config = authorize_metering_application(&tx, self.source.as_ref(), caller, evidence)?;
         let result = original(&tx, &config, evidence)?;
-        let released = result.released;
         crate::domains::require(&tx, &evidence.family)?;
         crate::provider_quota::require(&tx, &config, &evidence.family, &evidence.node)?;
         let body = serde_json::to_string(evidence)?;
@@ -319,55 +308,93 @@ impl Ledger {
                 Err(Error::Conflict("metering application already bound"))
             };
         }
-        crate::publication_barrier::require_resolved(&tx)?;
-        let domain = crate::domains::view(&tx, &evidence.family)?;
-        let members = persistence::read_all(&tx,
-            "SELECT json_extract(t.record,'$.principal') FROM execution_origins o
-             JOIN tasks t ON t.family=o.canonical_family WHERE o.budget_root=?1 OR o.history_root=?2",
-            [domain.stamp.budget_root.as_str(), &domain.stamp.history_root], |row| row.get::<String>(0)).map_err(db)?;
-        if members
-            .iter()
-            .any(|principal| config.tenant_for(principal) != Some(&evidence.tenant))
-        {
-            return Err(Error::Denied);
-        }
-        let inserted = persistence::exec(
-            &tx,
-            "INSERT INTO metering_applications VALUES(?1,?2,?3,?4,?5,?6) ON CONFLICT DO NOTHING",
-            persistence::params![
-                evidence.tenant.clone(),
-                evidence.application.clone(),
-                evidence.family.clone(),
-                evidence.node.clone(),
-                body,
-                released as i64
-            ],
-        )
-        .map_err(db)?;
-        if inserted != 1 {
-            return Err(Error::Conflict("original reservation already settled"));
-        }
-        let task = persistence::exec(
-            &tx,
-            "UPDATE tasks SET held=held-?1 WHERE family=?2 AND held>=?1",
-            persistence::params![released as i64, evidence.family.clone()],
-        )
-        .map_err(db)?;
-        let budget = persistence::exec(
-            &tx,
-            "UPDATE budget_domains SET held=held-?1 WHERE id=?2 AND root=id AND held>=?1",
-            persistence::params![released as i64, domain.stamp.budget_root],
-        )
-        .map_err(db)?;
-        if task != 1 || budget != 1 {
-            return Err(Error::Conflict("metering balance changed"));
-        }
-        crate::provider_quota::release(&tx, &evidence.family, &evidence.node, released)?;
-        crate::provider_quota::require(&tx, &config, &evidence.family, &evidence.node)?;
-        crate::domains::require(&tx, &evidence.family)?;
+        apply_new_metering_application(&tx, &config, evidence, body, result.released)?;
         tx.commit().map_err(db)?;
         Ok(result)
     }
+}
+
+fn authorize_metering_application(
+    tx: &persistence::WriteScope<'_>,
+    source: Option<&weaver_contracts::SourceIdentity>,
+    caller: Option<&weaver_contracts::SourceIdentity>,
+    evidence: &MeteringReceipt,
+) -> Result<MeteringDeployment> {
+    crate::source_authority::require(tx, source)?;
+    let config = deployment(tx)?.ok_or(Error::Denied)?;
+    if let Some(caller) = caller {
+        crate::metering_credentials::require(
+            tx,
+            &config,
+            caller,
+            &evidence.tenant,
+            &evidence.issuer,
+        )?;
+    }
+    Ok(config)
+}
+
+fn apply_new_metering_application(
+    tx: &persistence::WriteScope<'_>,
+    config: &MeteringDeployment,
+    evidence: &MeteringReceipt,
+    body: String,
+    released: u64,
+) -> Result<()> {
+    crate::publication_barrier::require_resolved(tx)?;
+    let domain = crate::domains::view(tx, &evidence.family)?;
+    let members = persistence::read_all(
+        tx,
+        "SELECT json_extract(t.record,'$.principal') FROM execution_origins o
+         JOIN tasks t ON t.family=o.canonical_family WHERE o.budget_root=?1 OR o.history_root=?2",
+        [
+            domain.stamp.budget_root.as_str(),
+            &domain.stamp.history_root,
+        ],
+        |row| row.get::<String>(0),
+    )
+    .map_err(db)?;
+    if members
+        .iter()
+        .any(|principal| config.tenant_for(principal) != Some(&evidence.tenant))
+    {
+        return Err(Error::Denied);
+    }
+    let inserted = persistence::exec(
+        tx,
+        "INSERT INTO metering_applications VALUES(?1,?2,?3,?4,?5,?6) ON CONFLICT DO NOTHING",
+        persistence::params![
+            evidence.tenant.clone(),
+            evidence.application.clone(),
+            evidence.family.clone(),
+            evidence.node.clone(),
+            body,
+            released as i64
+        ],
+    )
+    .map_err(db)?;
+    if inserted != 1 {
+        return Err(Error::Conflict("original reservation already settled"));
+    }
+    let task = persistence::exec(
+        tx,
+        "UPDATE tasks SET held=held-?1 WHERE family=?2 AND held>=?1",
+        persistence::params![released as i64, evidence.family.clone()],
+    )
+    .map_err(db)?;
+    let budget = persistence::exec(
+        tx,
+        "UPDATE budget_domains SET held=held-?1 WHERE id=?2 AND root=id AND held>=?1",
+        persistence::params![released as i64, domain.stamp.budget_root],
+    )
+    .map_err(db)?;
+    if task != 1 || budget != 1 {
+        return Err(Error::Conflict("metering balance changed"));
+    }
+    crate::provider_quota::release(tx, &evidence.family, &evidence.node, released)?;
+    crate::provider_quota::require(tx, config, &evidence.family, &evidence.node)?;
+    crate::domains::require(tx, &evidence.family)?;
+    Ok(())
 }
 
 fn quote_digest(

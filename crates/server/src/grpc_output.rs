@@ -9,8 +9,24 @@ use crate::{
 };
 use tokio::sync::mpsc;
 use tokio_util::sync::CancellationToken;
-use weaver_contracts::{Error, ProviderEvent, ProviderRoute, Result};
 use weaver_broker::ProviderOutput;
+use weaver_contracts::{Error, ProviderEvent, ProviderRoute, Result};
+#[cfg(test)]
+thread_local! {
+    static HANDOFFS: std::cell::RefCell<Vec<(u64, u128)>> = const { std::cell::RefCell::new(Vec::new()) };
+    static ENCODING_NANOS: std::cell::Cell<u128> = const { std::cell::Cell::new(0) };
+}
+
+#[cfg(test)]
+pub(crate) fn take_encoding_nanos() -> u128 {
+    ENCODING_NANOS.with(|total| total.replace(0))
+}
+
+#[cfg(test)]
+pub(crate) fn take_handoffs() -> Vec<(u64, u128)> {
+    HANDOFFS.with(|handoffs| std::mem::take(&mut *handoffs.borrow_mut()))
+}
+
 pub(crate) struct Output {
     pub telemetry: std::sync::Arc<weaver_telemetry::Metrics>,
     pub sender: mpsc::Sender<std::result::Result<pb::ProviderFrame, tonic::Status>>,
@@ -20,7 +36,7 @@ pub(crate) struct Output {
 }
 pub(crate) struct PreparedFrame {
     frame: pb::ProviderFrame,
-    #[cfg(all(test, unix))]
+    #[cfg(test)]
     first: u64,
     #[cfg(all(test, unix))]
     rows: usize,
@@ -66,6 +82,8 @@ impl ProviderOutput for Output {
         events: &[ProviderEvent],
         format: &str,
     ) -> Result<PreparedFrame> {
+        #[cfg(test)]
+        let started = std::time::Instant::now();
         let frame = encode_frame(Frame {
             target: &route.target,
             model,
@@ -76,9 +94,11 @@ impl ProviderOutput for Output {
                 _ => return Err(Error::Invalid("response encoding")),
             },
         })?;
+        #[cfg(test)]
+        ENCODING_NANOS.with(|total| total.set(total.get() + started.elapsed().as_nanos()));
         Ok(PreparedFrame {
             frame,
-            #[cfg(all(test, unix))]
+            #[cfg(test)]
             first: events[0].sequence,
             #[cfg(all(test, unix))]
             rows: events.len(),
@@ -87,6 +107,17 @@ impl ProviderOutput for Output {
     fn emit(&mut self, slot: Self::Slot, prepared: PreparedFrame) -> Result<()> {
         if self.stopped() {
             return Err(Error::Conflict("RPC cancelled before release"));
+        }
+        #[cfg(test)]
+        if std::env::var_os("WEAVER_TEST_PROVIDER_SCOPE_TRACE").is_some()
+            && let Ok(instant) = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH)
+        {
+            HANDOFFS.with(|handoffs| {
+                let mut handoffs = handoffs.borrow_mut();
+                if handoffs.len() < 64 {
+                    handoffs.push((prepared.first, instant.as_nanos()));
+                }
+            });
         }
         slot.send(Ok(prepared.frame));
         self.telemetry
