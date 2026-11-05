@@ -1305,20 +1305,86 @@ The sub-millisecond target is tracked separately for local scheduling
 and for the Rust-to-Go handoff. The 2 ms locked-domain-read budget
 remains a distinct stream allocation. End-to-end stream P99 and
 completed streams per second expose contention and durable work
-outside either local budget. An architecture candidate for reducing
-the tail is to coalesce durable pending-range preparation at the
-Rust owner, while retaining each range's exact claim, digest and
-uncertain hold. It requires proof that a partial or ambiguous batch
-commit cannot issue release authority. Each final queue insertion
-would still rejoin the current policy, history and fence. Transport
-codec selection cannot substitute for this storage boundary.
+outside either local budget. The following paired study holds framing fixed and varies preparation.
 
 #+begin_src sh
 go -C go test -mod=readonly -tags integration ./dev -run '^$' -bench '^BenchmarkProviderScheduledEncoding$' -benchtime=1x -count=1 -v
 #+end_src
 
-** Independent OAuth witness activation
+** Atomic range preparation
 
+The Rust worker groups up to four complete ranges from the decoder's
+existing buffer, with at most thirty-two rows per preparation ticket.
+It never polls the network to fill a preparation group.
+It reserves one output slot before preparation. Subsequent slot waits
+and encoding run outside the domain grant and transaction. Under
+paced input, complete ranges can progress individually.
+
+One deciding transaction rejoins the original claim and current
+authority, evaluates Cedar for each sequence, stages each exact
+pending row using one reusable SQL program and advances the cursor
+once. It constructs affine, session-bound range capabilities after
+acknowledgment and outside the deciding scope. The final transaction for each range rechecks live
+Cedar, OAuth, the fence and original claim, then matches its exact
+pending row. Later group members also require the immediately
+preceding range to be durably marked released.
+
+A definitive Cedar denial before preparation can be evaluated again
+one range at a time to preserve the authorized prefix. A failed native
+commit, lost acknowledgment or restart cannot reconstruct a capability
+or reopen the consumed request. The durable prepared cursor records
+possible exposure. It does not prove frame delivery or justify a
+refund. The Rust property test forces a native second-insert failure
+and checks the rollback and retained claim. The Go suite kills the
+actual owner around Turso commit, discards a real acknowledgment and
+advances the fence before a late worker can enqueue.
+
+The comparison fixes Protobuf at one event per gRPC frame, thirteen
+events per stream and four concurrent streams sharing both budget and
+history. A buffered burst lowers the deciding scope count from
+thirty-one to twenty-two while keeping all thirteen final queue
+checks. The paced arm preserves the same event and frame counts.
+Timings separate preparation ticket wait, all ticket wait, native
+commit and Rust-to-Go handoff. Handoff includes gRPC/TLS and client
+scheduling. The sub-millisecond target is assessed per deciding
+ticket and per delivered frame.
+
+#+begin_src sh
+go -C go test -mod=readonly -tags integration ./dev -run '^$' -bench '^BenchmarkProviderRangePreparationGroup$' -benchtime=1x -count=2 -v
+#+end_src
+
+Each arm completed 128 streams per repeat. The two loaded cohorts
+realized 3.68 and 4.59 additional CPU equivalents. The machine also
+carried background load in the uninjected arms.
+
+| Repeat | Input | Preparation | Prepare commits/stream | Prep wait P99 ms | Ticket wait P99 ms | Commit P99 ms/stream | Handoff P99 ms/frame | Domain mean ms/stream | Stream P99 ms | Streams/s |
+|-
+| 1 | burst | single | 13.000 | 22.580 | 18.370 | 10.190 | 3.661 | 1.997 | 404.300 | 20.200 |
+| 1 | burst | group | 4.000 | 21.040 | 20.960 | 16.410 | 3.022 | 1.393 | 314.600 | 25.990 |
+| 2 | burst | single | 13.000 | 15.600 | 15.880 | 11.890 | 2.537 | 1.836 | 365.200 | 20.250 |
+| 2 | burst | group | 4.000 | 24.850 | 24.610 | 10.340 | 5.057 | 1.477 | 307.500 | 25.840 |
+| 1 | paced | single | 13.000 | 18.920 | 20.520 | 97.820 | 3.214 | 1.806 | 686.000 | 19.110 |
+| 1 | paced | group | 12.000 | 22.080 | 21.840 | 18.760 | 4.406 | 1.828 | 545.100 | 19.320 |
+| 2 | paced | single | 13.000 | 23.730 | 23.400 | 61.770 | 3.786 | 2.285 | 612.200 | 15.830 |
+| 2 | paced | group | 12.000 | 17.390 | 18.640 | 22.440 | 3.449 | 1.944 | 626.400 | 19.280 |
+| 1 | burst-loaded | single | 13.000 | 28.710 | 33.660 | 27.170 | 5.040 | 2.833 | 464.200 | 12.950 |
+| 1 | burst-loaded | group | 4.000 | 30.170 | 31.990 | 16.950 | 5.470 | 2.144 | 386.600 | 16.260 |
+| 2 | burst-loaded | single | 13.000 | 37.400 | 38.080 | 73.120 | 8.338 | 2.673 | 740.900 | 11.610 |
+| 2 | burst-loaded | group | 4.000 | 37.550 | 25.840 | 8.928 | 7.014 | 1.847 | 395.800 | 18.840 |
+
+Under injected load, all-ticket P99 fell from 33.66 to 31.99 ms
+and from 38.08 to 25.84 ms. Preparation ticket P99 did not improve
+in either loaded repeat. Native commit time per stream and terminal
+P99 improved in both. Frame handoff P99 changed in opposite
+directions. The grouped burst needed four preparation commits
+instead of thirteen. The paced input averaged twelve.
+The grouped path met the 2 ms mean locked domain-read allocation
+in five of six cohorts. Neither same-domain ticket wait nor
+frame handoff met the 1 ms target. Fewer preparation transactions
+reduce work per stream. Each final range still contends for
+the shared domain until its guarded queue and commit complete.
+
+** Independent OAuth witness activation
 
 An existing direct deployment can enable its independent witness once
 while preserving the same issuer key, subject, client and audience.

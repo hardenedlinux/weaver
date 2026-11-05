@@ -49,7 +49,26 @@ module SharedDomains {
       rejected == waiting and disjoint.active == Set(2) and
       activate(barrier, 3) == barrier and
       recovered.waiting == Set() and recovered.active == Set() and recovered.unknownHold)
-    val initial=
+    pure def committedPreparation(committed: bool): Set[int] =
+    if (committed) Set(0,1,2,3) else Set()
+  pure def groupedRelease(member: int, durable: Set[int], released: Set[int],
+                         acknowledged: bool, live: bool): bool =
+    acknowledged and live and durable.contains(member) and not(released.contains(member)) and
+    (member == 0 or released.contains(member - 1))
+  run partialPreparationCannotIssueCapabilityTest = init.expect(
+    committedPreparation(false) == Set() and
+    not(groupedRelease(0, committedPreparation(false), Set(), true, true)))
+  run lostGroupedPrepareResponseRetainsOriginalTest = init.expect(
+    committedPreparation(true).size() == 4 and
+    not(groupedRelease(0, committedPreparation(true), Set(), false, true)) and
+    observedRelease(false, true, true, false) == 0)
+  run groupedTailRequiresLivePolicyAndReleasedPrefixTest = init.expect(
+    not(groupedRelease(1, Set(0,1), Set(), true, true)) and
+    not(groupedRelease(1, Set(0,1), Set(0), true, false)) and
+    groupedRelease(1, Set(0,1), Set(0), true, true))
+  run partialPrepareProjectionCounterexampleTest = init.expect(
+    groupedRelease(0, Set(0), Set(), true, true) and Set(0) != committedPreparation(true))
+  val initial=
   {root:Map(0->0,1->0,2->2),hroot:Map(0->0,1->0,2->2),held:Map(0->0,1->0,2->0),claims:Set(),history:Set(),spent:Set(),
       epoch:1,permit:Map(0->0,1->0,2->0),calls:Map(0->0,1->0,2->0),owner:1,permitOwner:Map(0->0,1->0,2->0),active:Set(),merged:false,receipt:false,revoked:false,policyPending:false}
   def exposure(d:int):int=families.filter(f=>s.root.get(f)==d).fold(0,(n,f)=>n+s.held.get(f))

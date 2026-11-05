@@ -183,6 +183,8 @@ fn guarded_provider(c: &mut Criterion) {
 }
 #[path = "../src/provider/anthropic_sse.rs"]
 mod anthropic_sse;
+#[path = "../src/provider/sse_buffer.rs"]
+mod sse_buffer;
 
 fn anthropic_decode(c: &mut Criterion) {
     use weaver_contracts::ProviderEventKind;
@@ -210,6 +212,21 @@ fn anthropic_decode(c: &mut Criterion) {
             let mut decoder = anthropic_sse::Decoder::new(black_box(data.as_bytes()), "fixture");
             loop {
                 let event = black_box(decoder.next().expect("bounded provider event"));
+                if event.kind == ProviderEventKind::Done {
+                    break;
+                }
+            }
+            assert_eq!(black_box(decoder.tokens()), [1, 0, 0, 64]);
+        })
+    });
+    c.bench_function("broker/anthropic_buffered_sse_64_deltas", |b| {
+        b.iter(|| {
+            let mut decoder = anthropic_sse::Decoder::new(black_box(data.as_bytes()), "fixture");
+            loop {
+                let event = decoder.next_buffered().expect("bounded buffered event");
+                let event = black_box(
+                    event.unwrap_or_else(|| decoder.next().expect("bounded provider event")),
+                );
                 if event.kind == ProviderEventKind::Done {
                     break;
                 }

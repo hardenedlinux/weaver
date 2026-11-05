@@ -39,7 +39,10 @@ mod snapshot;
 mod source_authority;
 mod source_rotation;
 mod task_origins;
-pub use provider::{ProviderDispatch, ProviderRelease};
+pub use provider::{
+    MAX_PROVIDER_PREPARATION_RANGES, MAX_PROVIDER_PREPARATION_ROWS, ProviderDispatch,
+    ProviderRelease,
+};
 #[cfg(feature = "commit-observer")]
 pub use provider::{use_cached_release_programs, use_separate_release_reads};
 mod store;
@@ -50,6 +53,7 @@ mod stream_ranges;
 mod stream_state;
 mod task_publication;
 pub use store::{Dispatch, Ledger};
+pub(crate) use store::{db, integer};
 pub use stream_custody::{StreamClaim, StreamOwner};
 pub use stream_ranges::RangePermit;
 

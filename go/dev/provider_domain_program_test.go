@@ -98,8 +98,11 @@ func benchmarkDomainPrograms(b *testing.B, image string, ranges, parallel int, s
 }
 
 func newDomainBenchmarkFixture(b *testing.B, image string, ranges int, env []string) *fixture {
-	b.Helper()
-	handler := func(w http.ResponseWriter, _ *http.Request) {
+	return domainBenchmarkFixture(b, image, append(env, "WEAVER_TEST_SINGLE_RANGE_PREPARE=1"), domainBenchmarkSSE(ranges))
+}
+
+func domainBenchmarkSSE(ranges int) http.HandlerFunc {
+	return func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "text/event-stream")
 		for range ranges - 3 {
 			emitChunk(w, "delta", false)
@@ -107,6 +110,10 @@ func newDomainBenchmarkFixture(b *testing.B, image string, ranges int, env []str
 		emitChunk(w, "", true)
 		fmt.Fprint(w, "data: {\"id\":\"stream-1\",\"object\":\"chat.completion.chunk\",\"model\":\"model-a\",\"choices\":[],\"usage\":{\"total_tokens\":7}}\n\ndata: [DONE]\n\n")
 	}
+}
+
+func domainBenchmarkFixture(b *testing.B, image string, env []string, handler http.HandlerFunc) *fixture {
+	b.Helper()
 	args := []string{"--exact", "grpc_config::serve_wif_gateway", "--ignored", "--nocapture"}
 	f := providerFixture(b, handler, false, image, args, env, providerProfile(), nil, nil)
 	ctx, cancel := context.WithTimeout(b.Context(), 5*time.Second)

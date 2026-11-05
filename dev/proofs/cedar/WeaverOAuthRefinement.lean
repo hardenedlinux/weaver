@@ -251,6 +251,52 @@ theorem scheduled_disjoint_roots_remain_eligible {Key : Type}
     ticketEligible sharedSchedulingRoot older active next :=
   ⟨pendingIndependent, activeIndependent⟩
 
+/-- The native transaction projects the complete prepared group and
+    cursor together. Acknowledgment affects capabilities, not storage. -/
+def preparedImage {Image : Type} (before staged : Image) (committed : Bool) : Image :=
+  if committed then staged else before
+
+def prepareGranted (committed acknowledged live predecessorReleased : Bool) : Bool :=
+  committed && acknowledged && live && predecessorReleased
+
+theorem failed_group_keeps_original_image {Image : Type} (before staged : Image) :
+    preparedImage before staged false = before := rfl
+
+theorem lost_prepare_ack_keeps_image_without_capability {Image : Type}
+    (before staged : Image) (live predecessor : Bool) :
+    preparedImage before staged true = staged ∧
+      prepareGranted true false live predecessor = false := ⟨rfl, rfl⟩
+
+theorem prepared_group_cannot_replace_final_checks (commit ack live predecessor : Bool)
+    (grant : prepareGranted commit ack live predecessor = true) :
+    live = true ∧ predecessor = true := by
+  cases live <;> cases predecessor <;> simp_all [prepareGranted]
+
+/-- The durable group holds the original reservation. Only the acknowledged
+    worker that owns the current session may use a pending member. -/
+def groupMemberEligible (tokenOwner workerOwner : Nat) (pending live previous : Bool) : Bool :=
+  decide (tokenOwner = workerOwner) && pending && live && previous
+
+theorem released_member_cannot_repeat (owner : Nat) (live previous : Bool) :
+    groupMemberEligible owner owner false live previous = false := by
+  simp [groupMemberEligible]
+
+theorem restarted_worker_cannot_release_member (old current : Nat)
+    (retired : old ≠ current) (pending live previous : Bool) :
+    groupMemberEligible old current pending live previous = false := by
+  simp [groupMemberEligible, retired]
+
+theorem grouped_preparation_preserves_hold {Image : Type} (held : Image → Nat)
+    (before staged : Image) (committed : Bool) (sameHold : held staged = held before) :
+    held (preparedImage before staged committed) = held before := by
+  cases committed <;> simp [preparedImage, sameHold]
+
+#print axioms released_member_cannot_repeat
+#print axioms restarted_worker_cannot_release_member
+#print axioms grouped_preparation_preserves_hold
+#print axioms failed_group_keeps_original_image
+#print axioms lost_prepare_ack_keeps_image_without_capability
+#print axioms prepared_group_cannot_replace_final_checks
 #print axioms scheduled_disjoint_roots_remain_eligible
 #print axioms scheduled_conflict_cannot_overtake
 

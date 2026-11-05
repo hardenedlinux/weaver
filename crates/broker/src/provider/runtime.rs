@@ -216,6 +216,11 @@ pub trait ProviderOutput {
     type PreparedFrame;
     fn stopped(&self) -> bool;
     fn reserve(&mut self) -> Result<Self::Slot>;
+    /// Diagnostic single-range preparation on the explicit test-loopback host.
+    #[cfg(feature = "test-loopback")]
+    fn prepare_ranges_separately(&self) -> bool {
+        false
+    }
     /// Pure bounded encoding. It cannot insert a frame or grant send authority.
     fn prepare(
         route: &ProviderRoute,
@@ -242,6 +247,7 @@ pub fn execute_provider<O: ProviderOutput>(
     execute_catalog_provider(ledger, request, output, "")
 }
 
+/// Execute with the current catalog commitment from the authenticated host.
 pub fn execute_catalog_provider<O: ProviderOutput>(
     ledger: &mut Ledger,
     request: ProviderExecution<'_>,
@@ -310,53 +316,27 @@ pub fn execute_catalog_provider_with_oauth<O: ProviderOutput>(
             StreamDecoder::Anthropic(anthropic_sse::Decoder::new(response, &plan.model))
         }
     };
-    let mut batch = Vec::with_capacity(batch_rows);
-    loop {
-        if output.stopped() {
-            return Err(Error::Conflict("provider response cancelled"));
-        }
-        let event = reader.next()?;
-        let terminal = event.kind == weaver_contracts::ProviderEventKind::Done;
-        batch.push(event);
-        if terminal || batch.len() == batch_rows {
-            // Flow-control capacity is reserved outside the deciding write lock.
-            let slot = output.reserve()?;
-            let digest = weaver_contracts::body_digest(&serde_json::to_string(&batch)?);
-            let release =
-                ledger.prepare_provider_release(&permit, &digest, format, batch.len() as u64)?;
-            if output.stopped() {
-                return Err(Error::Conflict("provider release cancelled"));
-            }
-            let first = release.first_sequence();
-            for (offset, event) in batch.iter_mut().enumerate() {
-                event.sequence = first + offset as u64;
-            }
-            let frame = O::prepare(permit.route(), &plan.model, &batch, format)?;
-            ledger.release_provider(&permit, release, format, |actual| {
-                if actual != first || output.stopped() {
-                    return Err(Error::Conflict("provider release cancelled or rebound"));
-                }
-                output.emit(slot, frame)
-            })?;
-            batch.clear();
-        }
-        if terminal {
-            break;
-        }
-    }
+    super::range_output::relay(ledger, &permit, output, &mut reader, format, batch_rows)?;
     ledger.complete_provider_with_usage(&permit, format, reader.terminal_tokens())
 }
 
-enum StreamDecoder<R: std::io::Read> {
+pub(super) enum StreamDecoder<R: std::io::Read> {
     OpenAi(openai_sse::Decoder<R>),
     Anthropic(anthropic_sse::Decoder<R>),
 }
 
 impl<R: std::io::Read> StreamDecoder<R> {
-    fn next(&mut self) -> Result<ProviderEvent> {
+    pub(super) fn next(&mut self) -> Result<ProviderEvent> {
         match self {
             Self::OpenAi(reader) => reader.next(),
             Self::Anthropic(reader) => reader.next(),
+        }
+    }
+
+    pub(super) fn next_buffered(&mut self) -> Result<Option<ProviderEvent>> {
+        match self {
+            Self::OpenAi(reader) => reader.next_buffered(),
+            Self::Anthropic(reader) => reader.next_buffered(),
         }
     }
 

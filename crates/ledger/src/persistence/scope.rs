@@ -170,13 +170,26 @@ fn start<'a>(
 }
 impl WriteScope<'_> {
     pub(crate) fn commit_provider(self) -> driver::Result<()> {
+        self.commit_observed::<false>()
+    }
+
+    pub(crate) fn commit_range_prepare(self) -> driver::Result<()> {
+        self.commit_observed::<true>()
+    }
+
+    fn commit_observed<const RANGE: bool>(self) -> driver::Result<()> {
         #[cfg(any(test, feature = "commit-observer"))]
         {
             use super::commit_observer::{Cut, Decision};
             let observer = self.observer.clone();
+            let (before, after) = if RANGE {
+                (Cut::BeforeRangePrepareCommit, Cut::AfterRangePrepareCommit)
+            } else {
+                (Cut::BeforeCommit, Cut::AfterCommit)
+            };
             let poisoned = self.poisoned;
             if let Some(observer) = &observer
-                && observer.observe(Cut::BeforeCommit) != Decision::Continue
+                && observer.observe(before) != Decision::Continue
             {
                 let mut scope = self;
                 poisoned.store(true, Ordering::Release);
@@ -193,7 +206,7 @@ impl WriteScope<'_> {
             // the acknowledgment observation. A new fence may commit during this gap.
             self.commit()?;
             if let Some(observer) = observer
-                && observer.observe(Cut::AfterCommit) != Decision::Continue
+                && observer.observe(after) != Decision::Continue
             {
                 poisoned.store(true, Ordering::Release);
                 return Err(driver::Error::Misuse(

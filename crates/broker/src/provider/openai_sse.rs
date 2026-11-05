@@ -33,25 +33,40 @@ impl<R: Read> Decoder<R> {
         }
     }
     pub(super) fn next(&mut self) -> Result<ProviderEvent> {
+        self.next_event(false)?
+            .ok_or(Error::Conflict("SSE ended without DONE"))
+    }
+
+    pub(super) fn next_buffered(&mut self) -> Result<Option<ProviderEvent>> {
+        self.next_event(true)
+    }
+
+    fn next_event(&mut self, buffered: bool) -> Result<Option<ProviderEvent>> {
         let mut data = Vec::new();
+        if buffered && !super::sse_buffer::buffered_sse_record(self.input.buffer()) {
+            return Ok(None);
+        }
         loop {
             let line = self.line()?;
             if line.is_empty() {
                 if data.is_empty() {
+                    if buffered && !super::sse_buffer::buffered_sse_record(self.input.buffer()) {
+                        return Ok(None);
+                    }
                     continue;
                 }
                 if data == b"[DONE]" {
                     if !self.finished {
                         return Err(Error::Invalid("SSE done before choice completion"));
                     }
-                    return Ok(ProviderEvent {
+                    return Ok(Some(ProviderEvent {
                         sequence: 0,
                         kind: ProviderEventKind::Done,
                         text: String::new(),
                         tokens: 0,
-                    });
+                    }));
                 }
-                return self.chunk(&data);
+                return self.chunk(&data).map(Some);
             }
             if line.starts_with(b":") {
                 continue;

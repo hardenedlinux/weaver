@@ -48,15 +48,27 @@ impl<R: Read> Decoder<R> {
     }
 
     pub(super) fn next(&mut self) -> Result<ProviderEvent> {
-        loop {
-            let frame = self.frame()?;
-            if let Some(event) = self.accept(&frame)? {
-                return Ok(event);
-            }
-        }
+        self.next_event(false)?
+            .ok_or(Error::Conflict("Anthropic stream missing terminal event"))
     }
 
-    fn frame(&mut self) -> Result<Value> {
+    pub(super) fn next_buffered(&mut self) -> Result<Option<ProviderEvent>> {
+        self.next_event(true)
+    }
+
+    fn next_event(&mut self, buffered: bool) -> Result<Option<ProviderEvent>> {
+        while let Some(frame) = self.frame(buffered)? {
+            if let Some(event) = self.accept(&frame)? {
+                return Ok(Some(event));
+            }
+        }
+        Ok(None)
+    }
+
+    fn frame(&mut self, buffered: bool) -> Result<Option<Value>> {
+        if buffered && !super::sse_buffer::buffered_sse_record(self.reader.buffer()) {
+            return Ok(None);
+        }
         self.data.clear();
         let mut kind = None;
         loop {
@@ -81,6 +93,9 @@ impl<R: Read> Decoder<R> {
                     if kind.is_some() {
                         return Err(Error::Invalid("empty Anthropic event"));
                     }
+                    if buffered && !super::sse_buffer::buffered_sse_record(self.reader.buffer()) {
+                        return Ok(None);
+                    }
                     continue;
                 }
                 self.frames += 1;
@@ -91,7 +106,7 @@ impl<R: Read> Decoder<R> {
                 if frame.get("type").and_then(Value::as_str) != kind {
                     return Err(Error::Invalid("Anthropic event type mismatch"));
                 }
-                return Ok(frame);
+                return Ok(Some(frame));
             }
             if let Some(name) = line.strip_prefix(b"event:") {
                 let name = name.strip_prefix(b" ").unwrap_or(name);
@@ -241,33 +256,5 @@ fn text_event(data: &Value, kind: &str) -> Result<ProviderEvent> {
 }
 
 #[cfg(test)]
-mod tests {
-
-    proptest::proptest! {
-        #[test]
-        fn cumulative_usage_is_replaced(
-            input in 0u64..4096, read in 0u64..4096, write in 0u64..4096,
-            initial in 0u64..2048, extra in 0u64..2048,
-        ) {
-            let mut decoder = super::Decoder::new(&b""[..], "bound");
-            let stop = serde_json::json!({"type":"message_stop"});
-            let start = serde_json::json!({"type":"message_start","message":{
-                "model":"bound","role":"assistant","content":[],
-                "usage":{"input_tokens":input,"cache_read_input_tokens":read,
-                    "cache_creation_input_tokens":write,"output_tokens":initial}
-            }});
-            let mut changed = start.clone();
-            changed["message"]["model"] = serde_json::json!("replacement");
-            proptest::prop_assert!(decoder.accept(&changed).is_err());
-            decoder.accept(&start).expect("bound model");
-            proptest::prop_assert!(decoder.accept(&stop).is_err());
-            let total = initial + extra;
-            decoder.accept(&serde_json::json!({"type":"message_delta","delta":{},"usage":{"output_tokens":initial}})).expect("first counter");
-            decoder.accept(&serde_json::json!({"type":"message_delta","delta":{"stop_reason":"end_turn"},
-                "usage":{"output_tokens":total}})).expect("final counter");
-            proptest::prop_assert_eq!(decoder.tokens(),[input,read,write,total]);
-            proptest::prop_assert!(decoder.accept(&stop).is_ok());
-            proptest::prop_assert!(decoder.accept(&stop).is_err());
-        }
-    }
-}
+#[path = "../../tests/unit/anthropic_sse.rs"]
+mod tests;

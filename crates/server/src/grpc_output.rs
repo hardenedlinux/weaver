@@ -44,6 +44,10 @@ pub(crate) struct PreparedFrame {
 impl ProviderOutput for Output {
     type PreparedFrame = PreparedFrame;
     type Slot = mpsc::OwnedPermit<std::result::Result<pb::ProviderFrame, tonic::Status>>;
+    #[cfg(test)]
+    fn prepare_ranges_separately(&self) -> bool {
+        std::env::var_os("WEAVER_TEST_SINGLE_RANGE_PREPARE").is_some()
+    }
     fn stopped(&self) -> bool {
         self.cancelled.is_cancelled() || self.shutdown.is_cancelled() || self.sender.is_closed()
     }

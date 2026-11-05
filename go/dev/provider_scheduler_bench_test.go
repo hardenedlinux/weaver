@@ -79,26 +79,36 @@ func benchmarkProviderScheduledEncoding(b *testing.B, image string, shared, load
 		if shared {
 			reportProviderRangeScopes(b, arm, mode.label, ranges, parallel)
 		}
-		reportScheduledEncoding(b, arm, mode.label, ranges, shared)
+		reportScheduledEncoding(b, arm, mode.label, ranges, ranges, shared)
 		arm.fixture.stop(b)
 	}
 }
 
-func reportScheduledEncoding(b *testing.B, arm *providerTailArm, label string, ranges int, shared bool) {
+func reportScheduledEncoding(b *testing.B, arm *providerTailArm, label string, ranges, preparations int, shared bool) {
 	b.Helper()
 	encodes := providerEncodingObservations(b, arm.fixture)
 	handoffs := providerHandoffs(b, arm.fixture)
 	scopes := readRangeScopes(b, arm.fixture)
 	waves := make(map[string][]rangeScopeSample)
 	var frames, payload int
-	var receives, decodes, encodesByStream, queueToRecv, scopeWaits []time.Duration
+	var receives, decodes, encodesByStream, queueToRecv, scopeWaits, prepareWaits []time.Duration
 	for _, stream := range arm.streams {
 		encode, ok := encodes[stream.family]
-		if !ok || len(scopes[stream.family]) != 5+2*ranges {
+		if !ok || len(scopes[stream.family]) == 0 {
 			b.Fatalf("%s missing scopes or codec timing for %s", label, stream.family)
 		}
+		counts := make(map[string]int)
 		for _, scope := range scopes[stream.family] {
+			counts[scope.phase]++
 			scopeWaits = append(scopeWaits, scope.wait)
+			if scope.phase == "prepare" {
+				prepareWaits = append(prepareWaits, scope.wait)
+			}
+		}
+		prepared := counts["prepare"]
+		if counts["other"] != 5 || counts["queue"] != ranges || prepared < (ranges+3)/4 || prepared > ranges ||
+			(preparations > 0 && prepared != preparations) {
+			b.Fatalf("%s unexpected phases for %s: %v", label, stream.family, counts)
 		}
 		sent := handoffs[stream.family]
 		if len(sent) != stream.transport.frames || len(stream.transport.received) != len(sent) {
@@ -129,6 +139,8 @@ func reportScheduledEncoding(b *testing.B, arm *providerTailArm, label string, r
 		}
 	}
 	n := float64(len(arm.streams))
+	b.ReportMetric(float64(len(prepareWaits))/n, label+"-preparations/stream")
+	b.ReportMetric(tailMillis(prepareWaits, 99), label+"-prepare-wait-p99-ms/scope")
 	b.ReportMetric(float64(frames)/n, label+"-frames/stream")
 	b.ReportMetric(float64(payload)/n, label+"-protobuf-bytes/stream")
 	b.ReportMetric(tailMillis(scopeWaits, 99), label+"-ticket-wait-p99-ms/scope")

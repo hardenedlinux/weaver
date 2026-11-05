@@ -21,6 +21,7 @@ import (
 	"encoding/pem"
 	"flag"
 	"fmt"
+	"io"
 	"math/big"
 	"net"
 	"net/http"
@@ -433,13 +434,16 @@ func (f *fixture) stop(t testing.TB) {
 	f.child = nil
 }
 func emitChunk(w http.ResponseWriter, text string, finish bool) {
+	writeProviderChunk(w, text, finish)
+	w.(http.Flusher).Flush()
+}
+func writeProviderChunk(w io.Writer, text string, finish bool) {
 	var reason any
 	if finish {
 		reason = "stop"
 	}
 	data, _ := json.Marshal(map[string]any{"id": "stream-1", "object": "chat.completion.chunk", "model": "model-a", "choices": []any{map[string]any{"index": 0, "delta": map[string]any{"content": text}, "finish_reason": reason}}})
 	fmt.Fprintf(w, "data: %s\n\n", data)
-	w.(http.Flusher).Flush()
 }
 func completeSSE(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/event-stream")

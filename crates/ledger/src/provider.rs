@@ -3,11 +3,12 @@
 // SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 //! One canonical provider invocation and affine response releases; no retry reset exists.
+#[path = "provider_release_group.rs"]
+mod release_group;
+pub use release_group::{MAX_PROVIDER_PREPARATION_RANGES, MAX_PROVIDER_PREPARATION_ROWS};
+
 use crate::persistence::{ProviderScopePhase, WriteScope};
-use crate::{
-    Ledger,
-    store::{db, integer},
-};
+use crate::{Ledger, db, integer};
 use std::collections::BTreeSet;
 use weaver_contracts::{
     DomainView, Error, ProviderOAuthUse, ProviderPlan, ProviderReceipt, ProviderRoute,
@@ -55,6 +56,7 @@ impl ProviderDispatch {
 pub struct ProviderRelease {
     sequence: u64,
     length: u64,
+    predecessor: Option<u64>,
     digest: String,
     session: String,
     plan_digest: String,
@@ -215,59 +217,9 @@ impl Ledger {
         format: &str,
         length: u64,
     ) -> Result<ProviderRelease> {
-        if length == 0 || length > 32 {
-            return Err(Error::Invalid("provider release rows"));
-        }
-        self.check_provider_session(permit)?;
-        let (tx, domains) = begin_provider_effect(
-            &mut self.connection,
-            permit,
-            ProviderScopePhase::PrepareRange,
-        )?;
-        let progress = release_progress(&tx, permit)?;
-        let seq = progress.next;
-        guard_live_range(
-            &tx,
-            permit,
-            &domains,
-            "emitProvider",
-            seq..seq + length,
-            format,
-        )?;
-        if progress.pending || seq + length > 4096 {
-            return Err(Error::Conflict("unknown or oversized provider response"));
-        }
-        crate::persistence::exec(
-            &tx,
-            "INSERT INTO provider_releases VALUES(?1,?2,?3,?4,?5,'unknown')",
-            crate::persistence::params![
-                (permit.plan.family).to_owned(),
-                (permit.plan.node).to_owned(),
-                (seq as i64).to_owned(),
-                (length as i64).to_owned(),
-                (digest).to_owned()
-            ],
-        )
-        .map_err(db)?;
-        crate::persistence::exec(
-            &tx,
-            "UPDATE provider_runs SET next_event=next_event+?3 WHERE family=?1 AND node=?2",
-            crate::persistence::params![
-                (permit.plan.family).to_owned(),
-                (permit.plan.node).to_owned(),
-                (length as i64).to_owned()
-            ],
-        )
-        .map_err(db)?;
-        tx.commit().map_err(db)?;
-        Ok(ProviderRelease {
-            sequence: seq,
-            length,
-            digest: digest.into(),
-            session: self.session.clone(),
-            plan_digest: permit.digest.clone(),
-            format: format.into(),
-        })
+        self.prepare_provider_releases(permit, &[(digest, length)], format)?
+            .pop()
+            .ok_or(Error::Conflict("missing prepared provider range"))
     }
     pub fn release_provider<T>(
         &mut self,
@@ -558,6 +510,9 @@ fn release_digest(
     permit: &ProviderDispatch,
     release: &ProviderRelease,
 ) -> Result<Option<String>> {
+    if let Some(predecessor) = release.predecessor {
+        return release_group::ordered_release_digest(tx, permit, release, predecessor);
+    }
     let params = crate::persistence::params![
         permit.plan.family.as_str(),
         permit.plan.node.as_str(),

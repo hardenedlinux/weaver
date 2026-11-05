@@ -37,7 +37,10 @@ impl Observer for CommitObserver {
             .expect("bounded delivery");
         // A different native connection observes committed bytes, never the staged
         // value on the writer. This query cannot grant execution or settle usage.
-        let marker = durable_marker();
+        let marker = match cut {
+            Cut::BeforeRangePrepareCommit | Cut::AfterRangePrepareCommit => durable_range_marker(),
+            _ => durable_marker(),
+        };
         socket
             .write_all(format!("{cut:?} {marker}\n").as_bytes())
             .expect("actual cut");
@@ -53,6 +56,23 @@ impl Observer for CommitObserver {
         }
     }
 }
+fn durable_range_marker() -> i64 {
+    if durable_marker() == 0 {
+        return 0;
+    }
+    let path = std::env::var("WEAVER_DB").expect("fixture database");
+    let session = persistence::Session::open_with_journal(path, persistence::Journal::Mvcc)
+        .expect("independent MVCC reader");
+    persistence::one(
+        &session,
+        "SELECT CASE WHEN COUNT(*)=(SELECT COALESCE(MAX(next_event),0) FROM provider_runs)
+                THEN COUNT(*) ELSE -1 END FROM provider_releases WHERE state='unknown'",
+        (),
+        |row| row.get(0),
+    )
+    .expect("atomic pending range group and cursor")
+}
+
 fn durable_marker() -> i64 {
     let path = std::env::var("WEAVER_DB").expect("fixture database");
     if !std::path::Path::new(&path).exists() {
@@ -109,12 +129,24 @@ fn serve_observed_gateway() {
     let selected = match std::env::var("WEAVER_TEST_COMMIT_CUT").as_deref() {
         Ok("before") => Cut::BeforeCommit,
         Ok("after") => Cut::AfterCommit,
+        Ok("prepare-before") => Cut::BeforeRangePrepareCommit,
+        Ok("prepare-after") => Cut::AfterRangePrepareCommit,
         _ => panic!("explicit commit cut required"),
     };
     // Restart reads the recovered store before any provider RPC can modify it.
     let mut socket = UnixStream::connect(&path).expect("startup observer");
     socket
-        .write_all(format!("Boot {}\n", durable_marker()).as_bytes())
+        .write_all(
+            format!(
+                "Boot {}\n",
+                match selected {
+                    Cut::BeforeRangePrepareCommit | Cut::AfterRangePrepareCommit =>
+                        durable_range_marker(),
+                    _ => durable_marker(),
+                }
+            )
+            .as_bytes(),
+        )
         .expect("recovery observation");
     assert!(
         OBSERVER

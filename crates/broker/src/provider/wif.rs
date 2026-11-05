@@ -16,6 +16,8 @@ pub(super) const MESSAGES: &str = "https://api.anthropic.com/v1/messages";
 const EXCHANGE: &str = "https://api.anthropic.com/v1/oauth/token";
 const LIMIT: usize = 16 * 1024;
 
+/// Raw DTO boundary for the deployment WIF configuration.
+/// Federation construction validates the issuer bindings before use.
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct AnthropicWifConfig {

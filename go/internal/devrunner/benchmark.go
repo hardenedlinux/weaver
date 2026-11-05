@@ -97,6 +97,7 @@ var rustBenchmarkCases = []string{
 	"ledger_profile_task_replay/256",
 	"broker_https_guarded_sse_three_events",
 	"broker_anthropic_sse_64_deltas",
+	"broker_anthropic_buffered_sse_64_deltas",
 	"broker_wif_cached_token",
 	"server_encoding_guard_hold/inside",
 	"server_encoding_guard_hold/outside",

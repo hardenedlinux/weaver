@@ -167,8 +167,9 @@ package WeaverExecution {
            cursors end at commit or rollback. Transport and client waits
            may span scopes. A writer seal cannot turn unknown into a refund.
            A successful new stream has five fixed scopes for admission, consume,
-           dispatch burn, request write and terminal commit, plus two per response
-           range for durable preparation and final queue release. */
+           dispatch burn, request write and terminal commit. Every output
+           range requires one final queue scope. Preparation adds one scope
+           per group. A single-range group yields two scopes per range. */
         attribute fixedDecidingScopes : Integer = 5;
         attribute decidingScopesPerResponseRange : Integer = 2;
     }
@@ -237,6 +238,30 @@ package WeaverExecution {
         assert constraint { (arrowRanges - 1) * arrowRowsPerBatch < responseEvents and responseEvents <= arrowRanges * arrowRowsPerBatch }
         assert constraint { protobufScopes == lifecycle.fixedDecidingScopes + lifecycle.decidingScopesPerResponseRange * protobufRanges }
         assert constraint { arrowScopes == lifecycle.fixedDecidingScopes + lifecycle.decidingScopesPerResponseRange * arrowRanges }
+    }
+
+    part def ProviderRangePreparationGroup {
+        doc /* The Rust provider worker may group up to four contiguous
+           complete output ranges decoded from already buffered SSE,
+       with at most thirty-two row decisions per preparation ticket.
+           It opens one preparation ticket and one Turso transaction.
+           Every row passes Cedar on the deciding image. All exact pending
+           records and the cursor advance commit together. The worker
+           receives affine capabilities only after commit acknowledgment. */
+        doc /* Transport capacity and codec work stay outside the deciding
+           transaction. Every final queue insertion rechecks the current
+           policy, original claim, fence and exact pending range. A later
+           member requires its immediate predecessor to be released. A
+           failed insert, lost commit response or restart issues no new
+           capability. Unknown ranges retain their original budget hold. */
+        part lifecycle : ProviderStorageLifecycle;
+        attribute maximumRangesPerPreparation : Integer = 4;
+        attribute maximumRowsPerPreparation : Integer = 32;
+        attribute fixtureRanges : Integer = 13;
+        attribute fixturePreparationGroups : Integer = 4;
+        attribute fixtureDecidingScopes : Integer = 22;
+        assert constraint { fixtureDecidingScopes == lifecycle.fixedDecidingScopes + fixtureRanges + fixturePreparationGroups }
+        attribute sameDomainTicketP99TargetMicros : Integer = 1000;
     }
 
     part def ProviderRangeScopeFairness {
