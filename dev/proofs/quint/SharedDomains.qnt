@@ -85,6 +85,15 @@ module SharedDomains {
     and not(retainedProfileUse(true,true,true,false)))
   run retainedProfileRejectsRestoredRegistryWithOldDigestTest=init.expect(
     not(retainedProfileUse(true,false,true,true)))
+  pure def currentnessReuse(sameScope:bool, claimsMatch:bool, historyMatch:bool, live:bool):bool=
+    sameScope and claimsMatch and historyMatch and live
+  run preparedPlanCannotReuseRowsAfterPolicyChangeTest=init.expect(
+    not(currentnessReuse(false,true,true,true))
+    and not(currentnessReuse(true,true,true,false)))
+  run budgetMemberReuseCannotHideMissingHistoryTest=init.expect(
+    currentnessReuse(true,true,true,true)
+    and not(currentnessReuse(true,true,false,true))
+    and not(currentnessReuse(true,false,true,true)))
   run oauthRetiredIssuerCannotPublishTest=init.expect(
     Set(0,1,2).forall(old=>old<3 and old!=3))
   run delegatedGrantCannotReplaceOperationCredentialTest=init.expect(

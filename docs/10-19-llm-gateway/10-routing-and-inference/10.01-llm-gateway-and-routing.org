@@ -813,6 +813,37 @@ and original-exposure reads and publication, authority and profile reads.
 Cedar reports actual evaluation separately. An MVCC conflict counts as a
 failed attempt and does not grant an automatic resend.
 
+The locked read counters separate domain views, publication and review,
+profile, and original claims. The claim interval includes original-task
+identity, retained budget, and history reconciliation. A member shared by
+the budget and history roots is validated once in the same deciding
+transaction. The history check reuses its verified original members
+and compares both the count and the full set of live history rows.
+Consumption and final use reuse the domain view they just read in that
+transaction. The dispatch permit retains only the stamp for future scopes.
+
+The diagnostic arm uses Turso's per-connection program cache for fixed
+currentness queries. The production guard uses ordinary Turso queries.
+Both bind inputs and execute against the current transaction. Policy
+publication and review, profile floors, budget conservation and history
+coverage still read live state. =currentness_reuse_preserves_decision=
+states the same-image premise in Lean. Quint rejects reuse across a
+changed image and rejects missing claim or history evidence.
+
+=BenchmarkProviderCurrentnessPlans= pairs fresh and cached SQL programs
+in the same optimized image, with OAuth enabled and the same two
+originals in each topology. =ProviderCurrentnessBudget= in SysML allocates
+a proposed 20 ms per completed stream to the four locked read categories
+in this fixture. This allocation is a design target. Host samples are
+diagnostic. The shared lock still serializes a common budget or history
+root. A future bounded projection needs an atomic update and recovery
+proof for the exact original claims and all affected roots. For publication,
+prequalify immutable review and receipt evidence, then match the exact
+artifact, outcome, issuer epoch, current revision and fence inside the
+transaction. The live pending barrier remains mandatory. This is a design
+option whose equivalence and recovery behavior need qualification before
+adoption.
+
 An existing direct deployment can enable its independent witness once
 while preserving the same issuer key, subject, client and audience.
 Activation seeds previously committed revocations before confirmation.

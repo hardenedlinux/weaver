@@ -50,7 +50,7 @@ type oauthRelayFixture struct {
 
 func newOAuthRelayFixture(t testing.TB, handler http.HandlerFunc, enabled bool, observedImage ...string) *oauthRelayFixture {
 	t.Helper()
-	pair, ingress := newOAuthRelayOwner(t, handler, enabled, observedImage...)
+	pair, ingress := newOAuthRelayOwner(t, handler, enabled, observedImage, false)
 	bundle := controlBundle(t, pair.rust)
 	pair.plans = bundle.Plans
 	pair.goServer = pair.startControl(t, ingress, bundle, enabled)
@@ -73,7 +73,7 @@ func (p *oauthRelayFixture) startControl(t testing.TB, ingress *testPKI, bundle 
 	return control
 }
 
-func newOAuthRelayOwner(t testing.TB, handler http.HandlerFunc, enabled bool, observedImage ...string) (*oauthRelayFixture, *testPKI) {
+func newOAuthRelayOwner(t testing.TB, handler http.HandlerFunc, enabled bool, observedImage []string, cachedPlans bool) (*oauthRelayFixture, *testPKI) {
 	t.Helper()
 	first, second := pki(t), pki(t)
 	public, key, err := ed25519.GenerateKey(rand.Reader)
@@ -103,6 +103,11 @@ func newOAuthRelayOwner(t testing.TB, handler http.HandlerFunc, enabled bool, ob
 		image = observedImage[0]
 		args = []string{"--exact", "grpc_config::serve_wif_gateway", "--ignored", "--nocapture"}
 		env = append(env, "WEAVER_TEST_PROVIDER_TIMINGS=1")
+		planMode := "0"
+		if cachedPlans {
+			planMode = "1"
+		}
+		env = append(env, "WEAVER_TEST_CACHE_CURRENTNESS_PLANS="+planMode)
 	}
 	pair.rust = providerFixture(t, handler, false, image, args, env, providerProfile(), nil, second)
 	return pair, first
@@ -385,7 +390,7 @@ func BenchmarkProviderOAuthRelayPair(b *testing.B) {
 	}
 }
 
-var providerTimingLabels = [...]string{"grant-check", "domain-hold", "txn-hold", "write", "queue", "grant-prepare", "txn-begin", "commit", "domain-wait", "domain-keys", "currentness", "cedar", "rollback"}
+var providerTimingLabels = [...]string{"grant-check", "domain-hold", "txn-hold", "write", "queue", "grant-prepare", "txn-begin", "commit", "domain-wait", "domain-keys", "domain-read", "publication-read", "profile-read", "claim-read", "cedar", "rollback"}
 
 func providerTimingTotals(t testing.TB, f *fixture, want int) [len(providerTimingLabels)]uint64 {
 	t.Helper()
@@ -414,7 +419,7 @@ func providerTimingTotals(t testing.TB, f *fixture, want int) [len(providerTimin
 		}
 		count++
 	}
-	if count != want || total[0] == 0 || total[1] == 0 || total[10] == 0 || total[11] == 0 {
+	if count != want || total[0] == 0 || total[1] == 0 || total[10] == 0 || total[11] == 0 || total[12] == 0 || total[13] == 0 || total[14] == 0 {
 		t.Fatalf("missing live MVCC timings: %d %v", count, total)
 	}
 	return total
@@ -442,9 +447,10 @@ type relayContentionSample struct {
 	timing      [len(providerTimingLabels)]uint64
 }
 
-func relayContentionWave(t *testing.B, image string, shared, oauth bool) relayContentionSample {
+func relayContentionWave(t *testing.B, image string, arm relayContentionArm) relayContentionSample {
 	t.Helper()
-	p, ingress := newOAuthRelayOwner(t, completeSSE, oauth, image)
+	p, ingress := newOAuthRelayOwner(t, completeSSE, arm.oauth, []string{image}, arm.cachedPlans)
+	shared, oauth := arm.shared, arm.oauth
 	left, right := contentionRelayBundle(t, p.rust, "left"), contentionRelayBundle(t, p.rust, "right")
 	a, b := p.startControl(t, ingress, left, oauth), p.startControl(t, ingress, right, oauth)
 	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
@@ -538,13 +544,35 @@ func relayContentionWave(t *testing.B, image string, shared, oauth bool) relayCo
 
 // Each arm launches two canonical originals through two identical relay processes.
 // Shared mode joins budget/history before measurement; cross mode leaves them independent.
+type relayContentionArm struct {
+	name                       string
+	shared, oauth, cachedPlans bool
+}
+
 func BenchmarkProviderOAuthDomainContention(b *testing.B) {
+	benchmarkRelayContention(b, [4]relayContentionArm{
+		{name: "shared-base", shared: true}, {name: "shared-oauth", shared: true, oauth: true},
+		{name: "cross-base"}, {name: "cross-oauth", oauth: true},
+	})
+}
+
+// Each pair changes only the native statement planning mode, with OAuth on.
+func BenchmarkProviderCurrentnessPlans(b *testing.B) {
+	benchmarkRelayContention(b, [4]relayContentionArm{
+		{name: "shared-fresh", shared: true, oauth: true},
+		{name: "shared-cached", shared: true, oauth: true, cachedPlans: true},
+		{name: "cross-fresh", oauth: true}, {name: "cross-cached", oauth: true, cachedPlans: true},
+	})
+}
+
+func benchmarkRelayContention(b *testing.B, arms [4]relayContentionArm) {
+	b.Helper()
 	image := wifImage(b, true)
 	b.StopTimer()
 	var totals [4]relayContentionSample
 	for range b.N {
 		for _, arm := range []int{0, 1, 2, 3, 3, 2, 1, 0} {
-			sample := relayContentionWave(b, image, arm < 2, arm%2 == 1)
+			sample := relayContentionWave(b, image, arms[arm])
 			total := &totals[arm]
 			total.wall += sample.wall
 			total.done += sample.done
@@ -555,7 +583,8 @@ func BenchmarkProviderOAuthDomainContention(b *testing.B) {
 		}
 	}
 	b.ReportMetric(0, "ns/op")
-	for arm, name := range []string{"shared-base", "shared-oauth", "cross-base", "cross-oauth"} {
+	for arm, settings := range arms {
+		name := settings.name
 		total := totals[arm]
 		attempts := float64(4 * b.N)
 		b.ReportMetric(float64(total.done)/total.wall.Seconds(), name+"-complete/s")

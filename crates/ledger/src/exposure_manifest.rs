@@ -70,14 +70,14 @@ impl<'de> Deserialize<'de> for Members {
         decoder.deserialize_map(Unique)
     }
 }
-type Family = BTreeMap<(String, String, String), Member>;
+pub(crate) type Family = BTreeMap<(String, String, String), Member>;
 
 fn conflict() -> Error {
     Error::Conflict("original claims or shared execution exposure not retained")
 }
 
 fn committed(tx: &WriteScope<'_>, family: &str) -> Result<Family> {
-    let rows = persistence::read_all(
+    let rows = persistence::read_all_current(
         tx,
         "SELECT node,kind,reservations FROM execution_claims WHERE family=?1",
         [family],
@@ -112,7 +112,7 @@ fn committed(tx: &WriteScope<'_>, family: &str) -> Result<Family> {
 }
 
 fn projected(tx: &WriteScope<'_>, family: &str) -> Result<(Family, u64)> {
-    let rows=persistence::read_all(tx,
+    let rows=persistence::read_all_current(tx,
         "SELECT node,'' AS member,digest,reserved,'request' AS kind,json_extract(proposal,'$.ceiling') AS original FROM operations WHERE family=?1
          UNION ALL SELECT node,message,digest,reserved,'stream',json_extract(proposal,'$.ceiling') FROM stream_messages WHERE family=?1
          UNION ALL SELECT node,'',digest,reserved,'provider',json_extract(plan,'$.ceiling') FROM provider_runs WHERE family=?1",
@@ -134,8 +134,8 @@ fn projected(tx: &WriteScope<'_>, family: &str) -> Result<(Family, u64)> {
     Ok((result, total))
 }
 
-pub(crate) fn require(tx: &WriteScope<'_>, family: &str) -> Result<()> {
-    let (held, budget, original) = persistence::one(
+pub(crate) fn verified_members(tx: &WriteScope<'_>, family: &str) -> Result<Family> {
+    let (held, budget, original) = persistence::one_current(
         tx,
         "SELECT held,budget,json_extract(record,'$.budget') FROM tasks WHERE family=?1",
         [family],
@@ -150,5 +150,5 @@ pub(crate) fn require(tx: &WriteScope<'_>, family: &str) -> Result<()> {
     if budget != original || held > budget || held != total || original_members != rows {
         return Err(conflict());
     }
-    Ok(())
+    Ok(original_members)
 }

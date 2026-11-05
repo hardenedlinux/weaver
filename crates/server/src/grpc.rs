@@ -772,6 +772,10 @@ impl pb::gateway_server::Gateway for Gateway {
                     #[cfg(all(test, unix))]
                     crate::provider_commit_tests::attach(&mut ledger);
                     ledger.require_principal(&config.principal, &plan.family)?;
+                    #[cfg(test)]
+                    weaver_ledger::persistence::use_cached_currentness_plans(
+                        std::env::var("WEAVER_TEST_CACHE_CURRENTNESS_PLANS").as_deref() == Ok("1"),
+                    );
                     let execution = weaver_broker::execute_catalog_provider_with_oauth(
                         &mut ledger,
                         weaver_broker::ProviderExecution {
@@ -787,10 +791,12 @@ impl pb::gateway_server::Gateway for Gateway {
                         },
                     );
                     #[cfg(test)]
+                    weaver_ledger::persistence::use_cached_currentness_plans(false);
+                    #[cfg(test)]
                     if std::env::var_os("WEAVER_TEST_PROVIDER_TIMINGS").is_some() {
                         let t = ledger.transaction_timings();
                         eprintln!(
-                            "weaver-oauth-timing {} {} {} {} {} {} {} {} {} {} {} {} {}",
+                            "weaver-oauth-timing {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}",
                             t.provider_oauth_check.nanos,
                             t.domain_hold.nanos,
                             t.transaction_hold.nanos,
@@ -801,7 +807,10 @@ impl pb::gateway_server::Gateway for Gateway {
                             t.commit.nanos,
                             t.domain_wait.nanos,
                             t.domain_keys.nanos,
-                            t.provider_currentness.nanos,
+                            t.provider_domain.nanos,
+                            t.provider_publication.nanos,
+                            t.provider_profile.nanos,
+                            t.provider_claim.nanos,
                             t.provider_cedar.nanos,
                             t.rollback.nanos
                         );

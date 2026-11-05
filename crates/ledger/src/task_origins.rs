@@ -103,7 +103,7 @@ pub(crate) fn default_binding(
     retain(tx, &key, task, requested.unwrap_or(&binding), publication)
 }
 pub(crate) fn require(tx: &WriteScope<'_>, family: &str) -> Result<()> {
-    let row=persistence::maybe(tx,"SELECT r.task_digest,r.binding_digest,t.record,o.binding,r.publication FROM original_tasks r JOIN tasks t ON t.family=r.family JOIN execution_origins o ON o.id=r.origin AND o.canonical_family=r.family WHERE r.family=?1",[family],|r|Ok((r.get::<String>(0)?,r.get::<String>(1)?,r.get::<String>(2)?,r.get::<String>(3)?,r.get::<String>(4)?))).map_err(db)?;
+    let row=persistence::maybe_current(tx,"SELECT r.task_digest,r.binding_digest,t.record,o.binding,r.publication FROM original_tasks r JOIN tasks t ON t.family=r.family JOIN execution_origins o ON o.id=r.origin AND o.canonical_family=r.family WHERE r.family=?1",[family],|r|Ok((r.get::<String>(0)?,r.get::<String>(1)?,r.get::<String>(2)?,r.get::<String>(3)?,r.get::<String>(4)?))).map_err(db)?;
     let (expected_task, expected_binding, task, binding, publication) = row.ok_or(
         Error::Conflict("authoritative original task registration missing"),
     )?;

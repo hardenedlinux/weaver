@@ -7,7 +7,7 @@ use crate::{Ledger, publication, store::db};
 use weaver_contracts::{Error, Publication, PublicationKey, Result};
 
 pub(crate) fn require_resolved(connection: &crate::persistence::driver::Connection) -> Result<()> {
-    let pending: bool = crate::persistence::one(
+    let pending: bool = crate::persistence::one_current(
         connection,
         "SELECT EXISTS(SELECT 1 FROM authority_pending)",
         (),

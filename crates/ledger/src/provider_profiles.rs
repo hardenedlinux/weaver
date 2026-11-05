@@ -63,7 +63,7 @@ pub(crate) struct CheckedProfile {
 
 impl CheckedProfile {
     pub(crate) fn require_current(&self, tx: &WriteScope<'_>, plan: &ProviderPlan) -> Result<()> {
-        let matches: bool = crate::persistence::one(
+        let matches: bool = crate::persistence::one_current(
             tx,
             "SELECT EXISTS(SELECT 1 FROM provider_profiles WHERE id=?1 AND digest=?2 AND record=?3)",
             [plan.profile.as_str(), plan.profile_commitment.as_str(), self.record.as_str()],
@@ -84,7 +84,7 @@ pub(crate) fn require(
 ) -> Result<CheckedProfile> {
     let id = plan.profile.as_str();
     let expected = plan.profile_commitment.as_str();
-    let (bound, record): (String, String) = crate::persistence::one(
+    let (bound, record): (String, String) = crate::persistence::one_current(
         connection,
         "SELECT digest,record FROM provider_profiles WHERE id=?1",
         crate::persistence::params![(id).to_owned()],
@@ -124,8 +124,10 @@ fn require_floor(
     key: &str,
 ) -> Result<()> {
     let conflict: bool =
-        crate::persistence::one(connection, PROFILE_FLOOR_QUERY, [id, key], |row| row.get(0))
-            .map_err(db)?;
+        crate::persistence::one_current(connection, PROFILE_FLOOR_QUERY, [id, key], |row| {
+            row.get(0)
+        })
+        .map_err(db)?;
     if conflict {
         return Err(Error::Conflict(
             "original task retains another profile commitment",

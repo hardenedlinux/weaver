@@ -91,6 +91,17 @@ theorem retained_profile_refines_current
     valid actual ∧ floorCurrent ∧ otherLiveGuards := by
   exact ⟨same.symm ▸ decoded, floor, live⟩
 
+/-- A prepared SQL program is evaluated on the deciding image. Only evidence
+    already checked against that same image can replace a second traversal. -/
+theorem currentness_reuse_preserves_decision
+    {Snapshot Claims : Type} {image : Snapshot} {checked observed : Claims}
+    (readClaims : Snapshot → Claims) (guard : Snapshot → Prop)
+    (fromScope : checked = readClaims image) :
+    (checked = observed ∧ guard image) ↔
+      (readClaims image = observed ∧ guard image) := by
+  rw [fromScope]
+
+#print axioms currentness_reuse_preserves_decision
 #print axioms retained_profile_refines_current
 #print axioms prepared_use_refines_current
 #print axioms retained_root_revocation_blocks_child

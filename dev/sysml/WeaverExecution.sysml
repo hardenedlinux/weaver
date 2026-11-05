@@ -104,6 +104,47 @@ package WeaverExecution {
            the registry identity, digest and bytes and the current task floor
            under the deciding scope, alongside live OAuth, Cedar and fencing. */
     }
+    requirement def ProviderCurrentnessPerformance {
+        doc /* Time domain view, publication and reviewed head, profile, and
+           original claim reconciliation separately in the deciding scope.
+           Domain lock wait, native begin and commit, Cedar and provider effects
+           have separate observations. Throughput is terminal receipts divided
+           by elapsed wave time, with completion and send counts retained. */
+        doc /* SQL preparation may be reused per Turso connection. Every cursor
+           binds and reads the current transaction. New plan reuse is diagnostic
+       until it meets the performance admission gate. The provider may reuse the
+           checked domain view and the validated reservation members between
+           budget and history checks only within that unchanged transaction.
+           History equality, capacity, revocation, Policy and fence remain live. */
+        doc /* Shared roots serialize. Independent roots may overlap under MVCC.
+           Qualify both with the same binary, ingress, original workload, provider,
+           and held-budget verification. Hold and wait intervals can overlap.
+           The sum of protected service demands is a lower bound on a wave
+       sharing one root. Cross-root time is bounded by the longest dependency
+       chain and can also be constrained by native writer and IO capacity.
+       Report wall time and sampled work separately. A diagnostic speed result
+           carries no authority and does not establish a production SLO. */
+    }
+
+    part def ProviderCurrentnessBudget {
+        doc /* Proposed allocation for mean locked read time per completed stream
+           in the two-original local MVCC fixture. These targets guide profiling.
+           Admit a performance claim only after controlled, repeatable evidence.
+           Full recovery reconciliation grows with the union of domain origins
+           and retained claims. A bounded transactional projection is a future
+           option contingent on verified equivalence and fail-closed recovery.
+       For publication, qualify immutable review and receipt evidence before
+       locking. Final use would still match the exact artifact and result,
+       issuer epoch, authority revision and fence, and resolve the live
+       pending barrier. A stale or incomplete projection cannot grant use. */
+        attribute domainReadBudgetNs : Integer = 2000000;
+        attribute publicationReadBudgetNs : Integer = 5000000;
+        attribute profileReadBudgetNs : Integer = 3000000;
+        attribute claimReadBudgetNs : Integer = 10000000;
+        attribute currentnessReadBudgetNs : Integer = 20000000;
+        assert constraint { domainReadBudgetNs + publicationReadBudgetNs + profileReadBudgetNs + claimReadBudgetNs <= currentnessReadBudgetNs }
+    }
+
     requirement def UnknownRetainsHold {
         doc /* Crashes, lost replies and partial writes cannot prove no execution or refund capacity. */
         doc /* Startup does not synthesize execution claims from outcome rows.

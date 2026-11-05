@@ -106,14 +106,22 @@ pub(crate) fn message(tx: &WriteScope<'_>, binding: &MessageBinding) -> Result<(
     require_family(tx, &binding.family)
 }
 
-pub(crate) fn provider(tx: &WriteScope<'_>, plan: &ProviderPlan, digest: &str) -> Result<()> {
-    let matches: bool = crate::persistence::one(tx, "SELECT EXISTS(SELECT 1 FROM provider_runs WHERE family=?1 AND node=?2 AND reserved=?3 AND digest=?4)", crate::persistence::params![(plan.family).to_owned(),(plan.node).to_owned(),(plan.ceiling as i64).to_owned(),(digest).to_owned()], |row| row.get(0)).map_err(db)?;
+pub(crate) fn provider(
+    tx: &WriteScope<'_>,
+    plan: &ProviderPlan,
+    digest: &str,
+    current: &weaver_contracts::DomainView,
+) -> Result<()> {
+    if current.family != plan.family {
+        return Err(Error::Conflict("foreign domain view"));
+    }
+    let matches: bool = crate::persistence::one_current(tx, "SELECT EXISTS(SELECT 1 FROM provider_runs WHERE family=?1 AND node=?2 AND reserved=?3 AND digest=?4)", crate::persistence::params![(plan.family).to_owned(),(plan.node).to_owned(),(plan.ceiling as i64).to_owned(),(digest).to_owned()], |row| row.get(0)).map_err(db)?;
     require(matches)?;
     if let Some(config) = crate::metering::deployment(tx)? {
         crate::provider_quota::require(tx, &config, &plan.family, &plan.node)?;
         crate::metering::require_quote(tx, &config, plan, digest)?;
     }
-    require_family(tx, &plan.family)
+    crate::domains::require_view(tx, current)
 }
 
 fn require(retained: bool) -> Result<()> {

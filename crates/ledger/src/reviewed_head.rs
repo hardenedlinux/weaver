@@ -25,7 +25,7 @@ pub(crate) fn bind(
 /// substitute for this current committed association. Source rotation retains
 /// a historic publication; any new publication must use the current source.
 pub(crate) fn require(c: &Connection) -> Result<()> {
-    let admitted: bool = crate::persistence::one(c, r#"
+    let admitted: bool = crate::persistence::one_current(c, r#"
 SELECT CASE WHEN NOT EXISTS(SELECT 1 FROM review_keys)
  AND NOT EXISTS(SELECT 1 FROM review_authority)
  AND NOT EXISTS(SELECT 1 FROM review_deployment)

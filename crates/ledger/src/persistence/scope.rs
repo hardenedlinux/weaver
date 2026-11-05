@@ -21,7 +21,10 @@ pub struct WriteScope<'a> {
     timings: &'a mut super::TransactionTimings,
     entered: Instant,
     oauth_check: Cell<super::Timing>,
-    currentness: Cell<super::Timing>,
+    current_domain: Cell<super::Timing>,
+    current_publication: Cell<super::Timing>,
+    current_profile: Cell<super::Timing>,
+    current_claim: Cell<super::Timing>,
     cedar: Cell<super::Timing>,
     owner_entered: Option<Instant>,
     domains_entered: Option<Instant>,
@@ -104,7 +107,10 @@ fn start<'a>(session: &'a mut Session, family: Option<&str>) -> driver::Result<W
         timings: &mut session.timings,
         entered: Instant::now(),
         oauth_check: Cell::default(),
-        currentness: Cell::default(),
+        current_domain: Cell::default(),
+        current_publication: Cell::default(),
+        current_profile: Cell::default(),
+        current_claim: Cell::default(),
         cedar: Cell::default(),
         owner_entered,
         domains_entered,
@@ -160,8 +166,17 @@ impl WriteScope<'_> {
             crate::provider_oauth::require(self, evidence)
         })
     }
-    pub(crate) fn provider_currentness<T>(&self, run: impl FnOnce() -> T) -> T {
-        observe(&self.currentness, run)
+    pub(crate) fn provider_domain<T>(&self, run: impl FnOnce() -> T) -> T {
+        observe(&self.current_domain, run)
+    }
+    pub(crate) fn provider_publication<T>(&self, run: impl FnOnce() -> T) -> T {
+        observe(&self.current_publication, run)
+    }
+    pub(crate) fn provider_profile<T>(&self, run: impl FnOnce() -> T) -> T {
+        observe(&self.current_profile, run)
+    }
+    pub(crate) fn provider_claim<T>(&self, run: impl FnOnce() -> T) -> T {
+        observe(&self.current_claim, run)
     }
     pub(crate) fn provider_cedar<T>(&self, run: impl FnOnce() -> T) -> T {
         observe(&self.cedar, run)
@@ -227,10 +242,16 @@ impl Drop for WriteScope<'_> {
                 &mut self.timings.provider_oauth_check,
                 self.oauth_check.get(),
             ),
+            (&mut self.timings.provider_domain, self.current_domain.get()),
             (
-                &mut self.timings.provider_currentness,
-                self.currentness.get(),
+                &mut self.timings.provider_publication,
+                self.current_publication.get(),
             ),
+            (
+                &mut self.timings.provider_profile,
+                self.current_profile.get(),
+            ),
+            (&mut self.timings.provider_claim, self.current_claim.get()),
             (&mut self.timings.provider_cedar, self.cedar.get()),
         ] {
             total.attempts = total.attempts.saturating_add(sample.attempts);

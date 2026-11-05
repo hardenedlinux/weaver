@@ -43,14 +43,73 @@ pub fn read_all<T>(
     connection: &Connection,
     sql: &str,
     params: impl IntoParams,
+    decode: impl FnMut(&Row) -> Result<T>,
+) -> Result<Vec<T>> {
+    block_on(async { decode_all(connection.query(sql, params).await?, decode).await })
+}
+
+#[cfg(feature = "commit-observer")]
+thread_local! {
+    static CACHE_CURRENTNESS_PLANS: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
+}
+
+/// Diagnostic control for the observed server only.
+#[cfg(feature = "commit-observer")]
+pub fn use_cached_currentness_plans(cached: bool) {
+    CACHE_CURRENTNESS_PLANS.set(cached);
+}
+
+async fn currentness_rows(
+    connection: &Connection,
+    sql: &'static str,
+    params: impl IntoParams,
+) -> Result<super::driver::Rows> {
+    #[cfg(feature = "commit-observer")]
+    if CACHE_CURRENTNESS_PLANS.get() {
+        // Diagnostic comparison only. Each cursor still uses the live
+        // connection and current transaction, with fresh parameters.
+        return connection.prepare_cached(sql).await?.query(params).await;
+    }
+    connection.query(sql, params).await
+}
+
+pub(crate) fn maybe_current<T>(
+    connection: &Connection,
+    sql: &'static str,
+    params: impl IntoParams,
+    decode: impl FnOnce(&Row) -> Result<T>,
+) -> Result<Option<T>> {
+    block_on(async {
+        let mut rows = currentness_rows(connection, sql, params).await?;
+        rows.next().await?.as_ref().map(decode).transpose()
+    })
+}
+
+pub(crate) fn one_current<T>(
+    connection: &Connection,
+    sql: &'static str,
+    params: impl IntoParams,
+    decode: impl FnOnce(&Row) -> Result<T>,
+) -> Result<T> {
+    maybe_current(connection, sql, params, decode)?.ok_or(Error::QueryReturnedNoRows)
+}
+
+pub(crate) fn read_all_current<T>(
+    connection: &Connection,
+    sql: &'static str,
+    params: impl IntoParams,
+    decode: impl FnMut(&Row) -> Result<T>,
+) -> Result<Vec<T>> {
+    block_on(async { decode_all(currentness_rows(connection, sql, params).await?, decode).await })
+}
+
+async fn decode_all<T>(
+    mut rows: super::driver::Rows,
     mut decode: impl FnMut(&Row) -> Result<T>,
 ) -> Result<Vec<T>> {
-    block_on(async {
-        let mut rows = connection.query(sql, params).await?;
-        let mut result = Vec::new();
-        while let Some(row) = rows.next().await? {
-            result.push(decode(&row)?);
-        }
-        Ok(result)
-    })
+    let mut result = Vec::new();
+    while let Some(row) = rows.next().await? {
+        result.push(decode(&row)?);
+    }
+    Ok(result)
 }

@@ -249,7 +249,7 @@ package WeaverViews {
         attribute readerQuestion : String = "What can authorize actual provider use?";
         attribute designAudience : String = "Gateway developers and operators";
         attribute designMedium : String = "GitHub at 830 CSS pixels";
-        attribute designMessage : String = "Rust prepares the relay grant before locking.\nFinal use rechecks grant, profile, witness and Cedar.";
+        attribute designMessage : String = "Reuse evidence within one transaction.\nCedar evaluates the live authority before effects.";
         attribute designFocus : String = "execution";
         attribute captionContext : String = "journey";
         attribute visualThemes : String = "sketchbook,ember,compact,reading";
@@ -257,6 +257,7 @@ package WeaverViews {
         attribute visualWidth : Integer = 980;
         requirement finalUse : WeaverExecution::ConsumeBeforeSend;
         requirement callerOAuth : ProviderRpc::SenderBoundProviderOAuth;
+        requirement liveReadCost : WeaverExecution::ProviderCurrentnessPerformance;
         expose WeaverGatewayArchitecture::gateway::routing;
         expose WeaverGatewayArchitecture::gateway::publication;
         expose WeaverGatewayArchitecture::gateway::execution;

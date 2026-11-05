@@ -10,7 +10,7 @@ use crate::{
 };
 use std::collections::BTreeSet;
 use weaver_contracts::{
-    DomainStamp, DomainView, Error, ProviderOAuthUse, ProviderPlan, ProviderReceipt, ProviderRoute,
+    DomainView, Error, ProviderOAuthUse, ProviderPlan, ProviderReceipt, ProviderRoute,
     ProviderState, Result, Task,
 };
 
@@ -101,7 +101,7 @@ impl Ledger {
             None => true,
         };
         any_authorized(&tx, plan, "admitProvider", None)?;
-        crate::execution_exposure::require_family(&tx, &plan.family)?;
+        tx.provider_claim(|| crate::execution_exposure::require_family(&tx, &plan.family))?;
         if new_claim {
             crate::execution_exposure::retain(
                 &tx,
@@ -179,7 +179,9 @@ impl Ledger {
         )?;
         let selected = any_authorized(&tx, &plan, "invokeProvider", Some(eligible))?;
         let digest = plan.digest()?;
-        require_exposure(&tx, &plan, &digest)?;
+        tx.provider_claim(|| {
+            crate::execution_exposure::provider(&tx, &plan, &digest, &selected.domains)
+        })?;
         let consumed = crate::persistence::exec(
             &tx,
             "UPDATE provider_runs SET state='unknown',target=?1 WHERE family=?2 AND node=?3 AND state='queued'",
@@ -201,7 +203,7 @@ impl Ledger {
             digest,
             binding: selected.binding,
             profile: selected.profile,
-            domains: selected.domains,
+            domains: selected.domains.stamp,
             oauth: prepared,
             oauth_expires,
         })
@@ -416,28 +418,28 @@ fn record_dispatch_callback(tx: &WriteScope<'_>, permit: &ProviderDispatch) -> R
     Ok(())
 }
 fn active(tx: &WriteScope<'_>, p: &ProviderDispatch) -> Result<weaver_contracts::DomainView> {
-    tx.provider_currentness(|| {
-        // The exact view checked against the consumed stamp is also passed to Cedar.
-        // It never escapes this deciding transaction or authorizes a later callback.
-        let actual = crate::domains::view(tx, &p.plan.family)?;
-        if actual.canonical_family != p.plan.family || actual.stamp != p.domains {
-            return Err(Error::Conflict(
-                "execution domain migrated; old permit fenced",
-            ));
-        }
-        let same:bool=crate::persistence::one(tx, "SELECT EXISTS(SELECT 1 FROM provider_runs WHERE family=?1 AND node=?2 AND digest=?3 AND target=?4 AND state='unknown')", crate::persistence::params![(p.plan.family).to_owned(),(p.plan.node).to_owned(),(p.digest).to_owned(),(p.route.target).to_owned()], |r|r.get(0)).map_err(db)?;
-        if same {
-            require_exposure(tx, &p.plan, &p.digest)?;
-            Ok(actual)
-        } else {
-            Err(Error::Conflict("provider consumption changed"))
-        }
-    })
+    // The exact view checked against the consumed stamp is also passed to Cedar.
+    // It never escapes this deciding transaction or authorizes a later callback.
+    let actual = tx.provider_domain(|| crate::domains::view_current(tx, &p.plan.family))?;
+    if actual.canonical_family != p.plan.family || actual.stamp != p.domains {
+        return Err(Error::Conflict(
+            "execution domain migrated; old permit fenced",
+        ));
+    }
+    tx.provider_claim(|| require_active_claim(tx, p, &actual))?;
+    Ok(actual)
 }
-/// Refinement of ZeroTrust.consumptionCommitted / unknownRetained at actual use.
-/// Never reconstruct a missing claim or refund a contradictory recovery image.
-fn require_exposure(tx: &WriteScope<'_>, plan: &ProviderPlan, digest: &str) -> Result<()> {
-    crate::execution_exposure::provider(tx, plan, digest)
+fn require_active_claim(
+    tx: &WriteScope<'_>,
+    p: &ProviderDispatch,
+    current: &DomainView,
+) -> Result<()> {
+    let same:bool=crate::persistence::one_current(tx, "SELECT EXISTS(SELECT 1 FROM provider_runs WHERE family=?1 AND node=?2 AND digest=?3 AND target=?4 AND state='unknown')", crate::persistence::params![(p.plan.family).to_owned(),(p.plan.node).to_owned(),(p.digest).to_owned(),(p.route.target).to_owned()], |r|r.get(0)).map_err(db)?;
+    if same {
+        crate::execution_exposure::provider(tx, &p.plan, &p.digest, current)
+    } else {
+        Err(Error::Conflict("provider consumption changed"))
+    }
 }
 fn started(tx: &WriteScope<'_>, p: &ProviderDispatch) -> Result<()> {
     let burned: bool = crate::persistence::one(
@@ -457,7 +459,7 @@ struct AuthorizedRoute {
     route: ProviderRoute,
     binding: weaver_policy::BoundProviderPolicy,
     profile: crate::provider_profiles::CheckedProfile,
-    domains: DomainStamp,
+    domains: DomainView,
 }
 
 fn any_authorized(
@@ -466,7 +468,7 @@ fn any_authorized(
     action: &'static str,
     eligible: Option<&BTreeSet<String>>,
 ) -> Result<AuthorizedRoute> {
-    let domains = crate::domains::view(tx, &p.family)?;
+    let domains = tx.provider_domain(|| crate::domains::view_current(tx, &p.family))?;
     if domains.canonical_family != p.family {
         return Err(Error::Conflict("family alias is not an executable origin"));
     }
@@ -478,7 +480,7 @@ fn any_authorized(
                 route: route.clone(),
                 binding,
                 profile,
-                domains: domains.stamp,
+                domains,
             });
         }
     }
@@ -494,11 +496,9 @@ fn guard(
     weaver_policy::BoundProviderPolicy,
     crate::provider_profiles::CheckedProfile,
 )> {
-    crate::publication_barrier::require_resolved(tx)?;
-    let (source, profile) = tx.provider_currentness(|| {
-        let source = current_source(tx, p, "stale provider authority")?;
-        Ok::<_, Error>((source, crate::provider_profiles::require(tx, p)?))
-    })?;
+    tx.provider_publication(|| crate::publication_barrier::require_resolved(tx))?;
+    let source = tx.provider_publication(|| current_source(tx, p, "stale provider authority"))?;
+    let profile = tx.provider_profile(|| crate::provider_profiles::require(tx, p))?;
     let record: String = crate::persistence::one(
         tx,
         "SELECT record FROM tasks WHERE family=?1",
@@ -543,13 +543,11 @@ fn guard_live_range(
     sequences: std::ops::Range<u64>,
     format: &str,
 ) -> Result<()> {
-    crate::publication_barrier::require_resolved(tx)?;
+    tx.provider_publication(|| crate::publication_barrier::require_resolved(tx))?;
     tx.check_provider_oauth(p.oauth.as_ref())?;
-    let source = tx.provider_currentness(|| {
-        let source = current_source(tx, &p.plan, "stale provider release authority")?;
-        p.profile.require_current(tx, &p.plan)?;
-        Ok::<_, Error>(source)
-    })?;
+    let source = tx
+        .provider_publication(|| current_source(tx, &p.plan, "stale provider release authority"))?;
+    tx.provider_profile(|| p.profile.require_current(tx, &p.plan))?;
     for sequence in sequences {
         tx.provider_cedar(|| {
             p.binding.authorize(
@@ -567,7 +565,7 @@ fn guard_live_range(
 }
 fn current_source(tx: &WriteScope<'_>, p: &ProviderPlan, stale: &'static str) -> Result<String> {
     crate::task_publication::require(tx, &p.family)?;
-    let (revision, fence, source): (u64, u64, String) = crate::persistence::one(
+    let (revision, fence, source): (u64, u64, String) = crate::persistence::one_current(
         tx,
         "SELECT revision,fence,policy FROM authority WHERE singleton=1",
         (),
