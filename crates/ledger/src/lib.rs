@@ -56,8 +56,8 @@ pub use provider::{
 };
 #[cfg(feature = "commit-observer")]
 pub use provider::{
-    use_cached_release_programs, use_conservative_range_invalidation, use_exclusive_provider_reads,
-    use_full_lifecycle_invalidation, use_separate_release_reads,
+    use_cached_release_programs, use_conservative_range_invalidation, use_early_admission_barrier,
+    use_exclusive_provider_reads, use_full_lifecycle_invalidation, use_separate_release_reads,
 };
 mod store;
 mod stream_catalog;

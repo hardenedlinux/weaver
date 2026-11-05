@@ -61,8 +61,13 @@ fn expired_anthropic_bearer_is_rejected_before_io() {
     .expect("inert Anthropic request");
     assert!(prepared.request.headers()["authorization"].is_sensitive());
     assert!(!prepared.request.headers().contains_key("x-api-key"));
+    let phases = std::cell::Cell::default();
     assert!(matches!(
-        prepared.write_and_seal(),
+        prepared.write_and_seal(&phases),
         Err(weaver_contracts::Error::Denied)
     ));
+    assert!(!phases.get().connect.attempted);
+    assert!(!phases.get().tls.attempted);
+    assert!(!phases.get().write.attempted);
+    assert!(!phases.get().headers.attempted);
 }

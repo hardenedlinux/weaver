@@ -46,7 +46,15 @@ func observedServer(t testing.TB) string {
 		var stderr bytes.Buffer
 		cmd.Stderr = &stderr
 		var err error
-		observedBuild.binary, err = buildCargoExecutable(cmd, cargoTarget{Name: "weaver_server", Kind: "lib", Test: true})
+		built, err := buildCargoExecutable(cmd, cargoTarget{Name: "weaver_server", Kind: "lib", Test: true})
+		if err == nil {
+			observedBuild.binary = filepath.Join(filepath.Dir(serverBinary), "weaver-observed")
+			var digest string
+			digest, err = publishProviderImage(built, observedBuild.binary)
+			if err == nil {
+				t.Logf("observed provider image sha256=%s", digest)
+			}
+		}
 		if err != nil {
 			observedBuild.err = fmt.Errorf("observed test build: %w: %s", err, stderr.String())
 		}

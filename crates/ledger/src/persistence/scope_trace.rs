@@ -30,6 +30,8 @@ pub struct ProviderScopeSample {
     pub grant: u64,
     pub wait: Duration,
     pub hold: Duration,
+    /// Authority-intent lifetime; preserved progress does not close readers.
+    pub authority_span: Duration,
 }
 
 impl Arrival {
@@ -80,13 +82,14 @@ impl Trace {
         for sample in &self.samples {
             let phase = match sample.phase {
                 ProviderScopePhase::Other => "other",
+                ProviderScopePhase::Admission => "admit",
                 ProviderScopePhase::PrepareRange => "prepare",
                 ProviderScopePhase::FinalQueue => "queue",
                 ProviderScopePhase::RevalidateDelivery => "revalidate",
             };
             let _ = write!(
                 line,
-                " {phase}:{}:{}:{}:{}:{}",
+                " {phase}:{}:{}:{}:{}:{}:{}",
                 sample.arrival,
                 sample.grant,
                 sample.wait.as_nanos(),
@@ -95,7 +98,8 @@ impl Trace {
                     "origin"
                 } else {
                     "exclusive"
-                }
+                },
+                sample.authority_span.as_nanos()
             );
         }
         eprintln!("{line}");
@@ -113,9 +117,10 @@ impl Trace {
     }
 }
 impl Granted<'_> {
-    pub(super) fn record(self) {
+    pub(super) fn record(self, authority_span: Duration) {
         self.trace.record(ProviderScopeSample {
             phase: self.arrival.phase,
+            authority_span,
             origin_write: self.arrival.origin_write,
             arrival: self.arrival.order,
             grant: self.order,

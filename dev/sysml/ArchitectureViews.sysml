@@ -259,6 +259,7 @@ package WeaverViews {
         requirement publicationContract : WeaverExecution::ProviderSnapshotPublication;
         requirement lifecycleFootprint : WeaverExecution::ProviderLifecycleFootprint;
         requirement readCustody : WeaverExecution::ProviderReadCustody;
+        requirement admissionTurn : WeaverExecution::ProviderAdmissionTurn;
         expose WeaverExecution::providerDeliveryJoin::changes;
         expose WeaverExecution::providerDeliveryJoin::validated;
         expose WeaverExecution::providerDeliveryJoin::publication;

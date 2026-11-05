@@ -2,6 +2,7 @@
 --
 -- SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
+import ProviderAdmissionTurn
 import ProviderReadCustody
 import ProviderLifecycleFootprint
 import ProviderSnapshotPublication
@@ -266,5 +267,32 @@ theorem staged_policy_excludes_actual_effect {Key : Type} [DecidableEq Key]
     (effectRequiresReady effect)
 
 #print axioms staged_policy_excludes_actual_effect
+
+/-- Waiting for a native writer turn is not a source-accepted semantic change.
+    Compose on the same actual state; this does not license an accepted pending
+    source intent or mutation between qualification and final delivery. -/
+theorem queued_admission_preserves_spec_final_use
+    (use : Gateway.ZeroTrust.FinalUse proposal)
+    (events : GatewayHeadCAS.Run c owner GatewayHeadCAS.initial use.actual)
+    (queued : Weaver.ProviderAdmissionTurn.State GatewayHeadCAS.State)
+    (same : queued.actual = use.actual) (requests : List Nat) :
+    (Gateway.ZeroTrust.specialize proposal (reachableDomain c)).required effect
+      (Weaver.ProviderAdmissionTurn.enqueueAll queued requests).actual ∧
+    (∀ account, booked c (Weaver.ProviderAdmissionTurn.enqueueAll queued requests).actual.base account ≤ c.capacity account) ∧
+    (∀ key, ((Weaver.ProviderAdmissionTurn.enqueueAll queued requests).actual.base.messages key).claims ≤ 1 ∧
+      ((Weaver.ProviderAdmissionTurn.enqueueAll queued requests).actual.base.messages key).sends ≤ 1) ∧
+    original.Refines prepared.profile := by
+  have unchanged : (Weaver.ProviderAdmissionTurn.enqueueAll queued requests).actual = use.actual := by
+    have step (s : Weaver.ProviderAdmissionTurn.State GatewayHeadCAS.State) :
+        (Weaver.ProviderAdmissionTurn.enqueueAll s requests).actual = s.actual := by
+      induction requests generalizing s with
+      | nil => rfl
+      | cons id rest ih =>
+        simpa only [Weaver.ProviderAdmissionTurn.enqueueAll, List.foldl_cons] using
+          (ih (Weaver.ProviderAdmissionTurn.enqueue s id)).trans (Weaver.ProviderAdmissionTurn.queue_preserves_actual s id)
+    exact (step queued).trans same
+  simpa only [unchanged] using gateway_final_use_preserves_domain_contract use events
+
+#print axioms queued_admission_preserves_spec_final_use
 
 end Weaver.DomainMigrationComposition

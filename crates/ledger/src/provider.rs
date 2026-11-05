@@ -22,6 +22,32 @@ use weaver_contracts::{
 pub(crate) struct RangeProgress {
     _sealed: (),
 }
+/// Unaccepted execution request. It cannot mutate shared facts or expose an
+/// authoritative outcome before the scheduler selects its writer turn.
+pub(crate) struct AdmissionRequest {
+    _sealed: (),
+}
+#[cfg(feature = "commit-observer")]
+thread_local! {
+    static EARLY_ADMISSION_BARRIER: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
+}
+/// Safe same-image control retaining closure while an admission request waits.
+#[cfg(feature = "commit-observer")]
+pub fn use_early_admission_barrier(early: bool) {
+    EARLY_ADMISSION_BARRIER.set(early);
+}
+impl AdmissionRequest {
+    pub(crate) fn wait_before_close(&self) -> bool {
+        #[cfg(feature = "commit-observer")]
+        {
+            !EARLY_ADMISSION_BARRIER.get()
+        }
+        #[cfg(not(feature = "commit-observer"))]
+        {
+            true
+        }
+    }
+}
 /// Sealed write-set obligation: only run state/target, dispatch marker or raw
 /// terminal usage changes; no reservation, history, quota or publication write.
 pub(crate) struct OriginLifecycle {
@@ -186,8 +212,12 @@ impl Ledger {
         let publication = self.connection.prepare_provider_publication(&plan.family);
         let original = self.connection.prepare_provider_original(&plan.family);
         self.connection.prepare_provider_domain();
-        let tx =
-            crate::persistence::begin_family(&mut self.connection, &plan.family).map_err(db)?;
+        let tx = crate::persistence::begin_provider_admission(
+            &mut self.connection,
+            &plan.family,
+            &AdmissionRequest { _sealed: () },
+        )
+        .map_err(db)?;
         tx.check_provider_oauth(prepared.as_ref())?;
         let new_claim = match receipt(&tx, &plan.family, &plan.node)? {
             Some(old) if old.digest != digest => {

@@ -86,7 +86,12 @@ func TestMain(m *testing.M) {
 	}
 	fmt.Fprintf(os.Stderr, "test-owned provider image sha256=%s profile=%s\n", digest, profile)
 	controlBinary = filepath.Join(directory, "weaver-control")
-	controlBuild := exec.Command(filepath.Join(runtime.GOROOT(), "bin/go"), "-C", "go", "build", "-race", "-o", controlBinary, "./cmd/weaver-control")
+	controlArgs := []string{"-C", "go", "build", "-mod=readonly"}
+	if benchmark == "" {
+		controlArgs = append(controlArgs, "-race")
+	}
+	controlArgs = append(controlArgs, "-o", controlBinary, "./cmd/weaver-control")
+	controlBuild := exec.Command(filepath.Join(runtime.GOROOT(), "bin/go"), controlArgs...)
 	controlBuild.Dir, controlBuild.Stdout, controlBuild.Stderr = repo, os.Stderr, os.Stderr
 	if err := controlBuild.Run(); err != nil {
 		os.RemoveAll(directory)

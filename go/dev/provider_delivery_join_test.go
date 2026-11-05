@@ -290,7 +290,7 @@ func TestProviderSemanticProgressProperty(t *testing.T) {
 			for _, scope := range readRangeScopes(t, f)[f.plan.Family] {
 				counts[scope.phase]++
 			}
-			if counts["prepare"] < ((rows+3)/4) || counts["prepare"] > rows || counts["queue"] != counts["prepare"] || counts["revalidate"] != 0 || counts["other"] != 5 {
+			if counts["prepare"] < ((rows+3)/4) || counts["prepare"] > rows || counts["queue"] != counts["prepare"] || counts["revalidate"] != 0 || counts["other"] != 4 || counts["admit"] != 1 {
 				t.Fatal("native decisions did not match exact opportunistic manifests", counts, rows)
 			}
 		}

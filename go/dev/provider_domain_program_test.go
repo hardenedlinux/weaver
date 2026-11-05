@@ -200,6 +200,12 @@ func measureDomainEncodingWave(b *testing.B, f *fixture, plans []v1.ProviderPlan
 		latencies = append(latencies, r.domainStreamSample)
 	}
 	wall := time.Since(began)
+	verifyDomainProgramWave(b, ctx, f, plans, ranges, shared)
+	return latencies, wall
+}
+
+func verifyDomainProgramWave(b testing.TB, ctx context.Context, f *fixture, plans []v1.ProviderPlan, ranges int, shared bool) {
+	b.Helper()
 	// Inspect uses its own bounded observation lane. Verify all receipts
 	// sequentially after the timed stream calls have reached EOF.
 	for _, plan := range plans {
@@ -221,7 +227,6 @@ func measureDomainEncodingWave(b *testing.B, f *fixture, plans []v1.ProviderPlan
 			b.Fatalf("benchmark hold/history mismatch: %v %v", view, err)
 		}
 	}
-	return latencies, wall
 }
 
 type domainStreamTransport struct {
@@ -231,8 +236,16 @@ type domainStreamTransport struct {
 }
 
 func readDomainProgramStream(ctx context.Context, f *fixture, plan v1.ProviderPlan, encoding pb.Encoding, rows uint32) (int, domainStreamTransport, error) {
+	return readDomainProgramStreamWithClient(ctx, f.client, plan, encoding, rows)
+}
+
+func readDomainProgramStreamWithClient(ctx context.Context, client *gatewayclient.Client, plan v1.ProviderPlan, encoding pb.Encoding, rows uint32) (int, domainStreamTransport, error) {
+	return readDomainProgramStreamObserved(ctx, client, plan, encoding, rows, nil)
+}
+
+func readDomainProgramStreamObserved(ctx context.Context, client *gatewayclient.Client, plan v1.ProviderPlan, encoding pb.Encoding, rows uint32, onFirst func()) (int, domainStreamTransport, error) {
 	timing := domainStreamTransport{received: make(map[uint64]int64)}
-	stream, err := f.client.RPC.ExecuteProvider(f.client.Context(ctx), &pb.ProviderRequest{
+	stream, err := client.RPC.ExecuteProvider(client.Context(ctx), &pb.ProviderRequest{
 		Plan: gatewayclient.Plan(plan), Encoding: encoding, BatchRows: rows,
 	})
 	if err != nil {
@@ -263,6 +276,9 @@ func readDomainProgramStream(ctx context.Context, f *fixture, plan v1.ProviderPl
 			return next, timing, fmt.Errorf("invalid benchmark frame at %d", next)
 		}
 		timing.received[events[0].GetSequence()] = received.UnixNano()
+		if next == 0 && onFirst != nil {
+			onFirst()
+		}
 		for _, event := range events {
 			if done || event.GetSequence() != uint64(next) {
 				return next, timing, fmt.Errorf("invalid benchmark event at %d", next)

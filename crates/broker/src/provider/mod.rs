@@ -5,8 +5,10 @@
 //! Provider owner facade; request dispatch and output custody stay private.
 mod anthropic_sse;
 mod io_runtime;
+mod observation;
 mod openai_sse;
 mod range_output;
+pub use observation::{ProviderTransportPhases, TransportStage};
 mod request;
 mod response;
 mod runtime;

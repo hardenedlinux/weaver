@@ -15,6 +15,7 @@ use weaver_contracts::{Error, ProviderEvent, ProviderRoute, Result};
 thread_local! {
     static HANDOFFS: std::cell::RefCell<Vec<(u64, u128)>> = const { std::cell::RefCell::new(Vec::new()) };
     static DELIVERIES: std::cell::RefCell<Vec<weaver_ledger::DeliveryObservation>> = const { std::cell::RefCell::new(Vec::new()) };
+    static TRANSPORT: std::cell::Cell<Option<weaver_broker::ProviderTransportPhases>> = const { std::cell::Cell::new(None) };
     static ENCODING_NANOS: std::cell::Cell<u128> = const { std::cell::Cell::new(0) };
 }
 
@@ -31,6 +32,11 @@ pub(crate) fn take_handoffs() -> Vec<(u64, u128)> {
 #[cfg(test)]
 pub(crate) fn take_deliveries() -> Vec<weaver_ledger::DeliveryObservation> {
     DELIVERIES.with(|rows| std::mem::take(&mut *rows.borrow_mut()))
+}
+
+#[cfg(test)]
+pub(crate) fn take_transport() -> Option<weaver_broker::ProviderTransportPhases> {
+    TRANSPORT.with(|phases| phases.take())
 }
 
 /// Only Output constructs the packet. Other server owners cannot inspect or
@@ -75,6 +81,10 @@ pub(crate) struct PreparedFrame {
     rows: usize,
 }
 impl ProviderOutput for Output {
+    #[cfg(test)]
+    fn observe_transport(&self, phases: weaver_broker::ProviderTransportPhases) {
+        TRANSPORT.with(|slot| slot.set(Some(phases)));
+    }
     type PreparedFrame = PreparedFrame;
     type Slot = mpsc::OwnedPermit<std::result::Result<InertFrame, tonic::Status>>;
     #[cfg(test)]

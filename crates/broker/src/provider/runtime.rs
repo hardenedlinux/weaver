@@ -212,6 +212,8 @@ impl ProviderTransport {
 /// Starts at most one source-bound request. The callback receives bounded batches only
 /// under a fresh Cedar release guard; its error leaves the release and budget unknown.
 pub trait ProviderOutput {
+    /// Bounded local diagnostics, never evidence that a send did not happen.
+    fn observe_transport(&self, _phases: super::ProviderTransportPhases) {}
     type Slot;
     type PreparedFrame;
     fn stopped(&self) -> bool;
@@ -399,16 +401,21 @@ fn open_guarded<O: ProviderOutput>(
     let request = transport
         .prepare(permit.plan(), permit.route(), permit.protocol())?
         .with_oauth_expiration(permit.oauth_expires());
-    let sealed = ledger.dispatch_provider(permit, || {
+    let phases = std::cell::Cell::new(super::ProviderTransportPhases::default());
+    let result = (|| {
+        let sealed = ledger.dispatch_provider(permit, || {
+            if output.stopped() {
+                return Err(Error::Conflict("cancelled before provider invocation"));
+            }
+            request.write_and_seal(&phases)
+        })?;
         if output.stopped() {
-            return Err(Error::Conflict("cancelled before provider invocation"));
+            return Err(Error::Conflict("cancelled after provider seal"));
         }
-        request.write_and_seal()
-    })?;
-    if output.stopped() {
-        return Err(Error::Conflict("cancelled after provider seal"));
-    }
-    sealed.wait_for_response_headers()
+        sealed.wait_for_response_headers(&phases)
+    })();
+    output.observe_transport(phases.get());
+    result
 }
 
 #[cfg(test)]

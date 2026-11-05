@@ -39,9 +39,10 @@ func benchmarkProviderDeliveryJoin(b *testing.B, image string, shared, loaded bo
 }
 
 type deliveryComparison struct {
-	labels   [2]string
-	controls [2][]string
-	queues   [2]int
+	staggered bool
+	labels    [2]string
+	controls  [2][]string
+	queues    [2]int
 }
 
 func BenchmarkProviderLifecycleFootprint(b *testing.B) {
@@ -66,10 +67,27 @@ func BenchmarkProviderReadCustody(b *testing.B) {
 	}
 }
 
+func BenchmarkProviderAdmissionTurn(b *testing.B) {
+	image := wifImage(b, true)
+	comparison := deliveryComparison{labels: [2]string{"early-close", "selected-close"},
+		controls: [2][]string{{"WEAVER_TEST_EARLY_ADMISSION_BARRIER=1"}, nil}, queues: [2]int{4, 4}}
+	for _, shared := range []bool{true, false} {
+		for _, loaded := range []bool{false, true} {
+			b.Run(fmt.Sprintf("shared=%t/pressure=%t", shared, loaded), func(b *testing.B) {
+				benchmarkProviderDeliveryComparison(b, image, shared, loaded, comparison)
+			})
+		}
+	}
+}
+
 func benchmarkProviderDeliveryComparison(b *testing.B, image string, shared, loaded bool, comparison deliveryComparison) {
 	b.Helper()
 	b.StopTimer()
-	const ranges, parallel, samples = 13, 4, 128
+	const parallel, samples = 4, 128
+	ranges := 13
+	if comparison.staggered {
+		ranges = 64
+	}
 	var arms [2]providerTailArm
 	for i := range arms {
 		env := []string{"WEAVER_STORAGE_JOURNAL=mvcc", "WEAVER_TEST_PROVIDER_TAIL=1", "WEAVER_TEST_PROVIDER_SCOPE_TRACE=1"}
@@ -85,7 +103,13 @@ func benchmarkProviderDeliveryComparison(b *testing.B, image string, shared, loa
 		for _, i := range []int{wave % 2, 1 - wave%2} {
 			arm := &arms[i]
 			plans := registerDomainProgramWave(b, arm.fixture, wave, parallel, shared)
-			streams, wall := measureDomainProgramWave(b, arm.fixture, plans, ranges, shared)
+			var streams []domainStreamSample
+			var wall time.Duration
+			if comparison.staggered {
+				streams, wall = measureAdmissionOverlapWave(b, arm.fixture, plans, ranges)
+			} else {
+				streams, wall = measureDomainProgramWave(b, arm.fixture, plans, ranges, shared)
+			}
 			arm.streams = append(arm.streams, streams...)
 			arm.wall += wall
 		}
@@ -99,8 +123,16 @@ func benchmarkProviderDeliveryComparison(b *testing.B, image string, shared, loa
 	for i, label := range comparison.labels {
 		arm := &arms[i]
 		reportProviderTailArm(b, arm, label)
+		reportProviderTransport(b, arm, label)
 		queues := comparison.queues[i]
-		reportScheduledEncoding(b, arm, label, ranges, (ranges+3)/4, queues, shared)
+		if comparison.staggered {
+			queues = 0
+		}
+		preparations := (ranges + 3) / 4
+		if comparison.staggered {
+			preparations = 0
+		}
+		reportScheduledEncoding(b, arm, label, ranges, preparations, queues, shared)
 		reportDeliveryJoin(b, arm, label)
 		arm.fixture.stop(b)
 	}

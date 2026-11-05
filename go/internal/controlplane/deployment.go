@@ -195,6 +195,15 @@ func RunFromEnv(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+	// Static published routing has no runtime source reads. Return its scarce
+	// authenticated connection after known activation, before serving ingress.
+	// A deferred catalogue keeps source custody; bootstrap errors return above.
+	if gateway.source == nil {
+		if err := source.Connection.Close(); err != nil {
+			return err
+		}
+		trace("bootstrap-source-channel-closed")
+	}
 	gateway.oauthRelay = oauthRelay
 	trace("authority-reconciled")
 	server, err := NewServer(gateway, &tls.Config{Certificates: []tls.Certificate{serverKey}, ClientCAs: clientRoots, ClientAuth: tls.RequireAndVerifyClientCert}, leaf, token)

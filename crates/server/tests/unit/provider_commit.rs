@@ -25,6 +25,16 @@ struct CommitObserver {
 static OBSERVER: OnceLock<Arc<CommitObserver>> = OnceLock::new();
 
 impl Observer for CommitObserver {
+    fn admission_wait(&self, family: &str) -> Decision {
+        if self.selected == Cut::BeforeAdmissionSchedule
+            && std::env::var("WEAVER_TEST_ADMISSION_FAMILY").as_deref() == Ok(family)
+        {
+            self.observe(Cut::BeforeAdmissionSchedule)
+        } else {
+            Decision::Continue
+        }
+    }
+
     fn observe(&self, cut: Cut) -> Decision {
         if cut == Cut::AfterDeliveryCommit
             && matches!(
@@ -81,7 +91,9 @@ impl Observer for CommitObserver {
             Cut::BeforeRangePrepareCommit | Cut::AfterRangePrepareCommit => durable_range_marker(),
             Cut::BeforeDeliveryCommit | Cut::AfterDeliveryCommit => durable_delivery_marker(),
             Cut::BeforeLifecycleCommit | Cut::AfterLifecycleCommit => lifecycle_marker(),
-            Cut::BeforeAdmissionCommit | Cut::AfterAdmissionCommit => admission_marker(),
+            Cut::BeforeAdmissionSchedule
+            | Cut::BeforeAdmissionCommit
+            | Cut::AfterAdmissionCommit => admission_marker(),
             _ => durable_marker(),
         };
         socket
@@ -221,6 +233,7 @@ fn serve_observed_gateway() {
         Ok("prepare-after") => Cut::AfterRangePrepareCommit,
         Ok("lifecycle-before") => Cut::BeforeLifecycleCommit,
         Ok("lifecycle-after") => Cut::AfterLifecycleCommit,
+        Ok("admission-queued") => Cut::BeforeAdmissionSchedule,
         Ok("admission-before") => Cut::BeforeAdmissionCommit,
         Ok("admission-after") => Cut::AfterAdmissionCommit,
         Ok("delivery-before") => Cut::BeforeDeliveryCommit,
@@ -239,7 +252,9 @@ fn serve_observed_gateway() {
                     Cut::BeforeDeliveryCommit | Cut::AfterDeliveryCommit =>
                         durable_delivery_marker(),
                     Cut::BeforeLifecycleCommit | Cut::AfterLifecycleCommit => lifecycle_marker(),
-                    Cut::BeforeAdmissionCommit | Cut::AfterAdmissionCommit => admission_marker(),
+                    Cut::BeforeAdmissionSchedule
+                    | Cut::BeforeAdmissionCommit
+                    | Cut::AfterAdmissionCommit => admission_marker(),
                     _ => durable_marker(),
                 }
             )

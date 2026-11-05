@@ -92,6 +92,8 @@ impl Gateway {
                         std::env::var("WEAVER_TEST_SEPARATE_RELEASE_READS").as_deref() == Ok("1"),
                     );
                     #[cfg(test)]
+                    weaver_ledger::use_early_admission_barrier(std::env::var_os("WEAVER_TEST_EARLY_ADMISSION_BARRIER").is_some());
+                    #[cfg(test)]
                     weaver_ledger::use_exclusive_provider_reads(
                         std::env::var_os("WEAVER_TEST_EXCLUSIVE_PROVIDER_READS").is_some(),
                     );
@@ -117,6 +119,7 @@ impl Gateway {
                     #[cfg(test)]
                     {
                         crate::grpc_output::take_encoding_nanos();
+                        crate::grpc_output::take_transport();
                         crate::grpc_output::take_handoffs();
                         crate::grpc_output::take_deliveries();
                     }
@@ -143,6 +146,7 @@ impl Gateway {
                         weaver_ledger::use_fresh_provider_domain_plan(false);
                         weaver_ledger::use_separate_release_reads(false);
                         weaver_ledger::use_cached_release_programs(false);
+                        weaver_ledger::use_early_admission_barrier(false);
                         weaver_ledger::use_exclusive_provider_reads(false);
                         weaver_ledger::use_full_lifecycle_invalidation(false);
                         weaver_ledger::use_conservative_range_invalidation(false);
@@ -199,6 +203,14 @@ impl Gateway {
                     if trace_scopes {
                         eprintln!("weaver-provider-encode {} {}", plan.family, crate::grpc_output::take_encoding_nanos());
                         use std::fmt::Write;
+                        if let Some(phases) = crate::grpc_output::take_transport() {
+                            let mut line = format!("weaver-provider-transport {}", plan.family);
+                            for stage in [phases.connect, phases.tls, phases.write, phases.headers] {
+                                let _ = write!(line, " {}:{}:{}", stage.nanos, u8::from(stage.attempted), u8::from(stage.completed));
+                            }
+                            eprintln!("{line}");
+                        }
+
                         ledger.finish_provider_scope_trace();
                         let mut handoff = format!("weaver-provider-handoff {}", plan.family);
                         for (sequence, time) in crate::grpc_output::take_handoffs() {

@@ -303,6 +303,53 @@ package WeaverExecution {
            reopen only on the exact fenced image and outcome. */
     }
 
+    requirement def ProviderAdmissionTurn {
+        doc /* A pending execution request has no accepted authority outcome,
+           native claim, reservation or semantic publication. It waits in the
+           existing bounded runtime lane and conflicting-writer FIFO without
+           closing old frame authority. Once its exclusive writer turn and
+           domain discovery generation are current, close the entire semantic
+           footprint before BEGIN or any native mutation. A queued request is
+           not a source-accepted Policy/OAuth/witness intent. Those intents,
+           settlement, migration and all unclassified writers close immediately.
+           WAL retains the existing eager global closure. */
+        doc /* Known commit invalidates the affected image and activates the
+           exact new outcome; unknown commit seals and retains original holds.
+           Cancellation before native admission creates no claim or refund.
+           A crash after known queued admission can resume only the original
+           non-invoked operation; consumed/partially-written sends cannot replay.
+           Receiver owner, cut, one-use cursor, expiry and pending barriers
+           remain live at final Tonic delivery. */
+        doc /* Separate scheduler wait, native hold and authority-closed lifetime.
+           Selected closure excludes unaccepted queue residence, not native
+           service, hard-source barriers or transport latency. TCP connect, TLS
+           handshake and request write/seal remain inside the invocation guard;
+           response-header wait follows seal. Stage timing is diagnostic and
+           can never certify non-execution or authorize budget release. */
+        doc /* Go retains source-channel custody through known bootstrap activation.
+           Static published routing then closes the bootstrap-only source channel
+           before serving ingress. Runtime catalogue selection retains it. Unknown
+           activation never becomes readiness. Connection release changes no
+           authority view, claim, hold, publication or pending-intent outcome. */
+    }
+
+    part def ProviderAdmissionOverlapExperiment {
+        attribute responseFrames : Integer = 64;
+        attribute maximumGroupFrames : Integer = 4;
+        attribute minimumGroups : Integer = 16;
+        attribute oldFramesBeforeOffering : Integer = 1;
+        attribute laterRequests : Integer = 3;
+        attribute streamsPerArm : Integer = 128;
+        assert constraint { minimumGroups * maximumGroupFrames == responseFrames }
+        doc /* Additional scenario, not a replacement for the frozen thirteen-frame
+           wave. Offer three real requests after receiving the first old frame.
+           Opportunistic collect_buffered may stop at an input boundary; sixteen
+           is a lower bound, not an exact group count. Observe every prepare and
+           queue group and require matching counts within [minimumGroups,
+           responseFrames]. Do not erase actual renewals, shorten the stream or
+           change per-frame final authorization to satisfy a performance target. */
+    }
+
     part def ProviderReadCustodyExperiment {
         part grouped : ProviderSnapshotExperiment;
         attribute sharedReadScopes : Integer = 12;
@@ -483,7 +530,7 @@ package WeaverExecution {
     }
     part def EgressMutationBarrier {
         attribute displayName : String = "Rust / close";
-        attribute responsibility : String = "Run edits / origin cut\nShared edits / shared cut";
+        attribute responsibility : String = "Queued request / no cut\nAccepted edit / close first";
         attribute glyph : String = "policy";
         attribute visualRole : String = "governance";
         port closed : EgressWindowPort;

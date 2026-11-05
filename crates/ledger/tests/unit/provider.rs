@@ -891,3 +891,6 @@ mod lifecycle;
 
 #[path = "provider_read_custody.rs"]
 mod read_custody;
+
+#[path = "provider_admission_turn.rs"]
+mod admission_turn;

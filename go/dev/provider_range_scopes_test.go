@@ -25,6 +25,7 @@ type rangeScopeSample struct {
 	family         string
 	arrival, grant uint64
 	wait, hold     time.Duration
+	authoritySpan  time.Duration
 }
 
 func BenchmarkProviderSharedRangeScopes(b *testing.B) {
@@ -67,7 +68,7 @@ func parseRangeScopes(log string) (map[string][]rangeScopeSample, error) {
 		}
 		for _, field := range fields[2:] {
 			parts := strings.Split(field, ":")
-			if len(parts) != 6 || (parts[5] != "origin" && parts[5] != "exclusive") || (parts[0] != "prepare" && parts[0] != "queue" && parts[0] != "other" && parts[0] != "revalidate") {
+			if len(parts) != 7 || (parts[5] != "origin" && parts[5] != "exclusive") || (parts[0] != "admit" && parts[0] != "prepare" && parts[0] != "queue" && parts[0] != "other" && parts[0] != "revalidate") {
 				return nil, fmt.Errorf("invalid stripe sample: %q", field)
 			}
 			var n [4]uint64
@@ -77,12 +78,16 @@ func parseRangeScopes(log string) (map[string][]rangeScopeSample, error) {
 					return nil, fmt.Errorf("invalid stripe sample value: %q", value)
 				}
 			}
+			span, err := strconv.ParseInt(parts[6], 10, 64)
+			if err != nil || span < 0 {
+				return nil, fmt.Errorf("invalid authority span: %q", field)
+			}
 			previous := result[family]
 			if n[0] == 0 || n[0] >= n[1] || seen[n[0]] || seen[n[1]] || (len(previous) > 0 && n[0] <= previous[len(previous)-1].grant) {
 				return nil, fmt.Errorf("invalid or duplicate stripe ordinal: %q", field)
 			}
 			seen[n[0]], seen[n[1]] = true, true
-			result[family] = append(result[family], rangeScopeSample{originWrite: parts[5] == "origin", phase: parts[0], family: family, arrival: n[0], grant: n[1], wait: time.Duration(n[2]), hold: time.Duration(n[3])})
+			result[family] = append(result[family], rangeScopeSample{authoritySpan: time.Duration(span), originWrite: parts[5] == "origin", phase: parts[0], family: family, arrival: n[0], grant: n[1], wait: time.Duration(n[2]), hold: time.Duration(n[3])})
 		}
 		finished[family] = final == "1"
 	}
@@ -106,7 +111,7 @@ func TestProviderScopeTraceChunksPreserveAllRecords(t *testing.T) {
 			}
 			fmt.Fprintf(&log, "weaver-provider-scope f %d:%d", start, final)
 			for i := start; i < end; i++ {
-				fmt.Fprintf(&log, " revalidate:%d:%d:1:1:origin", 2*i+1, 2*i+2)
+				fmt.Fprintf(&log, " revalidate:%d:%d:1:1:origin:1", 2*i+1, 2*i+2)
 			}
 			log.WriteByte('\n')
 		}
@@ -216,11 +221,11 @@ func reportProviderRangeScopes(b *testing.B, arm *providerTailArm, name string, 
 		var wait time.Duration
 		for _, scope := range trace {
 			counts[scope.phase]++
-			if scope.phase != "other" {
+			if scope.phase != "other" && scope.phase != "admit" {
 				wait += scope.wait
 			}
 		}
-		if counts["prepare"] != ranges || counts["queue"] != ranges || counts["other"] != 5 {
+		if counts["prepare"] != ranges || counts["queue"] != ranges || counts["other"] != 4 || counts["admit"] != 1 {
 			b.Fatalf("%s unexpected range scope counts for %s: %v", name, stream.family, counts)
 		}
 		waves[wave] = append(waves[wave], trace...)

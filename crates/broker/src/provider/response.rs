@@ -5,6 +5,7 @@
 //! Owned HTTP driver: dropped on failed commit; polled for reads only afterwards.
 use super::{
     io_runtime::IoRuntime,
+    observation::{ProviderTransportPhases, Stage, measure},
     write_seal::{READING, SEALED, WriteSeal},
 };
 use bytes::Bytes;
@@ -95,21 +96,28 @@ impl SealedRequest {
         })
     }
     /// Only called after dispatch_provider returned success (including commit).
-    pub(super) fn wait_for_response_headers(mut self) -> Result<Response> {
+    pub(super) fn wait_for_response_headers(
+        mut self,
+        phases: &std::cell::Cell<ProviderTransportPhases>,
+    ) -> Result<Response> {
         self.phase
             .compare_exchange(SEALED, READING, Ordering::AcqRel, Ordering::Acquire)
             .map_err(|_| Error::Conflict("provider writer not sealed"))?;
         let response = self.runtime.wait(
             self.deadline,
-            poll_fn(|cx| {
-                if let Err(error) = self.driver.pump(cx) {
-                    return Poll::Ready(Err(error));
-                }
-                self.response
-                    .as_mut()
-                    .poll(cx)
-                    .map(|r| r.map_err(|_| Error::Conflict("provider outcome unknown")))
-            }),
+            measure(
+                phases,
+                Stage::Headers,
+                poll_fn(|cx| {
+                    if let Err(error) = self.driver.pump(cx) {
+                        return Poll::Ready(Err(error));
+                    }
+                    self.response
+                        .as_mut()
+                        .poll(cx)
+                        .map(|r| r.map_err(|_| Error::Conflict("provider outcome unknown")))
+                }),
+            ),
         )?;
         if response.status() != 200
             || response

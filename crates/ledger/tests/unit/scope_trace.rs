@@ -13,7 +13,7 @@ proptest! {
         for ordinal in 0..count {
             trace.record(ProviderScopeSample {origin_write: ordinal % 2 == 0, phase: ProviderScopePhase::RevalidateDelivery,
                 arrival: ordinal as u64*2+1, grant: ordinal as u64*2+2,
-                wait: Duration::ZERO, hold: Duration::ZERO});
+                wait: Duration::ZERO, authority_span: Duration::ZERO, hold: Duration::ZERO});
             prop_assert!(trace.samples.len() <= CAPACITY);
             prop_assert_eq!(trace.flushed + trace.samples.len(), ordinal+1);
         }

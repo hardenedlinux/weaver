@@ -15,6 +15,7 @@ use std::{
 /// Provider range phase used to label diagnostic scope observations.
 #[derive(Clone, Copy)]
 pub enum ProviderScopePhase {
+    Admission,
     Other,
     PrepareRange,
     FinalQueue,
@@ -23,6 +24,7 @@ pub enum ProviderScopePhase {
 
 enum Change<'a> {
     Semantic,
+    Admission(&'a crate::provider::AdmissionRequest),
     Progress(&'a crate::provider::RangeProgress),
     Lifecycle(&'a crate::provider::OriginLifecycle),
 }
@@ -37,6 +39,7 @@ pub struct WriteScope<'a> {
     poisoned: &'a AtomicBool,
     timings: &'a mut super::TransactionTimings,
     entered: Instant,
+    authority_entered: Instant,
     oauth_check: Cell<super::Timing>,
     current_domain: Cell<super::Timing>,
     current_pending: Cell<super::Timing>,
@@ -77,6 +80,23 @@ pub fn begin_family<'a>(session: &'a mut Session, family: &str) -> driver::Resul
         Change::Semantic,
     )
 }
+/// A queued execution request is not an accepted authority intent. Acquire its
+/// exclusive turn and recheck root discovery before closing, then start SQL.
+/// Source changes, OAuth intents and migration never use this entrypoint.
+pub(crate) fn begin_provider_admission<'a>(
+    session: &'a mut Session,
+    family: &str,
+    proof: &crate::provider::AdmissionRequest,
+) -> driver::Result<WriteScope<'a>> {
+    start(
+        session,
+        Some(family),
+        None,
+        ProviderScopePhase::Admission,
+        Change::Admission(proof),
+    )
+}
+
 /// Read custody remains the complete domain set. Only the sealed provider
 /// lifecycle write set may invalidate its origin lane alone in MVCC.
 pub(crate) fn begin_provider_lifecycle<'a>(
@@ -142,20 +162,42 @@ fn start<'a>(
     let close_scope = keys.as_ref().map_or(super::scheduler::Scope::All, |keys| {
         super::scheduler::Scope::Domains(keys.clone())
     });
-    let shared_reads =
-        !matches!(&change, Change::Semantic) && crate::provider::shared_provider_reads();
-    // Close before waiting for either the scheduler or native writer.
-    let authority = match change {
-        Change::Progress(progress) => session
-            .owner
-            .authority
-            .close_progress(close_scope, progress)?,
-        Change::Lifecycle(proof) => session
-            .owner
-            .authority
-            .close_lifecycle(close_scope, proof)?,
-        Change::Semantic => session.owner.authority.close(close_scope)?,
+    let shared_reads = matches!(&change, Change::Progress(_) | Change::Lifecycle(_))
+        && crate::provider::shared_provider_reads();
+    #[cfg(any(test, feature = "commit-observer"))]
+    let admission_request = matches!(&change, Change::Admission(_));
+    let selected_admission =
+        concurrent && matches!(&change, Change::Admission(proof) if proof.wait_before_close());
+    let authority_entered = Instant::now();
+    // Accepted source/Policy/OAuth intents close immediately, including while
+    // waiting. Only an unaccepted provider request may wait before closure.
+    let authority = if selected_admission {
+        None
+    } else {
+        Some(match change {
+            Change::Progress(proof) => session
+                .owner
+                .authority
+                .close_progress(close_scope.clone(), proof)?,
+            Change::Lifecycle(proof) => session
+                .owner
+                .authority
+                .close_lifecycle(close_scope.clone(), proof)?,
+            Change::Semantic | Change::Admission(_) => {
+                session.owner.authority.close(close_scope.clone())?
+            }
+        })
     };
+    #[cfg(any(test, feature = "commit-observer"))]
+    if admission_request
+        && let Some(observer) = &session.commit_observer
+        && observer.admission_wait(family.expect("provider admission family"))
+            != super::commit_observer::Decision::Continue
+    {
+        return Err(super::owner::error(
+            "unaccepted provider admission abandoned before native scheduling",
+        ));
+    }
     let mut owner_entered = None;
     let mut domains_entered = None;
     #[cfg(feature = "commit-observer")]
@@ -167,6 +209,7 @@ fn start<'a>(
                 ProviderScopePhase::PrepareRange
                 | ProviderScopePhase::FinalQueue
                 | ProviderScopePhase::RevalidateDelivery => session.range_cancelled.as_deref(),
+                ProviderScopePhase::Admission => session.range_cancelled.as_deref(),
                 ProviderScopePhase::Other => None,
             };
             #[cfg(feature = "commit-observer")]
@@ -213,6 +256,13 @@ fn start<'a>(
         }
         (false, _) => None,
     };
+    let (authority, authority_entered) = match authority {
+        Some(authority) => (authority, authority_entered),
+        None => {
+            let entered = Instant::now();
+            (session.owner.authority.close(close_scope)?, entered)
+        }
+    };
     let parallel = concurrent && family.is_some();
     // The mutable Session borrow provides exclusive custody for the whole scope.
     let native = super::timing::measure(&mut session.timings.transaction_begin, || {
@@ -234,6 +284,7 @@ fn start<'a>(
         poisoned: &session.poisoned,
         timings: &mut session.timings,
         entered: Instant::now(),
+        authority_entered,
         oauth_check: Cell::default(),
         current_domain: Cell::default(),
         current_pending: Cell::default(),
@@ -503,6 +554,9 @@ impl Drop for WriteScope<'_> {
             total.nanos = total.nanos.saturating_add(sample.nanos);
         }
         self.authority.settle_drop();
+        self.timings
+            .authority_span
+            .record(self.authority_entered.elapsed());
         drop(self.grant.take());
         if let Some(entered) = self.domains_entered {
             self.timings.domain_hold.record(entered.elapsed());
@@ -512,7 +566,7 @@ impl Drop for WriteScope<'_> {
         }
         #[cfg(feature = "commit-observer")]
         if let Some(trace) = self.scope_trace.take() {
-            trace.record();
+            trace.record(self.authority_entered.elapsed());
         }
     }
 }
