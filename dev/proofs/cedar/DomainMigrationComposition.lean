@@ -2,6 +2,7 @@
 --
 -- SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
+import ProviderReadCustody
 import ProviderLifecycleFootprint
 import ProviderSnapshotPublication
 import ProviderSemanticProgress
@@ -136,6 +137,31 @@ theorem peer_lifecycle_preserves_spec_final_use [DecidableEq Family]
   exact qualified
 
 #print axioms peer_lifecycle_preserves_spec_final_use
+
+/-- Scheduler compatibility preserves only the declared observer read projection.
+    The current SPEC FinalUse and reachable run remain separate host obligations,
+    including currentness, owner fencing and the original shared exposure. -/
+theorem read_custody_preserves_spec_final_use
+    (use : Gateway.ZeroTrust.FinalUse proposal)
+    (events : GatewayHeadCAS.Run c owner GatewayHeadCAS.initial use.actual)
+    (reader : Weaver.ProviderReadCustody.Access)
+    (before after : Nat → Nat)
+    (steps : Weaver.ProviderReadCustody.Steps reader before after)
+    (observe : GatewayHeadCAS.State → Nat → Nat)
+    (current : observe use.actual = after)
+    (allow : (Nat → Nat) → Prop)
+    (depends : Weaver.ProviderReadCustody.ReadsOnly allow reader.reads)
+    (qualified : allow before) :
+    allow (observe use.actual) ∧
+    (Gateway.ZeroTrust.specialize proposal (reachableDomain c)).required effect use.actual ∧
+    (∀ account, booked c use.actual.base account ≤ c.capacity account) ∧
+    (∀ key, (use.actual.base.messages key).claims ≤ 1 ∧
+      (use.actual.base.messages key).sends ≤ 1) ∧ original.Refines prepared.profile := by
+  refine ⟨?_, gateway_final_use_preserves_domain_contract use events⟩
+  rw [current]
+  exact Weaver.ProviderReadCustody.finite_interleaving_preserves_policy steps depends qualified
+
+#print axioms read_custody_preserves_spec_final_use
 
 theorem head_cas_preserves_original_obligations
     (step : GatewayHeadCAS.Step c owner before after)

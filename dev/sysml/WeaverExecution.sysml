@@ -119,14 +119,15 @@ package WeaverExecution {
            that transaction. Program reuse preserves the full domain join.
            The domain view and reservation reconciliation are scope-local.
            History equality, capacity, revocation, Policy and fence remain live. */
-        doc /* Shared roots serialize. Independent roots may overlap under MVCC.
-           Qualify both with the same binary, ingress, original workload, provider,
-           and held-budget verification. Hold and wait intervals can overlap.
-           The sum of protected service demands is a lower bound on a wave
-       sharing one root. Cross-root time is bounded by the longest dependency
-       chain and can also be constrained by native writer and IO capacity.
-       Report wall time and sampled work separately. A diagnostic speed result
-           carries no authority and does not establish a production SLO. */
+        doc /* Overlapping semantic writers serialize; certified provider work
+           may share semantic reads while writing distinct original origins.
+           Measure actual granted modes and reader/writer waits separately.
+           Only mutually conflicting protected demands form a serial service
+           lower bound. Compatible reads are bounded by dependency chains,
+           native writer/IO capacity and host scheduling, not their simple sum.
+           Both profiles use the same binary, original workload, ingress,
+           provider and held-budget verification. Hold intervals may overlap.
+           A diagnostic result carries no authority or production SLO claim. */
     }
 
     part def SharedDomainScheduler {
@@ -300,6 +301,36 @@ package WeaverExecution {
            authority inputs belong to the same projected image. Mutations
            close the affected conflict components before durable CAS and
            reopen only on the exact fenced image and outcome. */
+    }
+
+    part def ProviderReadCustodyExperiment {
+        part grouped : ProviderSnapshotExperiment;
+        attribute sharedReadScopes : Integer = 12;
+        attribute sharedWriterScopes : Integer = 1;
+        assert constraint { sharedReadScopes + sharedWriterScopes == grouped.snapshotBaseScopes }
+        assert constraint { sharedReadScopes == grouped.lifecycle.fixedDecidingScopes - 1 + grouped.preparationGroups + grouped.snapshotQueueGroups }
+        doc /* In the unchanged thirteen-range burst, four lifecycle scopes and
+           eight range scopes use compatible read custody; only new admission
+           writes the shared semantic projection. Actual renewal scopes are
+           additional and must be reported. A mode is observed at scheduler
+           grant, never inferred from the phase label or chosen benchmark arm.
+           The thirteen frame owner/cursor checks remain independent of SQL
+           lease compatibility. Fewer conflicts do not prove a tail bound. */
+    }
+
+    requirement def ProviderReadCustody {
+        doc /* Certified provider progress and lifecycle operations read the
+           complete six-domain semantic footprint and write their own original
+           origin. Different origins may hold those shared read leases together.
+           Same-origin work, broad admission/settlement and global Policy/OAuth/
+           migration remain conflicting writers. Earlier conflicting writers
+           prevent younger readers from bypassing them. No shared-budget cache
+           substitutes for live SQL, original claim or current Cedar checks. */
+        doc /* A lease is not send authority. Known native group commit and the
+           current cut, unique owner, grant time and affine cursor still join at
+           final Tonic use. Unknown native results preserve holds and seal; native
+           write conflicts cannot trigger another provider invocation. WAL keeps
+           its global profile. Actual Turso concurrency must be positively tested. */
     }
 
     requirement def ProviderLifecycleFootprint {
@@ -492,7 +523,7 @@ package WeaverExecution {
 
     part def DeliveryValidation {
         attribute displayName : String = "Rust / qualify group";
-        attribute responsibility : String = "Pending clear; each row\nCedar + claim + domains";
+        attribute responsibility : String = "Read shared; write origin\nCedar + claim + domains";
         attribute glyph : String = "authorization";
         attribute visualRole : String = "governance";
         port closed : ~EgressWindowPort;

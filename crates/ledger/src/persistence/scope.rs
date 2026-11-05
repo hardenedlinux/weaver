@@ -26,7 +26,7 @@ enum Change<'a> {
     Progress(&'a crate::provider::RangeProgress),
     Lifecycle(&'a crate::provider::OriginLifecycle),
 }
-/// Exclusive native transaction; final guarded callbacks keep this scope alive.
+/// Session-owned native transaction; compatible original origins may coexist.
 pub struct WriteScope<'a> {
     connection: &'a driver::Connection,
     authority: super::authority::Close<'a>,
@@ -142,6 +142,8 @@ fn start<'a>(
     let close_scope = keys.as_ref().map_or(super::scheduler::Scope::All, |keys| {
         super::scheduler::Scope::Domains(keys.clone())
     });
+    let shared_reads =
+        !matches!(&change, Change::Semantic) && crate::provider::shared_provider_reads();
     // Close before waiting for either the scheduler or native writer.
     let authority = match change {
         Change::Progress(progress) => session
@@ -170,14 +172,23 @@ fn start<'a>(
             #[cfg(feature = "commit-observer")]
             let arrived = Instant::now();
             let grant = super::timing::measure(&mut session.timings.domain_wait, || {
-                scheduler.acquire(super::scheduler::Scope::Domains(keys), cancelled)
+                if shared_reads {
+                    scheduler.acquire_origin(super::scheduler::Scope::Domains(keys), cancelled)
+                } else {
+                    scheduler.acquire(super::scheduler::Scope::Domains(keys), cancelled)
+                }
             })?;
             domains_entered = Some(Instant::now());
             #[cfg(feature = "commit-observer")]
             if let Some(trace) = session.scope_trace.as_mut() {
                 scope_trace = Some(
-                    super::scope_trace::Arrival::capture(phase, grant.arrival, arrived)
-                        .granted(trace, grant.granted),
+                    super::scope_trace::Arrival::capture(
+                        phase,
+                        grant.arrival,
+                        arrived,
+                        grant.origin_write,
+                    )
+                    .granted(trace, grant.granted),
                 );
             }
             // Key discovery is a hint. An intervening global scope may have migrated roots.

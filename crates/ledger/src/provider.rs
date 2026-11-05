@@ -36,6 +36,25 @@ thread_local! {
 pub fn use_full_lifecycle_invalidation(full: bool) {
     FULL_LIFECYCLE_INVALIDATION.set(full);
 }
+#[cfg(feature = "commit-observer")]
+thread_local! {
+    static EXCLUSIVE_PROVIDER_READS: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
+}
+/// Safe same-image control retaining full-domain exclusive read custody.
+#[cfg(feature = "commit-observer")]
+pub fn use_exclusive_provider_reads(exclusive: bool) {
+    EXCLUSIVE_PROVIDER_READS.set(exclusive);
+}
+pub(crate) fn shared_provider_reads() -> bool {
+    #[cfg(feature = "commit-observer")]
+    {
+        !EXCLUSIVE_PROVIDER_READS.get()
+    }
+    #[cfg(not(feature = "commit-observer"))]
+    {
+        true
+    }
+}
 impl OriginLifecycle {
     pub(crate) fn origin_only(&self) -> bool {
         #[cfg(feature = "commit-observer")]

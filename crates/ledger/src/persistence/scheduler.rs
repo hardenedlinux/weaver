@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
-//! Process-local custody for overlapping MVCC write scopes.
+//! FIFO read-set custody with exclusive original-origin provider writes.
 use super::{driver, owner::error};
 use std::{
     collections::VecDeque,
@@ -26,9 +26,27 @@ impl Scope {
     }
 }
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Access {
+    Exclusive,
+    OriginWrite,
+}
+
 struct Ticket {
+    access: Access,
     id: u64,
     scope: Scope,
+}
+
+impl Ticket {
+    fn conflicts(&self, other: &Self) -> bool {
+        match (&self.scope, &other.scope, self.access, other.access) {
+            (Scope::Domains(a), Scope::Domains(b), Access::OriginWrite, Access::OriginWrite) => {
+                a.key(0) == b.key(0)
+            }
+            _ => self.scope.overlaps(&other.scope),
+        }
+    }
 }
 
 #[derive(Default)]
@@ -52,12 +70,12 @@ impl State {
     }
 
     fn eligible(&self, at: usize) -> bool {
-        let candidate = &self.waiting[at].scope;
+        let candidate = &self.waiting[at];
         self.waiting
             .iter()
             .take(at)
             .chain(&self.active)
-            .all(|older| !older.scope.overlaps(candidate))
+            .all(|older| !older.conflicts(candidate))
     }
 }
 
@@ -68,6 +86,8 @@ pub(super) struct Grant<'a> {
     pub generation: u64,
     #[cfg(feature = "commit-observer")]
     pub arrival: u64,
+    #[cfg(feature = "commit-observer")]
+    pub origin_write: bool,
     #[cfg(feature = "commit-observer")]
     pub granted: u64,
 }
@@ -82,10 +102,33 @@ impl Scheduler {
         scope: Scope,
         cancelled: Option<&(dyn Fn() -> bool + Send + Sync)>,
     ) -> driver::Result<Grant<'_>> {
+        self.acquire_access(scope, Access::Exclusive, cancelled)
+    }
+
+    /// Only sealed provider progress/lifecycle callers can select this lease.
+    /// It still reads all six namespaces; only its origin is writable.
+    pub fn acquire_origin(
+        &self,
+        scope: Scope,
+        cancelled: Option<&(dyn Fn() -> bool + Send + Sync)>,
+    ) -> driver::Result<Grant<'_>> {
+        self.acquire_access(scope, Access::OriginWrite, cancelled)
+    }
+
+    fn acquire_access(
+        &self,
+        scope: Scope,
+        access: Access,
+        cancelled: Option<&(dyn Fn() -> bool + Send + Sync)>,
+    ) -> driver::Result<Grant<'_>> {
         let mut state = self.state.lock().map_err(error)?;
         let ticket = state.event();
         let global = matches!(scope, Scope::All);
-        state.waiting.push_back(Ticket { id: ticket, scope });
+        state.waiting.push_back(Ticket {
+            id: ticket,
+            scope,
+            access,
+        });
         loop {
             let position = state
                 .waiting
@@ -110,6 +153,8 @@ impl Scheduler {
                     generation: state.generation,
                     #[cfg(feature = "commit-observer")]
                     arrival: ticket,
+                    #[cfg(feature = "commit-observer")]
+                    origin_write: access == Access::OriginWrite && !global,
                     #[cfg(feature = "commit-observer")]
                     granted: state.event(),
                 });

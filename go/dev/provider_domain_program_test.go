@@ -217,7 +217,7 @@ func measureDomainEncodingWave(b *testing.B, f *fixture, plans []v1.ProviderPlan
 			count = uint64(len(plans))
 		}
 		view, err := f.admin.RPC.InspectExecutionDomains(f.admin.Context(ctx), &pb.OperationKey{Family: plan.Family})
-		if err != nil || view.GetHeld() != count*plan.Ceiling || view.GetHistoryCount() != count {
+		if err != nil || view.GetHeld() != count*plan.Ceiling || view.GetHistoryCount() != count || view.GetStamp().GetOrigin() != plan.Family {
 			b.Fatalf("benchmark hold/history mismatch: %v %v", view, err)
 		}
 	}

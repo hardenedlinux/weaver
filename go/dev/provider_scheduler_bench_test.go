@@ -92,6 +92,7 @@ func reportScheduledEncoding(b *testing.B, arm *providerTailArm, label string, r
 	scopes := readRangeScopes(b, arm.fixture)
 	waves := make(map[string][]rangeScopeSample)
 	var frames, payload int
+	var readWaits, readHolds, exclusiveWaits, exclusiveHolds, queueWaits []time.Duration
 	var receives, decodes, encodesByStream, queueToRecv, scopeWaits, prepareWaits []time.Duration
 	for _, stream := range arm.streams {
 		encode, ok := encodes[stream.family]
@@ -102,6 +103,16 @@ func reportScheduledEncoding(b *testing.B, arm *providerTailArm, label string, r
 		for _, scope := range scopes[stream.family] {
 			counts[scope.phase]++
 			scopeWaits = append(scopeWaits, scope.wait)
+			if scope.originWrite {
+				readWaits = append(readWaits, scope.wait)
+				readHolds = append(readHolds, scope.hold)
+			} else {
+				exclusiveWaits = append(exclusiveWaits, scope.wait)
+				exclusiveHolds = append(exclusiveHolds, scope.hold)
+			}
+			if scope.phase == "queue" {
+				queueWaits = append(queueWaits, scope.wait)
+			}
 			if scope.phase == "prepare" {
 				prepareWaits = append(prepareWaits, scope.wait)
 			}
@@ -138,6 +149,19 @@ func reportScheduledEncoding(b *testing.B, arm *providerTailArm, label string, r
 				b.Fatalf("%s conflicting ticket overtook %s arrival %d", label, scope.family, scope.arrival)
 			}
 		}
+	}
+	for _, metric := range []struct {
+		name   string
+		values []time.Duration
+	}{
+		{"shared-read-wait", readWaits}, {"shared-read-hold", readHolds},
+		{"exclusive-wait", exclusiveWaits}, {"exclusive-hold", exclusiveHolds},
+		{"queue-wait", queueWaits},
+	} {
+		if len(metric.values) > 0 {
+			b.ReportMetric(tailMillis(metric.values, 99), label+"-"+metric.name+"-p99-ms/scope")
+		}
+		b.ReportMetric(float64(len(metric.values))/float64(len(arm.streams)), label+"-"+metric.name+"-scopes/stream")
 	}
 	n := float64(len(arm.streams))
 	b.ReportMetric(float64(len(prepareWaits))/n, label+"-preparations/stream")

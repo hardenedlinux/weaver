@@ -92,7 +92,12 @@ impl Gateway {
                         std::env::var("WEAVER_TEST_SEPARATE_RELEASE_READS").as_deref() == Ok("1"),
                     );
                     #[cfg(test)]
+                    weaver_ledger::use_exclusive_provider_reads(
+                        std::env::var_os("WEAVER_TEST_EXCLUSIVE_PROVIDER_READS").is_some(),
+                    );
+                    #[cfg(test)]
                     weaver_ledger::use_full_lifecycle_invalidation(
+
                         std::env::var_os("WEAVER_TEST_FULL_LIFECYCLE_INVALIDATION").is_some(),
                     );
                     #[cfg(test)]
@@ -138,6 +143,7 @@ impl Gateway {
                         weaver_ledger::use_fresh_provider_domain_plan(false);
                         weaver_ledger::use_separate_release_reads(false);
                         weaver_ledger::use_cached_release_programs(false);
+                        weaver_ledger::use_exclusive_provider_reads(false);
                         weaver_ledger::use_full_lifecycle_invalidation(false);
                         weaver_ledger::use_conservative_range_invalidation(false);
                     }

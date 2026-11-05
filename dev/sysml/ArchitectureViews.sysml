@@ -258,6 +258,7 @@ package WeaverViews {
         requirement semanticProgress : WeaverExecution::ProviderSemanticProgress;
         requirement publicationContract : WeaverExecution::ProviderSnapshotPublication;
         requirement lifecycleFootprint : WeaverExecution::ProviderLifecycleFootprint;
+        requirement readCustody : WeaverExecution::ProviderReadCustody;
         expose WeaverExecution::providerDeliveryJoin::changes;
         expose WeaverExecution::providerDeliveryJoin::validated;
         expose WeaverExecution::providerDeliveryJoin::publication;

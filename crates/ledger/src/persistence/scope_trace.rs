@@ -10,6 +10,7 @@ pub(super) const CAPACITY: usize = 64;
 pub(super) struct Arrival {
     phase: ProviderScopePhase,
     order: u64,
+    origin_write: bool,
     at: Instant,
 }
 
@@ -23,6 +24,8 @@ pub(super) struct Granted<'a> {
 /// Process-local observations of atomic domain admission.
 pub struct ProviderScopeSample {
     pub phase: ProviderScopePhase,
+    /// Actual granted lease mode, not inferred from the phase name.
+    pub origin_write: bool,
     pub arrival: u64,
     pub grant: u64,
     pub wait: Duration,
@@ -30,8 +33,18 @@ pub struct ProviderScopeSample {
 }
 
 impl Arrival {
-    pub(super) fn capture(phase: ProviderScopePhase, order: u64, at: Instant) -> Self {
-        Self { phase, order, at }
+    pub(super) fn capture(
+        phase: ProviderScopePhase,
+        order: u64,
+        at: Instant,
+        origin_write: bool,
+    ) -> Self {
+        Self {
+            phase,
+            order,
+            at,
+            origin_write,
+        }
     }
     pub(super) fn granted(self, trace: &mut Trace, order: u64) -> Granted<'_> {
         Granted {
@@ -73,11 +86,16 @@ impl Trace {
             };
             let _ = write!(
                 line,
-                " {phase}:{}:{}:{}:{}",
+                " {phase}:{}:{}:{}:{}:{}",
                 sample.arrival,
                 sample.grant,
                 sample.wait.as_nanos(),
-                sample.hold.as_nanos()
+                sample.hold.as_nanos(),
+                if sample.origin_write {
+                    "origin"
+                } else {
+                    "exclusive"
+                }
             );
         }
         eprintln!("{line}");
@@ -98,6 +116,7 @@ impl Granted<'_> {
     pub(super) fn record(self) {
         self.trace.record(ProviderScopeSample {
             phase: self.arrival.phase,
+            origin_write: self.arrival.origin_write,
             arrival: self.arrival.order,
             grant: self.order,
             wait: self.at.duration_since(self.arrival.at),

@@ -47,7 +47,18 @@ type deliveryComparison struct {
 func BenchmarkProviderLifecycleFootprint(b *testing.B) {
 	image := wifImage(b, true)
 	comparison := deliveryComparison{labels: [2]string{"full-domain", "origin-cut"},
-		controls: [2][]string{{"WEAVER_TEST_FULL_LIFECYCLE_INVALIDATION=1"}, nil}, queues: [2]int{4, 4}}
+		controls: [2][]string{{"WEAVER_TEST_FULL_LIFECYCLE_INVALIDATION=1", "WEAVER_TEST_EXCLUSIVE_PROVIDER_READS=1"}, {"WEAVER_TEST_EXCLUSIVE_PROVIDER_READS=1"}}, queues: [2]int{4, 4}}
+	for _, shared := range []bool{true, false} {
+		for _, loaded := range []bool{false, true} {
+			b.Run(fmt.Sprintf("shared=%t/pressure=%t", shared, loaded), func(b *testing.B) { benchmarkProviderDeliveryComparison(b, image, shared, loaded, comparison) })
+		}
+	}
+}
+
+func BenchmarkProviderReadCustody(b *testing.B) {
+	image := wifImage(b, true)
+	comparison := deliveryComparison{labels: [2]string{"exclusive-reads", "shared-reads"},
+		controls: [2][]string{{"WEAVER_TEST_EXCLUSIVE_PROVIDER_READS=1"}, nil}, queues: [2]int{4, 4}}
 	for _, shared := range []bool{true, false} {
 		for _, loaded := range []bool{false, true} {
 			b.Run(fmt.Sprintf("shared=%t/pressure=%t", shared, loaded), func(b *testing.B) { benchmarkProviderDeliveryComparison(b, image, shared, loaded, comparison) })

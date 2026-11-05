@@ -888,3 +888,6 @@ mod snapshot_delivery;
 
 #[path = "provider_lifecycle.rs"]
 mod lifecycle;
+
+#[path = "provider_read_custody.rs"]
+mod read_custody;

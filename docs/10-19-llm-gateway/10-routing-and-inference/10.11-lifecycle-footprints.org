@@ -10,7 +10,14 @@
 [[file:10.10-snapshot-publication.org][Published snapshot design and previous evidence]]
 [[file:10.09-provider-delivery-join.svg]]
 
+This document records the origin-cut stage and its retained measurements.
+[[file:10.12-read-custody.org][The subsequent shared-read design]] replaces its
+exclusive scheduling assumption for the audited provider paths only.
+The lifecycle comparison keeps both arms on exclusive read custody to isolate
+its invalidation change; the separate read-custody comparison isolates scheduling.
+
 * Complete deciding view and concrete dependency audit
+
 
 A transaction's read/scheduling footprint is not its invalidation footprint.
 The existing scheduler still covers original origin, shared budget/history and
