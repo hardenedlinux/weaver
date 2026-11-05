@@ -68,6 +68,15 @@ impl Session {
     pub fn timings(&self) -> super::TransactionTimings {
         self.timings
     }
+    pub(crate) fn prepare_provider_original(
+        &mut self,
+        family: &str,
+    ) -> Option<crate::task_origins::PreparedOriginal> {
+        self.require_quiescent().ok()?;
+        super::timing::measure(&mut self.timings.provider_original_prepare, || {
+            crate::task_origins::prepare(&self.connection, family)
+        })
+    }
     pub(crate) fn prepare_provider_publication(
         &mut self,
         family: &str,

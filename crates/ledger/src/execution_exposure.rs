@@ -25,6 +25,18 @@ pub(crate) struct ReservationClaim<'a> {
 /// Append the original member under the same transaction as its row and hold.
 /// Only distinct stream messages may extend an existing logical node claim.
 pub(crate) fn retain(tx: &WriteScope<'_>, claim: ReservationClaim<'_>) -> Result<()> {
+    let current = crate::domains::view_current(tx, claim.family)?;
+    retain_in_view(tx, claim, &current)
+}
+
+pub(crate) fn retain_in_view(
+    tx: &WriteScope<'_>,
+    claim: ReservationClaim<'_>,
+    current: &weaver_contracts::DomainView,
+) -> Result<()> {
+    if current.family != claim.family {
+        return Err(Error::Conflict("foreign domain view"));
+    }
     let kind = match claim.kind {
         ClaimKind::Request => "request",
         ClaimKind::Stream => "stream",
@@ -75,15 +87,8 @@ pub(crate) fn retain(tx: &WriteScope<'_>, claim: ReservationClaim<'_>) -> Result
     if changed != 1 {
         return Err(Error::Conflict("logical reservation already claimed"));
     }
-    crate::domains::charge(tx, claim.family, claim.ceiling)?;
-    crate::domains::history(
-        tx,
-        claim.family,
-        claim.node,
-        claim.member,
-        kind,
-        claim.digest,
-    )?;
+    crate::domains::charge(tx, current, claim.ceiling)?;
+    crate::domains::history(tx, current, claim.node, claim.member, kind, claim.digest)?;
     Ok(())
 }
 
@@ -111,17 +116,24 @@ pub(crate) fn provider(
     plan: &ProviderPlan,
     digest: &str,
     current: &weaver_contracts::DomainView,
+    prepared: Option<&crate::task_origins::PreparedOriginal>,
+    consumed_target: Option<&str>,
 ) -> Result<()> {
     if current.family != plan.family {
         return Err(Error::Conflict("foreign domain view"));
     }
-    let matches: bool = crate::persistence::one_current(tx, "SELECT EXISTS(SELECT 1 FROM provider_runs WHERE family=?1 AND node=?2 AND reserved=?3 AND digest=?4)", crate::persistence::params![(plan.family).to_owned(),(plan.node).to_owned(),(plan.ceiling as i64).to_owned(),(digest).to_owned()], |row| row.get(0)).map_err(db)?;
+    let matches: bool = crate::persistence::one_current(
+        tx,
+        "SELECT EXISTS(SELECT 1 FROM provider_runs WHERE family=?1 AND node=?2 AND reserved=?3 AND digest=?4 AND (?5 IS NULL OR (state='unknown' AND target=?5)))",
+        crate::persistence::params![plan.family.as_str(), plan.node.as_str(), plan.ceiling as i64, digest, consumed_target],
+        |r| r.get(0),
+    ).map_err(db)?;
     require(matches)?;
     if let Some(config) = crate::metering::deployment(tx)? {
         crate::provider_quota::require(tx, &config, &plan.family, &plan.node)?;
         crate::metering::require_quote(tx, &config, plan, digest)?;
     }
-    crate::domains::require_view(tx, current)
+    crate::domains::require_view(tx, current, prepared)
 }
 
 fn require(retained: bool) -> Result<()> {

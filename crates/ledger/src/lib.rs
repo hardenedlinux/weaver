@@ -53,3 +53,6 @@ pub use stream_ranges::RangePermit;
 
 #[cfg(test)]
 asp_rust::asp_rust_cargo_test_gate!(mode = deny, config = asp_rust::default_asp_rust_config());
+
+#[cfg(feature = "commit-observer")]
+pub use task_origins::use_locked_original_evidence;

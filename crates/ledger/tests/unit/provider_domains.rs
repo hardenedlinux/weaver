@@ -181,3 +181,41 @@ fn policy_cas_waits_for_final_provider_callback() {
         ProviderState::Unknown
     );
 }
+
+#[test]
+fn prepared_original_cannot_mask_a_replaced_task_commitment() {
+    let directory = tempfile::tempdir().expect("directory");
+    let path = directory.path().join("original-commitment.db");
+    let storage = Session::open_with_journal(&path, Journal::Mvcc).expect("MVCC");
+    let (mut ledger, plan) = fixture_nodes(&path, &["infer"]);
+    ledger.enqueue_provider(&plan).expect("reserve");
+    let eligible = BTreeSet::from(["primary".into()]);
+    let permit = ledger
+        .consume_provider("f", "infer", &eligible)
+        .expect("consume");
+    weaver_ledger::persistence::exec(
+        &storage,
+        "UPDATE original_tasks SET task_digest='replaced' WHERE family='f'",
+        (),
+    )
+    .expect("inject a torn commitment after preparation");
+    let sent = ledger.dispatch_provider::<()>(&permit, || panic!("stale original sent bytes"));
+    assert!(matches!(
+        sent,
+        Err(weaver_contracts::Error::Conflict(
+            "original task or domain commitment changed"
+        ))
+    ));
+    let view = ledger.execution_domains("f").expect("retained view");
+    assert_eq!((view.held, view.history_count), (4, 1));
+    let mut recovered = Ledger::open(&path).expect("new worker");
+    assert!(recovered.consume_provider("f", "infer", &eligible).is_err());
+    assert_eq!(
+        recovered
+            .provider_receipt("f", "infer")
+            .expect("read")
+            .expect("receipt")
+            .state,
+        ProviderState::Unknown
+    );
+}

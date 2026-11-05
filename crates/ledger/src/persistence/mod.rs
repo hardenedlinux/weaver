@@ -20,7 +20,7 @@ pub use owner::Journal;
 pub use query::use_cached_currentness_plans;
 pub use query::{exec, maybe, one, read_all, script};
 pub(crate) use query::{maybe_current, one_current, read_all_current};
-pub(crate) use scope::begin_family;
 pub use scope::{WriteScope, begin};
+pub(crate) use scope::{begin_family, begin_provider_use};
 pub use session::Session;
 pub use timing::{Timing, TransactionTimings};

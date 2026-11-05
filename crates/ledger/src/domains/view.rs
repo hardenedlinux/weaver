@@ -85,11 +85,14 @@ pub(crate) fn lock_keys(
             "family alias is not another executable origin".into(),
         ));
     }
-    Ok(vec![
-        format!("origin:{}", current.stamp.origin),
-        format!("budget:{}", current.stamp.budget_root),
-        format!("history:{}", current.stamp.history_root),
-    ])
+    Ok(stamp_keys(&current.stamp))
+}
+pub(crate) fn stamp_keys(stamp: &DomainStamp) -> Vec<String> {
+    vec![
+        format!("origin:{}", stamp.origin),
+        format!("budget:{}", stamp.budget_root),
+        format!("history:{}", stamp.history_root),
+    ]
 }
 impl crate::Ledger {
     /// Observation only; subsequent effects rejoin these authoritative roots.

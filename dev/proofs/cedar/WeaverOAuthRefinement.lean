@@ -112,6 +112,38 @@ theorem prepared_review_refines_live
     qualifies live ∧ pendingClear ∧ issuerCurrent ∧ oauthCurrent ∧ fenceCurrent := by
   exact ⟨matched.symm ▸ verified, pending, issuer, oauth, fence⟩
 
+/-- A prepared original transports a deterministic static check across exact
+    row equality. Mutable domain state and the original publication link
+    belong to the deciding transaction. -/
+theorem prepared_original_refines_live
+    {Row View : Type} {candidate actual : Row} {staticCheck : Row → Prop}
+    {view : View} {liveChecks : View → Prop}
+    (verified : staticCheck candidate) (same : actual = candidate)
+    (live : liveChecks view) :
+    staticCheck actual ∧ liveChecks view :=
+  ⟨same.symm ▸ verified, live⟩
+
+/-- A claim insert changes the manifest, but can share the locked domain
+    identity with the ensuing capacity-guarded charge and history append
+    when neither root nor the origin can change between those effects. -/
+theorem retained_domain_identity_preserves_mutation_target
+    {Image Keys : Type} {before after : Image} {retained : Keys}
+    {keys : Image → Keys} {guardedMutation : Keys → Prop}
+    (observed : retained = keys before) (stable : keys before = keys after) :
+    guardedMutation retained ↔ guardedMutation (keys after) := by
+  rw [observed, stable]
+
+/-- The held stripe keys for an accepted effect identify the current
+    origin and roots. The owner gate stabilizes this equality during use. -/
+theorem retained_stamp_selects_live_keys
+    {Stamp Keys : Type} {expected current : Stamp}
+    (select : Stamp → Keys) (matched : current = expected) :
+    select expected = select current :=
+  congrArg select matched.symm
+
+#print axioms retained_stamp_selects_live_keys
+#print axioms prepared_original_refines_live
+#print axioms retained_domain_identity_preserves_mutation_target
 #print axioms prepared_review_refines_live
 #print axioms currentness_reuse_preserves_decision
 #print axioms retained_profile_refines_current

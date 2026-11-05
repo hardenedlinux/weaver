@@ -27,6 +27,9 @@ pub struct WriteScope<'a> {
     current_birth: Cell<super::Timing>,
     current_profile: Cell<super::Timing>,
     current_claim: Cell<super::Timing>,
+    current_history: Cell<super::Timing>,
+    current_manifest: Cell<super::Timing>,
+    current_original: Cell<super::Timing>,
     cedar: Cell<super::Timing>,
     owner_entered: Option<Instant>,
     domains_entered: Option<Instant>,
@@ -38,14 +41,28 @@ pub struct WriteScope<'a> {
 }
 /// Acquire an immediate write transaction with exclusive Rust session custody.
 pub fn begin(session: &mut Session) -> driver::Result<WriteScope<'_>> {
-    start(session, None)
+    start(session, None, None)
 }
 /// Parallel MVCC admission or final use for one original claim/budget/history family.
 /// Global mutations use `begin`, excluding every live family scope through commit.
 pub fn begin_family<'a>(session: &'a mut Session, family: &str) -> driver::Result<WriteScope<'a>> {
-    start(session, Some(family))
+    start(session, Some(family), None)
 }
-fn start<'a>(session: &'a mut Session, family: Option<&str>) -> driver::Result<WriteScope<'a>> {
+/// The caller must rejoin the live stamp in this scope before any effect.
+pub(crate) fn begin_provider_use<'a>(
+    session: &'a mut Session,
+    family: &str,
+    expected: &weaver_contracts::DomainStamp,
+) -> driver::Result<WriteScope<'a>> {
+    let expected = (!crate::task_origins::locked_original_evidence()).then_some(expected);
+    start(session, Some(family), expected)
+}
+
+fn start<'a>(
+    session: &'a mut Session,
+    family: Option<&str>,
+    expected: Option<&weaver_contracts::DomainStamp>,
+) -> driver::Result<WriteScope<'a>> {
     session.require_quiescent()?;
     let concurrent = session.owner.journal == super::Journal::Mvcc;
     let parallel = concurrent && family.is_some();
@@ -71,8 +88,9 @@ fn start<'a>(session: &'a mut Session, family: Option<&str>) -> driver::Result<W
     };
     let owner_entered = (exclusive.is_some() || shared.is_some()).then(Instant::now);
     let domains = if parallel {
-        let keys = super::timing::measure(&mut session.timings.domain_keys, || {
-            crate::domains::lock_keys(&session.connection, family.unwrap_or_default())
+        let keys = super::timing::measure(&mut session.timings.domain_keys, || match expected {
+            Some(stamp) => Ok(crate::domains::stamp_keys(stamp)),
+            None => crate::domains::lock_keys(&session.connection, family.unwrap_or_default()),
         })?;
         let mut stripes: Vec<usize> = keys.iter().map(|key| super::owner::stripe(key)).collect();
         stripes.sort_unstable();
@@ -115,6 +133,9 @@ fn start<'a>(session: &'a mut Session, family: Option<&str>) -> driver::Result<W
         current_birth: Cell::default(),
         current_profile: Cell::default(),
         current_claim: Cell::default(),
+        current_history: Cell::default(),
+        current_manifest: Cell::default(),
+        current_original: Cell::default(),
         cedar: Cell::default(),
         owner_entered,
         domains_entered,
@@ -187,6 +208,15 @@ impl WriteScope<'_> {
     }
     pub(crate) fn provider_claim<T>(&self, run: impl FnOnce() -> T) -> T {
         observe(&self.current_claim, run)
+    }
+    pub(crate) fn provider_original<T>(&self, run: impl FnOnce() -> T) -> T {
+        observe(&self.current_original, run)
+    }
+    pub(crate) fn provider_manifest<T>(&self, run: impl FnOnce() -> T) -> T {
+        observe(&self.current_manifest, run)
+    }
+    pub(crate) fn provider_history<T>(&self, run: impl FnOnce() -> T) -> T {
+        observe(&self.current_history, run)
     }
     pub(crate) fn provider_cedar<T>(&self, run: impl FnOnce() -> T) -> T {
         observe(&self.cedar, run)
@@ -264,6 +294,18 @@ impl Drop for WriteScope<'_> {
                 self.current_profile.get(),
             ),
             (&mut self.timings.provider_claim, self.current_claim.get()),
+            (
+                &mut self.timings.provider_history,
+                self.current_history.get(),
+            ),
+            (
+                &mut self.timings.provider_manifest,
+                self.current_manifest.get(),
+            ),
+            (
+                &mut self.timings.provider_original,
+                self.current_original.get(),
+            ),
             (&mut self.timings.provider_cedar, self.cedar.get()),
         ] {
             total.attempts = total.attempts.saturating_add(sample.attempts);

@@ -24,6 +24,7 @@ pub struct ProviderDispatch {
     profile: crate::provider_profiles::CheckedProfile,
     publication: crate::provider_publication::Prepared,
     domains: weaver_contracts::DomainStamp,
+    original: Option<crate::task_origins::PreparedOriginal>,
     oauth: Option<crate::provider_oauth::PreparedUse>,
     oauth_expires: Option<u64>,
 }
@@ -91,6 +92,7 @@ impl Ledger {
             .connection
             .prepare_provider_oauth(oauth, "provider:execute")?;
         let publication = self.connection.prepare_provider_publication(&plan.family);
+        let original = self.connection.prepare_provider_original(&plan.family);
         let tx =
             crate::persistence::begin_family(&mut self.connection, &plan.family).map_err(db)?;
         tx.check_provider_oauth(prepared.as_ref())?;
@@ -102,10 +104,12 @@ impl Ledger {
             Some(_) => false,
             None => true,
         };
-        any_authorized(&tx, plan, "admitProvider", None, &publication?)?;
-        tx.provider_claim(|| crate::execution_exposure::require_family(&tx, &plan.family))?;
+        let selected = any_authorized(&tx, plan, "admitProvider", None, &publication?)?;
+        tx.provider_claim(|| {
+            crate::domains::require_view(&tx, &selected.domains, original.as_ref())
+        })?;
         if new_claim {
-            crate::execution_exposure::retain(
+            crate::execution_exposure::retain_in_view(
                 &tx,
                 crate::execution_exposure::ReservationClaim {
                     family: &plan.family,
@@ -115,6 +119,7 @@ impl Ledger {
                     digest: &digest,
                     ceiling: plan.ceiling,
                 },
+                &selected.domains,
             )?;
             let held = crate::persistence::exec(
                 &tx,
@@ -168,6 +173,7 @@ impl Ledger {
             .connection
             .prepare_provider_oauth(oauth, "provider:execute")?;
         let publication = self.connection.prepare_provider_publication(family)?;
+        let original = self.connection.prepare_provider_original(family);
         let tx = crate::persistence::begin_family(&mut self.connection, family).map_err(db)?;
         let oauth_expires = tx.check_provider_oauth(prepared.as_ref())?;
         let record: Option<String> = crate::persistence::maybe(
@@ -183,7 +189,14 @@ impl Ledger {
         let selected = any_authorized(&tx, &plan, "invokeProvider", Some(eligible), &publication)?;
         let digest = plan.digest()?;
         tx.provider_claim(|| {
-            crate::execution_exposure::provider(&tx, &plan, &digest, &selected.domains)
+            crate::execution_exposure::provider(
+                &tx,
+                &plan,
+                &digest,
+                &selected.domains,
+                original.as_ref(),
+                None,
+            )
         })?;
         let consumed = crate::persistence::exec(
             &tx,
@@ -208,6 +221,7 @@ impl Ledger {
             profile: selected.profile,
             publication,
             domains: selected.domains.stamp,
+            original,
             oauth: prepared,
             oauth_expires,
         })
@@ -222,9 +236,7 @@ impl Ledger {
     ) -> Result<T> {
         self.check_provider_session(permit)?;
         burn_dispatch(&mut self.connection, permit)?;
-        let mut tx = crate::persistence::begin_family(&mut self.connection, &permit.plan.family)
-            .map_err(db)?;
-        let domains = active(&tx, permit)?;
+        let (mut tx, domains) = begin_provider_effect(&mut self.connection, permit)?;
         guard_live(&tx, permit, &domains, "invokeProvider", 0, "protobuf")?;
         let result = tx.request_effect(send)?;
         record_dispatch_callback(&tx, permit)?;
@@ -242,9 +254,7 @@ impl Ledger {
             return Err(Error::Invalid("provider release rows"));
         }
         self.check_provider_session(permit)?;
-        let tx = crate::persistence::begin_family(&mut self.connection, &permit.plan.family)
-            .map_err(db)?;
-        let domains = active(&tx, permit)?;
+        let (tx, domains) = begin_provider_effect(&mut self.connection, permit)?;
         started(&tx, permit)?;
         let seq: u64 = crate::persistence::one(
             &tx,
@@ -311,9 +321,7 @@ impl Ledger {
         if release.plan_digest != permit.digest || release.format != format {
             return Err(Error::Conflict("foreign provider release binding"));
         }
-        let mut tx = crate::persistence::begin_family(&mut self.connection, &permit.plan.family)
-            .map_err(db)?;
-        let domains = active(&tx, permit)?;
+        let (mut tx, domains) = begin_provider_effect(&mut self.connection, permit)?;
         guard_live_range(
             &tx,
             permit,
@@ -345,9 +353,7 @@ impl Ledger {
         tokens: Option<[u64; 4]>,
     ) -> Result<()> {
         self.check_provider_session(permit)?;
-        let tx = crate::persistence::begin_family(&mut self.connection, &permit.plan.family)
-            .map_err(db)?;
-        let domains = active(&tx, permit)?;
+        let (tx, domains) = begin_provider_effect(&mut self.connection, permit)?;
         started(&tx, permit)?;
         guard_live(&tx, permit, &domains, "emitProvider", 0, format)?;
         let pending:bool=crate::persistence::one(&tx, "SELECT EXISTS(SELECT 1 FROM provider_releases WHERE family=?1 AND node=?2 AND state='unknown')", crate::persistence::params![permit.plan.family.to_owned(),permit.plan.node.to_owned()], |r|r.get(0)).map_err(db)?;
@@ -390,8 +396,7 @@ fn burn_dispatch(
     session: &mut crate::persistence::Session,
     permit: &ProviderDispatch,
 ) -> Result<()> {
-    let tx = crate::persistence::begin_family(session, &permit.plan.family).map_err(db)?;
-    let domains = active(&tx, permit)?;
+    let (tx, domains) = begin_provider_effect(session, permit)?;
     guard_live(&tx, permit, &domains, "invokeProvider", 0, "protobuf")?;
     // Persist a separate affine dispatch burn: borrowing a handle cannot repeat this callback.
     let burn = crate::persistence::exec(
@@ -421,29 +426,31 @@ fn record_dispatch_callback(tx: &WriteScope<'_>, permit: &ProviderDispatch) -> R
     }
     Ok(())
 }
-fn active(tx: &WriteScope<'_>, p: &ProviderDispatch) -> Result<weaver_contracts::DomainView> {
-    // The exact view checked against the consumed stamp is also passed to Cedar.
-    // It never escapes this deciding transaction or authorizes a later callback.
-    let actual = tx.provider_domain(|| crate::domains::view_current(tx, &p.plan.family))?;
+fn begin_provider_effect<'a>(
+    session: &'a mut crate::persistence::Session,
+    p: &ProviderDispatch,
+) -> Result<(WriteScope<'a>, DomainView)> {
+    let tx =
+        crate::persistence::begin_provider_use(session, &p.plan.family, &p.domains).map_err(db)?;
+    // A retired stamp may name old lock keys. Before any mutation or
+    // callback, require the live stamp to identify exactly those keys.
+    let actual = tx.provider_domain(|| crate::domains::view_current(&tx, &p.plan.family))?;
     if actual.canonical_family != p.plan.family || actual.stamp != p.domains {
         return Err(Error::Conflict(
             "execution domain migrated; old permit fenced",
         ));
     }
-    tx.provider_claim(|| require_active_claim(tx, p, &actual))?;
-    Ok(actual)
-}
-fn require_active_claim(
-    tx: &WriteScope<'_>,
-    p: &ProviderDispatch,
-    current: &DomainView,
-) -> Result<()> {
-    let same:bool=crate::persistence::one_current(tx, "SELECT EXISTS(SELECT 1 FROM provider_runs WHERE family=?1 AND node=?2 AND digest=?3 AND target=?4 AND state='unknown')", crate::persistence::params![(p.plan.family).to_owned(),(p.plan.node).to_owned(),(p.digest).to_owned(),(p.route.target).to_owned()], |r|r.get(0)).map_err(db)?;
-    if same {
-        crate::execution_exposure::provider(tx, &p.plan, &p.digest, current)
-    } else {
-        Err(Error::Conflict("provider consumption changed"))
-    }
+    tx.provider_claim(|| {
+        crate::execution_exposure::provider(
+            &tx,
+            &p.plan,
+            &p.digest,
+            &actual,
+            p.original.as_ref(),
+            Some(&p.route.target),
+        )
+    })?;
+    Ok((tx, actual))
 }
 fn started(tx: &WriteScope<'_>, p: &ProviderDispatch) -> Result<()> {
     let burned: bool = crate::persistence::one(

@@ -134,20 +134,21 @@ fn projected(tx: &WriteScope<'_>, family: &str) -> Result<(Family, u64)> {
     Ok((result, total))
 }
 
-pub(crate) fn verified_members(tx: &WriteScope<'_>, family: &str) -> Result<Family> {
-    let (held, budget, original) = persistence::one_current(
-        tx,
-        "SELECT held,budget,json_extract(record,'$.budget') FROM tasks WHERE family=?1",
-        [family],
-        |r| Ok((integer(r, 0)?, integer(r, 1)?, integer(r, 2)?)),
-    )
-    .map_err(db)?;
+pub(crate) fn verified_members(
+    tx: &WriteScope<'_>,
+    family: &str,
+    exposure: &crate::task_origins::Exposure,
+) -> Result<Family> {
     let original_members = committed(tx, family)?;
     let (rows, total) = projected(tx, family)?;
     let total = total
         .checked_sub(crate::metering::applied_release(tx, family)?)
         .ok_or_else(conflict)?;
-    if budget != original || held > budget || held != total || original_members != rows {
+    if exposure.budget != exposure.original_budget
+        || exposure.held > exposure.budget
+        || exposure.held != total
+        || original_members != rows
+    {
         return Err(conflict());
     }
     Ok(original_members)

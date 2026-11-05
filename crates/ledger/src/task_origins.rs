@@ -102,24 +102,146 @@ pub(crate) fn default_binding(
     };
     retain(tx, &key, task, requested.unwrap_or(&binding), publication)
 }
-pub(crate) fn require(tx: &WriteScope<'_>, family: &str) -> Result<()> {
-    let row=persistence::maybe_current(tx,"SELECT r.task_digest,r.binding_digest,t.record,o.binding,r.publication FROM original_tasks r JOIN tasks t ON t.family=r.family JOIN execution_origins o ON o.id=r.origin AND o.canonical_family=r.family WHERE r.family=?1",[family],|r|Ok((r.get::<String>(0)?,r.get::<String>(1)?,r.get::<String>(2)?,r.get::<String>(3)?,r.get::<String>(4)?))).map_err(db)?;
-    let (expected_task, expected_binding, task, binding, publication) = row.ok_or(
-        Error::Conflict("authoritative original task registration missing"),
-    )?;
-    let task: Task = weaver_contracts::decode(task.as_bytes())?;
-    let binding: DomainBinding = weaver_contracts::decode(binding.as_bytes())?;
-    if digests(&task, &binding)? != (expected_task, expected_binding) {
+#[derive(PartialEq, Eq)]
+struct Original {
+    task_digest: String,
+    binding_digest: String,
+    task: String,
+    binding: String,
+    publication: String,
+    key: String,
+}
+
+pub(crate) struct PreparedOriginal {
+    original: Original,
+    task_budget: u64,
+}
+pub(crate) struct Exposure {
+    pub held: u64,
+    pub budget: u64,
+    pub original_budget: u64,
+}
+
+struct ObservedOriginal {
+    original: Original,
+    publication: Option<weaver_contracts::PublicationKey>,
+    held: u64,
+    budget: u64,
+}
+
+const ORIGINAL: &str = "SELECT r.task_digest,r.binding_digest,t.record,o.binding,r.publication,r.task_key,p.operation_id,p.digest,t.held,t.budget
+    FROM original_tasks r
+    JOIN tasks t ON t.family=r.family
+    JOIN execution_origins o ON o.id=r.origin AND o.canonical_family=r.family
+    LEFT JOIN task_publications p ON p.family=r.family WHERE r.family=?1";
+fn read(
+    connection: &persistence::driver::Connection,
+    family: &str,
+) -> Result<Option<ObservedOriginal>> {
+    persistence::maybe_current(connection, ORIGINAL, [family], |r| {
+        let publication = if let Some(operation_id) = r.get::<Option<String>>(6)? {
+            Some(weaver_contracts::PublicationKey {
+                operation_id,
+                digest: r.get(7)?,
+            })
+        } else {
+            None
+        };
+        Ok(ObservedOriginal {
+            original: Original {
+                task_digest: r.get(0)?,
+                binding_digest: r.get(1)?,
+                task: r.get(2)?,
+                binding: r.get(3)?,
+                publication: r.get(4)?,
+                key: r.get(5)?,
+            },
+            publication,
+            held: crate::store::integer(r, 8)?,
+            budget: crate::store::integer(r, 9)?,
+        })
+    })
+    .map_err(db)
+}
+
+fn verify(original: &Original) -> Result<u64> {
+    let task: Task = weaver_contracts::decode(original.task.as_bytes())?;
+    let binding: DomainBinding = weaver_contracts::decode(original.binding.as_bytes())?;
+    let (task_digest, binding_digest) = digests(&task, &binding)?;
+    if task_digest != original.task_digest || binding_digest != original.binding_digest {
         return Err(Error::Conflict(
             "original task or domain commitment changed",
         ));
     }
-    if publication != serde_json::to_string(&crate::task_publication::binding(tx, family)?)? {
+    Ok(task.budget)
+}
+
+#[cfg(feature = "commit-observer")]
+thread_local! {
+    static LOCKED_ORIGINAL: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
+}
+
+/// Same-image measurement control for the observed server.
+#[cfg(feature = "commit-observer")]
+pub fn use_locked_original_evidence(locked: bool) {
+    LOCKED_ORIGINAL.set(locked);
+}
+
+pub(crate) fn locked_original_evidence() -> bool {
+    #[cfg(feature = "commit-observer")]
+    {
+        LOCKED_ORIGINAL.get()
+    }
+    #[cfg(not(feature = "commit-observer"))]
+    {
+        false
+    }
+}
+
+pub(crate) fn prepare(
+    connection: &persistence::driver::Connection,
+    family: &str,
+) -> Option<PreparedOriginal> {
+    if locked_original_evidence() {
+        return None;
+    }
+    let original = read(connection, family).ok()??.original;
+    if original.task.len().saturating_add(original.binding.len()) > 64 * 1024 {
+        return None;
+    }
+    let task_budget = verify(&original).ok()?;
+    Some(PreparedOriginal {
+        original,
+        task_budget,
+    })
+}
+
+pub(crate) fn require(tx: &WriteScope<'_>, family: &str) -> Result<()> {
+    require_prepared(tx, family, None).map(|_| ())
+}
+
+pub(crate) fn require_prepared(
+    tx: &WriteScope<'_>,
+    family: &str,
+    prepared: Option<&PreparedOriginal>,
+) -> Result<Exposure> {
+    let observed = read(tx, family)?.ok_or(Error::Conflict(
+        "authoritative original task registration missing",
+    ))?;
+    let original_budget = match prepared {
+        Some(candidate) if observed.original == candidate.original => candidate.task_budget,
+        _ => verify(&observed.original)?,
+    };
+    if observed.original.publication != serde_json::to_string(&observed.publication)? {
         return Err(Error::Conflict(
             "original publication linkage missing or changed",
         ));
     }
-    Ok(())
+    Ok(Exposure {
+        held: observed.held,
+        budget: observed.budget,
+        original_budget,
+    })
 }
 pub(crate) fn seal_publication(tx: &WriteScope<'_>, family: &str) -> Result<()> {
     let actual = serde_json::to_string(&crate::task_publication::binding(tx, family)?)?;

@@ -19,6 +19,14 @@ module SharedDomains {
     ((s.revoked or s.policyPending) implies s.active==Set()) and
     s.active.forall(f=>s.permit.get(f)==s.epoch and s.permitOwner.get(f)==s.owner and
       s.active.forall(g=>f==g or (s.root.get(f)!=s.root.get(g) and s.hroot.get(f)!=s.hroot.get(g))))
+  pure def preparedSend(captured: int, current: int, valid: int, live: bool): bool =
+    (if (captured == current) captured == valid else current == valid) and live
+  run changedOriginalRechecksLiveCommitmentTest = init.expect(
+    preparedSend(1,1,1,true) and not(preparedSend(1,2,1,true)))
+  run originalCandidateCannotReplaceLiveGuardsTest = init.expect(
+    not(preparedSend(1,1,1,false)))
+  run cachedOriginalBypassCounterexampleTest = init.expect(
+    1 == 1 and not(preparedSend(1,2,1,true)))
   pure def quotaAllowed(key:int,user:int,tenant:int,amount:int):bool=
     key+amount<=4 and user+amount<=4 and tenant+amount<=8
   run secondKeyCannotSpendUnknownUserQuotaTest=init.expect(
@@ -156,6 +164,10 @@ module SharedDomains {
   run ignoreRevocationCounterexampleTest=accepted.then(revoke).then(unsafeStaleUse(0)).expect(not(safety))
   run newFamilySharesOriginalBudgetTest=init.then(reserve(0)).then(reserve(1)).expect(safety and exposure(0)==6)
   run sharedFinalUseSerializesTest=accepted.then(reserve(1)).then(consume(1)).then(finalGuard(0)).then(finalGuard(1).fail())
+  run preselectedLockKeysCannotAuthorizeMigratedOrRevokedUseTest =
+    accepted.then(migrate).then(replyLoss).then(restart).then(replay)
+      .expect(s.held.get(0)==3 and s.history.contains(0))
+      .then(finalGuard(0).fail())
   run migrationBlocksOldPermitTest=accepted.then(migrate).expect(safety and s.held.get(0)==3).then(finalGuard(0).fail())
   run migrationWaitsForActualUseTest=accepted.then(finalGuard(0)).then(migrate.fail())
   run migrationAfterActualUseTest=accepted.then(finalGuard(0)).then(send(0)).then(migrate).expect(safety)

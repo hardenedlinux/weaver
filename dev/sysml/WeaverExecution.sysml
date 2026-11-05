@@ -108,7 +108,9 @@ package WeaverExecution {
         doc /* Time domain view, publication and reviewed head, profile, and
            original claim reconciliation separately in the deciding scope. Split
            publication into pending, review match and original task birth.
-           Record publication preflight outside lock and include it in throughput.
+           Split claim time into original task, reservation manifest and history.
+           Record review and original preflight and Rust session open outside
+           the domain lock. Include those intervals in throughput accounting.
            Domain lock wait, native begin and commit, Cedar and provider effects
            have separate observations. Throughput is terminal receipts divided
            by elapsed wave time, with completion and send counts retained. */
@@ -128,6 +130,32 @@ package WeaverExecution {
            carries no authority and does not establish a production SLO. */
     }
 
+    part def ProviderStorageLifecycle {
+        doc /* The database owner lives with the server and owns the process
+           custody and MVCC gates. A blocking provider operation opens one
+           verified Turso session and holds it through completion or failure.
+           No session with an unresolved transaction may begin another scope. */
+        doc /* An original-task candidate holds bounded static evidence.
+           It may travel with the affine dispatch, and each use matches the
+           exact original task row and the live publication linkage again.
+           A mismatch runs the original validation on the deciding image.
+           The domain lookup joins live roots, epochs and original membership.
+           Admission reuses that scope's keys for capacity and history writes.
+           Later scopes can select stripes from the consumed stamp. Before any
+           effect the current stamp must name the same keys under the owner gate.
+           A stale selection can only reach validation and rollback. The stamp
+           cannot stand in for live claims, history, policy or fencing. */
+        doc /* Admission, consume, final request write and each response
+           release own separate short deciding scopes. The transaction and
+           cursors end at commit or rollback. Transport and client waits
+           may span scopes. A writer seal cannot turn unknown into a refund.
+           A successful new stream has five fixed scopes for admission, consume,
+           dispatch burn, request write and terminal commit, plus two per response
+           range for durable preparation and final queue release. */
+        attribute fixedDecidingScopes : Integer = 5;
+        attribute decidingScopesPerResponseRange : Integer = 2;
+    }
+
     part def ProviderCurrentnessBudget {
         doc /* Proposed allocation for mean locked read time per completed stream
            in the two-original local MVCC fixture. These targets guide profiling.
@@ -139,6 +167,10 @@ package WeaverExecution {
            outside the lock. The deciding scope matches exact rows, latest
            reviewer epoch, current revision and fence, and reads the pending
            barrier. A candidate carries no authority across a changed image. */
+        part lifecycle : ProviderStorageLifecycle;
+        attribute fixtureResponseRanges : Integer = 5;
+        attribute fixtureDecidingScopes : Integer = 15;
+        assert constraint { fixtureDecidingScopes == lifecycle.fixedDecidingScopes + lifecycle.decidingScopesPerResponseRange * fixtureResponseRanges }
         attribute domainReadBudgetNs : Integer = 2000000;
         attribute publicationReadBudgetNs : Integer = 5000000;
         attribute profileReadBudgetNs : Integer = 3000000;

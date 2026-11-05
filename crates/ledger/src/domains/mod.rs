@@ -9,4 +9,4 @@ mod migration;
 mod view;
 pub(crate) use binding::bind;
 pub(crate) use evidence::{charge, history, require, require_view};
-pub(crate) use view::{lock_keys, require_stamp, stamp, view, view_current};
+pub(crate) use view::{lock_keys, require_stamp, stamp, stamp_keys, view, view_current};

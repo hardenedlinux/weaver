@@ -50,7 +50,7 @@ type oauthRelayFixture struct {
 
 func newOAuthRelayFixture(t testing.TB, handler http.HandlerFunc, enabled bool, observedImage ...string) *oauthRelayFixture {
 	t.Helper()
-	pair, ingress := newOAuthRelayOwner(t, handler, enabled, observedImage, false, false)
+	pair, ingress := newOAuthRelayOwner(t, handler, enabled, observedImage, false, false, false)
 	bundle := controlBundle(t, pair.rust)
 	pair.plans = bundle.Plans
 	pair.goServer = pair.startControl(t, ingress, bundle, enabled)
@@ -73,7 +73,7 @@ func (p *oauthRelayFixture) startControl(t testing.TB, ingress *testPKI, bundle 
 	return control
 }
 
-func newOAuthRelayOwner(t testing.TB, handler http.HandlerFunc, enabled bool, observedImage []string, cachedPlans, lockedReview bool) (*oauthRelayFixture, *testPKI) {
+func newOAuthRelayOwner(t testing.TB, handler http.HandlerFunc, enabled bool, observedImage []string, cachedPlans, lockedReview, lockedOriginal bool) (*oauthRelayFixture, *testPKI) {
 	t.Helper()
 	first, second := pki(t), pki(t)
 	public, key, err := ed25519.GenerateKey(rand.Reader)
@@ -110,6 +110,9 @@ func newOAuthRelayOwner(t testing.TB, handler http.HandlerFunc, enabled bool, ob
 		reviewMode := "0"
 		if lockedReview {
 			reviewMode = "1"
+		}
+		if lockedOriginal {
+			env = append(env, "WEAVER_TEST_LOCKED_ORIGINAL_EVIDENCE=1")
 		}
 		env = append(env, "WEAVER_TEST_CACHE_CURRENTNESS_PLANS="+planMode, "WEAVER_TEST_LOCKED_PUBLICATION_REVIEW="+reviewMode)
 	}
@@ -394,7 +397,7 @@ func BenchmarkProviderOAuthRelayPair(b *testing.B) {
 	}
 }
 
-var providerTimingLabels = [...]string{"grant-check", "domain-hold", "txn-hold", "write", "queue", "grant-prepare", "txn-begin", "commit", "domain-wait", "domain-keys", "domain-read", "publication-read", "profile-read", "claim-read", "cedar", "rollback", "pending-read", "review-read", "birth-read", "publication-prepare"}
+var providerTimingLabels = [...]string{"grant-check", "domain-hold", "txn-hold", "write", "queue", "grant-prepare", "txn-begin", "commit", "domain-wait", "domain-keys", "domain-read", "publication-read", "profile-read", "claim-read", "cedar", "rollback", "pending-read", "review-read", "birth-read", "publication-prepare", "original-read", "manifest-read", "history-read", "original-prepare", "ledger-open"}
 
 func providerTimingTotals(t testing.TB, f *fixture, want int) [len(providerTimingLabels)]uint64 {
 	t.Helper()
@@ -453,7 +456,7 @@ type relayContentionSample struct {
 
 func relayContentionWave(t *testing.B, image string, arm relayContentionArm) relayContentionSample {
 	t.Helper()
-	p, ingress := newOAuthRelayOwner(t, completeSSE, arm.oauth, []string{image}, arm.cachedPlans, arm.lockedReview)
+	p, ingress := newOAuthRelayOwner(t, completeSSE, arm.oauth, []string{image}, arm.cachedPlans, arm.lockedReview, arm.lockedOriginal)
 	shared, oauth := arm.shared, arm.oauth
 	left, right := contentionRelayBundle(t, p.rust, "left"), contentionRelayBundle(t, p.rust, "right")
 	a, b := p.startControl(t, ingress, left, oauth), p.startControl(t, ingress, right, oauth)
@@ -549,8 +552,8 @@ func relayContentionWave(t *testing.B, image string, arm relayContentionArm) rel
 // Each arm launches two canonical originals through two identical relay processes.
 // Shared mode joins budget/history before measurement; cross mode leaves them independent.
 type relayContentionArm struct {
-	name                                     string
-	shared, oauth, cachedPlans, lockedReview bool
+	name                                                     string
+	shared, oauth, cachedPlans, lockedReview, lockedOriginal bool
 }
 
 func BenchmarkProviderOAuthDomainContention(b *testing.B) {
@@ -575,6 +578,16 @@ func BenchmarkProviderPublicationReviewPair(b *testing.B) {
 		{name: "shared-locked", shared: true, oauth: true, lockedReview: true},
 		{name: "shared-prepared", shared: true, oauth: true},
 		{name: "cross-locked", oauth: true, lockedReview: true},
+		{name: "cross-prepared", oauth: true},
+	})
+}
+
+// Compare provider evidence and scope entry on one native MVCC image.
+func BenchmarkProviderOriginalEvidencePair(b *testing.B) {
+	benchmarkRelayContention(b, [4]relayContentionArm{
+		{name: "shared-locked", shared: true, oauth: true, lockedOriginal: true},
+		{name: "shared-prepared", shared: true, oauth: true},
+		{name: "cross-locked", oauth: true, lockedOriginal: true},
 		{name: "cross-prepared", oauth: true},
 	})
 }
@@ -604,8 +617,14 @@ func benchmarkRelayContention(b *testing.B, arms [4]relayContentionArm) {
 		b.ReportMetric(float64(total.done)/total.wall.Seconds(), name+"-complete/s")
 		b.ReportMetric(float64(total.done)/attempts, name+"-complete/attempt")
 		b.ReportMetric(float64(total.calls)/attempts, name+"-sends/attempt")
+		var currentness uint64
 		for i, label := range providerTimingLabels {
 			b.ReportMetric(float64(total.timing[i])/attempts, name+"-"+label+"-ns/attempt")
+			switch label {
+			case "domain-read", "publication-read", "profile-read", "claim-read":
+				currentness += total.timing[i]
+			}
 		}
+		b.ReportMetric(float64(currentness)/float64(total.done), name+"-currentness-ns/completed")
 	}
 }
