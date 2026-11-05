@@ -45,7 +45,7 @@ module ProviderDeliveryJoin {
   action releaseCommit = all {
     s.staged, not(s.committed), not(s.failed), not(s.denied), s.clockValid,
     s.pending.size() == 0, s.orphan.size() == 0,
-    s' = {...s, committed: true, version: s.version + 1, frameVersion: s.version + 1}
+    s' = {...s, committed: true, frameVersion: s.version}
   }
   action acknowledge = all {
     s.staged, s.committed, not(s.acknowledged), not(s.consumed),

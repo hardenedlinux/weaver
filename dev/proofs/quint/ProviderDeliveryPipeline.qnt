@@ -20,7 +20,7 @@ module ProviderDeliveryPipeline {
   }
   action release(id:int):bool = all {
     id>=s.cursor,id<s.produced,not(s.frames.get(id).committed),s.allowed,s.pending.size()==0,
-    s'={...s,cut:s.cut+1,frames:s.frames.set(id,{...s.frames.get(id),cut:s.cut+1,committed:true})}
+    s'={...s,frames:s.frames.set(id,{...s.frames.get(id),cut:s.cut,committed:true})}
   }
   action ack(id:int):bool = all {
     id>=s.cursor,id<s.produced,s.frames.get(id).committed,not(s.frames.get(id).acknowledged),
@@ -56,10 +56,11 @@ module ProviderDeliveryPipeline {
     .then(stage).then(release(2)).then(ack(2))
   run threeInertFramesNeedNoStopAndWaitTest = full.expect(safe and s.produced-s.cursor==3).then(stage.fail())
   run committedPipelineRequalifiesItsHeadTest = full.then(qualify).then(accept).expect(safe)
-  run nextCommittedFrameInvalidatesOlderCertificateTest = first.then(stage).then(release(1))
-    .then(accept.fail())
+  run nextCommittedFramePreservesOlderCertificateTest = first.then(stage).then(release(1))
+    .then(accept).expect(safe)
   run receiverPrefixOutlivesRequalificationTest = first.then(accept).then(stage).then(release(1))
     .then(ack(1)).then(qualify).then(accept).expect(safe and s.cursor==2)
+  run committedPipelineDrainsWithoutRequalificationTest = full.then(accept).then(accept).then(accept).expect(safe and s.cursor==3)
   run pendingSourceStopsAllQueuedFramesTest = first.then(close(1)).then(accept.fail())
   run sourceResolutionRequiresCurrentRequalificationTest = first.then(close(1)).then(decide(1))
     .then(qualify).then(accept).expect(safe)

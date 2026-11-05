@@ -18,8 +18,8 @@ import (
 )
 
 // Both arms use one image, the same durable guards and the same 128-stream
-// workload. The control additionally repeats full authorization after commit;
-// neither arm disables currentness, revocation or the final receiver barrier.
+// workload. The control invalidates on every progress write; the candidate
+// uses a sealed progress lane. Both keep the exact same final receiver guard.
 func BenchmarkProviderDeliveryJoin(b *testing.B) {
 	image := wifImage(b, true)
 	for _, shared := range []bool{true, false} {
@@ -39,7 +39,7 @@ func benchmarkProviderDeliveryJoin(b *testing.B, image string, shared, loaded bo
 	for i := range arms {
 		env := []string{"WEAVER_STORAGE_JOURNAL=mvcc", "WEAVER_TEST_PROVIDER_TAIL=1", "WEAVER_TEST_PROVIDER_SCOPE_TRACE=1"}
 		if i == 0 {
-			env = append(env, "WEAVER_TEST_FORCE_DELIVERY_REFRESH=1")
+			env = append(env, "WEAVER_TEST_CONSERVATIVE_RANGE_INVALIDATION=1")
 		}
 		arms[i].fixture = domainBenchmarkFixture(b, image, env, burstProviderSSE(ranges))
 	}
@@ -63,7 +63,7 @@ func benchmarkProviderDeliveryJoin(b *testing.B, image string, shared, loaded bo
 		b.ReportMetric(cpu.Seconds()/wall.Seconds(), "pressure-cpu-equivalents")
 	}
 	b.ReportMetric(0, "ns/op")
-	for i, label := range []string{"full-recheck", "exact-cut"} {
+	for i, label := range []string{"all-writes", "semantic-cut"} {
 		arm := &arms[i]
 		reportProviderTailArm(b, arm, label)
 		reportScheduledEncoding(b, arm, label, ranges, (ranges+3)/4, shared)
@@ -79,7 +79,7 @@ type deliverySample struct {
 	refresh                uint64
 }
 
-func readDeliverySamples(b *testing.B, f *fixture) map[string][]deliverySample {
+func readDeliverySamples(b testing.TB, f *fixture) map[string][]deliverySample {
 	b.Helper()
 	log, err := os.ReadFile(filepath.Join(f.directory, "server.log"))
 	if err != nil {

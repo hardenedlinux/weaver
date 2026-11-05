@@ -89,7 +89,9 @@ For provider response streams, Rust closes affected execution lanes before
 authority changes and retains unresolved OAuth witness outcomes. Queued frames
 are inert. The final gRPC receiver joins an acknowledged range commit with the
 current owner and authority cut, then advances the original stream cursor once.
-Revocation blocks an old queued frame; restart cannot turn an unknown send into
+Exact range bookkeeping preserves prior permission; Policy and domain changes
+still invalidate it. Revocation blocks an old queued frame; restart cannot turn
+an unknown send into
 another invocation or a refund. See the
 [[file:docs/10-19-llm-gateway/10-routing-and-inference/10.08-send-window-promotion.org][writer mediation and final delivery design]].
 

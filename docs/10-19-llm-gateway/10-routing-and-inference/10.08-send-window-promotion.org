@@ -13,7 +13,7 @@
 
 The three mediation prerequisites now have runtime owners. Every production
 ledger write closes an authority ticket before waiting for a scheduler grant
-or a Turso transaction. The deciding outcome advances its exact revision and
+or a Turso transaction. A semantic outcome advances its exact revision and
 resolves only its own ticket. OAuth witness uncertainty survives database
 rollback. A unique Rust receiver joins acknowledged release commit with the
 current revision, owner/session and one-use interval before returning a frame
@@ -24,7 +24,7 @@ to Tonic. The internal MPSC queue holds inert frames, never send permission.
 This closes the delivery gap in the existing durable per-range profile. It
 does not activate the separate bounded-window candidate that removes per-range
 SQL. Every range still executes the existing live Cedar, original claim,
-domain, profile, pending-publication, history and OAuth checks. When a mutation
+domain, profile, pending-publication, history and OAuth checks. When a semantic mutation
 intervenes, the same released range requalifies against the actual current
 view and exact conflict footprint; changed roots retire the old receipt. It does
 not obtain another reservation, consume another range or call a
@@ -63,7 +63,7 @@ its dev-only activation does not qualify arbitrary raw SQL for production.
 |
 | Shared budget and three-dimensional quota | =domains::evidence::{charge,history}= and =provider_quota::{reserve,release}=, invoked by the preceding admission and settlement owners | Family; atomic held updates and exact reservation rows share the deciding transaction. | Use distinct origin, budget, history, API-key, user and tenant namespaces. Shared quota identities serialize even for disjoint execution roots. |
 |
-| History, stream cursor, range and terminal state | Generic =register_stream=, =enqueue_message=, =claim_stream=, =connect_stream=, =resume_message=, =consume_range=, =write_range=; provider grouped preparation, =release_provider= and =complete_provider_with_usage= | Global stream registration/custody; family range/terminal scopes; durable releases are the current profile. | Generic streams and provider terminal/range updates enter the same scope owner. A receiver certificate never substitutes for durable consumption. |
+| History, stream cursor, range and terminal state | Generic =register_stream=, =enqueue_message=, =claim_stream=, =connect_stream=, =resume_message=, =consume_range=, =write_range=; provider grouped preparation, =release_provider= and =complete_provider_with_usage= | Global stream registration/custody; family range/terminal scopes; durable releases are the current profile. | Generic streams and provider terminal updates remain semantic. The two certified provider progress paths retain the same outcome owner while preserving the semantic cut. A receiver certificate never substitutes for durable consumption. |
 |
 | Catalog, purchase rates, historical user formula and metering identity | =publish_provider_catalog=, =install_metering=, =rotate_meter_credential=; =metering::bind= | Global publication/configuration; family quote binding. | Global configuration/publication invalidates every receiver certificate. Immutable metering identity projects only after acknowledged commit. |
 |
@@ -96,8 +96,8 @@ rejoin after a global migration. Changed hints reject before effects.
 
 | Event | Authority transition | Delivery consequence |
 |-------+----------------------+----------------------|
-| Writer enters | Allocate a unique ticket and close overlapping lanes before waiting | Old acknowledged frames wait; unrelated components remain eligible |
-| Native commit succeeds | Advance the affected revision, publish immutable projections, resolve this exact ticket | Old certificates require the full existing live guard again |
+| Semantic writer enters | Allocate a unique ticket and close overlapping lanes before waiting | Old acknowledged frames wait; unrelated components remain eligible |
+| Semantic commit succeeds | Advance the affected revision, publish immutable projections, resolve this exact ticket | Old certificates require the full existing live guard again |
 | Read-only delivery requalification commits | Replace this same receipt's validation stamp without advancing data revision | No new range consumption, hold, payload or call |
 | Exclusive native transaction definitively rolls back | Resolve only its database ticket after synchronous cleanup proves that the original transaction cannot commit later | A certificate may retain its unchanged revision only if there was no external effect |
 | Native commit outcome is ambiguous | Seal the entire owner and poison the session | No old receipt can activate until owner recovery; keep original exposure |
@@ -309,3 +309,152 @@ unaccepted evidence in ignored cache. The final bounded pipeline, explicit lease
 retirement and complete diagnostic stream address those failures. These local
 passes do not promote the separate bounded-window candidate or change its
 sub-millisecond target.
+
+* Range progress preserves an exact authorization image
+
+Authorization depends on a semantic projection, not on every database write.
+The sealed =provider::RangeProgress= token is constructible only in the two
+provider paths below. All other transactions remain semantic by default;
+there is no caller-supplied table list, no TTL and no public exemption flag.
+
+| Transition | Exact writes and prerequisites | Why earlier authorization survives |
+|------------+--------------------------------+------------------------------------|
+| Prepare a finite range group | Insert fresh =(family,node,sequence,length,digest,unknown)= rows; CAS =provider_runs.next_event= from the observed cursor. Require dispatch burn, no unresolved earlier range, exact domain stamp and full live Cedar/claim guard for each new row. | No existing row, target, plan, claim, hold, history event or Cedar input changes. Fresh primary keys preserve earlier bindings. |
+| Release an exact range | CAS that exact =unknown= row to =released=, including length and digest; require exactly one changed row, predecessor continuity and the full live guard. | Its binding is immutable. Earlier released rows remain released, and the original request remains consumed with its reservation held. |
+| Generic write, terminal completion or other mutation | Default semantic ticket, even for a SQL no-op. | No inferred exemption: changed or unclassified authority requires requalification. |
+
+The actual read-set audit covers =ProviderContext::current= (including sequence,
+format, shared held/limit and history count), publication/schema/review/pending,
+profile commitment, OAuth grant/ancestry/witness/expiry, original exposure
+manifest, run state/target/digest/reservation, domain roots/epochs, retained
+history, metering quote/formula and API-key/user/tenant quota. None reads
+=next_event= or a different response range as a Cedar input. The deciding
+sequence belongs to the immutable frame. Adding a new authorization dependency
+on range progress requires retiring this exemption and updating the model first.
+
+A progress transaction registers and resolves a unique ticket before scheduling,
+executes a real Turso transaction and retains normal commit/fault handling. Its
+pending ticket does not block a previously acknowledged frame; its successful
+commit does not advance the semantic revision. Its /own/ inert frame still
+requires acknowledged native commit, exact binding, current semantic cut,
+owner/session, expiry and the one-use receiver cursor. Unknown native progress
+results still seal the whole owner. A progress token cannot register or reconcile
+independent witness IO. No progress outcome clears a semantic pending ticket.
+
+Rust owns classification, full deciding guards, durable CAS and the final
+receiver. Go keeps entry admission, Policy publication, cancellation and test
+orchestration. Scheme remains paused. Shared quota/history domains are not split
+for performance, and unknown reservations are never refunded by these writes.
+
+=ProviderSemanticProgress.lean= proves image equality and preservation for an
+arbitrary authorization predicate across any finite sequence of fresh appends
+and exact releases, as well as binding preservation. Its composition in
+=DomainMigrationComposition= reuses the pinned SPEC =Gateway.ZeroTrust.FinalUse=
+theorem on the same projected actual view. The Host obligation is the concrete
+SQL/read-set correspondence above; this is not a proof of arbitrary SQL.
+=ProviderSemanticProgress.qnt= races progress and semantic tickets, unknown
+outcomes, expiry and owner replacement. Its unsafe mutant changes semantic data
+without advancing the cut and produces a stale-send counterexample.
+
+** Qualification premises and negative boundaries
+
+The qualified Weaver schema has no trigger that converts a range update into
+an authorization mutation. Production callers cannot install SQL triggers or
+write around the mandatory owner; tampered schemas and unmediated external
+writers violate the Host premise. Any schema extension affecting the two SQL
+transitions must invalidate this qualification. The finite Lean result also
+preserves each previously released row's exact owner/span/digest, not just the
+semantic image. Unknown-hold preservation is an arbitrary projection of that
+same unchanged image, rather than a new settlement rule.
+
+The Rust PBT varies journal, range widths and finite group size. Its safe
+conservative arm requires requalification; the semantic arm accepts old exact
+ranges after both later releases and a fresh append. A deciding callback tests
+that an older acknowledged frame can cross while another progress transaction
+is still open, while that transaction's own uncommitted frame remains inert.
+The existing generic-write PBT still requires requalification even for a SQL
+no-op. Real Go/TLS PBT varies finite stream length, journal and Protobuf/Arrow;
+all eight seeded executions complete with zero progress-only requalification.
+
+Final acceptance passed 53 ledger library tests, 123 ledger integration tests,
+29 broker tests and 28 server tests. Three ignored server fixtures are owned by
+the real Go harness; Scheme remains paused. Go passed the complete race suite
+and 19 real fault/property groups, including revoke while blocked, native
+commit reply loss, crash before/after commit, old receiver recovery, domain
+migration, independent OAuth witness rollback, shared quota and signed
+settlement. The three Quint models passed 40 named schedules and 6,000 sampled
+traces of 80 steps. The default Lake build passed the SPEC composition and
+model closure. No external dependency declaration or lock changed.
+
+The initial failures remain under ignored =.cache/provider-semantic-progress*=:
+a missing public diagnostic API comment, a test that dropped the uncommitted
+producer before checking Pending, and a Go positive test that selected the
+fault-only server without its controller. They were fixed at the owning API or
+harness and followed by complete successful acceptance; none required relaxed
+limits or a production authorization bypass. The final diagram uses the same
+upstream Library/OpenSysML path and passes Chromium at 830 CSS pixels with the
+existing 18 px, 5 second and 30 second visual/export requirements. This is one
+selected source-bound view, not a claim to have rerendered the whole inventory.
+
+** Same-image MVCC result and remaining performance gates
+
+All eight arms completed in one invocation on the local 12-CPU Apple M2 Pro,
+using a single immutable optimized test image. Each arm retains 128 complete
+streams, four concurrent workers, 13 one-row Protobuf frames and four grouped
+preparations per stream; all 13,312 frames are accounted for. Arm order rotates
+by wave. Compilation, registration and inspection are outside the reported
+stream interval. The former mechanism is =all-writes=; the candidate is
+=semantic-cut=. Neither arm disables Cedar, currentness, revocation, fencing,
+expiry, immutable payload checks or original unknown exposure.
+
+| Shared execution roots | Injected workers | Arm | Rechecks/frame | Ack to Tonic P99 (ms/frame) | Final owner P99 (us/frame) | Tonic to Go P99 (ms/frame) | Complete streams/s |
+|------------------------+------------------+-----+----------------+-----------------------------+-----------------------------+----------------------------+--------------------|
+| yes | none | all-writes | 2.225 | 219.835 | 42.21 | 3.870 | 9.699 |
+| yes | none | semantic-cut | 0.05048 | 14.735 | 13.96 | 1.397 | 19.31 |
+| yes | six | all-writes | 2.055 | 439.619 | 25.21 | 5.020 | 4.262 |
+| yes | six | semantic-cut | 0.05589 | 51.855 | 10.79 | 3.615 | 7.986 |
+| no | none | all-writes | 1.566 | 215.175 | 47.71 | 3.343 | 13.87 |
+| no | none | semantic-cut | 0 | 2.829 | 15.67 | 5.581 | 29.81 |
+| no | six | all-writes | 1.526 | 202.219 | 39.88 | 4.915 | 12.17 |
+| no | six | semantic-cut | 0 | 4.095 | 11.71 | 4.277 | 26.26 |
+
+| Shared execution roots | Injected workers | Arm | All-ticket P99 (ms/scope) | Preparation wait P99 (ms/scope) | Native commit sum P99 (ms/stream) | Stream P99 (ms) |
+|------------------------+------------------+-----+----------------------------+---------------------------------+-----------------------------------+-----------------|
+| yes | none | all-writes | 18.55 | 26.30 | 12.45 | 871.3 |
+| yes | none | semantic-cut | 25.96 | 24.04 | 6.217 | 491.6 |
+| yes | six | all-writes | 85.96 | 126.8 | 14.38 | 1590 |
+| yes | six | semantic-cut | 124.2 | 121.0 | 24.56 | 1054 |
+| no | none | all-writes | 0.002667 | 0.002667 | 57.46 | 631.9 |
+| no | none | semantic-cut | 0.002458 | 0.002208 | 32.52 | 344.4 |
+| no | six | all-writes | 0.003000 | 0.002750 | 64.52 | 659.0 |
+| no | six | semantic-cut | 0.002416 | 0.003000 | 51.33 | 319.8 |
+
+Progress-only invalidation is removed. Disjoint frames need no requalification;
+shared-root residual requalification still protects genuine concurrent
+admission/history and terminal changes. The latter explanation is consistent
+with the audited write set and quiescent PBT, not a per-transition causal
+attribution from the aggregate benchmark. Complete-stream throughput improves
+in all four observed cohorts, but shared all-ticket P99 regresses; preparation
+wait does not reach a submillisecond target. Reduced requalification also
+changes the ticket population, so the aggregate quantile is not a claim about
+the same set of tickets. The phase-specific preparation statistic is retained.
+
+The pressure helper requests six workers from the actual CPU count without
+changing the frozen workload. Its observed process CPU equivalents are 0.9659
+(shared) and 0.8591 (disjoint). These are observed injected-load cohorts, not
+proof of six-core saturation or a worst-case host-load bound. Other shared
+workspace builds were present around the final cohorts; this is an observed
+host run, not an isolated idle-host qualification. The fixture
+varies execution roots without configured metering quotas; the independent
+quota fault tests retain genuinely shared API-key/user/tenant constraints.
+
+The /final owner turn/ is below the local submillisecond target. The complete
+ready-frame handoff and Go delivery are /not/ qualified: even disjoint, zero
+requalification still has 2.829--4.095 ms acknowledgment-to-Tonic P99, and the
+shared case remains 14.735--51.855 ms. The native-commit column is a per-stream
+sum, not a per-transaction P99; independent percentiles cannot be added. No
+sample is discarded and no deadline, queue size, concurrency or dependency pin
+is changed to turn this result into a pass. The separate bounded-window
+candidate remains unpromoted. Remaining work is deciding-snapshot publication,
+per-range transaction cost and transport scheduling with their own safety and
+measurement evidence; this change establishes the range-preservation premise.

@@ -9,7 +9,7 @@ vars: { d2-config: { data: { figure: |json
   "design": {
     "audience": "Gateway developers and security reviewers",
     "medium": "GitHub at 830 CSS pixels",
-    "message": "A changed view requires fresh authorization.\nUnknown sends keep the original hold.",
+    "message": "New authority requires fresh checks.\nProgress keeps the cut; unknown keeps the hold.",
     "questionRefs": [
       "q1"
     ],
@@ -18,11 +18,12 @@ vars: { d2-config: { data: { figure: |json
       "n1",
       "n2",
       "n3",
-      "n4"
+      "n4",
+      "n5"
     ],
     "requiredRelations": [],
     "focalSubjects": [
-      "n3"
+      "n4"
     ]
   },
   "icons": [
@@ -44,7 +45,7 @@ vars: { d2-config: { data: { figure: |json
         "model"
       ],
       "subjectRefs": [
-        "n3"
+        "n4"
       ]
     }
   ],
@@ -72,6 +73,7 @@ vars: { d2-config: { data: { figure: |json
     "model9": "dev/sysml/ExecutionReaderViews.sysml",
     "proof0": "dev/proofs/cedar/DomainMigrationComposition.lean",
     "proof1": "dev/proofs/lean/ProviderEgressWindow.lean",
+    "proof2": "dev/proofs/lean/ProviderSemanticProgress.lean",
     "sdkCapture": "dev/sysml/captures/WeaverViews-providerDeliveryJoin.json"
   },
   "copy": {},
@@ -101,7 +103,8 @@ vars: { d2-config: { data: { figure: |json
     ],
     "obligationRefs": [
       "proof0",
-      "proof1"
+      "proof1",
+      "proof2"
     ],
     "evidenceRefs": []
   },
@@ -117,12 +120,13 @@ vars: { d2-config: { data: { figure: |json
     "objectRows": [
       [
         "n0",
-        "n1"
+        "n1",
+        "n2"
       ],
       [
-        "n2",
         "n3",
-        "n4"
+        "n4",
+        "n5"
       ]
     ],
     "notation": "objects",
@@ -134,16 +138,18 @@ vars: { d2-config: { data: { figure: |json
     "icons": {
       "n0": "policy",
       "n1": "ledger",
-      "n2": "stream",
-      "n3": "authorization",
-      "n4": "stream"
+      "n2": "ledger",
+      "n3": "stream",
+      "n4": "authorization",
+      "n5": "stream"
     },
     "roles": {
       "n0": "governance",
       "n1": "ledger",
-      "n2": "semantic",
-      "n3": "execution",
-      "n4": "execution"
+      "n2": "ledger",
+      "n3": "semantic",
+      "n4": "execution",
+      "n5": "execution"
     },
     "edgeLabels": true,
     "graph": {
@@ -164,7 +170,7 @@ vars: { d2-config: { data: { figure: |json
         {
           "id": "n2",
           "layoutOptions": {
-            "elk.partitioning.partition": "1"
+            "elk.partitioning.partition": "0"
           }
         },
         {
@@ -175,6 +181,12 @@ vars: { d2-config: { data: { figure: |json
         },
         {
           "id": "n4",
+          "layoutOptions": {
+            "elk.partitioning.partition": "1"
+          }
+        },
+        {
+          "id": "n5",
           "layoutOptions": {
             "elk.partitioning.partition": "1"
           }
@@ -191,14 +203,15 @@ vars: { d2-config: { data: { figure: |json
   "modelSource": {
     "ref": "sdkCapture",
     "view": "WeaverViews::providerDeliveryJoin",
-    "modelHash": "7620b4922e797e626b81c4fe0552f31c347eaf6d428ac7f11ee41a6795c02754",
+    "modelHash": "f093c6efe8daeed664e7b7177131130e0904cf025ca6ec7eac22899796586224",
     "portProjection": "owner",
     "labels": {
       "n0": "Rust / close\nPolicy + OAuth + domains\nKeep every pending ID",
-      "n1": "Turso / validate\nCedar + claim + hold\nAcknowledge exact commit",
-      "n2": "Rust / prepare frame\nExact bytes and next span\nReserve transport credit",
-      "n3": "Rust / consume once\nLive cut + owner + expiry\nOne next cursor",
-      "n4": "Tonic / accept once\nOne current Rust owner\nObserve delivery later"
+      "n1": "Turso / validate\nCedar + claim + hold\nKeep the semantic cut",
+      "n2": "Turso / range progress\nAppend or release exactly\nKeep prior permission",
+      "n3": "Rust / prepare frame\nExact bytes and next span\nReserve transport credit",
+      "n4": "Rust / consume once\nLive cut + owner + expiry\nOne next cursor",
+      "n5": "Tonic / accept once\nOne current Rust owner\nObserve delivery later"
     }
   }
 }

@@ -53,12 +53,12 @@ pub struct WriteScope<'a> {
 }
 /// Acquire an immediate write transaction with exclusive Rust session custody.
 pub fn begin(session: &mut Session) -> driver::Result<WriteScope<'_>> {
-    start(session, None, None, ProviderScopePhase::Other)
+    start(session, None, None, ProviderScopePhase::Other, None)
 }
 /// Parallel MVCC admission or final use for one original claim/budget/history family.
 /// Global mutations use `begin`, excluding every live family scope through commit.
 pub fn begin_family<'a>(session: &'a mut Session, family: &str) -> driver::Result<WriteScope<'a>> {
-    start(session, Some(family), None, ProviderScopePhase::Other)
+    start(session, Some(family), None, ProviderScopePhase::Other, None)
 }
 /// The caller must rejoin the live stamp in this scope before any effect.
 pub(crate) fn begin_provider_use<'a>(
@@ -68,7 +68,19 @@ pub(crate) fn begin_provider_use<'a>(
     phase: ProviderScopePhase,
 ) -> driver::Result<WriteScope<'a>> {
     let expected = (!crate::task_origins::locked_original_evidence()).then_some(expected);
-    start(session, Some(family), expected, phase)
+    start(session, Some(family), expected, phase, None)
+}
+
+/// The sealed token is constructed only in provider's exact progress paths.
+pub(crate) fn begin_provider_progress<'a>(
+    session: &'a mut Session,
+    family: &str,
+    expected: &weaver_contracts::DomainStamp,
+    phase: ProviderScopePhase,
+    progress: &crate::provider::RangeProgress,
+) -> driver::Result<WriteScope<'a>> {
+    let expected = (!crate::task_origins::locked_original_evidence()).then_some(expected);
+    start(session, Some(family), expected, phase, Some(progress))
 }
 
 fn start<'a>(
@@ -76,6 +88,7 @@ fn start<'a>(
     family: Option<&str>,
     expected: Option<&weaver_contracts::DomainStamp>,
     phase: ProviderScopePhase,
+    progress: Option<&crate::provider::RangeProgress>,
 ) -> driver::Result<WriteScope<'a>> {
     session.require_quiescent()?;
     let concurrent = session.owner.journal == super::Journal::Mvcc;
@@ -99,7 +112,13 @@ fn start<'a>(
         super::scheduler::Scope::Domains(keys.clone())
     });
     // Close before waiting for either the scheduler or native writer.
-    let authority = session.owner.authority.close(close_scope)?;
+    let authority = match progress {
+        Some(progress) => session
+            .owner
+            .authority
+            .close_progress(close_scope, progress)?,
+        None => session.owner.authority.close(close_scope)?,
+    };
     let mut owner_entered = None;
     let mut domains_entered = None;
     #[cfg(feature = "commit-observer")]

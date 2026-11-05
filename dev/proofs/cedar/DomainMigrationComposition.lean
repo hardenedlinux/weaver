@@ -2,6 +2,7 @@
 --
 -- SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
+import ProviderSemanticProgress
 import CedarPooSpec.Gateway.ZeroTrust
 import GatewayHeadCAS
 import SharedDomains
@@ -61,6 +62,28 @@ theorem acknowledged_delivery_preserves_same_actual_view
   simpa only [same] using gateway_final_use_preserves_domain_contract use events
 
 #print axioms acknowledged_delivery_preserves_same_actual_view
+
+/-- Reuse the pinned SPEC final-use theorem under the exact projection preserved
+    by any finite sequence of the two progress-only SQL transitions. The host
+    still proves that its concrete SQL read set matches Image. No new axiom. -/
+theorem range_progress_preserves_spec_final_use
+    (use : Gateway.ZeroTrust.FinalUse proposal)
+    (events : GatewayHeadCAS.Run c owner GatewayHeadCAS.initial use.actual)
+    (before after : Weaver.ProviderSemanticProgress.Store)
+    (projection : Weaver.ProviderSemanticProgress.Image → GatewayHeadCAS.State)
+    (joined : projection before.image = use.actual)
+    (steps : Weaver.ProviderSemanticProgress.Steps before after) :
+    (Gateway.ZeroTrust.specialize proposal (reachableDomain c)).required effect (projection after.image) ∧
+    (∀ account, booked c (projection after.image).base account ≤ c.capacity account) ∧
+    (∀ key, ((projection after.image).base.messages key).claims ≤ 1 ∧
+      ((projection after.image).base.messages key).sends ≤ 1) ∧
+    original.Refines prepared.profile := by
+  have same : projection after.image = use.actual := by
+    rw [Weaver.ProviderSemanticProgress.finite_progress_preserves_image steps]
+    exact joined
+  simpa only [same] using gateway_final_use_preserves_domain_contract use events
+
+#print axioms range_progress_preserves_spec_final_use
 
 theorem head_cas_preserves_original_obligations
     (step : GatewayHeadCAS.Step c owner before after)

@@ -300,10 +300,29 @@ package WeaverExecution {
            reopen only on the exact fenced image and outcome. */
     }
 
+    requirement def ProviderSemanticProgress {
+        doc /* The complete authorization image excludes provider_runs.next_event
+           and provider_releases progress. Only fresh exact range insertion with
+           cursor CAS, and exact unknown-to-released CAS preserve that image.
+           A sealed Rust token is available only to these two audited paths.
+           They still register and settle a unique close/commit/activate ticket,
+           but neither advance the semantic revision nor block an older,
+           acknowledged range. They never authorize their own uncommitted frame. */
+        doc /* Policy/schema/review/pending, OAuth/witness, original claim,
+           consumed run state/target, immutable plan/profile, shared budget,
+           three-level quota, history and domain/fence edits remain semantic.
+           Terminal completion is semantic. Generic SQL always invalidates.
+           Any ambiguous native progress outcome seals the owner; restart
+           cannot adopt a queued role. Progress cannot reconcile witness IO.
+           Every new range retains the full live deciding Cedar/claim guard. */
+    }
+
     requirement def ProviderDeliveryJoin {
-        doc /* Every production writer enters WriteScope: close a unique ticket
-           before scheduler or database waiting, commit one Turso outcome, then
-           activate its exact revision. Unknown native outcomes seal the owner;
+        doc /* Every production writer enters WriteScope: register a unique
+           outcome ticket before scheduler or database waiting, commit one Turso
+           outcome, then resolve exactly that ticket. Semantic writers close
+           delivery and advance its revision; certified progress preserves it.
+           Unknown native outcomes seal the owner;
            witness append uncertainty remains pending until exact-path durable
            reconciliation. Known empty rollback may reopen only after the old
            exclusive transaction is definitively joined and cannot commit late. */
@@ -407,11 +426,18 @@ package WeaverExecution {
 
     part def DeliveryValidation {
         attribute displayName : String = "Turso / validate";
-        attribute responsibility : String = "Cedar + claim + hold\nAcknowledge exact commit";
+        attribute responsibility : String = "Cedar + claim + hold\nKeep the semantic cut";
         attribute glyph : String = "ledger";
         attribute visualRole : String = "ledger";
         port closed : ~EgressWindowPort;
         port validated : EgressWindowPort;
+    }
+    part def CertifiedRangeProgress {
+        attribute displayName : String = "Turso / range progress";
+        attribute responsibility : String = "Append or release exactly\nKeep prior permission";
+        attribute glyph : String = "ledger";
+        attribute visualRole : String = "ledger";
+        port preserved : EgressWindowPort;
     }
     part def DeliveryReceiver {
         attribute displayName : String = "Rust / consume once";
@@ -420,17 +446,20 @@ package WeaverExecution {
         attribute visualRole : String = "execution";
         port validated : ~EgressWindowPort;
         port staged : ~EgressWindowPort;
+        port progress : ~EgressWindowPort;
         port offer : EgressWindowPort;
     }
     part providerDeliveryJoin {
         part changes : EgressMutationBarrier;
         part validated : DeliveryValidation;
+        part progress : CertifiedRangeProgress;
         part staged : InertProviderFrame;
         part receiver : DeliveryReceiver;
         part tonic : ProviderEgressTransport;
         connection closeBeforeWrite connect changes.closed to validated.closed;
         connection exactRevision connect validated.validated to receiver.validated;
         connection inertOnly connect staged.stagedBytes to receiver.staged;
+        connection unchangedMeaning connect progress.preserved to receiver.progress;
         connection oneOffer connect receiver.offer to tonic.acceptedBytes;
     }
 

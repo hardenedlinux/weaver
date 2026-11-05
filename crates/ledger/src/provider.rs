@@ -15,6 +15,31 @@ use weaver_contracts::{
     ProviderState, Result, Task,
 };
 
+/// Sealed proof obligation for the two progress-only write paths in this module.
+/// No external caller or other ledger module can construct this token.
+/// Its transaction may only append fresh ranges/advance next_event, or CAS an
+/// exact unknown release to released. All authorization inputs stay unchanged.
+pub(crate) struct RangeProgress {
+    _sealed: (),
+}
+#[cfg(feature = "commit-observer")]
+thread_local! {
+    static CONSERVATIVE_RANGE_INVALIDATION: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
+}
+/// Same-image safe control: treat exact progress writes as semantic mutations.
+#[cfg(feature = "commit-observer")]
+pub fn use_conservative_range_invalidation(conservative: bool) {
+    CONSERVATIVE_RANGE_INVALIDATION.set(conservative);
+}
+impl RangeProgress {
+    pub(crate) fn invalidates(&self) -> bool {
+        #[cfg(feature = "commit-observer")]
+        return CONSERVATIVE_RANGE_INVALIDATION.get();
+        #[cfg(not(feature = "commit-observer"))]
+        false
+    }
+}
+
 /// Affine deciding-owner custody for one selected original provider invocation.
 pub struct ProviderDispatch {
     pub(super) plan: ProviderPlan,
@@ -248,8 +273,12 @@ impl Ledger {
             return Err(Error::Conflict("foreign provider release binding"));
         }
         let owner = self.connection.execution_owner();
-        let (mut tx, domains) =
-            begin_provider_effect(&mut self.connection, permit, ProviderScopePhase::FinalQueue)?;
+        let (mut tx, domains) = begin_progress_effect(
+            &mut self.connection,
+            permit,
+            ProviderScopePhase::FinalQueue,
+            &RangeProgress { _sealed: () },
+        )?;
         guard_live_range(
             &tx,
             permit,
@@ -474,6 +503,30 @@ pub(super) fn begin_provider_effect<'a>(
 ) -> Result<(WriteScope<'a>, DomainView)> {
     let tx = crate::persistence::begin_provider_use(session, &p.plan.family, &p.domains, phase)
         .map_err(db)?;
+    require_provider_effect(tx, p)
+}
+
+fn begin_progress_effect<'a>(
+    session: &'a mut crate::persistence::Session,
+    p: &ProviderDispatch,
+    phase: ProviderScopePhase,
+    progress: &RangeProgress,
+) -> Result<(WriteScope<'a>, DomainView)> {
+    let tx = crate::persistence::begin_provider_progress(
+        session,
+        &p.plan.family,
+        &p.domains,
+        phase,
+        progress,
+    )
+    .map_err(db)?;
+    require_provider_effect(tx, p)
+}
+
+fn require_provider_effect<'a>(
+    tx: WriteScope<'a>,
+    p: &ProviderDispatch,
+) -> Result<(WriteScope<'a>, DomainView)> {
     // A retired stamp may name old lock keys. Before any mutation or
     // callback, require the live stamp to identify exactly those keys.
     let actual = tx.provider_domain(|| crate::domains::provider_view(&tx, &p.plan.family))?;
@@ -515,7 +568,7 @@ pub fn use_cached_release_programs(cached: bool) {
 const RELEASE_LOOKUP: &str = "SELECT digest FROM provider_releases
     WHERE family=?1 AND node=?2 AND sequence=?3 AND length=?4 AND state='unknown'";
 const RELEASE_MARK: &str = "UPDATE provider_releases SET state='released'
-    WHERE family=?1 AND node=?2 AND sequence=?3";
+    WHERE family=?1 AND node=?2 AND sequence=?3 AND length=?4 AND digest=?5 AND state='unknown'";
 
 #[cfg(feature = "commit-observer")]
 fn warm_release_programs(connection: &crate::persistence::driver::Connection) {
@@ -560,17 +613,27 @@ fn mark_release(
     let params = crate::persistence::params![
         permit.plan.family.as_str(),
         permit.plan.node.as_str(),
-        release.sequence as i64
+        release.sequence as i64,
+        release.length as i64,
+        release.digest.as_str()
     ];
     #[cfg(feature = "commit-observer")]
     if CACHED_RELEASE_PROGRAMS.get() {
-        futures_executor::block_on(async {
+        let changed = futures_executor::block_on(async {
             tx.prepare_cached(RELEASE_MARK).await?.execute(params).await
         })
         .map_err(db)?;
-        return Ok(());
+        return require_marked(changed);
     }
-    crate::persistence::exec(tx, RELEASE_MARK, params).map_err(db)?;
+    require_marked(crate::persistence::exec(tx, RELEASE_MARK, params).map_err(db)?)
+}
+
+fn require_marked(changed: u64) -> Result<()> {
+    if changed != 1 {
+        return Err(Error::Conflict(
+            "provider release already consumed or changed",
+        ));
+    }
     Ok(())
 }
 

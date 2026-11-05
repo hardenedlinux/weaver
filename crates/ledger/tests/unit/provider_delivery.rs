@@ -63,3 +63,102 @@ proptest! {
         prop_assert_eq!(original.state, weaver_contracts::ProviderState::Unknown);
     }
 }
+
+proptest! {
+    #![proptest_config(Config::with_cases(24))]
+    #[test]
+    fn exact_range_progress_preserves_queued_authorization(
+        widths in proptest::collection::vec(1u64..=4, 2..=4),
+        mvcc in proptest::bool::ANY, conservative in proptest::bool::ANY,
+    ) {
+        weaver_ledger::use_conservative_range_invalidation(conservative);
+        let directory = tempfile::tempdir().expect("store");
+        let path = directory.path().join("progress.db");
+        let _custody = persistence::Session::open_with_journal(&path,
+            if mvcc { persistence::Journal::Mvcc } else { persistence::Journal::Wal }).expect("owner");
+        let (mut ledger, plan) = fixture(&path);
+        ledger.enqueue_provider(&plan).expect("reserve");
+        let permit = ledger.consume_provider("f", "infer", &BTreeSet::from(["primary".into()])).expect("consume");
+        ledger.dispatch_provider(&permit, || Ok(())).expect("dispatch burn");
+        let ranges: Vec<_> = widths.iter().map(|width| ("exact-frame", *width)).collect();
+        let releases = ledger.prepare_provider_releases(&permit, &ranges, "arrow").expect("ranges");
+        let mut frames = Vec::new();
+        for release in releases {
+            ledger.release_provider_for_delivery(&permit, release, "arrow", |_, delivery| {
+                frames.push(delivery.split()); Ok(())
+            }).expect("durable exact release");
+            frames.last().expect("frame").0.acknowledge(Instant::now()+Duration::from_secs(1)).expect("acknowledge");
+        }
+        // A fresh append must not invalidate any already released queued span.
+        ledger.prepare_provider_release(&permit, "next-frame", "arrow", 1).expect("fresh append");
+        let mut cursor = DeliveryCursor::new(&plan).expect("receiver");
+        let cx = Context::from_waker(Waker::noop());
+        for (producer, frame) in &frames {
+            if conservative {
+                prop_assert!(cursor.poll(frame, &cx, &mut Some(())).is_pending());
+                ledger.refresh_provider_delivery(&permit, producer, "arrow").expect("old conservative requalification");
+            }
+            prop_assert!(matches!(cursor.poll(frame, &cx, &mut Some(())), Poll::Ready(Ok(()))),
+                "progress alone invalidated an exact earlier frame");
+            prop_assert!(matches!(cursor.poll(frame, &cx, &mut Some(())), Poll::Ready(Err(_))), "cursor reused");
+        }
+        let receipt = ledger.provider_receipt("f", "infer").expect("inspect").expect("original");
+        prop_assert_eq!((receipt.held, receipt.state), (4, weaver_contracts::ProviderState::Unknown));
+        weaver_ledger::use_conservative_range_invalidation(false);
+    }
+}
+
+#[test]
+fn pending_range_release_cannot_block_an_already_acknowledged_frame() {
+    let directory = tempfile::tempdir().expect("store");
+    let path = directory.path().join("pending-progress.db");
+    let (mut ledger, plan) = fixture(&path);
+    ledger.enqueue_provider(&plan).expect("reserve");
+    let permit = ledger
+        .consume_provider("f", "infer", &BTreeSet::from(["primary".into()]))
+        .expect("consume");
+    ledger
+        .dispatch_provider(&permit, || Ok(()))
+        .expect("dispatch burn");
+    let mut releases = ledger
+        .prepare_provider_releases(&permit, &[("first", 1), ("second", 1)], "protobuf")
+        .expect("prepare")
+        .into_iter();
+    let mut first = None;
+    ledger
+        .release_provider_for_delivery(
+            &permit,
+            releases.next().expect("first"),
+            "protobuf",
+            |_, d| {
+                first = Some(d.split());
+                Ok(())
+            },
+        )
+        .expect("first commit");
+    let (producer, frame) = first.expect("frame");
+    producer
+        .acknowledge(Instant::now() + Duration::from_secs(1))
+        .expect("ack");
+    let mut cursor = DeliveryCursor::new(&plan).expect("receiver");
+    let cx = Context::from_waker(Waker::noop());
+    ledger
+        .release_provider_for_delivery(
+            &permit,
+            releases.next().expect("second"),
+            "protobuf",
+            |_, d| {
+                assert!(
+                    matches!(cursor.poll(&frame, &cx, &mut Some(())), Poll::Ready(Ok(()))),
+                    "unrelated progress ticket blocked an acknowledged frame"
+                );
+                let (_uncommitted_producer, uncommitted) = d.split();
+                assert!(
+                    cursor.poll(&uncommitted, &cx, &mut Some(())).is_pending(),
+                    "progress lane activated its own uncommitted frame"
+                );
+                Ok(())
+            },
+        )
+        .expect("second commit");
+}

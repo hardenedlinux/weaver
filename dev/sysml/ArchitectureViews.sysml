@@ -242,27 +242,30 @@ package WeaverViews {
     view providerDeliveryJoin {
         attribute mappedFile : String = "docs/10-19-llm-gateway/10-routing-and-inference/10.09-provider-delivery-join.d2";
         attribute displayTitle : String = "A queued frame is not permission.";
-        attribute displaySubtitle : String = "Changes close the lane. One current Rust receiver releases the next frame.";
+        attribute displaySubtitle : String = "Authority changes close the lane. Exact range progress keeps prior permission.";
         attribute displayEyebrow : String = "WEAVER / FINAL DELIVERY";
         attribute readerQuestion : String = "Can an old queued frame cross a new Policy cut?";
         attribute designAudience : String = "Gateway developers and security reviewers";
         attribute designMedium : String = "GitHub at 830 CSS pixels";
-        attribute designMessage : String = "A changed view requires fresh authorization.\nUnknown sends keep the original hold.";
+        attribute designMessage : String = "New authority requires fresh checks.\nProgress keeps the cut; unknown keeps the hold.";
         attribute designFocus : String = "receiver";
         attribute visualNotation : String = "objects";
-        attribute visualBands : String = "[[\"changes\",\"validated\"],[\"staged\",\"receiver\",\"tonic\"]]";
+        attribute visualBands : String = "[[\"changes\",\"validated\",\"progress\"],[\"staged\",\"receiver\",\"tonic\"]]";
         attribute visualThemes : String = "sketchbook,ocean,comfortable,reading";
         attribute visualOptions : String = "{\"elk.algorithm\":\"layered\",\"elk.direction\":\"DOWN\",\"elk.edgeRouting\":\"ORTHOGONAL\"}";
         attribute visualWidth : Integer = 980;
         requirement delivery : WeaverExecution::ProviderDeliveryJoin;
+        requirement semanticProgress : WeaverExecution::ProviderSemanticProgress;
         expose WeaverExecution::providerDeliveryJoin::changes;
         expose WeaverExecution::providerDeliveryJoin::validated;
+        expose WeaverExecution::providerDeliveryJoin::progress;
         expose WeaverExecution::providerDeliveryJoin::staged;
         expose WeaverExecution::providerDeliveryJoin::receiver;
         expose WeaverExecution::providerDeliveryJoin::tonic;
         expose WeaverExecution::providerDeliveryJoin::closeBeforeWrite;
         expose WeaverExecution::providerDeliveryJoin::exactRevision;
         expose WeaverExecution::providerDeliveryJoin::inertOnly;
+        expose WeaverExecution::providerDeliveryJoin::unchangedMeaning;
         expose WeaverExecution::providerDeliveryJoin::oneOffer;
         render asInterconnectionDiagram;
     }

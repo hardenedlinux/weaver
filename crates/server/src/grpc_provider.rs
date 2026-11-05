@@ -92,6 +92,10 @@ impl Gateway {
                         std::env::var("WEAVER_TEST_SEPARATE_RELEASE_READS").as_deref() == Ok("1"),
                     );
                     #[cfg(test)]
+                    weaver_ledger::use_conservative_range_invalidation(
+                        std::env::var_os("WEAVER_TEST_CONSERVATIVE_RANGE_INVALIDATION").is_some(),
+                    );
+                    #[cfg(test)]
                     let trace_scopes = std::env::var_os("WEAVER_TEST_PROVIDER_SCOPE_TRACE").is_some();
                     #[cfg(test)]
                     if trace_scopes {
@@ -130,6 +134,7 @@ impl Gateway {
                         weaver_ledger::use_fresh_provider_domain_plan(false);
                         weaver_ledger::use_separate_release_reads(false);
                         weaver_ledger::use_cached_release_programs(false);
+                        weaver_ledger::use_conservative_range_invalidation(false);
                     }
                     #[cfg(test)]
                     if std::env::var_os("WEAVER_TEST_PROVIDER_TIMINGS").is_some() {

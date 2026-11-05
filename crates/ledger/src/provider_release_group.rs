@@ -4,7 +4,8 @@
 
 //! One durable cursor advance for a bounded group of affine response ranges.
 use super::{
-    ProviderDispatch, ProviderRelease, begin_provider_effect, guard_live_range, release_progress,
+    ProviderDispatch, ProviderRelease, RangeProgress, begin_progress_effect, guard_live_range,
+    release_progress,
 };
 use crate::{
     Ledger, db,
@@ -28,10 +29,11 @@ impl Ledger {
     ) -> Result<Vec<ProviderRelease>> {
         let rows = group_length(ranges)?;
         self.check_provider_session(permit)?;
-        let (tx, domains) = begin_provider_effect(
+        let (tx, domains) = begin_progress_effect(
             &mut self.connection,
             permit,
             ProviderScopePhase::PrepareRange,
+            &RangeProgress { _sealed: () },
         )?;
         let progress = release_progress(&tx, permit)?;
         let end = progress

@@ -55,7 +55,9 @@ pub use provider::{
     ProviderRelease,
 };
 #[cfg(feature = "commit-observer")]
-pub use provider::{use_cached_release_programs, use_separate_release_reads};
+pub use provider::{
+    use_cached_release_programs, use_conservative_range_invalidation, use_separate_release_reads,
+};
 mod store;
 mod stream_catalog;
 mod stream_custody;

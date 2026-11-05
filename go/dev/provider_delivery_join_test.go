@@ -224,3 +224,44 @@ func awaitDeliveryCuts(t testing.TB, ctx context.Context, controller *commitCont
 	}
 	return commit
 }
+
+// Exercise the real TLS/Tonic producer and consumer with variable finite
+// streams. Progress writes alone must never ask for full reauthorization.
+func TestProviderSemanticProgressProperty(t *testing.T) {
+	property := func(length uint8, mvcc, arrow bool) bool {
+		journal := "wal"
+		if mvcc {
+			journal = "mvcc"
+		}
+		rows := 5 + int(length%9)
+		f := fixtureWithInvocation(t, burstProviderSSE(rows), false, observedServer(t),
+			[]string{"--exact", "grpc_config::serve_wif_gateway", "--ignored", "--nocapture"},
+			[]string{"WEAVER_STORAGE_JOURNAL=" + journal, "WEAVER_TEST_PROVIDER_SCOPE_TRACE=1"})
+		encoding := pb.Encoding_PROTOBUF
+		if arrow {
+			encoding = pb.Encoding_ARROW_IPC
+		}
+		ctx, cancel := context.WithTimeout(t.Context(), 12*time.Second)
+		defer cancel()
+		frames := 0
+		_, err := f.client.Execute(ctx, f.plan, encoding, 1, func(*pb.Event) error { frames++; return nil })
+		if err != nil || frames != rows || f.primary.Load() != 1 || f.backup.Load() != 0 {
+			t.Fatal("progress duplicated or lost a frame/request", err, frames, rows, f.primary.Load(), f.backup.Load())
+		}
+		// EOF joins the worker before its final trace is collected.
+		f.stop(t)
+		samples := readDeliverySamples(t, f)[f.plan.Family]
+		if len(samples) != rows {
+			t.Fatal("incomplete delivery trace", len(samples), rows)
+		}
+		for _, sample := range samples {
+			if sample.refresh != 0 {
+				t.Fatal("progress write invalidated an unchanged authorization image", sample.first, sample.refresh)
+			}
+		}
+		return true
+	}
+	if err := quick.Check(property, &quick.Config{MaxCount: 8, Rand: rand.New(rand.NewSource(293))}); err != nil {
+		t.Fatal(err)
+	}
+}

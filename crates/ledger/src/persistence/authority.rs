@@ -30,6 +30,7 @@ struct State {
 }
 struct Mutation {
     scope: Scope,
+    invalidates: bool,
     external: BTreeMap<String, bool>,
     orphaned: bool,
 }
@@ -112,11 +113,21 @@ impl State {
             || self
                 .pending
                 .values()
-                .any(|entry| entry.scope.overlaps(scope))
+                .any(|entry| entry.invalidates && entry.scope.overlaps(scope))
     }
 }
 impl Authority {
     pub(super) fn close(&self, scope: Scope) -> driver::Result<Close<'_>> {
+        self.close_kind(scope, true)
+    }
+    pub(super) fn close_progress(
+        &self,
+        scope: Scope,
+        proof: &crate::provider::RangeProgress,
+    ) -> driver::Result<Close<'_>> {
+        self.close_kind(scope, proof.invalidates())
+    }
+    fn close_kind(&self, scope: Scope, invalidates: bool) -> driver::Result<Close<'_>> {
         let mut state = self.state.lock().map_err(error)?;
         if state.failed {
             return Err(error("authority sealed until owner recovery"));
@@ -130,6 +141,7 @@ impl Authority {
             id,
             Mutation {
                 scope: scope.clone(),
+                invalidates,
                 external: BTreeMap::new(),
                 orphaned: false,
             },
@@ -224,6 +236,9 @@ impl Close<'_> {
             .pending
             .get_mut(&self.id)
             .ok_or_else(|| error("authority cut absent"))?;
+        if !mutation.invalidates {
+            return Err(error("range progress cannot reconcile external authority"));
+        }
         mutation.external.insert(path.to_owned(), reconciled);
         Ok(())
     }
@@ -241,7 +256,7 @@ impl Close<'_> {
         if !known {
             state.failed = true;
         }
-        if modified && state.advance(&self.scope).is_err() {
+        if modified && mutation.invalidates && state.advance(&self.scope).is_err() {
             state.failed = true;
         }
         if committed && mutation.external.values().all(|complete| *complete) {
