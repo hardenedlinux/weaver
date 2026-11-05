@@ -70,8 +70,13 @@ func TestD2SemanticCopyCannotOverrideSDKProjection(t *testing.T) {
 	for source, body := range capture.Mapped {
 		baseline[source] = body
 	}
-	if len(baseline) != 78 {
+	if len(baseline) != len(capture.Descriptions) {
 		t.Fatalf("expected product and development projections, got %d", len(baseline))
+	}
+	for name, description := range capture.Descriptions {
+		if baseline[description.File] == "" {
+			t.Fatal("declared SysML view lost its D2 projection", name, description.File)
+		}
 	}
 	for source, body := range baseline {
 		forged := body

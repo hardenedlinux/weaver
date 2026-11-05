@@ -100,6 +100,8 @@ package WeaverProject {
         part 'go/internal/devrunner' : ForbiddenRuntimeRoot;
         part prod : RuntimeAssetRoot;
         part 'go/cmd/weaver-control' : RuntimeGoEntry;
+        part 'go/cmd/weaver-import-provider' : RuntimeGoEntry;
+        part 'go/cmd/weaver-meter' : RuntimeGoEntry;
         part 'go/cmd/weaver-dev' : DevelopmentGoEntry;
         part 'scheme' : RuntimeSourceRoot;
         part 'proto' : RuntimeSourceRoot;

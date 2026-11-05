@@ -6,6 +6,7 @@ package devrunner
 
 import (
 	"encoding/json"
+	"maps"
 	"os"
 	"path/filepath"
 	"strings"
@@ -92,24 +93,30 @@ func FuzzLeanJSONSourceAndDeclarationBinding(f *testing.F) {
 }
 
 func TestLeanPlanUsesStructuredEvidenceInPolicyLane(t *testing.T) {
+	expected := map[string]string{}
+	for _, stage := range Plan("configured-go") {
+		if source := leanSource(stage); source != "" {
+			expected[stage.Name] = source
+		}
+	}
 	for _, mode := range []string{"check-go", "check-policy"} {
 		stages, err := Stages(mode, "configured-go")
 		if err != nil {
 			t.Fatal(err)
 		}
-		proofs, controls := 0, 0
+		proofs, controls := map[string]string{}, 0
 		for _, stage := range stages {
 			if leanSource(stage) != "" {
-				proofs++
+				proofs[stage.Name] = leanSource(stage)
 			}
 			if stage.Name == "lean-json-integration" {
 				controls++
 			}
 		}
-		if mode == "check-policy" && (proofs != 9 || controls != 1) {
-			t.Fatalf("policy lane lost machine proof evidence: %d/%d", proofs, controls)
+		if mode == "check-policy" && (!maps.Equal(proofs, expected) || controls != 1) {
+			t.Fatalf("policy lane lost machine proof evidence: %v/%d", proofs, controls)
 		}
-		if mode == "check-go" && (proofs != 0 || controls != 0) {
+		if mode == "check-go" && (len(proofs) != 0 || controls != 0) {
 			t.Fatal("Go-only lane acquired proof toolchain requirements")
 		}
 	}

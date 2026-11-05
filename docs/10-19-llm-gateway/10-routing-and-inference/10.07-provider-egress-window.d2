@@ -18,11 +18,12 @@ vars: { d2-config: { data: { figure: |json
       "n1",
       "n2",
       "n3",
-      "n4"
+      "n4",
+      "n5"
     ],
     "requiredRelations": [],
     "focalSubjects": [
-      "n3"
+      "n4"
     ]
   },
   "icons": [
@@ -30,7 +31,7 @@ vars: { d2-config: { data: { figure: |json
     "weaver",
     "components"
   ],
-  "title": "Burn the window. Decide each frame.",
+  "title": "Close every writer. Guard the actual handoff.",
   "purpose": "workflow",
   "kind": "routing",
   "language": "en",
@@ -39,12 +40,12 @@ vars: { d2-config: { data: { figure: |json
   "questions": [
     {
       "ref": "q1",
-      "text": "How can a frame leave without another durable commit?",
+      "text": "What must be true before a prepared frame can leave?",
       "focusRefs": [
         "model"
       ],
       "subjectRefs": [
-        "n3"
+        "n4"
       ]
     }
   ],
@@ -115,12 +116,13 @@ vars: { d2-config: { data: { figure: |json
     "objectRows": [
       [
         "n0",
-        "n1",
-        "n2"
+        "n2",
+        "n1"
       ],
       [
         "n3",
-        "n4"
+        "n4",
+        "n5"
       ]
     ],
     "notation": "objects",
@@ -130,18 +132,20 @@ vars: { d2-config: { data: { figure: |json
       "elk.edgeRouting": "ORTHOGONAL"
     },
     "icons": {
-      "n0": "ledger",
-      "n1": "publication",
-      "n2": "stream",
-      "n3": "authorization",
-      "n4": "stream"
+      "n0": "policy",
+      "n1": "ledger",
+      "n2": "publication",
+      "n3": "stream",
+      "n4": "authorization",
+      "n5": "stream"
     },
     "roles": {
-      "n0": "publication",
+      "n0": "governance",
       "n1": "publication",
-      "n2": "semantic",
-      "n3": "execution",
-      "n4": "execution"
+      "n2": "publication",
+      "n3": "semantic",
+      "n4": "execution",
+      "n5": "execution"
     },
     "edgeLabels": true,
     "graph": {
@@ -176,6 +180,12 @@ vars: { d2-config: { data: { figure: |json
           "layoutOptions": {
             "elk.partitioning.partition": "1"
           }
+        },
+        {
+          "id": "n5",
+          "layoutOptions": {
+            "elk.partitioning.partition": "1"
+          }
         }
       ],
       "layoutOptions": {
@@ -189,14 +199,15 @@ vars: { d2-config: { data: { figure: |json
   "modelSource": {
     "ref": "sdkCapture",
     "view": "WeaverViews::providerEgressWindow",
-    "modelHash": "85822cc7ecccbc8894859ed148c30f8aa698669c8c1c285dff5bd0797fef4fe6",
+    "modelHash": "62609eb38b56d61e989acde2b1c498782572922b0a610aa02dd105c53cd2819e",
     "portProjection": "owner",
     "labels": {
-      "n0": "Turso / burn window\nBind the original claim\nRetain the entire hold",
-      "n1": "Authority cut\nClose before durable change\nPublish the exact live image",
-      "n2": "Rust / prepare frame\nExact bytes and next span\nReserve transport credit",
-      "n3": "Rust / decide and hand off\nLive Cedar + exact claim\nFence + one-use cursor",
-      "n4": "gRPC / accept frame\nAccept a single owner offer\nObserve delivery separately"
+      "n0": "Rust / close\nPolicy + OAuth + domains\nKeep every pending ID",
+      "n1": "Turso / burn window\nBind original claim\nRetain the shared hold",
+      "n2": "Rust / activate\nJoin DB + OAuth witness\nResolve all pending IDs",
+      "n3": "Rust / prepare frame\nExact bytes and next span\nReserve transport credit",
+      "n4": "Rust / receiver owner\nCedar + claim + expiry\nFence + next interval",
+      "n5": "Tonic / accept once\nOne current Rust owner\nObserve delivery later"
     }
   }
 }

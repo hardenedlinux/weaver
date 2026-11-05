@@ -20,7 +20,7 @@ package WeaverViews {
         attribute designFocus : String = "ledger,executor";
         attribute visualThemes : String = "sketchbook,ocean,comfortable,reading";
         attribute visualOptions : String = "{\"elk.algorithm\":\"layered\",\"elk.direction\":\"RIGHT\",\"elk.edgeRouting\":\"ORTHOGONAL\",\"elk.spacing.nodeNode\":\"44\",\"elk.layered.spacing.nodeNodeBetweenLayers\":\"64\",\"elk.layered.wrapping.strategy\":\"MULTI_EDGE\",\"elk.aspectRatio\":\"1.15\",\"elk.separateConnectedComponents\":\"false\"}";
-        attribute visualWidth : Integer = 1120;
+        attribute visualWidth : Integer = 980;
 
         requirement specContract : WeaverZeroTrust::ZeroTrustContractRefinement;
         requirement executionContract : WeaverExecution::ConsumeBeforeSend;
@@ -124,7 +124,7 @@ package WeaverViews {
         attribute designFocus : String = "policy,broker";
         attribute visualThemes : String = "sketchbook,ember,comfortable,reading";
         attribute visualOptions : String = "{\"elk.algorithm\":\"layered\",\"elk.direction\":\"DOWN\",\"elk.edgeRouting\":\"ORTHOGONAL\",\"elk.spacing.nodeNode\":\"48\",\"elk.layered.spacing.nodeNodeBetweenLayers\":\"72\",\"elk.hierarchyHandling\":\"INCLUDE_CHILDREN\"}";
-        attribute visualWidth : Integer = 1120;
+        attribute visualWidth : Integer = 980;
 
         requirement specContract : WeaverZeroTrust::ZeroTrustContractRefinement;
         requirement executionContract : WeaverExecution::ConsumeBeforeSend;
@@ -241,20 +241,23 @@ package WeaverViews {
 
     view providerEgressWindow {
         attribute mappedFile : String = "docs/10-19-llm-gateway/10-routing-and-inference/10.07-provider-egress-window.d2";
-        attribute displayTitle : String = "Burn the window. Decide each frame.";
-        attribute displaySubtitle : String = "Durable exposure and the current Rust turn govern one transport offer.";
+        attribute displayTitle : String = "Close every writer. Guard the actual handoff.";
+        attribute displaySubtitle : String = "An inert queue carries bytes; one current Rust owner decides their release.";
         attribute displayEyebrow : String = "WEAVER / EGRESS DESIGN CANDIDATE";
-        attribute readerQuestion : String = "How can a frame leave without another durable commit?";
+        attribute readerQuestion : String = "What must be true before a prepared frame can leave?";
         attribute designAudience : String = "Gateway architects and security reviewers";
         attribute designMedium : String = "GitHub at 830 CSS pixels";
         attribute designMessage : String = "Design candidate. A lost window keeps its hold.";
         attribute designFocus : String = "owner";
         attribute visualNotation : String = "objects";
-        attribute visualBands : String = "[[\"durable\",\"publication\",\"preparation\"],[\"owner\",\"transport\"]]";
+        attribute visualBands : String = "[[\"mutation\",\"publication\",\"durable\"],[\"preparation\",\"owner\",\"transport\"]]";
         attribute visualThemes : String = "sketchbook,ocean,comfortable,reading";
         attribute visualOptions : String = "{\"elk.algorithm\":\"layered\",\"elk.direction\":\"DOWN\",\"elk.edgeRouting\":\"ORTHOGONAL\"}";
         attribute visualWidth : Integer = 980;
         requirement candidate : WeaverExecution::BoundedProviderEgressWindow;
+        requirement promotion : WeaverExecution::ProviderEgressPromotion;
+        expose WeaverExecution::providerEgressWindow::mutation;
+        expose WeaverExecution::providerEgressWindow::closedCut;
         expose WeaverExecution::providerEgressWindow::durable;
         expose WeaverExecution::providerEgressWindow::publication;
         expose WeaverExecution::providerEgressWindow::preparation;
@@ -334,7 +337,7 @@ package WeaverViews {
         attribute designFocus : String = "routing,execution";
         attribute visualThemes : String = "sketchbook,blueprint,comfortable,reading";
         attribute visualOptions : String = "{\"elk.algorithm\":\"layered\",\"elk.direction\":\"DOWN\",\"elk.edgeRouting\":\"ORTHOGONAL\",\"elk.spacing.nodeNode\":\"48\",\"elk.layered.spacing.nodeNodeBetweenLayers\":\"72\",\"elk.hierarchyHandling\":\"INCLUDE_CHILDREN\"}";
-        attribute visualWidth : Integer = 1120;
+        attribute visualWidth : Integer = 980;
 
         requirement specContract : WeaverZeroTrust::ZeroTrustContractRefinement;
         requirement executionContract : WeaverExecution::ConsumeBeforeSend;

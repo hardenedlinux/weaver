@@ -63,6 +63,8 @@ func Plan(goBinary string) []Stage {
 		{"provider-egress-window-quint-tests", "quint", []string{"test", "dev/proofs/quint/ProviderEgressWindow.qnt", "--main", "ProviderEgressWindow", "--seed", "293"}},
 		{"provider-egress-window-quint-safety", "quint", []string{"run", "dev/proofs/quint/ProviderEgressWindow.qnt", "--main", "ProviderEgressWindow", "--invariant", "safety", "--max-samples", "2000", "--max-steps", "80", "--seed", "293"}},
 		{"provider-egress-window-lean", "elan", []string{"run", proofToolchain, "lean", "--json", "dev/proofs/lean/ProviderEgressWindow.lean"}},
+		{"provider-egress-promotion-quint-tests", "quint", []string{"test", "dev/proofs/quint/ProviderEgressPromotion.qnt", "--main", "ProviderEgressPromotion", "--seed", "293"}},
+		{"provider-egress-promotion-quint-safety", "quint", []string{"run", "dev/proofs/quint/ProviderEgressPromotion.qnt", "--main", "ProviderEgressPromotion", "--invariant", "safe", "--max-samples", "2000", "--max-steps", "80", "--seed", "293"}},
 		{"shared-domains-tests", "quint", []string{"test", "dev/proofs/quint/SharedDomains.qnt", "--main", "SharedDomains", "--seed", "293"}},
 		{"task-origin-tests", "quint", []string{"test", "dev/proofs/quint/TaskOrigin.qnt", "--main", "TaskOrigin", "--seed", "293"}},
 		{"task-origin-safety", "quint", []string{"run", "dev/proofs/quint/TaskOrigin.qnt", "--main", "TaskOrigin", "--invariant", "safety", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},

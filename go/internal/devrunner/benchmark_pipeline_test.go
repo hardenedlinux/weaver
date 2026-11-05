@@ -89,8 +89,29 @@ func TestSourceAdmissionBenchmarksRetainEverySizeAndRepetition(t *testing.T) {
 
 func TestPublishedPipelineKeepsSchemeOutsideExecutionQualification(t *testing.T) {
 	stages, err := Stages("bench-execution", "go")
-	if err != nil || len(stages) != 13 {
+	if err != nil {
 		t.Fatal("execution qualification", err)
+	}
+	// Name every required responsibility. Added paired workloads cannot be
+	// mistaken for a failure merely because an old total stopped matching.
+	required := map[string]bool{
+		"execution-benchmark-target": true, "execution-policy-tests": true,
+		"execution-backend-tests": true, "execution-policy-benchmark": true,
+		"execution-ledger-benchmark": true, "execution-provider-benchmark": true,
+		"execution-encoding-benchmark": true, "execution-range-prepare-pair": true,
+		"execution-scheduled-encoding-pair": true, "execution-contention-pair": true,
+		"execution-provider-integration": true, "published-pipeline-benchmark": true,
+		"execution-header-seal-pair": true, "execution-header-wait-pair": true,
+		"execution-streaming-pair": true,
+	}
+	for _, stage := range stages {
+		if !required[stage.Name] {
+			t.Fatal("unexpected or duplicate execution stage", stage.Name)
+		}
+		delete(required, stage.Name)
+	}
+	if len(required) != 0 {
+		t.Fatal("missing execution responsibilities", required)
 	}
 	for _, stage := range stages {
 		if strings.Contains(strings.Join(stage.Args, " "), "schemeintegration") || strings.Contains(stage.Name, "scheme") {

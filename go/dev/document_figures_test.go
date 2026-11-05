@@ -98,7 +98,9 @@ func TestProjectArchitectureReadmeFigureScale(t *testing.T) {
 			for _, attribute := range start.Attr {
 				attributes[attribute.Name.Local] = attribute.Value
 			}
-			if _, ok := attributes["data-scene"]; !ok {
+			_, scene := attributes["data-scene"]
+			_, object := attributes["data-illustrated-object"]
+			if !scene && !object {
 				continue
 			}
 			scenes++

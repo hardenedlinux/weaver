@@ -12,6 +12,8 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/Open-MBEE/OpenSysML/client/opensysml"
 )
 
 func TestModelViewsUseActualSDK(t *testing.T) {
@@ -27,8 +29,14 @@ func TestModelViewsUseActualSDK(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if capture.ModelHash == "" || len(capture.Views) != 80 {
-		t.Fatalf("missing native model views: %+v", capture)
+	declared := declaredModelViews(t, root, capture.Sources)
+	if capture.ModelHash == "" || len(capture.Views) != len(declared) {
+		t.Fatalf("missing SDK model views: got %d", len(capture.Views))
+	}
+	for name := range declared {
+		if capture.Views[name] == nil {
+			t.Fatal("SDK-declared view missing from capture", name)
+		}
 	}
 	for name, view := range capture.Views {
 		if len(view.Nodes) == 0 {
@@ -36,7 +44,7 @@ func TestModelViewsUseActualSDK(t *testing.T) {
 		}
 		t.Logf("%s: %s, %d nodes, %d edges", name, view.Kind, len(view.Nodes), len(view.Edges))
 	}
-	for _, name := range []string{"architecture", "zeroTrust", "execution", "assurance", "gateway", "contractRefinement", "rangeRecovery", "storage"} {
+	for _, name := range []string{"architecture", "zeroTrust", "execution", "assurance", "gateway", "contractRefinement", "rangeRecovery", "storage", "providerEgressWindow"} {
 		if _, ok := capture.Views["WeaverViews::"+name]; !ok {
 			t.Fatalf("missing declared view: %s", name)
 		}
@@ -279,4 +287,36 @@ func TestReadmeProductArchitectureDoesNotSubstituteEngineeringWorkflow(t *testin
 			t.Fatalf("engineering reference is not separated: %+v", description)
 		}
 	}
+}
+
+// Query the official SDK declaration inventory, including views without a
+// mapped document. A new view must join the capture without changing a total.
+func declaredModelViews(t testing.TB, root string, sources map[string]string) map[string]bool {
+	t.Helper()
+	var documents []opensysml.Document
+	for source := range sources {
+		body, err := os.ReadFile(filepath.Join(root, source))
+		if err != nil {
+			t.Fatal(err)
+		}
+		documents = append(documents, opensysml.Source(source, string(body)))
+	}
+	client, err := opensysml.New(opensysml.WithCacheSize(1))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer client.Close()
+	model, err := client.ParseDocuments(context.Background(), documents, opensysml.WithStrictConformance())
+	if err != nil || !model.OK() {
+		t.Fatal("invalid declared model", err)
+	}
+	views, err := client.Query(context.Background(), model, opensysml.Query{Where: opensysml.Equals("@type", "ViewUsage")})
+	if err != nil {
+		t.Fatal(err)
+	}
+	declared := map[string]bool{}
+	for _, view := range views {
+		declared[view.ID] = true
+	}
+	return declared
 }

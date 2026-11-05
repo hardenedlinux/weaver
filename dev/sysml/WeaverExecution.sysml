@@ -277,6 +277,21 @@ package WeaverExecution {
            reopen only on the exact fenced image and outcome. */
     }
 
+    requirement def ProviderEgressPromotion {
+        doc /* Promotion requires every Policy, OAuth witness, original claim,
+           shared budget, history, domain, profile and fence writer to close
+           affected owner lanes before its first durable effect. Keep each
+           uncertain operation outstanding across lost responses and recovery.
+           Activate only an exact full image after all outcomes are resolved.
+           A native rollback cannot erase an independent witness append. */
+        doc /* The last Weaver-controlled response handoff is the receiver's
+           transfer to Tonic. Staging is inert. Live Cedar, original claim,
+           real OAuth expiry, cut, owner and one-use cursor belong to that same
+           nonblocking turn. Type-enforced writer custody and receiver fencing
+           remain implementation prerequisites; model success alone cannot
+           promote the currently unimplemented response-window profile. */
+    }
+
     part def ProviderEgressReadyBudget {
         doc /* Engineering budgets for one ready Protobuf frame in the bounded
            lane. They require measured maxima for this envelope and a paired
@@ -298,16 +313,24 @@ package WeaverExecution {
 
     part def WindowIntentStore {
         attribute displayName : String = "Turso / burn window";
-        attribute responsibility : String = "Bind the original claim\nRetain the entire hold";
+        attribute responsibility : String = "Bind original claim\nRetain the shared hold";
         attribute glyph : String = "ledger";
         attribute visualRole : String = "publication";
         port admitted : EgressWindowPort;
     }
+    part def EgressMutationBarrier {
+        attribute displayName : String = "Rust / close";
+        attribute responsibility : String = "Policy + OAuth + domains\nKeep every pending ID";
+        attribute glyph : String = "policy";
+        attribute visualRole : String = "governance";
+        port closed : EgressWindowPort;
+    }
     part def EgressAuthorityCut {
-        attribute displayName : String = "Authority cut";
-        attribute responsibility : String = "Close before durable change\nPublish the exact live image";
+        attribute displayName : String = "Rust / activate";
+        attribute responsibility : String = "Join DB + OAuth witness\nResolve all pending IDs";
         attribute glyph : String = "publication";
         attribute visualRole : String = "publication";
+        port closed : ~EgressWindowPort;
         port image : EgressWindowPort;
     }
     part def InertProviderFrame {
@@ -318,8 +341,8 @@ package WeaverExecution {
         port stagedBytes : EgressWindowPort;
     }
     part def ProviderEgressOwnerTurn {
-        attribute displayName : String = "Rust / decide and hand off";
-        attribute responsibility : String = "Live Cedar + exact claim\nFence + one-use cursor";
+        attribute displayName : String = "Rust / receiver owner";
+        attribute responsibility : String = "Cedar + claim + expiry\nFence + next interval";
         attribute glyph : String = "authorization";
         attribute visualRole : String = "execution";
         port admission : ~EgressWindowPort;
@@ -328,19 +351,21 @@ package WeaverExecution {
         port offer : EgressWindowPort;
     }
     part def ProviderEgressTransport {
-        attribute displayName : String = "gRPC / accept frame";
-        attribute responsibility : String = "Accept a single owner offer\nObserve delivery separately";
+        attribute displayName : String = "Tonic / accept once";
+        attribute responsibility : String = "One current Rust owner\nObserve delivery later";
         attribute glyph : String = "stream";
         attribute visualRole : String = "execution";
         port acceptedBytes : ~EgressWindowPort;
     }
 
     part providerEgressWindow {
+        part mutation : EgressMutationBarrier;
         part durable : WindowIntentStore;
         part publication : EgressAuthorityCut;
         part preparation : InertProviderFrame;
         part owner : ProviderEgressOwnerTurn;
         part transport : ProviderEgressTransport;
+        connection closedCut connect mutation.closed to publication.closed;
         connection burn connect durable.admitted to owner.admission;
         connection currentImage connect publication.image to owner.current;
         connection inertFrame connect preparation.stagedBytes to owner.ready;

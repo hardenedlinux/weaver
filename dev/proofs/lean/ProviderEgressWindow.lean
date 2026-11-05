@@ -239,3 +239,209 @@ theorem admitted_four_turn_envelope (encode ahead service scheduler handoff : Na
 #print axioms admitted_four_turn_envelope
 
 end Weaver.ProviderEgressWindow
+
+namespace Weaver.ProviderEgressWindow.Promotion
+
+/-- A field is a semantic input, not a table name. Time remains live at offer. -/
+inductive Input where
+  | policy | oauth | claim | budget | history | domain | profile | fence
+  deriving DecidableEq
+
+/-- Covers all host writers, including a witness append outside Turso.
+    This premise has to be established by the host; it is not inferred
+    from a successful proof of the state machine. -/
+def Covered {Writer : Type} (affects : Writer → Input → Prop)
+    (mediated : Writer → Prop) : Prop :=
+  ∀ writer input, affects writer input → mediated writer
+
+structure Cut where
+  serial : Nat
+  durable : Nat
+  witness : Nat
+  /-- Globally unique close tickets; never recycled client operation labels. -/
+  pending : List Nat
+  uncertain : List Nat
+  activated : Bool
+
+structure Image where
+  serial : Nat
+  durable : Nat
+  witness : Nat
+  deriving DecidableEq
+
+def image (cut : Cut) : Image := ⟨cut.serial, cut.durable, cut.witness⟩
+
+def Qualified (cut : Cut) (observed : Image) : Prop :=
+  cut.pending = [] ∧ cut.uncertain = [] ∧ observed = image cut
+
+def close (cut : Cut) (operation : Nat) : Cut :=
+  {cut with serial := cut.serial + 1, pending := operation :: cut.pending, activated := false}
+
+/-- Outcomes are joined individually. A native rollback cannot assert absence
+    of a durable witness append. An unknown operation remains outstanding. -/
+def decide (cut : Cut) (operation : Nat) (db witness : Nat) : Cut :=
+  {cut with durable := db, witness := witness, pending := cut.pending.erase operation, activated := false}
+
+def activate (cut : Cut) (observed : Image) (_proof : Qualified cut observed) : Cut :=
+  {cut with activated := true}
+
+def Open (cut : Cut) : Prop :=
+  cut.activated = true ∧ cut.pending = [] ∧ cut.uncertain = []
+
+theorem every_effect_writer_needs_mediation {Writer : Type}
+    (affects : Writer → Input → Prop) (mediated : Writer → Prop)
+    (coverage : Covered affects mediated) (writer : Writer) (input : Input)
+    (effect : affects writer input) : mediated writer := coverage writer input effect
+
+theorem close_prevents_offer (cut : Cut) (operation : Nat) : ¬ Open (close cut operation) := by
+  intro ready
+  exact Bool.noConfusion ready.1
+
+theorem pending_writer_blocks_activation (cut : Cut) (observed : Image) (operation : Nat)
+    (outstanding : operation ∈ cut.pending) : ¬ Qualified cut observed := by
+  intro qualified
+  rw [qualified.1] at outstanding
+  exact List.not_mem_nil outstanding
+
+theorem completing_one_writer_keeps_distinct_pending (cut : Cut) (first second db witness : Nat)
+    (outstanding : second ∈ cut.pending) (different : second ≠ first) :
+    second ∈ (decide cut first db witness).pending := by
+  exact (List.mem_erase_of_ne different).mpr outstanding
+
+theorem other_writer_blocks_activation (cut : Cut) (observed : Image)
+    (first second db witness : Nat) (outstanding : second ∈ cut.pending)
+    (different : second ≠ first) : ¬ Qualified (decide cut first db witness) observed :=
+  pending_writer_blocks_activation _ observed second
+    (completing_one_writer_keeps_distinct_pending cut first second db witness outstanding different)
+
+theorem uncertain_effect_blocks_activation (cut : Cut) (observed : Image) (operation : Nat)
+    (unknown : operation ∈ cut.uncertain) : ¬ Qualified cut observed := by
+  intro qualified
+  rw [qualified.2.1] at unknown
+  exact List.not_mem_nil unknown
+
+theorem unchanged_database_does_not_revalidate_old_read (cut : Cut) (operation : Nat) :
+    image cut ≠ image (close cut operation) := by
+  intro same
+  have serial := congrArg Image.serial same
+  simp only [image, close] at serial
+  omega
+
+theorem witness_ahead_blocks_old_image (cut : Cut) (observed : Image)
+    (ahead : observed.witness ≠ cut.witness) : ¬ Qualified cut observed := by
+  intro qualified
+  exact ahead (congrArg Image.witness qualified.2.2)
+
+theorem activated_image_has_no_unresolved_writer (cut : Cut) (observed : Image)
+    (qualified : Qualified cut observed) : Open (activate cut observed qualified) :=
+  ⟨rfl, qualified.1, qualified.2.1⟩
+
+/-- A transport offer is inside the same serialized owner turn as the live
+    checks. Enqueue is deliberately absent from this definition. -/
+structure Custody where
+  incarnation : Nat
+  retired : Bool
+  cursor : Nat
+
+structure Frame where
+  incarnation : Nat
+  cut : Image
+  start : Nat
+  width : Nat
+
+def CanDeliver (cut : Cut) (owner : Custody) (frame : Frame)
+    (freshCedar exactClaim liveClock exactBytes : Prop) : Prop :=
+  Open cut ∧ frame.cut = image cut ∧ owner.retired = false ∧
+    frame.incarnation = owner.incarnation ∧ frame.start = owner.cursor ∧
+    0 < frame.width ∧ freshCedar ∧ exactClaim ∧ liveClock ∧ exactBytes
+
+def delivered (owner : Custody) (frame : Frame) : Custody :=
+  {owner with cursor := owner.cursor + frame.width}
+
+def replace (owner : Custody) : Custody :=
+  ⟨owner.incarnation + 1, false, 0⟩
+
+theorem only_current_owner_can_deliver (cut : Cut) (owner : Custody) (frame : Frame)
+    (cedar claim clock bytes : Prop) (old : frame.incarnation ≠ owner.incarnation) :
+    ¬ CanDeliver cut owner frame cedar claim clock bytes := fun live => old live.2.2.2.1
+
+theorem old_queued_frame_cannot_follow_replacement (cut : Cut) (owner : Custody) (frame : Frame)
+    (cedar claim clock bytes : Prop) (issued : frame.incarnation = owner.incarnation) :
+    ¬ CanDeliver cut (replace owner) frame cedar claim clock bytes := by
+  apply only_current_owner_can_deliver
+  simp only [replace]
+  omega
+
+theorem delivered_frame_cannot_be_delivered_twice (cut : Cut) (owner : Custody) (frame : Frame)
+    (cedar claim clock bytes : Prop) (live : CanDeliver cut owner frame cedar claim clock bytes) :
+    ¬ CanDeliver cut (delivered owner frame) frame cedar claim clock bytes := by
+  intro again
+  have start := live.2.2.2.2.1
+  have positive := live.2.2.2.2.2.1
+  have next := again.2.2.2.2.1
+  simp only [delivered] at next
+  omega
+
+theorem queue_is_not_delivery_evidence (cut : Cut) (owner : Custody) (frame : Frame)
+    (cedar claim clock bytes : Prop) (operation : Nat) :
+    ¬ CanDeliver (close cut operation) owner frame cedar claim clock bytes :=
+  fun admission => close_prevents_offer cut operation admission.1
+
+/-- Erase the fully joined image to the scalar authority used by the interval
+    model only after the receiver-side promotion predicate has been checked. -/
+def asAuthority (cut : Cut) : Authority := ⟨cut.durable, cut.durable, !cut.activated⟩
+
+theorem receiver_promotion_refines_interval_admission
+    (cut : Cut) (owner : Custody) (frame : Frame) (window : Window)
+    (cedar claim clock bytes : Prop)
+    (admission : CanDeliver cut owner frame cedar claim clock bytes)
+    (burn : Weaver.ProviderEgressWindow.Custody window)
+    (sequence : frame.start = window.cursor) (bound : frame.start + frame.width ≤ window.bound) :
+    Eligible window (asAuthority cut) ⟨frame.start, frame.width⟩ cedar bytes claim := by
+  have active := admission.1.1
+  have ready : Ready (asAuthority cut) := by simp [Ready, asAuthority, active]
+  exact ⟨burn, ready, admission.2.2.2.2.2.2.1,
+    admission.2.2.2.2.2.2.2.2.2, admission.2.2.2.2.2.2.2.1,
+    sequence, admission.2.2.2.2.2.1, bound⟩
+
+/-- A durable client ID can be retried, but a mutation-completion ticket also
+    binds its close serial and command. A previous ticket cannot resolve a
+    fresh close even when the client chose the same operation label. -/
+structure MutationReceipt where
+  closeSerial : Nat
+  command : Nat
+  outcome : Nat
+  deriving DecidableEq
+
+def ExactReceipt (expected actual : MutationReceipt) : Prop := expected = actual
+
+theorem old_close_receipt_cannot_resolve_new_intent (expected actual : MutationReceipt)
+    (old : expected.closeSerial ≠ actual.closeSerial) : ¬ ExactReceipt expected actual := by
+  intro same
+  exact old (congrArg MutationReceipt.closeSerial same)
+
+theorem expired_clock_blocks_receiver (cut : Cut) (owner : Custody) (frame : Frame)
+    (cedar claim clock bytes : Prop) (expired : ¬ clock) :
+    ¬ CanDeliver cut owner frame cedar claim clock bytes :=
+  fun admission => expired admission.2.2.2.2.2.2.2.2.1
+
+#print axioms old_close_receipt_cannot_resolve_new_intent
+#print axioms expired_clock_blocks_receiver
+
+#print axioms receiver_promotion_refines_interval_admission
+
+#print axioms every_effect_writer_needs_mediation
+#print axioms close_prevents_offer
+#print axioms pending_writer_blocks_activation
+#print axioms completing_one_writer_keeps_distinct_pending
+#print axioms other_writer_blocks_activation
+#print axioms uncertain_effect_blocks_activation
+#print axioms unchanged_database_does_not_revalidate_old_read
+#print axioms witness_ahead_blocks_old_image
+#print axioms activated_image_has_no_unresolved_writer
+#print axioms only_current_owner_can_deliver
+#print axioms old_queued_frame_cannot_follow_replacement
+#print axioms delivered_frame_cannot_be_delivered_twice
+#print axioms queue_is_not_delivery_evidence
+
+end Weaver.ProviderEgressWindow.Promotion
