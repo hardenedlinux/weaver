@@ -94,6 +94,17 @@ module SharedDomains {
     currentnessReuse(true,true,true,true)
     and not(currentnessReuse(true,true,false,true))
     and not(currentnessReuse(true,false,true,true)))
+  pure def preparedReview(verified:bool, exact:bool, pending:bool, issuer:bool, fence:bool, oauth:bool):bool=
+    verified and exact and not(pending) and issuer and fence and oauth
+  run preparedReviewCannotMaskSameFenceReplacementTest=init.expect(
+    preparedReview(true,true,false,true,true,true)
+    and not(preparedReview(true,false,false,true,true,true)))
+  run preparedReviewKeepsLivePendingEpochAndRevocationTest=init.expect(
+    not(preparedReview(true,true,true,true,true,true))
+    and not(preparedReview(true,true,false,false,true,true))
+    and not(preparedReview(true,true,false,true,false,true))
+    and not(preparedReview(true,true,false,true,true,false))
+    and observedRelease(false,true,true,false)==0)
   run oauthRetiredIssuerCannotPublishTest=init.expect(
     Set(0,1,2).forall(old=>old<3 and old!=3))
   run delegatedGrantCannotReplaceOperationCredentialTest=init.expect(

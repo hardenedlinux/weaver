@@ -50,7 +50,7 @@ type oauthRelayFixture struct {
 
 func newOAuthRelayFixture(t testing.TB, handler http.HandlerFunc, enabled bool, observedImage ...string) *oauthRelayFixture {
 	t.Helper()
-	pair, ingress := newOAuthRelayOwner(t, handler, enabled, observedImage, false)
+	pair, ingress := newOAuthRelayOwner(t, handler, enabled, observedImage, false, false)
 	bundle := controlBundle(t, pair.rust)
 	pair.plans = bundle.Plans
 	pair.goServer = pair.startControl(t, ingress, bundle, enabled)
@@ -73,7 +73,7 @@ func (p *oauthRelayFixture) startControl(t testing.TB, ingress *testPKI, bundle 
 	return control
 }
 
-func newOAuthRelayOwner(t testing.TB, handler http.HandlerFunc, enabled bool, observedImage []string, cachedPlans bool) (*oauthRelayFixture, *testPKI) {
+func newOAuthRelayOwner(t testing.TB, handler http.HandlerFunc, enabled bool, observedImage []string, cachedPlans, lockedReview bool) (*oauthRelayFixture, *testPKI) {
 	t.Helper()
 	first, second := pki(t), pki(t)
 	public, key, err := ed25519.GenerateKey(rand.Reader)
@@ -107,7 +107,11 @@ func newOAuthRelayOwner(t testing.TB, handler http.HandlerFunc, enabled bool, ob
 		if cachedPlans {
 			planMode = "1"
 		}
-		env = append(env, "WEAVER_TEST_CACHE_CURRENTNESS_PLANS="+planMode)
+		reviewMode := "0"
+		if lockedReview {
+			reviewMode = "1"
+		}
+		env = append(env, "WEAVER_TEST_CACHE_CURRENTNESS_PLANS="+planMode, "WEAVER_TEST_LOCKED_PUBLICATION_REVIEW="+reviewMode)
 	}
 	pair.rust = providerFixture(t, handler, false, image, args, env, providerProfile(), nil, second)
 	return pair, first
@@ -390,7 +394,7 @@ func BenchmarkProviderOAuthRelayPair(b *testing.B) {
 	}
 }
 
-var providerTimingLabels = [...]string{"grant-check", "domain-hold", "txn-hold", "write", "queue", "grant-prepare", "txn-begin", "commit", "domain-wait", "domain-keys", "domain-read", "publication-read", "profile-read", "claim-read", "cedar", "rollback"}
+var providerTimingLabels = [...]string{"grant-check", "domain-hold", "txn-hold", "write", "queue", "grant-prepare", "txn-begin", "commit", "domain-wait", "domain-keys", "domain-read", "publication-read", "profile-read", "claim-read", "cedar", "rollback", "pending-read", "review-read", "birth-read", "publication-prepare"}
 
 func providerTimingTotals(t testing.TB, f *fixture, want int) [len(providerTimingLabels)]uint64 {
 	t.Helper()
@@ -449,7 +453,7 @@ type relayContentionSample struct {
 
 func relayContentionWave(t *testing.B, image string, arm relayContentionArm) relayContentionSample {
 	t.Helper()
-	p, ingress := newOAuthRelayOwner(t, completeSSE, arm.oauth, []string{image}, arm.cachedPlans)
+	p, ingress := newOAuthRelayOwner(t, completeSSE, arm.oauth, []string{image}, arm.cachedPlans, arm.lockedReview)
 	shared, oauth := arm.shared, arm.oauth
 	left, right := contentionRelayBundle(t, p.rust, "left"), contentionRelayBundle(t, p.rust, "right")
 	a, b := p.startControl(t, ingress, left, oauth), p.startControl(t, ingress, right, oauth)
@@ -545,8 +549,8 @@ func relayContentionWave(t *testing.B, image string, arm relayContentionArm) rel
 // Each arm launches two canonical originals through two identical relay processes.
 // Shared mode joins budget/history before measurement; cross mode leaves them independent.
 type relayContentionArm struct {
-	name                       string
-	shared, oauth, cachedPlans bool
+	name                                     string
+	shared, oauth, cachedPlans, lockedReview bool
 }
 
 func BenchmarkProviderOAuthDomainContention(b *testing.B) {
@@ -562,6 +566,16 @@ func BenchmarkProviderCurrentnessPlans(b *testing.B) {
 		{name: "shared-fresh", shared: true, oauth: true},
 		{name: "shared-cached", shared: true, oauth: true, cachedPlans: true},
 		{name: "cross-fresh", oauth: true}, {name: "cross-cached", oauth: true, cachedPlans: true},
+	})
+}
+
+// Compare the previous locked review and the exact prepared match on one image.
+func BenchmarkProviderPublicationReviewPair(b *testing.B) {
+	benchmarkRelayContention(b, [4]relayContentionArm{
+		{name: "shared-locked", shared: true, oauth: true, lockedReview: true},
+		{name: "shared-prepared", shared: true, oauth: true},
+		{name: "cross-locked", oauth: true, lockedReview: true},
+		{name: "cross-prepared", oauth: true},
 	})
 }
 

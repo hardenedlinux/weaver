@@ -76,6 +76,17 @@ pub(crate) fn lookup(
     operation_id: &str,
     digest: &str,
 ) -> Result<Option<PublicationReceipt>> {
+    decode_receipt(
+        operation_id,
+        digest,
+        receipt_record(connection, operation_id)?,
+    )
+}
+
+pub(crate) fn receipt_record(
+    connection: &crate::persistence::driver::Connection,
+    operation_id: &str,
+) -> Result<Option<(String, String)>> {
     let record: Option<(String, String)> = crate::persistence::maybe(
         connection,
         "SELECT digest,receipt FROM authority_publications WHERE operation_id=?1",
@@ -83,6 +94,14 @@ pub(crate) fn lookup(
         |r| Ok((r.get(0)?, r.get(1)?)),
     )
     .map_err(db)?;
+    Ok(record)
+}
+
+pub(crate) fn decode_receipt(
+    operation_id: &str,
+    digest: &str,
+    record: Option<(String, String)>,
+) -> Result<Option<PublicationReceipt>> {
     record
         .map(|(bound, encoded)| {
             if bound != digest {

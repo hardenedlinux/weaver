@@ -22,6 +22,7 @@ pub struct ProviderDispatch {
     digest: String,
     binding: weaver_policy::BoundProviderPolicy,
     profile: crate::provider_profiles::CheckedProfile,
+    publication: crate::provider_publication::Prepared,
     domains: weaver_contracts::DomainStamp,
     oauth: Option<crate::provider_oauth::PreparedUse>,
     oauth_expires: Option<u64>,
@@ -89,6 +90,7 @@ impl Ledger {
         let prepared = self
             .connection
             .prepare_provider_oauth(oauth, "provider:execute")?;
+        let publication = self.connection.prepare_provider_publication(&plan.family);
         let tx =
             crate::persistence::begin_family(&mut self.connection, &plan.family).map_err(db)?;
         tx.check_provider_oauth(prepared.as_ref())?;
@@ -100,7 +102,7 @@ impl Ledger {
             Some(_) => false,
             None => true,
         };
-        any_authorized(&tx, plan, "admitProvider", None)?;
+        any_authorized(&tx, plan, "admitProvider", None, &publication?)?;
         tx.provider_claim(|| crate::execution_exposure::require_family(&tx, &plan.family))?;
         if new_claim {
             crate::execution_exposure::retain(
@@ -165,6 +167,7 @@ impl Ledger {
         let prepared = self
             .connection
             .prepare_provider_oauth(oauth, "provider:execute")?;
+        let publication = self.connection.prepare_provider_publication(family)?;
         let tx = crate::persistence::begin_family(&mut self.connection, family).map_err(db)?;
         let oauth_expires = tx.check_provider_oauth(prepared.as_ref())?;
         let record: Option<String> = crate::persistence::maybe(
@@ -177,7 +180,7 @@ impl Ledger {
         let plan: ProviderPlan = serde_json::from_str(
             &record.ok_or(Error::Conflict("provider not queued or already consumed"))?,
         )?;
-        let selected = any_authorized(&tx, &plan, "invokeProvider", Some(eligible))?;
+        let selected = any_authorized(&tx, &plan, "invokeProvider", Some(eligible), &publication)?;
         let digest = plan.digest()?;
         tx.provider_claim(|| {
             crate::execution_exposure::provider(&tx, &plan, &digest, &selected.domains)
@@ -203,6 +206,7 @@ impl Ledger {
             digest,
             binding: selected.binding,
             profile: selected.profile,
+            publication,
             domains: selected.domains.stamp,
             oauth: prepared,
             oauth_expires,
@@ -467,6 +471,7 @@ fn any_authorized(
     p: &ProviderPlan,
     action: &'static str,
     eligible: Option<&BTreeSet<String>>,
+    publication: &crate::provider_publication::Prepared,
 ) -> Result<AuthorizedRoute> {
     let domains = tx.provider_domain(|| crate::domains::view_current(tx, &p.family))?;
     if domains.canonical_family != p.family {
@@ -474,7 +479,7 @@ fn any_authorized(
     }
     for route in &p.routes {
         if eligible.is_none_or(|set| set.contains(&route.target))
-            && let Ok((binding, profile)) = guard(tx, p, route, action, &domains)
+            && let Ok((binding, profile)) = guard(tx, p, route, action, &domains, publication)
         {
             return Ok(AuthorizedRoute {
                 route: route.clone(),
@@ -492,12 +497,13 @@ fn guard(
     r: &ProviderRoute,
     action: &'static str,
     domains: &DomainView,
+    publication: &crate::provider_publication::Prepared,
 ) -> Result<(
     weaver_policy::BoundProviderPolicy,
     crate::provider_profiles::CheckedProfile,
 )> {
-    tx.provider_publication(|| crate::publication_barrier::require_resolved(tx))?;
-    let source = tx.provider_publication(|| current_source(tx, p, "stale provider authority"))?;
+    tx.provider_pending(|| crate::publication_barrier::require_clear(tx))?;
+    let source = publication.policy(tx, p, "stale provider authority")?;
     let profile = tx.provider_profile(|| crate::provider_profiles::require(tx, p))?;
     let record: String = crate::persistence::one(
         tx,
@@ -543,10 +549,11 @@ fn guard_live_range(
     sequences: std::ops::Range<u64>,
     format: &str,
 ) -> Result<()> {
-    tx.provider_publication(|| crate::publication_barrier::require_resolved(tx))?;
+    tx.provider_pending(|| crate::publication_barrier::require_clear(tx))?;
     tx.check_provider_oauth(p.oauth.as_ref())?;
-    let source = tx
-        .provider_publication(|| current_source(tx, &p.plan, "stale provider release authority"))?;
+    let source = p
+        .publication
+        .policy(tx, &p.plan, "stale provider release authority")?;
     tx.provider_profile(|| p.profile.require_current(tx, &p.plan))?;
     for sequence in sequences {
         tx.provider_cedar(|| {
@@ -562,20 +569,6 @@ fn guard_live_range(
         })?;
     }
     Ok(())
-}
-fn current_source(tx: &WriteScope<'_>, p: &ProviderPlan, stale: &'static str) -> Result<String> {
-    crate::task_publication::require(tx, &p.family)?;
-    let (revision, fence, source): (u64, u64, String) = crate::persistence::one_current(
-        tx,
-        "SELECT revision,fence,policy FROM authority WHERE singleton=1",
-        (),
-        |r| Ok((integer(r, 0)?, integer(r, 1)?, r.get(2)?)),
-    )
-    .map_err(db)?;
-    if (p.revision, p.fence) != (revision, fence) {
-        return Err(Error::Conflict(stale));
-    }
-    Ok(source)
 }
 pub(crate) fn receipt(
     c: &crate::persistence::driver::Connection,

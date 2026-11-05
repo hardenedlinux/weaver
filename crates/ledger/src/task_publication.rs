@@ -74,3 +74,46 @@ pub(crate) fn require(
     }
     Ok(())
 }
+
+/// A verified birth receipt whose exact bytes remain binding at use.
+pub(crate) struct Prepared(Option<(PublicationKey, String)>);
+
+pub(crate) fn prepare(
+    c: &crate::persistence::driver::Connection,
+    family: &str,
+) -> Result<Prepared> {
+    let Some(key) = binding(c, family)? else {
+        return Ok(Prepared(None));
+    };
+    let row = publication::receipt_record(c, &key.operation_id)?;
+    let bytes = row.as_ref().map(|(_, bytes)| bytes.clone());
+    if !publication::decode_receipt(&key.operation_id, &key.digest, row)?
+        .is_some_and(|r| r.outcome == PublicationOutcome::Committed)
+    {
+        return Err(Error::Conflict(
+            "original task publication is not committed",
+        ));
+    }
+    Ok(Prepared(Some((key, bytes.ok_or(Error::Denied)?))))
+}
+
+impl Prepared {
+    pub(crate) fn require_current(
+        &self,
+        tx: &crate::persistence::WriteScope<'_>,
+        family: &str,
+    ) -> Result<()> {
+        if binding(tx, family)?.as_ref() != self.0.as_ref().map(|(key, _)| key) {
+            return Err(Error::Conflict("original task publication changed"));
+        }
+        if let Some((key, bytes)) = &self.0 {
+            let matches: bool = crate::persistence::one_current(tx,
+                "SELECT EXISTS(SELECT 1 FROM authority_publications WHERE operation_id=?1 AND digest=?2 AND receipt=?3)",
+                [key.operation_id.as_str(), key.digest.as_str(), bytes.as_str()], |r| r.get(0)).map_err(db)?;
+            if !matches {
+                return Err(Error::Conflict("original task publication receipt changed"));
+            }
+        }
+        Ok(())
+    }
+}

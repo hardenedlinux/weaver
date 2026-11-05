@@ -776,6 +776,10 @@ impl pb::gateway_server::Gateway for Gateway {
                     weaver_ledger::persistence::use_cached_currentness_plans(
                         std::env::var("WEAVER_TEST_CACHE_CURRENTNESS_PLANS").as_deref() == Ok("1"),
                     );
+                    #[cfg(test)]
+                    weaver_ledger::use_locked_publication_review(
+                        std::env::var("WEAVER_TEST_LOCKED_PUBLICATION_REVIEW").as_deref() == Ok("1"),
+                    );
                     let execution = weaver_broker::execute_catalog_provider_with_oauth(
                         &mut ledger,
                         weaver_broker::ProviderExecution {
@@ -791,12 +795,15 @@ impl pb::gateway_server::Gateway for Gateway {
                         },
                     );
                     #[cfg(test)]
-                    weaver_ledger::persistence::use_cached_currentness_plans(false);
+                    {
+                        weaver_ledger::persistence::use_cached_currentness_plans(false);
+                        weaver_ledger::use_locked_publication_review(false);
+                    }
                     #[cfg(test)]
                     if std::env::var_os("WEAVER_TEST_PROVIDER_TIMINGS").is_some() {
                         let t = ledger.transaction_timings();
                         eprintln!(
-                            "weaver-oauth-timing {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}",
+                            "weaver-oauth-timing {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}",
                             t.provider_oauth_check.nanos,
                             t.domain_hold.nanos,
                             t.transaction_hold.nanos,
@@ -808,11 +815,15 @@ impl pb::gateway_server::Gateway for Gateway {
                             t.domain_wait.nanos,
                             t.domain_keys.nanos,
                             t.provider_domain.nanos,
-                            t.provider_publication.nanos,
+                            t.provider_pending.nanos.saturating_add(t.provider_review.nanos).saturating_add(t.provider_birth.nanos),
                             t.provider_profile.nanos,
                             t.provider_claim.nanos,
                             t.provider_cedar.nanos,
-                            t.rollback.nanos
+                            t.rollback.nanos,
+                            t.provider_pending.nanos,
+                            t.provider_review.nanos,
+                            t.provider_birth.nanos,
+                            t.provider_publication_prepare.nanos
                         );
                     }
                     execution

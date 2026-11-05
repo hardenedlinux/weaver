@@ -837,12 +837,35 @@ a proposed 20 ms per completed stream to the four locked read categories
 in this fixture. This allocation is a design target. Host samples are
 diagnostic. The shared lock still serializes a common budget or history
 root. A future bounded projection needs an atomic update and recovery
-proof for the exact original claims and all affected roots. For publication,
-prequalify immutable review and receipt evidence, then match the exact
-artifact, outcome, issuer epoch, current revision and fence inside the
-transaction. The live pending barrier remains mandatory. This is a design
-option whose equivalence and recovery behavior need qualification before
-adoption.
+proof for the exact original claims and all affected roots.
+*** Prepared publication evidence
+
+Before admission and consumption, the session reads the reviewed head
+using the full reviewed-publication predicate and validates the original
+task's committed birth receipt. The provider permit retains the consumed
+candidate. The original reviewed authority predicate also serves as the
+locked reference in the test image.
+
+Each effect rereads the pending barrier and matches the exact reviewed
+association, publication request and result, review and delta records,
+review deployment and newest key, schema, current Policy, revision and
+fence. It matches the task birth link and receipt bytes independently.
+Legacy mode requires a live absence of review state. A mismatch denies
+use and does not change the original claim or release unknown exposure.
+Cedar still evaluates the matched live authority, and the independent
+OAuth, domain, fencing and budget guards remain active.
+
+=prepared_review_refines_live= in Lean composes the exact-image premise
+with the live gates. Quint exercises same-fence replacement, pending
+publication, issuer rotation and revocation. Native fault tests change
+individual durable projections after preflight.
+
+=BenchmarkProviderPublicationReviewPair= compares locked qualification and
+prepared matching on one optimized MVCC image, with OAuth enabled in both
+same-root and independent-root waves. It reports locked pending, review,
+and birth intervals, preflight outside the lock, the four currentness
+categories, and terminal throughput. The proposed 20 ms currentness
+allocation remains a design target for this workload.
 
 An existing direct deployment can enable its independent witness once
 while preserving the same issuer key, subject, client and audience.

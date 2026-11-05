@@ -68,6 +68,15 @@ impl Session {
     pub fn timings(&self) -> super::TransactionTimings {
         self.timings
     }
+    pub(crate) fn prepare_provider_publication(
+        &mut self,
+        family: &str,
+    ) -> weaver_contracts::Result<crate::provider_publication::Prepared> {
+        self.require_quiescent().map_err(crate::store::db)?;
+        super::timing::measure(&mut self.timings.provider_publication_prepare, || {
+            crate::provider_publication::prepare(&self.connection, family)
+        })
+    }
     pub(crate) fn prepare_provider_oauth(
         &mut self,
         request: Option<&weaver_contracts::ProviderOAuthUse>,

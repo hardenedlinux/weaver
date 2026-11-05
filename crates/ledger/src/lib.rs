@@ -20,6 +20,9 @@ mod provider_catalog;
 mod provider_oauth;
 mod provider_oauth_witness;
 mod provider_profiles;
+mod provider_publication;
+#[cfg(feature = "commit-observer")]
+pub use provider_publication::use_locked_publication_review;
 mod provider_quota;
 mod publication;
 mod publication_barrier;

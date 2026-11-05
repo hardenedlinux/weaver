@@ -101,6 +101,18 @@ theorem currentness_reuse_preserves_decision
       (readClaims image = observed ∧ guard image) := by
   rw [fromScope]
 
+/-- Prequalification is transported only across exact artifact equality.
+    Review authority, pending publication and OAuth are live premises. -/
+theorem prepared_review_refines_live
+    {Image : Type} {prepared live : Image} {qualifies : Image → Prop}
+    {pendingClear issuerCurrent oauthCurrent fenceCurrent : Prop}
+    (verified : qualifies prepared) (matched : live = prepared)
+    (pending : pendingClear) (issuer : issuerCurrent)
+    (oauth : oauthCurrent) (fence : fenceCurrent) :
+    qualifies live ∧ pendingClear ∧ issuerCurrent ∧ oauthCurrent ∧ fenceCurrent := by
+  exact ⟨matched.symm ▸ verified, pending, issuer, oauth, fence⟩
+
+#print axioms prepared_review_refines_live
 #print axioms currentness_reuse_preserves_decision
 #print axioms retained_profile_refines_current
 #print axioms prepared_use_refines_current

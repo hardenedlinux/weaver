@@ -22,7 +22,9 @@ pub struct WriteScope<'a> {
     entered: Instant,
     oauth_check: Cell<super::Timing>,
     current_domain: Cell<super::Timing>,
-    current_publication: Cell<super::Timing>,
+    current_pending: Cell<super::Timing>,
+    current_review: Cell<super::Timing>,
+    current_birth: Cell<super::Timing>,
     current_profile: Cell<super::Timing>,
     current_claim: Cell<super::Timing>,
     cedar: Cell<super::Timing>,
@@ -108,7 +110,9 @@ fn start<'a>(session: &'a mut Session, family: Option<&str>) -> driver::Result<W
         entered: Instant::now(),
         oauth_check: Cell::default(),
         current_domain: Cell::default(),
-        current_publication: Cell::default(),
+        current_pending: Cell::default(),
+        current_review: Cell::default(),
+        current_birth: Cell::default(),
         current_profile: Cell::default(),
         current_claim: Cell::default(),
         cedar: Cell::default(),
@@ -169,8 +173,14 @@ impl WriteScope<'_> {
     pub(crate) fn provider_domain<T>(&self, run: impl FnOnce() -> T) -> T {
         observe(&self.current_domain, run)
     }
-    pub(crate) fn provider_publication<T>(&self, run: impl FnOnce() -> T) -> T {
-        observe(&self.current_publication, run)
+    pub(crate) fn provider_pending<T>(&self, run: impl FnOnce() -> T) -> T {
+        observe(&self.current_pending, run)
+    }
+    pub(crate) fn provider_review<T>(&self, run: impl FnOnce() -> T) -> T {
+        observe(&self.current_review, run)
+    }
+    pub(crate) fn provider_birth<T>(&self, run: impl FnOnce() -> T) -> T {
+        observe(&self.current_birth, run)
     }
     pub(crate) fn provider_profile<T>(&self, run: impl FnOnce() -> T) -> T {
         observe(&self.current_profile, run)
@@ -244,9 +254,11 @@ impl Drop for WriteScope<'_> {
             ),
             (&mut self.timings.provider_domain, self.current_domain.get()),
             (
-                &mut self.timings.provider_publication,
-                self.current_publication.get(),
+                &mut self.timings.provider_pending,
+                self.current_pending.get(),
             ),
+            (&mut self.timings.provider_review, self.current_review.get()),
+            (&mut self.timings.provider_birth, self.current_birth.get()),
             (
                 &mut self.timings.provider_profile,
                 self.current_profile.get(),

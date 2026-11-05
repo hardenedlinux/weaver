@@ -106,7 +106,9 @@ package WeaverExecution {
     }
     requirement def ProviderCurrentnessPerformance {
         doc /* Time domain view, publication and reviewed head, profile, and
-           original claim reconciliation separately in the deciding scope.
+           original claim reconciliation separately in the deciding scope. Split
+           publication into pending, review match and original task birth.
+           Record publication preflight outside lock and include it in throughput.
            Domain lock wait, native begin and commit, Cedar and provider effects
            have separate observations. Throughput is terminal receipts divided
            by elapsed wave time, with completion and send counts retained. */
@@ -133,10 +135,10 @@ package WeaverExecution {
            Full recovery reconciliation grows with the union of domain origins
            and retained claims. A bounded transactional projection is a future
            option contingent on verified equivalence and fail-closed recovery.
-       For publication, qualify immutable review and receipt evidence before
-       locking. Final use would still match the exact artifact and result,
-       issuer epoch, authority revision and fence, and resolve the live
-       pending barrier. A stale or incomplete projection cannot grant use. */
+           Publication qualifies immutable review and original receipt evidence
+           outside the lock. The deciding scope matches exact rows, latest
+           reviewer epoch, current revision and fence, and reads the pending
+           barrier. A candidate carries no authority across a changed image. */
         attribute domainReadBudgetNs : Integer = 2000000;
         attribute publicationReadBudgetNs : Integer = 5000000;
         attribute profileReadBudgetNs : Integer = 3000000;

@@ -168,3 +168,69 @@ fn historical_signature_only_nogain_is_not_semantic_qualification() {
             .is_some()
     );
 }
+
+#[test]
+fn prepared_review_denies_changes_to_any_exact_projection() {
+    let temp = tempfile::tempdir().expect("dir");
+    let mut ledger = Ledger::open(temp.path().join("prepared.db")).expect("store");
+    ledger.install_review_authority(&issuer(0)).expect("root");
+    let p = change("prepared", None);
+    let proof = evidence(&mut ledger, &p);
+    ledger
+        .with_authenticated_source(&source(), |l| l.register_delta_review(&proof))
+        .expect("review");
+    let outcome = ledger
+        .with_authenticated_source(&source(), |l| l.publish_authority(&p))
+        .expect("commit");
+    let revision = outcome.revision.expect("committed revision");
+    let fence = outcome.fence.expect("committed fence");
+    let candidate = super::prepare(&ledger.connection).expect("preflight");
+    for fault in [
+        "UPDATE authority SET policy=policy||' '",
+        "UPDATE authority_schema SET schema=schema||' '",
+        "UPDATE authority_publications SET request=request||' '",
+        "UPDATE authority_publications SET receipt=receipt||' '",
+        "UPDATE authority_review_heads SET source_epoch=source_epoch+1",
+        "UPDATE authority_reviews SET artifact_digest='different'",
+        "UPDATE authority_delta_reviews SET digest='different'",
+        "UPDATE review_authority SET record=record||' '",
+        "INSERT INTO review_keys VALUES(1,'newer')",
+        "DELETE FROM review_deployment",
+    ] {
+        let scope = persistence::begin(&mut ledger.connection).expect("same deciding scope");
+        assert_eq!(
+            candidate.current(&scope, revision, fence).expect("match"),
+            Some(p.policy.as_str())
+        );
+        persistence::exec(&scope, fault, ()).expect("fault");
+        assert!(
+            candidate.current(&scope, revision, fence).is_err(),
+            "{fault}"
+        );
+    }
+    persistence::exec(
+        &ledger.connection,
+        "INSERT INTO tasks(family,record,budget) VALUES('birth','{}',1)",
+        (),
+    )
+    .expect("birth fixture");
+    persistence::exec(
+        &ledger.connection,
+        "INSERT INTO task_publications VALUES('birth',?1,?2)",
+        [outcome.operation_id.as_str(), outcome.digest.as_str()],
+    )
+    .expect("original birth");
+    let birth =
+        crate::task_publication::prepare(&ledger.connection, "birth").expect("birth preflight");
+    for fault in [
+        "DELETE FROM task_publications WHERE family='birth'",
+        "UPDATE authority_publications SET receipt=receipt||' '",
+    ] {
+        let scope = persistence::begin(&mut ledger.connection).expect("deciding scope");
+        birth.require_current(&scope, "birth").expect("birth match");
+        persistence::exec(&scope, fault, ()).expect("birth fault");
+        assert!(birth.require_current(&scope, "birth").is_err(), "{fault}");
+    }
+    let scope = persistence::begin(&mut ledger.connection).expect("deciding scope");
+    assert!(candidate.current(&scope, revision, fence + 1).is_err());
+}
