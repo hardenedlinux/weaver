@@ -264,6 +264,89 @@ package WeaverExecution {
         attribute sameDomainTicketP99TargetMicros : Integer = 1000;
     }
 
+    requirement def BoundedProviderEgressWindow {
+        doc /* Candidate architecture. One acknowledged durable response-window
+           burn binds the canonical origin, original claim, shared exposure,
+           maximum row interval and an exclusive effect-owner incarnation.
+           Activation also joins the exact guarded provider response. Loss,
+       ambiguity and replacement retire the window and retain the hold. */
+        doc /* Every exact frame crosses a current Cedar and original-claim
+           guard in the owner turn that transfers it to transport. All live
+           authority inputs belong to the same projected image. Mutations
+           close the affected conflict components before durable CAS and
+           reopen only on the exact fenced image and outcome. */
+    }
+
+    part def ProviderEgressReadyBudget {
+        doc /* Engineering budgets for one ready Protobuf frame in the bounded
+           lane. They require measured maxima for this envelope and a paired
+           end-to-end P99 qualification. A pending control cut, unavailable
+           transport credit or provider wait has a separate accounting lane. */
+        attribute framePreparationMicros : Integer = 100;
+        attribute olderReadyTurns : Integer = 3;
+        attribute ownerTurnMicros : Integer = 150;
+        attribute schedulerOverheadMicros : Integer = 50;
+        attribute localHandoffMicros : Integer = 200;
+        attribute readyEnvelopeMicros : Integer = 950;
+        attribute readyP99TargetMicros : Integer = 1000;
+        assert constraint { readyEnvelopeMicros == framePreparationMicros + (olderReadyTurns + 1) * ownerTurnMicros + schedulerOverheadMicros + localHandoffMicros }
+        assert constraint { readyEnvelopeMicros < readyP99TargetMicros }
+    }
+
+    item def EgressWindowEvidence;
+    port def EgressWindowPort { out item evidence : EgressWindowEvidence; }
+
+    part def WindowIntentStore {
+        attribute displayName : String = "Turso / burn window";
+        attribute responsibility : String = "Bind the original claim\nRetain the entire hold";
+        attribute glyph : String = "ledger";
+        attribute visualRole : String = "publication";
+        port admitted : EgressWindowPort;
+    }
+    part def EgressAuthorityCut {
+        attribute displayName : String = "Authority cut";
+        attribute responsibility : String = "Close before durable change\nPublish the exact live image";
+        attribute glyph : String = "publication";
+        attribute visualRole : String = "publication";
+        port image : EgressWindowPort;
+    }
+    part def InertProviderFrame {
+        attribute displayName : String = "Rust / prepare frame";
+        attribute responsibility : String = "Exact bytes and next span\nReserve transport credit";
+        attribute glyph : String = "stream";
+        attribute visualRole : String = "semantic";
+        port stagedBytes : EgressWindowPort;
+    }
+    part def ProviderEgressOwnerTurn {
+        attribute displayName : String = "Rust / decide and hand off";
+        attribute responsibility : String = "Live Cedar + exact claim\nFence + one-use cursor";
+        attribute glyph : String = "authorization";
+        attribute visualRole : String = "execution";
+        port admission : ~EgressWindowPort;
+        port current : ~EgressWindowPort;
+        port ready : ~EgressWindowPort;
+        port offer : EgressWindowPort;
+    }
+    part def ProviderEgressTransport {
+        attribute displayName : String = "gRPC / accept frame";
+        attribute responsibility : String = "Accept a single owner offer\nObserve delivery separately";
+        attribute glyph : String = "stream";
+        attribute visualRole : String = "execution";
+        port acceptedBytes : ~EgressWindowPort;
+    }
+
+    part providerEgressWindow {
+        part durable : WindowIntentStore;
+        part publication : EgressAuthorityCut;
+        part preparation : InertProviderFrame;
+        part owner : ProviderEgressOwnerTurn;
+        part transport : ProviderEgressTransport;
+        connection burn connect durable.admitted to owner.admission;
+        connection currentImage connect publication.image to owner.current;
+        connection inertFrame connect preparation.stagedBytes to owner.ready;
+        connection liveTransfer connect owner.offer to transport.acceptedBytes;
+    }
+
     part def ProviderRangeScopeFairness {
         doc /* A later ticket granted before an older conflicting
            waiter is an inversion. Compare within one shared-root wave and across

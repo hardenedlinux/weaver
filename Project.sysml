@@ -543,12 +543,15 @@ package WeaverProject {
         part 'go/api/gateway/v1' : GoPackage;
         part 'go/cmd/weaver-control' : GoPackage;
         part 'go/cmd/weaver-dev' : GoPackage;
+        part 'go/cmd/weaver-import-provider' : GoPackage;
+        part 'go/cmd/weaver-meter' : GoPackage;
         part 'go/dev' : GoPackage;
         part 'go/internal/config' : GoPackage;
         part 'go/internal/controlplane' : GoPackage;
         part 'go/internal/telemetry' : GoPackage;
         part 'go/internal/devrunner' : GoPackage;
         part 'go/internal/gatewayclient' : GoPackage;
+        part 'go/internal/metering' : GoPackage;
         part 'go/internal/specreview' : GoPackage;
         part 'go/internal/routing' : GoPackage;
         part 'go/internal/streaming' : GoPackage;

@@ -31,6 +31,8 @@ Area =10-19 LLM Gateway=; category =10 Routing and inference=.
 | 10.02 | [[file:10.02-llm-routing.d2][Core D2]] / [[file:10.02-llm-routing.svg][SVG]] |
 | 10.03 | [[file:10.03-differentiation-and-delivery.org][Differentiation, reference comparison and delivery/measurement plan]] |
 | 10.04 | [[file:10.04-validation-evidence.org][Formal evidence and remaining qualification]] |
+| 10.06 | [[file:10.06-provider-egress-window.org][Bounded provider egress window design candidate]] |
+| 10.07 | [[file:10.07-provider-egress-window.d2][Candidate D2]] / [[file:10.07-provider-egress-window.svg][SVG]] |
 
 [[file:../../../dev/proofs/lean/LlmRouting.lean][Lean]] and [[file:../../../dev/proofs/quint/LlmRouting.qnt][Quint]] model candidate eligibility, selection, current route
 binding and the initial single-provider-admission profile. Detailed downstream
@@ -52,3 +54,7 @@ No Gateway runtime or dependency pin is changed.
 ** 10.02-llm-routing.svg
 
 [[file:10.02-llm-routing.svg]]
+
+** 10.07-provider-egress-window.svg
+
+[[file:10.07-provider-egress-window.svg]]

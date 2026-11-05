@@ -239,6 +239,34 @@ package WeaverViews {
         render asInterconnectionDiagram;
     }
 
+    view providerEgressWindow {
+        attribute mappedFile : String = "docs/10-19-llm-gateway/10-routing-and-inference/10.07-provider-egress-window.d2";
+        attribute displayTitle : String = "Burn the window. Decide each frame.";
+        attribute displaySubtitle : String = "Durable exposure and the current Rust turn govern one transport offer.";
+        attribute displayEyebrow : String = "WEAVER / EGRESS DESIGN CANDIDATE";
+        attribute readerQuestion : String = "How can a frame leave without another durable commit?";
+        attribute designAudience : String = "Gateway architects and security reviewers";
+        attribute designMedium : String = "GitHub at 830 CSS pixels";
+        attribute designMessage : String = "Design candidate. A lost window keeps its hold.";
+        attribute designFocus : String = "owner";
+        attribute visualNotation : String = "objects";
+        attribute visualBands : String = "[[\"durable\",\"publication\",\"preparation\"],[\"owner\",\"transport\"]]";
+        attribute visualThemes : String = "sketchbook,ocean,comfortable,reading";
+        attribute visualOptions : String = "{\"elk.algorithm\":\"layered\",\"elk.direction\":\"DOWN\",\"elk.edgeRouting\":\"ORTHOGONAL\"}";
+        attribute visualWidth : Integer = 980;
+        requirement candidate : WeaverExecution::BoundedProviderEgressWindow;
+        expose WeaverExecution::providerEgressWindow::durable;
+        expose WeaverExecution::providerEgressWindow::publication;
+        expose WeaverExecution::providerEgressWindow::preparation;
+        expose WeaverExecution::providerEgressWindow::owner;
+        expose WeaverExecution::providerEgressWindow::transport;
+        expose WeaverExecution::providerEgressWindow::burn;
+        expose WeaverExecution::providerEgressWindow::currentImage;
+        expose WeaverExecution::providerEgressWindow::inertFrame;
+        expose WeaverExecution::providerEgressWindow::liveTransfer;
+        render asInterconnectionDiagram;
+    }
+
     view routeExecution {
         attribute visualNotation : String = "objects";
         attribute visualBands : String = "[[\"routing\",\"publication\"],[\"execution\",\"providers\",\"stream\"]]";

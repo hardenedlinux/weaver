@@ -86,12 +86,12 @@ package ProviderRpc {
            worker admission, authoritative domain contention, resource
            lifetime and every deciding scope. Go has no authority to
            order requests by a cached domain root or revive a durable burn. */
-        doc /* Current Rust execution uses sorted domain stripes under
-           the shared owner gate. A scheduling grant is transient and
+        doc /* Current Rust execution registers exact origin, budget and history
+           roots as one ticket. A scheduling grant is transient and
            each subsequent effect rejoins live authority. Queue waiting
            must be distinct from the scope holding budget and publication
-           exclusion. A future queue policy needs an explicit fairness
-           and cancellation contract and separate measurements. Waiting tickets
+           exclusion. Conflicting tickets follow registration order.
+           Cancellation and queue measurements remain separate. Waiting tickets
            identify candidate lock sets and own no execution authority. A
            grant must rejoin the owner generation and live roots before
            any mutation or callback. Cancelled or stale tickets are discarded.

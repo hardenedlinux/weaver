@@ -1,4 +1,34 @@
 [
+  {"id":"BoundedProviderEgressWindow","witnesses":[
+    {"file":"dev/proofs/lean/ProviderEgressWindow.lean","pattern":"theorem any_accepted_trace_keeps_disjoint_prefix","declaration":"Weaver.ProviderEgressWindow.any_accepted_trace_keeps_disjoint_prefix"},
+    {"file":"dev/proofs/lean/ProviderEgressWindow.lean","pattern":"theorem loss_and_restart_close_old_window","declaration":"Weaver.ProviderEgressWindow.loss_and_restart_close_old_window"},
+    {"file":"dev/proofs/lean/ProviderEgressWindow.lean","pattern":"theorem matching_image_does_not_reopen_old_cut","declaration":"Weaver.ProviderEgressWindow.matching_image_does_not_reopen_old_cut"},
+    {"file":"dev/proofs/lean/ProviderEgressWindow.lean","pattern":"theorem connected_roots_cannot_use_distinct_lanes","declaration":"Weaver.ProviderEgressWindow.connected_roots_cannot_use_distinct_lanes"},
+    {"file":"dev/proofs/lean/ProviderEgressWindow.lean","pattern":"theorem admitted_four_turn_envelope","declaration":"Weaver.ProviderEgressWindow.admitted_four_turn_envelope"},
+    {"file":"dev/proofs/lean/ProviderEgressWindow.lean","pattern":"theorem settlement_is_idempotent","declaration":"Weaver.ProviderEgressWindow.settlement_is_idempotent"},
+    {"file":"dev/proofs/lean/ProviderEgressWindow.lean","pattern":"theorem holder_stage_overlap_cannot_exceed_ticket_wait","declaration":"Weaver.ProviderEgressWindow.holder_stage_overlap_cannot_exceed_ticket_wait"},
+    {"file":"dev/proofs/quint/ProviderEgressWindow.qnt","pattern":"run coherentStoreRollbackActuallyDuplicatesOfferTest"},
+    {"file":"dev/proofs/quint/ProviderEgressWindow.qnt","pattern":"run pendingRevocationStopsActualOfferTest"},
+    {"file":"dev/proofs/quint/ProviderEgressWindow.qnt","pattern":"run lostBurnAckSealsOriginalTest"},
+    {"file":"dev/proofs/quint/ProviderEgressWindow.qnt","pattern":"run rehydratingOldWindowActuallyDuplicatesOfferTest"}]},
+  {"id":"OriginalFloorDecision","witnesses":[
+    {"file":"dev/proofs/quint/LlmAdmissionFloor.qnt","pattern":"run lostCommitResponseResolvesSameOperationTest"},
+    {"file":"dev/proofs/quint/LlmAdmissionFloor.qnt","pattern":"run unknownCommitCannotActivateTest"},
+    {"file":"crates/ledger/tests/unit/retained_admission.rs","pattern":"fn retained_admission_reply_loss_and_gateway_restore_do_not_release_exposure"}]},
+  {"id":"ProviderCurrentnessPerformance","witnesses":[
+    {"file":"go/dev/provider_domain_program_test.go","pattern":"func BenchmarkProviderDomainProgram"},
+    {"file":"go/dev/provider_domain_tail_test.go","pattern":"func BenchmarkProviderSharedLongTail"},
+    {"file":"dev/proofs/cedar/WeaverOAuthRefinement.lean","pattern":"theorem prepared_domain_program_preserves_live_decision"}]},
+  {"id":"ProviderSchedulerOwnership","witnesses":[
+    {"file":"crates/ledger/tests/unit/persistence_scheduler.rs","pattern":"fn waiting_multi_root_range_precedes_younger_conflicts"},
+    {"file":"go/dev/provider_range_scopes_test.go","pattern":"func TestProviderScopeFairnessCountsArrivalGrantInversions"},
+    {"file":"go/dev/provider_grpc_test.go","pattern":"func TestProviderClientCancellationCannotReplay"}]},
+  {"id":"SenderBoundProviderOAuth","witnesses":[
+    {"file":"go/dev/provider_oauth_relay_test.go","pattern":"func TestProviderOAuthTwoHopRevocationAndRecovery"},
+    {"file":"dev/proofs/cedar/WeaverOAuthRefinement.lean","pattern":"theorem retained_root_revocation_blocks_child"}]},
+  {"id":"TransportAndExecutionLatencySeparation","witnesses":[
+    {"file":"go/dev/provider_scheduler_bench_test.go","pattern":"func BenchmarkProviderScheduledEncoding"},
+    {"file":"go/dev/provider_range_group_test.go","pattern":"func BenchmarkProviderRangePreparationGroup"}]},
   {"id":"TelemetryNoninterference","witnesses":[
     {"file":"crates/telemetry/tests/unit/metrics.rs","pattern":"fn observations_are_monotone_and_restart_local"},
     {"file":"go/internal/telemetry/metrics_test.go","pattern":"func TestPropertyCountersAreBoundedMonotoneAndRestartLocal"},
@@ -49,10 +79,10 @@
     {"file":"go/internal/devrunner/diagrams_test.go","pattern":"func TestArchitectureDiagramsUseDifferentViewProfiles"},
     {"file":"go/internal/devrunner/diagrams_test.go","pattern":"func TestDiagramProfilesAreExplicitAndLocal"},
     {"file":"go/internal/devrunner/diagrams.go","pattern":"func RenderDiagrams"},
-    {"file":"dev/d2/src/render.ts","pattern":"composeFigure\\(input,input.layout==='sequence-view'\\?composeSequence:composeReadingView\\)"},
+    {"file":"dev/d2/src/render.ts","pattern":"composeFigure[(]input,composer[)]"},
     {"file":"dev/d2/test/model-view.test.ts","pattern":"public Library binds SDK SysML identity"},
-    {"file":"dev/d2/src/reading.ts","pattern":"export const composeReadingView"},
-    {"file":"dev/d2/test/reading.test.ts","pattern":"property: reading projection retains every scope"},
+    {"file":"dev/d2/src/objects.ts","pattern":"export const composeObjects"},
+    {"file":"dev/d2/test/model-view.test.ts","pattern":"missing captured views and unsupported source ports refuse"},
     {"file":"dev/d2/test/vector-readability.test.ts","pattern":"Preserve the original ordered-sequence line-overlap check"},
     {"file":"go/internal/devrunner/diagrams_test.go","pattern":"func TestDiagramEvidenceRejectsLostNodesAndRelationships"}]},
   {"id":"ProductionAssetBoundary","witnesses":[
@@ -86,7 +116,7 @@
     {"file":"dev/proofs/quint/RuntimeAdmission.qnt","pattern":"run partialMessageLossCounterexampleTest"},
     {"file":"dev/proofs/quint/RuntimeAdmission.qnt","pattern":"run digestSubstitutionFinalUseGuardTest"},
     {"file":"dev/proofs/lean/RuntimeAdmission.lean","pattern":"theorem exact_manifest_admission_covers_original_exposure"},
-    {"file":"crates/ledger/tests/unit/provider.rs","pattern":"fn balanced_provider_projection_never_funds_a_different_original_plan"},
+    {"file":"crates/ledger/tests/unit/provider_properties.rs","pattern":"fn balanced_provider_projection_never_funds_a_different_original_plan"},
     {"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn balanced_stream_projection_never_funds_the_next_logical_message"},
     {"file":"dev/proofs/lean/RuntimeAdmission.lean","pattern":"theorem admission_covers_original_exposure"},
     {"file":"dev/proofs/quint/RuntimeAdmission.qnt","pattern":"run balancedProjectionCounterexampleTest"},
@@ -102,7 +132,7 @@
     {"file":"crates/ledger/tests/unit/recovery.rs","pattern":"fn authored_ceiling_cannot_underreserve_the_original_wire_cost"}]},
   {"id":"ZeroTrustContractRefinement","witnesses":[
     {"file":"dev/proofs/cedar/DomainMigrationComposition.lean","pattern":"theorem final_use_on_committed_union","declaration":"Weaver.DomainMigrationComposition.final_use_on_committed_union"},
-    {"file":"crates/ledger/src/provider.rs","pattern":"let domains = active(&tx, permit)?"},
+    {"file":"crates/ledger/src/provider.rs","pattern":"actual.stamp != p.domains"},
     {"file":"crates/ledger/tests/unit/provider_domains.rs","pattern":"fn same_actual_domains_fence_original_provider_capability"},
     {"file":"go/dev/provider_shared_domains_test.go","pattern":"actual migration committed; response discarded"},
     {"file":"dev/proofs/quint/SharedDomains.qnt","pattern":"run committedUnionLostReplyKeepsBothOriginalsTest"},
@@ -203,7 +233,7 @@
     {"file":"go/internal/config/provider_profile_test.go","pattern":"func TestProviderProfileRejectsAmbiguousConfiguration"},
     {"file":"go/internal/config/provider_profile_test.go","pattern":"func FuzzProviderProfileConfiguration"}]},
   {"id":"AffineProviderAttempt","witnesses":[
-    {"file":"crates/ledger/tests/unit/provider.rs","pattern":"fn arbitrary_provider_replays_restarts_and_release_batches_keep_original_claim"},
+    {"file":"crates/ledger/tests/unit/provider_properties.rs","pattern":"fn arbitrary_provider_replays_restarts_and_release_batches_keep_original_claim"},
     {"file":"dev/proofs/quint/ProviderRpc.qnt","pattern":"run sdkRetryCannotConsumeAgainTest"},
     {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem consumed_unknown_retains_original_hold"}]},
   {"id":"EncodingAuthorityEquivalence","witnesses":[
@@ -226,7 +256,7 @@
     {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem failed_callback_cannot_enter_commit","declaration":"Weaver.ProviderRpc.RequestWriteFence.failed_callback_cannot_enter_commit"},
     {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem applied_commit_without_ack_does_not_activate","declaration":"Weaver.ProviderRpc.RequestWriteFence.applied_commit_without_ack_does_not_activate"},
     {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem late_commit_ack_cannot_bypass_new_fence","declaration":"Weaver.ProviderRpc.RequestWriteFence.late_commit_ack_cannot_bypass_new_fence"},
-    {"file":"crates/ledger/src/provider.rs","pattern":"fn require_exposure"},
+    {"file":"crates/ledger/src/execution_exposure.rs","pattern":"fn provider[(]"},
     {"file":"crates/ledger/tests/unit/provider.rs","pattern":"fn zero_trust_final_use_requires_durable_claim_and_shared_exposure"},
     {"file":"dev/proofs/quint/ProviderRpc.qnt","pattern":"run individualHoldOnlyCounterexampleTest"},
     {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem shared_provider_exposure_cannot_be_released"},
@@ -297,7 +327,7 @@
     {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem original_plan_survives_batching"},
     {"file":"crates/ledger/tests/unit/provider.rs","pattern":"fn equal_batch_digests_cannot_transfer_release_between_original_nodes"},
     {"file":"crates/ledger/tests/unit/provider.rs","pattern":"fn release_encoding_cannot_change_after_preparation"},
-    {"file":"crates/ledger/tests/unit/provider.rs","pattern":"fn release_capabilities_bind_plan_encoding_and_restart_session"},
+    {"file":"crates/ledger/tests/unit/provider_properties.rs","pattern":"fn release_capabilities_bind_plan_encoding_and_restart_session"},
     {"file":"dev/proofs/quint/ReleaseBinding.qnt","pattern":"run crossPlanCounterexampleTest"},
     {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem release_binding_and_execution_composition"}]},
   {"id":"SpecificSourceContracts","witnesses":[
@@ -528,5 +558,5 @@
     {"file":"crates/broker/benches/gateway.rs","pattern":"fn guarded_provider"},
     {"file":"go/dev/provider_bench_test.go","pattern":"func BenchmarkGatewayInspect"}]},
   {"id":"DurableRangeProgressJoin","witnesses":[{"file":"crates/ledger/src/stream_progress.rs","pattern":"fn message"},{"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn restored_message_cursor_cannot_hide_consumed_range"},{"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn restored_progress_cannot_release_old_writer_or_connection"},{"file":"dev/proofs/quint/StreamingExecution.qnt","pattern":"run restoredUnknownProjectionBlocksAdmissionTest"},{"file":"dev/proofs/quint/StreamingExecution.qnt","pattern":"run unknownResetDuplicatesRangeCounterexampleTest"},{"file":"dev/proofs/lean/StreamingExecution.lean","pattern":"theorem unresolved_tail_blocks_admission","declaration":"Weaver.StreamingExecution.RangeProgress.unresolved_tail_blocks_admission"},{"file":"dev/proofs/lean/StreamingExecution.lean","pattern":"theorem changed_progress_cannot_execute","declaration":"Weaver.StreamingExecution.RangeProgress.changed_progress_cannot_execute"},{"file":"dev/proofs/lean/StreamingExecution.lean","pattern":"theorem joined_execution_preserves_safety","declaration":"Weaver.StreamingExecution.RangeProgress.joined_execution_preserves_safety"}]},
-  {"id":"TursoAdmissionAtomicity","witnesses":[{"file":"crates/ledger/src/persistence/scope.rs","pattern":"pub fn begin"},{"file":"crates/ledger/src/exposure_manifest.rs","pattern":"pub\\(crate\\) fn require"},{"file":"crates/ledger/tests/unit/persistence_transactions.rs","pattern":"fn failed_commit_releases_writer_and_poisoned_session_cannot_reenter"},{"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn duplicate_claim_members_cannot_be_normalized_out_of_recovery"},{"file":"go/dev/workspace_test.go","pattern":"func TestProjectArchitectureStorageUsesMRRDataTursoOnly"},{"file":"dev/proofs/quint/TursoAdmission.qnt","pattern":"run tornCommitRefundCounterexampleTest"},{"file":"dev/proofs/lean/RuntimeAdmission.lean","pattern":"theorem storage_step_retains_admission_safety","declaration":"Weaver.RuntimeAdmission.Persistence.storage_step_retains_admission_safety"},{"file":"dev/proofs/lean/RuntimeAdmission.lean","pattern":"theorem committed_consume_survives_reply_loss_and_restart","declaration":"Weaver.RuntimeAdmission.Persistence.committed_consume_survives_reply_loss_and_restart"},{"file":"dev/proofs/lean/RuntimeAdmission.lean","pattern":"theorem commit_itself_does_not_send","declaration":"Weaver.RuntimeAdmission.Persistence.commit_itself_does_not_send"}]}
+  {"id":"TursoAdmissionAtomicity","witnesses":[{"file":"crates/ledger/src/persistence/scope.rs","pattern":"pub fn begin"},{"file":"crates/ledger/src/exposure_manifest.rs","pattern":"fn verified_members"},{"file":"crates/ledger/tests/unit/persistence_transactions.rs","pattern":"fn failed_commit_releases_writer_and_poisoned_session_cannot_reenter"},{"file":"crates/ledger/tests/unit/execution_exposure.rs","pattern":"fn duplicate_claim_members_cannot_be_normalized_out_of_recovery"},{"file":"go/dev/workspace_test.go","pattern":"func TestProjectArchitectureStorageUsesMRRDataTursoOnly"},{"file":"dev/proofs/quint/TursoAdmission.qnt","pattern":"run tornCommitRefundCounterexampleTest"},{"file":"dev/proofs/lean/RuntimeAdmission.lean","pattern":"theorem storage_step_retains_admission_safety","declaration":"Weaver.RuntimeAdmission.Persistence.storage_step_retains_admission_safety"},{"file":"dev/proofs/lean/RuntimeAdmission.lean","pattern":"theorem committed_consume_survives_reply_loss_and_restart","declaration":"Weaver.RuntimeAdmission.Persistence.committed_consume_survives_reply_loss_and_restart"},{"file":"dev/proofs/lean/RuntimeAdmission.lean","pattern":"theorem commit_itself_does_not_send","declaration":"Weaver.RuntimeAdmission.Persistence.commit_itself_does_not_send"}]}
 ]
