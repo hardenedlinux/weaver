@@ -49,6 +49,11 @@ package ControlActivation {
            archive/source correspondence and package lifecycle operations.
            Weaver's Go runner records actual command outcomes and root source
            currentness; it is not a second package manager. */
+        doc /* Cargo-owned native library outputs retain the selected SDK's
+           existing package source directory as an explicit input. Bind that
+           native pkg root before creating the tooling owner; do not resolve
+           versions, install dependencies, copy packages or alter source trees.
+           An occupied nonempty output directory must refuse replacement. */
         doc /* A package result or release label grants no Policy, publication
            or send authority. Changed-source and preparation-cut laws retain
            their explicit host premises; an upstream SDK API alone does not prove

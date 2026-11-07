@@ -531,7 +531,9 @@
     {"file":"go/internal/controlplane/deployment_source.go","pattern":"func selectDeploymentSource"},
     {"file":"go/internal/controlplane/deployment.go","pattern":"trace\\(\"authority-reconciled\"\\)"},
     {"file":"t/fixtures/governed-control.ss","pattern":"fixture-module-ready"},
-    {"file":"go/dev/provider_control_test.go","pattern":"These unauthenticated diagnostics never replace readiness or exit checks"}]},
+    {"file":"go/dev/provider_control_test.go","pattern":"These unauthenticated diagnostics never replace readiness or exit checks"},
+    {"file":"crates/governance-build/src/tooling.rs","pattern":"fn bind_package_sources"},
+    {"file":"crates/governance-build/tests/unit/package_sources.rs","pattern":"fn native_package_inputs_follow_the_selected_store_without_overwriting_sources"}]},
   {"id":"PolicyCAbiIsInert","witnesses":[
     {"file":"scheme/policy/func.ss","pattern":"def \\(validate-policy-projection!"},
     {"file":"scheme/gateway/func.ss","pattern":"validate-policy-projection! projection"},
