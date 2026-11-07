@@ -7,6 +7,7 @@ package devrunner
 import (
 	"fmt"
 	"os"
+	"slices"
 )
 
 const rustRuntimeFeatures = "weaver-server/arrow,weaver-governance/scheme-vm"
@@ -152,7 +153,20 @@ func Plan(goBinary string) []Stage {
 		{"semantic-boundary-quint-safety", "quint", []string{"run", "dev/proofs/quint/LlmPolicyContinuation.qnt", "--main", "LlmPolicyContinuation", "--step", "boundaryStep", "--invariant", "safety", "--max-samples", "1000", "--max-steps", "60", "--seed", "293", "--verbosity", "0"}},
 	}
 }
+
+const testParallelism = "4"
+
 func Stages(mode, goBinary string) ([]Stage, error) {
+	stages, err := stagesForMode(mode, goBinary)
+	for i, stage := range stages {
+		if stage.Binary == goBinary && len(stage.Args) >= 3 && stage.Args[0] == "-C" && stage.Args[2] == "test" {
+			stages[i].Args = slices.Insert(stage.Args, 3, "-parallel="+testParallelism)
+		}
+	}
+	return stages, err
+}
+
+func stagesForMode(mode, goBinary string) ([]Stage, error) {
 	switch mode {
 	case "bootstrap":
 		return []Stage{
@@ -179,7 +193,7 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 		}
 		return append(selected, Stage{"storage-grpc-integration", goBinary, []string{"-C", "go", "test", "-count=1", "-race", "-tags=integration", "./dev", "-run", "^TestProvider", "-v"}}), nil
 	case "bootstrap-build", "bootstrap-proofs":
-		stages, err := Stages("bootstrap", goBinary)
+		stages, err := stagesForMode("bootstrap", goBinary)
 		if err != nil {
 			return nil, err
 		}
@@ -228,7 +242,7 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 			{"scheme-source-integration-tests", schemeTool(), []string{"test", "-g", "-v", "5", "t/integration"}},
 			{"scheme-rooted-sdk-integration", "cargo", []string{"test", "-p", "weaver-governance", "-p", "weaver-governance-build", "-p", "weaver-server", "--features", "weaver-governance/scheme-qualification,weaver-server/governance-qualification", "--locked", "--offline"}},
 			{"scheme-provider-server-build", "cargo", []string{"build", "-p", "weaver-server", "--bin", "weaver-server", "--features", "arrow,governance-qualification", "--locked", "--offline", "-j", "4"}},
-			{"scheme-grpc-stream-integration", goBinary, []string{"-C", "go", "test", "-parallel=4", "-json", "-count=1", "-race", "-tags=integration,schemeintegration", "-timeout=10m", "./dev", "-run", "^TestProviderControl", "-skip", "^TestProviderControlGovernorPerformance$"}},
+			{"scheme-grpc-stream-integration", goBinary, []string{"-C", "go", "test", "-json", "-count=1", "-race", "-tags=integration,schemeintegration", "-timeout=10m", "./dev", "-run", "^TestProviderControl", "-skip", "^TestProviderControlGovernorPerformance$"}},
 		}, nil
 	case "bench-execution":
 		return []Stage{
