@@ -30,6 +30,10 @@ pub struct SourceSelection {
     pub schema: String,
     pub family: String,
     pub open_nodes: Vec<String>,
+    #[serde(default)]
+    pub workflow_edges: Vec<(String, String)>,
+    #[serde(default)]
+    pub workflow_selectors: Vec<[String; 3]>,
 }
 #[derive(Clone, PartialEq, Eq, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -82,7 +86,32 @@ fn validate(wire: &SourceData) -> Result<(), SourceError> {
         .map_err(|_| SourceError::Contract)?;
     let selected: BTreeSet<_> = wire.governance.open_nodes.iter().collect();
     let original: BTreeSet<_> = task.nodes.iter().collect();
-    if wire.governance.schema != "agentic-ai-lab.loop-governor.v1"
+    let supported = match wire.governance.schema.as_str() {
+        "agentic-ai-lab.loop-governor.v1" => wire.governance.workflow_edges.is_empty(),
+        weaver_contracts::SESSION_WORKFLOW_SCHEMA => {
+            selected.len() >= 2 && wire.governance.workflow_edges.is_empty()
+        }
+        weaver_contracts::SESSION_NESTED_SCHEMA => weaver_contracts::validate_session_selectors(
+            &wire.governance.open_nodes,
+            &wire.governance.workflow_edges,
+            &wire.governance.workflow_selectors,
+        )
+        .is_ok(),
+        weaver_contracts::SESSION_CHOICE_SCHEMA => weaver_contracts::validate_session_choice(
+            &wire.governance.open_nodes,
+            &wire.governance.workflow_edges,
+        )
+        .is_ok(),
+        weaver_contracts::SESSION_DAG_SCHEMA => weaver_contracts::validate_session_dag(
+            &wire.governance.open_nodes,
+            &wire.governance.workflow_edges,
+        )
+        .is_ok(),
+        _ => false,
+    };
+    if !supported
+        || (wire.governance.schema != weaver_contracts::SESSION_NESTED_SCHEMA
+            && !wire.governance.workflow_selectors.is_empty())
         || wire.governance.family != task.family
         || selected.len() != wire.governance.open_nodes.len()
         || selected != original

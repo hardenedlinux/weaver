@@ -4,7 +4,7 @@
 
 //! Bounded Anthropic Messages text stream. Only message_stop completes usage.
 use serde_json::Value;
-use std::io::{BufRead, BufReader, Read};
+use tokio::io::{AsyncBufReadExt, AsyncRead, AsyncReadExt, BufReader};
 use weaver_contracts::{Error, MAX_CREDITS, ProviderEvent, ProviderEventKind, Result};
 
 pub(super) struct Decoder<R> {
@@ -28,7 +28,7 @@ enum State {
     Done,
 }
 
-impl<R: Read> Decoder<R> {
+impl<R: AsyncRead + Unpin> Decoder<R> {
     pub(super) fn new(reader: R, model: &str) -> Self {
         Self {
             reader: BufReader::new(reader),
@@ -47,17 +47,18 @@ impl<R: Read> Decoder<R> {
         self.tokens
     }
 
-    pub(super) fn next(&mut self) -> Result<ProviderEvent> {
-        self.next_event(false)?
+    pub(super) async fn next(&mut self) -> Result<ProviderEvent> {
+        self.next_event(false)
+            .await?
             .ok_or(Error::Conflict("Anthropic stream missing terminal event"))
     }
 
-    pub(super) fn next_buffered(&mut self) -> Result<Option<ProviderEvent>> {
-        self.next_event(true)
+    pub(super) async fn next_buffered(&mut self) -> Result<Option<ProviderEvent>> {
+        self.next_event(true).await
     }
 
-    fn next_event(&mut self, buffered: bool) -> Result<Option<ProviderEvent>> {
-        while let Some(frame) = self.frame(buffered)? {
+    async fn next_event(&mut self, buffered: bool) -> Result<Option<ProviderEvent>> {
+        while let Some(frame) = self.frame(buffered).await? {
             if let Some(event) = self.accept(&frame)? {
                 return Ok(Some(event));
             }
@@ -65,7 +66,7 @@ impl<R: Read> Decoder<R> {
         Ok(None)
     }
 
-    fn frame(&mut self, buffered: bool) -> Result<Option<Value>> {
+    async fn frame(&mut self, buffered: bool) -> Result<Option<Value>> {
         if buffered && !super::sse_buffer::buffered_sse_record(self.reader.buffer()) {
             return Ok(None);
         }
@@ -73,11 +74,10 @@ impl<R: Read> Decoder<R> {
         let mut kind = None;
         loop {
             self.line.clear();
-            let count = self
-                .reader
-                .by_ref()
+            let count = (&mut self.reader)
                 .take(65537)
                 .read_until(b'\n', &mut self.line)
+                .await
                 .map_err(|_| Error::Conflict("Anthropic stream interrupted"))?;
             if count == 0 || self.line.last() != Some(&b'\n') {
                 return Err(Error::Conflict("Anthropic stream missing terminal event"));

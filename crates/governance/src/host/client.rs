@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
-//! Nonblocking source admission; capacity covers queued, active and ready data.
+//! Bounded source admission; capacity covers queued, active and ready data.
 use super::{Command, Phase, Shared, SourceInbox, SourceJob, SourceJobError, State, Work};
 use crate::{OwnedSource, SourceExpectation};
 use std::{
@@ -53,12 +53,14 @@ impl SourceClient {
             phase: Mutex::new(Phase::Queued),
         });
         let (reply, receiver) = oneshot::channel();
+        let cancel = self.shared.shutdown.child_token();
         let work = Work {
             original,
             expected,
             state: state.clone(),
             reply,
             slot,
+            cancel: cancel.clone(),
         };
         let closed = self.shared.gate();
         if *closed {
@@ -70,7 +72,59 @@ impl SourceClient {
                 mpsc::error::TrySendError::Full(_) => SourceJobError::Busy,
                 mpsc::error::TrySendError::Closed(_) => SourceJobError::Closed,
             })?;
-        Ok(SourceJob::new(receiver, self.shared.clone(), state))
+        Ok(SourceJob::new(receiver, self.shared.clone(), state, cancel))
+    }
+    /// Wait for space on the bounded Scheme owner so a Session wake is not lost.
+    pub async fn derive(&self, input: crate::GovernorCut) -> Result<Vec<String>, SourceJobError> {
+        self.evaluate(crate::Derivation::Governor(Box::new(input)))
+            .await
+    }
+    /// Ask the same Scheme owner for the impact of an already persisted intent.
+    pub async fn fact_impact(
+        &self,
+        work: &weaver_contracts::FactWork,
+    ) -> Result<Vec<String>, SourceJobError> {
+        self.evaluate(crate::Derivation::FactImpact {
+            root: work.root.clone(),
+            dependencies: work.dependencies.clone(),
+        })
+        .await
+    }
+    async fn evaluate(&self, input: crate::Derivation) -> Result<Vec<String>, SourceJobError> {
+        let capacity = self.capacity.clone();
+        let slot = match &input {
+            crate::Derivation::Governor(_) => tokio::select! {
+                biased;
+                _ = self.shared.shutdown.cancelled() => return Err(SourceJobError::Closed),
+                slot = capacity.acquire_owned() => slot.map_err(|_| SourceJobError::Closed)?,
+            },
+            crate::Derivation::FactImpact { .. } => capacity
+                .try_acquire_owned()
+                .map_err(|_| SourceJobError::Busy)?,
+        };
+        let (reply, receiver) = oneshot::channel();
+        {
+            let closed = self.shared.gate();
+            if *closed {
+                return Err(SourceJobError::Closed);
+            }
+            self.sender
+                .try_send(Command::Derive {
+                    input,
+                    reply,
+                    _slot: slot,
+                    queued: super::governor_timing().then(std::time::Instant::now),
+                })
+                .map_err(|error| match error {
+                    mpsc::error::TrySendError::Full(_) => SourceJobError::Busy,
+                    mpsc::error::TrySendError::Closed(_) => SourceJobError::Closed,
+                })?;
+        }
+        tokio::select! {
+            biased;
+            _ = self.shared.shutdown.cancelled() => Err(SourceJobError::Closed),
+            result = receiver => result.map_err(|_| SourceJobError::Closed)?.map_err(SourceJobError::from),
+        }
     }
     /// Close admission and wake callers/owner. This is not drain acknowledgment;
     /// an active synchronous compiler must return and clean its VM naturally.

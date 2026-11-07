@@ -16,6 +16,8 @@ extern crate self as weaver_ledger;
 mod delta_registration;
 mod domains;
 mod execution_exposure;
+mod hard_fact;
+pub use hard_fact::FactPreparation;
 mod exposure_manifest;
 mod metering;
 mod metering_credentials;
@@ -35,6 +37,12 @@ mod provider_publication;
 #[cfg(feature = "commit-observer")]
 pub use provider_publication::use_locked_publication_review;
 mod provider_quota;
+mod provider_workflow;
+mod provider_workflow_choice;
+mod provider_workflow_nested;
+pub use provider_workflow::{ProviderProgression, WorkflowObservation};
+pub use provider_workflow_choice::WorkflowChoiceObservation;
+pub use provider_workflow_nested::NestedObservation;
 mod publication;
 mod publication_barrier;
 mod publication_review;
@@ -56,7 +64,8 @@ pub use provider::{
 };
 #[cfg(feature = "commit-observer")]
 pub use provider::{
-    use_cached_release_programs, use_conservative_range_invalidation, use_separate_release_reads,
+    use_cached_release_programs, use_conservative_range_invalidation, use_early_admission_barrier,
+    use_exclusive_provider_reads, use_full_lifecycle_invalidation, use_separate_release_reads,
 };
 mod store;
 mod stream_catalog;

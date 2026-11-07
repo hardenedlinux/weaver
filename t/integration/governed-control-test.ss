@@ -12,8 +12,8 @@
         (only-in :std/misc/ports read-all-as-string)
         (only-in :clan/poo/object .o .get)
         (only-in :clan/poo/mop TypeError?)
-        (only-in ../fixtures/control-inputs control-inputs)
-        (only-in ../fixtures/governed-control capture-control-fixture))
+        (only-in "../fixtures/control-inputs.ss" control-inputs)
+        (only-in "../fixtures/governed-control.ss" capture-control-fixture prepare-control-fixture))
 (export governed-control-test)
 
 (def refusal-cases
@@ -48,7 +48,8 @@
       (def init (path-expand "../../init.ss" (path-directory (this-source-file))))
       (call-with-temporary-directory "weaver-control-"
         (lambda (directory)
-          (def (invoke mode)
+          (def view (yuanxu-load-modules init))
+          (def (invoke mode (source view))
             (def original-task (car (.get input tasks)))
             (def original-publication (.get input publication))
             (def task (if (equal? mode "task-type")
@@ -63,11 +64,9 @@
               (lambda (port)
                 (display (if (equal? mode "asset-mismatch")
                            "forbid(principal,action,resource);" (.get publication policy)) port)))
-            (capture-control-fixture init mode (list task) plans publication directory))
-          ;; Only framework Scheme sources are fixed within this inert batch.
-          ;; Profile data and Policy assets still vary and are read per case.
-          ;; Independent currentness guards bracket the upstream read window.
-          (def view (yuanxu-load-modules init))
+            (capture-control-fixture source mode (list task) plans publication directory))
+          ;; Reuse the Yuanxu scope for fixed framework sources. Profile data
+          ;; and Policy assets still vary, and every capture admits the view.
           ((.get view admit-current))
           (dynamic-wind
             void
@@ -84,10 +83,28 @@
                                     (list (car row) #t)))
                     refusal-cases)
                   (check-exception (invoke "task-type") TypeError?)
-                  ;; Refusal must not poison a subsequent legitimate capture on this VM.
+                  ;; Refusal must not poison a subsequent legitimate capture.
                   (def valid (invoke "valid"))
                   (check-equal? (.get valid governance open_nodes) '("infer" "next"))
                   (check-equal? (.get (car (.get input tasks)) budget) 8)
+                  ;; Preparation and source capture use the same declared
+                  ;; semantic producer, while evidence stays outside wire data.
+                  (def prepared (prepare-control-fixture view "valid" (.get input tasks) (.get input plans)
+                                                        (.get input publication) directory))
+                  (check-equal? (.get prepared source governance open_nodes) '("infer" "next"))
+                  (check-equal? (.get prepared derivation complete) #t)
+                  (check-equal? (.get prepared derivation execution_authorized) #f)
+                  (check-equal? (length (.get prepared derivation candidates)) 4)
+                  (def gateway (.get view modules Weaver gateway))
+                  (def advice ((.get gateway derive) (.get prepared source)))
+                  (check-equal? (.get advice request_digest) (.get prepared derivation request_digest))
+                  (def owner ((.get gateway open-derivation)))
+                  (def query (.o source: (.get prepared source) dependencies: '() changed: '()))
+                  (def retained ((.get owner derive) query))
+                  (check-equal? ((.get owner matches?) query retained) #t)
+                  ((.get owner close))
+                  ;; The production path also opens and admits its own view.
+                  (check-equal? (.get (invoke "valid" init) governance open_nodes) '("infer" "next"))
                   #t)))
             (lambda () ((.get view admit-current))))
           directory)))))

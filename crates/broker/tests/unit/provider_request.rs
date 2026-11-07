@@ -7,7 +7,7 @@ use crate::provider::test_runtime as fixture_runtime;
 use std::sync::Arc;
 #[test]
 fn prepared_bearer_retains_sensitive_debug_redaction_without_io() {
-    let runtime = fixture_runtime::fixture_runtime();
+    let runtime = fixture_runtime::fixture_runtime(Some(4));
     let config = rustls::ClientConfig::builder_with_provider(Arc::new(
         rustls::crypto::ring::default_provider(),
     ))
@@ -39,7 +39,7 @@ fn prepared_bearer_retains_sensitive_debug_redaction_without_io() {
 
 #[test]
 fn expired_anthropic_bearer_is_rejected_before_io() {
-    let runtime = fixture_runtime::fixture_runtime();
+    let runtime = fixture_runtime::fixture_runtime(Some(4));
     let tls = rustls::ClientConfig::builder_with_provider(Arc::new(
         rustls::crypto::ring::default_provider(),
     ))
@@ -61,8 +61,13 @@ fn expired_anthropic_bearer_is_rejected_before_io() {
     .expect("inert Anthropic request");
     assert!(prepared.request.headers()["authorization"].is_sensitive());
     assert!(!prepared.request.headers().contains_key("x-api-key"));
+    let phases = std::cell::Cell::default();
     assert!(matches!(
-        prepared.write_and_seal(),
+        prepared.write_and_seal(&phases),
         Err(weaver_contracts::Error::Denied)
     ));
+    assert!(!phases.get().connect.attempted);
+    assert!(!phases.get().tls.attempted);
+    assert!(!phases.get().write.attempted);
+    assert!(!phases.get().headers.attempted);
 }

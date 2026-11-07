@@ -17,6 +17,7 @@ pub struct MeteringTenant {
     pub rates: [u64; 4],
 }
 
+/// Deployment-wide tenant assignments and optional quota and procurement rules.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct MeteringDeployment {
@@ -30,6 +31,7 @@ pub struct MeteringDeployment {
     pub provider_quotes: BTreeMap<String, ProviderQuote>,
 }
 
+/// Versioned procurement terms and token bounds bound to a tenant pricing formula.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct ProviderQuote {
@@ -57,20 +59,11 @@ impl MeteringDeployment {
         let mut keys = BTreeSet::new();
         for (tenant, rule) in &self.tenants {
             identifier(tenant)?;
-            identifier(&rule.issuer)?;
-            if !digest(&rule.public_key, 64)
-                || !keys.insert(&rule.public_key)
-                || rule.principals.is_empty()
-                || rule.rates.iter().any(|rate| *rate > MAX_CREDITS)
-            {
+            rule.validate()?;
+            if !keys.insert(&rule.public_key) {
                 return Err(Error::Invalid("metering tenant configuration"));
             }
-            for principal in &rule.principals {
-                identifier(principal)?;
-                if !principals.insert(principal) {
-                    return Err(Error::Invalid("ambiguous metering principal"));
-                }
-            }
+            rule.register_principals(&mut principals)?;
         }
         if let Some(quotas) = &self.quotas {
             quotas.validate(self)?;
@@ -108,6 +101,27 @@ impl MeteringDeployment {
 }
 
 impl MeteringTenant {
+    fn validate(&self) -> Result<()> {
+        identifier(&self.issuer)?;
+        if !digest(&self.public_key, 64)
+            || self.principals.is_empty()
+            || self.rates.iter().any(|rate| *rate > MAX_CREDITS)
+        {
+            return Err(Error::Invalid("metering tenant configuration"));
+        }
+        Ok(())
+    }
+
+    fn register_principals<'a>(&'a self, principals: &mut BTreeSet<&'a String>) -> Result<()> {
+        for principal in &self.principals {
+            identifier(principal)?;
+            if !principals.insert(principal) {
+                return Err(Error::Invalid("ambiguous metering principal"));
+            }
+        }
+        Ok(())
+    }
+
     pub fn formula_digest(&self) -> Result<String> {
         Ok(body_digest(&serde_json::to_string(&(
             "weaver.metering.linear-ceil-per-million.v1",
@@ -204,6 +218,7 @@ impl MeteringReceipt {
     }
 }
 
+/// Settlement records how a reservation was charged and how much was released.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct MeteringApplication {
     pub application: String,

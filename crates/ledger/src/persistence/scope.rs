@@ -15,13 +15,20 @@ use std::{
 /// Provider range phase used to label diagnostic scope observations.
 #[derive(Clone, Copy)]
 pub enum ProviderScopePhase {
+    Admission,
     Other,
     PrepareRange,
     FinalQueue,
     RevalidateDelivery,
 }
 
-/// Exclusive native transaction; final guarded callbacks keep this scope alive.
+enum Change<'a> {
+    Semantic,
+    Admission(&'a crate::provider::AdmissionRequest),
+    Progress(&'a crate::provider::RangeProgress),
+    Lifecycle(&'a crate::provider::OriginLifecycle),
+}
+/// Session-owned native transaction; compatible original origins may coexist.
 pub struct WriteScope<'a> {
     connection: &'a driver::Connection,
     authority: super::authority::Close<'a>,
@@ -32,6 +39,7 @@ pub struct WriteScope<'a> {
     poisoned: &'a AtomicBool,
     timings: &'a mut super::TransactionTimings,
     entered: Instant,
+    authority_entered: Instant,
     oauth_check: Cell<super::Timing>,
     current_domain: Cell<super::Timing>,
     current_pending: Cell<super::Timing>,
@@ -53,22 +61,60 @@ pub struct WriteScope<'a> {
 }
 /// Acquire an immediate write transaction with exclusive Rust session custody.
 pub fn begin(session: &mut Session) -> driver::Result<WriteScope<'_>> {
-    start(session, None, None, ProviderScopePhase::Other, None)
+    start(
+        session,
+        None,
+        None,
+        ProviderScopePhase::Other,
+        Change::Semantic,
+    )
 }
 /// Parallel MVCC admission or final use for one original claim/budget/history family.
 /// Global mutations use `begin`, excluding every live family scope through commit.
 pub fn begin_family<'a>(session: &'a mut Session, family: &str) -> driver::Result<WriteScope<'a>> {
-    start(session, Some(family), None, ProviderScopePhase::Other, None)
+    start(
+        session,
+        Some(family),
+        None,
+        ProviderScopePhase::Other,
+        Change::Semantic,
+    )
 }
-/// The caller must rejoin the live stamp in this scope before any effect.
-pub(crate) fn begin_provider_use<'a>(
+/// Queued execution waits for its deciding turn before closing. MVCC rechecks
+/// scheduler roots before SQL. WAL acquires the native writer before closing
+/// and performs admission inside that transaction. Source changes, OAuth
+/// intents and migration never use this entrypoint.
+pub(crate) fn begin_provider_admission<'a>(
     session: &'a mut Session,
     family: &str,
-    expected: &weaver_contracts::DomainStamp,
-    phase: ProviderScopePhase,
+    proof: &crate::provider::AdmissionRequest,
 ) -> driver::Result<WriteScope<'a>> {
-    let expected = (!crate::task_origins::locked_original_evidence()).then_some(expected);
-    start(session, Some(family), expected, phase, None)
+    start(
+        session,
+        Some(family),
+        None,
+        ProviderScopePhase::Admission,
+        Change::Admission(proof),
+    )
+}
+
+/// Read custody remains the complete domain set. Only the sealed provider
+/// lifecycle write set may invalidate its origin lane alone in MVCC.
+pub(crate) fn begin_provider_lifecycle<'a>(
+    session: &'a mut Session,
+    family: &str,
+    expected: Option<&weaver_contracts::DomainStamp>,
+    phase: ProviderScopePhase,
+    proof: &crate::provider::OriginLifecycle,
+) -> driver::Result<WriteScope<'a>> {
+    let expected = expected.filter(|_| !crate::task_origins::locked_original_evidence());
+    start(
+        session,
+        Some(family),
+        expected,
+        phase,
+        Change::Lifecycle(proof),
+    )
 }
 
 /// The sealed token is constructed only in provider's exact progress paths.
@@ -80,7 +126,13 @@ pub(crate) fn begin_provider_progress<'a>(
     progress: &crate::provider::RangeProgress,
 ) -> driver::Result<WriteScope<'a>> {
     let expected = (!crate::task_origins::locked_original_evidence()).then_some(expected);
-    start(session, Some(family), expected, phase, Some(progress))
+    start(
+        session,
+        Some(family),
+        expected,
+        phase,
+        Change::Progress(progress),
+    )
 }
 
 fn start<'a>(
@@ -88,7 +140,7 @@ fn start<'a>(
     family: Option<&str>,
     expected: Option<&weaver_contracts::DomainStamp>,
     phase: ProviderScopePhase,
-    progress: Option<&crate::provider::RangeProgress>,
+    change: Change<'_>,
 ) -> driver::Result<WriteScope<'a>> {
     session.require_quiescent()?;
     let concurrent = session.owner.journal == super::Journal::Mvcc;
@@ -111,14 +163,45 @@ fn start<'a>(
     let close_scope = keys.as_ref().map_or(super::scheduler::Scope::All, |keys| {
         super::scheduler::Scope::Domains(keys.clone())
     });
-    // Close before waiting for either the scheduler or native writer.
-    let authority = match progress {
-        Some(progress) => session
-            .owner
-            .authority
-            .close_progress(close_scope, progress)?,
-        None => session.owner.authority.close(close_scope)?,
+    let shared_reads = matches!(&change, Change::Progress(_) | Change::Lifecycle(_))
+        && crate::provider::shared_provider_reads();
+    #[cfg(any(test, feature = "commit-observer"))]
+    let admission_request = matches!(&change, Change::Admission(_));
+    let queued_admission = matches!(&change, Change::Admission(proof) if proof.wait_before_close());
+    let selected_admission = concurrent && queued_admission;
+    let wait_for_wal_writer = !concurrent
+        && (queued_admission || matches!(&change, Change::Lifecycle(proof) if proof.origin_only()));
+    let authority_entered = Instant::now();
+    // Accepted source/Policy/OAuth intents close immediately, including while
+    // waiting. WAL provider admission and exact lifecycle work may wait for
+    // the native writer. Neither can use that transaction before closing.
+    let authority = if selected_admission || wait_for_wal_writer {
+        None
+    } else {
+        Some(match change {
+            Change::Progress(proof) => session
+                .owner
+                .authority
+                .close_progress(close_scope.clone(), proof)?,
+            Change::Lifecycle(proof) => session
+                .owner
+                .authority
+                .close_lifecycle(close_scope.clone(), proof)?,
+            Change::Semantic | Change::Admission(_) => {
+                session.owner.authority.close(close_scope.clone())?
+            }
+        })
     };
+    #[cfg(any(test, feature = "commit-observer"))]
+    if admission_request
+        && let Some(observer) = &session.commit_observer
+        && observer.admission_wait(family.expect("provider admission family"))
+            != super::commit_observer::Decision::Continue
+    {
+        return Err(super::owner::error(
+            "unaccepted provider admission abandoned before native scheduling",
+        ));
+    }
     let mut owner_entered = None;
     let mut domains_entered = None;
     #[cfg(feature = "commit-observer")]
@@ -130,19 +213,29 @@ fn start<'a>(
                 ProviderScopePhase::PrepareRange
                 | ProviderScopePhase::FinalQueue
                 | ProviderScopePhase::RevalidateDelivery => session.range_cancelled.as_deref(),
+                ProviderScopePhase::Admission => session.range_cancelled.as_deref(),
                 ProviderScopePhase::Other => None,
             };
             #[cfg(feature = "commit-observer")]
             let arrived = Instant::now();
             let grant = super::timing::measure(&mut session.timings.domain_wait, || {
-                scheduler.acquire(super::scheduler::Scope::Domains(keys), cancelled)
+                if shared_reads {
+                    scheduler.acquire_origin(super::scheduler::Scope::Domains(keys), cancelled)
+                } else {
+                    scheduler.acquire(super::scheduler::Scope::Domains(keys), cancelled)
+                }
             })?;
             domains_entered = Some(Instant::now());
             #[cfg(feature = "commit-observer")]
             if let Some(trace) = session.scope_trace.as_mut() {
                 scope_trace = Some(
-                    super::scope_trace::Arrival::capture(phase, grant.arrival, arrived)
-                        .granted(trace, grant.granted),
+                    super::scope_trace::Arrival::capture(
+                        phase,
+                        grant.arrival,
+                        arrived,
+                        grant.origin_write,
+                    )
+                    .granted(trace, grant.granted),
                 );
             }
             // Key discovery is a hint. An intervening global scope may have migrated roots.
@@ -167,6 +260,12 @@ fn start<'a>(
         }
         (false, _) => None,
     };
+    let authority = if selected_admission {
+        let entered = Instant::now();
+        Some((session.owner.authority.close(close_scope.clone())?, entered))
+    } else {
+        authority.map(|close| (close, authority_entered))
+    };
     let parallel = concurrent && family.is_some();
     // The mutable Session borrow provides exclusive custody for the whole scope.
     let native = super::timing::measure(&mut session.timings.transaction_begin, || {
@@ -179,6 +278,29 @@ fn start<'a>(
             },
         ))
     })?;
+    let (authority, authority_entered) = if let Some(authority) = authority {
+        authority
+    } else {
+        let entered = Instant::now();
+        match session.owner.authority.close(close_scope) {
+            Ok(authority) => (authority, entered),
+            Err(error) => {
+                if let Err(rollback_error) =
+                    super::timing::measure(&mut session.timings.rollback, || {
+                        block_on(native.rollback())
+                    })
+                {
+                    session.poisoned.store(true, Ordering::Release);
+                    let _ = release_failed_transaction(&session.connection);
+                    return Err(driver::Error::BatchRollbackFailed {
+                        error: Box::new(error),
+                        rollback_error: Box::new(rollback_error),
+                    });
+                }
+                return Err(error);
+            }
+        }
+    };
     Ok(WriteScope {
         connection: &session.connection,
         authority,
@@ -188,6 +310,7 @@ fn start<'a>(
         poisoned: &session.poisoned,
         timings: &mut session.timings,
         entered: Instant::now(),
+        authority_entered,
         oauth_check: Cell::default(),
         current_domain: Cell::default(),
         current_pending: Cell::default(),
@@ -225,6 +348,12 @@ impl WriteScope<'_> {
     ) {
         self.authority.replace_receipt(receipt);
     }
+    pub(crate) fn commit_provider_admission(self) -> driver::Result<()> {
+        self.commit_observed::<5>()
+    }
+    pub(crate) fn commit_lifecycle(self) -> driver::Result<()> {
+        self.commit_observed::<4>()
+    }
     pub(crate) fn commit_delivery_refresh(self) -> driver::Result<()> {
         self.commit_observed::<3>()
     }
@@ -259,6 +388,8 @@ impl WriteScope<'_> {
             let (before, after) = match PHASE {
                 1 => (Cut::BeforeRangePrepareCommit, Cut::AfterRangePrepareCommit),
                 2 => (Cut::BeforeDeliveryCommit, Cut::AfterDeliveryCommit),
+                5 => (Cut::BeforeAdmissionCommit, Cut::AfterAdmissionCommit),
+                4 => (Cut::BeforeLifecycleCommit, Cut::AfterLifecycleCommit),
                 3 => (
                     Cut::BeforeSnapshotPublication,
                     Cut::AfterSnapshotPublication,
@@ -449,6 +580,9 @@ impl Drop for WriteScope<'_> {
             total.nanos = total.nanos.saturating_add(sample.nanos);
         }
         self.authority.settle_drop();
+        self.timings
+            .authority_span
+            .record(self.authority_entered.elapsed());
         drop(self.grant.take());
         if let Some(entered) = self.domains_entered {
             self.timings.domain_hold.record(entered.elapsed());
@@ -458,7 +592,7 @@ impl Drop for WriteScope<'_> {
         }
         #[cfg(feature = "commit-observer")]
         if let Some(trace) = self.scope_trace.take() {
-            trace.record();
+            trace.record(self.authority_entered.elapsed());
         }
     }
 }

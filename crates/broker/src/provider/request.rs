@@ -5,6 +5,7 @@
 //! Immutable preparation is inert. Connect, TLS and request sealing stay guarded.
 use super::{
     io_runtime::IoRuntime,
+    observation::{ProviderTransportPhases, Stage, measure},
     response::{Driver, SealedRequest},
     write_seal::{WRITING, WriteSeal},
 };
@@ -106,7 +107,10 @@ impl PreparedRequest {
         self.loopback = address;
         self
     }
-    pub(super) fn write_and_seal(self) -> Result<SealedRequest> {
+    pub(super) fn write_and_seal(
+        self,
+        phases: &std::cell::Cell<ProviderTransportPhases>,
+    ) -> Result<SealedRequest> {
         require_fresh(self.expires)?;
         require_oauth_fresh(self.oauth_expires)?;
         let runtime = self.runtime.clone();
@@ -117,14 +121,29 @@ impl PreparedRequest {
             let stream = timeout(Duration::from_secs(3), async {
                 #[cfg(feature = "test-loopback")]
                 let tcp = if let Some(peer) = self.loopback {
-                    TcpStream::connect(peer).await?
+                    measure(phases, Stage::Connect, TcpStream::connect(peer)).await?
                 } else {
-                    TcpStream::connect((self.host.as_str(), self.port)).await?
+                    measure(
+                        phases,
+                        Stage::Connect,
+                        TcpStream::connect((self.host.as_str(), self.port)),
+                    )
+                    .await?
                 };
                 #[cfg(not(feature = "test-loopback"))]
-                let tcp = TcpStream::connect((self.host.as_str(), self.port)).await?;
+                let tcp = measure(
+                    phases,
+                    Stage::Connect,
+                    TcpStream::connect((self.host.as_str(), self.port)),
+                )
+                .await?;
                 tcp.set_nodelay(true)?;
-                TlsConnector::from(self.tls).connect(name, tcp).await
+                measure(
+                    phases,
+                    Stage::Tls,
+                    TlsConnector::from(self.tls).connect(name, tcp),
+                )
+                .await
             })
             .await
             .map_err(|_| Error::Conflict("provider connect unknown"))?
@@ -139,12 +158,16 @@ impl PreparedRequest {
             require_fresh(self.expires)?;
             require_oauth_fresh(self.oauth_expires)?;
             let response = Box::pin(async move { sender.send_request(self.request).await });
-            SealedRequest::finish_writing(
-                Driver::new(connection),
-                response,
-                phase,
-                self.runtime,
-                deadline,
+            measure(
+                phases,
+                Stage::Write,
+                SealedRequest::finish_writing(
+                    Driver::new(connection),
+                    response,
+                    phase,
+                    self.runtime,
+                    deadline,
+                ),
             )
             .await
         })

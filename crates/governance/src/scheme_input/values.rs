@@ -8,9 +8,9 @@ use gerbil_scheme::{
     BinaryInteger, CollectionKind, GerbilRuntime, IdentifierKind, RootedSchemeObject, TableEquality,
 };
 use std::{cell::Cell, collections::BTreeMap};
-pub(super) type Object<'r> = RootedSchemeObject<'r>;
-pub(super) type Result<T> = std::result::Result<T, SourceError>;
-pub(super) struct Input<'r> {
+pub(crate) type Object<'r> = RootedSchemeObject<'r>;
+pub(crate) type Result<T> = std::result::Result<T, SourceError>;
+pub(crate) struct Input<'r> {
     vm: &'r GerbilRuntime,
     bytes: Cell<usize>,
     nodes: Cell<usize>,
@@ -19,7 +19,7 @@ fn scheme_result<T>(value: std::result::Result<T, gerbil_scheme::NativeError>) -
     value.map_err(|_| SourceError::Scheme)
 }
 impl<'r> Input<'r> {
-    pub(super) fn new(vm: &'r GerbilRuntime) -> Self {
+    pub(crate) fn new(vm: &'r GerbilRuntime) -> Self {
         Self {
             vm,
             bytes: Cell::new(MAX_SOURCE_BYTES),
@@ -40,12 +40,12 @@ impl<'r> Input<'r> {
         );
         Ok(())
     }
-    pub(super) fn text(&self, value: &str) -> Result<Object<'r>> {
+    pub(crate) fn text(&self, value: &str) -> Result<Object<'r>> {
         self.node()?;
         self.bytes(value.len())?;
         Ok(scheme_result(self.vm.string_from_utf8(value))?.into_object())
     }
-    pub(super) fn number(&self, value: u64) -> Result<Object<'r>> {
+    pub(crate) fn number(&self, value: u64) -> Result<Object<'r>> {
         self.node()?;
         let mut bytes = value.to_le_bytes().to_vec();
         while bytes.last() == Some(&0) {
@@ -54,7 +54,7 @@ impl<'r> Input<'r> {
         let integer = BinaryInteger::new(false, bytes).map_err(|_| SourceError::Contract)?;
         scheme_result(self.vm.big_integer(&integer))
     }
-    pub(super) fn record(&self, fields: Vec<(&'static str, Object<'r>)>) -> Result<Object<'r>> {
+    pub(crate) fn record(&self, fields: Vec<(&'static str, Object<'r>)>) -> Result<Object<'r>> {
         self.node()?;
         if fields.len() > 64 {
             return Err(SourceError::Bound);
@@ -72,7 +72,7 @@ impl<'r> Input<'r> {
             .collect();
         scheme_result(self.vm.hash_table(TableEquality::Structural, &entries))
     }
-    pub(super) fn vector(&self, values: Vec<Object<'r>>) -> Result<Object<'r>> {
+    pub(crate) fn vector(&self, values: Vec<Object<'r>>) -> Result<Object<'r>> {
         self.node()?;
         if values.len() > 64 {
             return Err(SourceError::Bound);
@@ -85,7 +85,15 @@ impl<'r> Input<'r> {
         )?
         .into_object())
     }
-    pub(super) fn strings(&self, values: &[String]) -> Result<Object<'r>> {
+    pub(crate) fn edges(&self, edges: &[(String, String)]) -> Result<Object<'r>> {
+        self.vector(
+            edges
+                .iter()
+                .map(|(child, parent)| self.vector(vec![self.text(child)?, self.text(parent)?]))
+                .collect::<Result<Vec<_>>>()?,
+        )
+    }
+    pub(crate) fn strings(&self, values: &[String]) -> Result<Object<'r>> {
         if values.len() > 64 {
             return Err(SourceError::Bound);
         }
@@ -96,10 +104,10 @@ impl<'r> Input<'r> {
                 .collect::<Result<Vec<_>>>()?,
         )
     }
-    pub(super) fn texts(&self, values: &BTreeMap<String, String>) -> Result<Object<'r>> {
+    pub(crate) fn texts(&self, values: &BTreeMap<String, String>) -> Result<Object<'r>> {
         self.mapping(values, |value| self.text(value))
     }
-    pub(super) fn numbers(&self, values: &BTreeMap<String, u64>) -> Result<Object<'r>> {
+    pub(crate) fn numbers(&self, values: &BTreeMap<String, u64>) -> Result<Object<'r>> {
         self.mapping(values, |value| self.number(*value))
     }
     fn mapping<T>(

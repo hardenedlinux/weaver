@@ -117,6 +117,18 @@ impl ProviderDelivery {
     }
 }
 impl DeliveryProducer {
+    /// Register a reactor wake for receipt consumption, refresh or rejection.
+    /// The producer must still recheck the actual state with `progress`.
+    pub fn poll_progress_ready(&self, cx: &Context<'_>) -> Poll<()> {
+        let Ok(mut receipt) = self.0.completion.state.lock() else {
+            return Poll::Ready(());
+        };
+        if receipt.consumed || receipt.refresh || receipt.rejected {
+            return Poll::Ready(());
+        }
+        receipt.producer_waker = Some(cx.waker().clone());
+        Poll::Pending
+    }
     pub fn acknowledge(&self, deadline: Instant) -> Result<()> {
         let mut receipt = self
             .0
@@ -297,7 +309,12 @@ impl Drop for DeliveryFrame {
             if !receipt.consumed {
                 receipt.rejected = true;
             }
+            let producer = receipt.producer_waker.take();
             self.0.completion.changed.notify_all();
+            drop(receipt);
+            if let Some(waker) = producer {
+                waker.wake();
+            }
         }
     }
 }

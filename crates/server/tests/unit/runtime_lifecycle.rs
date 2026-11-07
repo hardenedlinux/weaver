@@ -7,7 +7,7 @@ use std::{future::Future, sync::Arc, task::Poll, time::Duration};
 use tokio::sync::{Semaphore, oneshot};
 use weaver_contracts::Error;
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn detached_executor_writer_keeps_slot_until_drain_acknowledges_completion() {
     let owner = RuntimeOwner::new();
     let slots = Arc::new(Semaphore::new(1));

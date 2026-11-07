@@ -68,6 +68,9 @@ pub(crate) fn write(
 fn has_application_rows(connection: &crate::persistence::driver::Connection) -> Result<bool> {
     let tables = crate::persistence::read_all(connection,"SELECT name FROM main.sqlite_schema WHERE type='table' AND name NOT GLOB 'sqlite_*' ORDER BY name",(),|r|r.get::<String>(0)).map_err(db)?;
     for table in tables {
+        if table == "hard_fact_feed" && !crate::hard_fact::has_fact_state(connection)? {
+            continue;
+        }
         // An independently provisioned verifier is deployment metadata, not
         // application ownership. Invalid metadata still refuses enrollment.
         if matches!(
@@ -118,6 +121,7 @@ fn ensure(ledger: &mut Ledger, caller: &SourceIdentity) -> Result<()> {
     }
     let tx = crate::persistence::begin(&mut ledger.connection).map_err(db)?;
     if current(&tx)?.is_none() {
+        crate::hard_fact::require_enrollment(&tx, caller)?;
         if has_application_rows(&tx)? {
             return Err(Error::Conflict(
                 "source enrollment requires an empty unowned store",

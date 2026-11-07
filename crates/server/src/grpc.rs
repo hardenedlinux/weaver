@@ -23,6 +23,7 @@ use tonic::{Request, Response, Status};
 use weaver_broker::ProviderTransport;
 use weaver_contracts::Error;
 use weaver_ledger::Ledger;
+
 #[derive(Clone)]
 pub(crate) struct Gateway {
     pub(crate) config: ServerConfig,
@@ -84,6 +85,7 @@ pub async fn serve_grpc_with_runtime(
         Err(error) => Err(error),
     };
     runtime.drain().await;
+    crate::shutdown::trace("tracked-owners-drained");
     result
 }
 async fn serve_owned(
@@ -92,6 +94,11 @@ async fn serve_owned(
     runtime: RuntimeOwner,
     shutdown: impl Future<Output = ()> + Send + 'static,
 ) -> weaver_contracts::Result<()> {
+    if runtime.session_wakeup().is_some() && settings.provider_oauth.is_some() {
+        return Err(Error::Invalid(
+            "automatic Session requires deployment provider credentials",
+        ));
+    }
     let admission = Admission::new(settings.owner.max_in_flight);
     let slot = admission
         .publication()
@@ -121,6 +128,7 @@ async fn serve_owned(
         admission,
         runtime.clone(),
     );
+    let session = operation.clone();
     let operation = serve_listener(
         listeners.operation,
         operation,
@@ -128,16 +136,24 @@ async fn serve_owned(
     );
     let source = serve_listener(listeners.source, source, settings.security.tls);
     tokio::pin!(operation, source, shutdown);
-    let result = tokio::select! {
-        result = &mut operation => { runtime.request_shutdown(); result.and(source.await) },
-        result = &mut source => { runtime.request_shutdown(); result.and(operation.await) },
-        _ = &mut shutdown => {
-            runtime.request_shutdown();
-            let (operation, source) = tokio::join!(operation, source);
-            operation.and(source)
-        },
+    let listeners = async {
+        tokio::select! {
+            result = &mut operation => { runtime.request_shutdown(); result.and(source.await) },
+            result = &mut source => { runtime.request_shutdown(); result.and(operation.await) },
+            _ = &mut shutdown => {
+                crate::shutdown::trace("signal-observed");
+                runtime.request_shutdown();
+                crate::shutdown::trace("admission-closed");
+                let (operation, source) = tokio::join!(operation, source);
+                crate::shutdown::trace("listeners-drained");
+                operation.and(source)
+            },
+        }
     };
-    result.and(source_worker.finish().await)
+    let (result, ()) = tokio::join!(listeners, session.run_session_workflow());
+    let source_result = source_worker.finish().await;
+    crate::shutdown::trace("source-owner-joined");
+    result.and(source_result)
 }
 
 async fn serve_listener(
@@ -293,6 +309,24 @@ impl Gateway {
 }
 #[tonic::async_trait]
 impl pb::gateway_server::Gateway for Gateway {
+    async fn stage_hard_fact(
+        &self,
+        request: Request<pb::HardFactIntent>,
+    ) -> Result<Response<pb::HardFactBarrier>, Status> {
+        let caller = self.source_identity(&request)?;
+        self.stage_fact_request(self.ingress.source()?, caller, request.into_inner())
+            .await
+    }
+
+    async fn resolve_hard_fact(
+        &self,
+        request: Request<pb::HardFactBarrier>,
+    ) -> Result<Response<pb::FactBarrierResolution>, Status> {
+        let caller = self.source_identity(&request)?;
+        self.resolve_fact_request(self.ingress.source()?, caller, request.into_inner())
+            .await
+    }
+
     async fn inspect_telemetry(
         &self,
         request: Request<pb::Empty>,
@@ -548,6 +582,27 @@ impl pb::gateway_server::Gateway for Gateway {
             .map_err(|_| Status::invalid_argument("producer name invalid"))?;
         let source = self.ingress.source()?;
         let before = source.authority(caller.clone()).await?;
+        let lifecycle = self.runtime.single_provider();
+        let _prepare = match lifecycle {
+            Some(lifecycle) => Some(
+                lifecycle
+                    .prepare
+                    .try_lock()
+                    .map_err(|_| Status::resource_exhausted("provider preparation in progress"))?,
+            ),
+            None => None,
+        };
+        if let Some(prepared) = lifecycle.and_then(|lifecycle| lifecycle.ready.get()) {
+            if prepared.producer != producer || prepared.authority != before {
+                return Err(Status::permission_denied(
+                    "prepared provider binding changed",
+                ));
+            }
+            if self.runtime.closing() {
+                return Err(Status::unavailable("source compilation closed"));
+            }
+            return Ok(Response::new(prepared.reply()));
+        }
         let client = self
             .runtime
             .producers()
@@ -575,13 +630,21 @@ impl pb::gateway_server::Gateway for Gateway {
         }
         let reply = pb::CompiledSource {
             producer,
-            authority: Some(crate::source_identity::view(after)?),
+            authority: Some(crate::source_identity::view(after.clone())?),
             artifact: Some(crate::source_artifact::artifact(&bound)),
         };
         if prost::Message::encoded_len(&reply) > 4 * 1024 * 1024 {
             return Err(Status::resource_exhausted(
                 "compiled source exceeds RPC response bound",
             ));
+        }
+        if let Some(lifecycle) = lifecycle {
+            let prepared =
+                crate::single_provider::Prepared::new(&reply, after, bound).map_err(status)?;
+            lifecycle
+                .ready
+                .set(prepared)
+                .map_err(|_| Status::internal("provider preparation already sealed"))?;
         }
         self.runtime
             .telemetry()
@@ -718,11 +781,10 @@ impl pb::gateway_server::Gateway for Gateway {
     ) -> std::result::Result<Response<pb::PublicationReceipt>, Status> {
         let caller = self.source_identity(&request)?;
         let change = request.into_inner();
-        let receipt = self
-            .ingress
-            .source()?
+        let source = self.ingress.source()?;
+        let receipt = source
             .publish(
-                caller,
+                caller.clone(),
                 weaver_contracts::Publication {
                     operation_id: change.operation_id,
                     expected_revision: change.expected_revision,
@@ -731,6 +793,8 @@ impl pb::gateway_server::Gateway for Gateway {
                     fence: change.fence,
                 },
             )
+            .await?;
+        self.retire_prepared_provider(source, caller, &receipt)
             .await?;
         Ok(Response::new(publication_receipt(receipt)))
     }
@@ -804,11 +868,10 @@ impl pb::gateway_server::Gateway for Gateway {
     ) -> std::result::Result<Response<pb::PublicationReceipt>, Status> {
         let caller = self.source_identity(&request)?;
         let key = request.into_inner();
-        let receipt = self
-            .ingress
-            .source()?
+        let source = self.ingress.source()?;
+        let receipt = source
             .inspect(
-                caller,
+                caller.clone(),
                 weaver_contracts::PublicationKey {
                     operation_id: key.operation_id,
                     digest: key.digest,
@@ -818,6 +881,8 @@ impl pb::gateway_server::Gateway for Gateway {
             .ok_or(Status::not_found(
                 "publication decision not observed; absence is not abort",
             ))?;
+        self.retire_prepared_provider(source, caller, &receipt)
+            .await?;
         Ok(Response::new(publication_receipt(receipt)))
     }
     async fn inspect_provider_catalog(

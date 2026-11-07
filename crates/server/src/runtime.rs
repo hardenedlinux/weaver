@@ -4,7 +4,7 @@
 
 //! Typed runtime owner: bounded task admission, cancellation, tracking and drain acknowledgment.
 use std::sync::{
-    Arc, Mutex,
+    Arc, Mutex, OnceLock,
     atomic::{AtomicBool, Ordering},
 };
 use tokio::sync::OwnedSemaphorePermit;
@@ -23,6 +23,9 @@ struct Inner {
     closed: AtomicBool,
     cancel: CancellationToken,
     tasks: TaskTracker,
+    single_provider: OnceLock<crate::single_provider::SingleProvider>,
+    fact_feed: OnceLock<weaver_contracts::FactFeed>,
+    session_wakeup: Arc<tokio::sync::Notify>,
 }
 struct AdmissionState {
     governance: Option<SourceClient>,
@@ -80,7 +83,59 @@ impl RuntimeOwner {
                 closed: AtomicBool::new(false),
                 cancel: CancellationToken::new(),
                 tasks: TaskTracker::new(),
+                single_provider: OnceLock::new(),
+                fact_feed: OnceLock::new(),
+                session_wakeup: Arc::new(tokio::sync::Notify::new()),
             }),
+        }
+    }
+    pub(crate) fn install_fact_feed(&self, feed: weaver_contracts::FactFeed) -> Result<()> {
+        self.inner
+            .fact_feed
+            .set(feed)
+            .map_err(|_| Error::Conflict("fact feed already installed"))
+    }
+    pub(crate) fn fact_feed(&self) -> Option<&weaver_contracts::FactFeed> {
+        self.inner.fact_feed.get()
+    }
+    pub(crate) fn session_wakeup(&self) -> Option<&Arc<tokio::sync::Notify>> {
+        self.fact_feed()
+            .filter(|feed| !feed.workflow_path.is_empty())
+            .map(|_| &self.inner.session_wakeup)
+    }
+    pub(crate) fn wake_session(&self) {
+        if let Some(wakeup) = self.session_wakeup() {
+            wakeup.notify_one();
+        }
+    }
+    #[cfg(any(feature = "scheme-program", test))]
+    pub(crate) fn enable_single_provider(&self) -> Result<()> {
+        self.inner
+            .single_provider
+            .set(crate::single_provider::SingleProvider::default())
+            .map_err(|_| Error::Conflict("single-provider lifecycle already installed"))
+    }
+    pub(crate) fn single_provider(&self) -> Option<&crate::single_provider::SingleProvider> {
+        self.inner.single_provider.get()
+    }
+    pub(crate) async fn retire_single_provider(&self) -> Result<()> {
+        let lifecycle = self
+            .single_provider()
+            .ok_or(Error::Conflict("single-provider lifecycle unavailable"))?;
+        let client = self
+            .inner
+            .gate
+            .lock()
+            .map_err(|_| Error::Conflict("runtime owner poisoned"))?
+            .governance
+            .clone()
+            .ok_or(Error::Conflict("governance owner unavailable"))?;
+        lifecycle.request_retirement();
+        client.close();
+        tokio::select! {
+            biased;
+            _ = lifecycle.retired() => Ok(()),
+            _ = self.cancellation() => Err(Error::Conflict("governance retirement interrupted")),
         }
     }
     /// Bounded local observations only; callers acquire no authority capability.
@@ -115,6 +170,15 @@ impl RuntimeOwner {
             }
             run(cancel)
         }))
+    }
+    pub(crate) fn governor(&self) -> Result<SourceClient> {
+        self.inner
+            .gate
+            .lock()
+            .map_err(|_| Error::Conflict("runtime owner poisoned"))?
+            .governance
+            .clone()
+            .ok_or(Error::Conflict("governance owner unavailable"))
     }
     pub(crate) fn attach_governance(&self, client: SourceClient) -> Result<()> {
         let mut state = self

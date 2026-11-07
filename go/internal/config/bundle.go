@@ -28,10 +28,20 @@ type Bundle struct {
 // Governance is the native governor's selected handoff, not a runtime permit.
 // This source profile publishes one original family per governor handoff.
 type Governance struct {
-	Schema    string   `json:"schema"`
-	Family    string   `json:"family"`
-	OpenNodes []string `json:"open_nodes"`
+	Schema            string      `json:"schema"`
+	Family            string      `json:"family"`
+	OpenNodes         []string    `json:"open_nodes"`
+	WorkflowEdges     [][2]string `json:"workflow_edges,omitempty"`
+	WorkflowSelectors [][3]string `json:"workflow_selectors,omitempty"`
 }
+
+const SessionNestedSchema = "weaver.session-nested.v1"
+
+const SessionChoiceSchema = "weaver.session-choice.v1"
+
+const SessionDAGSchema = "weaver.session-dag.v1"
+
+const SessionWorkflowSchema = "weaver.session-workflow.v1"
 
 func DecodeBundle(data []byte, format ProfileFormat) (Bundle, error) {
 	var zero Bundle
@@ -53,7 +63,10 @@ func (b Bundle) Validate() error {
 	if len(b.Tasks) != 1 || len(b.Plans) == 0 || len(b.Plans) > 64 {
 		return errors.New("source inventory bound")
 	}
-	if b.Governance.Schema != "agentic-ai-lab.loop-governor.v1" || b.Governance.Family != b.Tasks[0].Family || len(b.Governance.OpenNodes) != len(b.Plans) || len(b.Tasks[0].Nodes) != len(b.Plans) {
+	supported := b.Governance.Schema == "agentic-ai-lab.loop-governor.v1" ||
+		(b.Governance.Schema == SessionWorkflowSchema && len(b.Plans) >= 2) ||
+		((b.Governance.Schema == SessionDAGSchema || b.Governance.Schema == SessionChoiceSchema || b.Governance.Schema == SessionNestedSchema) && len(b.Governance.WorkflowEdges) > 0 && len(b.Governance.WorkflowEdges) <= 64)
+	if !supported || b.Governance.Family != b.Tasks[0].Family || len(b.Governance.OpenNodes) != len(b.Plans) || len(b.Tasks[0].Nodes) != len(b.Plans) {
 		return errors.New("Governor source handoff binding")
 	}
 	selected := map[string]bool{}
@@ -62,6 +75,9 @@ func (b Bundle) Validate() error {
 			return errors.New("governor node identity")
 		}
 		selected[node] = true
+	}
+	if err := b.Governance.validateWorkflowEdges(); err != nil {
+		return err
 	}
 	for _, node := range b.Tasks[0].Nodes {
 		if !selected[node] {
@@ -97,6 +113,77 @@ func (b Bundle) Validate() error {
 			return err
 		}
 		seen[key] = true
+	}
+	return nil
+}
+
+func (g Governance) validateWorkflowEdges() error {
+	if g.Schema == SessionNestedSchema {
+		if len(g.WorkflowSelectors) == 0 || len(g.WorkflowSelectors) > 31 {
+			return errors.New("nested Session selector count")
+		}
+		entries := make(map[string]bool)
+		for i, choice := range g.WorkflowSelectors {
+			if i > 0 && g.WorkflowSelectors[i-1][0] >= choice[0] {
+				return errors.New("nested Session selector order")
+			}
+			for _, entry := range choice[1:] {
+				parents := 0
+				for _, edge := range g.WorkflowEdges {
+					if edge[0] == entry {
+						if edge[1] != choice[0] {
+							return errors.New("nested Session entry parent")
+						}
+						parents++
+					}
+				}
+				if parents != 1 || entries[entry] {
+					return errors.New("nested Session entry")
+				}
+				entries[entry] = true
+			}
+		}
+	} else if len(g.WorkflowSelectors) != 0 {
+		return errors.New("selectors require nested Session")
+	}
+	if g.Schema != SessionDAGSchema && g.Schema != SessionChoiceSchema && g.Schema != SessionNestedSchema {
+		if len(g.WorkflowEdges) != 0 {
+			return errors.New("workflow edges require Session DAG")
+		}
+		return nil
+	}
+	position := make(map[string]int, len(g.OpenNodes))
+	for i, node := range g.OpenNodes {
+		position[node] = i
+	}
+	connected := make(map[string]bool, len(g.OpenNodes))
+	var previous [2]string
+	for i, edge := range g.WorkflowEdges {
+		child, childOK := position[edge[0]]
+		parent, parentOK := position[edge[1]]
+		if !childOK || !parentOK || parent >= child ||
+			(i > 0 && (previous[0] > edge[0] || (previous[0] == edge[0] && previous[1] >= edge[1]))) {
+			return errors.New("invalid Session DAG edge")
+		}
+		connected[edge[0]] = true
+		previous = edge
+	}
+	if g.Schema == SessionChoiceSchema {
+		if len(g.OpenNodes) != 4 || len(g.WorkflowEdges) != 4 {
+			return errors.New("conditional Session shape")
+		}
+		root, left, right, join := g.OpenNodes[0], g.OpenNodes[1], g.OpenNodes[2], g.OpenNodes[3]
+		for _, edge := range g.WorkflowEdges {
+			if edge != [2]string{left, root} && edge != [2]string{right, root} &&
+				edge != [2]string{join, left} && edge != [2]string{join, right} {
+				return errors.New("conditional Session edge")
+			}
+		}
+	}
+	for _, node := range g.OpenNodes[1:] {
+		if !connected[node] {
+			return errors.New("disconnected Session DAG step")
+		}
 	}
 	return nil
 }

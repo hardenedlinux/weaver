@@ -17,3 +17,7 @@ asp_rust::asp_rust_cargo_test_gate!(mode = deny, config = asp_rust::default_asp_
 mod path_tests;
 
 pub use tooling::{PackageTooling, stage_program};
+
+#[cfg(all(test, unix))]
+#[path = "../tests/unit/package_sources.rs"]
+mod package_source_tests;

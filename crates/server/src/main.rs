@@ -13,4 +13,11 @@ fn main() {
         eprintln!("{error}");
         std::process::exit(1);
     }
+    let wall = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap_or_default();
+    eprintln!(
+        "weaver shutdown stage=main-returning wall_ns={}",
+        wall.as_nanos()
+    );
 }

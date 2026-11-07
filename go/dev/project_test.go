@@ -104,9 +104,12 @@ func projectPath(root, path, kind string) error {
 	if info.Mode()&os.ModeSymlink != 0 {
 		return fmt.Errorf("project owner is a symlink: %s", path)
 	}
-	if kind == "File" {
+	if kind == "File" || kind == "ExecutableFile" {
 		if !info.Mode().IsRegular() {
 			return fmt.Errorf("project source is not a regular file: %s", path)
+		}
+		if kind == "ExecutableFile" && info.Mode().Perm()&0111 == 0 {
+			return fmt.Errorf("project entry is not executable: %s", path)
 		}
 	} else if !info.IsDir() {
 		return fmt.Errorf("project owner is not a directory: %s", path)
@@ -163,7 +166,7 @@ func TestProjectArchitecture(t *testing.T) {
 			continue
 		}
 		switch kind {
-		case "Directory", "File", "RustPackage", "SchemeModule", "GoPackage", "Absent":
+		case "Directory", "File", "ExecutableFile", "RustPackage", "SchemeModule", "GoPackage", "Absent":
 		default:
 			t.Fatalf("unknown layout kind %s", kind)
 		}

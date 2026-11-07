@@ -24,6 +24,14 @@ impl Admission {
     pub(crate) fn execution(&self) -> Result<Arc<OwnedSemaphorePermit>, Status> {
         acquire(&self.execution)
     }
+    pub(crate) async fn session_execution(&self) -> Option<Arc<OwnedSemaphorePermit>> {
+        self.execution
+            .clone()
+            .acquire_owned()
+            .await
+            .ok()
+            .map(Arc::new)
+    }
     pub(crate) fn publication(&self) -> Result<Arc<OwnedSemaphorePermit>, Status> {
         acquire(&self.publication)
     }

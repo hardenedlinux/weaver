@@ -116,7 +116,7 @@ impl Provider {
             }
         });
         Self {
-            runtime: fixture_runtime::fixture_runtime(),
+            runtime: fixture_runtime::fixture_runtime(None),
             address,
             endpoint: format!("https://localhost:{}/v1/chat/completions", address.port()),
             pem,
@@ -197,6 +197,10 @@ mod sse_buffer;
 
 fn anthropic_decode(c: &mut Criterion) {
     use weaver_contracts::ProviderEventKind;
+    let runtime = tokio::runtime::Builder::new_multi_thread()
+        .worker_threads(4)
+        .build()
+        .expect("Tokio SSE benchmark runtime");
     let mut data = String::new();
     for (event, fields) in [
         (
@@ -217,10 +221,10 @@ fn anthropic_decode(c: &mut Criterion) {
     }
     data.push_str("event: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":0}\n\nevent: message_delta\ndata: {\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\"},\"usage\":{\"output_tokens\":64}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n");
     c.bench_function("broker/anthropic_sse_64_deltas", |b| {
-        b.iter(|| {
+        b.to_async(&runtime).iter(|| async {
             let mut decoder = anthropic_sse::Decoder::new(black_box(data.as_bytes()), "fixture");
             loop {
-                let event = black_box(decoder.next().expect("bounded provider event"));
+                let event = black_box(decoder.next().await.expect("bounded provider event"));
                 if event.kind == ProviderEventKind::Done {
                     break;
                 }
@@ -229,13 +233,18 @@ fn anthropic_decode(c: &mut Criterion) {
         })
     });
     c.bench_function("broker/anthropic_buffered_sse_64_deltas", |b| {
-        b.iter(|| {
+        b.to_async(&runtime).iter(|| async {
             let mut decoder = anthropic_sse::Decoder::new(black_box(data.as_bytes()), "fixture");
             loop {
-                let event = decoder.next_buffered().expect("bounded buffered event");
-                let event = black_box(
-                    event.unwrap_or_else(|| decoder.next().expect("bounded provider event")),
-                );
+                let event = match decoder
+                    .next_buffered()
+                    .await
+                    .expect("bounded buffered event")
+                {
+                    Some(event) => event,
+                    None => decoder.next().await.expect("bounded provider event"),
+                };
+                let event = black_box(event);
                 if event.kind == ProviderEventKind::Done {
                     break;
                 }

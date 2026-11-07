@@ -6,12 +6,92 @@
 use crate::grpc::{Gateway, ResponseStream};
 use crate::grpc_contracts::{plan, status};
 use crate::{grpc_output::Output, pb, rpc_security::RpcRole};
-use tokio::sync::mpsc;
+use std::sync::Arc;
+use tokio::sync::{OwnedSemaphorePermit, mpsc};
 use tokio_util::sync::CancellationToken;
 use tonic::{Request, Response, Status};
-use weaver_ledger::Ledger;
+use weaver_contracts::{ProviderOAuthUse, ProviderPlan};
+use weaver_ledger::{Ledger, WorkflowObservation};
+
+pub(crate) struct StreamSettings {
+    pub arrow: bool,
+    pub batch_rows: u32,
+    pub catalog: String,
+}
+
+#[derive(Default)]
+pub(crate) struct WorkflowAdmission {
+    pub predecessors: Vec<ProviderPlan>,
+    pub observed: Option<Arc<WorkflowObservation>>,
+}
 
 impl Gateway {
+    /// Use the immutable Governor-approved plans from the retired preparation
+    /// owner. No request supplies an observation, transition or source graph.
+    fn workflow_predecessors(
+        &self,
+        successor: &weaver_contracts::ProviderPlan,
+    ) -> Result<Vec<ProviderPlan>, Status> {
+        let Some(feed) = self
+            .runtime
+            .fact_feed()
+            .filter(|feed| feed.family == successor.family)
+        else {
+            return Ok(Vec::new());
+        };
+        let predecessors = feed.workflow_predecessors(&successor.node);
+        let session = !feed.workflow_path.is_empty();
+        if predecessors.is_empty() && !session {
+            return Ok(Vec::new());
+        }
+        let source = self
+            .runtime
+            .single_provider()
+            .filter(|lifecycle| lifecycle.activated())
+            .and_then(|lifecycle| lifecycle.ready.get())
+            .map(crate::single_provider::Prepared::source)
+            .ok_or(Status::failed_precondition(
+                "compiled workflow has not activated",
+            ))?;
+        let selection = &source.data().governance;
+        let matches_path = if session {
+            selection.schema == feed.session_schema() && selection.open_nodes == feed.workflow_path
+        } else {
+            predecessors.iter().all(|node| {
+                selection
+                    .open_nodes
+                    .iter()
+                    .any(|selected| selected == *node)
+            })
+        };
+        if selection.family != feed.family
+            || !selection.open_nodes.contains(&successor.node)
+            || !matches_path
+        {
+            return Err(Status::failed_precondition(
+                "Governor workflow selection changed",
+            ));
+        }
+        let admitted = |node: &str| {
+            source
+                .plans()
+                .iter()
+                .find(|p| p.family == selection.family && p.node == node)
+                .ok_or(Status::failed_precondition(
+                    "compiled workflow plan missing",
+                ))
+        };
+        if admitted(&successor.node)? != successor {
+            return Err(Status::failed_precondition(
+                "successor differs from compiled original",
+            ));
+        }
+        predecessors
+            .into_iter()
+            .map(|node| admitted(node).cloned())
+            .collect()
+    }
+
     pub(super) async fn execute_provider_stream(
         &self,
         request: Request<pb::ProviderRequest>,
@@ -37,6 +117,48 @@ impl Gateway {
                 .plan
                 .ok_or(Status::invalid_argument("plan missing"))?,
         )?;
+        let predecessors = self.workflow_predecessors(&plan)?;
+        if self
+            .runtime
+            .fact_feed()
+            .is_some_and(|feed| !feed.workflow_path.is_empty() && feed.family == plan.family)
+        {
+            if !predecessors.is_empty() {
+                return Err(Status::failed_precondition(
+                    "Session owns successor execution",
+                ));
+            }
+        }
+        self.start_provider_stream(
+            slot,
+            plan,
+            WorkflowAdmission {
+                predecessors,
+                observed: None,
+            },
+            oauth,
+            StreamSettings {
+                arrow,
+                batch_rows: request.batch_rows,
+                catalog: request.catalog_version,
+            },
+        )
+        .map(Response::new)
+    }
+
+    pub(crate) fn start_provider_stream(
+        &self,
+        slot: Arc<OwnedSemaphorePermit>,
+        plan: ProviderPlan,
+        workflow: WorkflowAdmission,
+        oauth: Option<ProviderOAuthUse>,
+        settings: StreamSettings,
+    ) -> Result<ResponseStream, Status> {
+        let StreamSettings {
+            arrow,
+            batch_rows,
+            catalog,
+        } = settings;
         let cursor = weaver_ledger::DeliveryCursor::new(&plan).map_err(status)?;
         let (sender, receiver) = mpsc::channel(crate::grpc_output::DELIVERY_QUEUE_CAPACITY);
         let cancelled = CancellationToken::new();
@@ -51,6 +173,16 @@ impl Gateway {
         };
         let config = self.config.clone();
         let transport = self.transport.clone();
+        let wakeup = self
+            .runtime
+            .session_wakeup()
+            .filter(|_| {
+                self.runtime
+                    .fact_feed()
+                    .is_some_and(|feed| feed.family == plan.family)
+            })
+            .cloned();
+        let session_root = wakeup.is_some() && workflow.predecessors.is_empty();
         #[cfg(test)]
         let queued_at = std::time::Instant::now();
         let job = self
@@ -92,6 +224,17 @@ impl Gateway {
                         std::env::var("WEAVER_TEST_SEPARATE_RELEASE_READS").as_deref() == Ok("1"),
                     );
                     #[cfg(test)]
+                    weaver_ledger::use_early_admission_barrier(std::env::var_os("WEAVER_TEST_EARLY_ADMISSION_BARRIER").is_some());
+                    #[cfg(test)]
+                    weaver_ledger::use_exclusive_provider_reads(
+                        std::env::var_os("WEAVER_TEST_EXCLUSIVE_PROVIDER_READS").is_some(),
+                    );
+                    #[cfg(test)]
+                    weaver_ledger::use_full_lifecycle_invalidation(
+
+                        std::env::var_os("WEAVER_TEST_FULL_LIFECYCLE_INVALIDATION").is_some(),
+                    );
+                    #[cfg(test)]
                     weaver_ledger::use_conservative_range_invalidation(
                         std::env::var_os("WEAVER_TEST_CONSERVATIVE_RANGE_INVALIDATION").is_some(),
                     );
@@ -108,22 +251,31 @@ impl Gateway {
                     #[cfg(test)]
                     {
                         crate::grpc_output::take_encoding_nanos();
+                        crate::grpc_output::take_transport();
                         crate::grpc_output::take_handoffs();
                         crate::grpc_output::take_deliveries();
                     }
-                    let execution = weaver_broker::execute_catalog_provider_with_oauth(
+                    let progression = if workflow.predecessors.is_empty() {
+                        None
+                    } else {
+                        Some(ledger.prepare_workflow_candidate(&workflow.predecessors, &plan, workflow.observed.as_deref())?)
+                    };
+                    let execution = weaver_broker::execute_provider_progression(
 
                         &mut ledger,
                         weaver_broker::ProviderExecution {
                             plan: &plan,
                             transport: &transport,
                             format: if arrow { "arrow" } else { "protobuf" },
-                            batch_rows: request.batch_rows as usize,
+                            batch_rows: batch_rows as usize,
                         },
                         &mut output,
-                        weaver_broker::ProviderExecutionAuthority {
-                            catalog: &request.catalog_version,
-                            oauth: oauth.as_ref(),
+                        weaver_broker::ProviderExecutionAdmission {
+                            authority: weaver_broker::ProviderExecutionAuthority {
+                                catalog: &catalog,
+                                oauth: oauth.as_ref(),
+                            },
+                            progression: progression.as_ref(),
                         },
                     );
                     #[cfg(test)]
@@ -134,6 +286,9 @@ impl Gateway {
                         weaver_ledger::use_fresh_provider_domain_plan(false);
                         weaver_ledger::use_separate_release_reads(false);
                         weaver_ledger::use_cached_release_programs(false);
+                        weaver_ledger::use_early_admission_barrier(false);
+                        weaver_ledger::use_exclusive_provider_reads(false);
+                        weaver_ledger::use_full_lifecycle_invalidation(false);
                         weaver_ledger::use_conservative_range_invalidation(false);
                     }
                     #[cfg(test)]
@@ -188,6 +343,14 @@ impl Gateway {
                     if trace_scopes {
                         eprintln!("weaver-provider-encode {} {}", plan.family, crate::grpc_output::take_encoding_nanos());
                         use std::fmt::Write;
+                        if let Some(phases) = crate::grpc_output::take_transport() {
+                            let mut line = format!("weaver-provider-transport {}", plan.family);
+                            for stage in [phases.connect, phases.tls, phases.write, phases.headers] {
+                                let _ = write!(line, " {}:{}:{}", stage.nanos, u8::from(stage.attempted), u8::from(stage.completed));
+                            }
+                            eprintln!("{line}");
+                        }
+
                         ledger.finish_provider_scope_trace();
                         let mut handoff = format!("weaver-provider-handoff {}", plan.family);
                         for (sequence, time) in crate::grpc_output::take_handoffs() {
@@ -209,6 +372,13 @@ impl Gateway {
                 } else {
                     weaver_telemetry::Signal::ProviderFailed
                 });
+                // A duplicate root request may prompt reconciliation. Only
+                // the durable release and current guards can admit an edge.
+                if (result.is_ok() || session_root)
+                    && let Some(wakeup) = wakeup
+                {
+                    wakeup.notify_one();
+                }
                 if result.is_err() {
                     let _ = sender.try_send(Err(Status::failed_precondition(
                         "provider execution not completed; inspect original operation",
@@ -221,11 +391,11 @@ impl Gateway {
             .telemetry()
             .record(weaver_telemetry::Signal::ProviderAdmitted);
         drop(job); // The runtime tracker, not the disconnected caller, owns completion.
-        Ok(Response::new(ResponseStream::new(
+        Ok(ResponseStream::new(
             receiver,
             cursor,
             cancelled,
             self.runtime.cancellation(),
-        )))
+        ))
     }
 }

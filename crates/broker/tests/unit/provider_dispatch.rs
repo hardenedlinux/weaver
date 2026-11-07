@@ -122,7 +122,7 @@ impl Endpoint {
             }
         });
         Self {
-            runtime: fixture_runtime::fixture_runtime(),
+            runtime: fixture_runtime::fixture_runtime(Some(4)),
             peer_closed,
             address,
             root,
@@ -343,11 +343,17 @@ proptest::proptest! {
         proptest::prop_assert_eq!(endpoint.calls.load(Ordering::SeqCst),0);
         proptest::prop_assert_eq!(ledger.transaction_timings().transaction_hold.attempts,before.transaction_hold.attempts);
         if revoked {ledger.publish(Some(0),"forbid(principal,action,resource);",2).expect("new fence");}
+        let phases=std::cell::Cell::default();
         if discarded {drop(request);} else {
-            let result=ledger.dispatch_provider(&permit,||request.write_and_seal());
-            if revoked {proptest::prop_assert!(result.is_err());} else {let sealed=result.expect("guarded actual HTTPS seal");sealed.wait_for_response_headers().expect("headers");}
+            let result=ledger.dispatch_provider(&permit,||request.write_and_seal(&phases));
+            if revoked {proptest::prop_assert!(result.is_err());} else {let sealed=result.expect("guarded actual HTTPS seal");sealed.wait_for_response_headers(&phases).expect("headers");}
+        }
+        for stage in [phases.get().connect,phases.get().tls,phases.get().write,phases.get().headers] {
+            proptest::prop_assert_eq!(stage.attempted,!revoked&&!discarded);
+            proptest::prop_assert_eq!(stage.completed,!revoked&&!discarded);
         }
         proptest::prop_assert_eq!(endpoint.calls.load(Ordering::SeqCst),usize::from(!revoked&&!discarded));
+
         proptest::prop_assert_eq!(ledger.held("f").expect("held"),4);
         proptest::prop_assert!(ledger.consume_provider("f","infer",&eligible).is_err());
         ledger.close().expect("natural cleanup");
@@ -420,7 +426,7 @@ fn dropped_sealed_result_closes_sole_driver_without_header_read_or_refund() {
         .prepare(permit.plan(), permit.route(), permit.protocol())
         .expect("inert request");
     let sealed = ledger
-        .dispatch_provider(&permit, || request.write_and_seal())
+        .dispatch_provider(&permit, || request.write_and_seal(&Default::default()))
         .expect("guard commit and seal");
     // This is the same ownership drop used if the deciding commit fails or its
     // sealed result is lost. It is not an injected native storage-commit fault.

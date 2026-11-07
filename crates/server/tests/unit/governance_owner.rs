@@ -30,6 +30,8 @@ fn original() -> OwnedSource {
         governance: weaver_governance::SourceSelection {
             schema: "agentic-ai-lab.loop-governor.v1".into(),
             family: task.family.clone(),
+            workflow_edges: vec![],
+            workflow_selectors: vec![],
             open_nodes: task.nodes.clone(),
         },
         tasks: vec![task],
@@ -44,6 +46,95 @@ fn original() -> OwnedSource {
     })
     .expect("original source")
 }
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+async fn single_provider_retirement_joins_cleanup_without_closing_ingress() {
+    let runtime = ServiceRuntime::new();
+    runtime.enable_single_provider().expect("lifecycle enabled");
+    let (_, slot) = budget();
+    let (owned, mut cleaned) = oneshot::channel::<()>();
+    let (entered, started) = oneshot::channel();
+    let (release, wait) = mpsc::channel();
+    let worker = runtime
+        .start_governance(slot, capacity(), move || {
+            let mut entered = Some(entered);
+            Ok(move |source: &OwnedSource| {
+                let _keep = &owned;
+                if let Some(entered) = entered.take() {
+                    let _ = entered.send(());
+                }
+                wait.recv_timeout(Duration::from_secs(3))
+                    .map_err(|_| SourceError::Scheme)?;
+                copy(source)
+            })
+        })
+        .await
+        .expect("worker started");
+    let job = worker
+        .client()
+        .submit(original())
+        .expect("accepted original");
+    tokio::time::timeout(Duration::from_secs(3), started)
+        .await
+        .expect("call started")
+        .expect("entered");
+    let retiring = runtime.retire_single_provider();
+    tokio::pin!(retiring);
+    tokio::select! {
+        result = &mut retiring => panic!("retired before active call returned: {result:?}"),
+        result = job => assert!(matches!(result, Err(weaver_governance::SourceJobError::Closed))),
+    }
+    assert!(matches!(
+        cleaned.try_recv(),
+        Err(oneshot::error::TryRecvError::Empty)
+    ));
+    release.send(()).expect("release native call");
+    retiring.await.expect("retired");
+    assert!(matches!(
+        cleaned.try_recv(),
+        Err(oneshot::error::TryRecvError::Closed)
+    ));
+    assert!(!runtime.closing());
+    assert!(matches!(
+        worker.client().submit(original()),
+        Err(weaver_governance::SourceJobError::Closed)
+    ));
+    worker.finish().await.expect("joined");
+}
+
+#[test]
+fn single_provider_activation_requires_the_exact_committed_cut() {
+    use weaver_contracts::{PublicationOutcome, PublicationReceipt};
+
+    let original = original();
+    let publication = original.publication();
+    let bound = weaver_governance::SourceExpectation::capture(&original)
+        .bind(original.clone())
+        .expect("bound original");
+    let prepared = crate::single_provider::Prepared::new(&Default::default(), authority(), bound)
+        .expect("prepared");
+    let receipt = PublicationReceipt {
+        operation_id: publication.operation_id.clone(),
+        digest: publication.digest().expect("publication"),
+        outcome: PublicationOutcome::Committed,
+        revision: Some(1),
+        fence: Some(publication.fence),
+    };
+    assert!(prepared.matches_commit(&receipt));
+    assert!(!prepared.matches_commit(&PublicationReceipt {
+        outcome: PublicationOutcome::Rejected,
+        ..receipt.clone()
+    }));
+    assert!(!prepared.matches_commit(&PublicationReceipt {
+        digest: "0".repeat(64),
+        ..receipt.clone()
+    }));
+    assert!(!prepared.matches_commit(&PublicationReceipt {
+        revision: Some(0),
+        ..receipt
+    }));
+}
+
 fn authority() -> weaver_contracts::SourceAuthority {
     weaver_contracts::SourceAuthority {
         epoch: 1,

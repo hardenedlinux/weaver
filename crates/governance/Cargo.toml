@@ -16,6 +16,7 @@ scheme-qualification = ["scheme-program"]
 [dependencies]
 weaver-contracts.workspace = true
 serde.workspace = true
+serde_json.workspace = true
 thiserror.workspace = true
 tokio.workspace = true
 tokio-util.workspace = true
@@ -28,7 +29,6 @@ gerbil-scheme = { workspace = true, optional = true }
 weaver-governance-build.workspace = true
 
 [dev-dependencies]
-serde_json.workspace = true
 asp-rust.workspace = true
 criterion.workspace = true
 proptest.workspace = true

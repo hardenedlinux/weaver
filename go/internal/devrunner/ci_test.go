@@ -7,6 +7,7 @@ package devrunner
 import (
 	"context"
 	"io"
+	"slices"
 	"testing"
 )
 
@@ -31,7 +32,10 @@ func TestModularCISuitesPreserveUnifiedGateCoverage(t *testing.T) {
 			t.Fatal(err)
 		}
 		for _, stage := range stages {
-			if covered[stage.Name] && stage.Name != "project-architecture" && stage.Name != "workflow-contract" {
+			if stage.Binary == "go" && slices.Contains(stage.Args, "test") && !slices.Contains(stage.Args, "-parallel=4") {
+				t.Fatalf("expected four Go test workers for %s", stage.Name)
+			}
+			if covered[stage.Name] && stage.Name != "project-architecture" && stage.Name != "workflow-contract" && !stage.providerBuild() {
 				t.Fatalf("unintended duplicated check %s", stage.Name)
 			}
 			covered[stage.Name] = true

@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
+//! Deployment quota bindings across credential keys, principals and tenants.
+
 use crate::{Error, MAX_CREDITS, MeteringDeployment, Result, identifier};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
@@ -16,6 +18,7 @@ pub struct QuotaDeployment {
     pub tenants: BTreeMap<String, u64>,
 }
 
+/// The principal binding and credit limit for a stable credential identifier.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct QuotaKey {

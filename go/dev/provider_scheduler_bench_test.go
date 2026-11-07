@@ -86,12 +86,14 @@ func benchmarkProviderScheduledEncoding(b *testing.B, image string, shared, load
 
 func reportScheduledEncoding(b *testing.B, arm *providerTailArm, label string, ranges, preparations, queues int, shared bool) {
 	b.Helper()
-	b.ReportMetric(float64(queues), label+"-queue-transactions/stream")
+	// Positive counts retain the frozen exact shape. Zero requests actual
+	// bounded groups for a separate IO-sensitive overlap cohort.
 	encodes := providerEncodingObservations(b, arm.fixture)
 	handoffs := providerHandoffs(b, arm.fixture)
 	scopes := readRangeScopes(b, arm.fixture)
 	waves := make(map[string][]rangeScopeSample)
 	var frames, payload int
+	var readWaits, readHolds, exclusiveWaits, exclusiveHolds, queueWaits, spans, admissionClosed []time.Duration
 	var receives, decodes, encodesByStream, queueToRecv, scopeWaits, prepareWaits []time.Duration
 	for _, stream := range arm.streams {
 		encode, ok := encodes[stream.family]
@@ -101,14 +103,30 @@ func reportScheduledEncoding(b *testing.B, arm *providerTailArm, label string, r
 		counts := make(map[string]int)
 		for _, scope := range scopes[stream.family] {
 			counts[scope.phase]++
+			spans = append(spans, scope.authoritySpan)
+			if scope.phase == "admit" {
+				admissionClosed = append(admissionClosed, scope.authoritySpan)
+			}
 			scopeWaits = append(scopeWaits, scope.wait)
+			if scope.originWrite {
+				readWaits = append(readWaits, scope.wait)
+				readHolds = append(readHolds, scope.hold)
+			} else {
+				exclusiveWaits = append(exclusiveWaits, scope.wait)
+				exclusiveHolds = append(exclusiveHolds, scope.hold)
+			}
+			if scope.phase == "queue" {
+				queueWaits = append(queueWaits, scope.wait)
+			}
 			if scope.phase == "prepare" {
 				prepareWaits = append(prepareWaits, scope.wait)
 			}
 		}
 		prepared := counts["prepare"]
-		if counts["other"] != 5 || counts["queue"] != queues || prepared < (ranges+3)/4 || prepared > ranges ||
-			(preparations > 0 && prepared != preparations) {
+		queued := counts["queue"]
+		if counts["other"] != 4 || counts["admit"] != 1 || (queues > 0 && queued != queues) || prepared < (ranges+3)/4 || prepared > ranges ||
+			(preparations > 0 && prepared != preparations) ||
+			(queues == 0 && (queued != prepared || queued < (ranges+3)/4 || queued > ranges)) {
 			b.Fatalf("%s unexpected phases for %s: %v", label, stream.family, counts)
 		}
 		sent := handoffs[stream.family]
@@ -139,7 +157,21 @@ func reportScheduledEncoding(b *testing.B, arm *providerTailArm, label string, r
 			}
 		}
 	}
+	for _, metric := range []struct {
+		name   string
+		values []time.Duration
+	}{
+		{"shared-read-wait", readWaits}, {"shared-read-hold", readHolds},
+		{"exclusive-wait", exclusiveWaits}, {"exclusive-hold", exclusiveHolds},
+		{"queue-wait", queueWaits}, {"authority-span", spans}, {"admission-closed", admissionClosed},
+	} {
+		if len(metric.values) > 0 {
+			b.ReportMetric(tailMillis(metric.values, 99), label+"-"+metric.name+"-p99-ms/scope")
+		}
+		b.ReportMetric(float64(len(metric.values))/float64(len(arm.streams)), label+"-"+metric.name+"-scopes/stream")
+	}
 	n := float64(len(arm.streams))
+	b.ReportMetric(float64(len(queueWaits))/n, label+"-queue-transactions/stream")
 	b.ReportMetric(float64(len(prepareWaits))/n, label+"-preparations/stream")
 	b.ReportMetric(tailMillis(prepareWaits, 99), label+"-prepare-wait-p99-ms/scope")
 	b.ReportMetric(float64(frames)/n, label+"-frames/stream")
@@ -176,18 +208,34 @@ func providerEncodingObservations(b *testing.B, f *fixture) map[string]time.Dura
 
 func providerHandoffs(b *testing.B, f *fixture) map[string]map[uint64]int64 {
 	b.Helper()
+	groups := providerHandoffGroups(b, f)
+	result := make(map[string]map[uint64]int64, len(groups))
+	for family, rows := range groups {
+		if len(rows) != 1 {
+			b.Fatalf("duplicate single-stream family handoff: %s", family)
+		}
+		result[family] = rows[0]
+	}
+	return result
+}
+
+// Native output emits one complete group per stream. Multiple nodes in a family
+// are retained, not overwritten. Callers must establish their ordering before
+// joining observations; the control benchmark permits one node/family/wave.
+func providerHandoffGroups(b testing.TB, f *fixture) map[string][]map[uint64]int64 {
+	b.Helper()
 	log, err := os.ReadFile(filepath.Join(f.directory, "server.log"))
 	if err != nil {
 		b.Fatal(err)
 	}
-	result := make(map[string]map[uint64]int64)
+	result := make(map[string][]map[uint64]int64)
 	for _, line := range strings.Split(string(log), "\n") {
 		raw, ok := strings.CutPrefix(line, "weaver-provider-handoff ")
 		if !ok {
 			continue
 		}
 		fields := strings.Fields(raw)
-		if len(fields) < 2 || result[fields[0]] != nil {
+		if len(fields) < 2 {
 			b.Fatalf("invalid handoff observation: %q", raw)
 		}
 		stamps := make(map[uint64]int64)
@@ -200,7 +248,7 @@ func providerHandoffs(b *testing.B, f *fixture) map[string]map[uint64]int64 {
 			}
 			stamps[seq] = nanos
 		}
-		result[fields[0]] = stamps
+		result[fields[0]] = append(result[fields[0]], stamps)
 	}
 	return result
 }

@@ -22,17 +22,35 @@ pub(crate) struct Authority {
 #[derive(Default)]
 struct State {
     serial: u64,
+    whole: u64,
     global: u64,
     domains: [BTreeMap<String, u64>; 6],
     pending: BTreeMap<u64, Mutation>,
     failed: bool,
     waiters: Vec<Waker>,
 }
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Impact {
+    Full,
+    Origin,
+    Preserved,
+}
 struct Mutation {
     scope: Scope,
-    invalidates: bool,
+    impact: Impact,
     external: BTreeMap<String, bool>,
     orphaned: bool,
+}
+impl Mutation {
+    fn affects(&self, reader: &Scope) -> bool {
+        match (&self.scope, reader, self.impact) {
+            (_, _, Impact::Preserved) => false,
+            (Scope::Domains(writer), Scope::Domains(reader), Impact::Origin) => {
+                writer.key(0) == reader.key(0)
+            }
+            _ => self.scope.overlaps(reader),
+        }
+    }
 }
 #[derive(Default)]
 pub(crate) struct Completion {
@@ -65,6 +83,7 @@ pub(crate) struct Receipt {
     pub consumed: bool,
     pub rejected: bool,
     pub waker: Option<Waker>,
+    pub producer_waker: Option<Waker>,
     pub deadline: Option<std::time::Instant>,
     #[cfg(any(test, feature = "commit-observer"))]
     pub acknowledged_at: Option<std::time::SystemTime>,
@@ -93,7 +112,11 @@ pub(super) struct Close<'a> {
 impl State {
     fn stamp(&self, scope: &Scope) -> Stamp {
         Stamp {
-            global: self.global,
+            global: if matches!(scope, Scope::All) {
+                self.whole
+            } else {
+                self.global
+            },
             domains: match scope {
                 Scope::All => None,
                 Scope::Domains(keys) => Some(std::array::from_fn(|i| {
@@ -105,7 +128,11 @@ impl State {
             },
         }
     }
-    fn advance(&mut self, scope: &Scope) -> driver::Result<()> {
+    fn advance(&mut self, scope: &Scope, impact: Impact) -> driver::Result<()> {
+        self.whole = self
+            .whole
+            .checked_add(1)
+            .ok_or_else(|| error("whole-view revision exhausted"))?;
         match scope {
             Scope::All => {
                 self.global = self
@@ -114,7 +141,7 @@ impl State {
                     .ok_or_else(|| error("authority revision exhausted"))?
             }
             Scope::Domains(keys) => {
-                for i in 0..6 {
+                for i in 0..if impact == Impact::Origin { 1 } else { 6 } {
                     if let Some(key) = keys.key(i) {
                         let value = self.domains[i].entry(key.to_owned()).or_default();
                         *value = value
@@ -127,25 +154,40 @@ impl State {
         Ok(())
     }
     fn closed(&self, scope: &Scope) -> bool {
-        self.failed
-            || self
-                .pending
-                .values()
-                .any(|entry| entry.invalidates && entry.scope.overlaps(scope))
+        self.failed || self.pending.values().any(|entry| entry.affects(scope))
     }
 }
 impl Authority {
     pub(super) fn close(&self, scope: Scope) -> driver::Result<Close<'_>> {
-        self.close_kind(scope, true)
+        self.close_kind(scope, Impact::Full)
     }
     pub(super) fn close_progress(
         &self,
         scope: Scope,
         proof: &crate::provider::RangeProgress,
     ) -> driver::Result<Close<'_>> {
-        self.close_kind(scope, proof.invalidates())
+        self.close_kind(
+            scope,
+            if proof.invalidates() {
+                Impact::Full
+            } else {
+                Impact::Preserved
+            },
+        )
     }
-    fn close_kind(&self, scope: Scope, invalidates: bool) -> driver::Result<Close<'_>> {
+    pub(super) fn close_lifecycle(
+        &self,
+        scope: Scope,
+        proof: &crate::provider::OriginLifecycle,
+    ) -> driver::Result<Close<'_>> {
+        let impact = if proof.origin_only() && matches!(scope, Scope::Domains(_)) {
+            Impact::Origin
+        } else {
+            Impact::Full
+        };
+        self.close_kind(scope, impact)
+    }
+    fn close_kind(&self, scope: Scope, impact: Impact) -> driver::Result<Close<'_>> {
         let mut state = self.state.lock().map_err(error)?;
         if state.failed {
             return Err(error("authority sealed until owner recovery"));
@@ -159,7 +201,7 @@ impl Authority {
             id,
             Mutation {
                 scope: scope.clone(),
-                invalidates,
+                impact,
                 external: BTreeMap::new(),
                 orphaned: false,
             },
@@ -253,7 +295,13 @@ impl Authority {
                 state.waiters.push(waker.clone());
             }
             receipt.refresh = true;
+            let producer = receipt.producer_waker.take();
             completion.changed.notify_all();
+            drop(receipt);
+            drop(state);
+            if let Some(waker) = producer {
+                waker.wake();
+            }
             return Ok(None);
         }
         drop(qualification);
@@ -262,6 +310,16 @@ impl Authority {
         if accepted.is_ok() {
             receipt.lock_wait_nanos = entered.duration_since(arrived).as_nanos();
             receipt.turn_nanos = entered.elapsed().as_nanos();
+        }
+        let producer = if receipt.consumed {
+            receipt.producer_waker.take()
+        } else {
+            None
+        };
+        drop(receipt);
+        drop(state);
+        if let Some(waker) = producer {
+            waker.wake();
         }
         accepted.map(Some)
     }
@@ -291,6 +349,17 @@ impl Close<'_> {
         if self.receipt.is_some() {
             return Err(error("one delivery receipt per scope"));
         }
+        if self
+            .authority
+            .state
+            .lock()
+            .map_err(error)?
+            .pending
+            .get(&self.id)
+            .is_some_and(|entry| entry.impact == Impact::Origin)
+        {
+            return Err(error("origin lifecycle cannot issue a delivery receipt"));
+        }
         let receipt = Arc::new(Completion::default());
         self.receipt = Some(receipt.clone());
         Ok(receipt)
@@ -301,7 +370,7 @@ impl Close<'_> {
             .pending
             .get_mut(&self.id)
             .ok_or_else(|| error("authority cut absent"))?;
-        if !mutation.invalidates {
+        if mutation.impact != Impact::Full {
             return Err(error("range progress cannot reconcile external authority"));
         }
         mutation.external.insert(path.to_owned(), reconciled);
@@ -321,7 +390,10 @@ impl Close<'_> {
         if !known {
             state.failed = true;
         }
-        if modified && mutation.invalidates && state.advance(&self.scope).is_err() {
+        if modified
+            && mutation.impact != Impact::Preserved
+            && state.advance(&self.scope, mutation.impact).is_err()
+        {
             state.failed = true;
         }
         if committed && mutation.external.values().all(|complete| *complete) {
@@ -354,6 +426,9 @@ impl Close<'_> {
             } else {
                 qualification.rejected = true;
                 receipt.rejected = true;
+                if let Some(waker) = receipt.producer_waker.take() {
+                    state.waiters.push(waker);
+                }
             }
             drop(qualification);
             completion.changed.notify_all();
@@ -382,3 +457,7 @@ impl Drop for Close<'_> {
         }
     }
 }
+
+#[cfg(test)]
+#[path = "../../tests/unit/authority_footprint.rs"]
+mod footprint_tests;

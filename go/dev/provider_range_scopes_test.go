@@ -20,10 +20,12 @@ import (
 )
 
 type rangeScopeSample struct {
+	originWrite    bool
 	phase          string
 	family         string
 	arrival, grant uint64
 	wait, hold     time.Duration
+	authoritySpan  time.Duration
 }
 
 func BenchmarkProviderSharedRangeScopes(b *testing.B) {
@@ -66,22 +68,26 @@ func parseRangeScopes(log string) (map[string][]rangeScopeSample, error) {
 		}
 		for _, field := range fields[2:] {
 			parts := strings.Split(field, ":")
-			if len(parts) != 5 || (parts[0] != "prepare" && parts[0] != "queue" && parts[0] != "other" && parts[0] != "revalidate") {
+			if len(parts) != 7 || (parts[5] != "origin" && parts[5] != "exclusive") || (parts[0] != "admit" && parts[0] != "prepare" && parts[0] != "queue" && parts[0] != "other" && parts[0] != "revalidate") {
 				return nil, fmt.Errorf("invalid stripe sample: %q", field)
 			}
 			var n [4]uint64
-			for i, value := range parts[1:] {
+			for i, value := range parts[1:5] {
 				n[i], err = strconv.ParseUint(value, 10, 63)
 				if err != nil {
 					return nil, fmt.Errorf("invalid stripe sample value: %q", value)
 				}
+			}
+			span, err := strconv.ParseInt(parts[6], 10, 64)
+			if err != nil || span < 0 {
+				return nil, fmt.Errorf("invalid authority span: %q", field)
 			}
 			previous := result[family]
 			if n[0] == 0 || n[0] >= n[1] || seen[n[0]] || seen[n[1]] || (len(previous) > 0 && n[0] <= previous[len(previous)-1].grant) {
 				return nil, fmt.Errorf("invalid or duplicate stripe ordinal: %q", field)
 			}
 			seen[n[0]], seen[n[1]] = true, true
-			result[family] = append(result[family], rangeScopeSample{phase: parts[0], family: family, arrival: n[0], grant: n[1], wait: time.Duration(n[2]), hold: time.Duration(n[3])})
+			result[family] = append(result[family], rangeScopeSample{authoritySpan: time.Duration(span), originWrite: parts[5] == "origin", phase: parts[0], family: family, arrival: n[0], grant: n[1], wait: time.Duration(n[2]), hold: time.Duration(n[3])})
 		}
 		finished[family] = final == "1"
 	}
@@ -105,7 +111,7 @@ func TestProviderScopeTraceChunksPreserveAllRecords(t *testing.T) {
 			}
 			fmt.Fprintf(&log, "weaver-provider-scope f %d:%d", start, final)
 			for i := start; i < end; i++ {
-				fmt.Fprintf(&log, " revalidate:%d:%d:1:1", 2*i+1, 2*i+2)
+				fmt.Fprintf(&log, " revalidate:%d:%d:1:1:origin:1", 2*i+1, 2*i+2)
 			}
 			log.WriteByte('\n')
 		}
@@ -135,7 +141,7 @@ func TestProviderScopeTraceChunksPreserveAllRecords(t *testing.T) {
 func rangeScopeOvertakes(wave []rangeScopeSample, older rangeScopeSample) int {
 	count := 0
 	for _, younger := range wave {
-		if younger.family != older.family && older.arrival < younger.arrival && younger.grant < older.grant {
+		if (!younger.originWrite || !older.originWrite || younger.family == older.family) && older.arrival < younger.arrival && younger.grant < older.grant {
 			count++
 		}
 	}
@@ -143,20 +149,20 @@ func rangeScopeOvertakes(wave []rangeScopeSample, older rangeScopeSample) int {
 }
 
 func TestProviderScopeFairnessCountsArrivalGrantInversions(t *testing.T) {
-	property := func(seed uint64, count uint8) bool {
+	property := func(seed uint64, count uint8, modes uint32) bool {
 		n := int(count%24) + 1
 		order := rand.New(rand.NewSource(int64(seed))).Perm(n)
 		wave := make([]rangeScopeSample, n)
 		for grant, family := range order {
 			wave[family] = rangeScopeSample{
-				family: strconv.Itoa(family), arrival: uint64(family + 1), grant: uint64(n + grant + 1),
+				originWrite: modes&(1<<family) != 0, family: strconv.Itoa(family), arrival: uint64(family + 1), grant: uint64(n + grant + 1),
 			}
 		}
 		for grant, family := range order {
 			// Prior grants by later arrivals are exactly the observed overtakers.
 			want := 0
 			for _, prior := range order[:grant] {
-				if prior > family {
+				if prior > family && (modes&(1<<prior) == 0 || modes&(1<<family) == 0) {
 					want++
 				}
 			}
@@ -168,6 +174,31 @@ func TestProviderScopeFairnessCountsArrivalGrantInversions(t *testing.T) {
 	}
 	if err := quick.Check(property, &quick.Config{MaxCount: 256, Rand: rand.New(rand.NewSource(293))}); err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestProviderScopeFairnessRetainsWriterAndSameOriginBarriers(t *testing.T) {
+	for _, modes := range []struct {
+		old, young bool
+		same       bool
+		want       int
+	}{
+		{true, true, false, 0}, {true, true, true, 1},
+		{false, true, false, 1}, {true, false, false, 1}, {false, false, false, 1},
+	} {
+		older := rangeScopeSample{family: "a", originWrite: modes.old, arrival: 1, grant: 4}
+		younger := rangeScopeSample{family: "b", originWrite: modes.young, arrival: 2, grant: 3}
+		if modes.same {
+			younger.family = older.family
+		}
+		if got := rangeScopeOvertakes([]rangeScopeSample{older, younger}, older); got != modes.want {
+			t.Fatalf("conflict classification %+v: got %d", modes, got)
+		}
+	}
+	for _, mode := range []string{"", ":read", ":0"} {
+		if _, err := parseRangeScopes("weaver-provider-scope f 0:1 prepare:1:2:1:1" + mode + "\n"); err == nil {
+			t.Fatal("missing or unrecognized access mode accepted", mode)
+		}
 	}
 }
 
@@ -190,11 +221,11 @@ func reportProviderRangeScopes(b *testing.B, arm *providerTailArm, name string, 
 		var wait time.Duration
 		for _, scope := range trace {
 			counts[scope.phase]++
-			if scope.phase != "other" {
+			if scope.phase != "other" && scope.phase != "admit" {
 				wait += scope.wait
 			}
 		}
-		if counts["prepare"] != ranges || counts["queue"] != ranges || counts["other"] != 5 {
+		if counts["prepare"] != ranges || counts["queue"] != ranges || counts["other"] != 4 || counts["admit"] != 1 {
 			b.Fatalf("%s unexpected range scope counts for %s: %v", name, stream.family, counts)
 		}
 		waves[wave] = append(waves[wave], trace...)

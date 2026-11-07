@@ -21,6 +21,8 @@ pub fn source() -> SourceData {
         governance: SourceSelection {
             schema: "agentic-ai-lab.loop-governor.v1".into(),
             family: "f".into(),
+            workflow_edges: vec![],
+            workflow_selectors: vec![],
             open_nodes: vec!["infer".into(), "next".into()],
         },
         tasks: vec![task],

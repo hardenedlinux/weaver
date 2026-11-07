@@ -2,12 +2,15 @@
 //
 // SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
+//! Versioned provider plans and the tenant tariffs required to admit them.
+
 use crate::{
     Error, MAX_CREDITS, MeteringDeployment, ProviderQuote, Result, body_digest, identifier,
 };
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 
+/// An ordered provider plan snapshot linked to its parent catalog.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct ProviderCatalog {
@@ -15,6 +18,7 @@ pub struct ProviderCatalog {
     pub entries: BTreeMap<String, CatalogEntry>,
 }
 
+/// One plan's module, capability, latency and pricing declarations.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct CatalogEntry {
@@ -42,16 +46,7 @@ impl ProviderCatalog {
         }
         let mut tariffs = BTreeMap::new();
         for (plan, entry) in &self.entries {
-            identifier(&entry.module)?;
-            if entry.capabilities.len() > 32
-                || entry.latency_millis == 0
-                || entry.latency_millis > MAX_CREDITS
-            {
-                return Err(Error::Invalid("provider catalog entry bounds"));
-            }
-            for capability in &entry.capabilities {
-                identifier(capability)?;
-            }
+            entry.validate_shape()?;
             let tenant = deployment
                 .tenants
                 .get(&entry.quote.tenant)
@@ -68,5 +63,20 @@ impl ProviderCatalog {
             tenant.charge(entry.quote.token_bounds)?;
         }
         Ok(())
+    }
+}
+
+impl CatalogEntry {
+    fn validate_shape(&self) -> Result<()> {
+        identifier(&self.module)?;
+        if self.capabilities.len() > 32
+            || self.latency_millis == 0
+            || self.latency_millis > MAX_CREDITS
+        {
+            return Err(Error::Invalid("provider catalog entry bounds"));
+        }
+        self.capabilities
+            .iter()
+            .try_for_each(|capability| identifier(capability))
     }
 }

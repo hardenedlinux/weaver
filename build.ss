@@ -10,41 +10,86 @@
 (begin-syntax
   (register-module-build-source! (path-directory (this-source-file)) 'hardenedlinux/weaver))
 (import (only-in :clan/poo/object .get)
-        (only-in :std/make pkg-config-cflags pkg-config-libs)
-        (only-in :gerbil/expander import-module expander-context-id)
+        (only-in :std/source this-source-file)
+        (only-in :std/build-script defbuild-script)
+        (only-in :gerbil/tools/gxpkg pkg-root-dir)
+        (only-in :gerbil/expander eval-syntax import-module expander-context-id)
         (only-in :gerbil/compiler compile-module)
-        (only-in :yuanxu/module-system/building/script defbuild-script)
+        (only-in :yuanxu/module-system/building/interface call-with-init-build-spec)
+        (only-in :yuanxu/module-system/building/products build-output-directory
+                 current-build-compiler-options current-build-module-roots current-build-source-directory)
+        (only-in :yuanxu/module-system/building/source-package register-module-build-source!)
+        (only-in :yuanxu/module-system/source/observations current-module-source-observer)
         (only-in "./init.ss" hardenedlinux/weaver.init.exports))
 
-(def policy-package (getenv "WEAVER_POLICY_PKG_CONFIG_PACKAGE" "weaver-policy-ffi"))
-(def (package-spec (extra '()))
-  ((.get hardenedlinux/weaver.init.exports std-make-spec)
-   (append (list `(gxc: "scheme/policy/cedar-ffi"
-                "-cc-options" ,(pkg-config-cflags policy-package)
-                "-ld-options" ,(pkg-config-libs policy-package))
-         ;; Cross-language fixtures are libraries too: the standard package build
-         ;; owns their expansion instead of repeating it during each bootstrap.
-         '(gxc: "t/fixtures/governed-control")
-         '(gxc: "t/fixtures/control-inputs")) extra)))
+(export main)
 
-;; The native SDK invokes this same package entry with typed arguments.
-;; Compilation stays in the package declaration; no Rust-generated Scheme code.
+(def (run-build args entry prepare (target-options '()))
+  (def output (build-output-directory))
+  (def (dispatch spec native-args (prefix #f))
+    (def (this-source-file)
+      (let (directory (current-build-source-directory))
+        (if directory (path-expand (path-strip-directory entry) directory) entry)))
+    (def targets
+      (if (null? target-options) spec
+        (map (lambda (target)
+               (append (if (string? target) (list gxc: target) target) target-options))
+             spec)))
+    (defbuild-script targets libdir: output prefix: prefix)
+    (apply main native-args))
+  (parameterize ((current-build-compiler-options
+                   (append (current-build-compiler-options) target-options)))
+    (call-with-init-build-spec prepare dispatch args output entry)))
+
+(def (compile-package args)
+  (run-build args (this-source-file)
+    (lambda () ((.get hardenedlinux/weaver.init.exports std-make-spec) '()))))
+
+;; The pinned producer's Program root owns its Scheme library closure.
+(def (prepare-governor-library)
+  (def source (path-normalize (path-expand "github.com/tao3k/gerbil-ascent/" (pkg-root-dir))))
+  (register-module-build-source! source 'gerbil-ascent)
+  (parameterize ((current-directory source) (current-build-module-roots '(program)))
+    (def entry (path-expand "build.ss" source))
+    (eval-syntax `(import (only-in ,(path-expand "init.ss" source) gerbil-ascent.init.exports)))
+    (eval-syntax `(import (only-in ,entry gerbil-ascent-compiler-options)))
+    (def exports (eval 'gerbil-ascent.init.exports))
+    (run-build '("compile") entry
+      (lambda () ((.get exports std-make-spec) '()))
+      (eval 'gerbil-ascent-compiler-options))))
+
+;; Cargo needs the inputs already read by the package owner to invalidate its
+;; build script. Files created under OUT_DIR are products of the same build.
+(def (compile-package-for-cargo args)
+  (def outputs (path-expand "" (getenv "OUT_DIR")))
+  (def inputs (make-hash-table))
+  (def (observe key _)
+    (match key
+      (['file-read _ path]
+       (unless (string-prefix? outputs path)
+         (hash-put! inputs path #t)))
+      (else (void))))
+  (begin0
+    (parameterize ((current-module-source-observer observe))
+      (compile-package args))
+    (hash-for-each
+      (lambda (path _)
+        (when (file-exists? path)
+          (displayln "cargo:rerun-if-changed=" path)))
+      inputs)))
+
 (def (main . args)
   (match args
-    (["program" source expected-module]
-     (let ()
-       (defbuild-script
-         (package-spec (list '(gxc: "scheme/gateway/compiled")))
-         force: #t)
-       (main "compile"))
-     ;; The explicit operator application may live in a different source package.
-     ;; It is compiled as that source, never relabeled as a Weaver retained module.
+    (["prepare-governor-library"] (prepare-governor-library))
+    (["compile-approved-program" source expected-module]
+     ;; An operator can approve a source in a different package.
      (compile-module source [output-dir: (path-expand "lib" (gerbil-path))
                              invoke-gsc: #f optimize: #t static: #t])
      (unless (equal? (symbol->string (expander-context-id (import-module source)))
                      expected-module)
        (error "approved application root mismatch")))
-    (else
-     (let ()
-       (defbuild-script (package-spec))
-       (apply main args)))))
+    (["compile"]
+     (if (getenv "CARGO_FEATURE_SCHEME_PROGRAM" #f)
+       (compile-package-for-cargo args)
+       (compile-package args)))
+    (else (compile-package args))))

@@ -119,14 +119,15 @@ package WeaverExecution {
            that transaction. Program reuse preserves the full domain join.
            The domain view and reservation reconciliation are scope-local.
            History equality, capacity, revocation, Policy and fence remain live. */
-        doc /* Shared roots serialize. Independent roots may overlap under MVCC.
-           Qualify both with the same binary, ingress, original workload, provider,
-           and held-budget verification. Hold and wait intervals can overlap.
-           The sum of protected service demands is a lower bound on a wave
-       sharing one root. Cross-root time is bounded by the longest dependency
-       chain and can also be constrained by native writer and IO capacity.
-       Report wall time and sampled work separately. A diagnostic speed result
-           carries no authority and does not establish a production SLO. */
+        doc /* Overlapping semantic writers serialize; certified provider work
+           may share semantic reads while writing distinct original origins.
+           Measure actual granted modes and reader/writer waits separately.
+           Only mutually conflicting protected demands form a serial service
+           lower bound. Compatible reads are bounded by dependency chains,
+           native writer/IO capacity and host scheduling, not their simple sum.
+           Both profiles use the same binary, original workload, ingress,
+           provider and held-budget verification. Hold intervals may overlap.
+           A diagnostic result carries no authority or production SLO claim. */
     }
 
     part def SharedDomainScheduler {
@@ -302,6 +303,100 @@ package WeaverExecution {
            reopen only on the exact fenced image and outcome. */
     }
 
+    requirement def ProviderAdmissionTurn {
+        doc /* A pending execution request has no accepted authority outcome,
+           native claim, reservation or semantic publication. It waits in the
+           existing bounded runtime lane and conflicting-writer FIFO without
+           closing old frame authority. Once its exclusive writer turn and
+           domain discovery generation are current, close the entire semantic
+           footprint before BEGIN or any native mutation. A queued request is
+           not a source-accepted Policy/OAuth/witness intent. Those intents,
+           settlement, migration and all unclassified writers close immediately.
+           WAL retains the existing eager global closure. */
+        doc /* Known commit invalidates the affected image and activates the
+           exact new outcome; unknown commit seals and retains original holds.
+           Cancellation before native admission creates no claim or refund.
+           A crash after known queued admission can resume only the original
+           non-invoked operation; consumed/partially-written sends cannot replay.
+           Receiver owner, cut, one-use cursor, expiry and pending barriers
+           remain live at final Tonic delivery. */
+        doc /* Separate scheduler wait, native hold and authority-closed lifetime.
+           Selected closure excludes unaccepted queue residence, not native
+           service, hard-source barriers or transport latency. TCP connect, TLS
+           handshake and request write/seal remain inside the invocation guard;
+           response-header wait follows seal. Stage timing is diagnostic and
+           can never certify non-execution or authorize budget release. */
+        doc /* Go retains source-channel custody through known bootstrap activation.
+           Static published routing then closes the bootstrap-only source channel
+           before serving ingress. Runtime catalogue selection retains it. Unknown
+           activation never becomes readiness. Connection release changes no
+           authority view, claim, hold, publication or pending-intent outcome. */
+    }
+
+    part def ProviderAdmissionOverlapExperiment {
+        attribute responseFrames : Integer = 64;
+        attribute maximumGroupFrames : Integer = 4;
+        attribute minimumGroups : Integer = 16;
+        attribute oldFramesBeforeOffering : Integer = 1;
+        attribute laterRequests : Integer = 3;
+        attribute streamsPerArm : Integer = 128;
+        assert constraint { minimumGroups * maximumGroupFrames == responseFrames }
+        doc /* Additional scenario, not a replacement for the frozen thirteen-frame
+           wave. Offer three real requests after receiving the first old frame.
+           Opportunistic collect_buffered may stop at an input boundary; sixteen
+           is a lower bound, not an exact group count. Observe every prepare and
+           queue group and require matching counts within [minimumGroups,
+           responseFrames]. Do not erase actual renewals, shorten the stream or
+           change per-frame final authorization to satisfy a performance target. */
+    }
+
+    part def ProviderReadCustodyExperiment {
+        part grouped : ProviderSnapshotExperiment;
+        attribute sharedReadScopes : Integer = 12;
+        attribute sharedWriterScopes : Integer = 1;
+        assert constraint { sharedReadScopes + sharedWriterScopes == grouped.snapshotBaseScopes }
+        assert constraint { sharedReadScopes == grouped.lifecycle.fixedDecidingScopes - 1 + grouped.preparationGroups + grouped.snapshotQueueGroups }
+        doc /* In the unchanged thirteen-range burst, four lifecycle scopes and
+           eight range scopes use compatible read custody; only new admission
+           writes the shared semantic projection. Actual renewal scopes are
+           additional and must be reported. A mode is observed at scheduler
+           grant, never inferred from the phase label or chosen benchmark arm.
+           The thirteen frame owner/cursor checks remain independent of SQL
+           lease compatibility. Fewer conflicts do not prove a tail bound. */
+    }
+
+    requirement def ProviderReadCustody {
+        doc /* Certified provider progress and lifecycle operations read the
+           complete six-domain semantic footprint and write their own original
+           origin. Different origins may hold those shared read leases together.
+           Same-origin work, broad admission/settlement and global Policy/OAuth/
+           migration remain conflicting writers. Earlier conflicting writers
+           prevent younger readers from bypassing them. No shared-budget cache
+           substitutes for live SQL, original claim or current Cedar checks. */
+        doc /* A lease is not send authority. Known native group commit and the
+           current cut, unique owner, grant time and affine cursor still join at
+           final Tonic use. Unknown native results preserve holds and seal; native
+           write conflicts cannot trigger another provider invocation. WAL keeps
+           its global profile. Actual Turso concurrency must be positively tested. */
+    }
+
+    requirement def ProviderLifecycleFootprint {
+        doc /* Read custody and invalidation are different footprints. Admission
+           appends original claims and changes held/history/quota projections,
+           so it still closes all sharing origins. Settlement, migration,
+           Policy, OAuth/witness and unclassified writes remain broad. */
+        doc /* Exact consumed state/target, dispatch markers and terminal state
+           or usage observations change only the original origin's live view.
+           Cross-origin exposure reads digest/reserved/plan ceiling, original
+           claims and holds, never a peer's run state, target or raw usage.
+           Close and advance that origin lane only, retaining the full native
+           read/scheduler set. Same-origin frames still retire. Unknown outcomes
+           seal the whole owner; no lifecycle transition releases unknown hold.
+           Whole-store readers use a separate aggregate revision advanced by
+           every semantic commit; domain readers retain shared plus origin
+           revisions. WAL retains its conservative global profile. */
+    }
+
     requirement def ProviderSnapshotPublication {
         doc /* Existing ready ranges form a bounded immutable manifest. A native
            transaction rechecks Cedar for every actual row, original claim,
@@ -435,7 +530,7 @@ package WeaverExecution {
     }
     part def EgressMutationBarrier {
         attribute displayName : String = "Rust / close";
-        attribute responsibility : String = "Policy + OAuth + domains\nKeep every pending ID";
+        attribute responsibility : String = "Queued request / no cut\nAccepted edit / close first";
         attribute glyph : String = "policy";
         attribute visualRole : String = "governance";
         port closed : EgressWindowPort;
@@ -475,7 +570,7 @@ package WeaverExecution {
 
     part def DeliveryValidation {
         attribute displayName : String = "Rust / qualify group";
-        attribute responsibility : String = "Pending clear; each row\nCedar + claim + domains";
+        attribute responsibility : String = "Read shared; write origin\nCedar + claim + domains";
         attribute glyph : String = "authorization";
         attribute visualRole : String = "governance";
         port closed : ~EgressWindowPort;
@@ -584,6 +679,27 @@ package WeaverExecution {
     requirement def NoImplicitRetry {
         doc /* One logical node has one consumed send opportunity; redirects and SDK retries are disabled. */
     }
+    requirement def SessionWorkflowFrontier {
+        doc /* Match the compiled Session Workflow topology and the deployed
+           availability dependencies. Scheme Governor uses ASCENT over a
+           coherent observation of complete releases and current hard facts.
+           Independent ready branches can dispatch concurrently. A join needs
+           every active predecessor's complete response release. A conditional
+           fork uses the selector's complete structured result and current facts.
+           Commit one branch decision with the selected arm claim and reserve.
+           Its persisted arm defines the active frontier across nested selectors.
+           An unresolved active arm
+           holds its dependent join. Descendants of an unselected arm are
+           inactive, including any selector they contain. Parallel parents
+           inside the active arm each need a complete release. Admission rechecks
+           every release and the observed fact version. The Session wakes on
+           durable release completion, activation and fact resolution. Only the
+           root needs an operation request. Repeated wakes share one durable
+           winner, claim and reservation. Restart reconstructs the frontier from
+           existing receipts. A queued claim may resume and an unknown outcome
+           stops progression. Pending and resolved withdrawals block affected
+           successors until a new available revision is admitted. */
+    }
     requirement def DevelopmentPolicy {
         doc /* ASP Rust is a deny-mode Cargo test dependency and is absent from the runtime graph. */
     }
@@ -619,35 +735,26 @@ package WeaverExecution {
     port def WirePort {
         out item request : CanonicalWireRequest;
     }
-    action def DeriveSemanticCandidate {
-        in item original : PolicyEvidenceDesign::SemanticCommitment;
-        out item candidate : PolicyEvidenceDesign::SourceCommand;
-        doc /* Derivation preserves independently admitted original meaning.
-           This action grants no publication, consumption or transport right. */
-    }
-    action def OrchestrateSourcePublication {
-        in item candidate : PolicyEvidenceDesign::SourceCommand;
-        out item command : PolicyEvidenceDesign::SourceCommand;
-        doc /* Preserve original commitment while submitting authenticated
-           current-source commands; reconcile uncertain outcomes by identity. */
-    }
-    action def CommitOriginalAdmission {
-        in item command : PolicyEvidenceDesign::SourceCommand;
-        out item observation : PolicyEvidenceDesign::PublishedObservation;
-        doc /* Existing deciding transaction, current authority and immutable
-           original binding. Commit produces an observation, never external IO. */
-    }
-    action def GuardFinalEffect {
-        in item permit : ConsumedPermit;
-        out item request : CanonicalWireRequest;
-        doc /* Rejoin actual current authority and retained consumption under
-           final custody. An inert candidate cannot invoke this action. */
-    }
     part def SchemeSemanticPublisher {
         attribute overviewName : String = "Task contract";
         attribute overviewSummary : String = "Original scope";
         attribute overviewGlyph : String = "task-contract";
+        private action def DeriveSemanticCandidate {
+            in item original : PolicyEvidenceDesign::SemanticCommitment;
+            out item candidate : PolicyEvidenceDesign::SourceCommand;
+            doc /* Derivation preserves independently admitted original meaning.
+               This action grants no publication, consumption or transport right. */
+        }
         action deriveCandidate : DeriveSemanticCandidate;
+        action prepareObject : ControllerObjectLifecycle::PrepareObject;
+        action replaceObject : ControllerObjectLifecycle::PrepareObjectReplacement;
+        action reuseObject : ControllerObjectLifecycle::ReuseObjectProjection;
+        action invalidateObject : ControllerObjectLifecycle::InvalidateObjectProjection;
+        action assessObjectReadiness : ArchitectureEvolution::AssessObjectReadiness;
+        action reconcileObjects : ArchitectureEvolution::ReconcileObjectSet;
+        action prepareSessionWorkflow : ArchitectureEvolution::PrepareSessionWorkflow;
+        action advanceRoutine : ArchitectureEvolution::AdvanceGovernedRoutine;
+        action explainObjectDecision : ArchitectureEvolution::ExplainObjectDecision;
         doc /* Normative semantic allocation: reuse Agentic AI Lab Governor to
            select admitted original scope and Governance to assess obligations,
            evidence and source assets. Scheme defines routine meaning, original
@@ -703,6 +810,12 @@ package WeaverExecution {
         attribute overviewName : String = "Route proposal";
         attribute overviewSummary : String = "Suggest a provider";
         attribute overviewGlyph : String = "route-choice";
+        private action def OrchestrateSourcePublication {
+            in item candidate : PolicyEvidenceDesign::SourceCommand;
+            out item command : PolicyEvidenceDesign::SourceCommand;
+            doc /* Preserve original commitment while submitting authenticated
+               current-source commands; reconcile uncertain outcomes by identity. */
+        }
         action publishCandidate : OrchestrateSourcePublication;
         doc /* Preserve the semantic original through configuration normalization,
            protocol aliasing and authenticated publication. JSON/YAML populates
@@ -879,6 +992,12 @@ package WeaverExecution {
         attribute overviewName : String = "Claim + budget";
         attribute overviewSummary : String = "Record before sending";
         attribute overviewGlyph : String = "budget-ledger";
+        private action def CommitOriginalAdmission {
+            in item command : PolicyEvidenceDesign::SourceCommand;
+            out item observation : PolicyEvidenceDesign::PublishedObservation;
+            doc /* Existing deciding transaction, current authority and immutable
+               original binding. Commit produces an observation, never external IO. */
+        }
         action commitOriginal : CommitOriginalAdmission;
         doc /* Implement the semantic original binding in the existing source
            deciding transaction, with exact-outcome recovery and current fencing.
@@ -932,6 +1051,12 @@ package WeaverExecution {
         attribute overviewName : String = "Final-use gate";
         attribute overviewSummary : String = "Recheck actual use";
         attribute overviewGlyph : String = "permission-check";
+        private action def GuardFinalEffect {
+            in item permit : ConsumedPermit;
+            out item request : CanonicalWireRequest;
+            doc /* Rejoin actual current authority and retained consumption under
+               final custody. An inert candidate cannot invoke this action. */
+        }
         action guardEffect : GuardFinalEffect;
         attribute leanDeclaration : String = "CedarPooSpec.Gateway.ZeroTrust.FinalUse";
         attribute leanFields : String = "sameView,authenticated,current,profileAuthority,committed,unknownRetained,notRevoked,mediated";
@@ -1070,6 +1195,7 @@ package WeaverExecution {
            and local-counter reset. No external exporter is currently enabled. */
     }
     part def DerivedEvidenceAdapter {
+        action maintainObjectRelations : ControllerObjectLifecycle::MaintainObjectRelations;
         attribute overviewName : String = "Evidence";
         attribute overviewSummary : String = "Bound observations";
         attribute displayName : String = "Derived evidence";

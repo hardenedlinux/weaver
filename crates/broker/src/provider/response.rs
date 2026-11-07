@@ -5,6 +5,7 @@
 //! Owned HTTP driver: dropped on failed commit; polled for reads only afterwards.
 use super::{
     io_runtime::IoRuntime,
+    observation::{ProviderTransportPhases, Stage, measure},
     write_seal::{READING, SEALED, WriteSeal},
 };
 use bytes::Bytes;
@@ -16,7 +17,7 @@ use hyper::{
 use hyper_util::rt::TokioIo;
 use std::{
     future::{Future, poll_fn},
-    io::{self, Read},
+    io,
     pin::Pin,
     sync::{
         Arc,
@@ -24,7 +25,11 @@ use std::{
     },
     task::{Context, Poll},
 };
-use tokio::{net::TcpStream, time::Instant};
+use tokio::{
+    io::{AsyncRead, ReadBuf},
+    net::TcpStream,
+    time::Instant,
+};
 use tokio_rustls::client::TlsStream;
 use weaver_contracts::{Error, Result};
 pub(super) type Connection =
@@ -95,21 +100,28 @@ impl SealedRequest {
         })
     }
     /// Only called after dispatch_provider returned success (including commit).
-    pub(super) fn wait_for_response_headers(mut self) -> Result<Response> {
+    pub(super) fn wait_for_response_headers(
+        mut self,
+        phases: &std::cell::Cell<ProviderTransportPhases>,
+    ) -> Result<Response> {
         self.phase
             .compare_exchange(SEALED, READING, Ordering::AcqRel, Ordering::Acquire)
             .map_err(|_| Error::Conflict("provider writer not sealed"))?;
         let response = self.runtime.wait(
             self.deadline,
-            poll_fn(|cx| {
-                if let Err(error) = self.driver.pump(cx) {
-                    return Poll::Ready(Err(error));
-                }
-                self.response
-                    .as_mut()
-                    .poll(cx)
-                    .map(|r| r.map_err(|_| Error::Conflict("provider outcome unknown")))
-            }),
+            measure(
+                phases,
+                Stage::Headers,
+                poll_fn(|cx| {
+                    if let Err(error) = self.driver.pump(cx) {
+                        return Poll::Ready(Err(error));
+                    }
+                    self.response
+                        .as_mut()
+                        .poll(cx)
+                        .map(|r| r.map_err(|_| Error::Conflict("provider outcome unknown")))
+                }),
+            ),
         )?;
         if response.status() != 200
             || response
@@ -138,34 +150,36 @@ pub(super) struct Response {
     runtime: Arc<IoRuntime>,
     deadline: Instant,
 }
-impl Read for Response {
-    fn read(&mut self, bytes: &mut [u8]) -> io::Result<usize> {
-        if bytes.is_empty() {
-            return Ok(0);
+impl Response {
+    pub(super) fn reactor(&self) -> (Arc<IoRuntime>, Instant) {
+        (self.runtime.clone(), self.deadline)
+    }
+}
+impl AsyncRead for Response {
+    fn poll_read(
+        self: Pin<&mut Self>,
+        cx: &mut Context<'_>,
+        bytes: &mut ReadBuf<'_>,
+    ) -> Poll<io::Result<()>> {
+        if bytes.remaining() == 0 {
+            return Poll::Ready(Ok(()));
         }
-        while self.pending.is_empty() {
-            let frame = self
-                .runtime
-                .wait(
-                    self.deadline,
-                    poll_fn(|cx| {
-                        self.driver.pump(cx)?;
-                        Pin::new(&mut self.body).poll_frame(cx).map(|r| {
-                            r.transpose()
-                                .map_err(|_| Error::Conflict("provider outcome unknown"))
-                        })
-                    }),
-                )
-                .map_err(|_| io::Error::from(io::ErrorKind::ConnectionAborted))?;
-            let Some(frame) = frame else { return Ok(0) };
+        let this = self.get_mut();
+        let aborted = |_| io::Error::from(io::ErrorKind::ConnectionAborted);
+        while this.pending.is_empty() {
+            this.driver.pump(cx).map_err(aborted)?;
+            let Some(frame) = std::task::ready!(Pin::new(&mut this.body).poll_frame(cx)) else {
+                return Poll::Ready(Ok(()));
+            };
+            let frame = frame.map_err(|_| io::Error::from(io::ErrorKind::ConnectionAborted))?;
             // Hyper parses chunk framing. Trailer metadata cannot authorize use.
             if let Ok(data) = frame.into_data() {
-                self.pending = data;
+                this.pending = data;
             }
         }
-        let count = bytes.len().min(self.pending.len());
-        bytes[..count].copy_from_slice(&self.pending[..count]);
-        self.pending = self.pending.slice(count..);
-        Ok(count)
+        let count = bytes.remaining().min(this.pending.len());
+        bytes.put_slice(&this.pending[..count]);
+        this.pending = this.pending.slice(count..);
+        Poll::Ready(Ok(()))
     }
 }

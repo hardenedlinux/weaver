@@ -66,14 +66,121 @@ The published Scheme Gerbil toolchain setup action is reused at the same immutab
 as the authorized bridge dependency. Its release/host admission remains separate
 from application and formal proof results.
 
-* Results and cleanup
+* Artifact organization
 
-Each job produces source-bound compact latest results. Per-run stdout/stderr,
-module links and compiler output use system temporary directories and are removed
-on completion, including failures. Structured results retain exit status, source
-identity, output hashes and at most 4096 bytes of a failed stage's diagnostics.
-They overwrite fixed slots. CI uploads these compact files and the latest
-benchmark table as expiring artifacts; raw run logs are not archived by the project.
+=WeaverProject::ArtifactOrganization= in =Project.sysml= allocates the
+project-wide lifecycle. Gerbil Scheme is the planned source of executable
+artifact declarations. POO objects describe each artifact's kind, producer,
+relative location, identity fields, publication scope and retention.
+Use the existing Yuanxu Module Interface and Gerbil Build Packages. The
+Rust owner consumes the compiled, versioned declaration through the existing
+typed Scheme bridge or a build projection of the same export. Rust validates
+paths and bindings, writes the typed record atomically and advances =latest=
+only after the immutable result is available. Go runs the existing tests
+and passes their observations to the materializer.
+
+Generate or check the CI allowlist against that same Scheme declaration.
+GitHub keeps its own minimal job envelope for checkout or bootstrap failures
+that occur before the native materializer is available. Cargo and Gerbil
+continue to own their build products. Site authority owns approval and
+activation. The Scheme declaration and Rust materializer remain to be
+implemented.
+
+| Class | Owner and storage | Identity and retention | State |
+|-------+-------------------+------------------------+-------|
+| Reproducible inputs and projections | Git holds source, model, locks, fixed Snake Oil fixtures and reproducible views. | A committed generated file needs a checked-in recipe and reproducibility check. Per-run output stays outside Git. | Existing policy and entry points. |
+| Native outputs | Cargo owns =target/=. Gerbil Build Packages owns its package outputs. | Each tool reuses and cleans its own build products. A release selects the exact executable or image, Scheme library and resolved closure. | Native owners exist. The release handoff is specified below. |
+| Verification | Today =weaver-dev= and native suite owners write under =.cache/verification/=. The target gives Rust custody of materialization under the Scheme plan. | Job attempt and tested checkout identify remote evidence. The local design keeps a separate immutable result per run before advancing a latest view. | CI envelope and suite receipts implemented. Local suite files still use =latest-*.json=, while SPEC already has per-run paths. |
+| Local deployment qualification | The native Go entry runs Snake Oil. Its dedicated data root is =.cache/weaver-deployment-qualification/=. | New run directories should isolate generated catalog, configuration and ledger and associate them with the tested build and fixture. Retain original failed attempts with their verdicts. | Native path and dedicated root documented. Uniform per-run custody is pending. |
+| Deployable release | The release owner packages selected native outputs and the dependency closure. | A frozen manifest binds release digest, delivered bytes, application source and toolchain identities. The consumer verifies the manifest before activation. | Binding is specified in the Governor preregistration. No release publication job is allocated here. |
+| Runtime and site qualification | The launcher selects the catalog. The Rust authority owns the ledger. The site owns approval, activation, replay and formal results. | Bind activation, catalog and replay to one release digest and an admitted ledger cut or verified snapshot. Site records have independent retention. | Catalog and ledger inputs exist. Site approval and approved replay are pending. |
+
+For the pending local storage work, use the existing owners and these
+subdirectories of the existing roots.
+
+#+begin_example
+.cache/verification/runs/<run-id>/<mode>.json
+.cache/verification/latest-<mode>.json
+.cache/weaver-deployment-qualification/runs/<run-id>/
+  weaver.toml
+  governance/catalog.json
+  ledger/
+#+end_example
+
+The first path is the proposed authoritative local suite receipt. The second
+remains the existing convenience path, updated only after the run receipt is
+committed. The native integration test owns the qualification directory and
+selects the actual config and ledger paths for its roles. The runtime
+continues to receive its settings through the existing launcher boundary.
+
+The deployment and experiment contract is in
+[[file:59.64-governance-capture-ownership.org::*Governor release preregistration][Governor release preregistration]].
+The local run identity needs to distinguish retries of the same source and
+record the tested checkout, resolved inputs and execution scope. A latest
+view can point to a failed run, and an incomplete attempt must remain visible
+as such. Native diagnostics are process scratch, with bounded structured
+fields retained in the run record. Existing historical evidence remains in
+its original custody.
+
+Start with verification receipts as the first vertical slice. Accept it
+when a changed Scheme declaration updates both the Rust writer and the CI
+inventory, an escaping path or mismatched declaration identity is refused,
+and concurrent runs and a failed retry keep their distinct receipts. Verify
+that latest resolves to a complete receipt with the same run identity and
+that cleaning a build leaves both evidence and site data intact. Use bounded
+controls at the existing Go entry, independent of formal release sampling.
+
+** Implemented CI receipt layout
+
+=WeaverProject::Verification::Artifacts= in =Project.sysml= describes the current
+publication inventory. The workflow test checks the declared CI receipt paths against the
+actual upload allowlist. GitHub receives one artifact per suite, runner, tested
+checkout and run attempt.
+
+#+begin_example
+.cache/verification/
+  ci-job.json                         GitHub job and phase outcomes
+  latest-bootstrap-build.json         Rust and Go dependency preparation
+  latest-bootstrap-proofs.json        Cedar and Lean dependency preparation
+  latest-<suite>.json                  Committed source and verification result
+  spec/run-*/receipt.json             SPEC analyzer or kernel evidence
+  spec/run-*/catalog.json             Local validated SPEC catalog
+  latest-benchmark-summary.org        Local human-readable benchmark projection
+#+end_example
+
+| Class | Producer and custody | Publication |
+|-------+----------------------+-------------|
+| Reproducible inputs | Repository source, SysML models, lockfiles and fixed test declarations | Git owns the definitions consumed by each job. |
+| Native build products | Cargo and Gerbil Build Packages own executables, archives, package libraries and build caches | The ordinary verification artifact carries receipts. Release delivery identifies actual deployed bytes separately. |
+| Verification receipts | GitHub owns job and phase outcomes. =weaver-dev= and the SPEC tests own typed suite and proof results. | CI exports the declared JSON receipts with seven-day retention. |
+| Local result projections | SPEC emits a validated catalog. The benchmark runner derives the human-readable summary from measured results. | Both live under the verification root. CI retains benchmark observations in the suite JSON and SPEC status in the proof receipt. |
+| Process scratch | The stage owner captures native compiler and test output in a private temporary directory. | Cleanup runs after success or failure. The receipt retains the exit status, output hash and a bounded failure diagnostic. |
+| Production release evidence | The site authority owns deployment approval, catalog and activated release binding. | The site release protocol associates these records with the approved workload and exact image. |
+
+=ci-job.json= records the PR head and the actual checked-out revision separately.
+GitHub can test a PR merge revision. Suite receipts bind that revision to source
+digests and stage outcomes. A preparation failure can prevent a suite receipt
+from existing; the job receipt records the failed phase and skipped phases. A
+successful workflow requires its bootstrap and suite receipts before publishing
+the job envelope. Diagnostic excerpts are bounded fields within receipts.
+
+The verification owner stops dependency preparation at 3 minutes for Rust
+and Go and 7 minutes for proof dependencies. It stops Scheme verification at
+18 minutes and the other suites at 28 minutes. Each GitHub step allows another
+one or two minutes for tool invocation, process cleanup and receipt writing.
+A runner deadline records `TIMEOUT` in JSON. The separate 12-second recovery
+and 15-second natural-exit fences remain inside native integration.
+
+Praxis separates benchmark execution and comparison and publishes a typed result
+keyed by the tested SHA. Agent Gateway gives timing and failure artifacts their
+own job-scoped paths. Weaver applies those ownership boundaries to its existing
+verification owner and publishes the SysML-declared JSON inventory.
+Agent Gateway also uses a dedicated release workflow for registry images.
+[[https://github.com/praxis-proxy/praxis/blob/c3d2ae3628cf3167780e58c5e8b38580d0241399/.github/workflows/benchmarks.yaml][Praxis benchmark workflow]]
+[[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/.github/workflows/pull_request.yml][Agent Gateway pull request workflow]]
+[[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/.github/workflows/release.yml][Agent Gateway release workflow]]
+
+* Qualification boundaries
 
 Local passes, workflow syntax admission and remote execution are distinct results.
 A job that cannot install its SDK, finish cleanup, or complete a control fails.

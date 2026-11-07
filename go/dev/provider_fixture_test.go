@@ -51,12 +51,20 @@ var controlBinary string
 
 func TestMain(m *testing.M) {
 	flag.Parse()
+	if flag.Lookup("test.list").Value.String() != "" {
+		os.Exit(m.Run())
+	}
 	if os.Getenv(pressureChild) == "1" && flag.Lookup("test.run").Value.String() == "^TestProviderCPUPressureWorker$" {
 		os.Exit(m.Run())
 	}
 	benchmark := flag.Lookup("test.bench").Value.String()
+	args, optimized, err := providerCargoBuildArgs(providerRuntimeFeatures, benchmark, os.LookupEnv)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
 	profile := "dev"
-	if benchmark != "" {
+	if optimized {
 		profile = "release"
 	}
 	_, source, _, ok := runtime.Caller(0)
@@ -64,13 +72,22 @@ func TestMain(m *testing.M) {
 		os.Exit(1)
 	}
 	repo := filepath.Clean(filepath.Join(filepath.Dir(source), "../.."))
-	cmd := exec.Command("cargo", providerCargoBuildArgs(providerRuntimeFeatures, benchmark)...)
-	cmd.Dir = repo
-	cmd.Stderr = os.Stderr
-	executable, err := buildCargoExecutable(cmd, cargoTarget{Name: "weaver-server", Kind: "bin", Optimized: benchmark != ""})
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
+	expected, frozen := os.LookupEnv("WEAVER_TEST_PROVIDER_IMAGE_SHA256")
+	executable, prebuilt := os.LookupEnv("WEAVER_TEST_PREBUILT_PROVIDER_IMAGE")
+	if prebuilt {
+		if !optimized || !frozen || expected == "" || !filepath.IsAbs(executable) {
+			fmt.Fprintln(os.Stderr, "prebuilt provider image requires an absolute path and a frozen release SHA-256")
+			os.Exit(1)
+		}
+	} else {
+		cmd := exec.Command("cargo", args...)
+		cmd.Dir = repo
+		cmd.Stderr = os.Stderr
+		executable, err = buildCargoExecutable(cmd, cargoTarget{Name: "weaver-server", Kind: "bin", Optimized: optimized})
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
 	}
 	directory, err := os.MkdirTemp("", "weaver-control-build-*")
 	if err != nil {
@@ -85,8 +102,18 @@ func TestMain(m *testing.M) {
 		os.Exit(1)
 	}
 	fmt.Fprintf(os.Stderr, "test-owned provider image sha256=%s profile=%s\n", digest, profile)
+	if frozen && (!optimized || digest != expected) {
+		os.RemoveAll(directory)
+		fmt.Fprintln(os.Stderr, "test-owned release image differs from the frozen SHA-256")
+		os.Exit(1)
+	}
 	controlBinary = filepath.Join(directory, "weaver-control")
-	controlBuild := exec.Command(filepath.Join(runtime.GOROOT(), "bin/go"), "-C", "go", "build", "-race", "-o", controlBinary, "./cmd/weaver-control")
+	controlArgs := []string{"-C", "go", "build", "-mod=readonly"}
+	if benchmark == "" {
+		controlArgs = append(controlArgs, "-race")
+	}
+	controlArgs = append(controlArgs, "-o", controlBinary, "./cmd/weaver-control")
+	controlBuild := exec.Command(filepath.Join(runtime.GOROOT(), "bin/go"), controlArgs...)
 	controlBuild.Dir, controlBuild.Stdout, controlBuild.Stderr = repo, os.Stderr, os.Stderr
 	if err := controlBuild.Run(); err != nil {
 		os.RemoveAll(directory)
@@ -392,8 +419,7 @@ func (f *fixture) start(t testing.TB) {
 	f.client, err = gatewayclient.Dial(ctx, f.address, ownerToken, security)
 	t.Logf("Rust owner startup operation-channel started=%s elapsed=%s error=%v", started.UTC().Format(time.RFC3339Nano), time.Since(started), err)
 	if err != nil {
-		f.child.Process.Signal(syscall.SIGTERM)
-		<-f.exited
+		f.stop(t)
 		data, _ := os.ReadFile(filepath.Join(f.directory, "server.log"))
 		t.Fatalf("gRPC startup: %v: %s", err, data)
 	}
@@ -411,25 +437,49 @@ func (f *fixture) start(t testing.TB) {
 	}
 }
 func (f *fixture) stop(t testing.TB) {
+	f.stopObserved(t, nil)
+}
+
+func (f *fixture) stopObserved(t testing.TB, observe func(string, time.Time)) {
 	t.Helper()
 	if f.child == nil {
 		return
 	}
-	f.client.Connection.Close()
+	if f.client != nil {
+		f.client.Connection.Close()
+	}
 	if f.admin != nil {
 		f.admin.Connection.Close()
 	}
+	if observe != nil {
+		observe("connections-closed", time.Now())
+	}
 	f.child.Process.Signal(syscall.SIGTERM)
+	if observe != nil {
+		observe("signal-sent", time.Now())
+	}
 	select {
 	case err := <-f.exited:
+		if observe != nil {
+			observe("exit-observed", time.Now())
+		}
 		if err != nil {
 			data, _ := os.ReadFile(filepath.Join(f.directory, "server.log"))
 			t.Errorf("server natural exit: %v: %s", err, data)
 		}
 	case <-time.After(15 * time.Second):
+		data, _ := os.ReadFile(filepath.Join(f.directory, "server.log"))
 		f.child.Process.Kill()
 		<-f.exited
-		t.Error("server did not exit naturally; cleanup kill is a failure")
+		t.Errorf("server did not exit naturally; cleanup kill is a failure: %s", data)
+	}
+	if os.Getenv("WEAVER_TEST_SOURCE_MEASURE") != "" {
+		data, _ := os.ReadFile(filepath.Join(f.directory, "server.log"))
+		for _, line := range strings.Split(string(data), "\n") {
+			if strings.HasPrefix(line, "weaver source metric=") {
+				t.Log(line)
+			}
+		}
 	}
 	f.child = nil
 }

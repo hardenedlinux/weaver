@@ -53,6 +53,46 @@ pub struct ProducerCatalog {
     pub(super) entries: BTreeMap<String, ApprovedProducer>,
 }
 impl ProducerCatalog {
+    pub fn has_session_workflow(&self) -> bool {
+        self.entries.values().any(|entry| {
+            matches!(
+                entry.original.data().governance.schema.as_str(),
+                weaver_contracts::SESSION_WORKFLOW_SCHEMA
+                    | weaver_contracts::SESSION_DAG_SCHEMA
+                    | weaver_contracts::SESSION_CHOICE_SCHEMA
+                    | weaver_contracts::SESSION_NESTED_SCHEMA
+            )
+        })
+    }
+
+    pub fn admits_session_workflow(&self, feed: &weaver_contracts::FactFeed) -> bool {
+        self.is_single_provider()
+            && self.entries.values().next().is_some_and(|entry| {
+                let selection = &entry.original.data().governance;
+                selection.schema == feed.session_schema()
+                    && (!feed.workflow_dag || selection.workflow_edges == feed.dependencies)
+                    && selection.workflow_selectors == feed.workflow_selectors
+                    && selection.family == feed.family
+                    && selection.open_nodes == feed.workflow_path
+            })
+    }
+
+    /// Whether this catalog admits exactly one independently bound provider task.
+    pub fn is_single_provider(&self) -> bool {
+        self.entries.len() == 1
+    }
+
+    /// Match a deployment edge to the independent compiled-source original.
+    pub fn admits_workflow(&self, family: &str, edge: &weaver_contracts::ProviderWorkflow) -> bool {
+        self.is_single_provider()
+            && self.entries.values().next().is_some_and(|entry| {
+                let task = entry.original.task();
+                task.family == family
+                    && task.nodes.contains(&edge.predecessor)
+                    && task.nodes.contains(&edge.successor)
+            })
+    }
+
     /// Refuse aliases for one original family and conflicting publication IDs.
     /// Total copied text is bounded separately from native constructor traversal.
     pub fn from_entries(entries: Vec<ApprovedProducer>) -> Result<Self, CatalogError> {

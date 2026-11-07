@@ -50,7 +50,7 @@ func PrepareCITools(ctx context.Context, output io.Writer) error {
 		}
 		packages := []string{"apt-get", "install", "-y", "--no-install-recommends", "build-essential", "ca-certificates", "pkg-config", "libssl-dev", "zlib1g-dev", "protobuf-compiler"}
 		if suite == "check-policy" {
-			packages = append(packages, "elan")
+			packages = append(packages, "elan", "cvc5")
 		}
 		if err := run("sudo", packages...); err != nil {
 			return err
@@ -58,7 +58,7 @@ func PrepareCITools(ctx context.Context, output io.Writer) error {
 	case "darwin":
 		packages := []string{"install", "pkg-config", "openssl@3", "zlib", "protobuf"}
 		if suite == "check-policy" {
-			packages = append(packages, "elan")
+			packages = append(packages, "elan", "cvc5")
 		}
 		if err := run("brew", packages...); err != nil {
 			return err

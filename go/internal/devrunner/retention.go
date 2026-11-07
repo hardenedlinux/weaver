@@ -15,15 +15,20 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"slices"
 )
 
 const failureTailBytes int64 = 4096
+
+func verificationDirectory(root string) string {
+	return filepath.Join(root, ".cache", "verification")
+}
 
 func latestResultPath(root, mode string) string {
 	if mode == "" {
 		mode = "check"
 	}
-	return filepath.Join(root, ".cache", "verification", "latest-"+mode+".json")
+	return filepath.Join(verificationDirectory(root), "latest-"+mode+".json")
 }
 
 // summarizeOutput hashes the complete output while retaining at most one bounded
@@ -63,7 +68,7 @@ func summarizeOutput(directory string, result *Result) error {
 			}
 			// Preserve the first causal diagnostic as well as the final status.
 			// A passing test suffix must not erase an earlier failing case.
-			head, err := firstFailureExcerpt(file)
+			head, err := failureExcerpt(file, slices.Contains(result.Args, "-json"))
 			if err != nil {
 				return err
 			}
@@ -83,12 +88,79 @@ func summarizeOutput(directory string, result *Result) error {
 	return nil
 }
 
+func failureExcerpt(file io.ReadSeeker, goJSON bool) ([]byte, error) {
+	if goJSON {
+		head, err := firstGoTestFailure(file)
+		if err != nil || len(head) != 0 {
+			return head, err
+		}
+		if _, err := file.Seek(0, io.SeekStart); err != nil {
+			return nil, err
+		}
+	}
+	return firstFailureExcerpt(file)
+}
+
+type goTestEvent struct {
+	Action, Test, Output string
+}
+
+func firstGoTestFailure(file io.ReadSeeker) ([]byte, error) {
+	stream := bufio.NewScanner(file)
+	var failed string
+	for stream.Scan() {
+		var event goTestEvent
+		if json.Unmarshal(stream.Bytes(), &event) == nil && event.Action == "fail" && event.Test != "" {
+			failed = event.Test
+			break
+		}
+	}
+	if failed == "" {
+		return nil, stream.Err()
+	}
+	if _, err := file.Seek(0, io.SeekStart); err != nil {
+		return nil, err
+	}
+	const limit = 2048
+	header := fmt.Appendf(nil, "Go test failed: %s\n", failed)
+	if len(header) >= limit {
+		return header[:limit], nil
+	}
+	available := limit - len(header)
+	var output []byte
+	stream = bufio.NewScanner(file)
+	for stream.Scan() {
+		var event goTestEvent
+		if json.Unmarshal(stream.Bytes(), &event) != nil || event.Test != failed {
+			continue
+		}
+		if event.Action == "fail" {
+			break
+		}
+		if event.Action == "output" {
+			output = append(output, event.Output...)
+			if len(output) > available {
+				output = append(output[:0], output[len(output)-available:]...)
+			}
+		}
+	}
+	return append(header, output...), stream.Err()
+}
+
 func firstFailureExcerpt(input io.Reader) ([]byte, error) {
 	reader := bufio.NewReaderSize(input, 4096)
 	var excerpt, preceding []byte
 	for {
 		fragment, err := reader.ReadSlice('\n')
-		marker := bytes.Contains(fragment, []byte("--- FAIL:")) || bytes.Contains(fragment, []byte("*** ERROR")) || bytes.Contains(fragment, []byte("error:")) || bytes.Contains(fragment, []byte("control readiness:")) || bytes.Contains(fragment, []byte("negative control"))
+		marker := bytes.Contains(fragment, []byte("--- FAIL:")) ||
+			bytes.Contains(fragment, []byte("*** ERROR")) ||
+			bytes.Contains(fragment, []byte("error:")) ||
+			bytes.Contains(fragment, []byte("control readiness:")) ||
+			bytes.Contains(fragment, []byte("negative control")) ||
+			bytes.HasPrefix(fragment, []byte("panic: test timed out after ")) ||
+			bytes.HasPrefix(fragment, []byte("SIGQUIT: quit")) ||
+			bytes.Contains(fragment, []byte(`"Output":"panic: test timed out after `)) ||
+			bytes.Contains(fragment, []byte(`"Output":"SIGQUIT: quit`))
 		if len(excerpt) == 0 && marker {
 			// Go prints t.Fatal diagnostics before the FAIL marker. Keep a
 			// bounded preceding window rather than retaining only later passes.
@@ -138,7 +210,7 @@ func publishLatestResult(root, directory, mode string, runErr error) (path strin
 		if receipt.Status == "PASS" {
 			receipt.Stages = append(receipt.Stages, Result{Name: "run-finalization", Status: "FAIL", Error: runErr.Error()})
 		}
-		if receipt.Status != "CANCELLED" {
+		if receipt.Status != "CANCELLED" && receipt.Status != "TIMEOUT" {
 			receipt.Status = "FAIL"
 		}
 	}
