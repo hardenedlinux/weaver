@@ -51,6 +51,9 @@ var controlBinary string
 
 func TestMain(m *testing.M) {
 	flag.Parse()
+	if flag.Lookup("test.list").Value.String() != "" {
+		os.Exit(m.Run())
+	}
 	if os.Getenv(pressureChild) == "1" && flag.Lookup("test.run").Value.String() == "^TestProviderCPUPressureWorker$" {
 		os.Exit(m.Run())
 	}
@@ -397,8 +400,7 @@ func (f *fixture) start(t testing.TB) {
 	f.client, err = gatewayclient.Dial(ctx, f.address, ownerToken, security)
 	t.Logf("Rust owner startup operation-channel started=%s elapsed=%s error=%v", started.UTC().Format(time.RFC3339Nano), time.Since(started), err)
 	if err != nil {
-		f.child.Process.Signal(syscall.SIGTERM)
-		<-f.exited
+		f.stop(t)
 		data, _ := os.ReadFile(filepath.Join(f.directory, "server.log"))
 		t.Fatalf("gRPC startup: %v: %s", err, data)
 	}
@@ -420,7 +422,9 @@ func (f *fixture) stop(t testing.TB) {
 	if f.child == nil {
 		return
 	}
-	f.client.Connection.Close()
+	if f.client != nil {
+		f.client.Connection.Close()
+	}
 	if f.admin != nil {
 		f.admin.Connection.Close()
 	}
