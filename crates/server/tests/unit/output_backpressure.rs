@@ -167,7 +167,7 @@ fn prepared_ledger(path: &std::path::Path) -> (Ledger, weaver_ledger::ProviderDi
     (ledger, permit)
 }
 
-#[tokio::test(flavor = "multi_thread")]
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn waiting_capacity_does_not_hold_sql_or_authorize_after_publication() {
     let directory = tempfile::tempdir().expect("temp");
     let path = directory.path().join("ledger.db");
@@ -196,7 +196,7 @@ async fn waiting_capacity_does_not_hold_sql_or_authorize_after_publication() {
     assert_eq!(ledger.held("f").expect("hold"), 4);
 }
 
-#[tokio::test(flavor = "multi_thread")]
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn pending_range_history_created_during_capacity_wait_cannot_be_replayed() {
     let directory = tempfile::tempdir().expect("temp");
     let path = directory.path().join("ledger.db");
@@ -233,7 +233,7 @@ async fn pending_range_history_created_during_capacity_wait_cannot_be_replayed()
     assert_eq!(receipt.held, 4);
 }
 
-#[tokio::test(flavor = "multi_thread")]
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn cancellation_interrupts_actual_capacity_wait_without_refund() {
     let directory = tempfile::tempdir().expect("temp");
     let (ledger, _permit) = prepared_ledger(&directory.path().join("ledger.db"));

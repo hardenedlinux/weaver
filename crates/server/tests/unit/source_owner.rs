@@ -36,7 +36,7 @@ fn slot() -> Arc<tokio::sync::OwnedSemaphorePermit> {
     )
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn reused_source_connection_observes_other_writer_and_preserves_historical_result() {
     let directory = tempfile::tempdir().expect("directory");
     let path = directory.path().join("source.db");
@@ -142,7 +142,7 @@ async fn startup_failure_closes_runtime_and_drains_source_owner() {
     assert!(runtime.closing());
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn disconnected_source_caller_keeps_capacity_until_original_sql_work_finishes() {
     use std::{collections::BTreeSet, future::Future, task::Poll};
     let directory = tempfile::tempdir().expect("directory");
@@ -226,7 +226,7 @@ async fn disconnected_source_caller_keeps_capacity_until_original_sql_work_finis
     );
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn review_context_uses_provisioned_metadata_and_does_not_publish() {
     let directory = tempfile::tempdir().expect("dir");
     let path = directory.path().join("review.db");

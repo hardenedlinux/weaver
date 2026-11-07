@@ -11,7 +11,7 @@ use sha2::{Digest, Sha256};
 use tonic::transport::{Certificate, Identity, ServerTlsConfig};
 use weaver_contracts::{DeltaDisposition, DeltaReview, PublicationKey, PublicationReview};
 
-#[tokio::test(flavor = "multi_thread")]
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn source_rpc_reads_owned_parent_and_registers_only_authenticated_evidence() {
     let directory = tempfile::tempdir().expect("dir");
     let database = directory.path().join("rpc.db");

@@ -89,7 +89,7 @@ fn load_transport() -> Result<ProviderTransport> {
 }
 
 #[cfg(test)]
-#[tokio::test(flavor = "multi_thread")]
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 #[ignore = "started as a child by the Go WIF fixture"]
 async fn serve_wif_gateway() {
     crate::entrypoint::run_on_runtime()
