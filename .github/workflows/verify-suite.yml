@@ -82,7 +82,9 @@ jobs:
       - name: Install declared Scheme dependencies
         id: scheme_dependencies
         if: inputs.suite == 'check-scheme'
-        timeout-minutes: 12
+        # The native watchdog owns the existing 12-minute limit. Leave time
+        # for GitHub to retain its exit status before the outer cutoff.
+        timeout-minutes: 13
         env:
           GERBIL_PATH: ${{ runner.temp }}/weaver-gerbil
         run: |
@@ -97,7 +99,13 @@ jobs:
           export "GIT_CONFIG_KEY_$config_slot=includeIf.hasconfig:remote.*.url:https://github.com/tao3k/gerbil-parser.git.path"
           export "GIT_CONFIG_VALUE_$config_slot=$parser_sources"
           export GIT_CONFIG_COUNT="$((config_slot + 1))"
-          gerbil deps --install
+          if timeout --verbose --kill-after=5s 12m gerbil deps --install; then
+            status=0
+          else
+            status=$?
+          fi
+          printf 'exit_code=%s\n' "$status" >> "$GITHUB_OUTPUT"
+          exit "$status"
       - name: Verify declared suite
         id: verify_suite
         if: inputs.suite != 'check-scheme'
@@ -136,6 +144,7 @@ jobs:
               "os": ${{ toJSON(runner.os) }},
               "arch": ${{ toJSON(runner.arch) }},
               "status": ${{ toJSON(job.status) }},
+              "schemeDependencyExitCode": ${{ steps.scheme_dependencies.outputs.exit_code || 'null' }},
               "phases": {
                 "checkout": ${{ toJSON(steps.checkout.outcome || 'skipped') }},
                 "source": ${{ toJSON(steps.source.outcome || 'skipped') }},
