@@ -132,6 +132,44 @@ fn cancelled_running_work_keeps_its_slot_until_natural_return() {
     owner.finish().expect("natural finish");
 }
 #[test]
+fn active_compiler_observes_both_request_and_owner_cancellation() {
+    for close_owner in [false, true] {
+        let (entered, started) = mpsc::channel();
+        let (release, wait) = mpsc::channel();
+        let owner = Owner::start(1, move |inbox| {
+            inbox.run_with_cancellable_governor(
+                (),
+                |_, source, cancel| {
+                    entered.send(cancel.clone()).expect("active compiler token");
+                    wait.recv().expect("release compiler");
+                    copied(source)
+                },
+                |_, _| Err(SourceError::Contract),
+            )
+        });
+        let release = Release(Some(release));
+        let mut job = owner.client.submit(original()).expect("admitted");
+        let cancel = started
+            .recv_timeout(Duration::from_secs(5))
+            .expect("running");
+        assert!(!cancel.is_cancelled());
+        if close_owner {
+            owner.client.close();
+        } else {
+            job.cancel();
+        }
+        assert!(cancel.is_cancelled());
+        let expected = if close_owner {
+            SourceJobError::Closed
+        } else {
+            SourceJobError::Cancelled
+        };
+        assert!(matches!(runtime().block_on(job), Err(error) if error == expected));
+        drop(release);
+        owner.finish().expect("natural finish");
+    }
+}
+#[test]
 fn cancelled_queued_work_does_not_enter_the_compiler() {
     let (entered, started) = mpsc::channel();
     let (release, wait) = mpsc::channel();

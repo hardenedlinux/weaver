@@ -12,7 +12,7 @@ use std::{
     task::{Context, Poll},
 };
 use tokio::sync::oneshot;
-use tokio_util::sync::WaitForCancellationFutureOwned;
+use tokio_util::sync::{CancellationToken, WaitForCancellationFutureOwned};
 /// Scheduling failures contain no source content or permission claims.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, thiserror::Error)]
 pub enum SourceJobError {
@@ -36,6 +36,7 @@ pub struct SourceJob {
     shared: Arc<Shared>,
     state: Arc<State>,
     shutdown: Pin<Box<WaitForCancellationFutureOwned>>,
+    cancel: CancellationToken,
     finished: bool,
 }
 impl SourceJob {
@@ -43,6 +44,7 @@ impl SourceJob {
         receiver: oneshot::Receiver<Reply>,
         shared: Arc<Shared>,
         state: Arc<State>,
+        cancel: CancellationToken,
     ) -> Self {
         let shutdown = Box::pin(shared.shutdown.clone().cancelled_owned());
         Self {
@@ -50,6 +52,7 @@ impl SourceJob {
             shared,
             state,
             shutdown,
+            cancel,
             finished: false,
         }
     }
@@ -63,6 +66,7 @@ impl SourceJob {
                 *phase = Phase::Cancelled;
             }
         }
+        self.cancel.cancel();
         self.receiver.close();
     }
     fn claim(&self, reply: Reply) -> Result<BoundSource, SourceJobError> {

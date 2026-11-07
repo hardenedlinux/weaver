@@ -10,4 +10,5 @@ mod state;
 pub use client::{SourceClient, source_lane};
 pub use owner::SourceInbox;
 pub use request::{SourceJob, SourceJobError};
+pub use state::GovernorCut;
 use state::{Command, Phase, Reply, Shared, State, Work};

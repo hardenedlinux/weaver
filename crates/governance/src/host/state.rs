@@ -62,8 +62,30 @@ pub(super) struct Work {
     pub(super) state: Arc<State>,
     pub(super) reply: oneshot::Sender<Reply>,
     pub(super) slot: OwnedSemaphorePermit,
+    pub(super) cancel: CancellationToken,
+}
+/// Fixed Governor facts, detached from the authoritative ledger cut.
+#[derive(serde::Serialize)]
+pub struct GovernorCut {
+    pub nodes: Vec<String>,
+    pub edges: Vec<(String, String)>,
+    pub complete: Vec<String>,
+    pub available: Vec<String>,
+    pub pending: Vec<String>,
+    pub choice_arms: Vec<String>,
+    pub choice_join: Vec<String>,
+    pub choice_result: Vec<String>,
+    pub choice_decided: Vec<String>,
+    pub nested_selectors: Vec<[String; 3]>,
+    pub nested_results: Vec<(String, String)>,
+    pub nested_decisions: Vec<(String, String)>,
 }
 pub(super) enum Command {
+    Derive {
+        input: Box<GovernorCut>,
+        reply: oneshot::Sender<Result<Vec<String>, crate::SourceError>>,
+        _slot: OwnedSemaphorePermit,
+    },
     Compile(Box<Work>),
     Stop,
 }

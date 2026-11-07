@@ -7,6 +7,7 @@ use super::{Command, Phase, Reply, Shared, SourceJobError, Work};
 use crate::{OwnedSource, SourceError};
 use std::sync::Arc;
 use tokio::sync::mpsc;
+use tokio_util::sync::CancellationToken;
 /// Move this receiver to the existing tracked blocking owner before constructing
 /// its VM. The compiler can borrow that thread-affine, non-Send runtime.
 pub struct SourceInbox {
@@ -17,9 +18,36 @@ impl SourceInbox {
     /// Run synchronous approved compilation. No lock is held during foreign
     /// calls or content comparison. Finish/VM cleanup must precede owner join ack.
     /// This does not sandbox arbitrary callbacks or implement source authenticity.
-    pub fn run(
+    pub fn run(self, compile: impl FnMut(&OwnedSource) -> Result<OwnedSource, SourceError>) {
+        self.run_with_governor(
+            compile,
+            |owner, original| owner(original),
+            |_, _| Err(SourceError::Contract),
+        );
+    }
+    /// Run compilation and Governor derivation on the same affine owner.
+    pub fn run_with_governor<C>(
+        self,
+        owner: C,
+        mut compile: impl FnMut(&mut C, &OwnedSource) -> Result<OwnedSource, SourceError>,
+        derive: impl FnMut(&mut C, &crate::GovernorCut) -> Result<Vec<String>, SourceError>,
+    ) {
+        self.run_with_cancellable_governor(
+            owner,
+            |owner, original, _| compile(owner, original),
+            derive,
+        );
+    }
+    /// Pass the request cancellation token into a cooperative compiler.
+    pub fn run_with_cancellable_governor<C>(
         mut self,
-        mut compile: impl FnMut(&OwnedSource) -> Result<OwnedSource, SourceError>,
+        mut owner: C,
+        mut compile: impl FnMut(
+            &mut C,
+            &OwnedSource,
+            &CancellationToken,
+        ) -> Result<OwnedSource, SourceError>,
+        mut derive: impl FnMut(&mut C, &crate::GovernorCut) -> Result<Vec<String>, SourceError>,
     ) {
         while let Some(command) = self.receiver.blocking_recv() {
             if *self.shared.gate() {
@@ -27,17 +55,41 @@ impl SourceInbox {
             }
             match command {
                 Command::Stop => break,
-                Command::Compile(work) => self.execute(*work, &mut compile),
+                Command::Compile(work) => self.execute(*work, &mut |original, cancel| {
+                    compile(&mut owner, original, cancel)
+                }),
+                Command::Derive {
+                    input,
+                    reply,
+                    _slot,
+                } => {
+                    self.execute_derivation(reply, || derive(&mut owner, &input));
+                }
             }
             if *self.shared.gate() {
                 break;
             }
         }
+        drop(owner);
+    }
+    fn execute_derivation(
+        &self,
+        reply: tokio::sync::oneshot::Sender<Result<Vec<String>, SourceError>>,
+        derive: impl FnOnce() -> Result<Vec<String>, SourceError>,
+    ) {
+        if reply.is_closed() {
+            return;
+        }
+        let result = derive();
+        if matches!(result, Err(SourceError::Scheme)) {
+            self.shared.stop();
+        }
+        let _ = reply.send(result);
     }
     fn execute(
         &self,
         work: Work,
-        compile: &mut impl FnMut(&OwnedSource) -> Result<OwnedSource, SourceError>,
+        compile: &mut impl FnMut(&OwnedSource, &CancellationToken) -> Result<OwnedSource, SourceError>,
     ) {
         {
             let closed = self.shared.gate();
@@ -47,7 +99,7 @@ impl SourceInbox {
             }
             *phase = Phase::Running;
         }
-        let result = compile(&work.original)
+        let result = compile(&work.original, &work.cancel)
             .and_then(|candidate| work.expected.bind(candidate))
             .map_err(SourceJobError::from);
         if matches!(result, Err(SourceJobError::Source(SourceError::Scheme))) {
@@ -69,6 +121,7 @@ impl SourceInbox {
         });
     }
 }
+
 impl Drop for SourceInbox {
     fn drop(&mut self) {
         self.shared.stop();
