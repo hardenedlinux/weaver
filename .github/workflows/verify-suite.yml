@@ -82,17 +82,18 @@ jobs:
       - name: Prepare the Weaver Scheme source closure
         id: scheme_dependencies
         if: inputs.suite == 'check-scheme'
-        # The native watchdog owns the existing 12-minute limit. Leave time
-        # for GitHub to retain its exit status before the outer cutoff.
-        timeout-minutes: 13
+        # Leave time after either native watchdog for its exit receipt.
+        timeout-minutes: 19
         env:
           # The SDK setup exports the host core count via GITHUB_ENV.
           GERBIL_BUILD_CORES: '4'
           GERBIL_PATH: ${{ runner.temp }}/weaver-gerbil
+          SOURCE_PREPARE_MINUTES: ${{ runner.os == 'macOS' && 18 || 12 }}
         run: |
+          printf 'budget_minutes=%s\n' "$SOURCE_PREPARE_MINUTES" >> "$GITHUB_OUTPUT"
           command -v timeout
           export scheme_sources="$RUNNER_TEMP/weaver-scheme-sources"
-          if timeout --verbose --kill-after=5s 12m bash -se -o pipefail <<'SOURCE_CLOSURE'; then
+          if timeout --verbose --kill-after=5s "${SOURCE_PREPARE_MINUTES}m" bash -se -o pipefail <<'SOURCE_CLOSURE'; then
           printf 'phase=resolve-pins\n' >> "$GITHUB_OUTPUT"
           fetch_source() {
             local package=$1 pin=$2 destination=$3 revision=${2##*@}
@@ -170,6 +171,7 @@ jobs:
               "arch": ${{ toJSON(runner.arch) }},
               "status": ${{ toJSON(job.status) }},
               "schemeDependencyPhase": ${{ toJSON(steps.scheme_dependencies.outputs.phase || null) }},
+              "schemeDependencyBudgetMinutes": ${{ steps.scheme_dependencies.outputs.budget_minutes || 'null' }},
               "schemeDependencyExitCode": ${{ steps.scheme_dependencies.outputs.exit_code || 'null' }},
               "phases": {
                 "checkout": ${{ toJSON(steps.checkout.outcome || 'skipped') }},

@@ -252,8 +252,9 @@ package WeaverProject {
                Resolve Lab and ASCENT sources from native package declarations.
                Gerbil prepares the pinned Core and POO compiler dependencies.
                ASCENT's selected Program build supplies native linker inputs.
-               Dependency preparation defaults to four workers and has a
-               twelve-minute watchdog with its exit code in the job receipt.
+               Dependency preparation defaults to four workers, with a
+               twelve-minute watchdog on Linux and eighteen minutes on macOS.
+               Record the selected watchdog and its exit code in the job receipt.
                Run the selected package Build with a separate two-minute bound.
                Retain native Go failure events with the stage receipt. The
                provider recovery and natural-exit deadlines govern runtime.
