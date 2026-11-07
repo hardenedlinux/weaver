@@ -140,6 +140,28 @@ func TestFailureSummaryRetainsFirstCauseBeforePassingSuffix(t *testing.T) {
 	}
 }
 
+func TestGoTestFailureRetainsTheFailedSubtest(t *testing.T) {
+	directory := t.TempDir()
+	output := `{"Action":"output","Test":"TestGate/early","Output":"native cut was not observed\n"}
+` + strings.Repeat(`{"Action":"output","Test":"TestGate/selected","Output":"passing sibling\n"}
+`, 100) + `{"Action":"fail","Test":"TestGate/early"}
+{"Action":"fail","Test":"TestGate"}
+`
+	if err := os.WriteFile(filepath.Join(directory, "suite.log"), []byte(output), 0600); err != nil {
+		t.Fatal(err)
+	}
+	result := Result{Status: "FAIL", Log: "suite.log", Args: []string{"test", "-json"}}
+	if err := summarizeOutput(directory, &result); err != nil {
+		t.Fatal(err)
+	}
+	cause, _, _ := strings.Cut(result.FailureTail, "[... final output ...]")
+	if !strings.Contains(cause, "TestGate/early") ||
+		!strings.Contains(cause, "native cut was not observed") ||
+		strings.Contains(cause, "passing sibling") || len(result.FailureTail) > int(failureTailBytes) {
+		t.Fatalf("failed subtest evidence lost: %q", cause)
+	}
+}
+
 func FuzzFailureExcerptRetainsPrecedingDiagnostic(f *testing.F) {
 	f.Add(uint16(0), uint16(0))
 	f.Add(uint16(8191), uint16(8191))
