@@ -111,16 +111,17 @@
                          '("*** ERROR" "ERROR CASE" "ERROR CHECK" "ERROR HARNESS" "Heap overflow" "Stack overflow"))
               (error "Weaver action reported failure" command))
             output)
-          (def (cold-from-source-plan state)
-            ;; Use the guarded init plan already measured above for an empty
-            ;; native output. B's hot build and business use remain independent.
+          (def (build-in-state state command)
+            ;; Use the guarded init plan already measured above for B's cold
+            ;; build and A's clean. B's hot build and business use remain
+            ;; independent processes.
             (def output
               (call-with-output-string
                 (lambda (port)
                   (parameterize ((current-build-output-directory (path-expand "lib" state))
                                  (current-output-port port)
                                  (current-directory root))
-                    (weaver-build-main "compile")))))
+                    (weaver-build-main command)))))
             (display output)
             (force-output)
             output)
@@ -131,13 +132,13 @@
               (check-equal? (interfaces library) '())
               (check-equal? (compile-events (if (equal? state a)
                                              (action state '("gxi" "build.ss" "compile"))
-                                             (cold-from-source-plan state))) targets)
+                                             (build-in-state state "compile"))) targets)
               (check-equal? (interfaces library) targets)) (list a b))
           (def b-lib (path-expand "lib" b))
           (def b-products (digests (artifact-files identities b-lib)))
           (def sentinel (path-expand "lib/unrelated.ssi" a))
           (call-with-output-file sentinel (lambda (port) (display "unrelated" port)))
-          (action a '("gxi" "build.ss" "clean"))
+          (build-in-state a "clean")
           (check-equal? (interfaces (path-expand "lib" a)) '("unrelated"))
           (check-equal? (digests (artifact-files identities b-lib)) b-products)
           (check-equal? (compile-events (action b '("gxi" "build.ss" "compile"))) '())
