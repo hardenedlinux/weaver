@@ -14,6 +14,7 @@ scheme-program = ["scheme-vm", "dep:gerbil-scheme-sys", "dep:weaver-policy-ffi"]
 scheme-qualification = ["scheme-program"]
 
 [dependencies]
+ascent.workspace = true
 weaver-contracts.workspace = true
 serde.workspace = true
 thiserror.workspace = true

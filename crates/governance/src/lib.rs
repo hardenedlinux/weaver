@@ -7,10 +7,12 @@
 extern crate self as weaver_governance;
 mod binding;
 mod catalog;
+mod hard_fact;
 mod host;
 mod source;
 pub use binding::{BoundSource, SourceExpectation};
 pub use catalog::{ApprovedProducer, CatalogError, ProducerCatalog, ProducerClient};
+pub use hard_fact::derive_fact_impact;
 pub use host::{SourceClient, SourceInbox, SourceJob, SourceJobError, source_lane};
 pub use source::{MAX_SOURCE_BYTES, OwnedSource, SourceData, SourceError, SourceSelection};
 

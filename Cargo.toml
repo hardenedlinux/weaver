@@ -22,6 +22,7 @@ edition = "2024"
 license = "LGPL-2.1-or-later AND Apache-2.0"
 
 [workspace.dependencies]
+ascent = { version = "=0.8.1", default-features = false }
 weaver-contracts = { path = "crates/contracts" }
 weaver-governance = { path = "crates/governance" }
 weaver-policy = { path = "crates/policy" }
