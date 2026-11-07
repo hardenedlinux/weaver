@@ -16,7 +16,6 @@ import (
 	"path/filepath"
 	"runtime"
 	"sort"
-	"strconv"
 	"time"
 )
 
@@ -169,7 +168,7 @@ func Run(ctx context.Context, config Config, output io.Writer) (report string, r
 		if inherited := os.Getenv("PKG_CONFIG_PATH"); inherited != "" {
 			settings["PKG_CONFIG_PATH"] += string(os.PathListSeparator) + inherited
 		}
-		settings["GERBIL_BUILD_CORES"] = strconv.Itoa(runtime.NumCPU())
+		settings["GERBIL_BUILD_CORES"] = "4"
 		environment = Environment(settings)
 	}
 	var providerBuildFailure string

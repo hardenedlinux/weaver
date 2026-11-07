@@ -29,6 +29,8 @@ jobs:
     env:
       GOTOOLCHAIN: local
       WEAVER_VERIFY_SUITE: ${{ inputs.suite }}
+      # Gerbil std/make defaults to serial compilation without this setting.
+      GERBIL_BUILD_CORES: '4'
     steps:
       - name: Check out committed source
         id: checkout
