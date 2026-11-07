@@ -246,8 +246,9 @@ package WeaverProject {
             part 'check-scheme' : VerificationMode;
             doc /* Compile the qualification executable and Rust tests in one
                Cargo graph before running the Rust or Go tests. The Go fixture
-               uses the normal executable reported by that graph. Bound the
-               native build, Rust tests and Go suite separately.
+               uses the normal executable reported by that graph. Give the
+               cold native build eight minutes for Rust and the linked Scheme
+               archive. Bound the Rust tests and Go suite separately.
                Resolve Lab and ASCENT sources from native package declarations.
                Gerbil prepares the pinned Core and POO compiler dependencies.
                ASCENT's selected Program build supplies native linker inputs.
