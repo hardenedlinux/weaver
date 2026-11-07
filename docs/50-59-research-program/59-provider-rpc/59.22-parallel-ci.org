@@ -69,15 +69,28 @@ from application and formal proof results.
 * Artifact organization
 
 =WeaverProject::ArtifactOrganization= in =Project.sysml= allocates the
-project-wide lifecycle. The build owner produces bytes, verification records
-what it exercised, and the deployment owner selects and activates a release.
-The site binds formal measurements to that activation.
+project-wide lifecycle. Gerbil Scheme is the planned source of executable
+artifact declarations. POO objects describe each artifact's kind, producer,
+relative location, identity fields, publication scope and retention.
+Use the existing Yuanxu Module Interface and Gerbil Build Packages. The
+Rust owner consumes the compiled, versioned declaration through the existing
+typed Scheme bridge or a build projection of the same export. Rust validates
+paths and bindings, writes the typed record atomically and advances =latest=
+only after the immutable result is available. Go runs the existing tests
+and passes their observations to the materializer.
+
+Generate or check the CI allowlist against that same Scheme declaration.
+GitHub keeps its own minimal job envelope for checkout or bootstrap failures
+that occur before the native materializer is available. Cargo and Gerbil
+continue to own their build products. Site authority owns approval and
+activation. The Scheme declaration and Rust materializer remain to be
+implemented.
 
 | Class | Owner and storage | Identity and retention | State |
 |-------+-------------------+------------------------+-------|
 | Reproducible inputs and projections | Git holds source, model, locks, fixed Snake Oil fixtures and reproducible views. | A committed generated file needs a checked-in recipe and reproducibility check. Per-run output stays outside Git. | Existing policy and entry points. |
 | Native outputs | Cargo owns =target/=. Gerbil Build Packages owns its package outputs. | Each tool reuses and cleans its own build products. A release selects the exact executable or image, Scheme library and resolved closure. | Native owners exist. The release handoff is specified below. |
-| Verification | =weaver-dev= and native suite owners write under =.cache/verification/=. GitHub transports a JSON allowlist. | Job attempt and tested checkout identify remote evidence. The local design keeps a separate immutable result per run before advancing a latest view. | CI envelope and suite receipts implemented. Local suite files still use =latest-*.json=, while SPEC already has per-run paths. |
+| Verification | Today =weaver-dev= and native suite owners write under =.cache/verification/=. The target gives Rust custody of materialization under the Scheme plan. | Job attempt and tested checkout identify remote evidence. The local design keeps a separate immutable result per run before advancing a latest view. | CI envelope and suite receipts implemented. Local suite files still use =latest-*.json=, while SPEC already has per-run paths. |
 | Local deployment qualification | The native Go entry runs Snake Oil. Its dedicated data root is =.cache/weaver-deployment-qualification/=. | New run directories should isolate generated catalog, configuration and ledger and associate them with the tested build and fixture. Retain original failed attempts with their verdicts. | Native path and dedicated root documented. Uniform per-run custody is pending. |
 | Deployable release | The release owner packages selected native outputs and the dependency closure. | A frozen manifest binds release digest, delivered bytes, application source and toolchain identities. The consumer verifies the manifest before activation. | Binding is specified in the Governor preregistration. No release publication job is allocated here. |
 | Runtime and site qualification | The launcher selects the catalog. The Rust authority owns the ledger. The site owns approval, activation, replay and formal results. | Bind activation, catalog and replay to one release digest and an admitted ledger cut or verified snapshot. Site records have independent retention. | Catalog and ledger inputs exist. Site approval and approved replay are pending. |
@@ -109,16 +122,18 @@ as such. Native diagnostics are process scratch, with bounded structured
 fields retained in the run record. Existing historical evidence remains in
 its original custody.
 
-Accept the local storage change when concurrent runs and a failed retry keep
-their distinct receipts, latest resolves to a complete receipt with the same
-run identity, and cleaning a build leaves both verification evidence and
-site data intact. These are bounded controls using the existing Go entry and
-fixture, independent of formal release sampling.
+Start with verification receipts as the first vertical slice. Accept it
+when a changed Scheme declaration updates both the Rust writer and the CI
+inventory, an escaping path or mismatched declaration identity is refused,
+and concurrent runs and a failed retry keep their distinct receipts. Verify
+that latest resolves to a complete receipt with the same run identity and
+that cleaning a build leaves both evidence and site data intact. Use bounded
+controls at the existing Go entry, independent of formal release sampling.
 
 ** Implemented CI receipt layout
 
-=WeaverProject::Verification::Artifacts= in =Project.sysml= owns the publication
-inventory. The workflow test checks the declared CI receipt paths against the
+=WeaverProject::Verification::Artifacts= in =Project.sysml= describes the current
+publication inventory. The workflow test checks the declared CI receipt paths against the
 actual upload allowlist. GitHub receives one artifact per suite, runner, tested
 checkout and run attempt.
 

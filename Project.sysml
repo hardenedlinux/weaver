@@ -120,10 +120,13 @@ package WeaverProject {
     }
 
     package ArtifactOrganization {
-        doc /* Project-wide custody and lifecycle. Verification::Artifacts owns
-           the implemented CI path inventory. Each other producer keeps its
-           native entry point and store. This model allocates responsibility
-           and records remaining implementation work. */
+        doc /* Project-wide custody and lifecycle. SysML allocates the
+           responsibilities. The intended executable declaration lives in
+           Gerbil Scheme through the Weaver Scheme/POO Module system.
+           Verification::Artifacts records the implemented CI paths until
+           the executable projection can be checked against the workflow. */
+        part def SchemeArtifactDeclaration;
+        part def RustArtifactMaterializer;
         part def ReproducibleInput;
         part def NativeBuildProduct;
         part def VerificationRun;
@@ -133,6 +136,24 @@ package WeaverProject {
         part def SiteRuntimeState;
         part def SiteQualification;
 
+        part artifactPlan : SchemeArtifactDeclaration {
+            doc /* Typed POO objects declare artifact kinds, relative layout,
+               producers, identity bindings, publication scope and retention.
+               The existing Module Interface exports the checked plan.
+               Gerbil Build Packages compiles that export. Derive Rust input
+               and the CI publication inventory from the same plan. A change
+               to an admitted declaration invalidates both projections. */
+        }
+        part materialization : RustArtifactMaterializer {
+            doc /* Rust consumes the versioned Scheme plan over the existing
+               typed bridge or its build projection. Validate relative paths
+               and required identity before materializing a typed record.
+               Publish the immutable run record before advancing latest.
+               Go and native tools supply observations. GitHub can still
+               record early job failures before the native owner exists.
+               Neither observation path may override Scheme publication rules.
+               The Scheme declaration and Rust materializer are design work. */
+        }
         part checkedInSources : ReproducibleInput {
             doc /* Git owns source, schemas, locks, deterministic fixtures and
                reproducible projections. A generated file in Git must have a
@@ -146,9 +167,10 @@ package WeaverProject {
                outputs and does not remove verification evidence or site data. */
         }
         part verificationRuns : VerificationRun {
-            doc /* weaver-dev and the existing native suites emit typed outcomes.
-               Verification::Artifacts declares the implemented local and CI
-               paths. CI retains outcomes by job attempt for seven days.
+            doc /* weaver-dev and native suites produce verification outcomes.
+               Rust materializes records from those observations under the
+               Scheme plan once implemented. Verification::Artifacts declares
+               the current local and CI paths. CI retains job attempts for seven days.
                The remaining local design retains an immutable run by identity
                before updating any latest view. A failed or incomplete attempt
                remains separately addressable and never qualifies the input. */
