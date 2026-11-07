@@ -9,9 +9,10 @@ mod transport;
 pub use broker::execute::execute;
 pub use broker::stream_session::StreamSession;
 pub use provider::{
-    AnthropicWifConfig, ProviderExecution, ProviderExecutionAuthority, ProviderOutput,
-    ProviderTransport, ProviderTransportPhases, TransportStage, execute_catalog_provider,
-    execute_catalog_provider_with_oauth, execute_provider,
+    AnthropicWifConfig, ProviderExecution, ProviderExecutionAdmission, ProviderExecutionAuthority,
+    ProviderOutput, ProviderTransport, ProviderTransportPhases, TransportStage,
+    execute_catalog_provider, execute_catalog_provider_with_oauth, execute_provider,
+    execute_provider_progression,
 };
 pub use transport::https::{HttpsTransport, SendObservation};
 pub use transport::stream_sink::StreamTlsConfig;

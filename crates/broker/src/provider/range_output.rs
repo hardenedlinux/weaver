@@ -6,7 +6,9 @@
 use super::runtime::{ProviderOutput, StreamDecoder};
 use std::future::poll_fn;
 use tokio::io::AsyncRead;
-use weaver_contracts::{Error, ProviderEvent, ProviderEventKind, Result, body_digest};
+use weaver_contracts::{
+    Error, MAX_WORKFLOW_RESULT_BYTES, ProviderEvent, ProviderEventKind, Result, body_digest,
+};
 use weaver_ledger::{
     Ledger, MAX_PROVIDER_PREPARATION_RANGES, MAX_PROVIDER_PREPARATION_ROWS, ProviderDispatch,
     ProviderRelease,
@@ -19,7 +21,8 @@ pub(super) fn relay<O: ProviderOutput>(
     response: super::response::Response,
     format: &str,
     rows: usize,
-) -> Result<Option<[u64; 4]>> {
+    mut result: Option<String>,
+) -> Result<(Option<[u64; 4]>, Option<String>)> {
     let mut pending = Vec::with_capacity(rows);
     let width = preparation_width(output, rows);
     let (reactor, deadline) = response.reactor();
@@ -71,10 +74,27 @@ pub(super) fn relay<O: ProviderOutput>(
         );
         release_ranges(ledger, permit, output, format, &mut ready)?;
         buffered?;
+        result = result.and_then(|capture| capture_workflow_result(capture, &ready));
         if terminal {
-            return Ok(reader.terminal_tokens());
+            return Ok((reader.terminal_tokens(), result));
         }
     }
+}
+
+fn capture_workflow_result(mut capture: String, ranges: &[Vec<ProviderEvent>]) -> Option<String> {
+    let deltas = ranges.iter().flatten().filter(|event| {
+        matches!(
+            event.kind,
+            ProviderEventKind::Delta | ProviderEventKind::Finish
+        )
+    });
+    for delta in deltas {
+        if delta.text.len() > MAX_WORKFLOW_RESULT_BYTES - capture.len() {
+            return None;
+        }
+        capture.push_str(&delta.text);
+    }
+    Some(capture)
 }
 
 fn preparation_width<O: ProviderOutput>(_output: &O, rows: usize) -> usize {

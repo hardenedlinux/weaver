@@ -122,7 +122,7 @@ impl Endpoint {
             }
         });
         Self {
-            runtime: fixture_runtime::fixture_runtime(),
+            runtime: fixture_runtime::fixture_runtime(Some(4)),
             peer_closed,
             address,
             root,

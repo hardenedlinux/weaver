@@ -324,12 +324,36 @@ pub struct ProviderExecutionAuthority<'a> {
     pub oauth: Option<&'a weaver_contracts::ProviderOAuthUse>,
 }
 
+/// The host's current authority inputs and optional prepared Session successor.
+pub struct ProviderExecutionAdmission<'a> {
+    pub authority: ProviderExecutionAuthority<'a>,
+    pub progression: Option<&'a weaver_ledger::ProviderProgression>,
+}
+
 /// Run the provider pipeline with the caller observation from authenticated RPC.
 pub fn execute_catalog_provider_with_oauth<O: ProviderOutput>(
     ledger: &mut Ledger,
     request: ProviderExecution<'_>,
     output: &mut O,
     authority: ProviderExecutionAuthority<'_>,
+) -> Result<()> {
+    execute_provider_progression(
+        ledger,
+        request,
+        output,
+        ProviderExecutionAdmission {
+            authority,
+            progression: None,
+        },
+    )
+}
+
+/// Use the existing provider pipeline with an optional sealed successor proposal.
+pub fn execute_provider_progression<O: ProviderOutput>(
+    ledger: &mut Ledger,
+    request: ProviderExecution<'_>,
+    output: &mut O,
+    admission: ProviderExecutionAdmission<'_>,
 ) -> Result<()> {
     if !cfg!(feature = "llm-provider") {
         return Err(Error::Invalid("LLM provider feature disabled"));
@@ -340,7 +364,7 @@ pub fn execute_catalog_provider_with_oauth<O: ProviderOutput>(
         format,
         batch_rows,
     } = request;
-    let ProviderExecutionAuthority { catalog, oauth } = authority;
+    let ProviderExecutionAuthority { catalog, oauth } = admission.authority;
     if !(1..=32).contains(&batch_rows)
         || !matches!(format, "protobuf" | "arrow")
         || output.stopped()
@@ -350,7 +374,7 @@ pub fn execute_catalog_provider_with_oauth<O: ProviderOutput>(
     for route in &plan.routes {
         crate::HttpsTransport::validate_endpoint(&route.endpoint)?;
     }
-    ledger.enqueue_provider_with_oauth(plan, catalog, oauth)?;
+    ledger.enqueue_provider_progression(plan, catalog, oauth, admission.progression)?;
     if output.stopped() {
         return Err(Error::Conflict("cancelled before provider consumption"));
     }
@@ -360,10 +384,19 @@ pub fn execute_catalog_provider_with_oauth<O: ProviderOutput>(
         &transport.eligible(),
         oauth,
     )?;
+    let result_capture = permit.expects_workflow_result().then(String::new);
     let response = open_guarded(ledger, &permit, transport, output)?;
-    let tokens = super::range_output::relay(ledger, &permit, output, response, format, batch_rows)?;
+    let (tokens, response) = super::range_output::relay(
+        ledger,
+        &permit,
+        output,
+        response,
+        format,
+        batch_rows,
+        result_capture,
+    )?;
     output.drain_delivery(ledger, &permit, format)?;
-    ledger.complete_provider_with_usage(&permit, format, tokens)
+    ledger.complete_provider_with_result(&permit, format, tokens, response.as_deref())
 }
 
 pub(super) enum StreamDecoder<R: tokio::io::AsyncRead + Unpin> {
