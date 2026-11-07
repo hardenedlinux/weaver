@@ -93,6 +93,7 @@ jobs:
           command -v timeout
           export scheme_sources="$RUNNER_TEMP/weaver-scheme-sources"
           if timeout --verbose --kill-after=5s 12m bash -se -o pipefail <<'SOURCE_CLOSURE'; then
+          printf 'phase=resolve-pins\n' >> "$GITHUB_OUTPUT"
           fetch_source() {
             local package=$1 pin=$2 destination=$3 revision=${2##*@}
             [[ "$pin" == "$package@$revision" && "$revision" =~ ^[0-9a-f]{40}$ ]]
@@ -115,10 +116,13 @@ jobs:
 
           # Core supplies the compiler and POO. Lab and ASCENT supply the
           # source selected by Weaver; their unrelated build products stay out.
+          printf 'phase=core-and-poo\n' >> "$GITHUB_OUTPUT"
           gerbil pkg install "$core_pin"
+          printf 'phase=link-source-packages\n' >> "$GITHUB_OUTPUT"
           gerbil pkg link "$lab" "$lab_source"
           gerbil pkg link "$ascent" "$ascent_source"
           export GERBIL_LOADPATH="$GERBIL_PATH/lib:$scheme_sources/imports"
+          printf 'phase=ascent-program\n' >> "$GITHUB_OUTPUT"
           ./build.ss prepare-governor-library
           SOURCE_CLOSURE
             dependency_exit_code=0
@@ -165,6 +169,7 @@ jobs:
               "os": ${{ toJSON(runner.os) }},
               "arch": ${{ toJSON(runner.arch) }},
               "status": ${{ toJSON(job.status) }},
+              "schemeDependencyPhase": ${{ toJSON(steps.scheme_dependencies.outputs.phase || null) }},
               "schemeDependencyExitCode": ${{ steps.scheme_dependencies.outputs.exit_code || 'null' }},
               "phases": {
                 "checkout": ${{ toJSON(steps.checkout.outcome || 'skipped') }},
