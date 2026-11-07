@@ -24,6 +24,21 @@ impl SchemeCompiler {
         }
         Ok(Self { runtime })
     }
+    pub fn evaluate(&mut self, input: &crate::Derivation) -> Result<Vec<String>, SourceError> {
+        match input {
+            crate::Derivation::Governor(_) => Err(SourceError::Contract),
+            crate::Derivation::FactImpact { root, dependencies } => {
+                let input = crate::scheme_input::values::Input::new(&self.runtime);
+                let root = input.record(vec![
+                    ("root", input.text(root)?),
+                    ("dependencies", input.edges(dependencies)?),
+                ])?;
+                let output =
+                    linked::fact_impact(&self.runtime, &root).map_err(|_| SourceError::Scheme)?;
+                crate::scheme::materialize(output)
+            }
+        }
+    }
     /// Compilation is inert preparation; the source lane independently binds
     /// this result to its retained original before any caller can claim it.
     pub fn compile(&mut self, original: &OwnedSource) -> Result<OwnedSource, SourceError> {

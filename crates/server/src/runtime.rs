@@ -127,6 +127,15 @@ impl RuntimeOwner {
             run(cancel)
         }))
     }
+    pub(crate) fn governor(&self) -> Result<SourceClient> {
+        self.inner
+            .gate
+            .lock()
+            .map_err(|_| Error::Conflict("runtime owner poisoned"))?
+            .governance
+            .clone()
+            .ok_or(Error::Conflict("governance owner unavailable"))
+    }
     pub(crate) fn attach_governance(&self, client: SourceClient) -> Result<()> {
         let mut state = self
             .inner

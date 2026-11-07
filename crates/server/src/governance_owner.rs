@@ -33,6 +33,35 @@ impl RuntimeOwner {
         F: FnOnce() -> Result<C> + Send + 'static,
         C: FnMut(&OwnedSource) -> std::result::Result<OwnedSource, SourceError> + 'static,
     {
+        self.start_governance_with_governor(
+            slot,
+            capacity,
+            initialize,
+            |compiler, original, _| compiler(original),
+            |_, _| Err(SourceError::Contract),
+        )
+        .await
+    }
+
+    pub(crate) async fn start_governance_with_governor<C: 'static>(
+        &self,
+        slot: Arc<OwnedSemaphorePermit>,
+        capacity: NonZeroUsize,
+        initialize: impl FnOnce() -> Result<C> + Send + 'static,
+        compile: impl FnMut(
+            &mut C,
+            &OwnedSource,
+            &tokio_util::sync::CancellationToken,
+        ) -> std::result::Result<OwnedSource, SourceError>
+        + Send
+        + 'static,
+        derive: impl FnMut(
+            &mut C,
+            &weaver_governance::Derivation,
+        ) -> std::result::Result<Vec<String>, SourceError>
+        + Send
+        + 'static,
+    ) -> Result<GovernanceWorker> {
         let (client, inbox) = source_lane(capacity);
         self.attach_governance(client.clone())?;
         let mut starting = self.shutdown_guard();
@@ -51,7 +80,7 @@ impl RuntimeOwner {
                 return Ok(());
             }
             // run drops the compiler (and its VM) before the tracked task ends.
-            inbox.run(compiler);
+            inbox.run_with_cancellable_governor(compiler, compile, derive);
             Ok(())
         })?;
         let initialized = receiver

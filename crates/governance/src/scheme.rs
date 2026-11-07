@@ -4,12 +4,12 @@
 
 //! Scheme object conversion using the pinned Gerbil's GC-rooted APIs.
 //! No JSON text, unrooted object word, or VM borrow enters OwnedSource.
-use crate::{MAX_SOURCE_BYTES, OwnedSource, SourceData, SourceError};
+use crate::{MAX_SOURCE_BYTES, OwnedSource, SourceError};
 use gerbil_scheme::{
     BigIntegerBuffer, CollectionKind, IdentifierBuffer, IdentifierKind, ObjectKind,
     RootedObjectBatch, RootedSchemeObject, SchemeScalar,
 };
-use serde::de::{self, Deserialize, DeserializeSeed, MapAccess, SeqAccess, Visitor};
+use serde::de::{self, DeserializeSeed, MapAccess, SeqAccess, Visitor};
 use std::collections::BTreeSet;
 
 /// Materialize and bind to the original retained before the approved call.
@@ -49,16 +49,21 @@ impl SchemeDeserializer<'_, '_> {
 /// Approved producer supplies a stable typed snapshot. Gerbil table copies are
 /// shallow; limits bound traversal, not arbitrary hostile VM allocation.
 pub fn materialize_source(source: RootedSchemeObject<'_>) -> Result<OwnedSource, SourceError> {
+    OwnedSource::from_source(materialize(source)?)
+}
+
+pub(crate) fn materialize<T: serde::de::DeserializeOwned>(
+    source: RootedSchemeObject<'_>,
+) -> Result<T, SourceError> {
     let mut limits = Limits {
         bytes: MAX_SOURCE_BYTES,
         nodes: 16384,
     };
-    let data = SourceData::deserialize(SchemeDeserializer {
+    T::deserialize(SchemeDeserializer {
         value: source,
         limits: &mut limits,
         depth: 0,
-    })?;
-    OwnedSource::from_source(data)
+    })
 }
 struct Sequence<'r, 'a> {
     entries: RootedObjectBatch<'r>,

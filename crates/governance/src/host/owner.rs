@@ -30,12 +30,15 @@ impl SourceInbox {
         self,
         owner: C,
         mut compile: impl FnMut(&mut C, &OwnedSource) -> Result<OwnedSource, SourceError>,
-        derive: impl FnMut(&mut C, &crate::GovernorCut) -> Result<Vec<String>, SourceError>,
+        mut derive: impl FnMut(&mut C, &crate::GovernorCut) -> Result<Vec<String>, SourceError>,
     ) {
         self.run_with_cancellable_governor(
             owner,
             |owner, original, _| compile(owner, original),
-            derive,
+            |owner, input| match input {
+                crate::Derivation::Governor(cut) => derive(owner, cut),
+                crate::Derivation::FactImpact { .. } => Err(SourceError::Contract),
+            },
         );
     }
     /// Pass the request cancellation token into a cooperative compiler.
@@ -47,7 +50,7 @@ impl SourceInbox {
             &OwnedSource,
             &CancellationToken,
         ) -> Result<OwnedSource, SourceError>,
-        mut derive: impl FnMut(&mut C, &crate::GovernorCut) -> Result<Vec<String>, SourceError>,
+        mut derive: impl FnMut(&mut C, &crate::Derivation) -> Result<Vec<String>, SourceError>,
     ) {
         while let Some(command) = self.receiver.blocking_recv() {
             if *self.shared.gate() {

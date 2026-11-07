@@ -352,18 +352,22 @@ impl pb::gateway_server::Gateway for Gateway {
         let result = match source.prepare_fact(caller.clone(), barrier).await? {
             weaver_ledger::FactPreparation::Resolved(resolution) => resolution,
             weaver_ledger::FactPreparation::Pending(work) => {
-                let slot = self.admission.observation()?;
-                let job = self
+                let _slot = self.admission.observation()?;
+                let affected = self
                     .runtime
-                    .spawn_blocking(slot, move |_| {
-                        let affected = weaver_governance::derive_fact_impact(&work)?;
-                        Ok((work, affected))
-                    })
-                    .map_err(status)?;
-                let (work, affected) = job
+                    .governor()
+                    .map_err(status)?
+                    .fact_impact(&work)
                     .await
-                    .map_err(|_| Status::unavailable("hard fact derivation interrupted"))?
-                    .map_err(status)?;
+                    .map_err(|error| match error {
+                        weaver_governance::SourceJobError::Busy => {
+                            Status::resource_exhausted("hard fact derivation lane full")
+                        }
+                        weaver_governance::SourceJobError::Source(_) => {
+                            Status::failed_precondition("hard fact derivation rejected")
+                        }
+                        _ => Status::unavailable("hard fact derivation interrupted"),
+                    })?;
                 source.resolve_fact(caller, work, affected).await?
             }
         };

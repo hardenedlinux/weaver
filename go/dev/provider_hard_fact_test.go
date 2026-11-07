@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
-//go:build integration && !windows
+//go:build integration && schemeintegration && !windows
 
 package dev
 
@@ -64,9 +64,8 @@ func hardFactFeedSetting(t *testing.T, f *fixture, family, root string, dependen
 
 func TestProviderControlHardFactWithdrawalRestartAndABA(t *testing.T) {
 	f := newFixture(t, completeSSE, false)
-	f.stop(t)
 	f.env = append(f.env, hardFactFeedSetting(t, f, f.plan.Family, f.plan.Node, [][2]string{}, nil, "", nil))
-	f.start(t)
+	compiledControlSources(false).configure(t, f, controlBundle(t, f))
 
 	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
 	defer cancel()

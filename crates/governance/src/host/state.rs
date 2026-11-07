@@ -80,9 +80,18 @@ pub struct GovernorCut {
     pub nested_results: Vec<(String, String)>,
     pub nested_decisions: Vec<(String, String)>,
 }
+/// Inert observations evaluated by the existing linked Scheme owner.
+#[derive(serde::Serialize)]
+pub enum Derivation {
+    Governor(Box<GovernorCut>),
+    FactImpact {
+        root: String,
+        dependencies: Vec<(String, String)>,
+    },
+}
 pub(super) enum Command {
     Derive {
-        input: Box<GovernorCut>,
+        input: Derivation,
         reply: oneshot::Sender<Result<Vec<String>, crate::SourceError>>,
         _slot: OwnedSemaphorePermit,
     },

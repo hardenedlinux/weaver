@@ -730,6 +730,7 @@ package WeaverProject {
                fixture. This object supplies no publication or send authority. */
         }
         part 't/gateway-contracts-test.ss' : File;
+        part 't/gateway-fact-impact-test.ss' : File;
         part 't/governance-test.ss' : File;
         part 't/policy-test.ss' : File;
         part 't/fixtures/governed-control.ss' : File {

@@ -76,6 +76,21 @@ impl SourceClient {
     }
     /// Submit a detached ledger observation on the same bounded Scheme owner.
     pub async fn derive(&self, input: crate::GovernorCut) -> Result<Vec<String>, SourceJobError> {
+        self.evaluate(crate::Derivation::Governor(Box::new(input)))
+            .await
+    }
+    /// Ask the same Scheme owner for the impact of an already persisted intent.
+    pub async fn fact_impact(
+        &self,
+        work: &weaver_contracts::FactWork,
+    ) -> Result<Vec<String>, SourceJobError> {
+        self.evaluate(crate::Derivation::FactImpact {
+            root: work.root.clone(),
+            dependencies: work.dependencies.clone(),
+        })
+        .await
+    }
+    async fn evaluate(&self, input: crate::Derivation) -> Result<Vec<String>, SourceJobError> {
         let slot = self
             .capacity
             .clone()
@@ -89,7 +104,7 @@ impl SourceClient {
             }
             self.sender
                 .try_send(Command::Derive {
-                    input: Box::new(input),
+                    input,
                     reply,
                     _slot: slot,
                 })

@@ -443,9 +443,10 @@ package PolicyEvidenceDesign {
            not covered by a fixed-fact Policy delta. Lost replies recover the
            original outcome. Continuations reuse the existing canonical-family
            contract and cannot erase pending intent or reset original domains.
-           The local availability profile runs a bounded native ASCENT closure
-           on the retained graph. Only the oldest intent can install, and an
-           appended intent invalidates the earlier computation's prefix. */
+           The linked Weaver Scheme owner evaluates the bounded impact closure
+           using the Gerbil ASCENT package supplied by Agentic AI Lab. Owner
+           unavailability leaves the barrier pending. Only the oldest intent
+           can install, and a new intent invalidates the earlier work's prefix. */
     }
     item def PublicationCommand {
         doc /* At the existing publication CAS, compare operation/digest and the

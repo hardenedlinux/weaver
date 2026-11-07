@@ -10,10 +10,10 @@ mod catalog;
 mod host;
 mod source;
 pub use binding::{BoundSource, SourceExpectation};
-mod hard_fact;
 pub use catalog::{ApprovedProducer, CatalogError, ProducerCatalog, ProducerClient};
-pub use hard_fact::derive_fact_impact;
-pub use host::{GovernorCut, SourceClient, SourceInbox, SourceJob, SourceJobError, source_lane};
+pub use host::{
+    Derivation, GovernorCut, SourceClient, SourceInbox, SourceJob, SourceJobError, source_lane,
+};
 pub use source::{MAX_SOURCE_BYTES, OwnedSource, SourceData, SourceError, SourceSelection};
 
 #[cfg(feature = "scheme-vm")]

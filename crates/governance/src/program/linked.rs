@@ -11,6 +11,7 @@ unsafe extern "C" {
     fn ___LNK_weaver__governance__program(
         ctx: *mut gerbil_scheme_sys::GerbilGlobalState,
     ) -> *mut gerbil_scheme_sys::GerbilModuleOrLink;
+    fn weaver_hard_fact_impact_v1(root: i64) -> i64;
     fn weaver_capture_source_v1(root: i64) -> i64;
     fn weaver_governance_ready_v1(root: i64) -> i64;
 }
@@ -40,5 +41,14 @@ pub(super) fn capture<'r>(
     // input only synchronously, catches semantic declines and transfers one
     // fresh data/false root. It retains no Rust pointer and cannot finalize VM.
     let export = unsafe { runtime.bind_object_export(weaver_capture_source_v1) }?;
+    export.call(input).into_result()
+}
+
+pub(super) fn fact_impact<'r>(
+    runtime: &'r GerbilRuntime,
+    input: &RootedSchemeObject<'_>,
+) -> Result<RootedSchemeObject<'r>, GerbilError> {
+    // SAFETY: fixed same-graph rooted call transfers one fresh result root.
+    let export = unsafe { runtime.bind_object_export(weaver_hard_fact_impact_v1) }?;
     export.call(input).into_result()
 }

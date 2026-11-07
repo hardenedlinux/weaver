@@ -30,6 +30,11 @@ pub(crate) async fn start(
     catalog: Option<ProducerCatalog>,
 ) -> Result<Option<crate::GovernanceWorker>> {
     let Some(catalog) = catalog else {
+        if runtime.fact_feed().is_some() {
+            return Err(Error::Invalid(
+                "hard fact feed requires the linked Scheme owner",
+            ));
+        }
         return Ok(None);
     };
     #[cfg(not(feature = "scheme-program"))]
@@ -57,11 +62,16 @@ async fn start_compiler(
             .map_err(|_| Error::Conflict("compiler owner budget"))?,
     );
     let worker = runtime
-        .start_governance(slot, capacity, || {
-            let mut compiler = weaver_governance::SchemeCompiler::initialize()
-                .map_err(|_| Error::Conflict("approved Scheme program unavailable"))?;
-            Ok(move |source: &weaver_governance::OwnedSource| compiler.compile(source))
-        })
+        .start_governance_with_governor(
+            slot,
+            capacity,
+            || {
+                weaver_governance::SchemeCompiler::initialize()
+                    .map_err(|_| Error::Conflict("approved Scheme program unavailable"))
+            },
+            |compiler, source, _| compiler.compile(source),
+            weaver_governance::SchemeCompiler::evaluate,
+        )
         .await?;
     worker.publish_producers(catalog)?;
     Ok(worker)
