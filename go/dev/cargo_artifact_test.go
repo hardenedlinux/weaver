@@ -139,21 +139,38 @@ func FuzzCargoExecutablePreservesReportedPath(f *testing.F) {
 	})
 }
 
-// Standard Go benchmark selection also selects an optimized provider image.
-// Ordinary integration tests keep their default debug assertions. Artifact
-// paths still come from Cargo JSON, never a guessed target/profile directory.
-func providerCargoBuildArgs(features, benchmark string) []string {
+// The existing deployment inputs select the release Scheme graph. Ordinary
+// qualification keeps its debug-only producer and the Cargo artifact check.
+const providerSchemeQualificationFeatures = "arrow,governance-qualification"
+const providerSchemeReleaseFeatures = "arrow,scheme-program"
+
+func providerCargoBuildArgs(features, benchmark string, lookup func(string) (string, bool)) ([]string, bool, error) {
+	application, applicationSet := lookup("WEAVER_GOVERNANCE_APPLICATION")
+	source, sourceSet := lookup("WEAVER_GOVERNANCE_APPLICATION_SOURCE")
+	optimized := benchmark != ""
+	if applicationSet || sourceSet {
+		if !applicationSet || !sourceSet || application == "" || source == "" {
+			return nil, false, errors.New("release Scheme integration requires both application inputs")
+		}
+		if features != providerSchemeQualificationFeatures {
+			return nil, false, errors.New("release Scheme integration requires the schemeintegration tag")
+		}
+		features = providerSchemeReleaseFeatures
+		optimized = true
+	} else if optimized && features == providerSchemeQualificationFeatures {
+		return nil, false, errors.New("release Scheme integration requires an explicit application")
+	}
 	args := []string{"build", "-p", "weaver-server", "--bin", "weaver-server", "--features", features, "--locked", "--offline", "--message-format=json-render-diagnostics"}
-	if benchmark != "" {
+	if optimized {
 		args = append(args, "--release")
 	}
-	return args
+	return args, optimized, nil
 }
 
 func TestProviderBenchmarkUsesOptimizedRustImage(t *testing.T) {
 	for _, benchmark := range []string{"", "^BenchmarkGatewayStreamingPair$", "."} {
-		args := providerCargoBuildArgs("arrow", benchmark)
-		if slices.Contains(args, "--release") != (benchmark != "") {
+		args, optimized, err := providerCargoBuildArgs("arrow", benchmark, func(string) (string, bool) { return "", false })
+		if err != nil || optimized != (benchmark != "") || slices.Contains(args, "--release") != optimized {
 			t.Fatal("incorrect runtime measurement profile", args)
 		}
 		for _, required := range []string{"--locked", "--offline", "--message-format=json-render-diagnostics"} {
@@ -161,6 +178,41 @@ func TestProviderBenchmarkUsesOptimizedRustImage(t *testing.T) {
 				t.Fatal("lost source/artifact boundary", args)
 			}
 		}
+	}
+}
+
+func TestSchemeIntegrationReleaseRequiresExplicitApplication(t *testing.T) {
+	const module = "WEAVER_GOVERNANCE_APPLICATION"
+	const source = "WEAVER_GOVERNANCE_APPLICATION_SOURCE"
+	for _, tc := range []struct {
+		name, features, benchmark string
+		env                       map[string]string
+		wantFeatures              string
+		optimized                 bool
+	}{
+		{name: "debug qualification", features: "arrow,governance-qualification", wantFeatures: "arrow,governance-qualification"},
+		{name: "release application", features: "arrow,governance-qualification", env: map[string]string{module: "weaver/provider", source: "/provider.ss"}, wantFeatures: "arrow,scheme-program", optimized: true},
+		{name: "missing binding", features: "arrow,governance-qualification", env: map[string]string{module: "weaver/provider"}},
+		{name: "empty binding", features: "arrow,governance-qualification", env: map[string]string{module: "weaver/provider", source: ""}},
+		{name: "qualification benchmark", features: "arrow,governance-qualification", benchmark: "."},
+		{name: "missing tag", features: "arrow", env: map[string]string{module: "weaver/provider", source: "/provider.ss"}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			args, optimized, err := providerCargoBuildArgs(tc.features, tc.benchmark, func(key string) (string, bool) {
+				value, exists := tc.env[key]
+				return value, exists
+			})
+			if tc.wantFeatures == "" {
+				if err == nil || len(args) != 0 {
+					t.Fatal("invalid selection emitted a Cargo command", args, err)
+				}
+				return
+			}
+			if err != nil || optimized != tc.optimized || slices.Contains(args, "--release") != optimized ||
+				!slices.Contains(args, tc.wantFeatures) || (optimized && slices.Contains(args, "arrow,governance-qualification")) {
+				t.Fatal("invalid Scheme integration build selection", args, err)
+			}
+		})
 	}
 }
 

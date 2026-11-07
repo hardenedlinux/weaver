@@ -58,8 +58,13 @@ func TestMain(m *testing.M) {
 		os.Exit(m.Run())
 	}
 	benchmark := flag.Lookup("test.bench").Value.String()
+	args, optimized, err := providerCargoBuildArgs(providerRuntimeFeatures, benchmark, os.LookupEnv)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
 	profile := "dev"
-	if benchmark != "" {
+	if optimized {
 		profile = "release"
 	}
 	_, source, _, ok := runtime.Caller(0)
@@ -67,13 +72,22 @@ func TestMain(m *testing.M) {
 		os.Exit(1)
 	}
 	repo := filepath.Clean(filepath.Join(filepath.Dir(source), "../.."))
-	cmd := exec.Command("cargo", providerCargoBuildArgs(providerRuntimeFeatures, benchmark)...)
-	cmd.Dir = repo
-	cmd.Stderr = os.Stderr
-	executable, err := buildCargoExecutable(cmd, cargoTarget{Name: "weaver-server", Kind: "bin", Optimized: benchmark != ""})
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
+	expected, frozen := os.LookupEnv("WEAVER_TEST_PROVIDER_IMAGE_SHA256")
+	executable, prebuilt := os.LookupEnv("WEAVER_TEST_PREBUILT_PROVIDER_IMAGE")
+	if prebuilt {
+		if !optimized || !frozen || expected == "" || !filepath.IsAbs(executable) {
+			fmt.Fprintln(os.Stderr, "prebuilt provider image requires an absolute path and a frozen release SHA-256")
+			os.Exit(1)
+		}
+	} else {
+		cmd := exec.Command("cargo", args...)
+		cmd.Dir = repo
+		cmd.Stderr = os.Stderr
+		executable, err = buildCargoExecutable(cmd, cargoTarget{Name: "weaver-server", Kind: "bin", Optimized: optimized})
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
 	}
 	directory, err := os.MkdirTemp("", "weaver-control-build-*")
 	if err != nil {
@@ -88,6 +102,11 @@ func TestMain(m *testing.M) {
 		os.Exit(1)
 	}
 	fmt.Fprintf(os.Stderr, "test-owned provider image sha256=%s profile=%s\n", digest, profile)
+	if frozen && (!optimized || digest != expected) {
+		os.RemoveAll(directory)
+		fmt.Fprintln(os.Stderr, "test-owned release image differs from the frozen SHA-256")
+		os.Exit(1)
+	}
 	controlBinary = filepath.Join(directory, "weaver-control")
 	controlArgs := []string{"-C", "go", "build", "-mod=readonly"}
 	if benchmark == "" {

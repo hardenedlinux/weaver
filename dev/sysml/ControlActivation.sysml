@@ -60,6 +60,10 @@ package ControlActivation {
            arbitrary external source fidelity or exclude filesystem ABA.
            The retired Go linked-source checker is not native evidence for the
            current path. Actual FFI/gRPC qualification remains independent. */
+        doc /* A Scheme release qualification names the application module
+           and source. A prebuilt executable is admitted by the frozen
+           release SHA-256. The fixture launches only its verified private
+           copy, leaving site approval and replay custody to their owners. */
         doc /* Local Go startup phases distinguish configuration readiness,
            authority connections/reconciliation and issuing Serve; only the
            actual authenticated channel proves readiness. Go deployment never
