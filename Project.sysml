@@ -49,6 +49,7 @@ package WeaverProject {
     }
     requirement architectureViews : ArchitectureViewGrammar;
     part def File;
+    part def ExecutableFile :> File;
     part def IgnoredDirectory;
     part def Absent;
     part def RuntimeDependency;
@@ -72,11 +73,14 @@ package WeaverProject {
         part 'benches/README.org' : File;
     }
     part def SchemeModule {
+        doc /* The Scheme Module Interface and its native Contract own role
+           semantics. The native package build qualifies selected products. */
         part 'types.ss' : File;
         part 'objects.ss' : File;
         part 'func.ss' : File;
         part 'config.ss' : File;
         part 'interface.ss' : File;
+        part 'gerbil.pkg' : Absent;
     }
 
     package SourcePolicy {
@@ -483,7 +487,7 @@ package WeaverProject {
         part 'go/go.mod' : File;
         part 'go/go.sum' : File;
         part 'gerbil.pkg' : File;
-        part 'build.ss' : File;
+        part 'build.ss' : ExecutableFile;
         part 'init.ss' : File;
         part 'proto/gateway/v1/gateway.proto' : File;
         part '.github/workflows/ci.yml' : File;
@@ -761,6 +765,8 @@ package WeaverProject {
         part 'scheme/modules' : Absent;
         part 'scheme/weaver' : Absent;
         part 'scheme/gerbil.pkg' : Absent;
+        part 'dev/build.ss' : Absent;
+        part 'dev/gerbil.pkg' : Absent;
         part 'packages/server' : Absent;
         part 'packages/control' : Absent;
         part 'dev/models' : Absent;

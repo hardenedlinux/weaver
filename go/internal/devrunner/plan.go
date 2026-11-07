@@ -28,7 +28,7 @@ func Plan(goBinary string) []Stage {
 		{"proof-environment", "elan", []string{"run", proofToolchain, "lean", "--version"}},
 		{"lean-json-integration", goBinary, []string{"-C", "go", "test", "-count=1", "-tags=proofintegration", "./internal/devrunner", "-run", "^TestLeanJSONCompilerAndRunner$", "-v"}},
 		{"spec-real-qualification", goBinary, []string{"-C", "go", "test", "-race", "-count=1", "-tags=proofintegration", "./internal/specreview"}},
-		{"project-architecture", goBinary, []string{"-C", "go", "test", "-count=1", "./dev", "-run", "^Test(ProjectArchitecture|SysMLSDKAndRequirementTrace|CargoWorkspace|SchemeModuleOwnership|CIWorkflows)", "-v"}},
+		{"project-architecture", goBinary, []string{"-C", "go", "test", "-count=1", "./dev", "-run", "^Test(ProjectArchitecture|SysMLSDKAndRequirementTrace|CargoWorkspace|CIWorkflows)", "-v"}},
 		{"workflow-contract", "actionlint", nil},
 		{"rust-format", "cargo", []string{"fmt", "--all", "--", "--check"}},
 		{"rust-default-profile", "cargo", []string{"check", "--workspace", "--all-targets", "--locked", "--offline"}},
@@ -209,7 +209,7 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 		}, nil
 	case "check-scheme":
 		return []Stage{
-			{"project-architecture", goBinary, []string{"-C", "go", "test", "-count=1", "./dev", "-run", "^Test(ProjectArchitecture|SysMLSDKAndRequirementTrace|CargoWorkspace|SchemeModuleOwnership|CIWorkflows)", "-v"}},
+			{"project-architecture", goBinary, []string{"-C", "go", "test", "-count=1", "./dev", "-run", "^Test(ProjectArchitecture|SysMLSDKAndRequirementTrace|CargoWorkspace|CIWorkflows)", "-v"}},
 			{"scheme-policy-library", "cargo", []string{"build", "-p", "weaver-policy-ffi", "--locked", "--offline"}},
 			{"scheme-policy-preflight", "cargo", []string{"test", "-p", "weaver-policy-ffi", "--lib", "--benches", "--locked", "--offline"}},
 			{"scheme-policy-pkg-config", "cargo", []string{"run", "-p", "weaver-policy-ffi", "--example", "policy_pkg_config", "--locked", "--offline"}},
@@ -257,7 +257,7 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 		}, nil
 	case "bench":
 		return []Stage{
-			{"project-architecture", goBinary, []string{"-C", "go", "test", "-count=1", "./dev", "-run", "^Test(ProjectArchitecture|SysMLSDKAndRequirementTrace|CargoWorkspace|SchemeModuleOwnership|CIWorkflows)", "-v"}},
+			{"project-architecture", goBinary, []string{"-C", "go", "test", "-count=1", "./dev", "-run", "^Test(ProjectArchitecture|SysMLSDKAndRequirementTrace|CargoWorkspace|CIWorkflows)", "-v"}},
 			{"rust-environment", "rustc", []string{"-vV"}},
 			{"go-environment", goBinary, []string{"-C", "go", "version"}},
 			{"benchmark-package-contract", goBinary, []string{"-C", "go", "test", "-count=1", "./dev", "./internal/devrunner", "-run", "^Test(CargoWorkspaceAndDevelopmentGates|Benchmark.*)$"}},

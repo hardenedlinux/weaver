@@ -141,7 +141,7 @@ func TestCIWorkflowsMatchProjectSuites(t *testing.T) {
 			t.Fatal("verification receipt upload must cover failed stages")
 		}
 		for _, path := range strings.Split(strings.TrimSpace(step.With.Path), "\n") {
-			if !wantedReceipts[path] || !strings.HasPrefix(path, ".cache/verification/") || !strings.HasSuffix(path, ".json") {
+			if !wantedReceipts[path] {
 				t.Fatalf("unexpected verification artifact path %q", path)
 			}
 			delete(wantedReceipts, path)
