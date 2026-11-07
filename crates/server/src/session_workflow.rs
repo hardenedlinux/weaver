@@ -19,7 +19,7 @@ struct SessionStep {
 }
 
 enum SessionWork {
-    Linear(SessionStep),
+    Linear(Vec<SessionStep>),
     Graph(Box<SessionGraph>),
 }
 
@@ -66,7 +66,7 @@ impl Gateway {
                 continue;
             };
             let steps = match batch {
-                SessionWork::Linear(step) => vec![step],
+                SessionWork::Linear(steps) => steps,
                 SessionWork::Graph(graph) => match self.derive_session_steps(*graph).await {
                     Ok(steps) => steps,
                     Err(_) => continue,
@@ -290,14 +290,14 @@ impl Gateway {
                 Some(receipt) if receipt.state == ProviderState::Unknown => return Ok(None),
                 _ => {
                     return Ok(previous.map(|previous| {
-                        SessionWork::Linear(SessionStep {
+                        SessionWork::Linear(vec![SessionStep {
                             admission: WorkflowAdmission {
                                 predecessors: vec![previous],
                                 observed: None,
                             },
                             next: current,
                             catalog,
-                        })
+                        }])
                     }));
                 }
             }

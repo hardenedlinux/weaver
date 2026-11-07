@@ -122,12 +122,11 @@ impl Gateway {
             .runtime
             .fact_feed()
             .is_some_and(|feed| !feed.workflow_path.is_empty() && feed.family == plan.family)
+            && !predecessors.is_empty()
         {
-            if !predecessors.is_empty() {
-                return Err(Status::failed_precondition(
-                    "Session owns successor execution",
-                ));
-            }
+            return Err(Status::failed_precondition(
+                "Session owns successor execution",
+            ));
         }
         self.start_provider_stream(
             slot,

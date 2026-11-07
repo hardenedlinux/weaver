@@ -11,7 +11,6 @@ pub use release_group::{MAX_PROVIDER_PREPARATION_RANGES, MAX_PROVIDER_PREPARATIO
 
 use crate::persistence::{ProviderScopePhase, WriteScope};
 use crate::{Ledger, db, integer};
-use admission::{admissible_receipt, store_authorized_provider_plan};
 use std::collections::BTreeSet;
 use std::{
     sync::OnceLock,
@@ -218,74 +217,6 @@ impl Ledger {
     #[cfg(feature = "commit-observer")]
     pub fn finish_provider_scope_trace(&mut self) {
         self.connection.finish_provider_scope_trace();
-    }
-    pub fn enqueue_provider(&mut self, plan: &ProviderPlan) -> Result<ProviderReceipt> {
-        self.enqueue_catalog_provider(plan, "")
-    }
-
-    pub fn enqueue_catalog_provider(
-        &mut self,
-        plan: &ProviderPlan,
-        catalog: &str,
-    ) -> Result<ProviderReceipt> {
-        self.enqueue_provider_with_oauth(plan, catalog, None)
-    }
-
-    /// Bind the request observation before exposing any reservation or prior outcome.
-    pub fn enqueue_provider_with_oauth(
-        &mut self,
-        plan: &ProviderPlan,
-        catalog: &str,
-        oauth: Option<&ProviderOAuthUse>,
-    ) -> Result<ProviderReceipt> {
-        self.enqueue_provider_progression(plan, catalog, oauth, None)
-    }
-
-    /// Commit the prepared successor frontier with the existing claim and hold.
-    pub fn enqueue_provider_progression(
-        &mut self,
-        plan: &ProviderPlan,
-        catalog: &str,
-        oauth: Option<&ProviderOAuthUse>,
-        progression: Option<&crate::ProviderProgression>,
-    ) -> Result<ProviderReceipt> {
-        let digest = plan.digest()?;
-        let encoded = serde_json::to_string(plan)?;
-        let prepared = self
-            .connection
-            .prepare_provider_oauth(oauth, "provider:execute")?;
-        let publication = self.connection.prepare_provider_publication(&plan.family);
-        let original = self.connection.prepare_provider_original(&plan.family);
-        self.connection.prepare_provider_domain();
-        let transaction = (progression.is_some() && governor_timing()).then(Instant::now);
-        let tx = crate::persistence::begin_provider_admission(
-            &mut self.connection,
-            &plan.family,
-            &AdmissionRequest { _sealed: () },
-        )
-        .map_err(db)?;
-        let new_claim =
-            match admissible_receipt(&tx, plan, &digest, prepared.as_ref(), progression)? {
-                Some(old) if old.state != ProviderState::Queued => return Ok(old),
-                Some(_) => false,
-                None => true,
-            };
-        store_authorized_provider_plan(
-            &tx,
-            plan,
-            (&digest, encoded),
-            catalog,
-            new_claim,
-            &publication?,
-            original.as_ref(),
-        )?;
-        crate::provider_workflow::record_admission(&tx, plan, &digest, progression, new_claim)?;
-        tx.commit_provider_admission().map_err(db)?;
-        if new_claim && progression.is_some() {
-            governor_commit_trace("reserve", plan, transaction);
-        }
-        self.provider_receipt(&plan.family, &plan.node)?
-            .ok_or(Error::Conflict("provider receipt missing"))
     }
     /// Eligibility is a local Rust credential/configuration observation, never a provider call.
     pub fn consume_provider(
