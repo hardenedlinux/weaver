@@ -1781,6 +1781,84 @@ execution budget. The ordinary source RPC remains the explicitly trusted
 administrative profile; full semantic-adapter restrictions on that profile are
 not newly claimed by the startup mechanism.
 
+** Governor release preregistration
+
+Protocol prepared. Site evidence, the execution selector and the statistical
+design inputs remain pending. The local Snake Oil correctness qualification is
+closed. Its four-arm wiring wave and previous failed attempts remain in their
+original evidence scopes.
+
+*** Site records and release binding
+
+| Site record | Required binding |
+|-------------+------------------|
+| Approval and activation | Site and environment ID, approving principal or verifiable review receipt, approval scope and time, deployment ID, activation receipt and authoritative activation version. Bind the receipt to the running release digest, catalog digest and admitted source authority. |
+| Approved application and build | Scheme module ID and source revision, Build Packages manifest, Gerbil SDK revision, executable SHA-256 and deployment image digest. Record the Scheme package library and all native dependencies resolved outside the linked image with effective loader origins and content digests. |
+| Approved catalog and policy | Exact catalog bytes selected by =WEAVER_GOVERNANCE_CATALOG= and their SHA-256, authenticated source identity fingerprints and epoch, policy/schema digests, hard-fact starting cut and original ledger/claim state or verified snapshot. Use the site's credential configuration for access. |
+| Approved workload and execution envelope | Replay identity and digest, capture and approval window, request and response streams, open-loop arrival schedule, response release gates, fault/restart schedule, concurrency and outstanding-work limits, expected operation identities and outcomes, and independent owner and exit opportunities. Record the permitted replay environment and the policy for upstream effects. |
+
+Freeze these records in one manifest before sampling. Resolve the approved
+application through Build Packages and =scheme-program=, then verify that the
+test-owned executable SHA-256 and the effective runtime dependency digests match
+the approved release. Bind the running image to the site activation receipt.
+Check the same manifest before and after each cohort. Run both arms from separate
+ledger instances initialized from the same approved cut. Preserve original
+operation identities and authoritative admission checks in each instance. Keep
+catalog, policy, replay, host class and capacity settings fixed across arms. For
+retained A/B, the runtime derivation mode is the sole treatment change in the
+same executable.
+
+Use the site's approved runtime inputs and endpoint mapping to freeze the exact
+command that drives replay through the native Control and Rust release entry
+points. The developer qualification's nine-node loopback workload provides a
+local correctness fixture. Formal registration stays pending
+until the chosen entry consumes the approved site replay and emits the required
+cut, release, reservation and shutdown evidence. Record the exact executable
+selector and verify it during preflight, outside the formal sample.
+
+*** Sampling and decisions
+
+1. Freeze the primary site join and its correspondence between arms. Measure
+   durable complete release to the successful reservation commit using a
+   monotonic clock. Report other joins, first ASCENT open, warm derivation, queue,
+   FFI, ledger and natural stop separately. Match by scheduled operation and
+   compare both Governor cut and ready-node digests. Keep timeouts, refusals,
+   mismatches and incomplete blocks in the cohort record.
+2. Use fresh versus fresh for A/A. Collect matched blocks using the same offered
+   work with a frozen, balanced arm order. Keep all observations from a reused owner and
+   its dependent windows in the same analysis cluster. Treat shutdown as one
+   observation per owner exit. Freeze the number of independent matched blocks,
+   eligible requests per window, exit opportunities, warmup, host admission,
+   total wall-clock budget and stopping rule before the first formal sample.
+   The original capacity controls, four workers, 12-second recovery and
+   15-second natural-exit fences remain in force. Prelaunch host refusals are
+   recorded separately. Readiness failure after launch is a failed trial.
+3. Use nearest-rank empirical p99 for each arm. Calculate the B-to-A ratio on
+   the matched primary endpoints, preserving all within-owner
+   observations. Estimate two-sided 95% ratio intervals by resampling whole
+   independent matched blocks, with 20,000 draws and seed =20261106=. Calculate
+   natural-stop p99 and its ratio interval separately from independent matched
+   exits. Before locking sample sizes, use approved planning windows outside the
+   formal cohorts to check interval coverage and precision under plausible tail
+   variability and clustering. Target at least 90% probability of passing A/A
+   when the true ratio is 1.00 and 90% power for the declared retained planning
+   effect across the adoption gates. Leave a margin between the planning ratios
+   and the adoption bounds. Record the assumptions, simulation results, chosen
+   sizes and budget together. Freeze both cohort designs before the first formal
+   A/A sample. If tail support or the budget is insufficient, leave the gate pending.
+4. A/A passes when the primary p99 ratio interval lies within =[0.90, 1.10]=
+   and all semantic and capacity controls pass. Then run the separately frozen
+   A/B cohort, with fresh A and retained B. Adopt retained only when the upper
+   primary p99 ratio bound and median ratio are both at most =0.90=, the upper
+   natural-stop p99 ratio bound is at most =1.10=, admitted work matches and all
+   controls pass. A failed, missing or incomplete trial prevents qualification.
+   Retain failures at their deadlines and preserve the run's original verdict.
+
+Record production approval and workload replay as separate missing inputs until
+the site provides both. Freeze the numeric sample plan once those inputs support
+it. The default remains fresh derivation on one Scheme owner while qualification
+is pending.
+
 ** Evidence and retained gaps
 
 The first graph attempts failed during metadata import: importing a module
