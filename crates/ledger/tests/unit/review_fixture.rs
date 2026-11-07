@@ -34,8 +34,16 @@ pub fn change(id: &str, parent: Option<u64>) -> Publication {
     }
 }
 pub fn evidence(ledger: &mut weaver_ledger::Ledger, p: &Publication) -> DeltaReview {
+    evidence_for_source(ledger, p, &source())
+}
+/// Reuse the same synthetic issuer with an independently authenticated fixture source.
+pub fn evidence_for_source(
+    ledger: &mut weaver_ledger::Ledger,
+    p: &Publication,
+    authenticated_source: &SourceIdentity,
+) -> DeltaReview {
     let ctx = ledger
-        .with_authenticated_source(&source(), |l| {
+        .with_authenticated_source(authenticated_source, |l| {
             let key = l.stage_reviewed_authority(p)?;
             l.publication_review_context(&key)
         })

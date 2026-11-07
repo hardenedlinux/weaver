@@ -9,6 +9,9 @@ use weaver_governance::{OwnedSource, SchemeCompiler, SourceError};
 use weaver_server::ServiceRuntime;
 #[path = "../../../governance/tests/unit/fixture.rs"]
 mod fixture;
+#[allow(dead_code, reason = "integration reuses the issuer only")]
+#[path = "../../../ledger/tests/unit/review_fixture.rs"]
+mod review_fixture;
 mod rpc_fixture;
 
 struct Compiler {
@@ -45,7 +48,7 @@ impl Drop for Compiler {
         }
     }
 }
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn actual_scheme_vm_is_owner_local_and_cleanup_precedes_shared_drain() {
     use sha2::{Digest, Sha256};
     use tonic::transport::{Certificate, Identity, ServerTlsConfig};
@@ -111,6 +114,26 @@ async fn actual_scheme_vm_is_owner_local_and_cleanup_precedes_shared_drain() {
     let client = runtime.producers().expect("installed producer set");
     let directory = tempfile::tempdir().expect("database directory");
     let database = directory.path().join("state.db");
+    // Keep the existing no-expansion deployment profile. The independent test
+    // issuer approves the exact bootstrap; compilation is never that approval.
+    // This is signature/binding fixture evidence, not a SPEC semantic proof.
+    let mut review_authority = review_fixture::issuer(0);
+    review_authority.allow_expansion = false;
+    let mut preparation = weaver_ledger::Ledger::open(&database).expect("review preparation");
+    preparation
+        .install_review_authority(&review_authority)
+        .expect("initial review deployment");
+    let bootstrap = review_fixture::evidence_for_source(
+        &mut preparation,
+        &original.publication,
+        &source_identity,
+    );
+    preparation
+        .with_authenticated_source(&source_identity, |ledger| {
+            ledger.register_delta_review(&bootstrap)
+        })
+        .expect("independent exact bootstrap review");
+    preparation.close().expect("review preparation closes");
     let listeners = GrpcListeners {
         operation: tokio::net::TcpListener::bind("127.0.0.1:0")
             .await
@@ -124,13 +147,7 @@ async fn actual_scheme_vm_is_owner_local_and_cleanup_precedes_shared_drain() {
     let settings = GrpcConfig {
         metering: None,
         provider_oauth: None,
-        review_authority: weaver_contracts::ReviewAuthority {
-            audience: "test-gateway".into(),
-            epoch: 0,
-            public_key: "4".repeat(64),
-            allow_expansion: false,
-            qualified_catalog: None,
-        },
+        review_authority,
         owner: ServerConfig {
             database: database.clone(),
             principal: "alice".into(),
@@ -302,8 +319,33 @@ async fn actual_scheme_vm_is_owner_local_and_cleanup_precedes_shared_drain() {
         policy: include_str!("../../../../prod/policies/provider/provider.cedar").into(),
         schema: original.publication.schema.clone(),
     };
+    assert!(
+        ledger
+            .with_authenticated_source(&next, |ledger| {
+                ledger.stage_authority(&allow)?;
+                ledger.publish_authority(&allow)
+            })
+            .is_err(),
+        "the source alone cannot publish an unreviewed Permit"
+    );
+    let forbidden_approval = review_fixture::evidence_for_source(&mut ledger, &allow, &next);
+    assert!(
+        ledger
+            .with_authenticated_source(&next, |ledger| {
+                ledger.register_delta_review(&forbidden_approval)
+            })
+            .is_err(),
+        "the initial no-expansion deployment must reject an explicit grant"
+    );
+    // Only the native deployment owner can advance this review profile. A
+    // source RPC and a completed Scheme derivation cannot perform this step.
+    ledger
+        .install_review_authority(&review_fixture::issuer(1))
+        .expect("explicit deployment authorization for the Permit control");
+    let approved = review_fixture::evidence_for_source(&mut ledger, &allow, &next);
     ledger
         .with_authenticated_source(&next, |ledger| {
+            ledger.register_delta_review(&approved)?;
             ledger.stage_authority(&allow)?;
             let receipt = ledger.publish_authority(&allow)?;
             assert_eq!(
