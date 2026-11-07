@@ -7,8 +7,8 @@
 (import (only-in :clan/poo/object .o .get .ref seal-object!)
         (only-in :clan/poo/mop validate)
         (only-in :std/list/list delete-duplicates/hash)
-        (only-in :gerbil-ascent/program/interface relational-program gerbil-ascent-open-session
-                 gerbil-ascent-session-run)
+        (only-in :gerbil-ascent/program/scheme-language relational-program)
+        (only-in :gerbil-ascent/program/session gerbil-ascent-open-session gerbil-ascent-session-run)
         (only-in "./types.ss" GatewayProgram)
         (only-in "./contracts.ss" GatewayArtifact)
         (only-in "./snapshot.ss" copy-source-data))

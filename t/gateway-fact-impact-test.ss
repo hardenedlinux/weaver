@@ -4,7 +4,7 @@
 
 (import :std/test
         (only-in :clan/poo/object .o .ref)
-        (only-in :gerbil-ascent/program/interface gerbil-ascent-open-session
+        (only-in :gerbil-ascent/program/session gerbil-ascent-open-session
                  gerbil-ascent-session-run gerbil-ascent-session-replace-sources!)
         (only-in ../scheme/gateway/program hard-fact-affected gateway-impact-program))
 (export gateway-fact-impact-test)
