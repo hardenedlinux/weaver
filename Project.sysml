@@ -140,6 +140,51 @@ package WeaverProject {
         part architecture : VerificationSuite { part 'check-architecture' : VerificationMode; }
         part policy : VerificationSuite { part 'check-policy' : VerificationMode; }
         part benchmarks : VerificationSuite { part bench : VerificationMode; }
+
+        package Artifacts {
+            doc /* The repository owns reproducible inputs. Toolchains own build
+               products and caches. The verification owner publishes typed
+               receipts through one output directory. GitHub transports the
+               declared JSON paths as one artifact per job attempt. */
+            part def CIReceipt;
+            part def LocalResult;
+            part def ToolOutput;
+            part def ReleaseEvidence;
+
+            part '.cache/verification/ci-job.json' : CIReceipt {
+                doc /* The reusable workflow binds the run, attempt, PR head,
+                   actual checkout, runner and phase outcomes. Publish after
+                   failure as well as success. An absent checkout is explicit. */
+            }
+            part '.cache/verification/latest-bootstrap-build.json' : CIReceipt;
+            part '.cache/verification/latest-bootstrap-proofs.json' : CIReceipt;
+            part '.cache/verification/latest-<suite>.json' : CIReceipt {
+                doc /* weaver-dev owns suite receipts. Preserve committed input
+                   digests, stage status, exit, duration and output digest.
+                   Bench measurements remain separate from correctness claims. */
+            }
+            part '.cache/verification/spec/*/receipt.json' : CIReceipt {
+                doc /* The SPEC owner retains per-run verdicts and stage evidence
+                   alongside its typed catalog. Only the receipt is exported to CI. */
+            }
+            part '.cache/verification/spec/*/catalog.json' : LocalResult;
+            part '.cache/verification/latest-benchmark-summary.org' : LocalResult;
+            part transientProcessOutput : ToolOutput {
+                doc /* Native process owners use private temporary directories.
+                   Retain bounded diagnostics inside the typed receipt and clean
+                   the scratch directory when the producer finishes. */
+            }
+            part toolchainProducts : ToolOutput {
+                doc /* Cargo and Scheme Build Packages own compiled outputs.
+                   Their stores and caches are inputs to reproducibility checks
+                   where required. Ordinary jobs export the declared receipts. */
+            }
+            part approvedReleaseEvidence : ReleaseEvidence {
+                doc /* Site authority binds the deployable release and its
+                   manifest to approval, activation and workload identity.
+                   Production qualification follows the separate site protocol. */
+            }
+        }
     }
 
     package AssuranceResponsibilities {

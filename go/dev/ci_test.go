@@ -89,12 +89,48 @@ func TestCIWorkflowsMatchProjectSuites(t *testing.T) {
 				} `yaml:"inputs"`
 			} `yaml:"workflow_call"`
 		} `yaml:"on"`
+		Jobs map[string]struct {
+			Steps []struct {
+				Uses string `yaml:"uses"`
+				If   string `yaml:"if"`
+				With struct {
+					Path string `yaml:"path"`
+				} `yaml:"with"`
+			} `yaml:"steps"`
+		} `yaml:"jobs"`
 	}
 	if err := yaml.Unmarshal(data, &reusable); err != nil {
 		t.Fatal(err)
 	}
 	if reusable.On.Call.Inputs["runner"].Default != "ubuntu-latest" {
 		t.Fatal("default suite runner must follow ubuntu-latest")
+	}
+	wantedReceipts := map[string]bool{}
+	for _, part := range parts {
+		if part.Properties["owner"] == projectNamespace+"Verification::Artifacts" && projectKind(part) == "Verification::Artifacts::CIReceipt" {
+			path := strings.ReplaceAll(part.Properties["name"], "<suite>", "${{ inputs.suite }}")
+			wantedReceipts[path] = true
+		}
+	}
+	if len(wantedReceipts) == 0 {
+		t.Fatal("missing SysML CI receipt allocation")
+	}
+	for _, step := range reusable.Jobs["verify"].Steps {
+		if !strings.HasPrefix(step.Uses, "actions/upload-artifact@") {
+			continue
+		}
+		if step.If != "always()" {
+			t.Fatal("verification receipt upload must cover failed stages")
+		}
+		for _, path := range strings.Split(strings.TrimSpace(step.With.Path), "\n") {
+			if !wantedReceipts[path] || !strings.HasPrefix(path, ".cache/verification/") || !strings.HasSuffix(path, ".json") {
+				t.Fatalf("unexpected verification artifact path %q", path)
+			}
+			delete(wantedReceipts, path)
+		}
+	}
+	if len(wantedReceipts) != 0 {
+		t.Fatalf("CI upload is missing declared receipts: %v", wantedReceipts)
 	}
 	for _, path := range []string{".github/workflows/verify-suite.yml", ".github/actions/prepare-toolchain/action.yml"} {
 		data, err := os.ReadFile(filepath.Join(root(t), path))

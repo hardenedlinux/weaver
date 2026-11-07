@@ -31,6 +31,7 @@ jobs:
       WEAVER_VERIFY_SUITE: ${{ inputs.suite }}
     steps:
       - name: Check out committed source
+        id: checkout
         timeout-minutes: 2
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
@@ -40,32 +41,35 @@ jobs:
             /*
             !/dev/proofs/evidence/
             !/dev/specs/evidence/
-      - name: Record tested revision
+      - name: Verify tested revision
+        id: source
         timeout-minutes: 1
-        env:
-          PR_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
           checkout_sha=$(git rev-parse HEAD)
           test "$checkout_sha" = "$GITHUB_SHA"
-          mkdir -p .cache/verification
-          printf 'head=%s\ncheckout=%s\n' "$PR_HEAD" "$checkout_sha" > .cache/verification/ci-source.txt
+          printf 'revision=%s\n' "$checkout_sha" >> "$GITHUB_OUTPUT"
       - name: Prepare deterministic toolchain
+        id: toolchain
         timeout-minutes: 10
         uses: ./.github/actions/prepare-toolchain
       - name: Fetch locked Rust and Go dependencies
+        id: bootstrap_build
         timeout-minutes: 4
         run: go -C go run ./cmd/weaver-dev -clean-source bootstrap-build
       - name: Prepare Cedar and Lean proof dependencies
+        id: bootstrap_proofs
         if: inputs.suite == 'check-policy'
         timeout-minutes: 8
         run: go -C go run ./cmd/weaver-dev -clean-source bootstrap-proofs
       - name: Prepare published Scheme SDK
+        id: scheme_sdk
         if: contains(fromJSON('["check-rust", "check-go", "check-scheme", "bench"]'), inputs.suite)
         timeout-minutes: 5
         uses: tao3k/gerbil-scheme-rust/.github/actions/setup-gerbil@838af1ab4e6c0c8177fed176efba448c694012b5
         with:
           release-root: ${{ runner.temp }}/gerbil-sdk
       - name: Prepare macOS Scheme build watchdog
+        id: scheme_watchdog
         if: inputs.suite == 'check-scheme' && runner.os == 'macOS'
         timeout-minutes: 4
         env:
@@ -74,6 +78,7 @@ jobs:
           brew install coreutils
           echo "$(brew --prefix coreutils)/libexec/gnubin" >> "$GITHUB_PATH"
       - name: Install declared Scheme dependencies
+        id: scheme_dependencies
         if: inputs.suite == 'check-scheme'
         timeout-minutes: 12
         env:
@@ -82,26 +87,72 @@ jobs:
           command -v timeout
           gerbil deps --install
       - name: Verify declared suite
+        id: verify_suite
         if: inputs.suite != 'check-scheme'
         timeout-minutes: 30
         run: go -C go run ./cmd/weaver-dev -clean-source "$WEAVER_VERIFY_SUITE"
       - name: Verify Scheme modules, Cedar FFI and streaming recovery
+        id: verify_scheme
         if: inputs.suite == 'check-scheme'
         timeout-minutes: 20
         env:
           GERBIL_GXI: ${{ env.GERBIL_PREFIX }}/bin/gxi
           GERBIL_PATH: ${{ runner.temp }}/weaver-gerbil
         run: go -C go run ./cmd/weaver-dev -clean-source check-scheme
-      - name: Publish latest structured result
+      - name: Require successful phase receipts
+        id: receipt_check
+        timeout-minutes: 1
+        run: |
+          test -s .cache/verification/latest-bootstrap-build.json
+          test -s ".cache/verification/latest-$WEAVER_VERIFY_SUITE.json"
+          if [ "$WEAVER_VERIFY_SUITE" = check-policy ]; then
+            test -s .cache/verification/latest-bootstrap-proofs.json
+          fi
+      - name: Write verification job receipt
+        if: always()
+        timeout-minutes: 1
+        env:
+          JOB_RECEIPT: >-
+            {
+              "schema": "weaver.ci-job.v1",
+              "suite": ${{ toJSON(inputs.suite) }},
+              "runId": ${{ toJSON(github.run_id) }},
+              "runAttempt": ${{ toJSON(github.run_attempt) }},
+              "headRevision": ${{ toJSON(github.event.pull_request.head.sha || github.sha) }},
+              "expectedCheckoutRevision": ${{ toJSON(github.sha) }},
+              "checkoutRevision": ${{ toJSON(steps.source.outputs.revision || null) }},
+              "os": ${{ toJSON(runner.os) }},
+              "arch": ${{ toJSON(runner.arch) }},
+              "status": ${{ toJSON(job.status) }},
+              "phases": {
+                "checkout": ${{ toJSON(steps.checkout.outcome || 'skipped') }},
+                "source": ${{ toJSON(steps.source.outcome || 'skipped') }},
+                "toolchain": ${{ toJSON(steps.toolchain.outcome || 'skipped') }},
+                "bootstrapBuild": ${{ toJSON(steps.bootstrap_build.outcome || 'skipped') }},
+                "bootstrapProofs": ${{ toJSON(steps.bootstrap_proofs.outcome || 'skipped') }},
+                "schemeSdk": ${{ toJSON(steps.scheme_sdk.outcome || 'skipped') }},
+                "schemeWatchdog": ${{ toJSON(steps.scheme_watchdog.outcome || 'skipped') }},
+                "schemeDependencies": ${{ toJSON(steps.scheme_dependencies.outcome || 'skipped') }},
+                "verifySuite": ${{ toJSON(steps.verify_suite.outcome || 'skipped') }},
+                "verifyScheme": ${{ toJSON(steps.verify_scheme.outcome || 'skipped') }},
+                "receiptCheck": ${{ toJSON(steps.receipt_check.outcome || 'skipped') }}
+              }
+            }
+        run: |
+          mkdir -p .cache/verification
+          printf '%s\n' "$JOB_RECEIPT" > .cache/verification/ci-job.json
+      - name: Publish structured verification receipts
         if: always()
         timeout-minutes: 2
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: ${{ inputs.suite }}-${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}
+          name: ${{ inputs.suite }}-${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}-attempt-${{ github.run_attempt }}
           path: |
-            .cache/verification/ci-source.txt
-            .cache/verification/latest-*
-            .cache/spec-qualification/**/spec-exact-delta-qualification.log
+            .cache/verification/ci-job.json
+            .cache/verification/latest-bootstrap-build.json
+            .cache/verification/latest-bootstrap-proofs.json
+            .cache/verification/latest-${{ inputs.suite }}.json
+            .cache/verification/spec/*/receipt.json
           include-hidden-files: true
-          if-no-files-found: warn
+          if-no-files-found: error
           retention-days: 7

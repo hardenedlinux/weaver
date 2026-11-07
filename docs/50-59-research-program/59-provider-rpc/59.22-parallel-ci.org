@@ -66,14 +66,48 @@ The published Scheme Gerbil toolchain setup action is reused at the same immutab
 as the authorized bridge dependency. Its release/host admission remains separate
 from application and formal proof results.
 
-* Results and cleanup
+* Artifact organization
 
-Each job produces source-bound compact latest results. Per-run stdout/stderr,
-module links and compiler output use system temporary directories and are removed
-on completion, including failures. Structured results retain exit status, source
-identity, output hashes and at most 4096 bytes of a failed stage's diagnostics.
-They overwrite fixed slots. CI uploads these compact files and the latest
-benchmark table as expiring artifacts; raw run logs are not archived by the project.
+=WeaverProject::Verification::Artifacts= in =Project.sysml= owns the publication
+inventory. The workflow test checks the declared CI receipt paths against the
+actual upload allowlist. GitHub receives one artifact per suite, runner, tested
+checkout and run attempt.
+
+#+begin_example
+.cache/verification/
+  ci-job.json                         GitHub job and phase outcomes
+  latest-bootstrap-build.json         Rust and Go dependency preparation
+  latest-bootstrap-proofs.json        Cedar and Lean dependency preparation
+  latest-<suite>.json                  Committed source and verification result
+  spec/run-*/receipt.json             SPEC analyzer or kernel evidence
+  spec/run-*/catalog.json             Local validated SPEC catalog
+  latest-benchmark-summary.org        Local human-readable benchmark projection
+#+end_example
+
+| Class | Producer and custody | Publication |
+|-------+----------------------+-------------|
+| Reproducible inputs | Repository source, SysML models, lockfiles and fixed test declarations | Git owns the definitions consumed by each job. |
+| Native build products | Cargo and Gerbil Build Packages own executables, archives, package libraries and build caches | The ordinary verification artifact carries receipts. Release delivery identifies actual deployed bytes separately. |
+| Verification receipts | GitHub owns job and phase outcomes. =weaver-dev= and the SPEC tests own typed suite and proof results. | CI exports the declared JSON receipts with seven-day retention. |
+| Local result projections | SPEC emits a validated catalog. The benchmark runner derives the human-readable summary from measured results. | Both live under the verification root. CI retains benchmark observations in the suite JSON and SPEC status in the proof receipt. |
+| Process scratch | The stage owner captures native compiler and test output in a private temporary directory. | Cleanup runs after success or failure. The receipt retains the exit status, output hash and a bounded failure diagnostic. |
+| Production release evidence | The site authority owns deployment approval, catalog and activated release binding. | The site release protocol associates these records with the approved workload and exact image. |
+
+=ci-job.json= records the PR head and the actual checked-out revision separately.
+GitHub can test a PR merge revision. Suite receipts bind that revision to source
+digests and stage outcomes. A preparation failure can prevent a suite receipt
+from existing; the job receipt records the failed phase and skipped phases. A
+successful workflow requires its bootstrap and suite receipts before publishing
+the job envelope. Diagnostic excerpts are bounded fields within receipts.
+
+Praxis separates benchmark execution and comparison and publishes a typed result
+keyed by the tested SHA. Agent Gateway gives timing and failure artifacts their
+own job-scoped paths. Weaver applies those ownership boundaries to its existing
+verification owner and publishes the SysML-declared JSON inventory.
+[[https://github.com/praxis-proxy/praxis/blob/c3d2ae3628cf3167780e58c5e8b38580d0241399/.github/workflows/benchmarks.yaml][Praxis benchmark workflow]]
+[[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/.github/workflows/pull_request.yml][Agent Gateway pull request workflow]]
+
+* Qualification boundaries
 
 Local passes, workflow syntax admission and remote execution are distinct results.
 A job that cannot install its SDK, finish cleanup, or complete a control fails.

@@ -19,11 +19,15 @@ import (
 
 const failureTailBytes int64 = 4096
 
+func verificationDirectory(root string) string {
+	return filepath.Join(root, ".cache", "verification")
+}
+
 func latestResultPath(root, mode string) string {
 	if mode == "" {
 		mode = "check"
 	}
-	return filepath.Join(root, ".cache", "verification", "latest-"+mode+".json")
+	return filepath.Join(verificationDirectory(root), "latest-"+mode+".json")
 }
 
 // summarizeOutput hashes the complete output while retaining at most one bounded
