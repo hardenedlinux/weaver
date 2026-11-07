@@ -143,9 +143,15 @@ func TestFailureSummaryRetainsFirstCauseBeforePassingSuffix(t *testing.T) {
 func FuzzFailureExcerptRetainsPrecedingDiagnostic(f *testing.F) {
 	f.Add(uint16(0), uint16(0))
 	f.Add(uint16(8191), uint16(8191))
+	f.Add(uint16(8192), uint16(8191))
 	f.Fuzz(func(t *testing.T, prefix, suffix uint16) {
 		const cause = "    gateway_test.go:42: original capacity deadline exceeded\n"
-		const marker = "--- FAIL: TestGateway/PROTOBUF\n"
+		markers := [...]string{
+			"--- FAIL: TestGateway/PROTOBUF\n",
+			"panic: test timed out after 10m0s\n",
+			"SIGQUIT: quit\n",
+		}
+		marker := markers[int(prefix)%len(markers)]
 		output := strings.Repeat("passing progress\n", int(prefix%8192)) + cause + marker + strings.Repeat("later passing case\n", int(suffix%8192))
 		excerpt, err := firstFailureExcerpt(strings.NewReader(output))
 		if err != nil || len(excerpt) > 2048 || !strings.Contains(string(excerpt), cause) || !strings.Contains(string(excerpt), marker) {
