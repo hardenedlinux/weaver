@@ -28,7 +28,7 @@ serde_json.workspace = true
 [dev-dependencies]
 asp-rust.workspace = true
 futures-executor.workspace = true
-criterion.workspace = true
+criterion = { workspace = true, features = ["async_tokio"] }
 tempfile.workspace = true
 rcgen.workspace = true
 socket2.workspace = true

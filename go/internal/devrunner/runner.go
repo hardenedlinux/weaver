@@ -192,6 +192,7 @@ func Run(ctx context.Context, config Config, output io.Writer) (report string, r
 	if mode == "bench" && !failed {
 		if err := collectCargoBenchmarks(ctx, root, directory, receipt.Started, environment); err != nil {
 			failed = true
+			receipt.Stages = append(receipt.Stages, Result{Name: "benchmark-evidence", Status: "FAIL", Error: err.Error()})
 			fmt.Fprintf(output, "FAIL benchmark artifacts: %v\n", err)
 		}
 	}
@@ -346,16 +347,16 @@ func runStageObserved(ctx context.Context, root, directory string, environment [
 	if (stage.Name == "storage-final-benchmark" || stage.Name == "telemetry-benchmark" || stage.Name == "execution-policy-benchmark" || stage.Name == "execution-ledger-benchmark" || stage.Name == "execution-provider-benchmark" || stage.Name == "execution-encoding-benchmark") && err == nil && closeErr == nil {
 		cases := storageBenchmarkCases
 		if stage.Name == "execution-encoding-benchmark" {
-			cases = []string{"server_encoding_guard_hold/inside", "server_encoding_guard_hold/outside"}
+			cases = []string{"server/encoding_guard_hold/inside", "server/encoding_guard_hold/outside"}
 		}
 		if stage.Name == "execution-provider-benchmark" {
-			cases = []string{"broker_https_guarded_sse_three_events"}
+			cases = []string{"broker/https_guarded_sse_three_events"}
 		}
 		if stage.Name == "execution-ledger-benchmark" {
-			cases = []string{"ledger_provider_release/1", "ledger_provider_release/8", "ledger_provider_release/32"}
+			cases = providerReleaseBenchmarkCases
 		}
 		if stage.Name == "execution-policy-benchmark" {
-			cases = []string{"policy_context_json_local", "policy_context_literal_local", "policy_context_json_shared", "policy_context_literal_shared"}
+			cases = []string{"policy/context_json_local", "policy/context_literal_local", "policy/context_json_shared", "policy/context_literal_shared"}
 		}
 		if stage.Name == "telemetry-benchmark" {
 			cases = nil
