@@ -381,17 +381,20 @@
 (def (emit-gateway bundle)
   (deliver-gateway-source bundle))
 
-;;; Both delivery modes use one admitted module view and one semantic producer.
-(def (with-current-gateway init operation)
+;;; Accept a source path or a retained Yuanxu view from a Scheme caller.
+;;; Every use still checks the view's source generation before and after delivery.
+(def (with-current-gateway source operation)
   (require-source-open!)
-  (let* ((view (if (gateway-source-cancelled?)
-                 (yuanxu-load-modules init module-view:
+  (let* ((view (cond
+                ((not (string? source)) source)
+                ((gateway-source-cancelled?)
+                 (yuanxu-load-modules source module-view:
                    (lambda (_ resolve)
                      (require-source-open!)
                      (let ((scope (resolve)))
                        (require-source-open!)
-                       scope)))
-                 (apply yuanxu-load-modules (list init))))
+                       scope))))
+                (else (apply yuanxu-load-modules (list source)))))
          (gateway (begin
                     (source-phase! "source-selection-loaded")
                     (.get view modules Weaver gateway)))
@@ -416,13 +419,13 @@
     ((.get gateway emit) bundle)))
 
 ;;; Scheme source-generation guards qualify compilation, not final execution.
-(def (emit-governed-gateway init governor profile context states tasks plans publication)
-  (with-current-gateway init
+(def (emit-governed-gateway source governor profile context states tasks plans publication)
+  (with-current-gateway source
     (lambda (gateway admit-current)
       (produce-governed-source gateway admit-current governor profile context states tasks plans publication))))
 
-(def (capture-governed-gateway init governor profile context states tasks plans publication)
-  (with-current-gateway init
+(def (capture-governed-gateway source governor profile context states tasks plans publication)
+  (with-current-gateway source
     (lambda (gateway admit-current)
       ((.get gateway capture)
        (lambda ()
@@ -430,7 +433,7 @@
 
 ;;; Rich preparation remains inside the same admitted Yuanxu view. The caller
 ;;; may inspect advisory evidence; existing emit/capture still accept only source.
-(def (prepare-governed-gateway init governor profile context states tasks plans publication)
-  (with-current-gateway init
+(def (prepare-governed-gateway source governor profile context states tasks plans publication)
+  (with-current-gateway source
     (lambda (gateway admit-current)
       ((.get gateway prepare) governor profile context states tasks plans publication))))
