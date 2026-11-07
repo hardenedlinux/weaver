@@ -247,7 +247,10 @@ package WeaverProject {
             doc /* Prepare the qualification image through Cargo before Go
                streaming tests. Bound the image build and Go suite separately.
                Retain native Go failure events with the stage receipt. The
-               provider recovery and natural-exit deadlines govern runtime. */
+               provider recovery and natural-exit deadlines govern runtime.
+               Git may fetch Parser's retained source reference to recover
+               objects after squash merge. Native Gerbil package declarations
+               still select the exact revisions. */
         }
         part architecture : VerificationSuite { part 'check-architecture' : VerificationMode; }
         part policy : VerificationSuite {

@@ -85,6 +85,16 @@ jobs:
           GERBIL_PATH: ${{ runner.temp }}/weaver-gerbil
         run: |
           command -v timeout
+          # Parser PR #13 was squash-merged. Its retained head contains the
+          # source objects still named by Lab's native package declaration.
+          # Fetch them only for Parser. Gerbil still selects the declared SHA.
+          parser_sources="$RUNNER_TEMP/weaver-parser-source.gitconfig"
+          git config --file "$parser_sources" remote.origin.fetch \
+            '+refs/pull/13/head:refs/remotes/origin/weaver-parser-source'
+          config_slot="${GIT_CONFIG_COUNT:-0}"
+          export "GIT_CONFIG_KEY_$config_slot=includeIf.hasconfig:remote.*.url:https://github.com/tao3k/gerbil-parser.git.path"
+          export "GIT_CONFIG_VALUE_$config_slot=$parser_sources"
+          export GIT_CONFIG_COUNT="$((config_slot + 1))"
           gerbil deps --install
       - name: Verify declared suite
         id: verify_suite
