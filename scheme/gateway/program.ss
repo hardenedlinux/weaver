@@ -12,7 +12,7 @@
         (only-in "./types.ss" GatewayProgram)
         (only-in "./contracts.ss" GatewayArtifact)
         (only-in "./snapshot.ss" copy-source-data))
-(export make-gateway-program hard-fact-affected)
+(export make-gateway-program hard-fact-affected gateway-impact-program)
 
 (def (make-gateway-program)
   (let ((gate (make-mutex 'weaver-gateway-program))
@@ -66,6 +66,19 @@
       (validate GatewayProgram
         (seal-object! (.o install: install-program! capture: capture-source close: close-program!))))))
 
+;;; Expand shared clauses into one ASCENT program. Each consumer supplies its
+;;; own admitted rows, limits and optional views over the impact relation.
+(defrules gateway-impact-program ()
+  ((_ (edges seeds) (input-bound derived-bound output-bound) clause ...)
+   (relational-program
+     (relation depends (dependent dependency) edges)
+     (relation changed (subject) seeds)
+     (relation affected (subject) '())
+     (rule (affected ?s) (changed ?s))
+     (rule (affected ?d) (depends ?d ?s) (affected ?s))
+     clause ...
+     (limits input-bound derived-bound output-bound))))
+
 ;;; The Rust ledger supplies the detached graph after persisting the intent.
 ;;; Dense IDs keep external names out of the evaluator's atom space.
 (def (hard-fact-affected cut)
@@ -79,14 +92,7 @@
     (iota (vector-length names)))
   (def changed (list (list (hash-ref ids root))))
   (def edges (map (lambda (edge) (map (lambda (name) (hash-ref ids name)) edge)) dependencies))
-  (def program
-    (relational-program
-      (relation depends (dependent dependency) edges)
-      (relation changed (node) changed)
-      (relation affected (node) '())
-      (rule (affected ?n) (changed ?n))
-      (rule (affected ?d) (depends ?d ?n) (affected ?n))
-      (limits 65 65 130)))
+  (def program (gateway-impact-program (edges changed) (65 65 130)))
   (def result (gerbil-ascent-session-run (gerbil-ascent-open-session program)))
   (unless (eq? (.ref result 'finished) #t) (error "Hard fact derivation incomplete"))
   (list-sort string<?

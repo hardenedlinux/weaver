@@ -366,6 +366,13 @@ package PolicyEvidenceDesign {
            backend/rule/query/input/limit semantics to factProjectionClosure;
            equal rows do not make evidence interchangeable. Incomplete, timed-out
            or out-of-scope nonmembership is unknown, never an allow/no-execution. */
+        doc /* Use the admitted Gerbil ASCENT Datalog rules inside the Scheme/POO
+           owner for impact, candidate eligibility and Workflow readiness.
+           Compose shared clauses at package expansion where possible. Each
+           consumer binds its own query and input scope. A retained Session may
+           replace source relations on the same rule and topology identity.
+           A changed rule or topology requires fresh admission, and a candidate
+           always carries the current input cut. */
         attribute backend : DerivationBackend;
         attribute engineClosure : String;
         attribute queryIdentity : String;
@@ -752,9 +759,12 @@ package PolicyEvidenceDesign {
            deployment can still bind one edge. For a fork/join Workflow the
            prepared source binds the ordered nodes and every graph edge. The
            live Scheme Governor uses ASCENT to select candidates from detached
-           ledger observations. Each proposal joins the complete release of
-           all immediate predecessors and one current fact version. A join
-           retains one winner, claim and reservation across recovery. */
+           ledger observations. A conditional route joins the complete
+           selector release to its structured result. At a conditional join
+           only predecessors activated by durable branch decisions count.
+           Each proposal joins its required complete releases to one current
+           fact version. A join retains one winner, claim and reservation across
+           recovery. */
     }
     item def SourceCommand {
         item policyPublication : PublicationCommand[0..1];
