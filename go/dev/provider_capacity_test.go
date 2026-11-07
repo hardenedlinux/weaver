@@ -79,6 +79,7 @@ func TestProviderSaturatedExecutionPreservesRevocationAndObservation(t *testing.
 	}
 	first := make(chan struct{}, streams)
 	type outcome struct {
+		node  string
 		count int
 		err   error
 	}
@@ -93,14 +94,18 @@ func TestProviderSaturatedExecutionPreservesRevocationAndObservation(t *testing.
 				}
 				return nil
 			})
-			results <- outcome{count, err}
+			results <- outcome{node: plan.Node, count: count, err: err}
 		}()
 	}
-	for range streams {
+	for ready := range streams {
 		select {
 		case <-first:
+		case result := <-results:
+			t.Fatalf("stream %s ended before revocation after %d events (%d/%d first events observed, %d primary requests): %v",
+				result.node, result.count, ready, streams, f.primary.Load(), result.err)
 		case <-ctx.Done():
-			t.Fatal("execution capacity did not fill before deadline")
+			t.Fatalf("execution capacity did not fill before deadline (%d/%d first events observed, %d primary requests)",
+				ready, streams, f.primary.Load())
 		}
 	}
 	// Capacity rejection occurs before considering a duplicate root or its Policy.
