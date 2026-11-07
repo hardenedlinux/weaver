@@ -256,8 +256,9 @@ package WeaverProject {
                twelve-minute watchdog on Linux and eighteen minutes on macOS.
                Record the selected watchdog and its exit code in the job receipt.
                Run the selected package Build with a separate two-minute bound.
-               Retain native Go failure events with the stage receipt. The
-               provider recovery and natural-exit deadlines govern runtime.
+               Retain SDK archive milestones and native Go failure events
+               with their stage receipts. The provider recovery and natural-exit
+               deadlines govern runtime.
                Unrelated producer products stay outside this source closure. */
         }
         part architecture : VerificationSuite { part 'check-architecture' : VerificationMode; }

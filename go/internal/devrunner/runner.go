@@ -320,7 +320,7 @@ func runStageObserved(ctx context.Context, root, directory string, environment [
 	cmd.Env = environment
 	var output io.Writer = log
 	var observation *schemeOutput
-	if tests != "" && streamSchemeOutput {
+	if streamSchemeOutput && (tests != "" || stage.Name == "scheme-provider-server-build") {
 		observation = &schemeOutput{destination: log, started: started}
 		output = observation
 	}

@@ -15,11 +15,18 @@ import (
 // cleanup or deadline. PreHarness includes discovery/loading; these timestamps
 // cannot distinguish boundaries the SDK does not expose.
 type SchemeTiming struct {
-	PreHarness    string `json:"preHarness,omitempty"`
-	FirstCase     string `json:"firstCase,omitempty"`
-	HarnessDone   string `json:"harnessDone,omitempty"`
-	Terminal      string `json:"terminal,omitempty"`
-	AfterTerminal string `json:"afterTerminal,omitempty"`
+	PreHarness    string               `json:"preHarness,omitempty"`
+	FirstCase     string               `json:"firstCase,omitempty"`
+	HarnessDone   string               `json:"harnessDone,omitempty"`
+	Terminal      string               `json:"terminal,omitempty"`
+	AfterTerminal string               `json:"afterTerminal,omitempty"`
+	Archive       []schemeArchiveEvent `json:"archive,omitempty"`
+}
+
+type schemeArchiveEvent struct {
+	Phase string `json:"phase"`
+	State string `json:"state"`
+	At    string `json:"at"`
 }
 
 type schemeOutput struct {
@@ -60,6 +67,16 @@ func (s *schemeOutput) observe(line string, now time.Time) {
 	case line == "OK" && s.terminal.IsZero():
 		s.observed.Terminal = elapsed
 		s.terminal = now
+	case strings.HasPrefix(line, "[weaver-governance "):
+		_, event, ok := strings.Cut(line, "] governance-program: phase=")
+		phase, state, framed := strings.Cut(event, " state=")
+		state, _, _ = strings.Cut(state, " ")
+		if ok && framed {
+			switch phase {
+			case "program-plan", "native-link-inputs", "module-c-batch", "gsc-link", "native-object-batch", "static-archive":
+				s.observed.Archive = append(s.observed.Archive, schemeArchiveEvent{Phase: phase, State: state, At: elapsed})
+			}
+		}
 	}
 }
 

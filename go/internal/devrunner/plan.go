@@ -249,7 +249,7 @@ func stagesForMode(mode, goBinary string) ([]Stage, error) {
 			{"scheme-unit-tests", schemeTool(), []string{"test", "-g", "-v", "5", "t"}},
 			{"scheme-module-selection-integration", schemeTool(), []string{"test", "-g", "-v", "5", "t/qualification/module-selection"}},
 			{"scheme-source-integration-tests", schemeTool(), []string{"test", "-g", "-v", "5", "t/integration"}},
-			{"scheme-provider-server-build", "cargo", append(SchemeQualificationCargoArgs(), "--no-run")},
+			{"scheme-provider-server-build", "cargo", append(SchemeQualificationCargoArgs(), "--no-run", "-vv")},
 			{"scheme-rooted-sdk-integration", "cargo", append(SchemeQualificationCargoArgs(), "--", "--test-threads=4")},
 			{"scheme-grpc-stream-integration", goBinary, []string{"-C", "go", "test", "-json", "-count=1", "-race", "-tags=integration,schemeintegration", "-timeout=10m", "./dev", "-run", "^TestProviderControl", "-skip", "^TestProviderControlGovernorPerformance$"}},
 		}, nil
