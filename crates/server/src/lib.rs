@@ -16,6 +16,7 @@ mod grpc_config;
 mod grpc_contracts;
 mod grpc_delivery;
 mod grpc_delivery_producer;
+mod grpc_hard_fact;
 mod grpc_listeners;
 mod grpc_output;
 mod grpc_provider;
