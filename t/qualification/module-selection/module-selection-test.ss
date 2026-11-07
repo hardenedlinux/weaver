@@ -50,6 +50,7 @@
       (check-equal? (hash-ref counts '(calls scope-factory) 0) 0)
       (check-equal? (hash-ref counts '(calls candidate-read) 0) 4)
       (def targets (list-sort string<? (map cadr (call-with-input-string spec read))))
+      (check-equal? (length targets) 40)
       (for-each (lambda (target) (check-equal? (and (member target targets) #t) #t))
         '("agentic-ai-lab/modules/governance/interface"
           "hardenedlinux/weaver/scheme/governance/interface"
@@ -112,9 +113,8 @@
               (error "Weaver action reported failure" command))
             output)
           (def (build-in-state state command)
-            ;; Use the guarded init plan already measured above for B's cold
-            ;; build and A's clean. B's hot build and business use remain
-            ;; independent processes.
+            ;; Reuse the guarded init plan. The Build entry still admits the
+            ;; sources and checks its native products on each invocation.
             (def output
               (call-with-output-string
                 (lambda (port)
@@ -141,7 +141,8 @@
           (build-in-state a "clean")
           (check-equal? (interfaces (path-expand "lib" a)) '("unrelated"))
           (check-equal? (digests (artifact-files identities b-lib)) b-products)
-          (check-equal? (compile-events (action b '("gxi" "build.ss" "compile"))) '())
+          (check-equal? (compile-events (build-in-state b "compile")) '())
+          (check-equal? (digests (artifact-files identities b-lib)) b-products)
           (def output (action b '("gxi" "t/qualification/module-selection/use.ss")))
           (check-equal? (and (string-contains output "WEAVER-MODULE-USE-OK") #t) #t)
           (check-equal? (map module-source-read sources) source-before)
