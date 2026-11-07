@@ -762,7 +762,9 @@ package PolicyEvidenceDesign {
            release. For a fork/join Workflow the
            prepared source binds the ordered nodes and every graph edge. The
            live Scheme Governor uses ASCENT to select candidates from detached
-           ledger observations. A conditional route joins the complete
+           ledger observations. A reconciliation waits for bounded Governor
+           capacity or owner shutdown. The ledger rechecks the detached cut
+           before admission. A conditional route joins the complete
            selector release to its structured result. At a conditional join
            only predecessors activated by durable branch decisions count.
            Each proposal joins its required complete releases to one current

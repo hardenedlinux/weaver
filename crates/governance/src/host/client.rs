@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
-//! Nonblocking source admission; capacity covers queued, active and ready data.
+//! Bounded source admission; capacity covers queued, active and ready data.
 use super::{Command, Phase, Shared, SourceInbox, SourceJob, SourceJobError, State, Work};
 use crate::{OwnedSource, SourceExpectation};
 use std::{
@@ -74,7 +74,7 @@ impl SourceClient {
             })?;
         Ok(SourceJob::new(receiver, self.shared.clone(), state, cancel))
     }
-    /// Submit a detached ledger observation on the same bounded Scheme owner.
+    /// Wait for space on the bounded Scheme owner so a Session wake is not lost.
     pub async fn derive(&self, input: crate::GovernorCut) -> Result<Vec<String>, SourceJobError> {
         self.evaluate(crate::Derivation::Governor(Box::new(input)))
             .await
@@ -91,11 +91,17 @@ impl SourceClient {
         .await
     }
     async fn evaluate(&self, input: crate::Derivation) -> Result<Vec<String>, SourceJobError> {
-        let slot = self
-            .capacity
-            .clone()
-            .try_acquire_owned()
-            .map_err(|_| SourceJobError::Busy)?;
+        let capacity = self.capacity.clone();
+        let slot = match &input {
+            crate::Derivation::Governor(_) => tokio::select! {
+                biased;
+                _ = self.shared.shutdown.cancelled() => return Err(SourceJobError::Closed),
+                slot = capacity.acquire_owned() => slot.map_err(|_| SourceJobError::Closed)?,
+            },
+            crate::Derivation::FactImpact { .. } => capacity
+                .try_acquire_owned()
+                .map_err(|_| SourceJobError::Busy)?,
+        };
         let (reply, receiver) = oneshot::channel();
         {
             let closed = self.shared.gate();

@@ -103,6 +103,58 @@ fn ready_results_keep_capacity_until_observed_and_close_fences_delivery() {
     ));
     owner.finish().expect("drained");
 }
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+async fn governor_observation_waits_for_capacity_or_shutdown() {
+    for close_owner in [false, true] {
+        let owner = Owner::start(1, |inbox| {
+            inbox.run_with_governor(
+                (),
+                |_, source| copied(source),
+                |_, cut| Ok(cut.pending.clone()),
+            );
+        });
+        let job = owner
+            .client
+            .submit(original())
+            .expect("occupy the only slot");
+        let observation = owner.client.derive(crate::GovernorCut {
+            nodes: vec!["next".into()],
+            edges: vec![],
+            complete: vec![],
+            available: vec!["next".into()],
+            pending: vec!["next".into()],
+            choice_arms: vec![],
+            choice_join: vec![],
+            choice_result: vec![],
+            choice_decided: vec![],
+            nested_selectors: vec![],
+            nested_results: vec![],
+            nested_decisions: vec![],
+        });
+        tokio::pin!(observation);
+        assert!(matches!(
+            observation
+                .as_mut()
+                .poll(&mut Context::from_waker(Waker::noop())),
+            Poll::Pending
+        ));
+        if close_owner {
+            owner.client.close();
+        } else {
+            job.await.expect("release the source slot");
+        }
+        let result = tokio::time::timeout(Duration::from_secs(3), observation)
+            .await
+            .expect("waiting Governor resumes");
+        if close_owner {
+            assert_eq!(result, Err(SourceJobError::Closed));
+        } else {
+            assert_eq!(result.expect("derived"), ["next"]);
+        }
+    }
+}
+
 #[test]
 fn cancelled_running_work_keeps_its_slot_until_natural_return() {
     let (entered, started) = mpsc::channel();
