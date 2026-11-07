@@ -22,6 +22,14 @@ func schemeTool() string {
 	return "gerbil"
 }
 
+// SchemeQualificationCargoArgs defines the one Cargo graph for the native
+// qualification tests and the executable used by the Go fixtures.
+func SchemeQualificationCargoArgs() []string {
+	return []string{"test", "-p", "weaver-governance", "-p", "weaver-governance-build", "-p", "weaver-server",
+		"--features", "weaver-governance/scheme-qualification,weaver-server/governance-qualification,weaver-server/arrow",
+		"--locked", "--offline", "-j", "4"}
+}
+
 func Plan(goBinary string) []Stage {
 	return []Stage{
 		{"rust-environment", "rustc", []string{"-vV"}},
@@ -241,8 +249,8 @@ func stagesForMode(mode, goBinary string) ([]Stage, error) {
 			{"scheme-unit-tests", schemeTool(), []string{"test", "-g", "-v", "5", "t"}},
 			{"scheme-module-selection-integration", schemeTool(), []string{"test", "-g", "-v", "5", "t/qualification/module-selection"}},
 			{"scheme-source-integration-tests", schemeTool(), []string{"test", "-g", "-v", "5", "t/integration"}},
-			{"scheme-rooted-sdk-integration", "cargo", []string{"test", "-p", "weaver-governance", "-p", "weaver-governance-build", "-p", "weaver-server", "--features", "weaver-governance/scheme-qualification,weaver-server/governance-qualification", "--locked", "--offline"}},
-			{"scheme-provider-server-build", "cargo", []string{"build", "-p", "weaver-server", "--bin", "weaver-server", "--features", "arrow,governance-qualification", "--locked", "--offline", "-j", "4"}},
+			{"scheme-provider-server-build", "cargo", append(SchemeQualificationCargoArgs(), "--no-run")},
+			{"scheme-rooted-sdk-integration", "cargo", SchemeQualificationCargoArgs()},
 			{"scheme-grpc-stream-integration", goBinary, []string{"-C", "go", "test", "-json", "-count=1", "-race", "-tags=integration,schemeintegration", "-timeout=10m", "./dev", "-run", "^TestProviderControl", "-skip", "^TestProviderControlGovernorPerformance$"}},
 		}, nil
 	case "bench-execution":

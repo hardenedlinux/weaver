@@ -14,6 +14,8 @@ import (
 	"strings"
 	"testing"
 	"unicode/utf8"
+
+	"github.com/HardenedLinux/weaver/go/internal/devrunner"
 )
 
 type cargoTarget struct {
@@ -160,6 +162,9 @@ func providerCargoBuildArgs(features, benchmark string, lookup func(string) (str
 	} else if optimized && features == providerSchemeQualificationFeatures {
 		return nil, false, errors.New("release Scheme integration requires an explicit application")
 	}
+	if features == providerSchemeQualificationFeatures {
+		return append(devrunner.SchemeQualificationCargoArgs(), "--no-run", "--message-format=json-render-diagnostics"), false, nil
+	}
 	args := []string{"build", "-p", "weaver-server", "--bin", "weaver-server", "--features", features, "--locked", "--offline", "--message-format=json-render-diagnostics"}
 	if optimized {
 		args = append(args, "--release")
@@ -190,7 +195,6 @@ func TestSchemeIntegrationReleaseRequiresExplicitApplication(t *testing.T) {
 		wantFeatures              string
 		optimized                 bool
 	}{
-		{name: "debug qualification", features: "arrow,governance-qualification", wantFeatures: "arrow,governance-qualification"},
 		{name: "release application", features: "arrow,governance-qualification", env: map[string]string{module: "weaver/provider", source: "/provider.ss"}, wantFeatures: "arrow,scheme-program", optimized: true},
 		{name: "missing binding", features: "arrow,governance-qualification", env: map[string]string{module: "weaver/provider"}},
 		{name: "empty binding", features: "arrow,governance-qualification", env: map[string]string{module: "weaver/provider", source: ""}},
@@ -213,6 +217,14 @@ func TestSchemeIntegrationReleaseRequiresExplicitApplication(t *testing.T) {
 				t.Fatal("invalid Scheme integration build selection", args, err)
 			}
 		})
+	}
+}
+
+func TestSchemeDebugUsesPreparedCargoQualificationGraph(t *testing.T) {
+	args, optimized, err := providerCargoBuildArgs(providerSchemeQualificationFeatures, "", func(string) (string, bool) { return "", false })
+	want := append(devrunner.SchemeQualificationCargoArgs(), "--no-run", "--message-format=json-render-diagnostics")
+	if err != nil || optimized || !slices.Equal(args, want) {
+		t.Fatal("debug Scheme integration does not share the prepared Cargo graph", args, err)
 	}
 }
 

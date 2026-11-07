@@ -179,7 +179,7 @@ func Run(ctx context.Context, config Config, output io.Writer) (report string, r
 		}
 		var result Result
 		if (stage.Name == "go-provider-grpc-integration" || stage.Name == "policy-provider-spec-integration" ||
-			stage.Name == "scheme-grpc-stream-integration") &&
+			stage.Name == "scheme-rooted-sdk-integration" || stage.Name == "scheme-grpc-stream-integration") &&
 			providerBuildFailure != "" {
 			result = Result{Name: stage.Name, Status: "SKIP", Binary: stage.Binary, Args: stage.Args,
 				Error: "required native build did not pass: " + providerBuildFailure}
@@ -278,6 +278,8 @@ func runStageObserved(ctx context.Context, root, directory string, environment [
 	switch stage.Name {
 	case "scheme-module-build":
 		deadline = schemeModuleBuildTimeout
+	case "scheme-rooted-sdk-integration":
+		deadline = 5 * time.Minute
 	case "scheme-unit-tests":
 		tests = "t"
 	case "scheme-source-integration-tests":
