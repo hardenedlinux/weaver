@@ -30,7 +30,8 @@ type Stage struct {
 }
 
 func (stage Stage) providerBuild() bool {
-	return stage.Name == "go-provider-server-build" || stage.Name == "go-provider-observer-build"
+	return stage.Name == "go-provider-server-build" || stage.Name == "go-provider-observer-build" ||
+		stage.Name == "scheme-provider-server-build"
 }
 
 type Result struct {
@@ -178,7 +179,8 @@ func Run(ctx context.Context, config Config, output io.Writer) (report string, r
 			break
 		}
 		var result Result
-		if (stage.Name == "go-provider-grpc-integration" || stage.Name == "policy-provider-spec-integration") &&
+		if (stage.Name == "go-provider-grpc-integration" || stage.Name == "policy-provider-spec-integration" ||
+			stage.Name == "scheme-grpc-stream-integration") &&
 			providerBuildFailure != "" {
 			result = Result{Name: stage.Name, Status: "SKIP", Binary: stage.Binary, Args: stage.Args,
 				Error: "required native build did not pass: " + providerBuildFailure}

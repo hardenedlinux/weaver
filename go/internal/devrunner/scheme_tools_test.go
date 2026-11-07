@@ -89,10 +89,17 @@ func TestSchemeQualificationStaysWithPreparedSchemeOwner(t *testing.T) {
 		t.Fatal(err)
 	}
 	found := false
+	imagePrepared := false
 	for _, stage := range stages {
 		if stage.Name == "scheme-rooted-sdk-integration" {
 			args := strings.Join(stage.Args, " ")
 			found = strings.Contains(args, "weaver-governance/scheme-qualification") && strings.Contains(args, "weaver-server/governance-qualification") && strings.Contains(args, "-p weaver-server")
+		}
+		if stage.Name == "scheme-provider-server-build" {
+			imagePrepared = stage.providerBuild()
+		}
+		if stage.Name == "scheme-grpc-stream-integration" && !imagePrepared {
+			t.Fatal("Scheme Go integration has no preceding qualification image build")
 		}
 	}
 	if !found {

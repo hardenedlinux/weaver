@@ -242,7 +242,13 @@ package WeaverProject {
                image authority. The integration package keeps its ten-minute
                timeout and all existing recovery and natural-exit gates. */
         }
-        part scheme : VerificationSuite { part 'check-scheme' : VerificationMode; }
+        part scheme : VerificationSuite {
+            part 'check-scheme' : VerificationMode;
+            doc /* Prepare the qualification image through Cargo before Go
+               streaming tests. Bound the image build and Go suite separately.
+               Retain native Go failure events with the stage receipt. The
+               provider recovery and natural-exit deadlines govern runtime. */
+        }
         part architecture : VerificationSuite { part 'check-architecture' : VerificationMode; }
         part policy : VerificationSuite {
             part 'check-policy' : VerificationMode;
