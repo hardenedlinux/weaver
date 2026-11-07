@@ -24,12 +24,14 @@ jobs:
   verify:
     name: ${{ inputs.label }}
     runs-on: ${{ inputs.runner }}
-    timeout-minutes: 45
+    # Keep time for the receipt upload after a phase hits its own limit.
+    timeout-minutes: 65
     env:
       GOTOOLCHAIN: local
       WEAVER_VERIFY_SUITE: ${{ inputs.suite }}
     steps:
       - name: Check out committed source
+        timeout-minutes: 2
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           persist-credentials: false
@@ -38,38 +40,68 @@ jobs:
             /*
             !/dev/proofs/evidence/
             !/dev/specs/evidence/
+      - name: Record tested revision
+        timeout-minutes: 1
+        env:
+          PR_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          checkout_sha=$(git rev-parse HEAD)
+          test "$checkout_sha" = "$GITHUB_SHA"
+          mkdir -p .cache/verification
+          printf 'head=%s\ncheckout=%s\n' "$PR_HEAD" "$checkout_sha" > .cache/verification/ci-source.txt
       - name: Prepare deterministic toolchain
+        timeout-minutes: 10
         uses: ./.github/actions/prepare-toolchain
       - name: Fetch locked Rust and Go dependencies
+        timeout-minutes: 4
         run: go -C go run ./cmd/weaver-dev -clean-source bootstrap-build
       - name: Prepare Cedar and Lean proof dependencies
         if: inputs.suite == 'check-policy'
+        timeout-minutes: 8
         run: go -C go run ./cmd/weaver-dev -clean-source bootstrap-proofs
       - name: Prepare published Scheme SDK
-        if: inputs.suite == 'check-scheme'
+        if: contains(fromJSON('["check-rust", "check-go", "check-scheme", "bench"]'), inputs.suite)
+        timeout-minutes: 5
         uses: tao3k/gerbil-scheme-rust/.github/actions/setup-gerbil@838af1ab4e6c0c8177fed176efba448c694012b5
         with:
           release-root: ${{ runner.temp }}/gerbil-sdk
+      - name: Prepare macOS Scheme build watchdog
+        if: inputs.suite == 'check-scheme' && runner.os == 'macOS'
+        timeout-minutes: 4
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: '1'
+        run: |
+          brew install coreutils
+          echo "$(brew --prefix coreutils)/libexec/gnubin" >> "$GITHUB_PATH"
       - name: Install declared Scheme dependencies
         if: inputs.suite == 'check-scheme'
+        timeout-minutes: 12
         env:
           GERBIL_PATH: ${{ runner.temp }}/weaver-gerbil
-        run: gerbil deps --install
+        run: |
+          command -v timeout
+          gerbil deps --install
       - name: Verify declared suite
         if: inputs.suite != 'check-scheme'
+        timeout-minutes: 30
         run: go -C go run ./cmd/weaver-dev -clean-source "$WEAVER_VERIFY_SUITE"
       - name: Verify Scheme modules, Cedar FFI and streaming recovery
         if: inputs.suite == 'check-scheme'
+        timeout-minutes: 20
         env:
           GERBIL_GXI: ${{ env.GERBIL_PREFIX }}/bin/gxi
           GERBIL_PATH: ${{ runner.temp }}/weaver-gerbil
         run: go -C go run ./cmd/weaver-dev -clean-source check-scheme
       - name: Publish latest structured result
         if: always()
+        timeout-minutes: 2
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: ${{ inputs.suite }}-${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}
-          path: .cache/verification/latest-*
+          path: |
+            .cache/verification/ci-source.txt
+            .cache/verification/latest-*
+            .cache/spec-qualification/**/spec-exact-delta-qualification.log
           include-hidden-files: true
           if-no-files-found: warn
           retention-days: 7
