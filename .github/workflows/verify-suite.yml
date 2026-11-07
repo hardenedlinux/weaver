@@ -86,6 +86,8 @@ jobs:
         # for GitHub to retain its exit status before the outer cutoff.
         timeout-minutes: 13
         env:
+          # The SDK setup exports the host core count via GITHUB_ENV.
+          GERBIL_BUILD_CORES: '4'
           GERBIL_PATH: ${{ runner.temp }}/weaver-gerbil
         run: |
           command -v timeout
