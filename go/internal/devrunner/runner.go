@@ -28,6 +28,11 @@ type Stage struct {
 	Name, Binary string
 	Args         []string
 }
+
+func (stage Stage) providerBuild() bool {
+	return stage.Name == "go-provider-server-build" || stage.Name == "go-provider-observer-build"
+}
+
 type Result struct {
 	HeaderSeal         *HeaderSealEvidence `json:"headerSeal,omitempty"`
 	Contention         *ContentionEvidence `json:"contention,omitempty"`
@@ -166,15 +171,25 @@ func Run(ctx context.Context, config Config, output io.Writer) (report string, r
 		settings["GERBIL_BUILD_CORES"] = strconv.Itoa(runtime.NumCPU())
 		environment = Environment(settings)
 	}
+	var providerBuildFailure string
 	for _, stage := range stages {
 		if ctx.Err() != nil {
 			failed = true
 			break
 		}
-		result := runStage(ctx, root, directory, environment, stage)
+		var result Result
+		if stage.Name == "go-provider-grpc-integration" && providerBuildFailure != "" {
+			result = Result{Name: stage.Name, Status: "SKIP", Binary: stage.Binary, Args: stage.Args,
+				Error: "required native build did not pass: " + providerBuildFailure}
+		} else {
+			result = runStage(ctx, root, directory, environment, stage)
+		}
 		receipt.Stages = append(receipt.Stages, result)
 		if result.Status != "PASS" {
 			failed = true
+			if stage.providerBuild() {
+				providerBuildFailure = stage.Name
+			}
 		}
 		if err := writeReceipt(directory, receipt); err != nil {
 			return directory, err
@@ -258,9 +273,16 @@ func runStageObserved(ctx context.Context, root, directory string, environment [
 	case "scheme-source-integration-tests":
 		tests = "t/integration"
 	}
+	deadline := time.Duration(0)
 	if tests != "" {
+		deadline = schemePackageTestTimeout
+	}
+	if stage.providerBuild() {
+		deadline = 5 * time.Minute
+	}
+	if deadline != 0 {
 		var cancel context.CancelFunc
-		ctx, cancel = context.WithTimeout(ctx, schemePackageTestTimeout)
+		ctx, cancel = context.WithTimeout(ctx, deadline)
 		defer cancel()
 	}
 

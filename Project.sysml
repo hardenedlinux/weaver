@@ -233,7 +233,14 @@ package WeaverProject {
            not completion evidence. Go testing.F exercises protocol corruption;
            transcript checks do not prove SDK execution or final-send safety. */
         part rust : VerificationSuite { part 'check-rust' : VerificationMode; }
-        part go : VerificationSuite { part 'check-go' : VerificationMode; }
+        part go : VerificationSuite {
+            part 'check-go' : VerificationMode;
+            doc /* Prepare the ordinary provider and commit-observer images with
+               Cargo in separate five-minute stages before the Go Provider
+               integration suite. The same Cargo targets remain the fixture's
+               image authority. The integration package keeps its ten-minute
+               timeout and all existing recovery and natural-exit gates. */
+        }
         part scheme : VerificationSuite { part 'check-scheme' : VerificationMode; }
         part architecture : VerificationSuite { part 'check-architecture' : VerificationMode; }
         part policy : VerificationSuite { part 'check-policy' : VerificationMode; }
