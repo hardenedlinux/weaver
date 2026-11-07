@@ -80,6 +80,8 @@ impl BuildPaths {
         let headers = [include.join("weaver_policy.h")];
         let required = [
             "gerbil-scheme-rust/scheme/runtime",
+            "gerbil-ascent/program/scheme-language",
+            "gerbil-ascent/program/session",
             "hardenedlinux/weaver/scheme/gateway/compiled",
             self.application.module(),
         ];

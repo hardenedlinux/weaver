@@ -32,6 +32,7 @@ struct SourceDeployment {
     metering: Option<weaver_contracts::MeteringDeployment>,
     oauth: Option<weaver_contracts::ProviderOAuthDeployment>,
     fact_feed: Option<FactFeed>,
+    session_wakeup: Option<Arc<tokio::sync::Notify>>,
 }
 
 enum Command {
@@ -351,6 +352,7 @@ impl SourceOwner {
     ) -> Result<SourceWorker> {
         authority.validate()?;
         let fact_feed = runtime.fact_feed().cloned();
+        let session_wakeup = runtime.session_wakeup().cloned();
         Self::start_inner(
             runtime,
             slot,
@@ -360,6 +362,7 @@ impl SourceOwner {
                 metering,
                 oauth,
                 fact_feed,
+                session_wakeup,
             },
         )
         .await
@@ -379,6 +382,7 @@ impl SourceOwner {
                 metering: None,
                 oauth: None,
                 fact_feed: None,
+                session_wakeup: None,
             },
         )
         .await
@@ -609,7 +613,13 @@ fn run(
     let result = if ready.send(Ok(())).is_err() {
         Err(Error::Conflict("source startup abandoned"))
     } else {
-        process(&mut ledger, receiver, handle, cancel)
+        process(
+            &mut ledger,
+            receiver,
+            handle,
+            cancel,
+            deployment.session_wakeup,
+        )
     };
     result.and(ledger.close())
 }
@@ -618,6 +628,7 @@ fn process(
     mut receiver: mpsc::Receiver<Envelope>,
     handle: Handle,
     cancel: CancellationToken,
+    session_wakeup: Option<Arc<tokio::sync::Notify>>,
 ) -> Result<()> {
     loop {
         let command = handle.block_on(async {
@@ -661,6 +672,11 @@ fn process(
                 let result = ledger.with_authenticated_source(&caller, |ledger| {
                     ledger.resolve_fact_projection(&work, affected)
                 });
+                if result.is_ok()
+                    && let Some(wakeup) = &session_wakeup
+                {
+                    wakeup.notify_one();
+                }
                 answer(ledger, reply, result, slot)?;
             }
             Command::ChangeProviderOAuth {
@@ -708,6 +724,11 @@ fn process(
                 let result = ledger.with_authenticated_source(&caller, |ledger| {
                     ledger.publish_provider_catalog(&catalog)
                 });
+                if result.is_ok()
+                    && let Some(wakeup) = &session_wakeup
+                {
+                    wakeup.notify_one();
+                }
                 answer(ledger, reply, result, slot)?;
             }
             Command::ApplyMetering {

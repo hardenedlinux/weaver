@@ -303,6 +303,7 @@
     {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem provider_and_connection_composition"}]},
   {"id":"SourceIngressBinding","witnesses":[
     {"file":"go/dev/provider_source_test.go","pattern":"func TestProviderSourceIngressBindsCertificateCredentialAndMethod"},
+    {"file":"go/dev/provider_program_deployment_test.go","pattern":"func TestProviderControlCompiledCatalogRequiresExactSourceEpoch"},
     {"file":"go/dev/provider_capacity_test.go","pattern":"full operation ingress blocked new source session"},
     {"file":"crates/server/tests/unit/grpc_ingress.rs","pattern":"async fn aliased_or_empty_source_identity_is_rejected_before_serving"},
     {"file":"dev/proofs/quint/SourceIngress.qnt","pattern":"run forwardedCredentialCounterexampleTest"},
@@ -338,6 +339,7 @@
     {"file":"dev/proofs/quint/ReleaseBinding.qnt","pattern":"run crossPlanCounterexampleTest"},
     {"file":"dev/proofs/lean/ProviderRpc.lean","pattern":"theorem release_binding_and_execution_composition"}]},
   {"id":"SpecificSourceContracts","witnesses":[
+    {"file":"crates/server/src/single_provider.rs","pattern":"bound: BoundSource"},
     {"file":"t/gateway-source-test.ss","pattern":"upstream Governor selection cannot be replaced by a Governance callback"},
     {"file":"dev/proofs/quint/LlmPolicyContinuation.qnt","pattern":"run governanceCannotReplaceGovernorTest"},
     {"file":"dev/proofs/quint/LlmPolicyContinuation.qnt","pattern":"run missingGovernorCounterexampleTest"},
@@ -485,6 +487,8 @@
     {"file":"crates/governance/src/host/client.rs","pattern":"pub fn source_lane"},
     {"file":"crates/governance/src/host/owner.rs","pattern":"pub fn run"},
     {"file":"crates/governance/tests/unit/host.rs","pattern":"cancelled_running_work_keeps_its_slot_until_natural_return"},
+    {"file":"crates/governance/tests/unit/host.rs","pattern":"active_compiler_observes_both_request_and_owner_cancellation"},
+    {"file":"go/dev/provider_workflow_nested_test.go","pattern":"func TestProviderControlSourceCancellationDrainsSchemeOwner"},
     {"file":"dev/proofs/quint/LlmPolicyContinuation.qnt","pattern":"checkThenSendCloseRaceCounterexampleTest"},
     {"file":"dev/proofs/cedar/WeaverPolicyBridge.lean","pattern":"source_host_delivery_requires_open_gate"},
     {"file":"crates/governance/src/binding.rs","pattern":"pub struct SourceExpectation"},
@@ -521,6 +525,7 @@
     {"file":"t/integration/governed-control-test.ss","pattern":"def governed-control-test"},
     {"file":"go/internal/config/bundle_test.go","pattern":"func TestBundleRejectsSelectionAndCommitmentSubstitution"}]},
   {"id":"SourceStartupObservation","witnesses":[
+    {"file":"scheme/gateway/provider-program.ss","pattern":"call-with-module-source-operation-measurement"},
     {"file":"go/internal/devrunner/scheme_tools_test.go","pattern":"func TestSchemeVerificationUsesOnlyPublicPackageEntries"},
     {"file":"crates/governance-build/src/program.rs","pattern":"build_program_archive_with_contract"},
     {"file":"dev/proofs/quint/LlmPolicyContinuation.qnt","pattern":"run releaseTagCannotRebaseCapturedSourceCounterexampleTest"},
@@ -531,6 +536,12 @@
     {"file":"dev/proofs/quint/LlmPolicyContinuation.qnt","pattern":"run stalePreparationReceiptCounterexampleTest"},
     {"file":"go/internal/controlplane/deployment_source.go","pattern":"func selectDeploymentSource"},
     {"file":"go/internal/controlplane/deployment.go","pattern":"trace\\(\"authority-reconciled\"\\)"},
+    {"file":"scheme/gateway/func.ss","pattern":"source-selection-loaded"},
+    {"file":"scheme/gateway/func.ss","pattern":"source-module-view-loaded"},
+    {"file":"scheme/gateway/func.ss","pattern":"source-contracts-checked"},
+    {"file":"scheme/gateway/func.ss","pattern":"source-advisory-derived"},
+    {"file":"go/dev/provider_governor_performance_test.go","pattern":"status=failed drain_ns"},
+    {"file":"crates/governance/src/host/owner.rs","pattern":"scheme-owner-drop-begin"},
     {"file":"t/fixtures/governed-control.ss","pattern":"fixture-module-ready"},
     {"file":"go/dev/provider_control_test.go","pattern":"These unauthenticated diagnostics never replace readiness or exit checks"},
     {"file":"crates/governance-build/src/tooling.rs","pattern":"fn bind_package_sources"},
@@ -577,10 +588,21 @@
   {"id":"SessionWorkflowFrontier","witnesses":[
     {"file":"scheme/gateway/program.ss","pattern":"def \\(hard-fact-affected"},
     {"file":"go/dev/provider_hard_fact_test.go","pattern":"func TestProviderControlHardFactWithdrawalRestartAndABA"},
+    {"file":"scheme/gateway/func.ss","pattern":"def \\(session-workflow-path"},
+    {"file":"crates/server/src/governance_deployment.rs","pattern":"admits_session_workflow"},
     {"file":"crates/ledger/src/provider_workflow.rs","pattern":"fn bind_winner"},
     {"file":"crates/ledger/tests/unit/provider/workflow.rs","pattern":"fn provider_workflow_rechecks_prepared_floor_and_frontier_before_one_reservation"},
+    {"file":"crates/server/src/session_workflow.rs","pattern":"async fn run_session_workflow"},
+    {"file":"go/dev/provider_program_deployment_test.go","pattern":"func TestProviderControlSessionWorkflowAutomaticallyResumes"},
+    {"file":"scheme/gateway/func.ss","pattern":"def \\(governor-ready-steps"},
     {"file":"crates/ledger/src/provider_workflow.rs","pattern":"pub fn observe_workflow"},
+    {"file":"crates/governance/src/host/owner.rs","pattern":"cut_sha256=.*ready_sha256="},
+    {"file":"go/dev/provider_workflow_nested_test.go","pattern":"governor wave matched inner-join cut_sha256="},
+    {"file":"go/dev/provider_workflow_nested_test.go","pattern":"governor wave matched outer-join cut_sha256="},
+    {"file":"go/dev/provider_program_deployment_test.go","pattern":"func TestProviderControlSessionDAGConcurrentJoinAndRecovery"},
     {"file":"crates/ledger/src/provider_workflow_choice.rs","pattern":"fn record_result"},
+    {"file":"go/dev/provider_workflow_choice_test.go","pattern":"func TestProviderControlSessionChoiceFromReleasedResult"},
     {"file":"crates/ledger/src/provider_workflow_nested.rs","pattern":"fn load"},
-    {"file":"crates/ledger/tests/unit/provider/workflow.rs","pattern":"fn nested_workflow_rejects_stale_decision_and_keeps_winner_after_reopen"}]}
+    {"file":"crates/ledger/tests/unit/provider/workflow.rs","pattern":"fn nested_workflow_rejects_stale_decision_and_keeps_winner_after_reopen"},
+    {"file":"go/dev/provider_workflow_nested_test.go","pattern":"func TestProviderControlSessionNestedChoiceAndParallelRecovery"}]}
 ]

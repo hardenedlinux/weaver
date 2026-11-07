@@ -124,9 +124,14 @@ func (c *controlProcess) start(t testing.TB) {
 	c.child = child
 	c.exited = make(chan error, 1)
 	exited := c.exited
-	go func() { err := child.Wait(); log.Close(); exited <- err }()
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
+	go func() {
+		err := child.Wait()
+		log.Close()
+		exited <- err
+		cancel()
+	}()
 	caller := c.fixture.pki.client
 	if c.ingress != nil {
 		caller = c.ingress.client

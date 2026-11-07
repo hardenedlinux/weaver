@@ -59,33 +59,65 @@ impl SourceInbox {
             match command {
                 Command::Stop => break,
                 Command::Compile(work) => self.execute(*work, &mut |original, cancel| {
-                    compile(&mut owner, original, cancel)
+                    if governor_timing() {
+                        trace_compile("begin");
+                    }
+                    let result = compile(&mut owner, original, cancel);
+                    if governor_timing() {
+                        trace_compile("end");
+                    }
+                    result
                 }),
                 Command::Derive {
                     input,
                     reply,
                     _slot,
-                } => {
-                    self.execute_derivation(reply, || derive(&mut owner, &input));
-                }
+                    queued,
+                } => self.execute_derivation(&input, reply, queued, || derive(&mut owner, &input)),
             }
             if *self.shared.gate() {
                 break;
             }
         }
+        if governor_timing() {
+            let wall = std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap_or_default();
+            eprintln!(
+                "weaver shutdown stage=scheme-owner-drop-begin wall_ns={}",
+                wall.as_nanos()
+            );
+        }
         drop(owner);
     }
     fn execute_derivation(
         &self,
+        input: &crate::Derivation,
         reply: tokio::sync::oneshot::Sender<Result<Vec<String>, SourceError>>,
+        queued: Option<std::time::Instant>,
         derive: impl FnOnce() -> Result<Vec<String>, SourceError>,
     ) {
         if reply.is_closed() {
             return;
         }
+        let started = queued.map(|queued| (queued, std::time::Instant::now()));
         let result = derive();
         if matches!(result, Err(SourceError::Scheme)) {
             self.shared.stop();
+        }
+        if let Some((queued, started)) = started {
+            let derive_ns = started.elapsed().as_nanos();
+            let cut_sha256 = match input {
+                crate::Derivation::Governor(cut) => trace_digest(cut),
+                crate::Derivation::FactImpact { .. } => trace_digest(input),
+            };
+            let ready_sha256 = result.as_ref().ok().map(trace_digest);
+            eprintln!(
+                "weaver-governor-owner wait_ns={} derive_ns={derive_ns} ok={} cut_sha256={cut_sha256} ready_sha256={}",
+                started.duration_since(queued).as_nanos(),
+                result.is_ok(),
+                ready_sha256.as_deref().unwrap_or("unavailable"),
+            );
         }
         let _ = reply.send(result);
     }
@@ -125,6 +157,25 @@ impl SourceInbox {
     }
 }
 
+fn trace_digest(value: &impl serde::Serialize) -> String {
+    serde_json::to_string(value)
+        .map(|json| weaver_contracts::body_digest(&json))
+        .unwrap_or_else(|_| "unavailable".to_owned())
+}
+
+pub(crate) fn governor_timing() -> bool {
+    static ENABLED: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
+    *ENABLED.get_or_init(|| std::env::var_os("WEAVER_TEST_GOVERNOR_TIMING").is_some())
+}
+
+fn trace_compile(phase: &str) {
+    use std::time::{SystemTime, UNIX_EPOCH};
+    let wall = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_nanos();
+    eprintln!("weaver-governor-compile {phase} {wall}");
+}
 impl Drop for SourceInbox {
     fn drop(&mut self) {
         self.shared.stop();

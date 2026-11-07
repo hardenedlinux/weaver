@@ -27,6 +27,9 @@ package ControlActivation {
            Stable caller memory and native copy fidelity remain host premises.
            Scheme assessment, source-authority reobservation, stage/register/
            final publication CAS and Rust current-use checks remain separate.
+           The Rust preparation owner retains the original-bound typed source
+           for Session observation. An RPC replay projects that same source
+           onto the wire after the caller and source authority checks.
            No cached approval replaces claim, budget, history or fence.
            Runtime evidence separates source activation and actual streaming;
            builds and fixture startup are excluded, and replay is never a fresh
@@ -77,6 +80,12 @@ package ControlActivation {
            release. Preserve failed deadlines and distinguish unavailable process
            inventory from an absent process. No source/credential payload or path
            belongs in producer-created phase attributes. */
+        doc /* Release qualification observes linked VM readiness, source-module
+           view loading, semantic preparation, artifact delivery and authority
+           reconciliation as separate stages. The source RPC's 10-second
+           limit is distinct from the 15-second control readiness observation.
+           A failed trial still records Scheme cancellation, Rust owner cleanup
+           and the natural process exit outcome. */
     }
     requirement def GovernorSourceHandoff {
         doc /* Allocate original semantics and derivation constraints to

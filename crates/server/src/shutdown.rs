@@ -5,6 +5,14 @@
 //! Install process signals before admission, then enter the ordinary tracked drain path.
 use weaver_contracts::Result;
 
+pub(crate) fn trace(stage: &str) {
+    use std::time::{SystemTime, UNIX_EPOCH};
+    let wall = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or_default();
+    eprintln!("weaver shutdown stage={stage} wall_ns={}", wall.as_nanos());
+}
+
 #[cfg(unix)]
 pub(crate) fn signal() -> Result<impl std::future::Future<Output = ()> + Send> {
     use tokio::signal::unix::{SignalKind, signal};

@@ -94,6 +94,7 @@ pub(super) enum Command {
         input: Derivation,
         reply: oneshot::Sender<Result<Vec<String>, crate::SourceError>>,
         _slot: OwnedSemaphorePermit,
+        queued: Option<std::time::Instant>,
     },
     Compile(Box<Work>),
     Stop,

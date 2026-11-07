@@ -34,25 +34,43 @@ pub(crate) async fn start(
         Err(std::env::VarError::NotPresent) => false,
         _ => return Err(Error::Invalid("single-provider lifecycle setting")),
     };
-    if let Some(feed) = runtime.fact_feed() {
-        match &feed.workflow {
-            Some(edge)
-                if retire
-                    && catalog
-                        .as_ref()
-                        .is_some_and(|catalog| catalog.admits_workflow(&feed.family, edge)) => {}
-            Some(_) => {
-                return Err(Error::Invalid(
-                    "workflow requires the single compiled provider original",
-                ));
-            }
-            None if retire => {
-                return Err(Error::Invalid(
-                    "compiler retirement requires a deployment without a hard fact feed",
-                ));
-            }
-            None => {}
+    let session_workflow = runtime
+        .fact_feed()
+        .filter(|feed| !feed.workflow_path.is_empty());
+    let session_original = catalog
+        .as_ref()
+        .filter(|catalog| catalog.has_session_workflow());
+    if !match (session_workflow, session_original) {
+        (None, None) => true,
+        (Some(feed), Some(catalog)) => {
+            (retire || feed.workflow_dag) && catalog.admits_session_workflow(feed)
         }
+        _ => false,
+    } {
+        return Err(Error::Invalid(
+            "session workflow requires the exact compiled path",
+        ));
+    }
+    if retire
+        && session_workflow.is_none()
+        && runtime
+            .fact_feed()
+            .is_some_and(|feed| feed.workflow.is_none())
+    {
+        return Err(Error::Invalid(
+            "compiler retirement requires a deployment without a hard fact feed",
+        ));
+    }
+    if let Some(feed) = runtime.fact_feed()
+        && let Some(edge) = &feed.workflow
+        && (!retire
+            || !catalog
+                .as_ref()
+                .is_some_and(|catalog| catalog.admits_workflow(&feed.family, edge)))
+    {
+        return Err(Error::Invalid(
+            "workflow requires the single compiled provider original",
+        ));
     }
     let Some(catalog) = catalog else {
         if runtime.fact_feed().is_some() {
@@ -74,7 +92,7 @@ pub(crate) async fn start(
     }
     #[cfg(feature = "scheme-program")]
     {
-        if retire {
+        if retire || session_workflow.is_some_and(|feed| feed.workflow_dag) {
             if !catalog.is_single_provider() {
                 return Err(Error::Invalid(
                     "single-provider lifecycle requires exactly one producer",
@@ -107,7 +125,7 @@ async fn start_compiler(
                 weaver_governance::SchemeCompiler::initialize()
                     .map_err(|_| Error::Conflict("approved Scheme program unavailable"))
             },
-            |compiler, source, _| compiler.compile(source),
+            weaver_governance::SchemeCompiler::compile_cancellable,
             weaver_governance::SchemeCompiler::evaluate,
         )
         .await?;

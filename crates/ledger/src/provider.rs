@@ -13,10 +13,35 @@ use crate::persistence::{ProviderScopePhase, WriteScope};
 use crate::{Ledger, db, integer};
 use admission::{admissible_receipt, store_authorized_provider_plan};
 use std::collections::BTreeSet;
+use std::{
+    sync::OnceLock,
+    time::{Instant, SystemTime, UNIX_EPOCH},
+};
 use weaver_contracts::{
     DomainView, Error, ProviderOAuthUse, ProviderPlan, ProviderReceipt, ProviderRoute,
     ProviderState, Result, Task,
 };
+
+fn governor_timing() -> bool {
+    static ENABLED: OnceLock<bool> = OnceLock::new();
+    *ENABLED.get_or_init(|| std::env::var_os("WEAVER_TEST_GOVERNOR_TIMING").is_some())
+}
+
+fn governor_commit_trace(phase: &str, plan: &ProviderPlan, transaction: Option<Instant>) {
+    static EPOCH: OnceLock<Instant> = OnceLock::new();
+    if governor_timing() {
+        let nanos = EPOCH.get_or_init(Instant::now).elapsed().as_nanos();
+        let wall = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_nanos();
+        let tx_nanos = transaction.map_or(0, |start| start.elapsed().as_nanos());
+        eprintln!(
+            "weaver-governor-commit {phase} {} {} {nanos} {wall} {tx_nanos}",
+            plan.family, plan.node
+        );
+    }
+}
 
 /// Sealed proof obligation for the two progress-only write paths in this module.
 /// No external caller or other ledger module can construct this token.
@@ -232,6 +257,7 @@ impl Ledger {
         let publication = self.connection.prepare_provider_publication(&plan.family);
         let original = self.connection.prepare_provider_original(&plan.family);
         self.connection.prepare_provider_domain();
+        let transaction = (progression.is_some() && governor_timing()).then(Instant::now);
         let tx = crate::persistence::begin_provider_admission(
             &mut self.connection,
             &plan.family,
@@ -255,6 +281,9 @@ impl Ledger {
         )?;
         crate::provider_workflow::record_admission(&tx, plan, &digest, progression, new_claim)?;
         tx.commit_provider_admission().map_err(db)?;
+        if new_claim && progression.is_some() {
+            governor_commit_trace("reserve", plan, transaction);
+        }
         self.provider_receipt(&plan.family, &plan.node)?
             .ok_or(Error::Conflict("provider receipt missing"))
     }
@@ -426,6 +455,7 @@ impl Ledger {
             .map_err(db)?;
         }
         tx.commit_lifecycle().map_err(db)?;
+        governor_commit_trace("release", &permit.plan, None);
         Ok(())
     }
     pub fn provider_receipt(&self, family: &str, node: &str) -> Result<Option<ProviderReceipt>> {

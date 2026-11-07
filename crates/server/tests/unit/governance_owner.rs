@@ -46,6 +46,7 @@ fn original() -> OwnedSource {
     })
     .expect("original source")
 }
+
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn single_provider_retirement_joins_cleanup_without_closing_ingress() {
     let runtime = ServiceRuntime::new();

@@ -113,6 +113,7 @@ impl SourceClient {
                     input,
                     reply,
                     _slot: slot,
+                    queued: super::governor_timing().then(std::time::Instant::now),
                 })
                 .map_err(|error| match error {
                     mpsc::error::TrySendError::Full(_) => SourceJobError::Busy,

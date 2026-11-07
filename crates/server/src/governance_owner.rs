@@ -81,12 +81,14 @@ impl RuntimeOwner {
             }
             // run drops the compiler (and its VM) before the tracked task ends.
             inbox.run_with_cancellable_governor(compiler, compile, derive);
+            crate::shutdown::trace("scheme-owner-cleaned");
             if let Some(lifecycle) = runtime.single_provider()
                 && lifecycle.retirement_requested()
             {
                 exit.disarm();
                 eprintln!("weaver governance stage=compiler-retired");
                 lifecycle.acknowledge_retirement();
+                runtime.wake_session();
             }
             Ok(())
         })?;

@@ -23,6 +23,7 @@ use tonic::{Request, Response, Status};
 use weaver_broker::ProviderTransport;
 use weaver_contracts::Error;
 use weaver_ledger::Ledger;
+
 #[derive(Clone)]
 pub(crate) struct Gateway {
     pub(crate) config: ServerConfig,
@@ -84,6 +85,7 @@ pub async fn serve_grpc_with_runtime(
         Err(error) => Err(error),
     };
     runtime.drain().await;
+    crate::shutdown::trace("tracked-owners-drained");
     result
 }
 async fn serve_owned(
@@ -92,6 +94,11 @@ async fn serve_owned(
     runtime: RuntimeOwner,
     shutdown: impl Future<Output = ()> + Send + 'static,
 ) -> weaver_contracts::Result<()> {
+    if runtime.session_wakeup().is_some() && settings.provider_oauth.is_some() {
+        return Err(Error::Invalid(
+            "automatic Session requires deployment provider credentials",
+        ));
+    }
     let admission = Admission::new(settings.owner.max_in_flight);
     let slot = admission
         .publication()
@@ -121,6 +128,7 @@ async fn serve_owned(
         admission,
         runtime.clone(),
     );
+    let session = operation.clone();
     let operation = serve_listener(
         listeners.operation,
         operation,
@@ -128,16 +136,24 @@ async fn serve_owned(
     );
     let source = serve_listener(listeners.source, source, settings.security.tls);
     tokio::pin!(operation, source, shutdown);
-    let result = tokio::select! {
-        result = &mut operation => { runtime.request_shutdown(); result.and(source.await) },
-        result = &mut source => { runtime.request_shutdown(); result.and(operation.await) },
-        _ = &mut shutdown => {
-            runtime.request_shutdown();
-            let (operation, source) = tokio::join!(operation, source);
-            operation.and(source)
-        },
+    let listeners = async {
+        tokio::select! {
+            result = &mut operation => { runtime.request_shutdown(); result.and(source.await) },
+            result = &mut source => { runtime.request_shutdown(); result.and(operation.await) },
+            _ = &mut shutdown => {
+                crate::shutdown::trace("signal-observed");
+                runtime.request_shutdown();
+                crate::shutdown::trace("admission-closed");
+                let (operation, source) = tokio::join!(operation, source);
+                crate::shutdown::trace("listeners-drained");
+                operation.and(source)
+            },
+        }
     };
-    result.and(source_worker.finish().await)
+    let (result, ()) = tokio::join!(listeners, session.run_session_workflow());
+    let source_result = source_worker.finish().await;
+    crate::shutdown::trace("source-owner-joined");
+    result.and(source_result)
 }
 
 async fn serve_listener(

@@ -25,6 +25,7 @@ struct Inner {
     tasks: TaskTracker,
     single_provider: OnceLock<crate::single_provider::SingleProvider>,
     fact_feed: OnceLock<weaver_contracts::FactFeed>,
+    session_wakeup: Arc<tokio::sync::Notify>,
 }
 struct AdmissionState {
     governance: Option<SourceClient>,
@@ -84,6 +85,7 @@ impl RuntimeOwner {
                 tasks: TaskTracker::new(),
                 single_provider: OnceLock::new(),
                 fact_feed: OnceLock::new(),
+                session_wakeup: Arc::new(tokio::sync::Notify::new()),
             }),
         }
     }
@@ -95,6 +97,16 @@ impl RuntimeOwner {
     }
     pub(crate) fn fact_feed(&self) -> Option<&weaver_contracts::FactFeed> {
         self.inner.fact_feed.get()
+    }
+    pub(crate) fn session_wakeup(&self) -> Option<&Arc<tokio::sync::Notify>> {
+        self.fact_feed()
+            .filter(|feed| !feed.workflow_path.is_empty())
+            .map(|_| &self.inner.session_wakeup)
+    }
+    pub(crate) fn wake_session(&self) {
+        if let Some(wakeup) = self.session_wakeup() {
+            wakeup.notify_one();
+        }
     }
     #[cfg(any(feature = "scheme-program", test))]
     pub(crate) fn enable_single_provider(&self) -> Result<()> {

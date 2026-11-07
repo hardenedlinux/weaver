@@ -28,6 +28,7 @@ mod provider_oauth;
 mod review_wire;
 mod rpc_security;
 mod runtime;
+mod session_workflow;
 mod shutdown;
 mod single_provider;
 mod source_artifact;

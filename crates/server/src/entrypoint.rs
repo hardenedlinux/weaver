@@ -23,8 +23,12 @@ pub(crate) async fn run_on_runtime() -> weaver_contracts::Result<()> {
     let storage = LedgerCustody::open_with_journal(path, journal)
         .map_err(|error| weaver_contracts::Error::Storage(error.to_string()))?;
     let result = crate::run_from_env().await;
+    crate::shutdown::trace("service-returned");
     let closed = storage
         .close()
         .map_err(|error| weaver_contracts::Error::Storage(error.to_string()));
+    if closed.is_ok() {
+        crate::shutdown::trace("storage-closed");
+    }
     result.and(closed)
 }

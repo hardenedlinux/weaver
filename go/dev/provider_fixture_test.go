@@ -437,6 +437,10 @@ func (f *fixture) start(t testing.TB) {
 	}
 }
 func (f *fixture) stop(t testing.TB) {
+	f.stopObserved(t, nil)
+}
+
+func (f *fixture) stopObserved(t testing.TB, observe func(string, time.Time)) {
 	t.Helper()
 	if f.child == nil {
 		return
@@ -447,17 +451,35 @@ func (f *fixture) stop(t testing.TB) {
 	if f.admin != nil {
 		f.admin.Connection.Close()
 	}
+	if observe != nil {
+		observe("connections-closed", time.Now())
+	}
 	f.child.Process.Signal(syscall.SIGTERM)
+	if observe != nil {
+		observe("signal-sent", time.Now())
+	}
 	select {
 	case err := <-f.exited:
+		if observe != nil {
+			observe("exit-observed", time.Now())
+		}
 		if err != nil {
 			data, _ := os.ReadFile(filepath.Join(f.directory, "server.log"))
 			t.Errorf("server natural exit: %v: %s", err, data)
 		}
 	case <-time.After(15 * time.Second):
+		data, _ := os.ReadFile(filepath.Join(f.directory, "server.log"))
 		f.child.Process.Kill()
 		<-f.exited
-		t.Error("server did not exit naturally; cleanup kill is a failure")
+		t.Errorf("server did not exit naturally; cleanup kill is a failure: %s", data)
+	}
+	if os.Getenv("WEAVER_TEST_SOURCE_MEASURE") != "" {
+		data, _ := os.ReadFile(filepath.Join(f.directory, "server.log"))
+		for _, line := range strings.Split(string(data), "\n") {
+			if strings.HasPrefix(line, "weaver source metric=") {
+				t.Log(line)
+			}
+		}
 	}
 	f.child = nil
 }
