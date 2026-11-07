@@ -73,6 +73,13 @@ pub(crate) fn authority(tx: &WriteScope<'_>) -> Result<(u64, u64, String)> {
     .map_err(db)
 }
 pub(crate) fn authorize(tx: &WriteScope<'_>, check: StreamCheck<'_>) -> Result<()> {
+    if crate::hard_fact::require_available(tx, &check.contract.family, &check.contract.node)?
+        .is_some()
+    {
+        return Err(Error::Conflict(
+            "hard fact feed requires provider admission",
+        ));
+    }
     crate::task_publication::require(tx, &check.contract.family)?;
     let (revision, fence, policy) = authority(tx)?;
     if revision != check.revision || fence != check.fence {

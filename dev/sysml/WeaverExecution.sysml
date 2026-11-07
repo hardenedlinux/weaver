@@ -679,6 +679,27 @@ package WeaverExecution {
     requirement def NoImplicitRetry {
         doc /* One logical node has one consumed send opportunity; redirects and SDK retries are disabled. */
     }
+    requirement def SessionWorkflowFrontier {
+        doc /* Match the compiled Session Workflow topology and the deployed
+           availability dependencies. Scheme Governor uses ASCENT over a
+           coherent observation of complete releases and current hard facts.
+           Independent ready branches can dispatch concurrently. A join needs
+           every active predecessor's complete response release. A conditional
+           fork uses the selector's complete structured result and current facts.
+           Commit one branch decision with the selected arm claim and reserve.
+           Its persisted arm defines the active frontier across nested selectors.
+           An unresolved active arm
+           holds its dependent join. Descendants of an unselected arm are
+           inactive, including any selector they contain. Parallel parents
+           inside the active arm each need a complete release. Admission rechecks
+           every release and the observed fact version. The Session wakes on
+           durable release completion, activation and fact resolution. Only the
+           root needs an operation request. Repeated wakes share one durable
+           winner, claim and reservation. Restart reconstructs the frontier from
+           existing receipts. A queued claim may resume and an unknown outcome
+           stops progression. Pending and resolved withdrawals block affected
+           successors until a new available revision is admitted. */
+    }
     requirement def DevelopmentPolicy {
         doc /* ASP Rust is a deny-mode Cargo test dependency and is absent from the runtime graph. */
     }

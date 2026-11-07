@@ -6,7 +6,14 @@
 mod delta_review;
 pub use delta_review::{DeltaDisposition, DeltaReview, PublicationReviewContext, ReviewAuthority};
 mod domains;
+mod hard_fact;
 pub use domains::{TaskAdmission, TaskAdmissionReceipt};
+pub use hard_fact::{
+    FactBarrier, FactFeed, FactIntent, FactResolution, FactWork, MAX_WORKFLOW_RESULT_BYTES,
+    ProviderWorkflow, SESSION_CHOICE_SCHEMA, SESSION_DAG_SCHEMA, SESSION_NESTED_SCHEMA,
+    SESSION_WORKFLOW_SCHEMA, WorkflowRoute, validate_session_choice, validate_session_dag,
+    validate_session_selectors,
+};
 mod json;
 pub use domains::{
     DomainBinding, DomainMigration, DomainMigrationReceipt, DomainStamp, DomainView,

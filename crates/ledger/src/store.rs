@@ -323,6 +323,11 @@ fn receipt(
 
 fn guard(tx: &WriteScope<'_>, p: &Proposal) -> Result<()> {
     crate::publication_barrier::require_resolved(tx)?;
+    if crate::hard_fact::require_available(tx, &p.family, &p.node)?.is_some() {
+        return Err(Error::Conflict(
+            "hard fact feed requires provider admission",
+        ));
+    }
     crate::task_publication::require(tx, &p.family)?;
     let (revision, fence, policy): (u64, u64, String) = crate::persistence::one(
         tx,

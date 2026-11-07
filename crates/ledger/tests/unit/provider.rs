@@ -16,6 +16,8 @@ mod observation;
 mod properties;
 #[path = "provider_range_group.rs"]
 mod range_group;
+#[path = "provider/workflow.rs"]
+mod workflow;
 const POLICY: &str = include_str!(concat!(
     env!("CARGO_MANIFEST_DIR"),
     "/../../prod/policies/provider/provider.cedar"

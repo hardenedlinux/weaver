@@ -37,6 +37,12 @@ CREATE TABLE IF NOT EXISTS review_authority (
  singleton INTEGER PRIMARY KEY CHECK(singleton=1), epoch INTEGER NOT NULL CHECK(epoch>=0), record TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS authority_pending (
  operation_id TEXT PRIMARY KEY, digest TEXT NOT NULL, proposal TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS hard_fact_feed (
+ singleton INTEGER PRIMARY KEY CHECK(singleton=1), family TEXT NOT NULL, record TEXT NOT NULL,
+ floor INTEGER NOT NULL, revision INTEGER NOT NULL, snapshot TEXT NOT NULL,
+ pending TEXT REFERENCES hard_fact_intents(operation_id), unavailable TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS hard_fact_intents (
+ operation_id TEXT PRIMARY KEY, original TEXT NOT NULL, barrier TEXT NOT NULL, resolution TEXT);
 CREATE TABLE IF NOT EXISTS authority_review_requirements (
  operation_id TEXT PRIMARY KEY, digest TEXT NOT NULL, parent TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS authority_reviews (
@@ -101,6 +107,12 @@ CREATE TABLE IF NOT EXISTS provider_runs (
  reserved INTEGER NOT NULL CHECK(reserved>0), state TEXT NOT NULL CHECK(state IN ('queued','unknown','complete')),
  target TEXT, dispatched INTEGER NOT NULL DEFAULT 0, next_event INTEGER NOT NULL DEFAULT 0,
  PRIMARY KEY(family,node));
+CREATE TABLE IF NOT EXISTS provider_workflow_decisions (
+ origin TEXT NOT NULL, selector TEXT NOT NULL, arm_digest TEXT NOT NULL,
+ record TEXT NOT NULL, PRIMARY KEY(origin,selector));
+CREATE TABLE IF NOT EXISTS provider_workflow_transitions (
+ origin TEXT NOT NULL, successor TEXT NOT NULL, successor_digest TEXT NOT NULL,
+ record TEXT NOT NULL, PRIMARY KEY(origin,successor));
 CREATE TABLE IF NOT EXISTS provider_releases (
  family TEXT NOT NULL, node TEXT NOT NULL, sequence INTEGER NOT NULL, length INTEGER NOT NULL, digest TEXT NOT NULL,
  state TEXT NOT NULL CHECK(state IN ('unknown','released')), PRIMARY KEY(family,node,sequence),
@@ -130,6 +142,9 @@ CREATE TABLE IF NOT EXISTS provider_rate_bindings (
 CREATE TABLE IF NOT EXISTS metering_credentials (
  tenant TEXT NOT NULL, epoch INTEGER NOT NULL, certificate TEXT NOT NULL UNIQUE,
  public_key TEXT NOT NULL UNIQUE, credential TEXT NOT NULL UNIQUE, record TEXT NOT NULL, PRIMARY KEY(tenant,epoch));
+CREATE TABLE IF NOT EXISTS provider_terminal_results (
+ family TEXT NOT NULL, node TEXT NOT NULL, record TEXT NOT NULL,
+ PRIMARY KEY(family,node), FOREIGN KEY(family,node) REFERENCES provider_runs(family,node));
 CREATE TABLE IF NOT EXISTS provider_terminal_usage (
  family TEXT NOT NULL, node TEXT NOT NULL, tokens TEXT NOT NULL,
  PRIMARY KEY(family,node), FOREIGN KEY(family,node) REFERENCES provider_runs(family,node));
