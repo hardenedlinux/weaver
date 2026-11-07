@@ -8,7 +8,9 @@ use std::sync::OnceLock;
 use tokio::sync::Mutex;
 use tokio_util::sync::CancellationToken;
 use tonic::Status;
-use weaver_contracts::{PublicationOutcome, PublicationReceipt, SourceAuthority, SourceIdentity};
+use weaver_contracts::{
+    ProviderPlan, PublicationOutcome, PublicationReceipt, SourceAuthority, SourceIdentity,
+};
 use weaver_governance::BoundSource;
 
 #[derive(Default)]
@@ -17,6 +19,7 @@ pub(crate) struct SingleProvider {
     pub(crate) ready: OnceLock<Prepared>,
     retire: CancellationToken,
     retired: CancellationToken,
+    live: CancellationToken,
 }
 
 pub(crate) struct Prepared {
@@ -95,23 +98,78 @@ impl SingleProvider {
 }
 
 impl Gateway {
+    pub(crate) fn workflow_predecessor(
+        &self,
+        successor: &ProviderPlan,
+    ) -> Result<Option<ProviderPlan>, Status> {
+        let Some((feed, edge)) = self
+            .runtime
+            .fact_feed()
+            .filter(|feed| feed.family == successor.family)
+            .and_then(|feed| feed.workflow.as_ref().map(|edge| (feed, edge)))
+            .filter(|(_, edge)| edge.successor == successor.node)
+        else {
+            return Ok(None);
+        };
+        let source = self
+            .runtime
+            .single_provider()
+            .filter(|lifecycle| lifecycle.live.is_cancelled())
+            .and_then(|lifecycle| lifecycle.ready.get())
+            .map(|prepared| prepared.bound.source())
+            .ok_or(Status::failed_precondition(
+                "compiled workflow has not activated",
+            ))?;
+        let selection = &source.data().governance;
+        if selection.family != feed.family
+            || !selection.open_nodes.contains(&edge.predecessor)
+            || !selection.open_nodes.contains(&successor.node)
+        {
+            return Err(Status::failed_precondition(
+                "Governor workflow selection changed",
+            ));
+        }
+        let admitted = |node: &str| {
+            source
+                .plans()
+                .iter()
+                .find(|plan| plan.family == selection.family && plan.node == node)
+                .ok_or(Status::failed_precondition(
+                    "compiled workflow plan missing",
+                ))
+        };
+        if admitted(&successor.node)? != successor {
+            return Err(Status::failed_precondition(
+                "successor differs from compiled original",
+            ));
+        }
+        Ok(Some(admitted(&edge.predecessor)?.clone()))
+    }
+
     pub(super) async fn retire_prepared_provider(
         &self,
         source: &SourceOwner,
         caller: SourceIdentity,
         receipt: &PublicationReceipt,
     ) -> Result<(), Status> {
-        let Some(prepared) = self
-            .runtime
-            .single_provider()
-            .and_then(|lifecycle| lifecycle.ready.get())
-        else {
+        let Some(lifecycle) = self.runtime.single_provider() else {
+            return Ok(());
+        };
+        let Some(prepared) = lifecycle.ready.get() else {
             return Ok(());
         };
         if prepared.matches_commit(receipt)
             && prepared.authority.identity == caller
             && prepared.authority == source.authority(caller).await?
         {
+            if self
+                .runtime
+                .fact_feed()
+                .is_some_and(|feed| feed.workflow.is_some())
+            {
+                lifecycle.live.cancel();
+                return Ok(());
+            }
             self.runtime
                 .retire_single_provider()
                 .await

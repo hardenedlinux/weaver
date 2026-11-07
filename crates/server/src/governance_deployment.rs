@@ -34,10 +34,25 @@ pub(crate) async fn start(
         Err(std::env::VarError::NotPresent) => false,
         _ => return Err(Error::Invalid("single-provider lifecycle setting")),
     };
-    if retire && runtime.fact_feed().is_some() {
-        return Err(Error::Invalid(
-            "compiler retirement requires a deployment without a hard fact feed",
-        ));
+    if let Some(feed) = runtime.fact_feed() {
+        match &feed.workflow {
+            Some(edge)
+                if retire
+                    && catalog
+                        .as_ref()
+                        .is_some_and(|catalog| catalog.admits_workflow(&feed.family, edge)) => {}
+            Some(_) => {
+                return Err(Error::Invalid(
+                    "workflow requires the single compiled provider original",
+                ));
+            }
+            None if retire => {
+                return Err(Error::Invalid(
+                    "compiler retirement requires a deployment without a hard fact feed",
+                ));
+            }
+            None => {}
+        }
     }
     let Some(catalog) = catalog else {
         if runtime.fact_feed().is_some() {

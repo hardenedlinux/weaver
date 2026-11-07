@@ -37,6 +37,7 @@ impl Gateway {
                 .plan
                 .ok_or(Status::invalid_argument("plan missing"))?,
         )?;
+        let predecessor = self.workflow_predecessor(&plan)?;
         let cursor = weaver_ledger::DeliveryCursor::new(&plan).map_err(status)?;
         let (sender, receiver) = mpsc::channel(crate::grpc_output::DELIVERY_QUEUE_CAPACITY);
         let cancelled = CancellationToken::new();
@@ -123,8 +124,10 @@ impl Gateway {
                         crate::grpc_output::take_handoffs();
                         crate::grpc_output::take_deliveries();
                     }
-                    let execution = weaver_broker::execute_catalog_provider_with_oauth(
-
+                    let progression = predecessor.as_ref()
+                        .map(|predecessor| ledger.prepare_provider_progression(predecessor, &plan))
+                        .transpose()?;
+                    let execution = weaver_broker::execute_provider_progression(
                         &mut ledger,
                         weaver_broker::ProviderExecution {
                             plan: &plan,
@@ -133,9 +136,12 @@ impl Gateway {
                             batch_rows: request.batch_rows as usize,
                         },
                         &mut output,
-                        weaver_broker::ProviderExecutionAuthority {
-                            catalog: &request.catalog_version,
-                            oauth: oauth.as_ref(),
+                        weaver_broker::ProviderExecutionAdmission {
+                            authority: weaver_broker::ProviderExecutionAuthority {
+                                catalog: &request.catalog_version,
+                                oauth: oauth.as_ref(),
+                            },
+                            progression: progression.as_ref(),
                         },
                     );
                     #[cfg(test)]

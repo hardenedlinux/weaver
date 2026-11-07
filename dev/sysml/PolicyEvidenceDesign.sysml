@@ -755,8 +755,11 @@ package PolicyEvidenceDesign {
            guarded local receiver. Durable completion wakes reconciliation.
            On restart after reactivation, existing operation receipts identify
            the first missing or queued successor. A wake carries no authority
-           and an unknown operation stops progression. The legacy Governor
-           deployment can still bind one edge. For a fork/join Workflow the
+           and an unknown operation stops progression. An explicit Governor
+           edge retains the linked owner for authenticated hard-fact projection
+           after exact activation. The prepared original remains sealed, and
+           the successor must match its immutable plan and complete predecessor
+           release. For a fork/join Workflow the
            prepared source binds the ordered nodes and every graph edge. The
            live Scheme Governor uses ASCENT to select candidates from detached
            ledger observations. A conditional route joins the complete

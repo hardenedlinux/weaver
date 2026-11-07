@@ -102,6 +102,69 @@ func TestProviderControlSingleProviderRetiresCompilerAfterActivation(t *testing.
 	}
 }
 
+func TestProviderControlCompiledGovernorSuccessorUsesCompleteRelease(t *testing.T) {
+	f := newFixture(t, completeSSE, false)
+	bundle := controlBundle(t, f)
+	predecessor, successor := bundle.Plans[0], bundle.Plans[1]
+	f.env = append(f.env, "WEAVER_GOVERNANCE_RETIRE_ON_ACTIVATION=1",
+		hardFactFeedSetting(t, f, predecessor.Family, predecessor.Node,
+			[][2]string{{successor.Node, predecessor.Node}},
+			map[string]string{"predecessor": predecessor.Node, "successor": successor.Node}, "", nil))
+	policy := compiledControlSources(false)
+	policy.configure(t, f, bundle)
+	c := newControlProcess(t, f, writeControlBundle(t, f, bundle, "json"))
+	c.useProducer(policy.producer)
+	c.start(t)
+	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
+	defer cancel()
+	a := &pb.HardFactIntent{OperationId: "workflow-fact-a", Domain: "availability",
+		Revision: 1, PreviousSnapshot: strings.Repeat("0", 64), Available: proto.Bool(true)}
+	stage := func(intent *pb.HardFactIntent) *pb.HardFactBarrier {
+		t.Helper()
+		key, err := f.admin.RPC.StageHardFact(f.admin.Context(ctx), intent)
+		if err != nil {
+			t.Fatal(err)
+		}
+		return key
+	}
+	resolve := func(key *pb.HardFactBarrier) {
+		t.Helper()
+		result, err := f.admin.RPC.ResolveHardFact(f.admin.Context(ctx), key)
+		if err != nil || strings.Join(result.GetAffected(), ",") != "infer,next" {
+			t.Fatalf("native transitive impact: %v %v", result, err)
+		}
+	}
+	attempt := func(plan v1.ProviderPlan) error {
+		_, err := c.client.Execute(ctx, plan, pb.Encoding_PROTOBUF, 1, func(*pb.Event) error { return nil })
+		return err
+	}
+	barrier := stage(a)
+	resolve(barrier)
+	if err := attempt(successor); status.Code(err) != codes.FailedPrecondition || f.primary.Load() != 0 {
+		t.Fatalf("successor advanced before response completion: %v", err)
+	}
+	if err := attempt(predecessor); err != nil || f.primary.Load() != 1 {
+		t.Fatalf("predecessor did not complete: %v", err)
+	}
+	nextFact := stage(&pb.HardFactIntent{OperationId: "workflow-fact-b", Domain: a.Domain,
+		Revision: 2, PreviousSnapshot: barrier.Snapshot, ExpectedFloor: barrier.Floor,
+		Available: proto.Bool(true)})
+	if err := attempt(successor); status.Code(err) != codes.FailedPrecondition || f.primary.Load() != 1 {
+		t.Fatalf("successor crossed pending fact floor: %v", err)
+	}
+	resolve(nextFact)
+	if err := attempt(successor); err != nil || f.primary.Load() != 2 {
+		t.Fatalf("completed release did not admit the exact successor: %v", err)
+	}
+	if err := attempt(successor); err == nil || f.primary.Load() != 2 || f.backup.Load() != 0 {
+		t.Fatal("successor replay reset the original claim")
+	}
+	receipt, err := c.client.RPC.Inspect(c.client.Context(ctx), &pb.OperationKey{Family: successor.Family, Node: successor.Node})
+	if err != nil || receipt.GetState() != "complete" || receipt.GetHeld() != 8 {
+		t.Fatalf("successor completion or retained shared hold: %v %v", receipt, err)
+	}
+}
+
 func TestProviderControlCompiledProgramSharedBudgetRejectsConcurrentSendAndSDKRetry(t *testing.T) {
 	exerciseControlSharedBudgetPolicies(t, nil, compiledControlSources(false))
 }

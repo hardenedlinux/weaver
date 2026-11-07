@@ -58,6 +58,17 @@ impl ProducerCatalog {
         self.entries.len() == 1
     }
 
+    /// Match a deployment edge to the independent compiled-source original.
+    pub fn admits_workflow(&self, family: &str, edge: &weaver_contracts::ProviderWorkflow) -> bool {
+        self.is_single_provider()
+            && self.entries.values().next().is_some_and(|entry| {
+                let task = entry.original.task();
+                task.family == family
+                    && task.nodes.contains(&edge.predecessor)
+                    && task.nodes.contains(&edge.successor)
+            })
+    }
+
     /// Refuse aliases for one original family and conflicting publication IDs.
     /// Total copied text is bounded separately from native constructor traversal.
     pub fn from_entries(entries: Vec<ApprovedProducer>) -> Result<Self, CatalogError> {
