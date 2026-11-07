@@ -115,6 +115,7 @@ package WeaverProject {
         part 'gerbil.pkg' : RuntimeInput;
         part 'github.com/HardenedLinux/weaver/go/dev' : ForbiddenRuntimeReference;
         part 'github.com/HardenedLinux/weaver/go/internal/devrunner' : ForbiddenRuntimeReference;
+        part 'github.com/Open-MBEE/OpenSysML' : ForbiddenRuntimeReference;
         part ':hardenedlinux/weaver/dev' : ForbiddenRuntimeReference;
         part 'weaver-dev' : ForbiddenRuntimeReference;
         doc /* Rust src/build inputs derive from Layout.RustPackage. Go inputs

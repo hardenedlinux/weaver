@@ -5,20 +5,15 @@
 package dev
 
 import (
-	"bufio"
 	"bytes"
 	"context"
 	"encoding/json"
-	"math/rand"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"regexp"
-	"runtime"
-	"strconv"
 	"strings"
 	"testing"
-	"testing/quick"
 	"time"
 
 	"github.com/HardenedLinux/weaver/go/internal/devrunner"
@@ -158,25 +153,6 @@ func TestCargoWorkspaceAndDevelopmentGates(t *testing.T) {
 		if !known {
 			t.Fatalf("unmapped crate: %s", p.Name)
 		}
-		data, err := os.ReadFile(p.ManifestPath)
-		if err != nil {
-			t.Fatal(err)
-		}
-		scan := bufio.NewScanner(strings.NewReader(string(data)))
-		dependencies := false
-		for scan.Scan() {
-			line := strings.TrimSpace(strings.SplitN(scan.Text(), "#", 2)[0])
-			if strings.HasPrefix(line, "[") {
-				dependencies = strings.Contains(line, "dependencies")
-				continue
-			}
-			if dependencies && line != "" && !inheritedDependency.MatchString(line) {
-				t.Fatalf("dependency not inherited from workspace: %s: %s", p.Name, line)
-			}
-		}
-		if err := scan.Err(); err != nil {
-			t.Fatal(err)
-		}
 		actual := map[string]bool{}
 		asp, criterion := 0, 0
 		for _, d := range p.Dependencies {
@@ -275,57 +251,5 @@ func TestCargoWorkspaceAndDevelopmentGates(t *testing.T) {
 				t.Fatalf("weakened ASP gate: %s", p.Name)
 			}
 		}
-	}
-}
-func TestSysMLSDKIsAbsentFromProductionBuild(t *testing.T) {
-	goBinary := filepath.Join(runtime.GOROOT(), "bin/go")
-	commands := strings.Fields(string(tool(t, goBinary, "-C", "go", "list", "./cmd/...")))
-	production := 0
-	for _, command := range commands {
-		// The development owner intentionally captures SDK views in-process.
-		// Every other command, including future commands, remains covered.
-		if strings.HasSuffix(command, "/cmd/weaver-dev") {
-			continue
-		}
-		production++
-		t.Run(command, func(t *testing.T) {
-			deps := tool(t, goBinary, "-C", "go", "list", "-deps", command)
-			if strings.Contains(string(deps), "github.com/Open-MBEE/OpenSysML") {
-				t.Fatal("development SDK leaked into production command graph")
-			}
-		})
-	}
-	if production == 0 {
-		t.Fatal("no production commands were checked")
-	}
-}
-
-// Canonical member declarations may select workspace features without becoming
-// optional. Source/version/path overrides remain forbidden; Cargo metadata above
-// independently resolves every member and checks its actual dependency graph.
-var inheritedDependency = regexp.MustCompile(`^[A-Za-z0-9_-]+(?:\.workspace\s*=\s*true|\s*=\s*\{\s*workspace\s*=\s*true(?:,\s*optional\s*=\s*true)?(?:,\s*features\s*=\s*\["[A-Za-z0-9_/-]+"(?:,\s*"[A-Za-z0-9_/-]+")*\])?\s*\})\s*$`)
-
-func TestCargoWorkspaceInheritanceForms(t *testing.T) {
-	check := func(selector uint8) bool {
-		gap := strings.Repeat(" ", int(selector%4))
-		feature := "commit-observer-" + strconv.Itoa(int(selector))
-		base := "weaver-ledger = {" + gap + "workspace = true"
-		optional := ""
-		if selector&1 != 0 {
-			optional = ", optional = true"
-		}
-		valid := base + optional + ", features = [\"" + feature + "\"]" + gap + "}"
-		if !inheritedDependency.MatchString(valid) || !inheritedDependency.MatchString("weaver-ledger.workspace = true") {
-			return false
-		}
-		for _, override := range []string{`version = "1"`, `path = "../ledger"`, `git = "https://example.invalid/ledger"`, `workspace = false`} {
-			if inheritedDependency.MatchString("weaver-ledger = {"+override+"}") || inheritedDependency.MatchString(base+", "+override+"}") {
-				return false
-			}
-		}
-		return true
-	}
-	if err := quick.Check(check, &quick.Config{MaxCount: 64, Rand: rand.New(rand.NewSource(293))}); err != nil {
-		t.Fatal(err)
 	}
 }

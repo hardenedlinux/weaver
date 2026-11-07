@@ -201,33 +201,36 @@ func TestProjectArchitectureRuntimeAssetBoundary(t *testing.T) {
 			inputs = append(inputs, build)
 		}
 	}
+	patterns := make([]string, 0, len(entries))
 	for _, entry := range entries {
 		relative, err := filepath.Rel(filepath.Join(repository, "go"), filepath.Join(repository, entry))
 		if err != nil {
 			t.Fatal(err)
 		}
-		stream := json.NewDecoder(bytes.NewReader(tool(t, filepath.Join(runtime.GOROOT(), "bin/go"), "-C", "go", "list", "-deps", "-json", "./"+filepath.ToSlash(relative))))
-		for {
-			var pkg struct {
-				Dir, ImportPath                   string
-				GoFiles, CgoFiles, IgnoredGoFiles []string
+		patterns = append(patterns, "./"+filepath.ToSlash(relative))
+	}
+	args := append([]string{"-C", "go", "list", "-deps", "-json"}, patterns...)
+	stream := json.NewDecoder(bytes.NewReader(tool(t, filepath.Join(runtime.GOROOT(), "bin/go"), args...)))
+	for {
+		var pkg struct {
+			Dir, ImportPath                   string
+			GoFiles, CgoFiles, IgnoredGoFiles []string
+		}
+		if err := stream.Decode(&pkg); err != nil {
+			if err == io.EOF {
+				break
 			}
-			if err := stream.Decode(&pkg); err != nil {
-				if err == io.EOF {
-					break
+			t.Fatal(err)
+		}
+		if err := boundary.reference(repository, pkg.Dir, pkg.ImportPath); err != nil {
+			t.Fatal(err)
+		}
+		if insidePath(pkg.Dir, repository) {
+			for _, name := range append(append(pkg.GoFiles, pkg.CgoFiles...), pkg.IgnoredGoFiles...) {
+				if strings.HasSuffix(name, "_test.go") {
+					continue
 				}
-				t.Fatal(err)
-			}
-			if err := boundary.reference(repository, pkg.Dir, pkg.ImportPath); err != nil {
-				t.Fatal(err)
-			}
-			if insidePath(pkg.Dir, repository) {
-				for _, name := range append(append(pkg.GoFiles, pkg.CgoFiles...), pkg.IgnoredGoFiles...) {
-					if strings.HasSuffix(name, "_test.go") {
-						continue
-					}
-					inputs = append(inputs, filepath.Join(pkg.Dir, name))
-				}
+				inputs = append(inputs, filepath.Join(pkg.Dir, name))
 			}
 		}
 	}
