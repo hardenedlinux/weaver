@@ -178,7 +178,8 @@ func Run(ctx context.Context, config Config, output io.Writer) (report string, r
 			break
 		}
 		var result Result
-		if stage.Name == "go-provider-grpc-integration" && providerBuildFailure != "" {
+		if (stage.Name == "go-provider-grpc-integration" || stage.Name == "policy-provider-spec-integration") &&
+			providerBuildFailure != "" {
 			result = Result{Name: stage.Name, Status: "SKIP", Binary: stage.Binary, Args: stage.Args,
 				Error: "required native build did not pass: " + providerBuildFailure}
 		} else {

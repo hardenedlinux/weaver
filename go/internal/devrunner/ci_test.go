@@ -31,7 +31,7 @@ func TestModularCISuitesPreserveUnifiedGateCoverage(t *testing.T) {
 			t.Fatal(err)
 		}
 		for _, stage := range stages {
-			if covered[stage.Name] && stage.Name != "project-architecture" && stage.Name != "workflow-contract" {
+			if covered[stage.Name] && stage.Name != "project-architecture" && stage.Name != "workflow-contract" && !stage.providerBuild() {
 				t.Fatalf("unintended duplicated check %s", stage.Name)
 			}
 			covered[stage.Name] = true

@@ -63,7 +63,7 @@ jobs:
         run: go -C go run ./cmd/weaver-dev -clean-source -timeout 7m bootstrap-proofs
       - name: Prepare published Scheme SDK
         id: scheme_sdk
-        if: contains(fromJSON('["check-rust", "check-go", "check-scheme", "bench"]'), inputs.suite)
+        if: contains(fromJSON('["check-rust", "check-go", "check-policy", "check-scheme", "bench"]'), inputs.suite)
         timeout-minutes: 5
         uses: tao3k/gerbil-scheme-rust/.github/actions/setup-gerbil@380f8ba5f87b2f9ba3924302b35b3eea1e3f2a8e
         with:

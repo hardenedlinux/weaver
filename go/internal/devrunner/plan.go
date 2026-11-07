@@ -10,6 +10,7 @@ import (
 )
 
 const rustRuntimeFeatures = "weaver-server/arrow,weaver-governance/scheme-vm"
+const providerSpecReviewCase = "^TestProviderRealSPECReviewRevocationLostRepliesAndRestart$"
 
 const proofToolchain = "leanprover/lean4:v4.35.0"
 
@@ -140,7 +141,8 @@ func Plan(goBinary string) []Stage {
 		{"source-owner-quint-safety", "quint", []string{"run", "dev/proofs/quint/SourceOwner.qnt", "--main", "SourceOwner", "--invariant", "safe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
 		{"go-provider-server-build", "cargo", []string{"build", "-p", "weaver-server", "--bin", "weaver-server", "--features", "arrow", "--locked", "--offline", "-j", "4"}},
 		{"go-provider-observer-build", "cargo", []string{"test", "-p", "weaver-server", "--lib", "--features", "arrow", "--locked", "--offline", "-j", "4", "--no-run"}},
-		{"go-provider-grpc-integration", goBinary, []string{"-C", "go", "test", "-count=1", "-race", "-tags=integration", "-timeout=10m", "./dev", "-run", "TestProvider", "-v"}},
+		{"go-provider-grpc-integration", goBinary, []string{"-C", "go", "test", "-count=1", "-race", "-tags=integration", "-timeout=10m", "./dev", "-run", "TestProvider", "-skip", providerSpecReviewCase, "-v"}},
+		{"policy-provider-spec-integration", goBinary, []string{"-C", "go", "test", "-count=1", "-race", "-tags=integration", "-timeout=4m", "./dev", "-run", providerSpecReviewCase, "-v"}},
 		{"control-bundle-pbt", goBinary, []string{"-C", "go", "test", "./internal/config", "-run", "^$", "-fuzz", "FuzzSourceBundleCannotExpandOriginalSelection", "-fuzztime=3s"}},
 		{"authority-publication-quint-tests", "quint", []string{"test", "dev/proofs/quint/AuthorityPublication.qnt", "--main", "AuthorityPublication", "--seed", "293", "--match", "^authority[A-Z]"}},
 		{"authority-publication-quint-safety", "quint", []string{"run", "dev/proofs/quint/AuthorityPublication.qnt", "--main", "AuthorityPublication", "--invariant", "safe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
@@ -190,9 +192,11 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 		for _, stage := range Plan(goBinary) {
 			common := stage.Name == "project-architecture" || stage.Name == "workflow-contract"
 			providerBuild := stage.providerBuild()
+			proofGo := stage.Name == "lean-json-integration" || stage.Name == "spec-real-qualification" ||
+				stage.Name == "spec-proof-closure-integration" || stage.Name == "policy-provider-spec-integration"
 			language := mode == "check-rust" && !providerBuild && (stage.Binary == "cargo" || stage.Binary == "rustc") ||
-				mode == "check-go" && (providerBuild || stage.Binary == goBinary && stage.Name != "lean-json-integration" && stage.Name != "spec-real-qualification" && stage.Name != "spec-proof-closure-integration") ||
-				mode == "check-policy" && (stage.Binary == "quint" || stage.Binary == "elan" || stage.Name == "lean-json-integration" || stage.Name == "spec-real-qualification" || stage.Name == "spec-proof-closure-integration")
+				mode == "check-go" && (providerBuild || stage.Binary == goBinary && !proofGo) ||
+				mode == "check-policy" && (providerBuild || stage.Binary == "quint" || stage.Binary == "elan" || proofGo)
 			if common || language {
 				selected = append(selected, stage)
 			}

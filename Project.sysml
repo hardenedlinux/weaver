@@ -243,7 +243,12 @@ package WeaverProject {
         }
         part scheme : VerificationSuite { part 'check-scheme' : VerificationMode; }
         part architecture : VerificationSuite { part 'check-architecture' : VerificationMode; }
-        part policy : VerificationSuite { part 'check-policy' : VerificationMode; }
+        part policy : VerificationSuite {
+            part 'check-policy' : VerificationMode;
+            doc /* Own the real SPEC provider integration because it consumes
+               Lean and CVC5. Run its stream-release, before-commit and
+               after-commit cases after the same native image build stages. */
+        }
         part benchmarks : VerificationSuite { part bench : VerificationMode; }
 
         package Artifacts {
