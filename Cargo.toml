@@ -83,10 +83,6 @@ unimplemented = "deny"
 opt-level = 1
 incremental = true
 
-# Keep cold development builds bounded while optimizing workspace code.
-[profile.dev.package."*"]
-opt-level = 0
-
 [profile.release]
 opt-level = 3
 incremental = true
