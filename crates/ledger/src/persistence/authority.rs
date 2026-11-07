@@ -83,6 +83,7 @@ pub(crate) struct Receipt {
     pub consumed: bool,
     pub rejected: bool,
     pub waker: Option<Waker>,
+    pub producer_waker: Option<Waker>,
     pub deadline: Option<std::time::Instant>,
     #[cfg(any(test, feature = "commit-observer"))]
     pub acknowledged_at: Option<std::time::SystemTime>,
@@ -294,7 +295,13 @@ impl Authority {
                 state.waiters.push(waker.clone());
             }
             receipt.refresh = true;
+            let producer = receipt.producer_waker.take();
             completion.changed.notify_all();
+            drop(receipt);
+            drop(state);
+            if let Some(waker) = producer {
+                waker.wake();
+            }
             return Ok(None);
         }
         drop(qualification);
@@ -303,6 +310,16 @@ impl Authority {
         if accepted.is_ok() {
             receipt.lock_wait_nanos = entered.duration_since(arrived).as_nanos();
             receipt.turn_nanos = entered.elapsed().as_nanos();
+        }
+        let producer = if receipt.consumed {
+            receipt.producer_waker.take()
+        } else {
+            None
+        };
+        drop(receipt);
+        drop(state);
+        if let Some(waker) = producer {
+            waker.wake();
         }
         accepted.map(Some)
     }
@@ -409,6 +426,9 @@ impl Close<'_> {
             } else {
                 qualification.rejected = true;
                 receipt.rejected = true;
+                if let Some(waker) = receipt.producer_waker.take() {
+                    state.waiters.push(waker);
+                }
             }
             drop(qualification);
             completion.changed.notify_all();

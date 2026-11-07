@@ -143,6 +143,22 @@ impl ProviderOutput for Output {
     ) -> Result<()> {
         self.drain_deliveries(ledger, permit, format)
     }
+    fn service_delivery(
+        &mut self,
+        ledger: &mut weaver_ledger::Ledger,
+        permit: &weaver_ledger::ProviderDispatch,
+        format: &str,
+    ) -> Result<Option<tokio::time::Instant>> {
+        self.progress_deliveries(ledger, permit, format)?;
+        Ok(self.deliveries.front().map(|entry| entry.deadline.into()))
+    }
+    fn poll_delivery_ready(&self, cx: &mut std::task::Context<'_>) -> std::task::Poll<()> {
+        self.deliveries
+            .front()
+            .map_or(std::task::Poll::Pending, |entry| {
+                entry.receipt.poll_progress_ready(cx)
+            })
+    }
     fn prepare(
         route: &ProviderRoute,
         model: &str,

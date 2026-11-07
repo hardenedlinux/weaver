@@ -80,9 +80,10 @@ pub fn begin_family<'a>(session: &'a mut Session, family: &str) -> driver::Resul
         Change::Semantic,
     )
 }
-/// A queued execution request is not an accepted authority intent. Acquire its
-/// exclusive turn and recheck root discovery before closing, then start SQL.
-/// Source changes, OAuth intents and migration never use this entrypoint.
+/// Queued execution waits for its deciding turn before closing. MVCC rechecks
+/// scheduler roots before SQL. WAL acquires the native writer before closing
+/// and performs admission inside that transaction. Source changes, OAuth
+/// intents and migration never use this entrypoint.
 pub(crate) fn begin_provider_admission<'a>(
     session: &'a mut Session,
     family: &str,
@@ -166,12 +167,15 @@ fn start<'a>(
         && crate::provider::shared_provider_reads();
     #[cfg(any(test, feature = "commit-observer"))]
     let admission_request = matches!(&change, Change::Admission(_));
-    let selected_admission =
-        concurrent && matches!(&change, Change::Admission(proof) if proof.wait_before_close());
+    let queued_admission = matches!(&change, Change::Admission(proof) if proof.wait_before_close());
+    let selected_admission = concurrent && queued_admission;
+    let wait_for_wal_writer = !concurrent
+        && (queued_admission || matches!(&change, Change::Lifecycle(proof) if proof.origin_only()));
     let authority_entered = Instant::now();
     // Accepted source/Policy/OAuth intents close immediately, including while
-    // waiting. Only an unaccepted provider request may wait before closure.
-    let authority = if selected_admission {
+    // waiting. WAL provider admission and exact lifecycle work may wait for
+    // the native writer. Neither can use that transaction before closing.
+    let authority = if selected_admission || wait_for_wal_writer {
         None
     } else {
         Some(match change {
@@ -256,12 +260,11 @@ fn start<'a>(
         }
         (false, _) => None,
     };
-    let (authority, authority_entered) = match authority {
-        Some(authority) => (authority, authority_entered),
-        None => {
-            let entered = Instant::now();
-            (session.owner.authority.close(close_scope)?, entered)
-        }
+    let authority = if selected_admission {
+        let entered = Instant::now();
+        Some((session.owner.authority.close(close_scope.clone())?, entered))
+    } else {
+        authority.map(|close| (close, authority_entered))
     };
     let parallel = concurrent && family.is_some();
     // The mutable Session borrow provides exclusive custody for the whole scope.
@@ -275,6 +278,29 @@ fn start<'a>(
             },
         ))
     })?;
+    let (authority, authority_entered) = if let Some(authority) = authority {
+        authority
+    } else {
+        let entered = Instant::now();
+        match session.owner.authority.close(close_scope) {
+            Ok(authority) => (authority, entered),
+            Err(error) => {
+                if let Err(rollback_error) =
+                    super::timing::measure(&mut session.timings.rollback, || {
+                        block_on(native.rollback())
+                    })
+                {
+                    session.poisoned.store(true, Ordering::Release);
+                    let _ = release_failed_transaction(&session.connection);
+                    return Err(driver::Error::BatchRollbackFailed {
+                        error: Box::new(error),
+                        rollback_error: Box::new(rollback_error),
+                    });
+                }
+                return Err(error);
+            }
+        }
+    };
     Ok(WriteScope {
         connection: &session.connection,
         authority,

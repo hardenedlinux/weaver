@@ -97,6 +97,14 @@ package ProviderRpc {
            any mutation or callback. Cancelled or stale tickets are discarded.
            Disjoint tickets may advance independently. Overlapping tickets
            need an explicit order and maximum wait policy. */
+        doc /* In WAL, queued provider admission and exact lifecycle work
+           close the delivery barrier after acquiring the native writer
+           and before any business read, mutation or callback. Accepted
+           source, Policy and OAuth mutations close before waiting.
+           The existing Tokio reactor polls upstream and delivery readiness.
+           Keep the same decoder future across handoff wakeups. The blocking
+           owner services ledger work outside reactor polling, without
+           draining the output queue or extending either deadline. */
     }
     requirement def EncodingAuthorityEquivalence {
         doc /* Protobuf events and optional Arrow IPC batches use the same row-by-row current Cedar and fence guard before bounded queue admission. */

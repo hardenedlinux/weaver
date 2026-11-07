@@ -4,39 +4,75 @@
 
 //! Opportunistic storage coalescing with one guarded queue insertion per frame.
 use super::runtime::{ProviderOutput, StreamDecoder};
-use std::io::Read;
+use std::future::poll_fn;
+use tokio::io::AsyncRead;
 use weaver_contracts::{Error, ProviderEvent, ProviderEventKind, Result, body_digest};
 use weaver_ledger::{
     Ledger, MAX_PROVIDER_PREPARATION_RANGES, MAX_PROVIDER_PREPARATION_ROWS, ProviderDispatch,
     ProviderRelease,
 };
 
-pub(super) fn relay<O: ProviderOutput, R: Read>(
+pub(super) fn relay<O: ProviderOutput>(
     ledger: &mut Ledger,
     permit: &ProviderDispatch,
     output: &mut O,
-    reader: &mut StreamDecoder<R>,
+    response: super::response::Response,
     format: &str,
     rows: usize,
-) -> Result<()> {
+) -> Result<Option<[u64; 4]>> {
     let mut pending = Vec::with_capacity(rows);
     let width = preparation_width(output, rows);
+    let (reactor, deadline) = response.reactor();
+    let mut reader = StreamDecoder::new(response, permit);
     loop {
         if output.stopped() {
             return Err(Error::Conflict("provider response cancelled"));
         }
-        let mut terminal = push_event(&mut pending, reader.next()?);
+        // Keep the exact decoder future across wakeups, including partially
+        // consumed SSE records. The blocking owner services ledger work between
+        // reactor waits and never while holding a network poll.
+        let event = {
+            let mut next = std::pin::pin!(reader.next());
+            loop {
+                let pending = output.service_delivery(ledger, permit, format)?;
+                let event = reactor.wait(deadline, async {
+                    if let Some(delivery_deadline) = pending {
+                        tokio::select! {
+                            biased;
+                            () = poll_fn(|cx| output.poll_delivery_ready(cx)) => Ok(None),
+                            () = tokio::time::sleep_until(delivery_deadline) => Ok(None),
+                            event = &mut next => event.map(Some),
+                        }
+                    } else {
+                        next.as_mut().await.map(Some)
+                    }
+                })?;
+                if let Some(event) = event {
+                    break event;
+                }
+            }
+        };
+        let mut terminal = push_event(&mut pending, event);
         if !terminal && pending.len() != rows {
             continue;
         }
         let mut ready = Vec::with_capacity(width);
         ready.push(std::mem::replace(&mut pending, Vec::with_capacity(rows)));
-        let buffered =
-            collect_buffered(reader, &mut pending, &mut ready, rows, width, &mut terminal);
+        let buffered = reactor.wait(
+            deadline,
+            collect_buffered(
+                &mut reader,
+                &mut pending,
+                &mut ready,
+                rows,
+                width,
+                &mut terminal,
+            ),
+        );
         release_ranges(ledger, permit, output, format, &mut ready)?;
         buffered?;
         if terminal {
-            return Ok(());
+            return Ok(reader.terminal_tokens());
         }
     }
 }
@@ -55,7 +91,7 @@ fn push_event(range: &mut Vec<ProviderEvent>, event: ProviderEvent) -> bool {
     terminal
 }
 
-fn collect_buffered<R: Read>(
+async fn collect_buffered<R: AsyncRead + Unpin>(
     reader: &mut StreamDecoder<R>,
     pending: &mut Vec<ProviderEvent>,
     ready: &mut Vec<Vec<ProviderEvent>>,
@@ -64,7 +100,7 @@ fn collect_buffered<R: Read>(
     terminal: &mut bool,
 ) -> Result<()> {
     while !*terminal && ready.len() < width {
-        let Some(event) = reader.next_buffered()? else {
+        let Some(event) = reader.next_buffered().await? else {
             break;
         };
         *terminal = push_event(pending, event);

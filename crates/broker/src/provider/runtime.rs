@@ -218,6 +218,20 @@ pub trait ProviderOutput {
     type PreparedFrame;
     fn stopped(&self) -> bool;
     fn reserve(&mut self) -> Result<Self::Slot>;
+    /// Advance local handoffs while waiting for upstream data and return the
+    /// original deadline of the oldest pending handoff.
+    fn service_delivery(
+        &mut self,
+        _ledger: &mut Ledger,
+        _permit: &ProviderDispatch,
+        _format: &str,
+    ) -> Result<Option<tokio::time::Instant>> {
+        Ok(None)
+    }
+    /// Poll the oldest pending handoff's state changes on the same reactor.
+    fn poll_delivery_ready(&self, _cx: &mut std::task::Context<'_>) -> std::task::Poll<()> {
+        std::task::Poll::Pending
+    }
     /// Reconcile bounded inert deliveries before waiting for actual output credit.
     fn reserve_for_delivery(
         &mut self,
@@ -347,40 +361,42 @@ pub fn execute_catalog_provider_with_oauth<O: ProviderOutput>(
         oauth,
     )?;
     let response = open_guarded(ledger, &permit, transport, output)?;
-    let mut reader = match permit.protocol() {
-        ProviderProtocol::OpenAi => {
-            StreamDecoder::OpenAi(openai_sse::Decoder::new(response, &plan.model))
-        }
-        ProviderProtocol::Anthropic => {
-            StreamDecoder::Anthropic(anthropic_sse::Decoder::new(response, &plan.model))
-        }
-    };
-    super::range_output::relay(ledger, &permit, output, &mut reader, format, batch_rows)?;
+    let tokens = super::range_output::relay(ledger, &permit, output, response, format, batch_rows)?;
     output.drain_delivery(ledger, &permit, format)?;
-    ledger.complete_provider_with_usage(&permit, format, reader.terminal_tokens())
+    ledger.complete_provider_with_usage(&permit, format, tokens)
 }
 
-pub(super) enum StreamDecoder<R: std::io::Read> {
+pub(super) enum StreamDecoder<R: tokio::io::AsyncRead + Unpin> {
     OpenAi(openai_sse::Decoder<R>),
     Anthropic(anthropic_sse::Decoder<R>),
 }
 
-impl<R: std::io::Read> StreamDecoder<R> {
-    pub(super) fn next(&mut self) -> Result<ProviderEvent> {
-        match self {
-            Self::OpenAi(reader) => reader.next(),
-            Self::Anthropic(reader) => reader.next(),
+impl<R: tokio::io::AsyncRead + Unpin> StreamDecoder<R> {
+    pub(super) fn new(input: R, permit: &ProviderDispatch) -> Self {
+        let model = &permit.plan().model;
+        match permit.protocol() {
+            ProviderProtocol::OpenAi => Self::OpenAi(openai_sse::Decoder::new(input, model)),
+            ProviderProtocol::Anthropic => {
+                Self::Anthropic(anthropic_sse::Decoder::new(input, model))
+            }
         }
     }
 
-    pub(super) fn next_buffered(&mut self) -> Result<Option<ProviderEvent>> {
+    pub(super) async fn next(&mut self) -> Result<ProviderEvent> {
         match self {
-            Self::OpenAi(reader) => reader.next_buffered(),
-            Self::Anthropic(reader) => reader.next_buffered(),
+            Self::OpenAi(reader) => reader.next().await,
+            Self::Anthropic(reader) => reader.next().await,
         }
     }
 
-    fn terminal_tokens(&self) -> Option<[u64; 4]> {
+    pub(super) async fn next_buffered(&mut self) -> Result<Option<ProviderEvent>> {
+        match self {
+            Self::OpenAi(reader) => reader.next_buffered().await,
+            Self::Anthropic(reader) => reader.next_buffered().await,
+        }
+    }
+
+    pub(super) fn terminal_tokens(&self) -> Option<[u64; 4]> {
         match self {
             Self::OpenAi(reader) => reader.terminal_tokens,
             Self::Anthropic(reader) => Some(reader.tokens()),

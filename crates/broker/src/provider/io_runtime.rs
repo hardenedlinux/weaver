@@ -18,8 +18,8 @@ impl IoRuntime {
         if Instant::now() >= deadline {
             return Err(Error::Conflict("provider outcome unknown"));
         }
-        let _entered = self.handle.enter();
-        futures_executor::block_on(tokio::time::timeout_at(deadline, future))
+        self.handle
+            .block_on(async { tokio::time::timeout_at(deadline, future).await })
             .map_err(|_| Error::Conflict("provider outcome unknown"))?
     }
 }
