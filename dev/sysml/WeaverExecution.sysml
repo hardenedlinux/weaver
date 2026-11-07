@@ -714,34 +714,16 @@ package WeaverExecution {
     port def WirePort {
         out item request : CanonicalWireRequest;
     }
-    action def DeriveSemanticCandidate {
-        in item original : PolicyEvidenceDesign::SemanticCommitment;
-        out item candidate : PolicyEvidenceDesign::SourceCommand;
-        doc /* Derivation preserves independently admitted original meaning.
-           This action grants no publication, consumption or transport right. */
-    }
-    action def OrchestrateSourcePublication {
-        in item candidate : PolicyEvidenceDesign::SourceCommand;
-        out item command : PolicyEvidenceDesign::SourceCommand;
-        doc /* Preserve original commitment while submitting authenticated
-           current-source commands; reconcile uncertain outcomes by identity. */
-    }
-    action def CommitOriginalAdmission {
-        in item command : PolicyEvidenceDesign::SourceCommand;
-        out item observation : PolicyEvidenceDesign::PublishedObservation;
-        doc /* Existing deciding transaction, current authority and immutable
-           original binding. Commit produces an observation, never external IO. */
-    }
-    action def GuardFinalEffect {
-        in item permit : ConsumedPermit;
-        out item request : CanonicalWireRequest;
-        doc /* Rejoin actual current authority and retained consumption under
-           final custody. An inert candidate cannot invoke this action. */
-    }
     part def SchemeSemanticPublisher {
         attribute overviewName : String = "Task contract";
         attribute overviewSummary : String = "Original scope";
         attribute overviewGlyph : String = "task-contract";
+        private action def DeriveSemanticCandidate {
+            in item original : PolicyEvidenceDesign::SemanticCommitment;
+            out item candidate : PolicyEvidenceDesign::SourceCommand;
+            doc /* Derivation preserves independently admitted original meaning.
+               This action grants no publication, consumption or transport right. */
+        }
         action deriveCandidate : DeriveSemanticCandidate;
         doc /* Normative semantic allocation: reuse Agentic AI Lab Governor to
            select admitted original scope and Governance to assess obligations,
@@ -798,6 +780,12 @@ package WeaverExecution {
         attribute overviewName : String = "Route proposal";
         attribute overviewSummary : String = "Suggest a provider";
         attribute overviewGlyph : String = "route-choice";
+        private action def OrchestrateSourcePublication {
+            in item candidate : PolicyEvidenceDesign::SourceCommand;
+            out item command : PolicyEvidenceDesign::SourceCommand;
+            doc /* Preserve original commitment while submitting authenticated
+               current-source commands; reconcile uncertain outcomes by identity. */
+        }
         action publishCandidate : OrchestrateSourcePublication;
         doc /* Preserve the semantic original through configuration normalization,
            protocol aliasing and authenticated publication. JSON/YAML populates
@@ -974,6 +962,12 @@ package WeaverExecution {
         attribute overviewName : String = "Claim + budget";
         attribute overviewSummary : String = "Record before sending";
         attribute overviewGlyph : String = "budget-ledger";
+        private action def CommitOriginalAdmission {
+            in item command : PolicyEvidenceDesign::SourceCommand;
+            out item observation : PolicyEvidenceDesign::PublishedObservation;
+            doc /* Existing deciding transaction, current authority and immutable
+               original binding. Commit produces an observation, never external IO. */
+        }
         action commitOriginal : CommitOriginalAdmission;
         doc /* Implement the semantic original binding in the existing source
            deciding transaction, with exact-outcome recovery and current fencing.
@@ -1027,6 +1021,12 @@ package WeaverExecution {
         attribute overviewName : String = "Final-use gate";
         attribute overviewSummary : String = "Recheck actual use";
         attribute overviewGlyph : String = "permission-check";
+        private action def GuardFinalEffect {
+            in item permit : ConsumedPermit;
+            out item request : CanonicalWireRequest;
+            doc /* Rejoin actual current authority and retained consumption under
+               final custody. An inert candidate cannot invoke this action. */
+        }
         action guardEffect : GuardFinalEffect;
         attribute leanDeclaration : String = "CedarPooSpec.Gateway.ZeroTrust.FinalUse";
         attribute leanFields : String = "sameView,authenticated,current,profileAuthority,committed,unknownRetained,notRevoked,mediated";
