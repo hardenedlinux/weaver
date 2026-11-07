@@ -210,6 +210,9 @@ async fn actual_scheme_vm_is_owner_local_and_cleanup_precedes_shared_drain() {
         .current_dir(std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../go"))
         .args([
             "test",
+            "-p",
+            "4",
+            "-parallel=4",
             "-count=1",
             "-race",
             "./internal/controlplane",
@@ -276,19 +279,23 @@ async fn actual_scheme_vm_is_owner_local_and_cleanup_precedes_shared_drain() {
         tonic::Code::PermissionDenied
     );
     let _ = stop.send(());
-    server
-        .await
-        .expect("service task")
-        .expect("natural shared drain");
-    runtime.drain().await;
-    assert_eq!(
-        cleaned
+    tokio::time::timeout(std::time::Duration::from_secs(15), async {
+        server
             .await
-            .expect("natural VM cleanup before acknowledgment"),
-        3
-    );
-    assert_eq!(permits.available_permits(), capacity.get());
-    worker.finish().await.expect("tracked worker joined");
+            .expect("service task")
+            .expect("natural shared drain");
+        runtime.drain().await;
+        assert_eq!(
+            cleaned
+                .await
+                .expect("natural VM cleanup before acknowledgment"),
+            3
+        );
+        assert_eq!(permits.available_permits(), capacity.get());
+        worker.finish().await.expect("tracked worker joined");
+    })
+    .await
+    .expect("owner and service did not drain within 15 seconds");
     let mut ledger = weaver_ledger::Ledger::open(database).expect("recovered ledger");
     let next = weaver_server::source_certificate_identity(
         &pki.next.der,

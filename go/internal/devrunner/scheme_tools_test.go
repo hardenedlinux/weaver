@@ -94,7 +94,7 @@ func TestSchemeQualificationStaysWithPreparedSchemeOwner(t *testing.T) {
 	for _, stage := range stages {
 		if stage.Name == "scheme-rooted-sdk-integration" {
 			args := strings.Join(stage.Args, " ")
-			found = imagePrepared && slices.Equal(stage.Args, SchemeQualificationCargoArgs()) &&
+			found = imagePrepared && slices.Equal(stage.Args, append(SchemeQualificationCargoArgs(), "--", "--test-threads=4")) &&
 				strings.Contains(args, "weaver-governance/scheme-qualification") && strings.Contains(args, "weaver-server/governance-qualification")
 		}
 		if stage.Name == "scheme-provider-server-build" {
