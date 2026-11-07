@@ -119,6 +119,78 @@ package WeaverProject {
            closure; a production import of one is rejected, never exempted. */
     }
 
+    package ArtifactOrganization {
+        doc /* Project-wide custody and lifecycle. Verification::Artifacts owns
+           the implemented CI path inventory. Each other producer keeps its
+           native entry point and store. This model allocates responsibility
+           and records remaining implementation work. */
+        part def ReproducibleInput;
+        part def NativeBuildProduct;
+        part def VerificationRun;
+        part def DerivedView;
+        part def LocalQualification;
+        part def ReleaseBundle;
+        part def SiteRuntimeState;
+        part def SiteQualification;
+
+        part checkedInSources : ReproducibleInput {
+            doc /* Git owns source, schemas, locks, deterministic fixtures and
+               reproducible projections. A generated file in Git must have a
+               checked-in recipe and a reproducibility check. Site data, local
+               digests, and individual execution verdicts stay outside Git. */
+        }
+        part nativeBuild : NativeBuildProduct {
+            doc /* Cargo and Gerbil Build Packages prepare and reuse their own
+               outputs. The release consumer selects exact executable, linked
+               image and package closure. Toolchain clean operates on owned
+               outputs and does not remove verification evidence or site data. */
+        }
+        part verificationRuns : VerificationRun {
+            doc /* weaver-dev and the existing native suites emit typed outcomes.
+               Verification::Artifacts declares the implemented local and CI
+               paths. CI retains outcomes by job attempt for seven days.
+               The remaining local design retains an immutable run by identity
+               before updating any latest view. A failed or incomplete attempt
+               remains separately addressable and never qualifies the input. */
+        }
+        part reportViews : DerivedView {
+            doc /* Org summaries and other views consume typed results. Views
+               inherit their evidence identity and can be regenerated. Scratch
+               is process-owned and cleaned on exit. Only structured diagnostics
+               and explicitly retained historical evidence survive cleanup. */
+        }
+        part localSnakeOil : LocalQualification {
+            doc /* Native Go integration owns local developer qualification.
+               Use .cache/weaver-deployment-qualification/ as its dedicated
+               root for generated catalogs, config and isolated ledgers. The
+               design gives each new run a private subdirectory and binds the
+               fixture and build identities in its typed result. Existing runs
+               and original verdicts stay where they were recorded. */
+        }
+        part deployableRelease : ReleaseBundle {
+            doc /* The release design freezes one digest-bound manifest for the
+               selected executable or image, Gerbil package library and
+               resolved closure, build inputs and toolchain revisions. The
+               deployment owner verifies the delivered bytes. Project CI
+               receipts alone cannot authorize release publication. */
+        }
+        part runtimeCustody : SiteRuntimeState {
+            doc /* The site launcher supplies settings and a selected catalog.
+               The Rust authority owns the persistent ledger. Keep catalog
+               and ledger at separate paths on the site's persistent storage.
+               A mutable ledger is bound to qualification by its admitted cut
+               or verified snapshot, never by copying a live database into CI. */
+        }
+        part formalQualification : SiteQualification {
+            doc /* Site approval, activation, catalog, replay and baseline cut
+               bind to the same immutable release before sampling. The
+               existing Governor preregistration governs A/A and retained A/B.
+               Site authority retains these records and formal verdicts
+               independently of CI expiry. Missing site records keep formal
+               qualification pending. */
+        }
+    }
+
     package Verification {
         doc /* The Go verification owner inventories maintained project sources,
            the complete Lean/Quint/Cedar proof source trees and Org/D2 design
@@ -145,7 +217,8 @@ package WeaverProject {
             doc /* The repository owns reproducible inputs. Toolchains own build
                products and caches. The verification owner publishes typed
                receipts through one output directory. GitHub transports the
-               declared JSON paths as one artifact per job attempt. */
+               declared JSON paths as one artifact per job attempt.
+               ArtifactOrganization defines custody beyond verification. */
             part def CIReceipt;
             part def LocalResult;
             part def ToolOutput;
@@ -161,6 +234,9 @@ package WeaverProject {
             part '.cache/verification/latest-<suite>.json' : CIReceipt {
                 doc /* weaver-dev owns suite receipts. Preserve committed input
                    digests, stage status, exit, duration and output digest.
+                   The native deadline precedes the GitHub step deadline so
+                   timeout evidence can finish publication. Native recovery
+                   and natural-exit acceptance keep their separate fences.
                    Bench measurements remain separate from correctness claims. */
             }
             part '.cache/verification/spec/*/receipt.json' : CIReceipt {

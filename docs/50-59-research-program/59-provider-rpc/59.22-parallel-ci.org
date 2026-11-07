@@ -68,6 +68,55 @@ from application and formal proof results.
 
 * Artifact organization
 
+=WeaverProject::ArtifactOrganization= in =Project.sysml= allocates the
+project-wide lifecycle. The build owner produces bytes, verification records
+what it exercised, and the deployment owner selects and activates a release.
+The site binds formal measurements to that activation.
+
+| Class | Owner and storage | Identity and retention | State |
+|-------+-------------------+------------------------+-------|
+| Reproducible inputs and projections | Git holds source, model, locks, fixed Snake Oil fixtures and reproducible views. | A committed generated file needs a checked-in recipe and reproducibility check. Per-run output stays outside Git. | Existing policy and entry points. |
+| Native outputs | Cargo owns =target/=. Gerbil Build Packages owns its package outputs. | Each tool reuses and cleans its own build products. A release selects the exact executable or image, Scheme library and resolved closure. | Native owners exist. The release handoff is specified below. |
+| Verification | =weaver-dev= and native suite owners write under =.cache/verification/=. GitHub transports a JSON allowlist. | Job attempt and tested checkout identify remote evidence. The local design keeps a separate immutable result per run before advancing a latest view. | CI envelope and suite receipts implemented. Local suite files still use =latest-*.json=, while SPEC already has per-run paths. |
+| Local deployment qualification | The native Go entry runs Snake Oil. Its dedicated data root is =.cache/weaver-deployment-qualification/=. | New run directories should isolate generated catalog, configuration and ledger and associate them with the tested build and fixture. Retain original failed attempts with their verdicts. | Native path and dedicated root documented. Uniform per-run custody is pending. |
+| Deployable release | The release owner packages selected native outputs and the dependency closure. | A frozen manifest binds release digest, delivered bytes, application source and toolchain identities. The consumer verifies the manifest before activation. | Binding is specified in the Governor preregistration. No release publication job is allocated here. |
+| Runtime and site qualification | The launcher selects the catalog. The Rust authority owns the ledger. The site owns approval, activation, replay and formal results. | Bind activation, catalog and replay to one release digest and an admitted ledger cut or verified snapshot. Site records have independent retention. | Catalog and ledger inputs exist. Site approval and approved replay are pending. |
+
+For the pending local storage work, use the existing owners and these
+subdirectories of the existing roots.
+
+#+begin_example
+.cache/verification/runs/<run-id>/<mode>.json
+.cache/verification/latest-<mode>.json
+.cache/weaver-deployment-qualification/runs/<run-id>/
+  weaver.toml
+  governance/catalog.json
+  ledger/
+#+end_example
+
+The first path is the proposed authoritative local suite receipt. The second
+remains the existing convenience path, updated only after the run receipt is
+committed. The native integration test owns the qualification directory and
+selects the actual config and ledger paths for its roles. The runtime
+continues to receive its settings through the existing launcher boundary.
+
+The deployment and experiment contract is in
+[[file:59.64-governance-capture-ownership.org::*Governor release preregistration][Governor release preregistration]].
+The local run identity needs to distinguish retries of the same source and
+record the tested checkout, resolved inputs and execution scope. A latest
+view can point to a failed run, and an incomplete attempt must remain visible
+as such. Native diagnostics are process scratch, with bounded structured
+fields retained in the run record. Existing historical evidence remains in
+its original custody.
+
+Accept the local storage change when concurrent runs and a failed retry keep
+their distinct receipts, latest resolves to a complete receipt with the same
+run identity, and cleaning a build leaves both verification evidence and
+site data intact. These are bounded controls using the existing Go entry and
+fixture, independent of formal release sampling.
+
+** Implemented CI receipt layout
+
 =WeaverProject::Verification::Artifacts= in =Project.sysml= owns the publication
 inventory. The workflow test checks the declared CI receipt paths against the
 actual upload allowlist. GitHub receives one artifact per suite, runner, tested
@@ -100,12 +149,21 @@ from existing; the job receipt records the failed phase and skipped phases. A
 successful workflow requires its bootstrap and suite receipts before publishing
 the job envelope. Diagnostic excerpts are bounded fields within receipts.
 
+The verification owner stops dependency preparation at 3 minutes for Rust
+and Go and 7 minutes for proof dependencies. It stops Scheme verification at
+18 minutes and the other suites at 28 minutes. Each GitHub step allows another
+one or two minutes for tool invocation, process cleanup and receipt writing.
+A runner deadline records `TIMEOUT` in JSON. The separate 12-second recovery
+and 15-second natural-exit fences remain inside native integration.
+
 Praxis separates benchmark execution and comparison and publishes a typed result
 keyed by the tested SHA. Agent Gateway gives timing and failure artifacts their
 own job-scoped paths. Weaver applies those ownership boundaries to its existing
 verification owner and publishes the SysML-declared JSON inventory.
+Agent Gateway also uses a dedicated release workflow for registry images.
 [[https://github.com/praxis-proxy/praxis/blob/c3d2ae3628cf3167780e58c5e8b38580d0241399/.github/workflows/benchmarks.yaml][Praxis benchmark workflow]]
 [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/.github/workflows/pull_request.yml][Agent Gateway pull request workflow]]
+[[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/.github/workflows/release.yml][Agent Gateway release workflow]]
 
 * Qualification boundaries
 

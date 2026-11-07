@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/HardenedLinux/weaver/go/internal/devrunner"
 	"gopkg.in/yaml.v3"
@@ -91,9 +92,12 @@ func TestCIWorkflowsMatchProjectSuites(t *testing.T) {
 		} `yaml:"on"`
 		Jobs map[string]struct {
 			Steps []struct {
-				Uses string `yaml:"uses"`
-				If   string `yaml:"if"`
-				With struct {
+				ID             string `yaml:"id"`
+				Uses           string `yaml:"uses"`
+				If             string `yaml:"if"`
+				Run            string `yaml:"run"`
+				TimeoutMinutes int    `yaml:"timeout-minutes"`
+				With           struct {
 					Path string `yaml:"path"`
 				} `yaml:"with"`
 			} `yaml:"steps"`
@@ -115,7 +119,21 @@ func TestCIWorkflowsMatchProjectSuites(t *testing.T) {
 	if len(wantedReceipts) == 0 {
 		t.Fatal("missing SysML CI receipt allocation")
 	}
+	deadlined := map[string]bool{
+		"bootstrap_build": true, "bootstrap_proofs": true,
+		"verify_suite": true, "verify_scheme": true,
+	}
 	for _, step := range reusable.Jobs["verify"].Steps {
+		if deadlined[step.ID] {
+			_, tail, hasDeadline := strings.Cut(step.Run, "-timeout ")
+			value, _, hasCommand := strings.Cut(tail, " ")
+			inner, err := time.ParseDuration(value)
+			outer := time.Duration(step.TimeoutMinutes) * time.Minute
+			if !hasDeadline || !hasCommand || err != nil || inner <= 0 || outer-inner < time.Minute {
+				t.Fatalf("%s must leave a minute between its runner deadline and GitHub cutoff", step.ID)
+			}
+			delete(deadlined, step.ID)
+		}
 		if !strings.HasPrefix(step.Uses, "actions/upload-artifact@") {
 			continue
 		}
@@ -131,6 +149,9 @@ func TestCIWorkflowsMatchProjectSuites(t *testing.T) {
 	}
 	if len(wantedReceipts) != 0 {
 		t.Fatalf("CI upload is missing declared receipts: %v", wantedReceipts)
+	}
+	if len(deadlined) != 0 {
+		t.Fatalf("missing CI phases with native deadlines: %v", deadlined)
 	}
 	for _, path := range []string{".github/workflows/verify-suite.yml", ".github/actions/prepare-toolchain/action.yml"} {
 		data, err := os.ReadFile(filepath.Join(root(t), path))

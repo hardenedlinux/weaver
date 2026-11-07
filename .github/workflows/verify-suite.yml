@@ -55,12 +55,12 @@ jobs:
       - name: Fetch locked Rust and Go dependencies
         id: bootstrap_build
         timeout-minutes: 4
-        run: go -C go run ./cmd/weaver-dev -clean-source bootstrap-build
+        run: go -C go run ./cmd/weaver-dev -clean-source -timeout 3m bootstrap-build
       - name: Prepare Cedar and Lean proof dependencies
         id: bootstrap_proofs
         if: inputs.suite == 'check-policy'
         timeout-minutes: 8
-        run: go -C go run ./cmd/weaver-dev -clean-source bootstrap-proofs
+        run: go -C go run ./cmd/weaver-dev -clean-source -timeout 7m bootstrap-proofs
       - name: Prepare published Scheme SDK
         id: scheme_sdk
         if: contains(fromJSON('["check-rust", "check-go", "check-scheme", "bench"]'), inputs.suite)
@@ -90,7 +90,7 @@ jobs:
         id: verify_suite
         if: inputs.suite != 'check-scheme'
         timeout-minutes: 30
-        run: go -C go run ./cmd/weaver-dev -clean-source "$WEAVER_VERIFY_SUITE"
+        run: go -C go run ./cmd/weaver-dev -clean-source -timeout 28m "$WEAVER_VERIFY_SUITE"
       - name: Verify Scheme modules, Cedar FFI and streaming recovery
         id: verify_scheme
         if: inputs.suite == 'check-scheme'
@@ -98,7 +98,7 @@ jobs:
         env:
           GERBIL_GXI: ${{ env.GERBIL_PREFIX }}/bin/gxi
           GERBIL_PATH: ${{ runner.temp }}/weaver-gerbil
-        run: go -C go run ./cmd/weaver-dev -clean-source check-scheme
+        run: go -C go run ./cmd/weaver-dev -clean-source -timeout 18m check-scheme
       - name: Require successful phase receipts
         id: receipt_check
         timeout-minutes: 1

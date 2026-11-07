@@ -142,7 +142,7 @@ func publishLatestResult(root, directory, mode string, runErr error) (path strin
 		if receipt.Status == "PASS" {
 			receipt.Stages = append(receipt.Stages, Result{Name: "run-finalization", Status: "FAIL", Error: runErr.Error()})
 		}
-		if receipt.Status != "CANCELLED" {
+		if receipt.Status != "CANCELLED" && receipt.Status != "TIMEOUT" {
 			receipt.Status = "FAIL"
 		}
 	}

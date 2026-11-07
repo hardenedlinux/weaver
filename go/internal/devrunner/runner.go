@@ -132,13 +132,20 @@ func Run(ctx context.Context, config Config, output io.Writer) (report string, r
 	if config.RequireClean {
 		admission, revision := committedSource(ctx, root, directory, "committed-source-before", "", inputs)
 		receipt.Revision = revision
+		if interruption := ctx.Err(); interruption != nil {
+			admission.Status = interruptionStatus(interruption)
+			admission.Error = interruption.Error()
+		}
 		receipt.Stages = append(receipt.Stages, admission)
 		if admission.Status != "PASS" {
-			receipt.Status = "FAIL"
+			receipt.Status = admission.Status
 			if err := writeReceipt(directory, receipt); err != nil {
 				return directory, err
 			}
-			fmt.Fprintf(output, "FAIL %s\n", admission.Name)
+			fmt.Fprintf(output, "%s %s\n", admission.Status, admission.Name)
+			if ctx.Err() != nil {
+				return directory, ctx.Err()
+			}
 			return directory, errors.New("source does not match a committed revision")
 		}
 		fmt.Fprintf(output, "PASS %s\n", admission.Name)
@@ -161,7 +168,6 @@ func Run(ctx context.Context, config Config, output io.Writer) (report string, r
 	}
 	for _, stage := range stages {
 		if ctx.Err() != nil {
-			receipt.Status = "CANCELLED"
 			failed = true
 			break
 		}
@@ -175,7 +181,7 @@ func Run(ctx context.Context, config Config, output io.Writer) (report string, r
 		}
 		fmt.Fprintf(output, "%s %s\n", result.Status, result.Name)
 	}
-	if mode != "generate-rpc" {
+	if mode != "generate-rpc" && ctx.Err() == nil {
 		current := sourceCurrentness(root, directory, inputs)
 		receipt.Stages = append(receipt.Stages, current)
 		if current.Status != "PASS" {
@@ -189,7 +195,7 @@ func Run(ctx context.Context, config Config, output io.Writer) (report string, r
 			fmt.Fprintf(output, "FAIL benchmark artifacts: %v\n", err)
 		}
 	}
-	if config.RequireClean {
+	if config.RequireClean && ctx.Err() == nil {
 		admission, _ := committedSource(ctx, root, directory, "committed-source-after", receipt.Revision, inputs)
 		receipt.Stages = append(receipt.Stages, admission)
 		if admission.Status != "PASS" {
@@ -198,10 +204,10 @@ func Run(ctx context.Context, config Config, output io.Writer) (report string, r
 		fmt.Fprintf(output, "%s %s\n", admission.Status, admission.Name)
 	}
 	if ctx.Err() != nil {
-		receipt.Status = "CANCELLED"
+		receipt.Status = interruptionStatus(ctx.Err())
 		failed = true
 	}
-	if receipt.Status != "CANCELLED" {
+	if receipt.Status == "RUNNING" {
 		if refs, err := proofReferences(root, receipt.Stages); err != nil {
 			receipt.Stages = append(receipt.Stages, Result{Name: "proof-references", Status: "FAIL", Error: err.Error()})
 			failed = true
@@ -218,10 +224,18 @@ func Run(ctx context.Context, config Config, output io.Writer) (report string, r
 	}
 	fmt.Fprintf(output, "Result: %s\n", latestResultPath(root, mode))
 	if failed {
-		return directory, errors.New("verification did not pass; see the latest structured result")
+		return directory, errors.Join(errors.New("verification did not pass; see the latest structured result"), ctx.Err())
 	}
 	return directory, nil
 }
+
+func interruptionStatus(err error) string {
+	if errors.Is(err, context.DeadlineExceeded) {
+		return "TIMEOUT"
+	}
+	return "CANCELLED"
+}
+
 func runStage(ctx context.Context, root, directory string, environment []string, stage Stage) Result {
 	return runStageCapture(ctx, root, directory, environment, stage, true)
 }
@@ -257,6 +271,7 @@ func runStageObserved(ctx context.Context, root, directory string, environment [
 		return result
 	}
 	cmd := exec.CommandContext(ctx, stage.Binary, stage.Args...)
+	boundStageProcess(cmd)
 	result.ResolvedBinary = cmd.Path
 	if resolved, err := filepath.EvalSymlinks(cmd.Path); err == nil {
 		result.ResolvedBinary = resolved
@@ -277,6 +292,9 @@ func runStageObserved(ctx context.Context, root, directory string, environment [
 			onStart(cmd.Process.Pid)
 		}
 		err = cmd.Wait()
+	}
+	if err == nil {
+		err = ctx.Err()
 	}
 	finished := time.Now()
 	if observation != nil {
@@ -367,7 +385,13 @@ func runStageObserved(ctx context.Context, root, directory string, environment [
 		code := cmd.ProcessState.ExitCode()
 		result.ExitCode = &code
 	}
-	if err == nil && closeErr == nil {
+	if interruption := ctx.Err(); interruption != nil {
+		result.Status = interruptionStatus(interruption)
+		if !errors.Is(err, interruption) {
+			err = errors.Join(err, interruption)
+		}
+		result.Error = fmt.Sprint(errors.Join(err, closeErr))
+	} else if err == nil && closeErr == nil {
 		result.Status = "PASS"
 	} else {
 		result.Error = fmt.Sprint(errors.Join(err, closeErr))
