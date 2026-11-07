@@ -23,6 +23,7 @@ struct Inner {
     closed: AtomicBool,
     cancel: CancellationToken,
     tasks: TaskTracker,
+    single_provider: OnceLock<crate::single_provider::SingleProvider>,
     fact_feed: OnceLock<weaver_contracts::FactFeed>,
 }
 struct AdmissionState {
@@ -81,6 +82,7 @@ impl RuntimeOwner {
                 closed: AtomicBool::new(false),
                 cancel: CancellationToken::new(),
                 tasks: TaskTracker::new(),
+                single_provider: OnceLock::new(),
                 fact_feed: OnceLock::new(),
             }),
         }
@@ -93,6 +95,36 @@ impl RuntimeOwner {
     }
     pub(crate) fn fact_feed(&self) -> Option<&weaver_contracts::FactFeed> {
         self.inner.fact_feed.get()
+    }
+    #[cfg(any(feature = "scheme-program", test))]
+    pub(crate) fn enable_single_provider(&self) -> Result<()> {
+        self.inner
+            .single_provider
+            .set(crate::single_provider::SingleProvider::default())
+            .map_err(|_| Error::Conflict("single-provider lifecycle already installed"))
+    }
+    pub(crate) fn single_provider(&self) -> Option<&crate::single_provider::SingleProvider> {
+        self.inner.single_provider.get()
+    }
+    pub(crate) async fn retire_single_provider(&self) -> Result<()> {
+        let lifecycle = self
+            .single_provider()
+            .ok_or(Error::Conflict("single-provider lifecycle unavailable"))?;
+        let client = self
+            .inner
+            .gate
+            .lock()
+            .map_err(|_| Error::Conflict("runtime owner poisoned"))?
+            .governance
+            .clone()
+            .ok_or(Error::Conflict("governance owner unavailable"))?;
+        lifecycle.request_retirement();
+        client.close();
+        tokio::select! {
+            biased;
+            _ = lifecycle.retired() => Ok(()),
+            _ = self.cancellation() => Err(Error::Conflict("governance retirement interrupted")),
+        }
     }
     /// Bounded local observations only; callers acquire no authority capability.
     pub fn telemetry(&self) -> &Arc<weaver_telemetry::Metrics> {

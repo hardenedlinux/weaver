@@ -53,6 +53,11 @@ pub struct ProducerCatalog {
     pub(super) entries: BTreeMap<String, ApprovedProducer>,
 }
 impl ProducerCatalog {
+    /// Whether this catalog admits exactly one independently bound provider task.
+    pub fn is_single_provider(&self) -> bool {
+        self.entries.len() == 1
+    }
+
     /// Refuse aliases for one original family and conflicting publication IDs.
     /// Total copied text is bounded separately from native constructor traversal.
     pub fn from_entries(entries: Vec<ApprovedProducer>) -> Result<Self, CatalogError> {

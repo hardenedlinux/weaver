@@ -64,11 +64,11 @@ impl RuntimeOwner {
     ) -> Result<GovernanceWorker> {
         let (client, inbox) = source_lane(capacity);
         self.attach_governance(client.clone())?;
+        let runtime = self.clone();
         let mut starting = self.shutdown_guard();
-        let exit = self.shutdown_guard();
+        let mut exit = self.shutdown_guard();
         let (ready, receiver) = oneshot::channel();
         let job = self.spawn_blocking(slot, move |_| {
-            let _exit = exit;
             let compiler = match initialize() {
                 Ok(compiler) => compiler,
                 Err(error) => {
@@ -81,6 +81,13 @@ impl RuntimeOwner {
             }
             // run drops the compiler (and its VM) before the tracked task ends.
             inbox.run_with_cancellable_governor(compiler, compile, derive);
+            if let Some(lifecycle) = runtime.single_provider()
+                && lifecycle.retirement_requested()
+            {
+                exit.disarm();
+                eprintln!("weaver governance stage=compiler-retired");
+                lifecycle.acknowledge_retirement();
+            }
             Ok(())
         })?;
         let initialized = receiver

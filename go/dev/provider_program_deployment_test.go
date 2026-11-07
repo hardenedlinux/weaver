@@ -65,6 +65,43 @@ func TestProviderControlCompiledProgramRevocationAndRestart(t *testing.T) {
 	exerciseControlPolicies(t, "json", nil, compiledControlSources(false))
 }
 
+func TestProviderControlSingleProviderRetiresCompilerAfterActivation(t *testing.T) {
+	f := newFixture(t, completeSSE, false)
+	bundle := controlBundle(t, f)
+	f.env = append(f.env, "WEAVER_GOVERNANCE_RETIRE_ON_ACTIVATION=1")
+	policy := compiledControlSources(false)
+	policy.configure(t, f, bundle)
+	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
+	defer cancel()
+	prepared, err := f.admin.CompileSource(ctx, policy.producer)
+	if err != nil {
+		t.Fatal(err)
+	}
+	retired := func() bool {
+		data, err := os.ReadFile(filepath.Join(f.directory, "server.log"))
+		if err != nil {
+			t.Fatal(err)
+		}
+		return strings.Contains(string(data), "weaver governance stage=compiler-retired")
+	}
+	if retired() {
+		t.Fatal("preparation retired before publication")
+	}
+	c := newControlProcess(t, f, writeControlBundle(t, f, bundle, "json"))
+	c.useProducer(policy.producer)
+	c.start(t)
+	if !retired() {
+		t.Fatal("activation did not await compiler cleanup")
+	}
+	replayed, err := f.admin.CompileSource(ctx, policy.producer)
+	if err != nil || !proto.Equal(prepared, replayed) {
+		t.Fatalf("retired preparation replay changed: %v", err)
+	}
+	if _, err := c.client.Execute(ctx, bundle.Plans[0], pb.Encoding_PROTOBUF, 1, func(*pb.Event) error { return nil }); err != nil || f.primary.Load() != 1 {
+		t.Fatalf("activated provider unavailable after compiler retirement: %v", err)
+	}
+}
+
 func TestProviderControlCompiledProgramSharedBudgetRejectsConcurrentSendAndSDKRetry(t *testing.T) {
 	exerciseControlSharedBudgetPolicies(t, nil, compiledControlSources(false))
 }

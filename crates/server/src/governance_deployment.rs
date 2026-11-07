@@ -29,10 +29,25 @@ pub(crate) async fn start(
     runtime: &ServiceRuntime,
     catalog: Option<ProducerCatalog>,
 ) -> Result<Option<crate::GovernanceWorker>> {
+    let retire = match std::env::var("WEAVER_GOVERNANCE_RETIRE_ON_ACTIVATION") {
+        Ok(value) if value == "1" => true,
+        Err(std::env::VarError::NotPresent) => false,
+        _ => return Err(Error::Invalid("single-provider lifecycle setting")),
+    };
+    if retire && runtime.fact_feed().is_some() {
+        return Err(Error::Invalid(
+            "compiler retirement requires a deployment without a hard fact feed",
+        ));
+    }
     let Some(catalog) = catalog else {
         if runtime.fact_feed().is_some() {
             return Err(Error::Invalid(
                 "hard fact feed requires the linked Scheme owner",
+            ));
+        }
+        if retire {
+            return Err(Error::Invalid(
+                "single-provider lifecycle requires a catalog",
             ));
         }
         return Ok(None);
@@ -44,6 +59,14 @@ pub(crate) async fn start(
     }
     #[cfg(feature = "scheme-program")]
     {
+        if retire {
+            if !catalog.is_single_provider() {
+                return Err(Error::Invalid(
+                    "single-provider lifecycle requires exactly one producer",
+                ));
+            }
+            runtime.enable_single_provider()?;
+        }
         let capacity = std::thread::available_parallelism()
             .map_err(|_| Error::Invalid("host compiler budget"))?;
         start_compiler(runtime, catalog, capacity).await.map(Some)

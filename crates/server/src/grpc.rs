@@ -23,7 +23,6 @@ use tonic::{Request, Response, Status};
 use weaver_broker::ProviderTransport;
 use weaver_contracts::Error;
 use weaver_ledger::Ledger;
-
 #[derive(Clone)]
 pub(crate) struct Gateway {
     pub(crate) config: ServerConfig,
@@ -567,6 +566,27 @@ impl pb::gateway_server::Gateway for Gateway {
             .map_err(|_| Status::invalid_argument("producer name invalid"))?;
         let source = self.ingress.source()?;
         let before = source.authority(caller.clone()).await?;
+        let lifecycle = self.runtime.single_provider();
+        let _prepare = match lifecycle {
+            Some(lifecycle) => Some(
+                lifecycle
+                    .prepare
+                    .try_lock()
+                    .map_err(|_| Status::resource_exhausted("provider preparation in progress"))?,
+            ),
+            None => None,
+        };
+        if let Some(prepared) = lifecycle.and_then(|lifecycle| lifecycle.ready.get()) {
+            if prepared.producer != producer || prepared.authority != before {
+                return Err(Status::permission_denied(
+                    "prepared provider binding changed",
+                ));
+            }
+            if self.runtime.closing() {
+                return Err(Status::unavailable("source compilation closed"));
+            }
+            return Ok(Response::new(prepared.reply()));
+        }
         let client = self
             .runtime
             .producers()
@@ -594,13 +614,21 @@ impl pb::gateway_server::Gateway for Gateway {
         }
         let reply = pb::CompiledSource {
             producer,
-            authority: Some(crate::source_identity::view(after)?),
+            authority: Some(crate::source_identity::view(after.clone())?),
             artifact: Some(crate::source_artifact::artifact(&bound)),
         };
         if prost::Message::encoded_len(&reply) > 4 * 1024 * 1024 {
             return Err(Status::resource_exhausted(
                 "compiled source exceeds RPC response bound",
             ));
+        }
+        if let Some(lifecycle) = lifecycle {
+            let prepared =
+                crate::single_provider::Prepared::new(&reply, after, bound).map_err(status)?;
+            lifecycle
+                .ready
+                .set(prepared)
+                .map_err(|_| Status::internal("provider preparation already sealed"))?;
         }
         self.runtime
             .telemetry()
@@ -737,11 +765,10 @@ impl pb::gateway_server::Gateway for Gateway {
     ) -> std::result::Result<Response<pb::PublicationReceipt>, Status> {
         let caller = self.source_identity(&request)?;
         let change = request.into_inner();
-        let receipt = self
-            .ingress
-            .source()?
+        let source = self.ingress.source()?;
+        let receipt = source
             .publish(
-                caller,
+                caller.clone(),
                 weaver_contracts::Publication {
                     operation_id: change.operation_id,
                     expected_revision: change.expected_revision,
@@ -750,6 +777,8 @@ impl pb::gateway_server::Gateway for Gateway {
                     fence: change.fence,
                 },
             )
+            .await?;
+        self.retire_prepared_provider(source, caller, &receipt)
             .await?;
         Ok(Response::new(publication_receipt(receipt)))
     }
@@ -823,11 +852,10 @@ impl pb::gateway_server::Gateway for Gateway {
     ) -> std::result::Result<Response<pb::PublicationReceipt>, Status> {
         let caller = self.source_identity(&request)?;
         let key = request.into_inner();
-        let receipt = self
-            .ingress
-            .source()?
+        let source = self.ingress.source()?;
+        let receipt = source
             .inspect(
-                caller,
+                caller.clone(),
                 weaver_contracts::PublicationKey {
                     operation_id: key.operation_id,
                     digest: key.digest,
@@ -837,6 +865,8 @@ impl pb::gateway_server::Gateway for Gateway {
             .ok_or(Status::not_found(
                 "publication decision not observed; absence is not abort",
             ))?;
+        self.retire_prepared_provider(source, caller, &receipt)
+            .await?;
         Ok(Response::new(publication_receipt(receipt)))
     }
     async fn inspect_provider_catalog(
