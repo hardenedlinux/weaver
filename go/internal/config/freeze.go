@@ -24,6 +24,8 @@ func FreezeBundle(input Bundle) (Bundle, error) {
 	}
 	result := input
 	result.Governance.OpenNodes = slices.Clone(input.Governance.OpenNodes)
+	result.Governance.WorkflowEdges = slices.Clone(input.Governance.WorkflowEdges)
+	result.Governance.WorkflowSelectors = slices.Clone(input.Governance.WorkflowSelectors)
 	result.Publication = input.Publication.Clone()
 	result.Tasks = make([]v1.Task, len(input.Tasks))
 	for index, t := range input.Tasks {
@@ -105,6 +107,19 @@ func sourceTextBound(input Bundle) bool {
 	}
 	if !strings([]string{input.Governance.Schema, input.Governance.Family, input.Publication.OperationID, input.Publication.Policy, input.Publication.Schema}) || !strings(input.Governance.OpenNodes) {
 		return false
+	}
+	if len(input.Governance.WorkflowEdges) > 64 || len(input.Governance.WorkflowSelectors) > 31 {
+		return false
+	}
+	for _, edge := range input.Governance.WorkflowEdges {
+		if !strings(edge[:]) {
+			return false
+		}
+	}
+	for _, selector := range input.Governance.WorkflowSelectors {
+		if !strings(selector[:]) {
+			return false
+		}
 	}
 	if r := input.Publication.Review; r != nil {
 		if !strings([]string{r.Audience, r.SourceIdentityDigest, r.Signature, r.Delta, r.Review.Artifact, r.Review.Publication.OperationID, r.Review.Publication.Digest, string(r.Disposition)}) {

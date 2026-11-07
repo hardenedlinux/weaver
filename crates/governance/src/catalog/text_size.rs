@@ -36,11 +36,20 @@ pub(super) fn text_bytes(data: &SourceData) -> Option<usize> {
         schema,
         family,
         open_nodes,
+        workflow_edges,
+        workflow_selectors,
     } = governance;
     let mut bytes = Bytes(0);
     bytes.add(schema)?;
     bytes.add(family)?;
     bytes.strings(open_nodes)?;
+    for (child, parent) in workflow_edges {
+        bytes.add(child)?;
+        bytes.add(parent)?;
+    }
+    for selector in workflow_selectors {
+        bytes.strings(selector)?;
+    }
     for task in tasks {
         let Task {
             family,

@@ -17,6 +17,8 @@ pub(crate) fn artifact(bound: &BoundSource) -> pb::SourceArtifact {
         schema,
         family,
         open_nodes,
+        workflow_edges,
+        workflow_selectors,
     } = governance;
     let Publication {
         operation_id,
@@ -30,6 +32,21 @@ pub(crate) fn artifact(bound: &BoundSource) -> pb::SourceArtifact {
             schema: schema.clone(),
             family: family.clone(),
             open_nodes: open_nodes.clone(),
+            workflow_selectors: workflow_selectors
+                .iter()
+                .map(|[selector, left, right]| pb::WorkflowSelector {
+                    selector: selector.clone(),
+                    left: left.clone(),
+                    right: right.clone(),
+                })
+                .collect(),
+            workflow_edges: workflow_edges
+                .iter()
+                .map(|(dependent, dependency)| pb::WorkflowEdge {
+                    dependent: dependent.clone(),
+                    dependency: dependency.clone(),
+                })
+                .collect(),
         }),
         tasks: tasks.iter().map(task).collect(),
         plans: plans.iter().map(plan).collect(),

@@ -85,6 +85,14 @@ impl<'r> Input<'r> {
         )?
         .into_object())
     }
+    pub(super) fn edges(&self, edges: &[(String, String)]) -> Result<Object<'r>> {
+        self.vector(
+            edges
+                .iter()
+                .map(|(child, parent)| self.vector(vec![self.text(child)?, self.text(parent)?]))
+                .collect::<Result<Vec<_>>>()?,
+        )
+    }
     pub(super) fn strings(&self, values: &[String]) -> Result<Object<'r>> {
         if values.len() > 64 {
             return Err(SourceError::Bound);

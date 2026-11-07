@@ -79,7 +79,9 @@ message FactBarrierResolution {
   string previous_pending_prefix = 4;
   optional string remaining_pending_prefix = 5;
 }
-message GovernanceSelection { string schema = 1; string family = 2; repeated string open_nodes = 3; }
+message WorkflowEdge { string dependent = 1; string dependency = 2; }
+message WorkflowSelector { string selector = 1; string left = 2; string right = 3; }
+message GovernanceSelection { string schema = 1; string family = 2; repeated string open_nodes = 3; repeated WorkflowEdge workflow_edges = 4; repeated WorkflowSelector workflow_selectors = 5; }
 message SourceArtifact { GovernanceSelection governance = 1; repeated Task tasks = 2; repeated ProviderPlan plans = 3; PublishRequest publication = 4; }
 // Source authority here is knowledge at response admission, never a later permit.
 message CompiledSource { string producer = 1; SourceAuthorityView authority = 2; SourceArtifact artifact = 3; }

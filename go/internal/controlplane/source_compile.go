@@ -46,6 +46,18 @@ func compiledBundle(input *pb.SourceArtifact) (config.Bundle, error) {
 	}
 	bundle := config.Bundle{Governance: config.Governance{Schema: g.Schema, Family: g.Family, OpenNodes: g.OpenNodes},
 		Publication: v1.Publication{OperationID: p.OperationId, ExpectedRevision: cloneRevision(p.ExpectedRevision), Fence: p.Fence, Policy: p.Policy, Schema: p.Schema}}
+	for _, edge := range g.WorkflowEdges {
+		if edge == nil || unknownFields(edge) {
+			return zero, errors.New("compiled workflow edge")
+		}
+		bundle.Governance.WorkflowEdges = append(bundle.Governance.WorkflowEdges, [2]string{edge.Dependent, edge.Dependency})
+	}
+	for _, choice := range g.WorkflowSelectors {
+		if choice == nil || unknownFields(choice) {
+			return zero, errors.New("compiled workflow selector")
+		}
+		bundle.Governance.WorkflowSelectors = append(bundle.Governance.WorkflowSelectors, [3]string{choice.Selector, choice.Left, choice.Right})
+	}
 	for _, t := range input.Tasks {
 		if t == nil || unknownFields(t) {
 			return zero, errors.New("compiled task missing")

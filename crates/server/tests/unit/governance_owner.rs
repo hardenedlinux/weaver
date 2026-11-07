@@ -30,6 +30,8 @@ fn original() -> OwnedSource {
         governance: weaver_governance::SourceSelection {
             schema: "agentic-ai-lab.loop-governor.v1".into(),
             family: task.family.clone(),
+            workflow_edges: vec![],
+            workflow_selectors: vec![],
             open_nodes: task.nodes.clone(),
         },
         tasks: vec![task],

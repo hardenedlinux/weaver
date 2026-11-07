@@ -19,16 +19,7 @@ pub fn root_source<'r>(vm: &'r GerbilRuntime, source: &OwnedSource) -> Result<Ob
         plans,
         publication,
     } = source.data();
-    let SourceSelection {
-        schema,
-        family,
-        open_nodes,
-    } = governance;
-    let selection = input.record(vec![
-        ("schema", input.text(schema)?),
-        ("family", input.text(family)?),
-        ("open_nodes", input.strings(open_nodes)?),
-    ])?;
+    let selection = root_selection(&input, governance)?;
     let tasks = input.vector(
         tasks
             .iter()
@@ -41,6 +32,46 @@ pub fn root_source<'r>(vm: &'r GerbilRuntime, source: &OwnedSource) -> Result<Ob
             .map(|plan| root_plan(&input, plan))
             .collect::<Result<Vec<_>>>()?,
     )?;
+    let publication = root_publication(&input, publication)?;
+    input.record(vec![
+        ("governance", selection),
+        ("tasks", tasks),
+        ("plans", plans),
+        ("publication", publication),
+    ])
+}
+
+fn root_selection<'r>(input: &Input<'r>, governance: &SourceSelection) -> Result<Object<'r>> {
+    let SourceSelection {
+        schema,
+        family,
+        open_nodes,
+        workflow_edges,
+        workflow_selectors,
+    } = governance;
+    let mut selection = vec![
+        ("schema", input.text(schema)?),
+        ("family", input.text(family)?),
+        ("open_nodes", input.strings(open_nodes)?),
+    ];
+    if !workflow_edges.is_empty() {
+        selection.push(("workflow_edges", input.edges(workflow_edges)?));
+    }
+    if !workflow_selectors.is_empty() {
+        selection.push((
+            "workflow_selectors",
+            input.vector(
+                workflow_selectors
+                    .iter()
+                    .map(|row| input.strings(row))
+                    .collect::<Result<Vec<_>>>()?,
+            )?,
+        ));
+    }
+    input.record(selection)
+}
+
+fn root_publication<'r>(input: &Input<'r>, publication: &Publication) -> Result<Object<'r>> {
     let Publication {
         operation_id,
         expected_revision,
@@ -57,13 +88,7 @@ pub fn root_source<'r>(vm: &'r GerbilRuntime, source: &OwnedSource) -> Result<Ob
     if let Some(revision) = *expected_revision {
         fields.push(("expected_revision", input.number(revision)?));
     }
-    let publication = input.record(fields)?;
-    input.record(vec![
-        ("governance", selection),
-        ("tasks", tasks),
-        ("plans", plans),
-        ("publication", publication),
-    ])
+    input.record(fields)
 }
 fn root_task<'r>(input: &Input<'r>, task: &Task) -> Result<Object<'r>> {
     let Task {
