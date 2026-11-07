@@ -20,3 +20,14 @@ runs:
     - name: Install Ubuntu or Darwin packages
       shell: sh
       run: go -C go run ./cmd/weaver-dev prepare-ci-tools
+    - name: Bind the Cedar solver
+      if: env.WEAVER_VERIFY_SUITE == 'check-policy'
+      shell: sh
+      run: |
+        solver=$(command -v cvc5)
+        case "$solver" in
+          /*) test -x "$solver" ;;
+          *) exit 1 ;;
+        esac
+        "$solver" --version
+        printf 'CVC5=%s\n' "$solver" >> "$GITHUB_ENV"
