@@ -140,11 +140,13 @@ jobs:
       - name: Verify Scheme modules, Cedar FFI and streaming recovery
         id: verify_scheme
         if: inputs.suite == 'check-scheme'
-        timeout-minutes: 20
+        # The source-closure watchdog is separate. Give the suite room for
+        # its prelude and all three independently bounded native stages.
+        timeout-minutes: 37
         env:
           GERBIL_GXI: ${{ env.GERBIL_PREFIX }}/bin/gxi
           GERBIL_PATH: ${{ runner.temp }}/weaver-gerbil
-        run: go -C go run ./cmd/weaver-dev -clean-source -timeout 18m check-scheme
+        run: go -C go run ./cmd/weaver-dev -clean-source -timeout 35m check-scheme
       - name: Require successful phase receipts
         id: receipt_check
         timeout-minutes: 1
