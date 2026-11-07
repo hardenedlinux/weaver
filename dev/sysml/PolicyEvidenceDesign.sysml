@@ -745,8 +745,8 @@ package PolicyEvidenceDesign {
            in existing admission; no local-advance then separate claim gap.
            Use existing claims/outcomes, not a second Session ledger.
            The single-provider implementation specializes the linear Session
-           Workflow during Scheme preparation. After activation and retirement,
-           Rust instantiates the fixed complete-response predicate for each
+           Workflow during Scheme preparation. After exact activation, Rust
+           instantiates the fixed complete-response predicate for each
            adjacent edge with the actual release observation, predecessor winner
            when applicable, current fact cut and original domain stamp. The
            provider transaction compares the winner frontier and commits the

@@ -778,6 +778,8 @@ package WeaverProject {
         part 'dev/sysml/ProviderRpc.sysml' : File;
         part 'dev/sysml/ControlActivation.sysml' : File;
         part 'dev/sysml/PolicyEvidenceDesign.sysml' : File;
+        part 'dev/sysml/ControllerObjectLifecycle.sysml' : File;
+        part 'dev/sysml/ArchitectureEvolution.sysml' : File;
         part 'dev/sysml/runtime-trace.json' : File;
 
         part '.cache' : IgnoredDirectory;

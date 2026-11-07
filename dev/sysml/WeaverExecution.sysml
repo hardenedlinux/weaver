@@ -746,6 +746,15 @@ package WeaverExecution {
                This action grants no publication, consumption or transport right. */
         }
         action deriveCandidate : DeriveSemanticCandidate;
+        action prepareObject : ControllerObjectLifecycle::PrepareObject;
+        action replaceObject : ControllerObjectLifecycle::PrepareObjectReplacement;
+        action reuseObject : ControllerObjectLifecycle::ReuseObjectProjection;
+        action invalidateObject : ControllerObjectLifecycle::InvalidateObjectProjection;
+        action assessObjectReadiness : ArchitectureEvolution::AssessObjectReadiness;
+        action reconcileObjects : ArchitectureEvolution::ReconcileObjectSet;
+        action prepareSessionWorkflow : ArchitectureEvolution::PrepareSessionWorkflow;
+        action advanceRoutine : ArchitectureEvolution::AdvanceGovernedRoutine;
+        action explainObjectDecision : ArchitectureEvolution::ExplainObjectDecision;
         doc /* Normative semantic allocation: reuse Agentic AI Lab Governor to
            select admitted original scope and Governance to assess obligations,
            evidence and source assets. Scheme defines routine meaning, original
@@ -1186,6 +1195,7 @@ package WeaverExecution {
            and local-counter reset. No external exporter is currently enabled. */
     }
     part def DerivedEvidenceAdapter {
+        action maintainObjectRelations : ControllerObjectLifecycle::MaintainObjectRelations;
         attribute overviewName : String = "Evidence";
         attribute overviewSummary : String = "Bound observations";
         attribute displayName : String = "Derived evidence";
