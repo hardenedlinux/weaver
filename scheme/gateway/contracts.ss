@@ -9,7 +9,7 @@
         (only-in :clan/poo/number UIntN)
         (only-in :hardenedlinux/weaver/scheme/policy/types CedarPolicySource CedarSchemaSource))
 (export GatewayArtifact GatewaySourceInput TaskContract ProviderPlanContract PublicationContract
-        ProviderProfileContract ProviderRouteContract Identifier Counter Credits)
+        ProviderProfileContract ProviderRouteContract Identifier Counter Credits Digest)
 
 ;;; Preserve exact JSON integer tokens above 2^53; the default Integer JSON
 ;;; encoder intentionally uses strings there, which this wire schema forbids.
@@ -80,7 +80,9 @@
        identity: 'weaver/gateway/source-input sealed: #t))
 (def GovernorHandoff
   (.cc (Record schema: (list String) family: (list Identifier)
-               open_nodes: (list (List Identifier))) identity: 'weaver/governor-handoff sealed: #t))
+               open_nodes: (list (List Identifier))
+               workflow_edges: (list (List (List Identifier)) optional: #t)
+               workflow_selectors: (list (List (List Identifier)) optional: #t)) identity: 'weaver/governor-handoff sealed: #t))
 (def GatewayArtifact
   (.cc (Record governance: (list GovernorHandoff) tasks: (list (List TaskContract))
                plans: (list (List ProviderPlanContract)) publication: (list PublicationContract))

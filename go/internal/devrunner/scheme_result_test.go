@@ -197,29 +197,35 @@ func TestSchemeUsesPackageTestEntry(t *testing.T) {
 }
 
 func TestSchemePackageResultIntegrationCannotBorrowUnitReceipt(t *testing.T) {
-	root := schemeResultRoot(t)
-	directory := filepath.Join(root, "t/integration")
-	if err := os.Mkdir(directory, 0700); err != nil {
-		t.Fatal(err)
-	}
-	if err := os.WriteFile(filepath.Join(directory, "library-test.ss"), nil, 0600); err != nil {
-		t.Fatal(err)
-	}
-	binary, err := os.Executable()
-	if err != nil {
-		t.Fatal(err)
-	}
-	for _, valid := range []bool{false, true} {
-		body := schemeTranscript(20)
-		if valid {
-			body = strings.ReplaceAll(body, "t/library-test.ss", "t/integration/library-test.ss")
-		}
-		result := runStage(context.Background(), root, t.TempDir(),
-			Environment(map[string]string{"WEAVER_TEST_TOOL": "success"}),
-			Stage{Name: "scheme-source-integration-tests", Binary: binary,
-				Args: []string{"-test.run=^TestToolProcess$", "--", body}})
-		if result.ExitCode == nil || *result.ExitCode != 0 || (result.Status == "PASS") != valid {
-			t.Fatal("integration accepted a different module inventory", valid, result)
-		}
+	for _, entry := range []struct{ stage, directory string }{
+		{"scheme-source-integration-tests", "t/integration"},
+		{"scheme-module-selection-integration", "t/qualification/module-selection"},
+	} {
+		t.Run(entry.stage, func(t *testing.T) {
+			root := schemeResultRoot(t)
+			directory := filepath.Join(root, entry.directory)
+			if err := os.MkdirAll(directory, 0700); err != nil {
+				t.Fatal(err)
+			}
+			if err := os.WriteFile(filepath.Join(directory, "library-test.ss"), nil, 0600); err != nil {
+				t.Fatal(err)
+			}
+			binary, err := os.Executable()
+			if err != nil {
+				t.Fatal(err)
+			}
+			for _, valid := range []bool{false, true} {
+				body := schemeTranscript(20)
+				if valid {
+					body = strings.ReplaceAll(body, "t/library-test.ss", entry.directory+"/library-test.ss")
+				}
+				result := runStage(context.Background(), root, t.TempDir(),
+					Environment(map[string]string{"WEAVER_TEST_TOOL": "success"}),
+					Stage{Name: entry.stage, Binary: binary, Args: []string{"-test.run=^TestToolProcess$", "--", body}})
+				if result.ExitCode == nil || *result.ExitCode != 0 || (result.Status == "PASS") != valid {
+					t.Fatal("integration accepted a different module inventory", valid, result)
+				}
+			}
+		})
 	}
 }

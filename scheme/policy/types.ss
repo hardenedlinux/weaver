@@ -5,7 +5,6 @@
 ;;; This Contract describes an inert Rust preflight, not an authorization grant.
 (import (only-in :clan/poo/object .cc)
         (only-in :clan/poo/mop Function Bool)
-        (only-in :yuanxu/object-types/contracts YuanxuContract.)
         (only-in :clan/poo/type Record String)
         (only-in "./source-bytes.ss" bounded-cedar-source?))
 (import (only-in :clan/poo/type List)
@@ -21,7 +20,7 @@
   (.cc (Record policy: (list CedarPolicySource) inputs: (list (List PolicyDocument)) root: (list String))
        identity: 'weaver/policy/projection sealed: #t))
 (def PolicyScopeContract
-  (.cc YuanxuContract. value-contract:
+  (.cc
        (Record validate: (list (Function (list Bool) (list CedarPolicySource CedarSchemaSource)))
                project: (list (Function (list PolicyProjection)
                                         (list AgenticAILabGovernanceProfile CedarPolicySource String))))

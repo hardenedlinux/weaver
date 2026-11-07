@@ -264,20 +264,30 @@ func runStageCapture(ctx context.Context, root, directory string, environment []
 	return runStageObserved(ctx, root, directory, environment, stage, streamSchemeOutput, nil)
 }
 
-// Package functionality has a whole-suite budget; native Runtime is measured separately.
-const schemePackageTestTimeout = time.Minute
+// Package tests and the cold/hot build integration have separate budgets.
+const (
+	schemeModuleBuildTimeout     = 2 * time.Minute
+	schemePackageTestTimeout     = time.Minute
+	schemeModuleSelectionTimeout = 2 * time.Minute
+)
 
 func runStageObserved(ctx context.Context, root, directory string, environment []string, stage Stage, streamSchemeOutput bool, onStart func(int)) Result {
 	tests := ""
+	testTimeout := schemePackageTestTimeout
+	deadline := time.Duration(0)
 	switch stage.Name {
+	case "scheme-module-build":
+		deadline = schemeModuleBuildTimeout
 	case "scheme-unit-tests":
 		tests = "t"
 	case "scheme-source-integration-tests":
 		tests = "t/integration"
+	case "scheme-module-selection-integration":
+		tests = "t/qualification/module-selection"
+		testTimeout = schemeModuleSelectionTimeout
 	}
-	deadline := time.Duration(0)
 	if tests != "" {
-		deadline = schemePackageTestTimeout
+		deadline = testTimeout
 	}
 	if stage.providerBuild() {
 		deadline = 5 * time.Minute

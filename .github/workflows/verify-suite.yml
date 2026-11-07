@@ -79,7 +79,7 @@ jobs:
         run: |
           brew install coreutils
           echo "$(brew --prefix coreutils)/libexec/gnubin" >> "$GITHUB_PATH"
-      - name: Install declared Scheme dependencies
+      - name: Prepare the Weaver Scheme source closure
         id: scheme_dependencies
         if: inputs.suite == 'check-scheme'
         # The native watchdog owns the existing 12-minute limit. Leave time
@@ -89,23 +89,42 @@ jobs:
           GERBIL_PATH: ${{ runner.temp }}/weaver-gerbil
         run: |
           command -v timeout
-          # Parser PR #13 was squash-merged. Its retained head contains the
-          # source objects still named by Lab's native package declaration.
-          # Fetch them only for Parser. Gerbil still selects the declared SHA.
-          parser_sources="$RUNNER_TEMP/weaver-parser-source.gitconfig"
-          git config --file "$parser_sources" remote.origin.fetch \
-            '+refs/pull/13/head:refs/remotes/origin/weaver-parser-source'
-          config_slot="${GIT_CONFIG_COUNT:-0}"
-          export "GIT_CONFIG_KEY_$config_slot=includeIf.hasconfig:remote.*.url:https://github.com/tao3k/gerbil-parser.git.path"
-          export "GIT_CONFIG_VALUE_$config_slot=$parser_sources"
-          export GIT_CONFIG_COUNT="$((config_slot + 1))"
-          if timeout --verbose --kill-after=5s 12m gerbil deps --install; then
-            status=0
+          export scheme_sources="$RUNNER_TEMP/weaver-scheme-sources"
+          if timeout --verbose --kill-after=5s 12m bash -se -o pipefail <<'SOURCE_CLOSURE'; then
+          fetch_source() {
+            local package=$1 pin=$2 destination=$3 revision=${2##*@}
+            [[ "$pin" == "$package@$revision" && "$revision" =~ ^[0-9a-f]{40}$ ]]
+            git init --quiet "$destination"
+            git -C "$destination" fetch --quiet --depth=1 --no-tags "https://$package.git" "$revision"
+            git -C "$destination" checkout --quiet --detach FETCH_HEAD
+            test "$(git -C "$destination" rev-parse HEAD)" = "$revision"
+          }
+
+          lab=github.com/tao3k/agentic-ai-lab
+          ascent=github.com/tao3k/gerbil-ascent
+          lab_source="$scheme_sources/lab"
+          ascent_source="$scheme_sources/imports/gerbil-ascent"
+          mkdir -p "$scheme_sources/imports"
+          fetch_source "$lab" "$(gerbil deps)" "$lab_source"
+          ascent_pin=$(cd "$lab_source" && gerbil deps | grep "^$ascent@")
+          fetch_source "$ascent" "$ascent_pin" "$ascent_source"
+          core_pin=$(cd "$ascent_source" && gerbil deps)
+          [[ "$core_pin" =~ ^github\.com/tao3k/gebril-yuanxu@[0-9a-f]{40}$ ]]
+
+          # Core supplies the compiler and POO. Lab and ASCENT supply the
+          # source selected by Weaver; their unrelated build products stay out.
+          gerbil pkg install "$core_pin"
+          gerbil pkg link "$lab" "$lab_source"
+          gerbil pkg link "$ascent" "$ascent_source"
+          export GERBIL_LOADPATH="$GERBIL_PATH/lib:$scheme_sources/imports"
+          ./build.ss prepare-governor-library
+          SOURCE_CLOSURE
+            dependency_exit_code=0
           else
-            status=$?
+            dependency_exit_code=$?
           fi
-          printf 'exit_code=%s\n' "$status" >> "$GITHUB_OUTPUT"
-          exit "$status"
+          printf 'exit_code=%s\n' "$dependency_exit_code" >> "$GITHUB_OUTPUT"
+          exit "$dependency_exit_code"
       - name: Verify declared suite
         id: verify_suite
         if: inputs.suite != 'check-scheme'

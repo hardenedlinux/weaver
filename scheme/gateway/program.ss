@@ -10,7 +10,6 @@
         (only-in :gerbil-ascent/program/scheme-language relational-program)
         (only-in :gerbil-ascent/program/session gerbil-ascent-open-session gerbil-ascent-session-run)
         (only-in "./types.ss" GatewayProgram)
-        (only-in "./contracts.ss" GatewayArtifact)
         (only-in "./snapshot.ss" copy-source-data))
 (export make-gateway-program hard-fact-affected gateway-impact-program)
 
@@ -36,7 +35,9 @@
     (def (close-program!)
       (locked (lambda () (set! phase 'closed) (set! producer #f) #t)))
     (def (capture-source original)
-      (let* ((input (copy-source-data (validate GatewayArtifact original)))
+      ;; GatewayProgram.capture and the installed producer both have typed
+      ;; arguments/results. Detach their admitted data without a third walk.
+      (let* ((input (copy-source-data original))
              (selected
               (locked
                 (lambda ()
@@ -56,7 +57,7 @@
             ;; The approved producer performs its existing scoped capture and
             ;; returns one typed Record. An ambient sink outside the admitted
             ;; Yuanxu scope need not share that scope's parameter identity.
-            (let ((result (copy-source-data (validate GatewayArtifact (selected input)))))
+            (let ((result (copy-source-data (selected input))))
               (locked
                 (lambda ()
                   (unless (eq? phase 'active) (error "Gateway program closed during capture"))

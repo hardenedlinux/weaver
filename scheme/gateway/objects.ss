@@ -4,6 +4,8 @@
 
 ;;; Dependency scopes are injected by Yuanxu's declaration linker.
 (import (only-in :clan/poo/object .o) "./func.ss"
+        (only-in "./derivation.ss" derive-gateway-source make-gateway-derivation)
         (only-in "./capture.ss" capture-gateway-source))
 (export Gateway.)
-(def Gateway. (.o emit: emit-gateway capture: capture-gateway-source))
+(def Gateway. (.o emit: emit-gateway capture: capture-gateway-source
+                 derive: derive-gateway-source open-derivation: make-gateway-derivation))

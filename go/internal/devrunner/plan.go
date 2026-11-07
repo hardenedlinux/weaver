@@ -234,11 +234,12 @@ func stagesForMode(mode, goBinary string) ([]Stage, error) {
 			{"scheme-policy-library", "cargo", []string{"build", "-p", "weaver-policy-ffi", "--locked", "--offline"}},
 			{"scheme-policy-preflight", "cargo", []string{"test", "-p", "weaver-policy-ffi", "--lib", "--benches", "--locked", "--offline"}},
 			{"scheme-policy-pkg-config", "cargo", []string{"run", "-p", "weaver-policy-ffi", "--example", "policy_pkg_config", "--locked", "--offline"}},
-			{"scheme-module-build", schemeTool(), []string{"build", "-g"}},
+			{"scheme-module-build", "./build.ss", []string{"compile", "--debug"}},
 			{"scheme-build-environment-tests", goBinary, []string{"-C", "go", "test", "-count=1", "-race", "-tags=schemeintegration", "./internal/devrunner", "-run", "^(Test(SchemePkgConfig|SchemeTool|SchemePackageResult|SchemeTestInventory|SchemeUsesPackageTestEntry|SourceInputsWithArchived)|FuzzSchemePackageResultProtocol)", "-v"}},
 			// Package tools own discovery, execution and result reporting. Historical
 			// direct-gxi image experiments are not a prerequisite for gerbil test.
 			{"scheme-unit-tests", schemeTool(), []string{"test", "-g", "-v", "5", "t"}},
+			{"scheme-module-selection-integration", schemeTool(), []string{"test", "-g", "-v", "5", "t/qualification/module-selection"}},
 			{"scheme-source-integration-tests", schemeTool(), []string{"test", "-g", "-v", "5", "t/integration"}},
 			{"scheme-rooted-sdk-integration", "cargo", []string{"test", "-p", "weaver-governance", "-p", "weaver-governance-build", "-p", "weaver-server", "--features", "weaver-governance/scheme-qualification,weaver-server/governance-qualification", "--locked", "--offline"}},
 			{"scheme-provider-server-build", "cargo", []string{"build", "-p", "weaver-server", "--bin", "weaver-server", "--features", "arrow,governance-qualification", "--locked", "--offline", "-j", "4"}},

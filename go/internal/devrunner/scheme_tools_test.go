@@ -135,8 +135,14 @@ func TestSchemeVerificationUsesOnlyPublicPackageEntries(t *testing.T) {
 		if stage.Binary == schemeTool() {
 			entries[stage.Name] = args
 		}
+		if stage.Name == "scheme-module-build" {
+			if stage.Binary != "./build.ss" || args != "compile --debug" {
+				t.Fatalf("Scheme build must use the selected native entry: %v", stage)
+			}
+			entries[stage.Name] = args
+		}
 	}
-	if len(entries) != 3 || entries["scheme-source-integration-tests"] != "test -g -v 5 t/integration" || entries["scheme-module-build"] != "build -g" || entries["scheme-unit-tests"] != "test -g -v 5 t" {
+	if len(entries) != 4 || entries["scheme-module-selection-integration"] != "test -g -v 5 t/qualification/module-selection" || entries["scheme-source-integration-tests"] != "test -g -v 5 t/integration" || entries["scheme-unit-tests"] != "test -g -v 5 t" {
 		t.Fatalf("unexpected Scheme package lifecycle: %v", entries)
 	}
 }

@@ -246,14 +246,15 @@ package WeaverProject {
             part 'check-scheme' : VerificationMode;
             doc /* Prepare the qualification image through Cargo before Go
                streaming tests. Bound the image build and Go suite separately.
-               Native package installation defaults to four build workers and
-               has a twelve-minute watchdog. Retain the exit code in the job
-               receipt.
+               Resolve Lab and ASCENT sources from native package declarations.
+               Gerbil prepares the pinned Core and POO compiler dependencies.
+               ASCENT's selected Program build supplies native linker inputs.
+               Dependency preparation defaults to four workers and has a
+               twelve-minute watchdog with its exit code in the job receipt.
+               Run the selected package Build with a separate two-minute bound.
                Retain native Go failure events with the stage receipt. The
                provider recovery and natural-exit deadlines govern runtime.
-               Git may fetch Parser's retained source reference to recover
-               objects after squash merge. Native Gerbil package declarations
-               still select the exact revisions. */
+               Unrelated producer products stay outside this source closure. */
         }
         part architecture : VerificationSuite { part 'check-architecture' : VerificationMode; }
         part policy : VerificationSuite {

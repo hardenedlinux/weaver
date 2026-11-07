@@ -12,8 +12,8 @@
         (only-in :std/misc/ports read-all-as-string)
         (only-in :clan/poo/object .o .get)
         (only-in :clan/poo/mop TypeError?)
-        (only-in ../fixtures/control-inputs control-inputs)
-        (only-in ../fixtures/governed-control capture-control-fixture))
+        (only-in "../fixtures/control-inputs.ss" control-inputs)
+        (only-in "../fixtures/governed-control.ss" capture-control-fixture prepare-control-fixture))
 (export governed-control-test)
 
 (def refusal-cases
@@ -88,6 +88,22 @@
                   (def valid (invoke "valid"))
                   (check-equal? (.get valid governance open_nodes) '("infer" "next"))
                   (check-equal? (.get (car (.get input tasks)) budget) 8)
+                  ;; Preparation and source capture use the same declared
+                  ;; semantic producer, while evidence stays outside wire data.
+                  (def prepared (prepare-control-fixture init "valid" (.get input tasks) (.get input plans)
+                                                        (.get input publication) directory))
+                  (check-equal? (.get prepared source governance open_nodes) '("infer" "next"))
+                  (check-equal? (.get prepared derivation complete) #t)
+                  (check-equal? (.get prepared derivation execution_authorized) #f)
+                  (check-equal? (length (.get prepared derivation candidates)) 4)
+                  (def gateway (.get view modules Weaver gateway))
+                  (def advice ((.get gateway derive) (.get prepared source)))
+                  (check-equal? (.get advice request_digest) (.get prepared derivation request_digest))
+                  (def owner ((.get gateway open-derivation)))
+                  (def query (.o source: (.get prepared source) dependencies: '() changed: '()))
+                  (def retained ((.get owner derive) query))
+                  (check-equal? ((.get owner matches?) query retained) #t)
+                  ((.get owner close))
                   #t)))
             (lambda () ((.get view admit-current))))
           directory)))))

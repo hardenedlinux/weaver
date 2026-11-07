@@ -37,7 +37,7 @@ package ControlActivation {
            Governance scope exposes only typed assess; it cannot override
            Governor selection with an open callback. A selected step still needs
            an accepted assessment, publication and current final-use authority. */
-        doc /* Each Scheme scope uses an evidence-bearing YuanxuContract whose value-contract delegates shape and normalization to concrete Record and Function descriptors. Wire records are sealed, counters and credits are exact bounded integers, and Go and Rust independently validate the same artifact. Contract validity is required before registration and grants no execution authority. */
+        doc /* Each Scheme scope uses a native POO Type/Record with concrete Function descriptors. Core normalization and selected Feature obligations apply to the same final receiver. Module scope Types do not add .classify, .obligations or .admit evidence hooks; Yuanxu owns value-admission evidence and currentness, while domain evidence Contracts remain separate. Wire records are sealed, counters and credits are exact bounded integers, and Go and Rust independently validate the same artifact. Contract validity is required before registration and grants no execution authority. */
     }
     requirement def SourceStartupObservation {
         doc /* Package declarations and installed dependency state belong to

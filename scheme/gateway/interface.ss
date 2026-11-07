@@ -5,6 +5,7 @@
 (import (only-in :yuanxu/module-system/source/declaration .def))
 (.def Gateway
   identity: 'gateway
+  tags: '(gateway)
   core:
   (.o requires:
       (.o Governance: (.o module-id: 'governance contract: GovernanceScopeContract)
@@ -12,5 +13,7 @@
       scope-contract: GatewayScopeContract
       exports:
       (.o (:: @ Gateway.)
-          compile: (lambda args (apply compile-gateway Governance Policy args))))
+          compile: (lambda args (apply compile-gateway Governance Policy args))
+          prepare: (lambda args (apply prepare-gateway Governance Policy args)))
+      projections: (list Build))
   features: (.o))
