@@ -83,6 +83,10 @@ unimplemented = "deny"
 opt-level = 1
 incremental = true
 
+# Keep locked dependency compilation within the cold development build budget.
+[profile.dev.package."*"]
+opt-level = 0
+
 [profile.release]
 opt-level = 3
 incremental = true
