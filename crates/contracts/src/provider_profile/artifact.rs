@@ -8,8 +8,10 @@ use serde::{Deserialize, Serialize};
 
 /// Closed implementation protocol; other protocols require their own semantic owner.
 pub const CHAT_TEXT_SSE: &str = "openai.chat-text-sse.v1";
+/// Anthropic Messages text streaming with the validated SSE event sequence.
 pub const ANTHROPIC_MESSAGES_SSE: &str = "anthropic.messages-text-sse.v1";
 
+/// Supported request and stream adapters selected from a validated profile.
 #[derive(Clone, Copy)]
 pub enum ProviderProtocol {
     OpenAi,
