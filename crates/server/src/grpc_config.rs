@@ -159,15 +159,26 @@ async fn run_owned(runtime: crate::ServiceRuntime) -> Result<()> {
         std::time::SystemTime::now()
     );
     let shutdown = crate::shutdown::signal()?;
-    let (settings, addresses, catalog) = crate::runtime::RuntimeOwner::initialize(|| {
+    let (settings, addresses, catalog, feed) = crate::runtime::RuntimeOwner::initialize(|| {
         let (settings, addresses) = load()?;
+        let feed = match std::env::var("WEAVER_HARD_FACT_FEED") {
+            Ok(value) => Some(weaver_contracts::decode::<weaver_contracts::FactFeed>(
+                value.as_bytes(),
+            )?),
+            Err(std::env::VarError::NotPresent) => None,
+            Err(_) => return Err(Error::Invalid("hard fact feed deployment encoding")),
+        };
         Ok((
             settings,
             addresses,
             crate::governance_deployment::load_catalog()?,
+            feed,
         ))
     })
     .await?;
+    if let Some(feed) = feed {
+        runtime.install_fact_feed(feed)?;
+    }
     let worker = crate::governance_deployment::start(&runtime, catalog).await?;
     eprintln!(
         "weaver startup stage=configured elapsed={:?}",

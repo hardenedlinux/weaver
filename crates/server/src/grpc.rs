@@ -41,6 +41,18 @@ enum Ingress {
     Operation,
     Source(SourceOwner),
 }
+impl Gateway {
+    fn fact_barrier(barrier: weaver_contracts::FactBarrier) -> pb::HardFactBarrier {
+        pb::HardFactBarrier {
+            operation_id: barrier.operation_id,
+            source_epoch: barrier.source_epoch,
+            revision: barrier.revision,
+            snapshot: barrier.snapshot,
+            floor: barrier.floor,
+            pending_prefix: barrier.pending_prefix,
+        }
+    }
+}
 impl Ingress {
     fn role(&self) -> RpcRole {
         match self {
@@ -293,6 +305,76 @@ impl Gateway {
 }
 #[tonic::async_trait]
 impl pb::gateway_server::Gateway for Gateway {
+    async fn stage_hard_fact(
+        &self,
+        request: Request<pb::HardFactIntent>,
+    ) -> Result<Response<pb::HardFactBarrier>, Status> {
+        let caller = self.source_identity(&request)?;
+        let change = request.into_inner();
+        let intent = weaver_contracts::FactIntent {
+            operation_id: change.operation_id,
+            domain: change.domain,
+            source_epoch: change.source_epoch,
+            revision: change.revision,
+            previous_snapshot: change.previous_snapshot,
+            expected_floor: change.expected_floor,
+            available: change.available.ok_or(Status::invalid_argument(
+                "explicit hard fact value required",
+            ))?,
+        };
+        intent
+            .snapshot()
+            .map_err(|_| Status::invalid_argument("invalid hard fact intent"))?;
+        let barrier = self.ingress.source()?.stage_fact(caller, intent).await?;
+        Ok(Response::new(Self::fact_barrier(barrier)))
+    }
+
+    async fn resolve_hard_fact(
+        &self,
+        request: Request<pb::HardFactBarrier>,
+    ) -> Result<Response<pb::FactBarrierResolution>, Status> {
+        let caller = self.source_identity(&request)?;
+        let key = request.into_inner();
+        weaver_contracts::identifier(&key.operation_id)
+            .map_err(|_| Status::invalid_argument("invalid hard fact identity"))?;
+        if key.snapshot.len() != 64 || key.pending_prefix.len() != 64 {
+            return Err(Status::invalid_argument("invalid hard fact barrier"));
+        }
+        let barrier = weaver_contracts::FactBarrier {
+            operation_id: key.operation_id,
+            source_epoch: key.source_epoch,
+            revision: key.revision,
+            snapshot: key.snapshot,
+            floor: key.floor,
+            pending_prefix: key.pending_prefix,
+        };
+        let source = self.ingress.source()?;
+        let result = match source.prepare_fact(caller.clone(), barrier).await? {
+            weaver_ledger::FactPreparation::Resolved(resolution) => resolution,
+            weaver_ledger::FactPreparation::Pending(work) => {
+                let slot = self.admission.observation()?;
+                let job = self
+                    .runtime
+                    .spawn_blocking(slot, move |_| {
+                        let affected = weaver_governance::derive_fact_impact(&work)?;
+                        Ok((work, affected))
+                    })
+                    .map_err(status)?;
+                let (work, affected) = job
+                    .await
+                    .map_err(|_| Status::unavailable("hard fact derivation interrupted"))?
+                    .map_err(status)?;
+                source.resolve_fact(caller, work, affected).await?
+            }
+        };
+        Ok(Response::new(pb::FactBarrierResolution {
+            barrier: Some(Self::fact_barrier(result.barrier)),
+            affected: result.affected,
+            floor: result.floor,
+            previous_pending_prefix: result.previous_pending_prefix,
+            remaining_pending_prefix: result.remaining_pending_prefix,
+        }))
+    }
     async fn inspect_telemetry(
         &self,
         request: Request<pb::Empty>,

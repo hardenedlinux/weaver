@@ -29,6 +29,9 @@ service Gateway {
   rpc RegisterPublicationReview(DeltaReview) returns (ReviewRegistrationReceipt);
   rpc InspectSourceAuthority(Empty) returns (SourceAuthorityView);
   rpc RotateSourceAuthority(SourceRotationRequest) returns (SourceRotationReceipt);
+  // Dedicated deployment-admitted feed. Resolve accepts only the exact durable barrier.
+  rpc StageHardFact(HardFactIntent) returns (HardFactBarrier);
+  rpc ResolveHardFact(HardFactBarrier) returns (FactBarrierResolution);
   // Preparation only. Actual ingress/source state selects an installed original;
   // request labels cannot supply authority, replacement source or module paths.
   rpc CompileSource(ProducerRequest) returns (CompiledSource);
@@ -52,6 +55,30 @@ message TelemetrySnapshot {
 }
 message Empty {}
 message ProducerRequest { string producer = 1; }
+message HardFactIntent {
+  string operation_id = 1;
+  string domain = 2;
+  uint64 source_epoch = 3;
+  uint64 revision = 4;
+  string previous_snapshot = 5;
+  uint64 expected_floor = 6;
+  optional bool available = 7;
+}
+message HardFactBarrier {
+  string operation_id = 1;
+  uint64 source_epoch = 2;
+  uint64 revision = 3;
+  string snapshot = 4;
+  uint64 floor = 5;
+  string pending_prefix = 6;
+}
+message FactBarrierResolution {
+  HardFactBarrier barrier = 1;
+  repeated string affected = 2;
+  uint64 floor = 3;
+  string previous_pending_prefix = 4;
+  optional string remaining_pending_prefix = 5;
+}
 message GovernanceSelection { string schema = 1; string family = 2; repeated string open_nodes = 3; }
 message SourceArtifact { GovernanceSelection governance = 1; repeated Task tasks = 2; repeated ProviderPlan plans = 3; PublishRequest publication = 4; }
 // Source authority here is knowledge at response admission, never a later permit.

@@ -4,7 +4,7 @@
 
 //! Typed runtime owner: bounded task admission, cancellation, tracking and drain acknowledgment.
 use std::sync::{
-    Arc, Mutex,
+    Arc, Mutex, OnceLock,
     atomic::{AtomicBool, Ordering},
 };
 use tokio::sync::OwnedSemaphorePermit;
@@ -23,6 +23,7 @@ struct Inner {
     closed: AtomicBool,
     cancel: CancellationToken,
     tasks: TaskTracker,
+    fact_feed: OnceLock<weaver_contracts::FactFeed>,
 }
 struct AdmissionState {
     governance: Option<SourceClient>,
@@ -80,8 +81,18 @@ impl RuntimeOwner {
                 closed: AtomicBool::new(false),
                 cancel: CancellationToken::new(),
                 tasks: TaskTracker::new(),
+                fact_feed: OnceLock::new(),
             }),
         }
+    }
+    pub(crate) fn install_fact_feed(&self, feed: weaver_contracts::FactFeed) -> Result<()> {
+        self.inner
+            .fact_feed
+            .set(feed)
+            .map_err(|_| Error::Conflict("fact feed already installed"))
+    }
+    pub(crate) fn fact_feed(&self) -> Option<&weaver_contracts::FactFeed> {
+        self.inner.fact_feed.get()
     }
     /// Bounded local observations only; callers acquire no authority capability.
     pub fn telemetry(&self) -> &Arc<weaver_telemetry::Metrics> {

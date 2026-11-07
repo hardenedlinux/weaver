@@ -409,6 +409,258 @@ func (x *ProducerRequest) GetProducer() string {
 	return ""
 }
 
+type HardFactIntent struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	OperationId      string                 `protobuf:"bytes,1,opt,name=operation_id,json=operationId,proto3" json:"operation_id,omitempty"`
+	Domain           string                 `protobuf:"bytes,2,opt,name=domain,proto3" json:"domain,omitempty"`
+	SourceEpoch      uint64                 `protobuf:"varint,3,opt,name=source_epoch,json=sourceEpoch,proto3" json:"source_epoch,omitempty"`
+	Revision         uint64                 `protobuf:"varint,4,opt,name=revision,proto3" json:"revision,omitempty"`
+	PreviousSnapshot string                 `protobuf:"bytes,5,opt,name=previous_snapshot,json=previousSnapshot,proto3" json:"previous_snapshot,omitempty"`
+	ExpectedFloor    uint64                 `protobuf:"varint,6,opt,name=expected_floor,json=expectedFloor,proto3" json:"expected_floor,omitempty"`
+	Available        *bool                  `protobuf:"varint,7,opt,name=available,proto3,oneof" json:"available,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *HardFactIntent) Reset() {
+	*x = HardFactIntent{}
+	mi := &file_gateway_v1_gateway_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *HardFactIntent) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*HardFactIntent) ProtoMessage() {}
+
+func (x *HardFactIntent) ProtoReflect() protoreflect.Message {
+	mi := &file_gateway_v1_gateway_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use HardFactIntent.ProtoReflect.Descriptor instead.
+func (*HardFactIntent) Descriptor() ([]byte, []int) {
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *HardFactIntent) GetOperationId() string {
+	if x != nil {
+		return x.OperationId
+	}
+	return ""
+}
+
+func (x *HardFactIntent) GetDomain() string {
+	if x != nil {
+		return x.Domain
+	}
+	return ""
+}
+
+func (x *HardFactIntent) GetSourceEpoch() uint64 {
+	if x != nil {
+		return x.SourceEpoch
+	}
+	return 0
+}
+
+func (x *HardFactIntent) GetRevision() uint64 {
+	if x != nil {
+		return x.Revision
+	}
+	return 0
+}
+
+func (x *HardFactIntent) GetPreviousSnapshot() string {
+	if x != nil {
+		return x.PreviousSnapshot
+	}
+	return ""
+}
+
+func (x *HardFactIntent) GetExpectedFloor() uint64 {
+	if x != nil {
+		return x.ExpectedFloor
+	}
+	return 0
+}
+
+func (x *HardFactIntent) GetAvailable() bool {
+	if x != nil && x.Available != nil {
+		return *x.Available
+	}
+	return false
+}
+
+type HardFactBarrier struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	OperationId   string                 `protobuf:"bytes,1,opt,name=operation_id,json=operationId,proto3" json:"operation_id,omitempty"`
+	SourceEpoch   uint64                 `protobuf:"varint,2,opt,name=source_epoch,json=sourceEpoch,proto3" json:"source_epoch,omitempty"`
+	Revision      uint64                 `protobuf:"varint,3,opt,name=revision,proto3" json:"revision,omitempty"`
+	Snapshot      string                 `protobuf:"bytes,4,opt,name=snapshot,proto3" json:"snapshot,omitempty"`
+	Floor         uint64                 `protobuf:"varint,5,opt,name=floor,proto3" json:"floor,omitempty"`
+	PendingPrefix string                 `protobuf:"bytes,6,opt,name=pending_prefix,json=pendingPrefix,proto3" json:"pending_prefix,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *HardFactBarrier) Reset() {
+	*x = HardFactBarrier{}
+	mi := &file_gateway_v1_gateway_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *HardFactBarrier) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*HardFactBarrier) ProtoMessage() {}
+
+func (x *HardFactBarrier) ProtoReflect() protoreflect.Message {
+	mi := &file_gateway_v1_gateway_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use HardFactBarrier.ProtoReflect.Descriptor instead.
+func (*HardFactBarrier) Descriptor() ([]byte, []int) {
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *HardFactBarrier) GetOperationId() string {
+	if x != nil {
+		return x.OperationId
+	}
+	return ""
+}
+
+func (x *HardFactBarrier) GetSourceEpoch() uint64 {
+	if x != nil {
+		return x.SourceEpoch
+	}
+	return 0
+}
+
+func (x *HardFactBarrier) GetRevision() uint64 {
+	if x != nil {
+		return x.Revision
+	}
+	return 0
+}
+
+func (x *HardFactBarrier) GetSnapshot() string {
+	if x != nil {
+		return x.Snapshot
+	}
+	return ""
+}
+
+func (x *HardFactBarrier) GetFloor() uint64 {
+	if x != nil {
+		return x.Floor
+	}
+	return 0
+}
+
+func (x *HardFactBarrier) GetPendingPrefix() string {
+	if x != nil {
+		return x.PendingPrefix
+	}
+	return ""
+}
+
+type FactBarrierResolution struct {
+	state                  protoimpl.MessageState `protogen:"open.v1"`
+	Barrier                *HardFactBarrier       `protobuf:"bytes,1,opt,name=barrier,proto3" json:"barrier,omitempty"`
+	Affected               []string               `protobuf:"bytes,2,rep,name=affected,proto3" json:"affected,omitempty"`
+	Floor                  uint64                 `protobuf:"varint,3,opt,name=floor,proto3" json:"floor,omitempty"`
+	PreviousPendingPrefix  string                 `protobuf:"bytes,4,opt,name=previous_pending_prefix,json=previousPendingPrefix,proto3" json:"previous_pending_prefix,omitempty"`
+	RemainingPendingPrefix *string                `protobuf:"bytes,5,opt,name=remaining_pending_prefix,json=remainingPendingPrefix,proto3,oneof" json:"remaining_pending_prefix,omitempty"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *FactBarrierResolution) Reset() {
+	*x = FactBarrierResolution{}
+	mi := &file_gateway_v1_gateway_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FactBarrierResolution) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FactBarrierResolution) ProtoMessage() {}
+
+func (x *FactBarrierResolution) ProtoReflect() protoreflect.Message {
+	mi := &file_gateway_v1_gateway_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FactBarrierResolution.ProtoReflect.Descriptor instead.
+func (*FactBarrierResolution) Descriptor() ([]byte, []int) {
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *FactBarrierResolution) GetBarrier() *HardFactBarrier {
+	if x != nil {
+		return x.Barrier
+	}
+	return nil
+}
+
+func (x *FactBarrierResolution) GetAffected() []string {
+	if x != nil {
+		return x.Affected
+	}
+	return nil
+}
+
+func (x *FactBarrierResolution) GetFloor() uint64 {
+	if x != nil {
+		return x.Floor
+	}
+	return 0
+}
+
+func (x *FactBarrierResolution) GetPreviousPendingPrefix() string {
+	if x != nil {
+		return x.PreviousPendingPrefix
+	}
+	return ""
+}
+
+func (x *FactBarrierResolution) GetRemainingPendingPrefix() string {
+	if x != nil && x.RemainingPendingPrefix != nil {
+		return *x.RemainingPendingPrefix
+	}
+	return ""
+}
+
 type GovernanceSelection struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Schema        string                 `protobuf:"bytes,1,opt,name=schema,proto3" json:"schema,omitempty"`
@@ -420,7 +672,7 @@ type GovernanceSelection struct {
 
 func (x *GovernanceSelection) Reset() {
 	*x = GovernanceSelection{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[3]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -432,7 +684,7 @@ func (x *GovernanceSelection) String() string {
 func (*GovernanceSelection) ProtoMessage() {}
 
 func (x *GovernanceSelection) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[3]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -445,7 +697,7 @@ func (x *GovernanceSelection) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GovernanceSelection.ProtoReflect.Descriptor instead.
 func (*GovernanceSelection) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{3}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *GovernanceSelection) GetSchema() string {
@@ -481,7 +733,7 @@ type SourceArtifact struct {
 
 func (x *SourceArtifact) Reset() {
 	*x = SourceArtifact{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[4]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -493,7 +745,7 @@ func (x *SourceArtifact) String() string {
 func (*SourceArtifact) ProtoMessage() {}
 
 func (x *SourceArtifact) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[4]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -506,7 +758,7 @@ func (x *SourceArtifact) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SourceArtifact.ProtoReflect.Descriptor instead.
 func (*SourceArtifact) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{4}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *SourceArtifact) GetGovernance() *GovernanceSelection {
@@ -549,7 +801,7 @@ type CompiledSource struct {
 
 func (x *CompiledSource) Reset() {
 	*x = CompiledSource{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[5]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -561,7 +813,7 @@ func (x *CompiledSource) String() string {
 func (*CompiledSource) ProtoMessage() {}
 
 func (x *CompiledSource) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[5]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -574,7 +826,7 @@ func (x *CompiledSource) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CompiledSource.ProtoReflect.Descriptor instead.
 func (*CompiledSource) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{5}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *CompiledSource) GetProducer() string {
@@ -608,7 +860,7 @@ type OperationKey struct {
 
 func (x *OperationKey) Reset() {
 	*x = OperationKey{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[6]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -620,7 +872,7 @@ func (x *OperationKey) String() string {
 func (*OperationKey) ProtoMessage() {}
 
 func (x *OperationKey) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[6]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -633,7 +885,7 @@ func (x *OperationKey) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OperationKey.ProtoReflect.Descriptor instead.
 func (*OperationKey) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{6}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *OperationKey) GetFamily() string {
@@ -660,7 +912,7 @@ type Route struct {
 
 func (x *Route) Reset() {
 	*x = Route{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[7]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -672,7 +924,7 @@ func (x *Route) String() string {
 func (*Route) ProtoMessage() {}
 
 func (x *Route) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[7]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -685,7 +937,7 @@ func (x *Route) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Route.ProtoReflect.Descriptor instead.
 func (*Route) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{7}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *Route) GetTarget() string {
@@ -720,7 +972,7 @@ type ProviderPlan struct {
 
 func (x *ProviderPlan) Reset() {
 	*x = ProviderPlan{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[8]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -732,7 +984,7 @@ func (x *ProviderPlan) String() string {
 func (*ProviderPlan) ProtoMessage() {}
 
 func (x *ProviderPlan) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[8]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -745,7 +997,7 @@ func (x *ProviderPlan) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProviderPlan.ProtoReflect.Descriptor instead.
 func (*ProviderPlan) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{8}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *ProviderPlan) GetFamily() string {
@@ -830,7 +1082,7 @@ type ProviderRequest struct {
 
 func (x *ProviderRequest) Reset() {
 	*x = ProviderRequest{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[9]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -842,7 +1094,7 @@ func (x *ProviderRequest) String() string {
 func (*ProviderRequest) ProtoMessage() {}
 
 func (x *ProviderRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[9]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -855,7 +1107,7 @@ func (x *ProviderRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProviderRequest.ProtoReflect.Descriptor instead.
 func (*ProviderRequest) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{9}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *ProviderRequest) GetPlan() *ProviderPlan {
@@ -896,7 +1148,7 @@ type ProviderCatalogSnapshot struct {
 
 func (x *ProviderCatalogSnapshot) Reset() {
 	*x = ProviderCatalogSnapshot{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[10]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -908,7 +1160,7 @@ func (x *ProviderCatalogSnapshot) String() string {
 func (*ProviderCatalogSnapshot) ProtoMessage() {}
 
 func (x *ProviderCatalogSnapshot) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[10]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -921,7 +1173,7 @@ func (x *ProviderCatalogSnapshot) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProviderCatalogSnapshot.ProtoReflect.Descriptor instead.
 func (*ProviderCatalogSnapshot) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{10}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *ProviderCatalogSnapshot) GetVersion() string {
@@ -947,7 +1199,7 @@ type ProviderCatalogChange struct {
 
 func (x *ProviderCatalogChange) Reset() {
 	*x = ProviderCatalogChange{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[11]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -959,7 +1211,7 @@ func (x *ProviderCatalogChange) String() string {
 func (*ProviderCatalogChange) ProtoMessage() {}
 
 func (x *ProviderCatalogChange) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[11]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -972,7 +1224,7 @@ func (x *ProviderCatalogChange) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProviderCatalogChange.ProtoReflect.Descriptor instead.
 func (*ProviderCatalogChange) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{11}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *ProviderCatalogChange) GetRecord() []byte {
@@ -994,7 +1246,7 @@ type Event struct {
 
 func (x *Event) Reset() {
 	*x = Event{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[12]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1006,7 +1258,7 @@ func (x *Event) String() string {
 func (*Event) ProtoMessage() {}
 
 func (x *Event) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[12]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1019,7 +1271,7 @@ func (x *Event) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Event.ProtoReflect.Descriptor instead.
 func (*Event) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{12}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *Event) GetSequence() uint64 {
@@ -1061,7 +1313,7 @@ type ArrowBatch struct {
 
 func (x *ArrowBatch) Reset() {
 	*x = ArrowBatch{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[13]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1073,7 +1325,7 @@ func (x *ArrowBatch) String() string {
 func (*ArrowBatch) ProtoMessage() {}
 
 func (x *ArrowBatch) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[13]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1086,7 +1338,7 @@ func (x *ArrowBatch) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ArrowBatch.ProtoReflect.Descriptor instead.
 func (*ArrowBatch) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{13}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *ArrowBatch) GetIpc() []byte {
@@ -1125,7 +1377,7 @@ type ProviderFrame struct {
 
 func (x *ProviderFrame) Reset() {
 	*x = ProviderFrame{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[14]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1137,7 +1389,7 @@ func (x *ProviderFrame) String() string {
 func (*ProviderFrame) ProtoMessage() {}
 
 func (x *ProviderFrame) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[14]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1150,7 +1402,7 @@ func (x *ProviderFrame) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProviderFrame.ProtoReflect.Descriptor instead.
 func (*ProviderFrame) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{14}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *ProviderFrame) GetTarget() string {
@@ -1224,7 +1476,7 @@ type ProviderReceipt struct {
 
 func (x *ProviderReceipt) Reset() {
 	*x = ProviderReceipt{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[15]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1236,7 +1488,7 @@ func (x *ProviderReceipt) String() string {
 func (*ProviderReceipt) ProtoMessage() {}
 
 func (x *ProviderReceipt) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[15]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1249,7 +1501,7 @@ func (x *ProviderReceipt) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProviderReceipt.ProtoReflect.Descriptor instead.
 func (*ProviderReceipt) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{15}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *ProviderReceipt) GetFamily() string {
@@ -1328,7 +1580,7 @@ type Task struct {
 
 func (x *Task) Reset() {
 	*x = Task{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[16]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1340,7 +1592,7 @@ func (x *Task) String() string {
 func (*Task) ProtoMessage() {}
 
 func (x *Task) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[16]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1353,7 +1605,7 @@ func (x *Task) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Task.ProtoReflect.Descriptor instead.
 func (*Task) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{16}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *Task) GetFamily() string {
@@ -1453,7 +1705,7 @@ type ProviderProfile struct {
 
 func (x *ProviderProfile) Reset() {
 	*x = ProviderProfile{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[17]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1465,7 +1717,7 @@ func (x *ProviderProfile) String() string {
 func (*ProviderProfile) ProtoMessage() {}
 
 func (x *ProviderProfile) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[17]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1478,7 +1730,7 @@ func (x *ProviderProfile) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProviderProfile.ProtoReflect.Descriptor instead.
 func (*ProviderProfile) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{17}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *ProviderProfile) GetId() string {
@@ -1525,7 +1777,7 @@ type RegisterTaskRequest struct {
 
 func (x *RegisterTaskRequest) Reset() {
 	*x = RegisterTaskRequest{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[18]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1537,7 +1789,7 @@ func (x *RegisterTaskRequest) String() string {
 func (*RegisterTaskRequest) ProtoMessage() {}
 
 func (x *RegisterTaskRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[18]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1550,7 +1802,7 @@ func (x *RegisterTaskRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RegisterTaskRequest.ProtoReflect.Descriptor instead.
 func (*RegisterTaskRequest) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{18}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *RegisterTaskRequest) GetTask() *Task {
@@ -1572,7 +1824,7 @@ type DomainBinding struct {
 
 func (x *DomainBinding) Reset() {
 	*x = DomainBinding{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[19]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1584,7 +1836,7 @@ func (x *DomainBinding) String() string {
 func (*DomainBinding) ProtoMessage() {}
 
 func (x *DomainBinding) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[19]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1597,7 +1849,7 @@ func (x *DomainBinding) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DomainBinding.ProtoReflect.Descriptor instead.
 func (*DomainBinding) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{19}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *DomainBinding) GetOrigin() string {
@@ -1642,7 +1894,7 @@ type DomainStamp struct {
 
 func (x *DomainStamp) Reset() {
 	*x = DomainStamp{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[20]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1654,7 +1906,7 @@ func (x *DomainStamp) String() string {
 func (*DomainStamp) ProtoMessage() {}
 
 func (x *DomainStamp) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[20]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1667,7 +1919,7 @@ func (x *DomainStamp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DomainStamp.ProtoReflect.Descriptor instead.
 func (*DomainStamp) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{20}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *DomainStamp) GetOrigin() string {
@@ -1726,7 +1978,7 @@ type DomainView struct {
 
 func (x *DomainView) Reset() {
 	*x = DomainView{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[21]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1738,7 +1990,7 @@ func (x *DomainView) String() string {
 func (*DomainView) ProtoMessage() {}
 
 func (x *DomainView) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[21]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1751,7 +2003,7 @@ func (x *DomainView) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DomainView.ProtoReflect.Descriptor instead.
 func (*DomainView) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{21}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *DomainView) GetFamily() string {
@@ -1807,7 +2059,7 @@ type RegisterDomainTaskRequest struct {
 
 func (x *RegisterDomainTaskRequest) Reset() {
 	*x = RegisterDomainTaskRequest{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[22]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1819,7 +2071,7 @@ func (x *RegisterDomainTaskRequest) String() string {
 func (*RegisterDomainTaskRequest) ProtoMessage() {}
 
 func (x *RegisterDomainTaskRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[22]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1832,7 +2084,7 @@ func (x *RegisterDomainTaskRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RegisterDomainTaskRequest.ProtoReflect.Descriptor instead.
 func (*RegisterDomainTaskRequest) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{22}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *RegisterDomainTaskRequest) GetTask() *Task {
@@ -1867,7 +2119,7 @@ type TaskAdmission struct {
 
 func (x *TaskAdmission) Reset() {
 	*x = TaskAdmission{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[23]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1879,7 +2131,7 @@ func (x *TaskAdmission) String() string {
 func (*TaskAdmission) ProtoMessage() {}
 
 func (x *TaskAdmission) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[23]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1892,7 +2144,7 @@ func (x *TaskAdmission) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TaskAdmission.ProtoReflect.Descriptor instead.
 func (*TaskAdmission) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{23}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *TaskAdmission) GetTaskKey() string {
@@ -1928,7 +2180,7 @@ type RegisterOriginalTaskRequest struct {
 
 func (x *RegisterOriginalTaskRequest) Reset() {
 	*x = RegisterOriginalTaskRequest{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[24]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1940,7 +2192,7 @@ func (x *RegisterOriginalTaskRequest) String() string {
 func (*RegisterOriginalTaskRequest) ProtoMessage() {}
 
 func (x *RegisterOriginalTaskRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[24]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1953,7 +2205,7 @@ func (x *RegisterOriginalTaskRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RegisterOriginalTaskRequest.ProtoReflect.Descriptor instead.
 func (*RegisterOriginalTaskRequest) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{24}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *RegisterOriginalTaskRequest) GetTask() *Task {
@@ -1998,7 +2250,7 @@ type TaskAdmissionReceipt struct {
 
 func (x *TaskAdmissionReceipt) Reset() {
 	*x = TaskAdmissionReceipt{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[25]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2010,7 +2262,7 @@ func (x *TaskAdmissionReceipt) String() string {
 func (*TaskAdmissionReceipt) ProtoMessage() {}
 
 func (x *TaskAdmissionReceipt) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[25]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2023,7 +2275,7 @@ func (x *TaskAdmissionReceipt) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TaskAdmissionReceipt.ProtoReflect.Descriptor instead.
 func (*TaskAdmissionReceipt) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{25}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *TaskAdmissionReceipt) GetOperationId() string {
@@ -2078,7 +2330,7 @@ type FamilyAliasRequest struct {
 
 func (x *FamilyAliasRequest) Reset() {
 	*x = FamilyAliasRequest{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[26]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2090,7 +2342,7 @@ func (x *FamilyAliasRequest) String() string {
 func (*FamilyAliasRequest) ProtoMessage() {}
 
 func (x *FamilyAliasRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[26]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2103,7 +2355,7 @@ func (x *FamilyAliasRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FamilyAliasRequest.ProtoReflect.Descriptor instead.
 func (*FamilyAliasRequest) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{26}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *FamilyAliasRequest) GetFamily() string {
@@ -2137,7 +2389,7 @@ type DomainMigration struct {
 
 func (x *DomainMigration) Reset() {
 	*x = DomainMigration{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[27]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2149,7 +2401,7 @@ func (x *DomainMigration) String() string {
 func (*DomainMigration) ProtoMessage() {}
 
 func (x *DomainMigration) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[27]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2162,7 +2414,7 @@ func (x *DomainMigration) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DomainMigration.ProtoReflect.Descriptor instead.
 func (*DomainMigration) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{27}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *DomainMigration) GetOperationId() string {
@@ -2243,7 +2495,7 @@ type DomainMigrationReceipt struct {
 
 func (x *DomainMigrationReceipt) Reset() {
 	*x = DomainMigrationReceipt{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[28]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2255,7 +2507,7 @@ func (x *DomainMigrationReceipt) String() string {
 func (*DomainMigrationReceipt) ProtoMessage() {}
 
 func (x *DomainMigrationReceipt) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[28]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2268,7 +2520,7 @@ func (x *DomainMigrationReceipt) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DomainMigrationReceipt.ProtoReflect.Descriptor instead.
 func (*DomainMigrationReceipt) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{28}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *DomainMigrationReceipt) GetOperationId() string {
@@ -2331,7 +2583,7 @@ type RegisterPublishedTaskRequest struct {
 
 func (x *RegisterPublishedTaskRequest) Reset() {
 	*x = RegisterPublishedTaskRequest{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[29]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2343,7 +2595,7 @@ func (x *RegisterPublishedTaskRequest) String() string {
 func (*RegisterPublishedTaskRequest) ProtoMessage() {}
 
 func (x *RegisterPublishedTaskRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[29]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2356,7 +2608,7 @@ func (x *RegisterPublishedTaskRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RegisterPublishedTaskRequest.ProtoReflect.Descriptor instead.
 func (*RegisterPublishedTaskRequest) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{29}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *RegisterPublishedTaskRequest) GetTask() *Task {
@@ -2386,7 +2638,7 @@ type PublishRequest struct {
 
 func (x *PublishRequest) Reset() {
 	*x = PublishRequest{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[30]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2398,7 +2650,7 @@ func (x *PublishRequest) String() string {
 func (*PublishRequest) ProtoMessage() {}
 
 func (x *PublishRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[30]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2411,7 +2663,7 @@ func (x *PublishRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PublishRequest.ProtoReflect.Descriptor instead.
 func (*PublishRequest) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{30}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{33}
 }
 
 func (x *PublishRequest) GetExpectedRevision() uint64 {
@@ -2462,7 +2714,7 @@ type PublicationReceipt struct {
 
 func (x *PublicationReceipt) Reset() {
 	*x = PublicationReceipt{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[31]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2474,7 +2726,7 @@ func (x *PublicationReceipt) String() string {
 func (*PublicationReceipt) ProtoMessage() {}
 
 func (x *PublicationReceipt) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[31]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2487,7 +2739,7 @@ func (x *PublicationReceipt) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PublicationReceipt.ProtoReflect.Descriptor instead.
 func (*PublicationReceipt) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{31}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *PublicationReceipt) GetOperationId() string {
@@ -2535,7 +2787,7 @@ type PublicationKey struct {
 
 func (x *PublicationKey) Reset() {
 	*x = PublicationKey{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[32]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2547,7 +2799,7 @@ func (x *PublicationKey) String() string {
 func (*PublicationKey) ProtoMessage() {}
 
 func (x *PublicationKey) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[32]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2560,7 +2812,7 @@ func (x *PublicationKey) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PublicationKey.ProtoReflect.Descriptor instead.
 func (*PublicationKey) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{32}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *PublicationKey) GetOperationId() string {
@@ -2587,7 +2839,7 @@ type SourceAuthorityView struct {
 
 func (x *SourceAuthorityView) Reset() {
 	*x = SourceAuthorityView{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[33]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2599,7 +2851,7 @@ func (x *SourceAuthorityView) String() string {
 func (*SourceAuthorityView) ProtoMessage() {}
 
 func (x *SourceAuthorityView) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[33]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2612,7 +2864,7 @@ func (x *SourceAuthorityView) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SourceAuthorityView.ProtoReflect.Descriptor instead.
 func (*SourceAuthorityView) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{33}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *SourceAuthorityView) GetEpoch() uint64 {
@@ -2642,7 +2894,7 @@ type SourceRotationRequest struct {
 
 func (x *SourceRotationRequest) Reset() {
 	*x = SourceRotationRequest{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[34]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2654,7 +2906,7 @@ func (x *SourceRotationRequest) String() string {
 func (*SourceRotationRequest) ProtoMessage() {}
 
 func (x *SourceRotationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[34]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2667,7 +2919,7 @@ func (x *SourceRotationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SourceRotationRequest.ProtoReflect.Descriptor instead.
 func (*SourceRotationRequest) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{34}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *SourceRotationRequest) GetOperationId() string {
@@ -2710,7 +2962,7 @@ type SourceRotationReceipt struct {
 
 func (x *SourceRotationReceipt) Reset() {
 	*x = SourceRotationReceipt{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[35]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2722,7 +2974,7 @@ func (x *SourceRotationReceipt) String() string {
 func (*SourceRotationReceipt) ProtoMessage() {}
 
 func (x *SourceRotationReceipt) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[35]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2735,7 +2987,7 @@ func (x *SourceRotationReceipt) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SourceRotationReceipt.ProtoReflect.Descriptor instead.
 func (*SourceRotationReceipt) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{35}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *SourceRotationReceipt) GetOperationId() string {
@@ -2779,7 +3031,7 @@ type AuthorityParent struct {
 
 func (x *AuthorityParent) Reset() {
 	*x = AuthorityParent{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[36]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2791,7 +3043,7 @@ func (x *AuthorityParent) String() string {
 func (*AuthorityParent) ProtoMessage() {}
 
 func (x *AuthorityParent) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[36]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2804,7 +3056,7 @@ func (x *AuthorityParent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AuthorityParent.ProtoReflect.Descriptor instead.
 func (*AuthorityParent) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{36}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *AuthorityParent) GetRevision() uint64 {
@@ -2848,7 +3100,7 @@ type ReviewAuthority struct {
 
 func (x *ReviewAuthority) Reset() {
 	*x = ReviewAuthority{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[37]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2860,7 +3112,7 @@ func (x *ReviewAuthority) String() string {
 func (*ReviewAuthority) ProtoMessage() {}
 
 func (x *ReviewAuthority) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[37]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2873,7 +3125,7 @@ func (x *ReviewAuthority) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReviewAuthority.ProtoReflect.Descriptor instead.
 func (*ReviewAuthority) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{37}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{40}
 }
 
 func (x *ReviewAuthority) GetAudience() string {
@@ -2922,7 +3174,7 @@ type PublicationReview struct {
 
 func (x *PublicationReview) Reset() {
 	*x = PublicationReview{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[38]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2934,7 +3186,7 @@ func (x *PublicationReview) String() string {
 func (*PublicationReview) ProtoMessage() {}
 
 func (x *PublicationReview) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[38]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2947,7 +3199,7 @@ func (x *PublicationReview) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PublicationReview.ProtoReflect.Descriptor instead.
 func (*PublicationReview) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{38}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{41}
 }
 
 func (x *PublicationReview) GetPublication() *PublicationKey {
@@ -2987,7 +3239,7 @@ type DeltaReview struct {
 
 func (x *DeltaReview) Reset() {
 	*x = DeltaReview{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[39]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2999,7 +3251,7 @@ func (x *DeltaReview) String() string {
 func (*DeltaReview) ProtoMessage() {}
 
 func (x *DeltaReview) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[39]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3012,7 +3264,7 @@ func (x *DeltaReview) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeltaReview.ProtoReflect.Descriptor instead.
 func (*DeltaReview) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{39}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{42}
 }
 
 func (x *DeltaReview) GetReview() *PublicationReview {
@@ -3083,7 +3335,7 @@ type PublicationReviewContext struct {
 
 func (x *PublicationReviewContext) Reset() {
 	*x = PublicationReviewContext{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[40]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3095,7 +3347,7 @@ func (x *PublicationReviewContext) String() string {
 func (*PublicationReviewContext) ProtoMessage() {}
 
 func (x *PublicationReviewContext) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[40]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3108,7 +3360,7 @@ func (x *PublicationReviewContext) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PublicationReviewContext.ProtoReflect.Descriptor instead.
 func (*PublicationReviewContext) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{40}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{43}
 }
 
 func (x *PublicationReviewContext) GetPublication() *PublicationKey {
@@ -3149,7 +3401,7 @@ type ReviewRegistrationReceipt struct {
 
 func (x *ReviewRegistrationReceipt) Reset() {
 	*x = ReviewRegistrationReceipt{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[41]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3161,7 +3413,7 @@ func (x *ReviewRegistrationReceipt) String() string {
 func (*ReviewRegistrationReceipt) ProtoMessage() {}
 
 func (x *ReviewRegistrationReceipt) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[41]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3174,7 +3426,7 @@ func (x *ReviewRegistrationReceipt) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReviewRegistrationReceipt.ProtoReflect.Descriptor instead.
 func (*ReviewRegistrationReceipt) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{41}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{44}
 }
 
 func (x *ReviewRegistrationReceipt) GetPublication() *PublicationKey {
@@ -3204,7 +3456,7 @@ type MeterCredentialRotation struct {
 
 func (x *MeterCredentialRotation) Reset() {
 	*x = MeterCredentialRotation{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[42]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[45]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3216,7 +3468,7 @@ func (x *MeterCredentialRotation) String() string {
 func (*MeterCredentialRotation) ProtoMessage() {}
 
 func (x *MeterCredentialRotation) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[42]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[45]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3229,7 +3481,7 @@ func (x *MeterCredentialRotation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MeterCredentialRotation.ProtoReflect.Descriptor instead.
 func (*MeterCredentialRotation) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{42}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{45}
 }
 
 func (x *MeterCredentialRotation) GetTenant() string {
@@ -3276,7 +3528,7 @@ type MeterCredentialEpoch struct {
 
 func (x *MeterCredentialEpoch) Reset() {
 	*x = MeterCredentialEpoch{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[43]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[46]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3288,7 +3540,7 @@ func (x *MeterCredentialEpoch) String() string {
 func (*MeterCredentialEpoch) ProtoMessage() {}
 
 func (x *MeterCredentialEpoch) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[43]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[46]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3301,7 +3553,7 @@ func (x *MeterCredentialEpoch) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MeterCredentialEpoch.ProtoReflect.Descriptor instead.
 func (*MeterCredentialEpoch) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{43}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{46}
 }
 
 func (x *MeterCredentialEpoch) GetEpoch() uint64 {
@@ -3332,7 +3584,7 @@ type MeteringReceipt struct {
 
 func (x *MeteringReceipt) Reset() {
 	*x = MeteringReceipt{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[44]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[47]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3344,7 +3596,7 @@ func (x *MeteringReceipt) String() string {
 func (*MeteringReceipt) ProtoMessage() {}
 
 func (x *MeteringReceipt) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[44]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[47]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3357,7 +3609,7 @@ func (x *MeteringReceipt) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MeteringReceipt.ProtoReflect.Descriptor instead.
 func (*MeteringReceipt) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{44}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{47}
 }
 
 func (x *MeteringReceipt) GetAudience() string {
@@ -3462,7 +3714,7 @@ type MeteringApplication struct {
 
 func (x *MeteringApplication) Reset() {
 	*x = MeteringApplication{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[45]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[48]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3474,7 +3726,7 @@ func (x *MeteringApplication) String() string {
 func (*MeteringApplication) ProtoMessage() {}
 
 func (x *MeteringApplication) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[45]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[48]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3487,7 +3739,7 @@ func (x *MeteringApplication) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MeteringApplication.ProtoReflect.Descriptor instead.
 func (*MeteringApplication) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{45}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{48}
 }
 
 func (x *MeteringApplication) GetApplication() string {
@@ -3525,7 +3777,7 @@ type ProviderOAuthChange struct {
 
 func (x *ProviderOAuthChange) Reset() {
 	*x = ProviderOAuthChange{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[46]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[49]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3537,7 +3789,7 @@ func (x *ProviderOAuthChange) String() string {
 func (*ProviderOAuthChange) ProtoMessage() {}
 
 func (x *ProviderOAuthChange) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[46]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[49]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3550,7 +3802,7 @@ func (x *ProviderOAuthChange) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProviderOAuthChange.ProtoReflect.Descriptor instead.
 func (*ProviderOAuthChange) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{46}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{49}
 }
 
 func (x *ProviderOAuthChange) GetAction() isProviderOAuthChange_Action {
@@ -3629,7 +3881,7 @@ type ProviderOAuthGrant struct {
 
 func (x *ProviderOAuthGrant) Reset() {
 	*x = ProviderOAuthGrant{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[47]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[50]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3641,7 +3893,7 @@ func (x *ProviderOAuthGrant) String() string {
 func (*ProviderOAuthGrant) ProtoMessage() {}
 
 func (x *ProviderOAuthGrant) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[47]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[50]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3654,7 +3906,7 @@ func (x *ProviderOAuthGrant) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProviderOAuthGrant.ProtoReflect.Descriptor instead.
 func (*ProviderOAuthGrant) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{47}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{50}
 }
 
 func (x *ProviderOAuthGrant) GetIssuer() string {
@@ -3752,7 +4004,7 @@ type ProviderOAuthIssuerRotation struct {
 
 func (x *ProviderOAuthIssuerRotation) Reset() {
 	*x = ProviderOAuthIssuerRotation{}
-	mi := &file_gateway_v1_gateway_proto_msgTypes[48]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[51]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3764,7 +4016,7 @@ func (x *ProviderOAuthIssuerRotation) String() string {
 func (*ProviderOAuthIssuerRotation) ProtoMessage() {}
 
 func (x *ProviderOAuthIssuerRotation) ProtoReflect() protoreflect.Message {
-	mi := &file_gateway_v1_gateway_proto_msgTypes[48]
+	mi := &file_gateway_v1_gateway_proto_msgTypes[51]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3777,7 +4029,7 @@ func (x *ProviderOAuthIssuerRotation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProviderOAuthIssuerRotation.ProtoReflect.Descriptor instead.
 func (*ProviderOAuthIssuerRotation) Descriptor() ([]byte, []int) {
-	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{48}
+	return file_gateway_v1_gateway_proto_rawDescGZIP(), []int{51}
 }
 
 func (x *ProviderOAuthIssuerRotation) GetExpectedEpoch() uint64 {
@@ -3818,7 +4070,31 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\x0esnapshot_reads\x18\t \x01(\x04R\rsnapshotReads\"\a\n" +
 	"\x05Empty\"-\n" +
 	"\x0fProducerRequest\x12\x1a\n" +
-	"\bproducer\x18\x01 \x01(\tR\bproducer\"d\n" +
+	"\bproducer\x18\x01 \x01(\tR\bproducer\"\x8f\x02\n" +
+	"\x0eHardFactIntent\x12!\n" +
+	"\foperation_id\x18\x01 \x01(\tR\voperationId\x12\x16\n" +
+	"\x06domain\x18\x02 \x01(\tR\x06domain\x12!\n" +
+	"\fsource_epoch\x18\x03 \x01(\x04R\vsourceEpoch\x12\x1a\n" +
+	"\brevision\x18\x04 \x01(\x04R\brevision\x12+\n" +
+	"\x11previous_snapshot\x18\x05 \x01(\tR\x10previousSnapshot\x12%\n" +
+	"\x0eexpected_floor\x18\x06 \x01(\x04R\rexpectedFloor\x12!\n" +
+	"\tavailable\x18\a \x01(\bH\x00R\tavailable\x88\x01\x01B\f\n" +
+	"\n" +
+	"_available\"\xcc\x01\n" +
+	"\x0fHardFactBarrier\x12!\n" +
+	"\foperation_id\x18\x01 \x01(\tR\voperationId\x12!\n" +
+	"\fsource_epoch\x18\x02 \x01(\x04R\vsourceEpoch\x12\x1a\n" +
+	"\brevision\x18\x03 \x01(\x04R\brevision\x12\x1a\n" +
+	"\bsnapshot\x18\x04 \x01(\tR\bsnapshot\x12\x14\n" +
+	"\x05floor\x18\x05 \x01(\x04R\x05floor\x12%\n" +
+	"\x0epending_prefix\x18\x06 \x01(\tR\rpendingPrefix\"\x9b\x02\n" +
+	"\x15FactBarrierResolution\x12<\n" +
+	"\abarrier\x18\x01 \x01(\v2\".weaver.gateway.v1.HardFactBarrierR\abarrier\x12\x1a\n" +
+	"\baffected\x18\x02 \x03(\tR\baffected\x12\x14\n" +
+	"\x05floor\x18\x03 \x01(\x04R\x05floor\x126\n" +
+	"\x17previous_pending_prefix\x18\x04 \x01(\tR\x15previousPendingPrefix\x12=\n" +
+	"\x18remaining_pending_prefix\x18\x05 \x01(\tH\x00R\x16remainingPendingPrefix\x88\x01\x01B\x1b\n" +
+	"\x19_remaining_pending_prefix\"d\n" +
 	"\x13GovernanceSelection\x12\x16\n" +
 	"\x06schema\x18\x01 \x01(\tR\x06schema\x12\x16\n" +
 	"\x06family\x18\x02 \x01(\tR\x06family\x12\x1d\n" +
@@ -4127,7 +4403,7 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\x1dDELTA_DISPOSITION_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tBOOTSTRAP\x10\x01\x12\x15\n" +
 	"\x11NO_EXECUTION_GAIN\x10\x02\x12\x15\n" +
-	"\x11EXPLICIT_APPROVAL\x10\x032\xee\x12\n" +
+	"\x11EXPLICIT_APPROVAL\x10\x032\xa7\x14\n" +
 	"\aGateway\x12Y\n" +
 	"\x0fExecuteProvider\x12\".weaver.gateway.v1.ProviderRequest\x1a .weaver.gateway.v1.ProviderFrame0\x01\x12N\n" +
 	"\aInspect\x12\x1f.weaver.gateway.v1.OperationKey\x1a\".weaver.gateway.v1.ProviderReceipt\x12l\n" +
@@ -4149,6 +4425,8 @@ const file_gateway_v1_gateway_proto_rawDesc = "" +
 	"\x19RegisterPublicationReview\x12\x1e.weaver.gateway.v1.DeltaReview\x1a,.weaver.gateway.v1.ReviewRegistrationReceipt\x12Z\n" +
 	"\x16InspectSourceAuthority\x12\x18.weaver.gateway.v1.Empty\x1a&.weaver.gateway.v1.SourceAuthorityView\x12k\n" +
 	"\x15RotateSourceAuthority\x12(.weaver.gateway.v1.SourceRotationRequest\x1a(.weaver.gateway.v1.SourceRotationReceipt\x12V\n" +
+	"\rStageHardFact\x12!.weaver.gateway.v1.HardFactIntent\x1a\".weaver.gateway.v1.HardFactBarrier\x12_\n" +
+	"\x0fResolveHardFact\x12\".weaver.gateway.v1.HardFactBarrier\x1a(.weaver.gateway.v1.FactBarrierResolution\x12V\n" +
 	"\rCompileSource\x12\".weaver.gateway.v1.ProducerRequest\x1a!.weaver.gateway.v1.CompiledSource\x12^\n" +
 	"\x16InspectProviderCatalog\x12\x18.weaver.gateway.v1.Empty\x1a*.weaver.gateway.v1.ProviderCatalogSnapshot\x12n\n" +
 	"\x16PublishProviderCatalog\x12(.weaver.gateway.v1.ProviderCatalogChange\x1a*.weaver.gateway.v1.ProviderCatalogSnapshot\x12R\n" +
@@ -4168,7 +4446,7 @@ func file_gateway_v1_gateway_proto_rawDescGZIP() []byte {
 }
 
 var file_gateway_v1_gateway_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
-var file_gateway_v1_gateway_proto_msgTypes = make([]protoimpl.MessageInfo, 53)
+var file_gateway_v1_gateway_proto_msgTypes = make([]protoimpl.MessageInfo, 56)
 var file_gateway_v1_gateway_proto_goTypes = []any{
 	(Encoding)(0),                        // 0: weaver.gateway.v1.Encoding
 	(PublicationOutcome)(0),              // 1: weaver.gateway.v1.PublicationOutcome
@@ -4177,154 +4455,162 @@ var file_gateway_v1_gateway_proto_goTypes = []any{
 	(*TelemetrySnapshot)(nil),            // 4: weaver.gateway.v1.TelemetrySnapshot
 	(*Empty)(nil),                        // 5: weaver.gateway.v1.Empty
 	(*ProducerRequest)(nil),              // 6: weaver.gateway.v1.ProducerRequest
-	(*GovernanceSelection)(nil),          // 7: weaver.gateway.v1.GovernanceSelection
-	(*SourceArtifact)(nil),               // 8: weaver.gateway.v1.SourceArtifact
-	(*CompiledSource)(nil),               // 9: weaver.gateway.v1.CompiledSource
-	(*OperationKey)(nil),                 // 10: weaver.gateway.v1.OperationKey
-	(*Route)(nil),                        // 11: weaver.gateway.v1.Route
-	(*ProviderPlan)(nil),                 // 12: weaver.gateway.v1.ProviderPlan
-	(*ProviderRequest)(nil),              // 13: weaver.gateway.v1.ProviderRequest
-	(*ProviderCatalogSnapshot)(nil),      // 14: weaver.gateway.v1.ProviderCatalogSnapshot
-	(*ProviderCatalogChange)(nil),        // 15: weaver.gateway.v1.ProviderCatalogChange
-	(*Event)(nil),                        // 16: weaver.gateway.v1.Event
-	(*ArrowBatch)(nil),                   // 17: weaver.gateway.v1.ArrowBatch
-	(*ProviderFrame)(nil),                // 18: weaver.gateway.v1.ProviderFrame
-	(*ProviderReceipt)(nil),              // 19: weaver.gateway.v1.ProviderReceipt
-	(*Task)(nil),                         // 20: weaver.gateway.v1.Task
-	(*ProviderProfile)(nil),              // 21: weaver.gateway.v1.ProviderProfile
-	(*RegisterTaskRequest)(nil),          // 22: weaver.gateway.v1.RegisterTaskRequest
-	(*DomainBinding)(nil),                // 23: weaver.gateway.v1.DomainBinding
-	(*DomainStamp)(nil),                  // 24: weaver.gateway.v1.DomainStamp
-	(*DomainView)(nil),                   // 25: weaver.gateway.v1.DomainView
-	(*RegisterDomainTaskRequest)(nil),    // 26: weaver.gateway.v1.RegisterDomainTaskRequest
-	(*TaskAdmission)(nil),                // 27: weaver.gateway.v1.TaskAdmission
-	(*RegisterOriginalTaskRequest)(nil),  // 28: weaver.gateway.v1.RegisterOriginalTaskRequest
-	(*TaskAdmissionReceipt)(nil),         // 29: weaver.gateway.v1.TaskAdmissionReceipt
-	(*FamilyAliasRequest)(nil),           // 30: weaver.gateway.v1.FamilyAliasRequest
-	(*DomainMigration)(nil),              // 31: weaver.gateway.v1.DomainMigration
-	(*DomainMigrationReceipt)(nil),       // 32: weaver.gateway.v1.DomainMigrationReceipt
-	(*RegisterPublishedTaskRequest)(nil), // 33: weaver.gateway.v1.RegisterPublishedTaskRequest
-	(*PublishRequest)(nil),               // 34: weaver.gateway.v1.PublishRequest
-	(*PublicationReceipt)(nil),           // 35: weaver.gateway.v1.PublicationReceipt
-	(*PublicationKey)(nil),               // 36: weaver.gateway.v1.PublicationKey
-	(*SourceAuthorityView)(nil),          // 37: weaver.gateway.v1.SourceAuthorityView
-	(*SourceRotationRequest)(nil),        // 38: weaver.gateway.v1.SourceRotationRequest
-	(*SourceRotationReceipt)(nil),        // 39: weaver.gateway.v1.SourceRotationReceipt
-	(*AuthorityParent)(nil),              // 40: weaver.gateway.v1.AuthorityParent
-	(*ReviewAuthority)(nil),              // 41: weaver.gateway.v1.ReviewAuthority
-	(*PublicationReview)(nil),            // 42: weaver.gateway.v1.PublicationReview
-	(*DeltaReview)(nil),                  // 43: weaver.gateway.v1.DeltaReview
-	(*PublicationReviewContext)(nil),     // 44: weaver.gateway.v1.PublicationReviewContext
-	(*ReviewRegistrationReceipt)(nil),    // 45: weaver.gateway.v1.ReviewRegistrationReceipt
-	(*MeterCredentialRotation)(nil),      // 46: weaver.gateway.v1.MeterCredentialRotation
-	(*MeterCredentialEpoch)(nil),         // 47: weaver.gateway.v1.MeterCredentialEpoch
-	(*MeteringReceipt)(nil),              // 48: weaver.gateway.v1.MeteringReceipt
-	(*MeteringApplication)(nil),          // 49: weaver.gateway.v1.MeteringApplication
-	(*ProviderOAuthChange)(nil),          // 50: weaver.gateway.v1.ProviderOAuthChange
-	(*ProviderOAuthGrant)(nil),           // 51: weaver.gateway.v1.ProviderOAuthGrant
-	(*ProviderOAuthIssuerRotation)(nil),  // 52: weaver.gateway.v1.ProviderOAuthIssuerRotation
-	nil,                                  // 53: weaver.gateway.v1.Task.EndpointsEntry
-	nil,                                  // 54: weaver.gateway.v1.Task.BodyDigestsEntry
-	nil,                                  // 55: weaver.gateway.v1.Task.NodeCostBoundsEntry
-	nil,                                  // 56: weaver.gateway.v1.Task.StreamContractsEntry
+	(*HardFactIntent)(nil),               // 7: weaver.gateway.v1.HardFactIntent
+	(*HardFactBarrier)(nil),              // 8: weaver.gateway.v1.HardFactBarrier
+	(*FactBarrierResolution)(nil),        // 9: weaver.gateway.v1.FactBarrierResolution
+	(*GovernanceSelection)(nil),          // 10: weaver.gateway.v1.GovernanceSelection
+	(*SourceArtifact)(nil),               // 11: weaver.gateway.v1.SourceArtifact
+	(*CompiledSource)(nil),               // 12: weaver.gateway.v1.CompiledSource
+	(*OperationKey)(nil),                 // 13: weaver.gateway.v1.OperationKey
+	(*Route)(nil),                        // 14: weaver.gateway.v1.Route
+	(*ProviderPlan)(nil),                 // 15: weaver.gateway.v1.ProviderPlan
+	(*ProviderRequest)(nil),              // 16: weaver.gateway.v1.ProviderRequest
+	(*ProviderCatalogSnapshot)(nil),      // 17: weaver.gateway.v1.ProviderCatalogSnapshot
+	(*ProviderCatalogChange)(nil),        // 18: weaver.gateway.v1.ProviderCatalogChange
+	(*Event)(nil),                        // 19: weaver.gateway.v1.Event
+	(*ArrowBatch)(nil),                   // 20: weaver.gateway.v1.ArrowBatch
+	(*ProviderFrame)(nil),                // 21: weaver.gateway.v1.ProviderFrame
+	(*ProviderReceipt)(nil),              // 22: weaver.gateway.v1.ProviderReceipt
+	(*Task)(nil),                         // 23: weaver.gateway.v1.Task
+	(*ProviderProfile)(nil),              // 24: weaver.gateway.v1.ProviderProfile
+	(*RegisterTaskRequest)(nil),          // 25: weaver.gateway.v1.RegisterTaskRequest
+	(*DomainBinding)(nil),                // 26: weaver.gateway.v1.DomainBinding
+	(*DomainStamp)(nil),                  // 27: weaver.gateway.v1.DomainStamp
+	(*DomainView)(nil),                   // 28: weaver.gateway.v1.DomainView
+	(*RegisterDomainTaskRequest)(nil),    // 29: weaver.gateway.v1.RegisterDomainTaskRequest
+	(*TaskAdmission)(nil),                // 30: weaver.gateway.v1.TaskAdmission
+	(*RegisterOriginalTaskRequest)(nil),  // 31: weaver.gateway.v1.RegisterOriginalTaskRequest
+	(*TaskAdmissionReceipt)(nil),         // 32: weaver.gateway.v1.TaskAdmissionReceipt
+	(*FamilyAliasRequest)(nil),           // 33: weaver.gateway.v1.FamilyAliasRequest
+	(*DomainMigration)(nil),              // 34: weaver.gateway.v1.DomainMigration
+	(*DomainMigrationReceipt)(nil),       // 35: weaver.gateway.v1.DomainMigrationReceipt
+	(*RegisterPublishedTaskRequest)(nil), // 36: weaver.gateway.v1.RegisterPublishedTaskRequest
+	(*PublishRequest)(nil),               // 37: weaver.gateway.v1.PublishRequest
+	(*PublicationReceipt)(nil),           // 38: weaver.gateway.v1.PublicationReceipt
+	(*PublicationKey)(nil),               // 39: weaver.gateway.v1.PublicationKey
+	(*SourceAuthorityView)(nil),          // 40: weaver.gateway.v1.SourceAuthorityView
+	(*SourceRotationRequest)(nil),        // 41: weaver.gateway.v1.SourceRotationRequest
+	(*SourceRotationReceipt)(nil),        // 42: weaver.gateway.v1.SourceRotationReceipt
+	(*AuthorityParent)(nil),              // 43: weaver.gateway.v1.AuthorityParent
+	(*ReviewAuthority)(nil),              // 44: weaver.gateway.v1.ReviewAuthority
+	(*PublicationReview)(nil),            // 45: weaver.gateway.v1.PublicationReview
+	(*DeltaReview)(nil),                  // 46: weaver.gateway.v1.DeltaReview
+	(*PublicationReviewContext)(nil),     // 47: weaver.gateway.v1.PublicationReviewContext
+	(*ReviewRegistrationReceipt)(nil),    // 48: weaver.gateway.v1.ReviewRegistrationReceipt
+	(*MeterCredentialRotation)(nil),      // 49: weaver.gateway.v1.MeterCredentialRotation
+	(*MeterCredentialEpoch)(nil),         // 50: weaver.gateway.v1.MeterCredentialEpoch
+	(*MeteringReceipt)(nil),              // 51: weaver.gateway.v1.MeteringReceipt
+	(*MeteringApplication)(nil),          // 52: weaver.gateway.v1.MeteringApplication
+	(*ProviderOAuthChange)(nil),          // 53: weaver.gateway.v1.ProviderOAuthChange
+	(*ProviderOAuthGrant)(nil),           // 54: weaver.gateway.v1.ProviderOAuthGrant
+	(*ProviderOAuthIssuerRotation)(nil),  // 55: weaver.gateway.v1.ProviderOAuthIssuerRotation
+	nil,                                  // 56: weaver.gateway.v1.Task.EndpointsEntry
+	nil,                                  // 57: weaver.gateway.v1.Task.BodyDigestsEntry
+	nil,                                  // 58: weaver.gateway.v1.Task.NodeCostBoundsEntry
+	nil,                                  // 59: weaver.gateway.v1.Task.StreamContractsEntry
 }
 var file_gateway_v1_gateway_proto_depIdxs = []int32{
-	7,  // 0: weaver.gateway.v1.SourceArtifact.governance:type_name -> weaver.gateway.v1.GovernanceSelection
-	20, // 1: weaver.gateway.v1.SourceArtifact.tasks:type_name -> weaver.gateway.v1.Task
-	12, // 2: weaver.gateway.v1.SourceArtifact.plans:type_name -> weaver.gateway.v1.ProviderPlan
-	34, // 3: weaver.gateway.v1.SourceArtifact.publication:type_name -> weaver.gateway.v1.PublishRequest
-	37, // 4: weaver.gateway.v1.CompiledSource.authority:type_name -> weaver.gateway.v1.SourceAuthorityView
-	8,  // 5: weaver.gateway.v1.CompiledSource.artifact:type_name -> weaver.gateway.v1.SourceArtifact
-	11, // 6: weaver.gateway.v1.ProviderPlan.routes:type_name -> weaver.gateway.v1.Route
-	12, // 7: weaver.gateway.v1.ProviderRequest.plan:type_name -> weaver.gateway.v1.ProviderPlan
-	0,  // 8: weaver.gateway.v1.ProviderRequest.encoding:type_name -> weaver.gateway.v1.Encoding
-	16, // 9: weaver.gateway.v1.ProviderFrame.event:type_name -> weaver.gateway.v1.Event
-	17, // 10: weaver.gateway.v1.ProviderFrame.arrow:type_name -> weaver.gateway.v1.ArrowBatch
-	53, // 11: weaver.gateway.v1.Task.endpoints:type_name -> weaver.gateway.v1.Task.EndpointsEntry
-	54, // 12: weaver.gateway.v1.Task.body_digests:type_name -> weaver.gateway.v1.Task.BodyDigestsEntry
-	55, // 13: weaver.gateway.v1.Task.node_cost_bounds:type_name -> weaver.gateway.v1.Task.NodeCostBoundsEntry
-	56, // 14: weaver.gateway.v1.Task.stream_contracts:type_name -> weaver.gateway.v1.Task.StreamContractsEntry
-	21, // 15: weaver.gateway.v1.Task.provider_profile:type_name -> weaver.gateway.v1.ProviderProfile
-	20, // 16: weaver.gateway.v1.RegisterTaskRequest.task:type_name -> weaver.gateway.v1.Task
-	24, // 17: weaver.gateway.v1.DomainView.stamp:type_name -> weaver.gateway.v1.DomainStamp
-	20, // 18: weaver.gateway.v1.RegisterDomainTaskRequest.task:type_name -> weaver.gateway.v1.Task
-	23, // 19: weaver.gateway.v1.RegisterDomainTaskRequest.domains:type_name -> weaver.gateway.v1.DomainBinding
-	36, // 20: weaver.gateway.v1.RegisterDomainTaskRequest.publication:type_name -> weaver.gateway.v1.PublicationKey
-	20, // 21: weaver.gateway.v1.RegisterOriginalTaskRequest.task:type_name -> weaver.gateway.v1.Task
-	23, // 22: weaver.gateway.v1.RegisterOriginalTaskRequest.domains:type_name -> weaver.gateway.v1.DomainBinding
-	27, // 23: weaver.gateway.v1.RegisterOriginalTaskRequest.admission:type_name -> weaver.gateway.v1.TaskAdmission
-	36, // 24: weaver.gateway.v1.RegisterOriginalTaskRequest.publication:type_name -> weaver.gateway.v1.PublicationKey
-	20, // 25: weaver.gateway.v1.RegisterPublishedTaskRequest.task:type_name -> weaver.gateway.v1.Task
-	36, // 26: weaver.gateway.v1.RegisterPublishedTaskRequest.publication:type_name -> weaver.gateway.v1.PublicationKey
-	1,  // 27: weaver.gateway.v1.PublicationReceipt.outcome:type_name -> weaver.gateway.v1.PublicationOutcome
-	2,  // 28: weaver.gateway.v1.SourceRotationReceipt.outcome:type_name -> weaver.gateway.v1.SourceRotationOutcome
-	37, // 29: weaver.gateway.v1.SourceRotationReceipt.authority:type_name -> weaver.gateway.v1.SourceAuthorityView
-	36, // 30: weaver.gateway.v1.PublicationReview.publication:type_name -> weaver.gateway.v1.PublicationKey
-	40, // 31: weaver.gateway.v1.PublicationReview.parent:type_name -> weaver.gateway.v1.AuthorityParent
-	42, // 32: weaver.gateway.v1.DeltaReview.review:type_name -> weaver.gateway.v1.PublicationReview
-	3,  // 33: weaver.gateway.v1.DeltaReview.disposition:type_name -> weaver.gateway.v1.DeltaDisposition
-	36, // 34: weaver.gateway.v1.PublicationReviewContext.publication:type_name -> weaver.gateway.v1.PublicationKey
-	40, // 35: weaver.gateway.v1.PublicationReviewContext.parent:type_name -> weaver.gateway.v1.AuthorityParent
-	41, // 36: weaver.gateway.v1.PublicationReviewContext.reviewer:type_name -> weaver.gateway.v1.ReviewAuthority
-	37, // 37: weaver.gateway.v1.PublicationReviewContext.source:type_name -> weaver.gateway.v1.SourceAuthorityView
-	36, // 38: weaver.gateway.v1.ReviewRegistrationReceipt.publication:type_name -> weaver.gateway.v1.PublicationKey
-	51, // 39: weaver.gateway.v1.ProviderOAuthChange.grant:type_name -> weaver.gateway.v1.ProviderOAuthGrant
-	52, // 40: weaver.gateway.v1.ProviderOAuthChange.rotate_issuer:type_name -> weaver.gateway.v1.ProviderOAuthIssuerRotation
-	13, // 41: weaver.gateway.v1.Gateway.ExecuteProvider:input_type -> weaver.gateway.v1.ProviderRequest
-	10, // 42: weaver.gateway.v1.Gateway.Inspect:input_type -> weaver.gateway.v1.OperationKey
-	46, // 43: weaver.gateway.v1.Gateway.RotateMeterCredential:input_type -> weaver.gateway.v1.MeterCredentialRotation
-	10, // 44: weaver.gateway.v1.Gateway.InspectTerminalUsage:input_type -> weaver.gateway.v1.OperationKey
-	48, // 45: weaver.gateway.v1.Gateway.ApplyMetering:input_type -> weaver.gateway.v1.MeteringReceipt
-	22, // 46: weaver.gateway.v1.Gateway.RegisterTask:input_type -> weaver.gateway.v1.RegisterTaskRequest
-	33, // 47: weaver.gateway.v1.Gateway.RegisterPublishedTask:input_type -> weaver.gateway.v1.RegisterPublishedTaskRequest
-	26, // 48: weaver.gateway.v1.Gateway.RegisterDomainTask:input_type -> weaver.gateway.v1.RegisterDomainTaskRequest
-	28, // 49: weaver.gateway.v1.Gateway.RegisterOriginalTask:input_type -> weaver.gateway.v1.RegisterOriginalTaskRequest
-	30, // 50: weaver.gateway.v1.Gateway.RegisterFamilyAlias:input_type -> weaver.gateway.v1.FamilyAliasRequest
-	31, // 51: weaver.gateway.v1.Gateway.MigrateExecutionDomains:input_type -> weaver.gateway.v1.DomainMigration
-	10, // 52: weaver.gateway.v1.Gateway.InspectExecutionDomains:input_type -> weaver.gateway.v1.OperationKey
-	34, // 53: weaver.gateway.v1.Gateway.PublishAuthority:input_type -> weaver.gateway.v1.PublishRequest
-	34, // 54: weaver.gateway.v1.Gateway.StageAuthority:input_type -> weaver.gateway.v1.PublishRequest
-	36, // 55: weaver.gateway.v1.Gateway.InspectPublication:input_type -> weaver.gateway.v1.PublicationKey
-	34, // 56: weaver.gateway.v1.Gateway.StageReviewedAuthority:input_type -> weaver.gateway.v1.PublishRequest
-	36, // 57: weaver.gateway.v1.Gateway.InspectPublicationReview:input_type -> weaver.gateway.v1.PublicationKey
-	43, // 58: weaver.gateway.v1.Gateway.RegisterPublicationReview:input_type -> weaver.gateway.v1.DeltaReview
-	5,  // 59: weaver.gateway.v1.Gateway.InspectSourceAuthority:input_type -> weaver.gateway.v1.Empty
-	38, // 60: weaver.gateway.v1.Gateway.RotateSourceAuthority:input_type -> weaver.gateway.v1.SourceRotationRequest
-	6,  // 61: weaver.gateway.v1.Gateway.CompileSource:input_type -> weaver.gateway.v1.ProducerRequest
-	5,  // 62: weaver.gateway.v1.Gateway.InspectProviderCatalog:input_type -> weaver.gateway.v1.Empty
-	15, // 63: weaver.gateway.v1.Gateway.PublishProviderCatalog:input_type -> weaver.gateway.v1.ProviderCatalogChange
-	5,  // 64: weaver.gateway.v1.Gateway.InspectTelemetry:input_type -> weaver.gateway.v1.Empty
-	50, // 65: weaver.gateway.v1.Gateway.ChangeProviderOAuth:input_type -> weaver.gateway.v1.ProviderOAuthChange
-	18, // 66: weaver.gateway.v1.Gateway.ExecuteProvider:output_type -> weaver.gateway.v1.ProviderFrame
-	19, // 67: weaver.gateway.v1.Gateway.Inspect:output_type -> weaver.gateway.v1.ProviderReceipt
-	47, // 68: weaver.gateway.v1.Gateway.RotateMeterCredential:output_type -> weaver.gateway.v1.MeterCredentialEpoch
-	48, // 69: weaver.gateway.v1.Gateway.InspectTerminalUsage:output_type -> weaver.gateway.v1.MeteringReceipt
-	49, // 70: weaver.gateway.v1.Gateway.ApplyMetering:output_type -> weaver.gateway.v1.MeteringApplication
-	5,  // 71: weaver.gateway.v1.Gateway.RegisterTask:output_type -> weaver.gateway.v1.Empty
-	5,  // 72: weaver.gateway.v1.Gateway.RegisterPublishedTask:output_type -> weaver.gateway.v1.Empty
-	5,  // 73: weaver.gateway.v1.Gateway.RegisterDomainTask:output_type -> weaver.gateway.v1.Empty
-	29, // 74: weaver.gateway.v1.Gateway.RegisterOriginalTask:output_type -> weaver.gateway.v1.TaskAdmissionReceipt
-	25, // 75: weaver.gateway.v1.Gateway.RegisterFamilyAlias:output_type -> weaver.gateway.v1.DomainView
-	32, // 76: weaver.gateway.v1.Gateway.MigrateExecutionDomains:output_type -> weaver.gateway.v1.DomainMigrationReceipt
-	25, // 77: weaver.gateway.v1.Gateway.InspectExecutionDomains:output_type -> weaver.gateway.v1.DomainView
-	35, // 78: weaver.gateway.v1.Gateway.PublishAuthority:output_type -> weaver.gateway.v1.PublicationReceipt
-	36, // 79: weaver.gateway.v1.Gateway.StageAuthority:output_type -> weaver.gateway.v1.PublicationKey
-	35, // 80: weaver.gateway.v1.Gateway.InspectPublication:output_type -> weaver.gateway.v1.PublicationReceipt
-	36, // 81: weaver.gateway.v1.Gateway.StageReviewedAuthority:output_type -> weaver.gateway.v1.PublicationKey
-	44, // 82: weaver.gateway.v1.Gateway.InspectPublicationReview:output_type -> weaver.gateway.v1.PublicationReviewContext
-	45, // 83: weaver.gateway.v1.Gateway.RegisterPublicationReview:output_type -> weaver.gateway.v1.ReviewRegistrationReceipt
-	37, // 84: weaver.gateway.v1.Gateway.InspectSourceAuthority:output_type -> weaver.gateway.v1.SourceAuthorityView
-	39, // 85: weaver.gateway.v1.Gateway.RotateSourceAuthority:output_type -> weaver.gateway.v1.SourceRotationReceipt
-	9,  // 86: weaver.gateway.v1.Gateway.CompileSource:output_type -> weaver.gateway.v1.CompiledSource
-	14, // 87: weaver.gateway.v1.Gateway.InspectProviderCatalog:output_type -> weaver.gateway.v1.ProviderCatalogSnapshot
-	14, // 88: weaver.gateway.v1.Gateway.PublishProviderCatalog:output_type -> weaver.gateway.v1.ProviderCatalogSnapshot
-	4,  // 89: weaver.gateway.v1.Gateway.InspectTelemetry:output_type -> weaver.gateway.v1.TelemetrySnapshot
-	5,  // 90: weaver.gateway.v1.Gateway.ChangeProviderOAuth:output_type -> weaver.gateway.v1.Empty
-	66, // [66:91] is the sub-list for method output_type
-	41, // [41:66] is the sub-list for method input_type
-	41, // [41:41] is the sub-list for extension type_name
-	41, // [41:41] is the sub-list for extension extendee
-	0,  // [0:41] is the sub-list for field type_name
+	8,  // 0: weaver.gateway.v1.FactBarrierResolution.barrier:type_name -> weaver.gateway.v1.HardFactBarrier
+	10, // 1: weaver.gateway.v1.SourceArtifact.governance:type_name -> weaver.gateway.v1.GovernanceSelection
+	23, // 2: weaver.gateway.v1.SourceArtifact.tasks:type_name -> weaver.gateway.v1.Task
+	15, // 3: weaver.gateway.v1.SourceArtifact.plans:type_name -> weaver.gateway.v1.ProviderPlan
+	37, // 4: weaver.gateway.v1.SourceArtifact.publication:type_name -> weaver.gateway.v1.PublishRequest
+	40, // 5: weaver.gateway.v1.CompiledSource.authority:type_name -> weaver.gateway.v1.SourceAuthorityView
+	11, // 6: weaver.gateway.v1.CompiledSource.artifact:type_name -> weaver.gateway.v1.SourceArtifact
+	14, // 7: weaver.gateway.v1.ProviderPlan.routes:type_name -> weaver.gateway.v1.Route
+	15, // 8: weaver.gateway.v1.ProviderRequest.plan:type_name -> weaver.gateway.v1.ProviderPlan
+	0,  // 9: weaver.gateway.v1.ProviderRequest.encoding:type_name -> weaver.gateway.v1.Encoding
+	19, // 10: weaver.gateway.v1.ProviderFrame.event:type_name -> weaver.gateway.v1.Event
+	20, // 11: weaver.gateway.v1.ProviderFrame.arrow:type_name -> weaver.gateway.v1.ArrowBatch
+	56, // 12: weaver.gateway.v1.Task.endpoints:type_name -> weaver.gateway.v1.Task.EndpointsEntry
+	57, // 13: weaver.gateway.v1.Task.body_digests:type_name -> weaver.gateway.v1.Task.BodyDigestsEntry
+	58, // 14: weaver.gateway.v1.Task.node_cost_bounds:type_name -> weaver.gateway.v1.Task.NodeCostBoundsEntry
+	59, // 15: weaver.gateway.v1.Task.stream_contracts:type_name -> weaver.gateway.v1.Task.StreamContractsEntry
+	24, // 16: weaver.gateway.v1.Task.provider_profile:type_name -> weaver.gateway.v1.ProviderProfile
+	23, // 17: weaver.gateway.v1.RegisterTaskRequest.task:type_name -> weaver.gateway.v1.Task
+	27, // 18: weaver.gateway.v1.DomainView.stamp:type_name -> weaver.gateway.v1.DomainStamp
+	23, // 19: weaver.gateway.v1.RegisterDomainTaskRequest.task:type_name -> weaver.gateway.v1.Task
+	26, // 20: weaver.gateway.v1.RegisterDomainTaskRequest.domains:type_name -> weaver.gateway.v1.DomainBinding
+	39, // 21: weaver.gateway.v1.RegisterDomainTaskRequest.publication:type_name -> weaver.gateway.v1.PublicationKey
+	23, // 22: weaver.gateway.v1.RegisterOriginalTaskRequest.task:type_name -> weaver.gateway.v1.Task
+	26, // 23: weaver.gateway.v1.RegisterOriginalTaskRequest.domains:type_name -> weaver.gateway.v1.DomainBinding
+	30, // 24: weaver.gateway.v1.RegisterOriginalTaskRequest.admission:type_name -> weaver.gateway.v1.TaskAdmission
+	39, // 25: weaver.gateway.v1.RegisterOriginalTaskRequest.publication:type_name -> weaver.gateway.v1.PublicationKey
+	23, // 26: weaver.gateway.v1.RegisterPublishedTaskRequest.task:type_name -> weaver.gateway.v1.Task
+	39, // 27: weaver.gateway.v1.RegisterPublishedTaskRequest.publication:type_name -> weaver.gateway.v1.PublicationKey
+	1,  // 28: weaver.gateway.v1.PublicationReceipt.outcome:type_name -> weaver.gateway.v1.PublicationOutcome
+	2,  // 29: weaver.gateway.v1.SourceRotationReceipt.outcome:type_name -> weaver.gateway.v1.SourceRotationOutcome
+	40, // 30: weaver.gateway.v1.SourceRotationReceipt.authority:type_name -> weaver.gateway.v1.SourceAuthorityView
+	39, // 31: weaver.gateway.v1.PublicationReview.publication:type_name -> weaver.gateway.v1.PublicationKey
+	43, // 32: weaver.gateway.v1.PublicationReview.parent:type_name -> weaver.gateway.v1.AuthorityParent
+	45, // 33: weaver.gateway.v1.DeltaReview.review:type_name -> weaver.gateway.v1.PublicationReview
+	3,  // 34: weaver.gateway.v1.DeltaReview.disposition:type_name -> weaver.gateway.v1.DeltaDisposition
+	39, // 35: weaver.gateway.v1.PublicationReviewContext.publication:type_name -> weaver.gateway.v1.PublicationKey
+	43, // 36: weaver.gateway.v1.PublicationReviewContext.parent:type_name -> weaver.gateway.v1.AuthorityParent
+	44, // 37: weaver.gateway.v1.PublicationReviewContext.reviewer:type_name -> weaver.gateway.v1.ReviewAuthority
+	40, // 38: weaver.gateway.v1.PublicationReviewContext.source:type_name -> weaver.gateway.v1.SourceAuthorityView
+	39, // 39: weaver.gateway.v1.ReviewRegistrationReceipt.publication:type_name -> weaver.gateway.v1.PublicationKey
+	54, // 40: weaver.gateway.v1.ProviderOAuthChange.grant:type_name -> weaver.gateway.v1.ProviderOAuthGrant
+	55, // 41: weaver.gateway.v1.ProviderOAuthChange.rotate_issuer:type_name -> weaver.gateway.v1.ProviderOAuthIssuerRotation
+	16, // 42: weaver.gateway.v1.Gateway.ExecuteProvider:input_type -> weaver.gateway.v1.ProviderRequest
+	13, // 43: weaver.gateway.v1.Gateway.Inspect:input_type -> weaver.gateway.v1.OperationKey
+	49, // 44: weaver.gateway.v1.Gateway.RotateMeterCredential:input_type -> weaver.gateway.v1.MeterCredentialRotation
+	13, // 45: weaver.gateway.v1.Gateway.InspectTerminalUsage:input_type -> weaver.gateway.v1.OperationKey
+	51, // 46: weaver.gateway.v1.Gateway.ApplyMetering:input_type -> weaver.gateway.v1.MeteringReceipt
+	25, // 47: weaver.gateway.v1.Gateway.RegisterTask:input_type -> weaver.gateway.v1.RegisterTaskRequest
+	36, // 48: weaver.gateway.v1.Gateway.RegisterPublishedTask:input_type -> weaver.gateway.v1.RegisterPublishedTaskRequest
+	29, // 49: weaver.gateway.v1.Gateway.RegisterDomainTask:input_type -> weaver.gateway.v1.RegisterDomainTaskRequest
+	31, // 50: weaver.gateway.v1.Gateway.RegisterOriginalTask:input_type -> weaver.gateway.v1.RegisterOriginalTaskRequest
+	33, // 51: weaver.gateway.v1.Gateway.RegisterFamilyAlias:input_type -> weaver.gateway.v1.FamilyAliasRequest
+	34, // 52: weaver.gateway.v1.Gateway.MigrateExecutionDomains:input_type -> weaver.gateway.v1.DomainMigration
+	13, // 53: weaver.gateway.v1.Gateway.InspectExecutionDomains:input_type -> weaver.gateway.v1.OperationKey
+	37, // 54: weaver.gateway.v1.Gateway.PublishAuthority:input_type -> weaver.gateway.v1.PublishRequest
+	37, // 55: weaver.gateway.v1.Gateway.StageAuthority:input_type -> weaver.gateway.v1.PublishRequest
+	39, // 56: weaver.gateway.v1.Gateway.InspectPublication:input_type -> weaver.gateway.v1.PublicationKey
+	37, // 57: weaver.gateway.v1.Gateway.StageReviewedAuthority:input_type -> weaver.gateway.v1.PublishRequest
+	39, // 58: weaver.gateway.v1.Gateway.InspectPublicationReview:input_type -> weaver.gateway.v1.PublicationKey
+	46, // 59: weaver.gateway.v1.Gateway.RegisterPublicationReview:input_type -> weaver.gateway.v1.DeltaReview
+	5,  // 60: weaver.gateway.v1.Gateway.InspectSourceAuthority:input_type -> weaver.gateway.v1.Empty
+	41, // 61: weaver.gateway.v1.Gateway.RotateSourceAuthority:input_type -> weaver.gateway.v1.SourceRotationRequest
+	7,  // 62: weaver.gateway.v1.Gateway.StageHardFact:input_type -> weaver.gateway.v1.HardFactIntent
+	8,  // 63: weaver.gateway.v1.Gateway.ResolveHardFact:input_type -> weaver.gateway.v1.HardFactBarrier
+	6,  // 64: weaver.gateway.v1.Gateway.CompileSource:input_type -> weaver.gateway.v1.ProducerRequest
+	5,  // 65: weaver.gateway.v1.Gateway.InspectProviderCatalog:input_type -> weaver.gateway.v1.Empty
+	18, // 66: weaver.gateway.v1.Gateway.PublishProviderCatalog:input_type -> weaver.gateway.v1.ProviderCatalogChange
+	5,  // 67: weaver.gateway.v1.Gateway.InspectTelemetry:input_type -> weaver.gateway.v1.Empty
+	53, // 68: weaver.gateway.v1.Gateway.ChangeProviderOAuth:input_type -> weaver.gateway.v1.ProviderOAuthChange
+	21, // 69: weaver.gateway.v1.Gateway.ExecuteProvider:output_type -> weaver.gateway.v1.ProviderFrame
+	22, // 70: weaver.gateway.v1.Gateway.Inspect:output_type -> weaver.gateway.v1.ProviderReceipt
+	50, // 71: weaver.gateway.v1.Gateway.RotateMeterCredential:output_type -> weaver.gateway.v1.MeterCredentialEpoch
+	51, // 72: weaver.gateway.v1.Gateway.InspectTerminalUsage:output_type -> weaver.gateway.v1.MeteringReceipt
+	52, // 73: weaver.gateway.v1.Gateway.ApplyMetering:output_type -> weaver.gateway.v1.MeteringApplication
+	5,  // 74: weaver.gateway.v1.Gateway.RegisterTask:output_type -> weaver.gateway.v1.Empty
+	5,  // 75: weaver.gateway.v1.Gateway.RegisterPublishedTask:output_type -> weaver.gateway.v1.Empty
+	5,  // 76: weaver.gateway.v1.Gateway.RegisterDomainTask:output_type -> weaver.gateway.v1.Empty
+	32, // 77: weaver.gateway.v1.Gateway.RegisterOriginalTask:output_type -> weaver.gateway.v1.TaskAdmissionReceipt
+	28, // 78: weaver.gateway.v1.Gateway.RegisterFamilyAlias:output_type -> weaver.gateway.v1.DomainView
+	35, // 79: weaver.gateway.v1.Gateway.MigrateExecutionDomains:output_type -> weaver.gateway.v1.DomainMigrationReceipt
+	28, // 80: weaver.gateway.v1.Gateway.InspectExecutionDomains:output_type -> weaver.gateway.v1.DomainView
+	38, // 81: weaver.gateway.v1.Gateway.PublishAuthority:output_type -> weaver.gateway.v1.PublicationReceipt
+	39, // 82: weaver.gateway.v1.Gateway.StageAuthority:output_type -> weaver.gateway.v1.PublicationKey
+	38, // 83: weaver.gateway.v1.Gateway.InspectPublication:output_type -> weaver.gateway.v1.PublicationReceipt
+	39, // 84: weaver.gateway.v1.Gateway.StageReviewedAuthority:output_type -> weaver.gateway.v1.PublicationKey
+	47, // 85: weaver.gateway.v1.Gateway.InspectPublicationReview:output_type -> weaver.gateway.v1.PublicationReviewContext
+	48, // 86: weaver.gateway.v1.Gateway.RegisterPublicationReview:output_type -> weaver.gateway.v1.ReviewRegistrationReceipt
+	40, // 87: weaver.gateway.v1.Gateway.InspectSourceAuthority:output_type -> weaver.gateway.v1.SourceAuthorityView
+	42, // 88: weaver.gateway.v1.Gateway.RotateSourceAuthority:output_type -> weaver.gateway.v1.SourceRotationReceipt
+	8,  // 89: weaver.gateway.v1.Gateway.StageHardFact:output_type -> weaver.gateway.v1.HardFactBarrier
+	9,  // 90: weaver.gateway.v1.Gateway.ResolveHardFact:output_type -> weaver.gateway.v1.FactBarrierResolution
+	12, // 91: weaver.gateway.v1.Gateway.CompileSource:output_type -> weaver.gateway.v1.CompiledSource
+	17, // 92: weaver.gateway.v1.Gateway.InspectProviderCatalog:output_type -> weaver.gateway.v1.ProviderCatalogSnapshot
+	17, // 93: weaver.gateway.v1.Gateway.PublishProviderCatalog:output_type -> weaver.gateway.v1.ProviderCatalogSnapshot
+	4,  // 94: weaver.gateway.v1.Gateway.InspectTelemetry:output_type -> weaver.gateway.v1.TelemetrySnapshot
+	5,  // 95: weaver.gateway.v1.Gateway.ChangeProviderOAuth:output_type -> weaver.gateway.v1.Empty
+	69, // [69:96] is the sub-list for method output_type
+	42, // [42:69] is the sub-list for method input_type
+	42, // [42:42] is the sub-list for extension type_name
+	42, // [42:42] is the sub-list for extension extendee
+	0,  // [0:42] is the sub-list for field type_name
 }
 
 func init() { file_gateway_v1_gateway_proto_init() }
@@ -4332,15 +4618,17 @@ func file_gateway_v1_gateway_proto_init() {
 	if File_gateway_v1_gateway_proto != nil {
 		return
 	}
-	file_gateway_v1_gateway_proto_msgTypes[14].OneofWrappers = []any{
+	file_gateway_v1_gateway_proto_msgTypes[3].OneofWrappers = []any{}
+	file_gateway_v1_gateway_proto_msgTypes[5].OneofWrappers = []any{}
+	file_gateway_v1_gateway_proto_msgTypes[17].OneofWrappers = []any{
 		(*ProviderFrame_Event)(nil),
 		(*ProviderFrame_Arrow)(nil),
 	}
-	file_gateway_v1_gateway_proto_msgTypes[30].OneofWrappers = []any{}
-	file_gateway_v1_gateway_proto_msgTypes[31].OneofWrappers = []any{}
-	file_gateway_v1_gateway_proto_msgTypes[36].OneofWrappers = []any{}
-	file_gateway_v1_gateway_proto_msgTypes[37].OneofWrappers = []any{}
-	file_gateway_v1_gateway_proto_msgTypes[46].OneofWrappers = []any{
+	file_gateway_v1_gateway_proto_msgTypes[33].OneofWrappers = []any{}
+	file_gateway_v1_gateway_proto_msgTypes[34].OneofWrappers = []any{}
+	file_gateway_v1_gateway_proto_msgTypes[39].OneofWrappers = []any{}
+	file_gateway_v1_gateway_proto_msgTypes[40].OneofWrappers = []any{}
+	file_gateway_v1_gateway_proto_msgTypes[49].OneofWrappers = []any{
 		(*ProviderOAuthChange_Grant)(nil),
 		(*ProviderOAuthChange_RevokeTokenHash)(nil),
 		(*ProviderOAuthChange_RotateIssuer)(nil),
@@ -4351,7 +4639,7 @@ func file_gateway_v1_gateway_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_gateway_v1_gateway_proto_rawDesc), len(file_gateway_v1_gateway_proto_rawDesc)),
 			NumEnums:      4,
-			NumMessages:   53,
+			NumMessages:   56,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

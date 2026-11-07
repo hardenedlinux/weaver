@@ -12,10 +12,11 @@ use tokio::{
 use tokio_util::sync::CancellationToken;
 use tonic::Status;
 use weaver_contracts::{
-    Error, Publication, PublicationKey, PublicationReceipt, Result, SourceAuthority,
-    SourceIdentity, SourceRotation, SourceRotationReceipt, Task,
+    Error, FactBarrier, FactFeed, FactIntent, FactResolution, FactWork, Publication,
+    PublicationKey, PublicationReceipt, Result, SourceAuthority, SourceIdentity, SourceRotation,
+    SourceRotationReceipt, Task,
 };
-use weaver_ledger::Ledger;
+use weaver_ledger::{FactPreparation, Ledger};
 
 #[derive(Clone)]
 pub(crate) struct SourceOwner {
@@ -30,9 +31,26 @@ struct SourceDeployment {
     review: Option<weaver_contracts::ReviewAuthority>,
     metering: Option<weaver_contracts::MeteringDeployment>,
     oauth: Option<weaver_contracts::ProviderOAuthDeployment>,
+    fact_feed: Option<FactFeed>,
 }
 
 enum Command {
+    StageFact {
+        intent: FactIntent,
+        reply: oneshot::Sender<Result<FactBarrier>>,
+        slot: OwnedSemaphorePermit,
+    },
+    PrepareFact {
+        barrier: FactBarrier,
+        reply: oneshot::Sender<Result<FactPreparation>>,
+        slot: OwnedSemaphorePermit,
+    },
+    ResolveFact {
+        work: FactWork,
+        affected: Vec<String>,
+        reply: oneshot::Sender<Result<FactResolution>>,
+        slot: OwnedSemaphorePermit,
+    },
     ChangeProviderOAuth {
         action: Box<crate::pb::provider_o_auth_change::Action>,
         reply: oneshot::Sender<Result<()>>,
@@ -157,6 +175,44 @@ impl SourceWorker {
     }
 }
 impl SourceOwner {
+    pub(crate) async fn stage_fact(
+        &self,
+        caller: SourceIdentity,
+        intent: FactIntent,
+    ) -> std::result::Result<FactBarrier, Status> {
+        self.submit(caller, |reply, slot| Command::StageFact {
+            intent,
+            reply,
+            slot,
+        })
+        .await
+    }
+    pub(crate) async fn prepare_fact(
+        &self,
+        caller: SourceIdentity,
+        barrier: FactBarrier,
+    ) -> std::result::Result<FactPreparation, Status> {
+        self.submit(caller, |reply, slot| Command::PrepareFact {
+            barrier,
+            reply,
+            slot,
+        })
+        .await
+    }
+    pub(crate) async fn resolve_fact(
+        &self,
+        caller: SourceIdentity,
+        work: FactWork,
+        affected: Vec<String>,
+    ) -> std::result::Result<FactResolution, Status> {
+        self.submit(caller, |reply, slot| Command::ResolveFact {
+            work,
+            affected,
+            reply,
+            slot,
+        })
+        .await
+    }
     pub(crate) async fn original(
         &self,
         caller: SourceIdentity,
@@ -294,6 +350,7 @@ impl SourceOwner {
         oauth: Option<weaver_contracts::ProviderOAuthDeployment>,
     ) -> Result<SourceWorker> {
         authority.validate()?;
+        let fact_feed = runtime.fact_feed().cloned();
         Self::start_inner(
             runtime,
             slot,
@@ -302,6 +359,7 @@ impl SourceOwner {
                 review: Some(authority),
                 metering,
                 oauth,
+                fact_feed,
             },
         )
         .await
@@ -320,6 +378,7 @@ impl SourceOwner {
                 review: None,
                 metering: None,
                 oauth: None,
+                fact_feed: None,
             },
         )
         .await
@@ -541,6 +600,12 @@ fn run(
             .close()
             .and(Err(Error::Conflict("provider OAuth startup refused")));
     }
+    if let Err(error) = ledger.configure_fact_feed(deployment.fact_feed.as_ref()) {
+        let _ = ready.send(Err(error));
+        return ledger
+            .close()
+            .and(Err(Error::Conflict("hard fact feed startup refused")));
+    }
     let result = if ready.send(Ok(())).is_err() {
         Err(Error::Conflict("source startup abandoned"))
     } else {
@@ -568,6 +633,36 @@ fn process(
         ledger.require_quiescent()?;
         let Envelope { caller, command } = command;
         match command {
+            Command::StageFact {
+                intent,
+                reply,
+                slot,
+            } => {
+                let result = ledger
+                    .with_authenticated_source(&caller, |ledger| ledger.stage_fact_intent(&intent));
+                answer(ledger, reply, result, slot)?;
+            }
+            Command::PrepareFact {
+                barrier,
+                reply,
+                slot,
+            } => {
+                let result = ledger.with_authenticated_source(&caller, |ledger| {
+                    ledger.prepare_fact_projection(&barrier)
+                });
+                answer(ledger, reply, result, slot)?;
+            }
+            Command::ResolveFact {
+                work,
+                affected,
+                reply,
+                slot,
+            } => {
+                let result = ledger.with_authenticated_source(&caller, |ledger| {
+                    ledger.resolve_fact_projection(&work, affected)
+                });
+                answer(ledger, reply, result, slot)?;
+            }
             Command::ChangeProviderOAuth {
                 action,
                 reply,
