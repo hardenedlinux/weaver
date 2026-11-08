@@ -88,48 +88,12 @@ jobs:
           # The SDK setup exports the host core count via GITHUB_ENV.
           GERBIL_BUILD_CORES: '4'
           GERBIL_PATH: ${{ runner.temp }}/weaver-gerbil
+          WEAVER_SCHEME_SOURCE_ROOT: ${{ runner.temp }}/weaver-scheme-sources
           SOURCE_PREPARE_MINUTES: ${{ runner.os == 'macOS' && 18 || 12 }}
         run: |
           printf 'budget_minutes=%s\n' "$SOURCE_PREPARE_MINUTES" >> "$GITHUB_OUTPUT"
-          command -v timeout
-          export scheme_sources="$RUNNER_TEMP/weaver-scheme-sources"
-          if timeout --verbose --kill-after=5s "${SOURCE_PREPARE_MINUTES}m" bash -se -o pipefail <<'SOURCE_CLOSURE'; then
-          printf 'phase=resolve-pins\n' >> "$GITHUB_OUTPUT"
-          fetch_source() {
-            local package=$1 pin=$2 destination=$3 revision=${2##*@}
-            [[ "$pin" == "$package@$revision" && "$revision" =~ ^[0-9a-f]{40}$ ]]
-            git init --quiet "$destination"
-            git -C "$destination" fetch --quiet --depth=1 --no-tags "https://$package.git" "$revision"
-            git -C "$destination" checkout --quiet --detach FETCH_HEAD
-            test "$(git -C "$destination" rev-parse HEAD)" = "$revision"
-          }
-
-          lab=github.com/tao3k/agentic-ai-lab
-          ascent=github.com/tao3k/gerbil-ascent
-          lab_source="$scheme_sources/lab"
-          ascent_source="$scheme_sources/imports/gerbil-ascent"
-          mkdir -p "$scheme_sources/imports"
-          fetch_source "$lab" "$(gerbil deps)" "$lab_source"
-          ascent_pin=$(cd "$lab_source" && gerbil deps | grep "^$ascent@")
-          fetch_source "$ascent" "$ascent_pin" "$ascent_source"
-          core_pin=$(cd "$ascent_source" && gerbil deps)
-          [[ "$core_pin" =~ ^github\.com/tao3k/gebril-yuanxu@[0-9a-f]{40}$ ]]
-
-          # Core supplies the compiler and POO. Lab and ASCENT supply the
-          # source selected by Weaver; their unrelated build products stay out.
-          printf 'phase=core-and-poo\n' >> "$GITHUB_OUTPUT"
-          gerbil pkg install "$core_pin"
-          printf 'phase=link-source-packages\n' >> "$GITHUB_OUTPUT"
-          gerbil pkg link "$lab" "$lab_source"
-          gerbil pkg link "$ascent" "$ascent_source"
-          export GERBIL_LOADPATH="$GERBIL_PATH/lib:$scheme_sources/imports"
-          printf 'phase=ascent-program\n' >> "$GITHUB_OUTPUT"
-          ./build.ss prepare-governor-library
-          SOURCE_CLOSURE
-            dependency_exit_code=0
-          else
-            dependency_exit_code=$?
-          fi
+          dependency_exit_code=0
+          timeout --verbose --kill-after=5s "${SOURCE_PREPARE_MINUTES}m" gxi prepare.ss || dependency_exit_code=$?
           printf 'exit_code=%s\n' "$dependency_exit_code" >> "$GITHUB_OUTPUT"
           exit "$dependency_exit_code"
       - name: Verify declared suite

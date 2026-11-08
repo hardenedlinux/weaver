@@ -252,6 +252,9 @@ package WeaverProject {
                whole-suite watchdog leaves time for these stages and the
                preceding package checks to retain independent results.
                Resolve Lab and ASCENT sources from native package declarations.
+               The Scheme prepare.ss bootstrap uses gxpkg metadata and package
+               installation APIs before the Yuanxu prelude is available.
+               CI only selects the watchdog and invokes this package entry.
                Gerbil prepares the pinned Core and POO compiler dependencies.
                ASCENT's selected Program build supplies native linker inputs.
                Dependency preparation defaults to four workers, with a
@@ -520,6 +523,14 @@ package WeaverProject {
         part 'go/go.mod' : File;
         part 'go/go.sum' : File;
         part 'gerbil.pkg' : File;
+        part 'prepare.ss' : File;
+        part 'dev/prepare-scheme.ss' : File {
+            doc /* Development-only bootstrap before Core's prelude exists.
+               Read native package declarations, prepare exact source revisions,
+               install Core/POO through gxpkg and invoke the selected Build.
+               This is not a runtime configuration or publication authority. */
+        }
+        part 't/source-preparation-test.ss' : File;
         part 'build.ss' : ExecutableFile;
         part 'init.ss' : File;
         part 'proto/gateway/v1/gateway.proto' : File;
