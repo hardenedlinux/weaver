@@ -68,7 +68,7 @@ jobs:
         id: scheme_sdk
         if: contains(fromJSON('["check-rust", "check-go", "check-policy", "check-scheme", "bench"]'), inputs.suite)
         timeout-minutes: 5
-        uses: tao3k/gerbil-scheme-rust/.github/actions/setup-gerbil@56f0d82c061b3d459a0ea15002249654e01853b5
+        uses: tao3k/gerbil-scheme-rust/.github/actions/setup-gerbil@9aa4de6adc1f566f78586b046ba9452c1e996d7b
         with:
           release-root: ${{ runner.temp }}/gerbil-sdk
       - name: Prepare macOS Scheme build watchdog

@@ -118,7 +118,12 @@ package ControlActivation {
            owner using an explicit host resource permit and source queue budget.
            The Send factory builds its non-Send compiler on the owner thread.
            Shared shutdown fences source delivery before returning, and shared
-           drain waits for natural VM cleanup. Abandoned or late initialization
+           drain waits for natural VM cleanup. Compiler teardown preserves
+           process-wide host SIGPIPE disposition while Tokio/TLS writes drain.
+           The SDK owns scoped SIGPIPE cleanup; host SIGPIPE updates retain
+           their original semantics.
+           Owner-local masking alone does not establish that process invariant.
+           Abandoned or late initialization
            cannot report activation after close. Embedding gRPC configuration
            failure still drains attached owners. Neither startup readiness nor
            resource cleanup is source admission, no-execution or budget evidence. */

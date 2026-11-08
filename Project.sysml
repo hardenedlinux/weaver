@@ -729,6 +729,10 @@ package WeaverProject {
                Approved compiler factories construct non-Send Scheme VMs on its
                tracked blocking worker. Terminal shutdown closes source delivery;
                drain waits for natural factory/call return and VM cleanup.
+               Compiler teardown may overlap host Tokio/TLS writes. The SDK
+               cleanup boundary preserves process-wide host SIGPIPE disposition
+               throughout that overlap; an owner-only signal mask is insufficient.
+               The SDK archive owns the scoped binding to the paired Gambit ABI.
                One compiler owner is installed for this runtime incarnation;
                rejected duplicates cannot retire the current owner. This lifecycle
                run_from_env may install the compiled program and explicit startup
