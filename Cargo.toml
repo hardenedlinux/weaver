@@ -64,9 +64,9 @@ arrow-array = "58.4.0"
 arrow-schema = "58.4.0"
 arrow-ipc = "58.4.0"
 criterion = { version = "0.8.2", default-features = false, features = ["cargo_bench_support"] }
-gerbil-scheme-aot-build = { git = "https://github.com/tao3k/gerbil-scheme-rust", rev = "deca3571a46fc66ac76a044a6b173c67cf24029e" }
-gerbil-scheme = { git = "https://github.com/tao3k/gerbil-scheme-rust", rev = "deca3571a46fc66ac76a044a6b173c67cf24029e" }
-gerbil-scheme-sys = { git = "https://github.com/tao3k/gerbil-scheme-rust", rev = "deca3571a46fc66ac76a044a6b173c67cf24029e", features = ["external-program"] }
+gerbil-scheme-aot-build = { git = "https://github.com/tao3k/gerbil-scheme-rust", rev = "56f0d82c061b3d459a0ea15002249654e01853b5" }
+gerbil-scheme = { git = "https://github.com/tao3k/gerbil-scheme-rust", rev = "56f0d82c061b3d459a0ea15002249654e01853b5" }
+gerbil-scheme-sys = { git = "https://github.com/tao3k/gerbil-scheme-rust", rev = "56f0d82c061b3d459a0ea15002249654e01853b5", features = ["external-program"] }
 
 asp-rust = { git = "https://github.com/tao3k/asp-rust", rev = "1ca41124b846dec947f3d05119cafa07eaa57924", default-features = false }
 
@@ -82,6 +82,8 @@ unimplemented = "deny"
 [profile.dev]
 opt-level = 1
 incremental = true
+# Keep filename/line backtraces without full type and local-variable debug data.
+debug = "line-tables-only"
 
 # Keep locked dependency compilation within the cold development build budget.
 [profile.dev.package."*"]
