@@ -15,12 +15,11 @@ watchdog. Coordinator errors remain failures; no text-based suppression or retry
 is introduced. The compiler-source substring assertion that required this exact
 backport has been retired.
 
-The locked standard Go 1.26.1 lacks the upstream race fix described below. A
-passing paired control does not prove that the race is absent. A recurrence
-must retain its failed receipt; moving to a fixed upstream release is a separate
-toolchain-version decision. Existing dependency and language-version pins are
-unchanged. The following package-build receipts describe the historical
-backport experiment, not the currently selected toolchain.
+GitHub CI selects the official Go 1.27.3 release, which includes the upstream
+coordinator fix described below. The locked development Go 1.26.1 still lacks
+that fix. The package-build receipts below describe the historical backport
+experiment. Both toolchains retain the native controls and their original
+workloads.
 
 * Failure mechanism and source repair
 
