@@ -92,7 +92,7 @@ jobs:
         run: |
           printf 'budget_minutes=%s\n' "$SOURCE_PREPARE_MINUTES" >> "$GITHUB_OUTPUT"
           dependency_exit_code=0
-          timeout --verbose --kill-after=5s "${SOURCE_PREPARE_MINUTES}m" gerbil deps --install || dependency_exit_code=$?
+          timeout --verbose --kill-after=5s "${SOURCE_PREPARE_MINUTES}m" gerbil -:1n,2n deps --install || dependency_exit_code=$?
           printf 'exit_code=%s\n' "$dependency_exit_code" >> "$GITHUB_OUTPUT"
           exit "$dependency_exit_code"
       - name: Verify declared suite

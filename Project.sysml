@@ -255,6 +255,8 @@ package WeaverProject {
                and native dependency builds from gerbil.pkg declarations.
                Each dependency owns its own Build targets and package tests.
                CI only selects the watchdog and invokes the package manager.
+               Native stdout/stderr line buffering exposes package boundaries
+               as they occur; buffered batches do not establish phase durations.
                Dependency preparation defaults to four workers, with a
                twelve-minute watchdog on Linux and eighteen minutes on macOS.
                Record the selected watchdog and its exit code in the job receipt.
