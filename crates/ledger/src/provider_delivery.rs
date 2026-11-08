@@ -258,18 +258,30 @@ impl DeliveryCursor {
                     .owner
                     .as_ref()
                     .is_some_and(|owner| !Arc::ptr_eq(owner, &binding.owner))
-                    || receipt
-                        .deadline
-                        .is_some_and(|deadline| Instant::now() >= deadline)
-                    || receipt.consumed
-                    || binding.plan != self.plan
-                    || binding.first != self.next
-                    || self
-                        .session
-                        .as_ref()
-                        .is_some_and(|session| session != &binding.session)
                 {
-                    return Err(Error::Conflict("delivery owner, interval or grant expired"));
+                    return Err(Error::Conflict("delivery owner changed"));
+                }
+                if receipt
+                    .deadline
+                    .is_some_and(|deadline| Instant::now() >= deadline)
+                {
+                    return Err(Error::Conflict("delivery grant expired"));
+                }
+                if receipt.consumed {
+                    return Err(Error::Conflict("delivery already consumed"));
+                }
+                if binding.plan != self.plan {
+                    return Err(Error::Conflict("delivery plan changed"));
+                }
+                if binding.first != self.next {
+                    return Err(Error::Conflict("delivery interval changed"));
+                }
+                if self
+                    .session
+                    .as_ref()
+                    .is_some_and(|session| session != &binding.session)
+                {
+                    return Err(Error::Conflict("delivery session changed"));
                 }
                 // Fail closed on a clock error as well as expiration.
                 if let Some(validity) = &binding.validity

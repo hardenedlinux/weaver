@@ -378,10 +378,11 @@ impl Gateway {
                 {
                     wakeup.notify_one();
                 }
-                if result.is_err() {
-                    let _ = sender.try_send(Err(Status::failed_precondition(
-                        "provider execution not completed; inspect original operation",
-                    )));
+                if let Err(error) = &result {
+                    let _ = sender.try_send(Err(Status::failed_precondition(format!(
+                        "provider execution not completed; inspect original operation: {}",
+                        crate::grpc_contracts::rejection_reason(error),
+                    ))));
                 }
                 result
             })

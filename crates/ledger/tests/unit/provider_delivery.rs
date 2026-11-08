@@ -24,6 +24,48 @@ impl Wake for DeliveryWake {
     }
 }
 
+#[test]
+fn expired_delivery_keeps_the_payload_inert() {
+    let directory = tempfile::tempdir().expect("store");
+    let path = directory.path().join("expired.db");
+    let _custody = persistence::Session::open_with_journal(&path, persistence::Journal::Wal)
+        .expect("native owner");
+    let (mut ledger, plan) = fixture(&path);
+    ledger.enqueue_provider(&plan).expect("reserve");
+    let permit = ledger
+        .consume_provider("f", "infer", &BTreeSet::from(["primary".into()]))
+        .expect("consume");
+    ledger
+        .dispatch_provider(&permit, || Ok(()))
+        .expect("dispatch burn");
+    let release = ledger
+        .prepare_provider_release(&permit, "expired-frame", "arrow", 1)
+        .expect("range");
+    let mut staged = None;
+    ledger
+        .release_provider_for_delivery(&permit, release, "arrow", |_, delivery| {
+            staged = Some(delivery.split());
+            Ok(())
+        })
+        .expect("native release committed");
+    let (producer, frame) = staged.expect("inert frame");
+    producer
+        .acknowledge(Instant::now() - Duration::from_secs(1))
+        .expect("acknowledged expired grant");
+    let mut cursor = DeliveryCursor::new(&plan).expect("receiver");
+    let cx = Context::from_waker(Waker::noop());
+    let mut payload = Some(42);
+    assert!(matches!(
+        cursor.poll(&frame, &cx, &mut payload),
+        Poll::Ready(Err(weaver_contracts::Error::Conflict(
+            "delivery grant expired"
+        )))
+    ));
+    assert_eq!(payload, Some(42));
+    drop((producer, frame, cursor));
+    ledger.close().expect("release worker");
+}
+
 proptest! {
     #![proptest_config(Config::with_cases(24))]
     #[test]
