@@ -7,7 +7,7 @@
 
 * Current standard toolchain decision
 
-The project now selects the unchanged locked upstream =pkgs.go= package,
+The project selects the locked upstream =pkgs.go_1_27= package,
 without a local Go override or patch. Gateway production behavior does not
 require a custom fuzz engine. The native no-op and real-failure controls remain
 mandatory with the original three-second workload, one worker and thirty-second
@@ -15,11 +15,11 @@ watchdog. Coordinator errors remain failures; no text-based suppression or retry
 is introduced. The compiler-source substring assertion that required this exact
 backport has been retired.
 
-GitHub CI selects the official Go 1.27.3 release, which includes the upstream
-coordinator fix described below. The locked development Go 1.26.1 still lacks
-that fix. The package-build receipts below describe the historical backport
-experiment. Both toolchains retain the native controls and their original
-workloads.
+GitHub CI and the Nix development environment select Go 1.27.3, which includes
+the upstream coordinator fix described below. The standard Nixpkgs input owns
+the development package. The package-build receipts below describe the
+historical backport experiment. Both toolchains retain the native controls and
+their original workloads.
 
 * Failure mechanism and source repair
 
