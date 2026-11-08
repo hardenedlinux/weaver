@@ -24,8 +24,9 @@ jobs:
   verify:
     name: ${{ inputs.label }}
     runs-on: ${{ inputs.runner }}
-    # Keep time for the receipt upload after a phase hits its own limit.
-    timeout-minutes: 65
+    # Full dependency preparation has no phase cutoff. Reserve room for the
+    # unchanged 37-minute Scheme suite and receipt upload after preparation.
+    timeout-minutes: ${{ inputs.suite == 'check-scheme' && 120 || 65 }}
     env:
       GOTOOLCHAIN: local
       WEAVER_VERIFY_SUITE: ${{ inputs.suite }}

@@ -264,8 +264,11 @@ package WeaverProject {
                Native compiler command diagnostics and POSIX real/user/sys
                totals distinguish configured flags and CPU work from wall time.
                Dependency preparation uses four workers. Observe full dependency
-               cold preparation under the existing whole-job watchdog, without
-               an independent installation cutoff. Retain prior installation
+               cold preparation without an independent installation cutoff.
+               The Scheme job has a 120-minute infrastructure watchdog so full
+               preparation does not consume the separate 37-minute suite window;
+               other verification jobs retain their 65-minute watchdog.
+               Retain prior installation
                timeouts as failed evidence. Native GC reports expose allocation
                and heap progress during indexing; completion still requires the
                package manager to exit successfully. This observation does not
