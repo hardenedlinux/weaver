@@ -257,6 +257,10 @@ package WeaverProject {
                CI only selects the watchdog and invokes the package manager.
                Native stdout/stderr line buffering exposes package boundaries
                as they occur; buffered batches do not establish phase durations.
+               Dependency compilation uses gambuild-C's native host flags,
+               matching Parser's separate C procedure policy for both macro
+               and runtime phases. Retain release optimization and tail calls;
+               qualify unchanged workloads and limits before accepting it.
                Dependency preparation defaults to four workers, with a
                twelve-minute watchdog on Linux and eighteen minutes on macOS.
                Record the selected watchdog and its exit code in the job receipt.

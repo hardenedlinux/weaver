@@ -88,6 +88,9 @@ jobs:
           # The SDK setup exports the host core count via GITHUB_ENV.
           GERBIL_BUILD_CORES: '4'
           GERBIL_PATH: ${{ runner.temp }}/weaver-gerbil
+          # Native gambuild-C contract, also used by Parser's compiler profile.
+          # Preserve tail calls and the release's optimization level.
+          CORCXXFLAGS_GAMBUILD: '-pipe -foptimize-sibling-calls -Wp,-U___SINGLE_HOST,-D___MULTIPLE_HOSTS -ftrack-macro-expansion=0'
           SOURCE_PREPARE_MINUTES: ${{ runner.os == 'macOS' && 18 || 12 }}
         run: |
           printf 'budget_minutes=%s\n' "$SOURCE_PREPARE_MINUTES" >> "$GITHUB_OUTPUT"
