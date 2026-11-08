@@ -64,14 +64,22 @@ func hardFactFeedSetting(t *testing.T, f *fixture, family, root string, dependen
 
 func TestProviderControlHardFactWithdrawalRestartAndABA(t *testing.T) {
 	f := newFixture(t, completeSSE, false)
-	f.env = append(f.env, hardFactFeedSetting(t, f, f.plan.Family, f.plan.Node, [][2]string{}, nil, "", nil))
-	compiledControlSources(false).configure(t, f, controlBundle(t, f))
+	bundle := controlBundle(t, f)
+	plan := bundle.Plans[0]
+	f.env = append(f.env, hardFactFeedSetting(t, f, plan.Family, plan.Node, [][2]string{}, nil, "", nil))
+	sources := compiledControlSources(false)
+	sources.configure(t, f, bundle)
+	// configure stages the reviewed publication. Activate that same original
+	// before testing facts, rather than leaving an unrelated Policy barrier open.
+	c := newControlProcess(t, f, writeControlBundle(t, f, bundle, "json"))
+	c.useProducer(sources.producer)
+	c.start(t)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
 	defer cancel()
 	blocked := func(label string) {
 		t.Helper()
-		_, err := f.client.Execute(ctx, f.plan, pb.Encoding_PROTOBUF, 1, func(*pb.Event) error {
+		_, err := f.client.Execute(ctx, plan, pb.Encoding_PROTOBUF, 1, func(*pb.Event) error {
 			t.Errorf("%s emitted a provider event", label)
 			return nil
 		})
@@ -91,7 +99,7 @@ func TestProviderControlHardFactWithdrawalRestartAndABA(t *testing.T) {
 		t.Helper()
 		result, err := f.admin.RPC.ResolveHardFact(f.admin.Context(ctx), barrier)
 		if err != nil || !proto.Equal(barrier, result.GetBarrier()) ||
-			len(result.GetAffected()) != 1 || result.GetAffected()[0] != f.plan.Node {
+			len(result.GetAffected()) != 1 || result.GetAffected()[0] != plan.Node {
 			t.Fatalf("resolve hard fact: %v %v", result, err)
 		}
 		return result
@@ -137,7 +145,7 @@ func TestProviderControlHardFactWithdrawalRestartAndABA(t *testing.T) {
 	resolve(a)
 	blocked("old exact receipt replay cannot clear a newer pending barrier")
 	resolve(aAgain)
-	_, err := f.client.Execute(ctx, f.plan, pb.Encoding_PROTOBUF, 1, func(*pb.Event) error { return nil })
+	_, err := f.client.Execute(ctx, plan, pb.Encoding_PROTOBUF, 1, func(*pb.Event) error { return nil })
 	if err != nil || f.primary.Load() != 1 || f.backup.Load() != 0 {
 		t.Fatalf("restored fact did not permit normal guarded provider execution: %v", err)
 	}
