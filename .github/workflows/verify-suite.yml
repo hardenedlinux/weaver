@@ -115,6 +115,19 @@ jobs:
           GERBIL_GXI: ${{ env.GERBIL_PREFIX }}/bin/gxi
           GERBIL_PATH: ${{ runner.temp }}/weaver-gerbil
         run: go -C go run ./cmd/weaver-dev -clean-source -timeout 35m check-scheme
+      - name: Diagnose failed native Scheme owner without rebuilding
+        id: scheme_native_diagnostic
+        if: failure() && inputs.suite == 'check-scheme' && runner.os == 'Linux' && steps.verify_scheme.conclusion == 'failure'
+        timeout-minutes: 4
+        env:
+          GERBIL_GXI: ${{ env.GERBIL_PREFIX }}/bin/gxi
+          GERBIL_PATH: ${{ runner.temp }}/weaver-gerbil
+          CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUNNER: gdb --batch --return-child-result -x ${{ github.workspace }}/.github/actions/prepare-toolchain/native-owner.gdb --args
+        run: |
+          if ! jq -e 'any(.stages[]; .name == "scheme-rooted-sdk-integration" and .status == "FAIL")' .cache/verification/latest-check-scheme.json > /dev/null; then
+            exit 0
+          fi
+          cargo test -p weaver-governance -p weaver-governance-build -p weaver-server --features weaver-governance/scheme-qualification,weaver-server/governance-qualification,weaver-server/arrow --locked --offline -j 4 --test governance_owner -- --exact actual_scheme_vm_is_owner_local_and_cleanup_precedes_shared_drain --nocapture --test-threads=4
       - name: Require successful phase receipts
         id: receipt_check
         timeout-minutes: 1
@@ -155,6 +168,7 @@ jobs:
                 "schemeDependencies": ${{ toJSON(steps.scheme_dependencies.outcome || 'skipped') }},
                 "verifySuite": ${{ toJSON(steps.verify_suite.outcome || 'skipped') }},
                 "verifyScheme": ${{ toJSON(steps.verify_scheme.outcome || 'skipped') }},
+                "schemeNativeDiagnostic": ${{ toJSON(steps.scheme_native_diagnostic.outcome || 'skipped') }},
                 "receiptCheck": ${{ toJSON(steps.receipt_check.outcome || 'skipped') }}
               }
             }

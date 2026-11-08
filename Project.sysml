@@ -278,7 +278,11 @@ package WeaverProject {
                Run the selected package Build with a separate two-minute bound.
                Retain SDK archive milestones and native Go failure events
                with their stage receipts. The provider recovery and natural-exit
-               deadlines govern runtime. */
+               deadlines govern runtime. After a Linux rooted SDK integration
+               failure only, observe the already-built owner test once through
+               Cargo's native GDB runner, bounded to four minutes. Pass signals
+               through unchanged and bound stack output. This diagnostic cannot
+               replace the failed suite receipt or qualify recovery deadlines. */
         }
         part architecture : VerificationSuite { part 'check-architecture' : VerificationMode; }
         part policy : VerificationSuite {
@@ -543,6 +547,7 @@ package WeaverProject {
         part '.github/workflows/ci.yml' : File;
         part '.github/workflows/verify-suite.yml' : File;
         part '.github/actions/prepare-toolchain/action.yml' : File;
+        part '.github/actions/prepare-toolchain/native-owner.gdb' : File;
         part 'scheme/policy/cedar-ffi.ss' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.24-telemetry-service.org' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.25-openshell-and-tao3k-ecosystem.org' : File;

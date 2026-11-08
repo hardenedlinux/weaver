@@ -51,6 +51,9 @@ func PrepareCITools(ctx context.Context, output io.Writer) error {
 			return err
 		}
 		packages := []string{"apt-get", "install", "-y", "--no-install-recommends", "build-essential", "ca-certificates", "pkg-config", "libssl-dev", "zlib1g-dev", "protobuf-compiler"}
+		if suite == "check-scheme" {
+			packages = append(packages, "gdb", "jq")
+		}
 		if suite == "check-policy" {
 			packages = append(packages, "elan", "cvc5", "zstd")
 		}
