@@ -261,6 +261,8 @@ package WeaverProject {
                matching Parser's separate C procedure policy for both macro
                and runtime phases. Retain release optimization and tail calls;
                qualify unchanged workloads and limits before accepting it.
+               Native compiler command diagnostics and POSIX real/user/sys
+               totals distinguish configured flags and CPU work from wall time.
                Dependency preparation defaults to four workers, with a
                twelve-minute watchdog on Linux and eighteen minutes on macOS.
                Record the selected watchdog and its exit code in the job receipt.
