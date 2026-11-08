@@ -82,8 +82,7 @@ jobs:
       - name: Install declared Scheme dependencies
         id: scheme_dependencies
         if: inputs.suite == 'check-scheme'
-        # Leave time after either native watchdog for its exit receipt.
-        timeout-minutes: 21
+        # Observe complete cold preparation under the whole-job watchdog.
         env:
           # Fix the dependency worker budget before the package manager starts.
           GERBIL_BUILD_CORES: '4'
@@ -92,13 +91,12 @@ jobs:
           # Preserve tail calls and the release's optimization level.
           CORCXXFLAGS_GAMBUILD: '-pipe -foptimize-sibling-calls -Wp,-U___SINGLE_HOST,-D___MULTIPLE_HOSTS -ftrack-macro-expansion=0'
           GAMBUILD_VERBOSE: '1'
-          # Calibrate the full Linux dependency closure separately from runtime.
-          SOURCE_PREPARE_MINUTES: ${{ runner.os == 'macOS' && 18 || 20 }}
         run: |
-          printf 'budget_minutes=%s\nbuild_cores=%s\n' "$SOURCE_PREPARE_MINUTES" "$GERBIL_BUILD_CORES" >> "$GITHUB_OUTPUT"
+          printf 'build_cores=%s\n' "$GERBIL_BUILD_CORES" >> "$GITHUB_OUTPUT"
+          export GAMBOPT="${GAMBOPT:+$GAMBOPT,}debug=q5"
           dependency_started=$SECONDS
           dependency_exit_code=0
-          /usr/bin/time -p timeout --verbose --kill-after=5s "${SOURCE_PREPARE_MINUTES}m" gerbil -:1n,2n deps --install || dependency_exit_code=$?
+          /usr/bin/time -p gerbil -:1n,2n deps --install || dependency_exit_code=$?
           printf 'exit_code=%s\nelapsed_seconds=%s\n' "$dependency_exit_code" "$((SECONDS - dependency_started))" >> "$GITHUB_OUTPUT"
           exit "$dependency_exit_code"
       - name: Verify declared suite
@@ -141,7 +139,7 @@ jobs:
               "os": ${{ toJSON(runner.os) }},
               "arch": ${{ toJSON(runner.arch) }},
               "status": ${{ toJSON(job.status) }},
-              "schemeDependencyBudgetMinutes": ${{ steps.scheme_dependencies.outputs.budget_minutes || 'null' }},
+              "schemeDependencyBudgetMinutes": null,
               "schemeDependencyBuildCores": ${{ steps.scheme_dependencies.outputs.build_cores || 'null' }},
               "schemeDependencyElapsedSeconds": ${{ steps.scheme_dependencies.outputs.elapsed_seconds || 'null' }},
               "schemeDependencyExitCode": ${{ steps.scheme_dependencies.outputs.exit_code || 'null' }},

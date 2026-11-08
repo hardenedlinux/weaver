@@ -263,13 +263,15 @@ package WeaverProject {
                qualify unchanged workloads and limits before accepting it.
                Native compiler command diagnostics and POSIX real/user/sys
                totals distinguish configured flags and CPU work from wall time.
-               Dependency preparation uses four workers. Calibrate the full
-               Linux dependency cold preparation within a twenty-minute cap;
-               retain prior twelve-minute timeouts as failed evidence. macOS
-               keeps its eighteen-minute watchdog. This independent preparation
-               cap does not relax target selection, the cold linked archive,
-               recovery or natural-exit gates. Record worker count, elapsed
-               whole seconds, the selected cap and exit code in the job receipt.
+               Dependency preparation uses four workers. Observe full dependency
+               cold preparation under the existing whole-job watchdog, without
+               an independent installation cutoff. Retain prior installation
+               timeouts as failed evidence. Native GC reports expose allocation
+               and heap progress during indexing; completion still requires the
+               package manager to exit successfully. This observation does not
+               relax target selection, the cold linked archive, recovery or
+               natural-exit gates. Record worker count, elapsed whole seconds
+               and exit code in the job receipt; the independent cap is null.
                Run the selected package Build with a separate two-minute bound.
                Retain SDK archive milestones and native Go failure events
                with their stage receipts. The provider recovery and natural-exit
