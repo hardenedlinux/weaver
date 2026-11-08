@@ -12,6 +12,7 @@ pub struct PackageTooling<Runtime, Error> {
     pub initialize: fn() -> Result<Runtime, Error>,
     pub configure_paths: fn(&Runtime, &str, &str) -> Result<i32, Error>,
     pub build_package: fn(&Runtime, &str) -> Result<i32, Error>,
+    pub build_package_spec: fn(&Runtime, &str, &str) -> Result<i32, Error>,
     pub run_package_main: fn(&Runtime, &str, &[&str]) -> Result<i32, Error>,
     pub stage_package_program: fn(&Runtime, &str, &str, &[&str]) -> Result<i32, Error>,
 }
@@ -39,14 +40,18 @@ impl<Runtime, Error: std::fmt::Debug> PackageTooling<Runtime, Error> {
         runtime
     }
     fn prepare_sdk(&self, runtime: &Runtime) {
-        // The selected SDK's standard package entry owns its complete module graph.
+        // The SDK's Build Packages specification owns the program prerequisites.
         // All outputs use Cargo's prefix; the SDK source checkout is read-only.
         let sdk = gerbil_scheme_aot_build::source_workspace()
             .canonicalize()
             .expect("Cargo SDK source");
         assert_eq!(
-            (self.build_package)(runtime, sdk.to_str().expect("SDK source encoding"))
-                .expect("SDK package build"),
+            (self.build_package_spec)(
+                runtime,
+                sdk.to_str().expect("SDK source encoding"),
+                "gerbil-scheme-rust-program-build-spec",
+            )
+            .expect("SDK program prerequisites"),
             0
         );
     }

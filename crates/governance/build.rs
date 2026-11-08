@@ -11,6 +11,7 @@ fn main() {
                 initialize: gerbil_scheme::GerbilRuntime::initialize,
                 configure_paths: gerbil_scheme::GerbilRuntime::configure_package_paths,
                 build_package: gerbil_scheme::GerbilRuntime::build_package,
+                build_package_spec: gerbil_scheme::GerbilRuntime::build_package_spec,
                 run_package_main: gerbil_scheme::GerbilRuntime::run_package_main,
                 stage_package_program: gerbil_scheme::GerbilRuntime::stage_package_program,
             },
