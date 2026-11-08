@@ -280,8 +280,10 @@ package WeaverProject {
                with their stage receipts. The provider recovery and natural-exit
                deadlines govern runtime. After a Linux rooted SDK integration
                failure only, observe the already-built owner test once through
-               Cargo's native GDB runner, bounded to four minutes. Pass signals
-               through unchanged and bound stack output. This diagnostic cannot
+               native GDB, bounded to four minutes. Require exactly one built
+               executable for this target; reject missing or ambiguous images.
+               Do not invoke Cargo after the private build environment retires.
+               Pass signals through unchanged and bound stack output. This diagnostic cannot
                replace the failed suite receipt or qualify recovery deadlines. */
         }
         part architecture : VerificationSuite { part 'check-architecture' : VerificationMode; }

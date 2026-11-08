@@ -122,12 +122,18 @@ jobs:
         env:
           GERBIL_GXI: ${{ env.GERBIL_PREFIX }}/bin/gxi
           GERBIL_PATH: ${{ runner.temp }}/weaver-gerbil
-          CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUNNER: gdb --batch --return-child-result -x ${{ github.workspace }}/.github/actions/prepare-toolchain/native-owner.gdb --args
+          GOCACHE: ${{ github.workspace }}/.cache/go-build-cache
+          GOMODCACHE: ${{ github.workspace }}/.cache/go-mod-cache
         run: |
           if ! jq -e 'any(.stages[]; .name == "scheme-rooted-sdk-integration" and .status == "FAIL")' .cache/verification/latest-check-scheme.json > /dev/null; then
             exit 0
           fi
-          cargo test -p weaver-governance -p weaver-governance-build -p weaver-server --features weaver-governance/scheme-qualification,weaver-server/governance-qualification,weaver-server/arrow --locked --offline -j 4 --test governance_owner -- --exact actual_scheme_vm_is_owner_local_and_cleanup_precedes_shared_drain --nocapture --test-threads=4
+          owners=()
+          for candidate in target/debug/deps/governance_owner-*; do
+            if [[ -f "$candidate" && -x "$candidate" ]]; then owners+=("$candidate"); fi
+          done
+          test "${#owners[@]}" -eq 1
+          gdb --batch --return-child-result -x .github/actions/prepare-toolchain/native-owner.gdb --args "${owners[0]}" --exact actual_scheme_vm_is_owner_local_and_cleanup_precedes_shared_drain --nocapture --test-threads=4
       - name: Require successful phase receipts
         id: receipt_check
         timeout-minutes: 1
