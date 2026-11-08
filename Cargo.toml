@@ -87,6 +87,10 @@ incremental = true
 [profile.dev.package."*"]
 opt-level = 0
 
+# The native build verifies generated sources and ABI headers with SHA-256.
+[profile.dev.package.sha2]
+opt-level = 3
+
 [profile.release]
 opt-level = 3
 incremental = true
