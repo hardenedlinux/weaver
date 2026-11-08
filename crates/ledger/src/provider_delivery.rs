@@ -5,7 +5,11 @@
 //! Inert gRPC frames join acknowledged Turso validation at the receiver owner.
 use crate::{
     Ledger, ProviderDispatch, db,
-    persistence::{authority::Completion, owner::Owner, scheduler::Scope},
+    persistence::{
+        authority::{Completion, Receipt},
+        owner::Owner,
+        scheduler::Scope,
+    },
 };
 use std::{
     sync::Arc,
@@ -253,66 +257,80 @@ impl DeliveryCursor {
             &binding.scope,
             &binding.completion,
             cx.waker(),
-            |receipt| {
-                if self
-                    .owner
-                    .as_ref()
-                    .is_some_and(|owner| !Arc::ptr_eq(owner, &binding.owner))
-                {
-                    return Err(Error::Conflict("delivery owner changed"));
-                }
-                if receipt
-                    .deadline
-                    .is_some_and(|deadline| Instant::now() >= deadline)
-                {
-                    return Err(Error::Conflict("delivery grant expired"));
-                }
-                if receipt.consumed {
-                    return Err(Error::Conflict("delivery already consumed"));
-                }
-                if binding.plan != self.plan {
-                    return Err(Error::Conflict("delivery plan changed"));
-                }
-                if binding.first != self.next {
-                    return Err(Error::Conflict("delivery interval changed"));
-                }
-                if self
-                    .session
-                    .as_ref()
-                    .is_some_and(|session| session != &binding.session)
-                {
-                    return Err(Error::Conflict("delivery session changed"));
-                }
-                // Fail closed on a clock error as well as expiration.
-                if let Some(validity) = &binding.validity
-                    && !validity.contains(&crate::provider_oauth::now()?)
-                {
-                    return Err(Error::Denied);
-                }
-                let next = self
-                    .next
-                    .checked_add(binding.rows)
-                    .ok_or(Error::Invalid("delivery interval exhausted"))?;
-                let value = payload
-                    .take()
-                    .ok_or(Error::Conflict("delivery payload absent"))?;
-                self.next = next;
-                self.owner.get_or_insert_with(|| binding.owner.clone());
-                self.session.get_or_insert_with(|| binding.session.clone());
-                receipt.consumed = true;
-                #[cfg(feature = "commit-observer")]
-                {
-                    receipt.accepted_at = Some(std::time::SystemTime::now());
-                }
-                binding.completion.changed.notify_all();
-                Ok(value)
-            },
+            |receipt| self.accept_current_frame(binding, receipt, payload),
         );
         match result {
             Ok(Some(value)) => Poll::Ready(Ok(value)),
             Ok(None) => Poll::Pending,
             Err(error) => Poll::Ready(Err(error)),
         }
+    }
+
+    fn validate_frame(&self, binding: &Binding, receipt: &Receipt) -> Result<()> {
+        if self
+            .owner
+            .as_ref()
+            .is_some_and(|owner| !Arc::ptr_eq(owner, &binding.owner))
+        {
+            return Err(Error::Conflict("delivery owner changed"));
+        }
+        if receipt
+            .deadline
+            .is_some_and(|deadline| Instant::now() >= deadline)
+        {
+            return Err(Error::Conflict("delivery grant expired"));
+        }
+        if receipt.consumed {
+            return Err(Error::Conflict("delivery already consumed"));
+        }
+        if binding.plan != self.plan {
+            return Err(Error::Conflict("delivery plan changed"));
+        }
+        if binding.first != self.next {
+            return Err(Error::Conflict("delivery interval changed"));
+        }
+        if self
+            .session
+            .as_ref()
+            .is_some_and(|session| session != &binding.session)
+        {
+            return Err(Error::Conflict("delivery session changed"));
+        }
+        // Fail closed on a clock error as well as expiration.
+        if let Some(validity) = &binding.validity
+            && !validity.contains(&crate::provider_oauth::now()?)
+        {
+            return Err(Error::Denied);
+        }
+        Ok(())
+    }
+
+    // Authority::current keeps validation and payload transfer in one deciding
+    // turn under its mutex; this helper must not be called before that turn.
+    fn accept_current_frame<T>(
+        &mut self,
+        binding: &Binding,
+        receipt: &mut Receipt,
+        payload: &mut Option<T>,
+    ) -> Result<T> {
+        self.validate_frame(binding, receipt)?;
+        let next = self
+            .next
+            .checked_add(binding.rows)
+            .ok_or(Error::Invalid("delivery interval exhausted"))?;
+        let value = payload
+            .take()
+            .ok_or(Error::Conflict("delivery payload absent"))?;
+        self.next = next;
+        self.owner.get_or_insert_with(|| binding.owner.clone());
+        self.session.get_or_insert_with(|| binding.session.clone());
+        receipt.consumed = true;
+        #[cfg(feature = "commit-observer")]
+        {
+            receipt.accepted_at = Some(std::time::SystemTime::now());
+        }
+        binding.completion.changed.notify_all();
+        Ok(value)
     }
 }
 impl Drop for DeliveryFrame {
