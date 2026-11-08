@@ -78,7 +78,7 @@ func SourceInputs(root string) (map[string]string, error) {
 				if directory == "dev/d2" {
 					return add(path)
 				}
-			case ".license", ".go", ".rs", ".h", ".ss", ".pkg", ".toml", ".json", ".yaml", ".yml", ".proto", ".sysml", ".cedar", ".lean", ".qnt", ".org", ".d2":
+			case ".license", ".go", ".rs", ".h", ".sh", ".ss", ".pkg", ".toml", ".json", ".yaml", ".yml", ".proto", ".sysml", ".cedar", ".lean", ".qnt", ".org", ".d2":
 				return add(path)
 			case ".svg":
 				if directory == "dev/d2" || strings.Contains(filepath.ToSlash(path), "/diagrams/assets/") {

@@ -25,6 +25,9 @@ func TestSourceCurrentnessRejectsDifferentExpectedInput(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	if _, ok := inputs[".github/actions/prepare-toolchain/install-lean.sh"]; !ok {
+		t.Fatal("toolchain installer is absent from source inputs")
+	}
 	changed := maps.Clone(inputs)
 	changed["Cargo.lock"] = "different-source-hash"
 	if result := sourceCurrentness(root, t.TempDir(), changed); result.Status != "FAIL" {

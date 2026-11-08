@@ -20,6 +20,10 @@ runs:
     - name: Install Ubuntu or Darwin packages
       shell: sh
       run: go -C go run ./cmd/weaver-dev prepare-ci-tools
+    - name: Prepare the pinned Lean release
+      if: env.WEAVER_VERIFY_SUITE == 'check-policy' && runner.os == 'Linux'
+      shell: bash
+      run: bash "${{ github.action_path }}/install-lean.sh"
     - name: Bind the Cedar solver
       if: env.WEAVER_VERIFY_SUITE == 'check-policy'
       shell: sh
