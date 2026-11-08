@@ -64,9 +64,9 @@ arrow-array = "58.4.0"
 arrow-schema = "58.4.0"
 arrow-ipc = "58.4.0"
 criterion = { version = "0.8.2", default-features = false, features = ["cargo_bench_support"] }
-gerbil-scheme-aot-build = { git = "https://github.com/tao3k/gerbil-scheme-rust", rev = "3ccd4ccf6db52f1cac8522a96a0dd510fb69afc7" }
-gerbil-scheme = { git = "https://github.com/tao3k/gerbil-scheme-rust", rev = "3ccd4ccf6db52f1cac8522a96a0dd510fb69afc7" }
-gerbil-scheme-sys = { git = "https://github.com/tao3k/gerbil-scheme-rust", rev = "3ccd4ccf6db52f1cac8522a96a0dd510fb69afc7", features = ["external-program"] }
+gerbil-scheme-aot-build = { git = "https://github.com/tao3k/gerbil-scheme-rust", rev = "deca3571a46fc66ac76a044a6b173c67cf24029e" }
+gerbil-scheme = { git = "https://github.com/tao3k/gerbil-scheme-rust", rev = "deca3571a46fc66ac76a044a6b173c67cf24029e" }
+gerbil-scheme-sys = { git = "https://github.com/tao3k/gerbil-scheme-rust", rev = "deca3571a46fc66ac76a044a6b173c67cf24029e", features = ["external-program"] }
 
 asp-rust = { git = "https://github.com/tao3k/asp-rust", rev = "1ca41124b846dec947f3d05119cafa07eaa57924", default-features = false }
 

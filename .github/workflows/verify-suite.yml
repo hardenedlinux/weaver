@@ -67,7 +67,7 @@ jobs:
         id: scheme_sdk
         if: contains(fromJSON('["check-rust", "check-go", "check-policy", "check-scheme", "bench"]'), inputs.suite)
         timeout-minutes: 5
-        uses: tao3k/gerbil-scheme-rust/.github/actions/setup-gerbil@3ccd4ccf6db52f1cac8522a96a0dd510fb69afc7
+        uses: tao3k/gerbil-scheme-rust/.github/actions/setup-gerbil@deca3571a46fc66ac76a044a6b173c67cf24029e
         with:
           release-root: ${{ runner.temp }}/gerbil-sdk
       - name: Prepare macOS Scheme build watchdog
@@ -83,21 +83,23 @@ jobs:
         id: scheme_dependencies
         if: inputs.suite == 'check-scheme'
         # Leave time after either native watchdog for its exit receipt.
-        timeout-minutes: 19
+        timeout-minutes: 21
         env:
-          # The SDK setup exports the host core count via GITHUB_ENV.
+          # Fix the dependency worker budget before the package manager starts.
           GERBIL_BUILD_CORES: '4'
           GERBIL_PATH: ${{ runner.temp }}/weaver-gerbil
           # Native gambuild-C contract, also used by Parser's compiler profile.
           # Preserve tail calls and the release's optimization level.
           CORCXXFLAGS_GAMBUILD: '-pipe -foptimize-sibling-calls -Wp,-U___SINGLE_HOST,-D___MULTIPLE_HOSTS -ftrack-macro-expansion=0'
           GAMBUILD_VERBOSE: '1'
-          SOURCE_PREPARE_MINUTES: ${{ runner.os == 'macOS' && 18 || 12 }}
+          # Calibrate the full Linux dependency closure separately from runtime.
+          SOURCE_PREPARE_MINUTES: ${{ runner.os == 'macOS' && 18 || 20 }}
         run: |
-          printf 'budget_minutes=%s\n' "$SOURCE_PREPARE_MINUTES" >> "$GITHUB_OUTPUT"
+          printf 'budget_minutes=%s\nbuild_cores=%s\n' "$SOURCE_PREPARE_MINUTES" "$GERBIL_BUILD_CORES" >> "$GITHUB_OUTPUT"
+          dependency_started=$SECONDS
           dependency_exit_code=0
           /usr/bin/time -p timeout --verbose --kill-after=5s "${SOURCE_PREPARE_MINUTES}m" gerbil -:1n,2n deps --install || dependency_exit_code=$?
-          printf 'exit_code=%s\n' "$dependency_exit_code" >> "$GITHUB_OUTPUT"
+          printf 'exit_code=%s\nelapsed_seconds=%s\n' "$dependency_exit_code" "$((SECONDS - dependency_started))" >> "$GITHUB_OUTPUT"
           exit "$dependency_exit_code"
       - name: Verify declared suite
         id: verify_suite
@@ -140,6 +142,8 @@ jobs:
               "arch": ${{ toJSON(runner.arch) }},
               "status": ${{ toJSON(job.status) }},
               "schemeDependencyBudgetMinutes": ${{ steps.scheme_dependencies.outputs.budget_minutes || 'null' }},
+              "schemeDependencyBuildCores": ${{ steps.scheme_dependencies.outputs.build_cores || 'null' }},
+              "schemeDependencyElapsedSeconds": ${{ steps.scheme_dependencies.outputs.elapsed_seconds || 'null' }},
               "schemeDependencyExitCode": ${{ steps.scheme_dependencies.outputs.exit_code || 'null' }},
               "phases": {
                 "checkout": ${{ toJSON(steps.checkout.outcome || 'skipped') }},
