@@ -251,20 +251,17 @@ package WeaverProject {
                archive. Bound the Rust tests and Go suite separately. The
                whole-suite watchdog leaves time for these stages and the
                preceding package checks to retain independent results.
-               Resolve Lab and ASCENT sources from native package declarations.
-               The Scheme prepare.ss bootstrap uses gxpkg metadata and package
-               installation APIs before the Yuanxu prelude is available.
-               CI only selects the watchdog and invokes this package entry.
-               Gerbil prepares the pinned Core and POO compiler dependencies.
-               ASCENT's selected Program build supplies native linker inputs.
+               gerbil deps --install owns dependency resolution, source revisions
+               and native dependency builds from gerbil.pkg declarations.
+               Each dependency owns its own Build targets and package tests.
+               CI only selects the watchdog and invokes the package manager.
                Dependency preparation defaults to four workers, with a
                twelve-minute watchdog on Linux and eighteen minutes on macOS.
                Record the selected watchdog and its exit code in the job receipt.
                Run the selected package Build with a separate two-minute bound.
                Retain SDK archive milestones and native Go failure events
                with their stage receipts. The provider recovery and natural-exit
-               deadlines govern runtime.
-               Unrelated producer products stay outside this source closure. */
+               deadlines govern runtime. */
         }
         part architecture : VerificationSuite { part 'check-architecture' : VerificationMode; }
         part policy : VerificationSuite {
@@ -523,14 +520,6 @@ package WeaverProject {
         part 'go/go.mod' : File;
         part 'go/go.sum' : File;
         part 'gerbil.pkg' : File;
-        part 'prepare.ss' : File;
-        part 'dev/prepare-scheme.ss' : File {
-            doc /* Development-only bootstrap before Core's prelude exists.
-               Read native package declarations, prepare exact source revisions,
-               install Core/POO through gxpkg and invoke the selected Build.
-               This is not a runtime configuration or publication authority. */
-        }
-        part 't/source-preparation-test.ss' : File;
         part 'build.ss' : ExecutableFile;
         part 'init.ss' : File;
         part 'proto/gateway/v1/gateway.proto' : File;

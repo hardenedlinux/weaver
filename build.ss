@@ -12,51 +12,27 @@
 (import (only-in :clan/poo/object .get)
         (only-in :std/source this-source-file)
         (only-in :std/build-script defbuild-script)
-        (only-in :gerbil/tools/gxpkg pkg-root-dir)
-        (only-in :gerbil/expander eval-syntax import-module expander-context-id)
+        (only-in :gerbil/expander import-module expander-context-id)
         (only-in :gerbil/compiler compile-module)
         (only-in :yuanxu/module-system/building/interface call-with-init-build-spec)
-        (only-in :yuanxu/module-system/building/products build-output-directory
-                 current-build-compiler-options current-build-module-roots current-build-source-directory)
-        (only-in :yuanxu/module-system/building/source-package register-module-build-source!)
+        (only-in :yuanxu/module-system/building/products build-output-directory current-build-source-directory)
         (only-in :yuanxu/module-system/source/observations current-module-source-observer)
         (only-in "./init.ss" hardenedlinux/weaver.init.exports))
 
 (export main)
 
-(def (run-build args entry prepare (target-options '()))
+(def (compile-package args)
   (def output (build-output-directory))
+  (def entry (this-source-file))
   (def (dispatch spec native-args (prefix #f))
     (def (this-source-file)
       (let (directory (current-build-source-directory))
         (if directory (path-expand (path-strip-directory entry) directory) entry)))
-    (def targets
-      (if (null? target-options) spec
-        (map (lambda (target)
-               (append (if (string? target) (list gxc: target) target) target-options))
-             spec)))
-    (defbuild-script targets libdir: output prefix: prefix)
+    (defbuild-script spec libdir: output prefix: prefix)
     (apply main native-args))
-  (parameterize ((current-build-compiler-options
-                   (append (current-build-compiler-options) target-options)))
-    (call-with-init-build-spec prepare dispatch args output entry)))
-
-(def (compile-package args)
-  (run-build args (this-source-file)
-    (lambda () ((.get hardenedlinux/weaver.init.exports std-make-spec) '()))))
-
-;; The pinned producer's Program root owns its Scheme library closure.
-(def (prepare-governor-library)
-  (def source (path-normalize (path-expand "github.com/tao3k/gerbil-ascent/" (pkg-root-dir))))
-  (register-module-build-source! source 'gerbil-ascent)
-  (parameterize ((current-directory source) (current-build-module-roots '(program)))
-    (def entry (path-expand "build.ss" source))
-    (eval-syntax `(import (only-in ,(path-expand "init.ss" source) gerbil-ascent.init.exports)))
-    (eval-syntax `(import (only-in ,entry gerbil-ascent-compiler-options)))
-    (def exports (eval 'gerbil-ascent.init.exports))
-    (run-build '("compile") entry
-      (lambda () ((.get exports std-make-spec) '()))
-      (eval 'gerbil-ascent-compiler-options))))
+  (call-with-init-build-spec
+    (lambda () ((.get hardenedlinux/weaver.init.exports std-make-spec) '()))
+    dispatch args output entry))
 
 ;; Cargo needs the inputs already read by the package owner to invalidate its
 ;; build script. Files created under OUT_DIR are products of the same build.
@@ -80,7 +56,6 @@
 
 (def (main . args)
   (match args
-    (["prepare-governor-library"] (prepare-governor-library))
     (["compile-approved-program" source expected-module]
      ;; An operator can approve a source in a different package.
      (compile-module source [output-dir: (path-expand "lib" (gerbil-path))
