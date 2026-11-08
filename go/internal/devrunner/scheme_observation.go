@@ -24,9 +24,10 @@ type SchemeTiming struct {
 }
 
 type schemeArchiveEvent struct {
-	Phase string `json:"phase"`
-	State string `json:"state"`
-	At    string `json:"at"`
+	Phase   string `json:"phase"`
+	State   string `json:"state"`
+	At      string `json:"at"`
+	Subject string `json:"subject,omitempty"`
 }
 
 type schemeOutput struct {
@@ -74,7 +75,9 @@ func (s *schemeOutput) observe(line string, now time.Time) {
 		if ok && framed {
 			switch phase {
 			case "program-plan", "native-link-inputs", "module-c-batch", "gsc-link", "native-object-batch", "static-archive":
-				s.observed.Archive = append(s.observed.Archive, schemeArchiveEvent{Phase: phase, State: state, At: elapsed})
+				_, subject, _ := strings.Cut(event, " subject=")
+				subject, _, _ = strings.Cut(subject, " elapsedMs=")
+				s.observed.Archive = append(s.observed.Archive, schemeArchiveEvent{Phase: phase, State: state, At: elapsed, Subject: subject})
 			}
 		}
 	}
