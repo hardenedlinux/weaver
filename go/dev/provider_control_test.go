@@ -100,6 +100,9 @@ func newControlProcess(t testing.TB, f *fixture, path string) *controlProcess {
 	for name, value := range settings {
 		c.env = append(c.env, "WEAVER_CONTROL_"+name+"="+value)
 	}
+	// Measure the service drain and process exit without the race runtime's
+	// default one-second sleep after main returns. Keep all race checks active.
+	c.env = append(c.env, "GORACE="+strings.TrimSpace(os.Getenv("GORACE")+" atexit_sleep_ms=0"))
 	t.Cleanup(func() { c.stop(t) })
 	return c
 }
