@@ -159,6 +159,16 @@ func Run(ctx context.Context, config Config, output io.Writer) (report string, r
 		return directory, err
 	}
 	failed := false
+	if mode == "bootstrap-scheme" {
+		settings["GERBIL_BUILD_CORES"] = "4"
+		settings["CORCXXFLAGS_GAMBUILD"] = "-pipe -foptimize-sibling-calls -Wp,-U___SINGLE_HOST,-D___MULTIPLE_HOSTS -ftrack-macro-expansion=0"
+		settings["GAMBUILD_VERBOSE"] = "1"
+		settings["GAMBOPT"] = "debug=q5"
+		if inherited := os.Getenv("GAMBOPT"); inherited != "" {
+			settings["GAMBOPT"] = inherited + "," + settings["GAMBOPT"]
+		}
+		environment = Environment(settings)
+	}
 	if mode == "check-scheme" || mode == "bench-runtime" {
 		// These are Weaver's FFI link inputs and host resource policy, not
 		// a Scheme package installer or SDK discovery layer.
@@ -183,6 +193,8 @@ func Run(ctx context.Context, config Config, output io.Writer) (report string, r
 			providerBuildFailure != "" {
 			result = Result{Name: stage.Name, Status: "SKIP", Binary: stage.Binary, Args: stage.Args,
 				Error: "required native build did not pass: " + providerBuildFailure}
+		} else if mode == "bootstrap-scheme" {
+			result = runStageObserved(ctx, root, directory, environment, stage, false, nil, output)
 		} else {
 			result = runStage(ctx, root, directory, environment, stage)
 		}
@@ -261,7 +273,7 @@ func runStage(ctx context.Context, root, directory string, environment []string,
 // The direct-file arm is retained solely for paired tests of the historical
 // output boundary. Both arms use the same public command and admission rules.
 func runStageCapture(ctx context.Context, root, directory string, environment []string, stage Stage, streamSchemeOutput bool) Result {
-	return runStageObserved(ctx, root, directory, environment, stage, streamSchemeOutput, nil)
+	return runStageObserved(ctx, root, directory, environment, stage, streamSchemeOutput, nil, nil)
 }
 
 // Package tests and the cold/hot build integration have separate budgets.
@@ -272,7 +284,7 @@ const (
 	schemeProviderBuildTimeout   = 8 * time.Minute
 )
 
-func runStageObserved(ctx context.Context, root, directory string, environment []string, stage Stage, streamSchemeOutput bool, onStart func(int)) Result {
+func runStageObserved(ctx context.Context, root, directory string, environment []string, stage Stage, streamSchemeOutput bool, onStart func(int), live io.Writer) Result {
 	tests := ""
 	testTimeout := schemePackageTestTimeout
 	deadline := time.Duration(0)
@@ -319,6 +331,9 @@ func runStageObserved(ctx context.Context, root, directory string, environment [
 	cmd.Dir = root
 	cmd.Env = environment
 	var output io.Writer = log
+	if live != nil {
+		output = io.MultiWriter(log, live)
+	}
 	var observation *schemeOutput
 	if streamSchemeOutput && (tests != "" || stage.Name == "scheme-provider-server-build") {
 		observation = &schemeOutput{destination: log, started: started}

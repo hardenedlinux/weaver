@@ -313,6 +313,10 @@ package WeaverProject {
             }
             part '.cache/verification/latest-bootstrap-build.json' : CIReceipt;
             part '.cache/verification/latest-bootstrap-proofs.json' : CIReceipt;
+            part '.cache/verification/latest-bootstrap-scheme.json' : CIReceipt {
+                doc /* Native Gerbil dependency preparation records its exit
+                   and elapsed time separately from cold program verification. */
+            }
             part '.cache/verification/latest-<suite>.json' : CIReceipt {
                 doc /* weaver-dev owns suite receipts. Preserve committed input
                    digests, stage status, exit, duration and output digest.

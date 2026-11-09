@@ -200,6 +200,8 @@ func stagesForMode(mode, goBinary string) ([]Stage, error) {
 			}
 		}
 		return append(selected, Stage{"storage-grpc-integration", goBinary, []string{"-C", "go", "test", "-count=1", "-race", "-tags=integration", "./dev", "-run", "^TestProvider", "-v"}}), nil
+	case "bootstrap-scheme":
+		return []Stage{{"scheme-dependencies", schemeTool(), []string{"-:1n,2n", "deps", "--install"}}}, nil
 	case "bootstrap-build", "bootstrap-proofs":
 		stages, err := stagesForMode("bootstrap", goBinary)
 		if err != nil {

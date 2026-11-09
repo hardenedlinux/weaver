@@ -33,7 +33,7 @@ func run() error {
 		return errors.New("-timeout must be nonnegative")
 	}
 	if flag.NArg() != 1 {
-		return errors.New("usage: weaver-dev [-go-bin PATH] [-clean-source] qualify-policy|bootstrap|bootstrap-build|bootstrap-proofs|check|check-rust|check-go|check-policy|check-architecture|check-scheme|check-storage|check-telemetry|bench|bench-runtime|bench-execution|render-diagrams|check-diagrams|generate-rpc|prepare-ci-host")
+		return errors.New("usage: weaver-dev [-go-bin PATH] [-clean-source] qualify-policy|bootstrap|bootstrap-build|bootstrap-proofs|bootstrap-scheme|check|check-rust|check-go|check-policy|check-architecture|check-scheme|check-storage|check-telemetry|bench|bench-runtime|bench-execution|render-diagrams|check-diagrams|generate-rpc|prepare-ci-host")
 	}
 	if flag.Arg(0) == "prepare-ci-host" {
 		return devrunner.PrepareHostedCI(os.Stdout)
