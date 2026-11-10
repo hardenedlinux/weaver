@@ -24,6 +24,7 @@ pub enum FactPreparation {
     Resolved(FactResolution),
 }
 
+/// The current hard-fact cut and ordered pending barriers for its authenticated source.
 pub struct FactFeedState {
     pub domain: String,
     pub source_epoch: u64,

@@ -10,7 +10,7 @@ use crate::{
 };
 use weaver_contracts::{
     Error, ProviderCatalog, ProviderOperationBinding, ProviderOperationScope, ProviderPlan,
-    ProviderRoutingScope, PublicationOutcome, Result, Task,
+    ProviderRoutingScope, Publication, PublicationOutcome, Result, Task,
 };
 
 /// A coherent read for bounded Scheme work, never a later registration permit.
@@ -92,6 +92,64 @@ fn cut(connection: &Connection, bound: ProviderOperationBinding) -> Result<Provi
     })
 }
 
+fn require_declared_publication(
+    connection: &Connection,
+    publication: &Publication,
+    digest: &str,
+) -> Result<()> {
+    if let Some(receipt) =
+        crate::publication::lookup(connection, &publication.operation_id, digest)?
+    {
+        return if receipt.outcome == PublicationOutcome::Rejected {
+            Err(Error::Denied)
+        } else {
+            Ok(())
+        };
+    }
+    let pending: Option<(String, String)> = persistence::maybe(
+        connection,
+        "SELECT digest,proposal FROM authority_pending WHERE operation_id=?1",
+        [publication.operation_id.as_str()],
+        |row| Ok((row.get(0)?, row.get(1)?)),
+    )
+    .map_err(db)?;
+    let (staged, record) = pending.ok_or(Error::Conflict("routing publication not staged"))?;
+    let original: Publication = weaver_contracts::decode(record.as_bytes())?;
+    if staged != digest || original != *publication {
+        return Err(Error::Denied);
+    }
+    Ok(())
+}
+
+fn require_routed_cut(
+    connection: &Connection,
+    observed: &ProviderOperationCut,
+    family: &str,
+    node: &str,
+    digest: &str,
+) -> Result<()> {
+    let original = binding(connection, family, node)?.ok_or(Error::Denied)?;
+    if original != observed.binding {
+        return Err(Error::Denied);
+    }
+    let current = cut(connection, original)?;
+    if current.catalog != observed.catalog
+        || current
+            .catalog
+            .as_ref()
+            .is_none_or(|catalog| !catalog.entries.contains_key(digest))
+    {
+        return Err(Error::Denied);
+    }
+    if current.catalog_version != observed.catalog_version
+        || current.revision != observed.revision
+        || current.fence != observed.fence
+    {
+        return Err(Error::Conflict("provider routing cut changed"));
+    }
+    Ok(())
+}
+
 impl Ledger {
     /// Explicit authenticated-source declaration. An operation credential cannot
     /// create or replace this scope. Replays preserve its exact source epoch.
@@ -112,29 +170,7 @@ impl Ledger {
         if self.source.as_ref() != Some(&authority.identity) {
             return Err(Error::Denied);
         }
-        let committed = crate::publication::lookup(&tx, &publication.operation_id, &digest)?;
-        if committed
-            .as_ref()
-            .is_some_and(|r| r.outcome == PublicationOutcome::Rejected)
-        {
-            return Err(Error::Denied);
-        }
-        if committed.is_none() {
-            let pending: Option<(String, String)> = persistence::maybe(
-                &tx,
-                "SELECT digest,proposal FROM authority_pending WHERE operation_id=?1",
-                [publication.operation_id.as_str()],
-                |r| Ok((r.get(0)?, r.get(1)?)),
-            )
-            .map_err(db)?;
-            let (staged, record) =
-                pending.ok_or(Error::Conflict("routing publication not staged"))?;
-            let original: weaver_contracts::Publication =
-                weaver_contracts::decode(record.as_bytes())?;
-            if staged != digest || original != *publication {
-                return Err(Error::Denied);
-            }
-        }
+        require_declared_publication(&tx, publication, &digest)?;
         let declared = ProviderOperationBinding {
             authority,
             scope: scope.clone(),
@@ -194,25 +230,7 @@ impl Ledger {
         observed.binding.scope.admits(task, plan)?;
         let digest = plan.digest()?;
         let tx = persistence::begin(&mut self.connection).map_err(db)?;
-        let original = binding(&tx, &task.family, &plan.node)?.ok_or(Error::Denied)?;
-        if original != observed.binding {
-            return Err(Error::Denied);
-        }
-        let current = cut(&tx, original)?;
-        if current.catalog != observed.catalog
-            || current
-                .catalog
-                .as_ref()
-                .is_none_or(|catalog| !catalog.entries.contains_key(&digest))
-        {
-            return Err(Error::Denied);
-        }
-        if current.catalog_version != observed.catalog_version
-            || current.revision != observed.revision
-            || current.fence != observed.fence
-        {
-            return Err(Error::Conflict("provider routing cut changed"));
-        }
+        require_routed_cut(&tx, observed, &task.family, &plan.node, &digest)?;
         let publication = observed.binding.scope.publication();
         let key = weaver_contracts::PublicationKey {
             operation_id: publication.operation_id.clone(),

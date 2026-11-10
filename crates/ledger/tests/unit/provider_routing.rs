@@ -3,7 +3,11 @@
 // SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 use crate::persistence::{Session, exec, one};
-use weaver_contracts::*;
+use weaver_contracts::{
+    CatalogEntry, ProviderCatalog, ProviderOperationScope, ProviderPlan, ProviderProfile,
+    ProviderQuote, ProviderRoute, ProviderRoutingScope, Publication, RoutingCandidate,
+    RoutingSelection, SourceIdentity, SourceRotation, Task, body_digest, decode,
+};
 use weaver_ledger::Ledger;
 
 fn identity(id: u8) -> SourceIdentity {

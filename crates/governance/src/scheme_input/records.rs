@@ -180,6 +180,7 @@ fn root_plan<'r>(input: &Input<'r>, plan: &ProviderPlan) -> Result<Object<'r>> {
 }
 
 /// Prepare bounded facts and canonical commitments without choosing a candidate.
+#[cfg(feature = "scheme-program")]
 pub(crate) fn root_composition<'r>(
     vm: &'r GerbilRuntime,
     value: &crate::SourceComposition,
@@ -264,6 +265,7 @@ pub(crate) fn root_composition<'r>(
         ("routing", input.vector(selections)?),
     ])
 }
+#[cfg(feature = "scheme-program")]
 fn numbers<'r>(input: &Input<'r>, values: &[u64]) -> Result<Object<'r>> {
     input.vector(
         values

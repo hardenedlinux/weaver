@@ -96,10 +96,13 @@ fn reusing_physical_connection_rejects_old_provider_dispatch() {
         .checkout()
         .expect("fresh logical session");
     let mut calls = 0;
-    assert!(next.dispatch_provider(&permit, || {
-        calls += 1;
-        Ok(())
-    }).is_err());
+    assert!(
+        next.dispatch_provider(&permit, || {
+            calls += 1;
+            Ok(())
+        })
+        .is_err()
+    );
     assert_eq!(calls, 0);
     assert_eq!(next.held("f").expect("original hold"), 4);
 }

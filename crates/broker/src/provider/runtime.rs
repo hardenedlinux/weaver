@@ -222,7 +222,8 @@ pub trait ProviderOutput {
         _enqueue_nanos: u128,
         _consume_nanos: u128,
         _ledger: [weaver_ledger::TransactionTimings; 2],
-    ) {}
+    ) {
+    }
     #[cfg(feature = "test-loopback")]
     fn observe_dispatch(&self, _prepare_nanos: u128, _dispatch_nanos: u128) {}
     type Slot;

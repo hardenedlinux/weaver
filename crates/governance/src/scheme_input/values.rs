@@ -45,6 +45,7 @@ impl<'r> Input<'r> {
         self.bytes(value.len())?;
         Ok(scheme_result(self.vm.string_from_utf8(value))?.into_object())
     }
+    #[cfg(feature = "scheme-program")]
     pub(crate) fn bytes_vector(&self, value: &[u8]) -> Result<Object<'r>> {
         self.node()?;
         self.bytes(value.len())?;

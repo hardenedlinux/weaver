@@ -79,9 +79,9 @@ mod stream_progress;
 mod stream_ranges;
 mod stream_state;
 mod task_publication;
-pub use store::{Dispatch, Ledger};
 #[cfg(feature = "commit-observer")]
 pub use store::ParkedProviderConnection;
+pub use store::{Dispatch, Ledger};
 pub(crate) use store::{db, integer};
 pub use stream_custody::{StreamClaim, StreamOwner};
 pub use stream_ranges::RangePermit;
