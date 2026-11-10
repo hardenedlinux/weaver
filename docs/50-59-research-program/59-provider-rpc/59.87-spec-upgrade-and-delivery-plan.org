@@ -267,6 +267,15 @@ measured separately. It uses a separate test executable and is not included in
 the frozen-server identity or a pure-runtime latency claim.
 The previous submillisecond performance gate remains open.
 
+At =b73813fe= the current integration entry passed a separate six-case
+control on one =arrow,kubernetes= Rust release. The cohort covered Cedar
+revocation during SSE, bound route mutation under Protobuf and Arrow IPC,
+redirect/overload/partial-response/tool-proposal failure without another send,
+shared budget, cross-key unknown holds, and OAuth revocation and recovery.
+The two Go reference reply-loss cases also passed after the test relay
+forwarded source composition. These controls use the direct runtime and the
+reference relay where named; the Scheme-backed cohort has its own gate.
+
 R3 still owns further startup/configuration consolidation. R4 cloud adapters
 and R5 reference/packaging removal are separate work; neither is required to
 route a default R2 operation through Go.
@@ -309,6 +318,13 @@ Agentic AI Lab's declared Parser pin =21fdb58642b135c48ad0006aab40e58e99e58c24=
 could be queried directly on GitHub, but the standard dependency clone did not
 contain its tree. The job produced no Weaver native result for that revision.
 See [[https://github.com/hardenedlinux/weaver/actions/runs/42799007497/job/129771406740][Ubuntu Scheme job]].
+
+The published macOS SDK can be restored independently of the project packages.
+Native verification also needs a prepared =GERBIL_PATH= for the exact Lab
+revision declared in =gerbil.pkg= and the transitive revisions declared by that
+Lab checkout. The available older local package prefix differs in the Lab,
+Parser, Gerbil Scheme Rust, Orgize and ASCENT revisions. It cannot qualify this
+release.
 
 ** R4 Kubernetes source observation
 
@@ -375,6 +391,11 @@ passed independent review and metering, and the offline JSON/YAML import
 matched the Go proposal. Duplicate keys, custom tags and trailing documents
 failed without emitting a proposal. Compiled Scheme preparation and dynamic
 catalog execution still require the Scheme release.
+
+With the published SDK restored, release Clippy passed all targets of
+=weaver-governance=, =weaver-ledger= and =weaver-server= with =scheme-vm=,
+=arrow= and =kubernetes=. This check does not build the approved Scheme
+application or replace the native release tests.
 
 Verification source, fixtures and acceptance commands are versioned with the
 implementation. Release executables and generated receipts remain local
