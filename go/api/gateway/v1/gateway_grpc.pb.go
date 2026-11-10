@@ -46,6 +46,7 @@ const (
 	Gateway_StageHardFact_FullMethodName             = "/weaver.gateway.v1.Gateway/StageHardFact"
 	Gateway_ResolveHardFact_FullMethodName           = "/weaver.gateway.v1.Gateway/ResolveHardFact"
 	Gateway_CompileSource_FullMethodName             = "/weaver.gateway.v1.Gateway/CompileSource"
+	Gateway_ComposeSource_FullMethodName             = "/weaver.gateway.v1.Gateway/ComposeSource"
 	Gateway_InspectProviderCatalog_FullMethodName    = "/weaver.gateway.v1.Gateway/InspectProviderCatalog"
 	Gateway_PublishProviderCatalog_FullMethodName    = "/weaver.gateway.v1.Gateway/PublishProviderCatalog"
 	Gateway_InspectTelemetry_FullMethodName          = "/weaver.gateway.v1.Gateway/InspectTelemetry"
@@ -85,6 +86,8 @@ type GatewayClient interface {
 	// Preparation only. Actual ingress/source state selects an installed original;
 	// request labels cannot supply authority, replacement source or module paths.
 	CompileSource(ctx context.Context, in *ProducerRequest, opts ...grpc.CallOption) (*CompiledSource, error)
+	// Authenticated source-only advisory composition; never publishes or installs an original.
+	ComposeSource(ctx context.Context, in *SourceCompositionRequest, opts ...grpc.CallOption) (*SourceCompositionReply, error)
 	InspectProviderCatalog(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ProviderCatalogSnapshot, error)
 	PublishProviderCatalog(ctx context.Context, in *ProviderCatalogChange, opts ...grpc.CallOption) (*ProviderCatalogSnapshot, error)
 	// Statistical process-local counters only; never durable execution evidence.
@@ -354,6 +357,16 @@ func (c *gatewayClient) CompileSource(ctx context.Context, in *ProducerRequest, 
 	return out, nil
 }
 
+func (c *gatewayClient) ComposeSource(ctx context.Context, in *SourceCompositionRequest, opts ...grpc.CallOption) (*SourceCompositionReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SourceCompositionReply)
+	err := c.cc.Invoke(ctx, Gateway_ComposeSource_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *gatewayClient) InspectProviderCatalog(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ProviderCatalogSnapshot, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ProviderCatalogSnapshot)
@@ -427,6 +440,8 @@ type GatewayServer interface {
 	// Preparation only. Actual ingress/source state selects an installed original;
 	// request labels cannot supply authority, replacement source or module paths.
 	CompileSource(context.Context, *ProducerRequest) (*CompiledSource, error)
+	// Authenticated source-only advisory composition; never publishes or installs an original.
+	ComposeSource(context.Context, *SourceCompositionRequest) (*SourceCompositionReply, error)
 	InspectProviderCatalog(context.Context, *Empty) (*ProviderCatalogSnapshot, error)
 	PublishProviderCatalog(context.Context, *ProviderCatalogChange) (*ProviderCatalogSnapshot, error)
 	// Statistical process-local counters only; never durable execution evidence.
@@ -508,6 +523,9 @@ func (UnimplementedGatewayServer) ResolveHardFact(context.Context, *HardFactBarr
 }
 func (UnimplementedGatewayServer) CompileSource(context.Context, *ProducerRequest) (*CompiledSource, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CompileSource not implemented")
+}
+func (UnimplementedGatewayServer) ComposeSource(context.Context, *SourceCompositionRequest) (*SourceCompositionReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ComposeSource not implemented")
 }
 func (UnimplementedGatewayServer) InspectProviderCatalog(context.Context, *Empty) (*ProviderCatalogSnapshot, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method InspectProviderCatalog not implemented")
@@ -951,6 +969,24 @@ func _Gateway_CompileSource_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Gateway_ComposeSource_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SourceCompositionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GatewayServer).ComposeSource(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Gateway_ComposeSource_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GatewayServer).ComposeSource(ctx, req.(*SourceCompositionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Gateway_InspectProviderCatalog_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Empty)
 	if err := dec(in); err != nil {
@@ -1117,6 +1153,10 @@ var Gateway_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CompileSource",
 			Handler:    _Gateway_CompileSource_Handler,
+		},
+		{
+			MethodName: "ComposeSource",
+			Handler:    _Gateway_ComposeSource_Handler,
 		},
 		{
 			MethodName: "InspectProviderCatalog",

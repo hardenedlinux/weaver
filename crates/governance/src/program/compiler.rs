@@ -48,8 +48,23 @@ impl SchemeCompiler {
             governor_topology: Weak::new(),
         })
     }
+    /// Compose trusted startup data before sealing its exact original binding.
+    /// This does not authenticate source authority or publish any object.
+    pub fn compose(
+        &mut self,
+        configuration: &crate::SourceComposition,
+    ) -> Result<OwnedSource, SourceError> {
+        let input = crate::scheme_input::records::root_composition(&self.runtime, configuration)?;
+        let output = linked::compose(&self.runtime, &input).map_err(|_| SourceError::Scheme)?;
+        let selected = materialize_source(output)?;
+        configuration.validate_selected(&selected)?;
+        Ok(selected)
+    }
     pub fn evaluate(&mut self, input: &crate::Derivation) -> Result<DerivationOutput, SourceError> {
         match input {
+            crate::Derivation::Composition(configuration) => {
+                self.compose(configuration).map(DerivationOutput::Source)
+            }
             crate::Derivation::Governor(cut) => self.derive(cut),
             crate::Derivation::FactImpact { root, dependencies } => {
                 let input = crate::scheme_input::values::Input::new(&self.runtime);
@@ -440,7 +455,8 @@ fn governor_indices_reject_stale_binding_and_foreign_node() {
 #[cfg(test)]
 #[test]
 fn rooted_governor_indices_preserve_full_width_binding_and_all_64_candidates() {
-    let compiler = SchemeCompiler::initialize().expect("approved linked application");
+    let mut compiler = SchemeCompiler::initialize().expect("approved linked application");
+    composition_uses_scheme_then_rust_seals_the_exact_original(&mut compiler);
     let vm = &compiler.runtime;
     let input = crate::scheme_input::values::Input::new(vm);
     let vector = |values: Vec<RootedSchemeObject<'_>>| {
@@ -520,4 +536,51 @@ fn rooted_governor_indices_preserve_full_width_binding_and_all_64_candidates() {
         materialize_indices(reply(&[4, 0]), 4, 2).expect("replacement binding"),
         [0]
     );
+}
+
+#[cfg(test)]
+fn composition_uses_scheme_then_rust_seals_the_exact_original(compiler: &mut SchemeCompiler) {
+    use crate::{RoutingCandidate, RoutingSelection, SourceComposition};
+    let original = crate::source_fixture::source();
+    let mut raw = original.clone();
+    raw.tasks[0].body_digests.clear();
+    raw.tasks[0].stream_contracts.clear();
+    raw.plans.clear();
+    let routing = original
+        .plans
+        .iter()
+        .map(|plan| RoutingSelection {
+            node: plan.node.clone(),
+            allowed_modules: vec!["approved".into()],
+            required: vec!["text".into()],
+            max_latency_ms: 100,
+            max_procurement_cost: 4,
+            user_token_rates: [0; 4],
+            candidates: vec![RoutingCandidate {
+                module: "approved".into(),
+                capabilities: vec!["text".into()],
+                latency_ms: 10,
+                procurement_rates: [0; 4],
+                token_bounds: [0, 0, 0, 32],
+                plan: plan.clone(),
+            }],
+        })
+        .collect();
+    let mut configuration = SourceComposition {
+        source: raw,
+        routing,
+    };
+    let selected = compiler
+        .compose(&configuration)
+        .expect("Scheme composition");
+    assert!(selected.data() == &original);
+    let expected = crate::SourceExpectation::capture(&selected);
+    assert!(expected.bind(selected.clone()).is_ok());
+    configuration.routing[0].allowed_modules.clear();
+    assert!(compiler.compose(&configuration).is_err());
+    configuration.routing[0]
+        .allowed_modules
+        .push("approved".into());
+    configuration.routing[0].candidates[0].plan.body = "{}".into();
+    assert!(compiler.compose(&configuration).is_err());
 }

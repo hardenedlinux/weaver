@@ -277,6 +277,7 @@ async fn bounded_catalog_wait_releases_cancelled_waiter_and_preserves_active_slo
         capacity: Arc::new(Semaphore::new(1)),
         waiting: Arc::new(Semaphore::new(3)),
         next_mutation: Arc::new(super::MutationHandoff::default()),
+        routing: Arc::new(tokio::sync::Mutex::new(None)),
     };
     let held = source.command_slot(false).await.expect("active slot");
     let mut first = Box::pin(source.command_slot(true));
@@ -320,6 +321,7 @@ async fn cancelled_priority_wait_does_not_send_a_source_command() {
         capacity: Arc::new(Semaphore::new(1)),
         waiting: Arc::new(Semaphore::new(3)),
         next_mutation: Arc::new(super::MutationHandoff::default()),
+        routing: Arc::new(tokio::sync::Mutex::new(None)),
     };
     let held = source.command_slot(false).await.expect("active slot");
     let mut command = Box::pin(source.publish(caller(), change("cancel", None)));

@@ -277,6 +277,9 @@ impl Gateway {
                 })
                 .collect::<Result<Vec<_>>>()?,
             weaver_governance::DerivationOutput::Indices(indices) => indices,
+            weaver_governance::DerivationOutput::Source(_) => {
+                return Err(Error::Conflict("Governor result kind"));
+            }
         };
         ready.sort_unstable();
         ready.dedup();

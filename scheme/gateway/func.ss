@@ -26,7 +26,7 @@
         (only-in "./derivation.ss" derive-gateway-source)
         (only-in "./derivation-types.ss" GatewayPreparation)
         "./contracts.ss")
-(export compile-gateway prepare-gateway prepare-governed-gateway emit-gateway emit-governed-gateway capture-governed-gateway make-gateway-program governor-open-nodes governor-ready-steps)
+(export compile-gateway prepare-gateway prepare-governed-gateway emit-gateway emit-governed-gateway capture-governed-gateway make-gateway-program governor-open-nodes governor-ready-steps compose-governor-selection)
 (export gateway-source-phase-observer gateway-source-cancelled? make-retained-governor trace-gateway-source-phase)
 
 ;;; Each source-loaded role has its own parameter. Enable the same numeric
@@ -126,6 +126,24 @@
                  edges))
                conditional?
                (list-sort (lambda (a b) (string<? (car a) (car b))) selectors)))))
+
+;;; Pure topology projection is reused before original sealing and at capture.
+(def (compose-governor-selection governor context states source-family)
+  (def nodes (governor-open-nodes governor states))
+  (def workflow (session-workflow-path context source-family))
+  (cond
+        ((not workflow)
+         (.o schema: "agentic-ai-lab.loop-governor.v1" family: source-family open_nodes: nodes))
+        ((pair? (cadddr workflow))
+         (.o schema: "weaver.session-nested.v1" family: source-family open_nodes: (car workflow)
+             workflow_edges: (cadr workflow) workflow_selectors: (cadddr workflow)))
+        ((cadr workflow)
+         (.o schema: (if (caddr workflow) "weaver.session-choice.v1" "weaver.session-dag.v1")
+             family: source-family open_nodes: (car workflow)
+             workflow_edges: (cadr workflow)))
+        (else
+         (.o schema: "weaver.session-workflow.v1" family: source-family open_nodes: (car workflow))))
+)
 
 ;;; All values are detached observations from the Rust ledger. Derived nodes
 ;;; carry no authority across the subsequent ledger admission transaction.
@@ -424,19 +442,7 @@
       (error "provider plans must exactly match the Governor source handoff"))
     ;; Retain caller data separately from the image assessed and returned. No
     ;; Policy/Governance callback receives a mutable alias into this image.
-    (def selection
-      (cond
-        ((not workflow)
-         (.o schema: "agentic-ai-lab.loop-governor.v1" family: source-family open_nodes: nodes))
-        ((pair? (cadddr workflow))
-         (.o schema: "weaver.session-nested.v1" family: source-family open_nodes: (car workflow)
-             workflow_edges: (cadr workflow) workflow_selectors: (cadddr workflow)))
-        ((cadr workflow)
-         (.o schema: (if (caddr workflow) "weaver.session-choice.v1" "weaver.session-dag.v1")
-             family: source-family open_nodes: (car workflow)
-             workflow_edges: (cadr workflow)))
-        (else
-         (.o schema: "weaver.session-workflow.v1" family: source-family open_nodes: (car workflow)))))
+    (def selection (compose-governor-selection governor context states source-family))
     (def original
       (validate GatewayArtifact
         (.o governance: selection tasks: task-values plans: plan-values publication: publication-value)))

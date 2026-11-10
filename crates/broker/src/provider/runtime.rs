@@ -177,7 +177,7 @@ impl ProviderTransport {
         route: &ProviderRoute,
         protocol: ProviderProtocol,
     ) -> Result<super::request::PreparedRequest> {
-        crate::HttpsTransport::validate_endpoint(&route.endpoint)?;
+        crate::HttpsTransport::validate_provider_endpoint(&route.endpoint, protocol)?;
         let runtime = self.inner.runtime.clone();
         let token = if let Some(federation) = self.inner.federation.get(&route.target) {
             if !matches!(protocol, ProviderProtocol::Anthropic) || route.endpoint != wif::MESSAGES {

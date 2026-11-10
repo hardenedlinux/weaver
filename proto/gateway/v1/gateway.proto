@@ -35,6 +35,8 @@ service Gateway {
   // Preparation only. Actual ingress/source state selects an installed original;
   // request labels cannot supply authority, replacement source or module paths.
   rpc CompileSource(ProducerRequest) returns (CompiledSource);
+  // Authenticated source-only advisory composition; never publishes or installs an original.
+  rpc ComposeSource(SourceCompositionRequest) returns (SourceCompositionReply);
   rpc InspectProviderCatalog(Empty) returns (ProviderCatalogSnapshot);
   rpc PublishProviderCatalog(ProviderCatalogChange) returns (ProviderCatalogSnapshot);
   // Statistical process-local counters only; never durable execution evidence.
@@ -83,6 +85,21 @@ message WorkflowEdge { string dependent = 1; string dependency = 2; }
 message WorkflowSelector { string selector = 1; string left = 2; string right = 3; }
 message GovernanceSelection { string schema = 1; string family = 2; repeated string open_nodes = 3; repeated WorkflowEdge workflow_edges = 4; repeated WorkflowSelector workflow_selectors = 5; }
 message SourceArtifact { GovernanceSelection governance = 1; repeated Task tasks = 2; repeated ProviderPlan plans = 3; PublishRequest publication = 4; }
+message RoutingCandidate {
+  string module = 1; repeated string capabilities = 2; uint64 latency_ms = 3;
+  repeated uint64 procurement_rates = 4; repeated uint64 token_bounds = 5;
+  ProviderPlan plan = 6;
+}
+message RoutingSelection {
+  string node = 1; repeated string allowed_modules = 2; repeated string required = 3;
+  uint64 max_latency_ms = 4; uint64 max_procurement_cost = 5;
+  repeated uint64 user_token_rates = 6; repeated RoutingCandidate candidates = 7;
+}
+message SourceCompositionRequest {
+  SourceArtifact source = 1; repeated RoutingSelection routing = 2;
+  bool use_catalog = 3; string expected_catalog_version = 4;
+}
+message SourceCompositionReply { SourceArtifact artifact = 1; string catalog_version = 2; }
 // Source authority here is knowledge at response admission, never a later permit.
 message CompiledSource { string producer = 1; SourceAuthorityView authority = 2; SourceArtifact artifact = 3; }
 message OperationKey { string family = 1; string node = 2; }
@@ -120,7 +137,9 @@ message FamilyAliasRequest { string family = 1; string origin = 2; }
 message DomainMigration { string operation_id = 1; string budget_from = 2; string budget_to = 3; string history_from = 4; string history_to = 5; uint64 budget_from_epoch = 6; uint64 budget_to_epoch = 7; uint64 history_from_epoch = 8; uint64 history_to_epoch = 9; }
 message DomainMigrationReceipt { string operation_id = 1; string digest = 2; bool committed = 3; string budget_root = 4; string history_root = 5; uint64 budget_epoch = 6; uint64 history_epoch = 7; }
 // Distinct source capability: both fields are required by the server. No fallback.
-message RegisterPublishedTaskRequest { Task task = 1; PublicationKey publication = 2; }
+// Exactly one of task or source_scope. The latter declares a bounded deferred
+// selection or immutable original under authenticated source custody; never an operation permit.
+message RegisterPublishedTaskRequest { Task task = 1; PublicationKey publication = 2; SourceCompositionRequest source_scope = 3; }
 message PublishRequest { optional uint64 expected_revision = 1; uint64 fence = 2; string policy = 3; string schema = 4; string operation_id = 5; }
 enum PublicationOutcome { PUBLICATION_OUTCOME_UNSPECIFIED = 0; COMMITTED = 1; REJECTED = 2; }
 message PublicationReceipt { string operation_id = 1; string digest = 2; PublicationOutcome outcome = 3; optional uint64 revision = 4; optional uint64 fence = 5; }

@@ -27,6 +27,7 @@ import (
 	v1 "github.com/HardenedLinux/weaver/go/api/v1"
 	"github.com/HardenedLinux/weaver/go/internal/config"
 	"github.com/HardenedLinux/weaver/go/internal/gatewayclient"
+	"github.com/HardenedLinux/weaver/go/internal/routing"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
@@ -631,8 +632,54 @@ func TestProviderControlCompiledAssetsRevocationAndRestart(t *testing.T) {
 }
 
 func compiledControlSources(assets bool) controlPolicySources {
+	return composedControlSources(assets, false)
+}
+
+func TestProviderControlSchemeCompositionRevocationAndRestart(t *testing.T) {
+	exerciseControlPolicies(t, "json", nil, composedControlSources(false, true))
+}
+
+func composedControlSources(assets, compose bool) controlPolicySources {
 	return controlPolicySources{producer: "approved-control", configure: func(t *testing.T, f *fixture, bundle config.Bundle) {
 		path := configuredCatalogPath(t, f, bundle)
+		if compose {
+			data, err := os.ReadFile(path)
+			if err != nil {
+				t.Fatal(err)
+			}
+			var catalog struct {
+				Producers []map[string]any `json:"producers"`
+			}
+			if err := json.Unmarshal(data, &catalog); err != nil {
+				t.Fatal(err)
+			}
+			raw := bundle
+			raw.Tasks = append([]v1.Task(nil), bundle.Tasks...)
+			raw.Tasks[0].BodyDigests = map[string]string{}
+			raw.Tasks[0].StreamContracts = map[string]string{}
+			raw.Plans = []v1.ProviderPlan{}
+			choices := make([]routing.Selection, 0, len(bundle.Plans))
+			for _, plan := range bundle.Plans {
+				invalid := plan
+				invalid.Body = `{}`
+				choices = append(choices, routing.Selection{Node: plan.Node,
+					AllowedModules: []string{"approved"}, Required: []string{"text"},
+					MaxLatencyMillis: 100, MaxProcurementCost: 4,
+					Candidates: []routing.Candidate{{Module: "approved", Capabilities: []string{"text"},
+						LatencyMillis: 10, TokenBounds: [4]uint64{0, 0, 0, 32}, Plan: plan},
+						{Module: "approved", Capabilities: []string{"text"}, LatencyMillis: 1, TokenBounds: [4]uint64{0, 0, 0, 32}, Plan: invalid}},
+				})
+			}
+			delete(catalog.Producers[0], "original")
+			catalog.Producers[0]["composition"] = map[string]any{"source": raw, "routing": choices}
+			data, err = json.Marshal(catalog)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := os.WriteFile(path, data, 0600); err != nil {
+				t.Fatal(err)
+			}
+		}
 		f.stop(t)
 		f.env = append(f.env, "WEAVER_GOVERNANCE_CATALOG="+path)
 		if assets {
@@ -805,4 +852,146 @@ func TestProviderControlCompiledCatalogRequiresExactSourceEpoch(t *testing.T) {
 		t.Fatal("matching source epoch did not execute Scheme capture")
 	}
 	t.Log("exact epoch and producer compiled after restart, with zero provider sends")
+}
+
+// The preparation command has source credentials only and exits before any
+// operation request. All frames then travel directly from the Rust listener.
+func TestProviderRustDirectPreparedOperationWithoutGoRelay(t *testing.T) {
+	f := newFixture(t, completeSSE, false)
+	bundle := controlBundle(t, f)
+	f.env = append(f.env, "WEAVER_GOVERNANCE_RETIRE_ON_ACTIVATION=1")
+	policy := compiledControlSources(false)
+	policy.configure(t, f, bundle)
+	control := newControlProcess(t, f, writeControlBundle(t, f, bundle, "json"))
+	control.useProducer(policy.producer)
+	ctx, cancel := context.WithTimeout(t.Context(), 15*time.Second)
+	defer cancel()
+	command := exec.CommandContext(ctx, control.image, "prepare")
+	for _, value := range os.Environ() {
+		if !strings.HasPrefix(value, "WEAVER_CONTROL_") {
+			command.Env = append(command.Env, value)
+		}
+	}
+	for _, value := range control.env {
+		name, _, _ := strings.Cut(value, "=")
+		if strings.HasPrefix(name, "WEAVER_CONTROL_AUTHORITY_SOURCE_") || name == "WEAVER_CONTROL_AUTHORITY_CA" ||
+			name == "WEAVER_CONTROL_AUTHORITY_SERVER_NAME" || name == "WEAVER_CONTROL_CONFIG" || name == "WEAVER_CONTROL_PRODUCER" {
+			command.Env = append(command.Env, value)
+		}
+	}
+	if output, err := command.CombinedOutput(); err != nil {
+		t.Fatalf("source-only preparation: %v: %s", err, output)
+	}
+	// A dangling modification must not be interpreted as an operation-key call.
+	stream, err := f.client.RPC.ExecuteProvider(f.client.Context(ctx), &pb.ProviderRequest{Plan: &pb.ProviderPlan{Family: "control", Node: "infer", Profile: "changed"}, Encoding: pb.Encoding_PROTOBUF, BatchRows: 1})
+	if err == nil {
+		_, err = stream.Recv()
+	}
+	if err == nil || f.primary.Load() != 0 || f.backup.Load() != 0 {
+		t.Fatal("modified original admitted", err)
+	}
+	stream, err = f.client.RPC.ExecuteProvider(f.client.Context(ctx), &pb.ProviderRequest{Plan: &pb.ProviderPlan{Family: "control", Node: "infer"}, Encoding: pb.Encoding_PROTOBUF, BatchRows: 1})
+	if err != nil {
+		t.Fatal(err)
+	}
+	frames := 0
+	text := ""
+	for {
+		frame, err := stream.Recv()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+		if frame.GetEvent() == nil {
+			t.Fatal("empty released frame")
+		}
+		text += frame.GetEvent().Text
+		frames++
+	}
+	if frames != 5 || text != "hello world" || f.primary.Load()+f.backup.Load() != 1 {
+		t.Fatal("direct operation incomplete", frames)
+	}
+	if control.child != nil {
+		t.Fatal("Go service remained in the request path")
+	}
+	f.stop(t)
+	f.start(t)
+	stream, err = f.client.RPC.ExecuteProvider(f.client.Context(ctx), &pb.ProviderRequest{Plan: &pb.ProviderPlan{Family: "control", Node: "infer"}, Encoding: pb.Encoding_PROTOBUF, BatchRows: 1})
+	if err == nil {
+		_, err = stream.Recv()
+	}
+	if err == nil || f.primary.Load()+f.backup.Load() != 1 {
+		t.Fatal("restart replayed completed original", err)
+	}
+}
+
+// JSON source preparation also retains exact plans for direct operation keys;
+// it does not rely on the optional compiled single-provider retirement profile.
+func TestProviderRustDirectFilePreparation(t *testing.T) {
+	f := newFixture(t, completeSSE, false)
+	bundle := controlBundle(t, f)
+	originalPolicy := bundle.Publication.Policy
+	bundle.Publication.Policy += `
+forbid(principal, action == Weaver::Action::"invokeProvider", resource) when { context.family == "control" && context.node == "next" };`
+	control := newControlProcess(t, f, writeControlBundle(t, f, bundle, "json"))
+	control.prepare(t)
+	ctx, cancel := context.WithTimeout(t.Context(), 12*time.Second)
+	defer cancel()
+	run := func() error {
+		stream, err := f.client.RPC.ExecuteProvider(f.client.Context(ctx), &pb.ProviderRequest{Plan: &pb.ProviderPlan{Family: "control", Node: "infer"}, Encoding: pb.Encoding_PROTOBUF, BatchRows: 1})
+		if err != nil {
+			return err
+		}
+		count := 0
+		text := ""
+		for {
+			frame, err := stream.Recv()
+			if err == io.EOF {
+				if count != 5 || text != "hello world" {
+					t.Fatalf("incomplete direct file stream: count=%d text=%q", count, text)
+				}
+				return nil
+			}
+			if err != nil {
+				return err
+			}
+			count++
+			text += frame.GetEvent().GetText()
+		}
+	}
+	if err := run(); err != nil {
+		t.Fatal(err)
+	}
+	if f.primary.Load() != 1 || control.child != nil {
+		t.Fatal("direct file operation path", f.primary.Load())
+	}
+	deniedNext := func() {
+		stream, err := f.client.RPC.ExecuteProvider(f.client.Context(ctx), &pb.ProviderRequest{Plan: &pb.ProviderPlan{Family: "control", Node: "next"}, Encoding: pb.Encoding_PROTOBUF, BatchRows: 1})
+		if err == nil {
+			_, err = stream.Recv()
+		}
+		if status.Code(err) != codes.FailedPrecondition || f.primary.Load() != 1 {
+			t.Fatalf("fixed projection used stale authority: %v", err)
+		}
+	}
+	deniedNext() // Warm exact immutable data while Cedar denies execution.
+	for index, policy := range []string{originalPolicy, bundle.Publication.Policy} {
+		publication := bundle.Publication.Clone()
+		revision := uint64(index + 1)
+		publication.OperationID = "fixed-policy-" + strconv.Itoa(index)
+		publication.ExpectedRevision = &revision
+		publication.Fence = uint64(index + 2)
+		publication.Policy = policy
+		if _, err := f.admin.Publish(ctx, publication); err != nil {
+			t.Fatal(err)
+		}
+		deniedNext() // Even newly allowing Cedar cannot rebase the old plan.
+	}
+	f.stop(t)
+	f.start(t)
+	if err := run(); err == nil || f.primary.Load() != 1 {
+		t.Fatal("restart replayed file original", err)
+	}
 }

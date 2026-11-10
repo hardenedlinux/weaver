@@ -23,7 +23,7 @@ pub enum SourceError {
     Scheme,
 }
 
-#[derive(Clone, PartialEq, Eq, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, serde::Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 /// Original governor family and selected node identities.
 pub struct SourceSelection {
@@ -35,7 +35,7 @@ pub struct SourceSelection {
     #[serde(default)]
     pub workflow_selectors: Vec<[String; 3]>,
 }
-#[derive(Clone, PartialEq, Eq, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, serde::Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 /// Concrete source records; data ownership grants no execution authority.
 pub struct SourceData {
@@ -47,7 +47,7 @@ pub struct SourceData {
 
 /// Rust-owned typed source data, not an encoded transport blob or publisher permit.
 /// No VM, callback, raw pointer or borrowed source survives in this type.
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct OwnedSource {
     data: Arc<SourceData>,
 }

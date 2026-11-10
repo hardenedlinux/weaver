@@ -456,4 +456,157 @@ package ArchitectureEvolution {
         expose reinforcement::reconcile;
         render asInterconnectionDiagram;
     }
+
+    requirement def SchemeSourceComposition {
+        doc /* Trusted startup routing is evaluated by the installed Scheme/POO
+           application with bounded gerbil-ascent eligibility and deterministic
+           cost/latency/canonical-digest ordering. Rust computes canonical facts,
+           validates the detached output against the independently retained task,
+           publication, declared topology and concrete candidate membership, and
+           only then seals its exact original. No second ranking engine is added.
+           Workflow topology comes from the existing Session/Funflow/Governor
+           producer. Later source captures retain unchanged SourceExpectation
+           equality; composition does not authenticate or publish a source.
+           The Go catalog adapter consumes the composed typed projection.
+           File syntax decoding and dynamic catalog reads use the same advisory
+           RPC; Go no longer selects candidates or interprets Workflow there.
+           Reference algorithms retain development consumers only. OpenSysML
+           tools remain Go. */
+    }
+    requirement def AdvisorySourceComposition {
+        doc /* ComposeSource is restricted to authenticated source ingress.
+           Recheck source authority before and after the bounded existing owner
+           call. When catalog facts are requested, require the expected exact
+           catalog version and recheck it after derivation. The response contains
+           inert typed source data, never a publication receipt, catalog install,
+           source enrollment, consumed permit or barrier resolution. Complete
+           static projections reuse Rust validation; undecided offers use the
+           same affine Scheme owner. Preserve independent SPEC review custody.
+           Existing immutable projection caching may coalesce one new version;
+           each request still observes live source/catalog authority and final
+           Rust admission independently decides registration, reservation and use. */
+    }
+    item def UnsealedSourceComposition {
+        item original : PolicyEvidenceDesign::SemanticCommitment;
+        attribute configurationIdentity : String;
+        doc /* Deployment-owned configuration and candidate facts, not a permit.
+           Exact byte/traversal and candidate limits bound application input. */
+    }
+    action def ComposeSourceBeforeSeal {
+        in item configuration : UnsealedSourceComposition;
+        out item proposal : PolicyEvidenceDesign::SourceCommand;
+        doc /* Existing tracked Rust owner invokes the fixed rooted Scheme ABI;
+           reuse POO source contracts, gerbil-ascent and installed producer.
+           No additional VM, loader, runner, semantic cache or durable store. */
+    }
+    requirement def SourceBoundOperationPreparation {
+        doc /* An authenticated source declares either exact fixed plans or one
+           bounded catalog selector before operations. Persist the tagged scope,
+           exact source authority epoch, publication and content digest in the
+           existing ledger. Only source ingress can declare it; the operation
+           listener receives a narrow resolver, never a source credential.
+           Fixed plans are inert original data; reuse their sealed projection
+           without a source-lane transaction on each hit. All fresh execution
+           guards remain broker/ledger decisions. Catalog derivation uses the
+           existing affine Scheme/POO/gerbil-ascent owner. Coalesce identical
+           immutable projections; never cache permission. Before registering a
+           selected task, one existing ledger transaction rejoins the exact
+           declared scope, current source epoch, committed original publication,
+           authority revision/fence and current catalog version/content.
+           Candidate/body mutation, stale cuts, withdrawal and source retirement
+           cannot register a new task. Restart reads the retained declaration,
+           not a Go service cache. Immutable task and spent claim rules remain. */
+    }
+    requirement def DirectRustOperationIngress {
+        doc /* Rust's existing operation listener directly authenticates callers,
+           admits bounded streams and invokes the existing ledger/broker/output
+           path. Go preparation is a source-only command and exits before the
+           request; it needs neither operation credentials nor an ingress socket.
+           Default prepare enables direct fixed and catalog-selected operations;
+           explicit serve retains reference relay controls until R5.
+           A complete typed plan retains the existing direct protocol. An exact
+           family/node key resolves activated Prepared or declared ledger data;
+           partial overrides are not keys, and no lookup grants authority.
+           Resolve using the sealed activation revision/fence, never current-head
+           rebasing. All final guards, encoding, order, cancellation, backpressure,
+           terminal status and unknown holds remain in the existing Rust owners.
+           Direct OAuth observes the actual TLS sender and rejects caller-supplied
+           relay evidence before execution admission. Signed relay delegation is
+           a separate explicit deployment mode, not a direct-mode fallback. */
+    }
+    requirement def RustSchemeRuntimeBoundary {
+        doc /* The target operation path terminates at the existing Rust server,
+           broker and ledger. Reuse the affine Scheme owner for necessary bounded
+           semantic derivation; publication preparation is not a per-frame task.
+           No Go relay, Kubernetes API call or controller reconciliation is required
+           for each request/frame. Rust preserves fresh source/version checks,
+           Cedar permission, reservation, frontier/claim, complete response release,
+           cancellation and unknown holds. This design is not a latency result. */
+    }
+    requirement def CloudAdapterAuthorityBoundary {
+        doc /* A cloud adapter carries authenticated observations and proposals,
+           not business selection or effect authority. Kubernetes UID, resource
+           version and generation are observation coordinates, not ledger source
+           revisions. Persist hard-fact intent in the existing source lane/ledger
+           before ASCENT derives impact; release barriers only after transactional
+           exact-source and intent-prefix checks. Duplicate/reordered watches,
+           relist, deletion, restart and A-to-B-to-A cannot restore stale authority.
+           Separate bounded adapter work from operation admission and owner work.
+           A disconnected adapter cannot authorize new use of revoked facts. */
+    }
+    requirement def GoIntegrationLeverage {
+        doc /* Go is optional in the target production graph. Retain an owned Go
+           adapter only for a named required integration whose maintained Go API
+           avoids substantial implementation and conformance work. Record SDK
+           coverage, protocol alternatives, trust custody, version/support cost,
+           failure isolation and retirement criteria. Go implementation of an
+           external cloud service does not require Weaver to embed a Go runtime.
+           Development OpenSysML tooling and independent signing services have
+           separate retirement decisions; migration cannot merge issuer custody. */
+    }
+    item def CloudResourceObservation {
+        attribute resourceIdentity : String;
+        attribute resourceVersion : String;
+        attribute generation : String;
+        attribute authenticatedSource : String;
+        item cut : ReconciliationCut;
+        doc /* Target envelope over existing typed source/fact contracts, not a
+           second durable store. A partial watch image is not a coherent ledger
+           cut. Secret bytes stay with their existing credential owner. */
+    }
+    item def CloudIntegrationAssessment {
+        attribute integration : String;
+        attribute requiredCapability : String;
+        attribute supportedInterface : String;
+        attribute maintainedSDKBenefit : String;
+        attribute operationalCost : String;
+        attribute retirementCondition : String;
+        item evidence : EvidenceAxis[0..*];
+    }
+    action def IngestCloudObservation {
+        in item observation : CloudResourceObservation;
+        out item cut : ReconciliationCut;
+        doc /* Target Rust kube-rs or protocol adapter feeds existing source lane.
+           Observation admission precedes Scheme ReconcileObjectSet. No watch
+           callback directly publishes or executes an effect. */
+    }
+    part def RustSchemeAllocation {
+        requirement composition : SchemeSourceComposition;
+        requirement advisory : AdvisorySourceComposition;
+        action compose : ComposeSourceBeforeSeal;
+        requirement operation : RustSchemeRuntimeBoundary;
+        requirement directIngress : DirectRustOperationIngress;
+        requirement sourcePreparation : SourceBoundOperationPreparation;
+        requirement cloud : CloudAdapterAuthorityBoundary;
+        requirement leverage : GoIntegrationLeverage;
+        action ingest : IngestCloudObservation;
+        action reconcile : ReconcileObjectSet;
+        action prepare : ControllerObjectLifecycle::PrepareObject;
+        action advance : AdvanceGovernedRoutine;
+        doc /* Target semantic owner is Scheme/POO/gerbil-ascent, effect owner is
+           existing Rust admission/broker/ledger, and cloud observation owner is
+           a bounded Rust adapter by default. Go development tooling is retained
+           while its existing OpenSysML SDK provides concrete leverage. */
+    }
+    part rustSchemeTarget : RustSchemeAllocation;
 }

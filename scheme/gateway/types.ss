@@ -2,7 +2,7 @@
 ;;;
 ;;; SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
-;;; Gateway configuration operations; actual routing compilation remains in Go.
+;;; Gateway semantic operations; Rust retains final validation and authority.
 (import (only-in :clan/poo/object .cc)
         (only-in :clan/poo/mop Function Bool)
         (only-in :clan/poo/type Record List Pair Or Symbol String Enum)

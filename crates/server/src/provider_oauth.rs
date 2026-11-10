@@ -47,6 +47,7 @@ pub(crate) fn change(
 
 pub(crate) fn observe<T>(
     enabled: bool,
+    relay: bool,
     request: &Request<T>,
 ) -> Result<Option<ProviderOAuthUse>, Status> {
     let metadata = request.metadata();
@@ -59,6 +60,11 @@ pub(crate) fn observe<T>(
             ));
         }
         return Ok(None);
+    }
+    if !relay && metadata.contains_key("weaver-provider-oauth-ingress-cert") {
+        return Err(Status::unauthenticated(
+            "direct ingress cannot supply relay evidence",
+        ));
     }
     if metadata.get_all("weaver-provider-oauth").iter().count() != 1 {
         return Err(Status::unauthenticated(
@@ -118,4 +124,33 @@ pub(crate) fn observe<T>(
         certificate_sha256: hex::encode(peer),
         ingress_certificate_sha256,
     }))
+}
+
+#[cfg(test)]
+mod direct_ingress_tests {
+    use super::*;
+    #[test]
+    fn direct_ingress_rejects_forged_relay_evidence_before_credential_use() {
+        let mut request = Request::new(());
+        request.metadata_mut().insert(
+            "weaver-provider-oauth-ingress-cert",
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                .parse()
+                .expect("metadata"),
+        );
+        assert_eq!(
+            observe(true, false, &request)
+                .err()
+                .expect("relay evidence refused")
+                .code(),
+            tonic::Code::Unauthenticated
+        );
+        assert_eq!(
+            observe(false, false, &request)
+                .err()
+                .expect("disabled profile refused")
+                .code(),
+            tonic::Code::FailedPrecondition
+        );
+    }
 }

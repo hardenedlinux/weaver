@@ -26,6 +26,33 @@ pub(crate) struct SourceOwner {
     capacity: Arc<Semaphore>,
     waiting: Arc<Semaphore>,
     next_mutation: Arc<MutationHandoff>,
+    routing: Arc<tokio::sync::Mutex<Option<OperationProjection>>>,
+}
+#[derive(Clone)]
+pub(crate) struct OperationResolver(SourceOwner);
+enum OperationProjection {
+    Fixed(Arc<weaver_contracts::ProviderPlan>),
+    Catalog(Box<RoutingProjection>),
+}
+struct RoutingProjection {
+    binding: weaver_contracts::ProviderOperationBinding,
+    version: String,
+    revision: u64,
+    fence: u64,
+    selected: weaver_governance::OwnedSource,
+}
+impl OperationResolver {
+    pub(crate) async fn resolve(
+        &self,
+        runtime: &RuntimeOwner,
+        family: String,
+        node: String,
+        expected: &str,
+    ) -> std::result::Result<(weaver_contracts::ProviderPlan, String), Status> {
+        self.0
+            .resolve_operation(runtime, family, node, expected)
+            .await
+    }
 }
 #[derive(Default)]
 struct MutationHandoff {
@@ -65,9 +92,24 @@ impl Drop for MutationReservation<'_> {
     }
 }
 
-struct Envelope {
-    caller: SourceIdentity,
-    command: Command,
+enum Envelope {
+    Source {
+        caller: SourceIdentity,
+        command: Box<Command>,
+    },
+    RoutingCut {
+        family: String,
+        node: String,
+        reply: oneshot::Sender<Result<Option<weaver_ledger::ProviderOperationCut>>>,
+        slot: OwnedSemaphorePermit,
+    },
+    RoutedTask {
+        observed: Box<weaver_ledger::ProviderOperationCut>,
+        task: Box<Task>,
+        plan: Box<weaver_contracts::ProviderPlan>,
+        reply: oneshot::Sender<Result<()>>,
+        slot: OwnedSemaphorePermit,
+    },
 }
 struct SourceDeployment {
     review: Option<weaver_contracts::ReviewAuthority>,
@@ -78,6 +120,12 @@ struct SourceDeployment {
 }
 
 enum Command {
+    RegisterOperationSource {
+        scope: Box<weaver_contracts::ProviderOperationScope>,
+        reply: oneshot::Sender<Result<()>>,
+        slot: OwnedSemaphorePermit,
+    },
+
     StageFact {
         intent: FactIntent,
         reply: oneshot::Sender<Result<FactBarrier>>,
@@ -458,6 +506,7 @@ impl SourceOwner {
                 capacity: Arc::new(Semaphore::new(1)),
                 waiting: Arc::new(Semaphore::new(3)),
                 next_mutation: Arc::new(MutationHandoff::default()),
+                routing: Arc::new(tokio::sync::Mutex::new(None)),
             },
             job,
         })
@@ -552,9 +601,9 @@ impl SourceOwner {
     ) -> std::result::Result<T, Status> {
         let (reply, receiver) = oneshot::channel();
         self.sender
-            .try_send(Envelope {
+            .try_send(Envelope::Source {
                 caller,
-                command: make(reply, slot),
+                command: Box::new(make(reply, slot)),
             })
             .map_err(|_| Status::unavailable("source owner stopped"))?;
         receiver
@@ -566,6 +615,160 @@ impl SourceOwner {
                 }
                 _ => Status::failed_precondition("source authority or state rejected"),
             })
+    }
+    pub(crate) async fn register_operation_source(
+        &self,
+        caller: SourceIdentity,
+        scope: weaver_contracts::ProviderOperationScope,
+    ) -> std::result::Result<(), Status> {
+        self.submit_with_wait(caller, true, |reply, slot| {
+            Command::RegisterOperationSource {
+                scope: Box::new(scope),
+                reply,
+                slot,
+            }
+        })
+        .await
+    }
+    async fn internal<T>(
+        &self,
+        make: impl FnOnce(oneshot::Sender<Result<T>>, OwnedSemaphorePermit) -> Envelope,
+    ) -> std::result::Result<T, Status> {
+        let slot = self.command_slot(true).await?;
+        let (reply, receive) = oneshot::channel();
+        self.sender
+            .try_send(make(reply, slot))
+            .map_err(|_| Status::unavailable("source owner stopped"))?;
+        receive
+            .await
+            .map_err(|_| Status::unavailable("source routing result unknown"))?
+            .map_err(crate::grpc_contracts::status)
+    }
+    pub(crate) fn operation_resolver(&self) -> OperationResolver {
+        OperationResolver(self.clone())
+    }
+    async fn resolve_operation(
+        &self,
+        runtime: &RuntimeOwner,
+        family: String,
+        node: String,
+        expected: &str,
+    ) -> std::result::Result<(weaver_contracts::ProviderPlan, String), Status> {
+        // This hit returns inert immutable data only. The original activation
+        // coordinates remain sealed and the broker performs all fresh deciding
+        // checks. Catalog derivations always rejoin the source lane below.
+        let cached = {
+            let projection = self.routing.lock().await;
+            match projection.as_ref() {
+                Some(OperationProjection::Fixed(plan))
+                    if plan.family == family && plan.node == node =>
+                {
+                    Some(plan.clone())
+                }
+                _ => None,
+            }
+        };
+        if let Some(plan) = cached {
+            if !expected.is_empty() {
+                return Err(Status::failed_precondition(
+                    "fixed original has no selected catalog coordinate",
+                ));
+            }
+            return Ok((plan.as_ref().clone(), String::new()));
+        }
+        let observed = self
+            .internal(|reply, slot| Envelope::RoutingCut {
+                family,
+                node,
+                reply,
+                slot,
+            })
+            .await?
+            .ok_or(Status::failed_precondition(
+                "source routing scope unavailable",
+            ))?;
+        if !expected.is_empty() && expected != observed.catalog_version {
+            return Err(Status::failed_precondition(
+                "provider catalog coordinate changed",
+            ));
+        }
+        if let weaver_contracts::ProviderOperationScope::Fixed { plan, .. } =
+            &observed.binding.scope
+        {
+            let mut plan = plan.clone();
+            plan.revision = observed.revision;
+            plan.fence = observed.fence;
+            *self.routing.lock().await = Some(OperationProjection::Fixed(Arc::new(plan.clone())));
+            return Ok((plan, String::new()));
+        }
+        let mut projection = self.routing.lock().await;
+        let reusable = match projection.as_ref() {
+            Some(OperationProjection::Catalog(p))
+                if p.binding == observed.binding
+                    && p.version == observed.catalog_version
+                    && p.revision == observed.revision
+                    && p.fence == observed.fence =>
+            {
+                Some(p)
+            }
+            _ => None,
+        };
+        let selected = if let Some(prior) = reusable {
+            prior.selected.clone()
+        } else {
+            let weaver_contracts::ProviderOperationScope::Catalog { routing: scope } =
+                &observed.binding.scope
+            else {
+                unreachable!()
+            };
+            let input = weaver_governance::SourceComposition {
+                source: weaver_governance::SourceData {
+                    governance: weaver_governance::SourceSelection {
+                        schema: scope.selection_schema.clone(),
+                        family: scope.task.family.clone(),
+                        open_nodes: scope.task.nodes.clone(),
+                        workflow_edges: Vec::new(),
+                        workflow_selectors: Vec::new(),
+                    },
+                    tasks: vec![scope.task.clone()],
+                    plans: Vec::new(),
+                    publication: scope.publication.clone(),
+                },
+                routing: vec![scope.selection.clone()],
+            };
+            let selected =
+                crate::source_composition::compose_typed(runtime, input, observed.catalog.as_ref())
+                    .await?;
+            *projection = Some(OperationProjection::Catalog(Box::new(RoutingProjection {
+                binding: observed.binding.clone(),
+                version: observed.catalog_version.clone(),
+                revision: observed.revision,
+                fence: observed.fence,
+                selected: selected.clone(),
+            })));
+            selected
+        };
+        drop(projection);
+        let mut plan = selected
+            .plans()
+            .first()
+            .ok_or(Status::failed_precondition("source routing plan missing"))?
+            .clone();
+        let task = selected.task().clone();
+        let version = observed.catalog_version.clone();
+        let revision = observed.revision;
+        let fence = observed.fence;
+        self.internal(|reply, slot| Envelope::RoutedTask {
+            observed: Box::new(observed),
+            task: Box::new(task),
+            plan: Box::new(plan.clone()),
+            reply,
+            slot,
+        })
+        .await?;
+        plan.revision = revision;
+        plan.fence = fence;
+        Ok((plan, version))
     }
     pub(crate) async fn register(
         &self,
@@ -770,8 +973,37 @@ fn process(
             return Ok(());
         };
         ledger.require_quiescent()?;
-        let Envelope { caller, command } = command;
+        let (caller, command) = match command {
+            Envelope::Source { caller, command } => (caller, *command),
+            Envelope::RoutingCut {
+                family,
+                node,
+                reply,
+                slot,
+            } => {
+                let result = ledger.provider_operation_cut(&family, &node);
+                answer(ledger, reply, result, slot)?;
+                continue;
+            }
+            Envelope::RoutedTask {
+                observed,
+                task,
+                plan,
+                reply,
+                slot,
+            } => {
+                let result = ledger.register_routed_task(&observed, &task, &plan);
+                answer(ledger, reply, result, slot)?;
+                continue;
+            }
+        };
         match command {
+            Command::RegisterOperationSource { scope, reply, slot } => {
+                let result = ledger.with_authenticated_source(&caller, |ledger| {
+                    ledger.register_provider_source(&scope)
+                });
+                answer(ledger, reply, result, slot)?;
+            }
             Command::StageFact {
                 intent,
                 reply,

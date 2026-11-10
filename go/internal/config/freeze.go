@@ -14,40 +14,12 @@ import (
 	"slices"
 )
 
-// FreezeBundle takes an independent validated copy for private control-plane
-// ownership. JSON/YAML remain ingress formats, not an internal cloning protocol.
+// FreezeBundle is the existing development/reference oracle. Deployment parsing
+// uses DecodeConfiguration and delegates semantic composition to Rust/Scheme.
 func FreezeBundle(input Bundle) (Bundle, error) {
-	// Copy only bounded input, then validate the independent image once.
-	// Callers must keep input stable during this synchronous copy.
-	if !sourceTextBound(input) {
-		return Bundle{}, errors.New("typed source text bound")
-	}
-	result := input
-	result.Governance.OpenNodes = slices.Clone(input.Governance.OpenNodes)
-	result.Governance.WorkflowEdges = slices.Clone(input.Governance.WorkflowEdges)
-	result.Governance.WorkflowSelectors = slices.Clone(input.Governance.WorkflowSelectors)
-	result.Publication = input.Publication.Clone()
-	result.Tasks = make([]v1.Task, len(input.Tasks))
-	for index, t := range input.Tasks {
-		copy := t
-		copy.Nodes = slices.Clone(t.Nodes)
-		copy.Targets = slices.Clone(t.Targets)
-		copy.Models = slices.Clone(t.Models)
-		copy.Endpoints = maps.Clone(t.Endpoints)
-		copy.BodyDigests = maps.Clone(t.BodyDigests)
-		copy.NodeCostBounds = maps.Clone(t.NodeCostBounds)
-		copy.StreamContracts = maps.Clone(t.StreamContracts)
-		if t.ProviderProfile != nil {
-			profile := *t.ProviderProfile
-			copy.ProviderProfile = &profile
-		}
-		result.Tasks[index] = copy
-	}
-	result.Plans = make([]v1.ProviderPlan, len(input.Plans))
-	for index, p := range input.Plans {
-		copy := p
-		copy.Routes = slices.Clone(p.Routes)
-		result.Plans[index] = copy
+	result, err := cloneBundle(input)
+	if err != nil {
+		return Bundle{}, err
 	}
 	if result.SelectOnRequest {
 		if len(input.Tasks) != 1 || len(input.Routing) != 1 || len(input.Tasks[0].Nodes) != 1 {
@@ -73,6 +45,64 @@ func FreezeBundle(input Bundle) (Bundle, error) {
 	}
 	if err := result.Validate(); err != nil {
 		return Bundle{}, err
+	}
+	return result, nil
+}
+
+// CloneConfiguration copies bounded source data without selecting or interpreting it.
+func CloneConfiguration(input Bundle) (Bundle, error) { return cloneBundle(input) }
+
+// CloneArtifact owns an already composed Rust/Scheme projection. It performs no
+// routing selection or Workflow interpretation; Rust remains the final validator.
+func CloneArtifact(input Bundle) (Bundle, error) {
+	if input.SelectOnRequest || len(input.Routing) != 0 {
+		return Bundle{}, errors.New("artifact must already be composed by Scheme")
+	}
+	return cloneBundle(input)
+}
+func cloneBundle(input Bundle) (Bundle, error) {
+	// Copy only bounded input, then validate the independent image once.
+	// Callers must keep input stable during this synchronous copy.
+	if !sourceTextBound(input) {
+		return Bundle{}, errors.New("typed source text bound")
+	}
+	result := input
+	result.Routing = slices.Clone(input.Routing)
+	for index := range result.Routing {
+		choice := &result.Routing[index]
+		choice.Required = slices.Clone(choice.Required)
+		choice.AllowedModules = slices.Clone(choice.AllowedModules)
+		choice.Candidates = slices.Clone(choice.Candidates)
+		for i := range choice.Candidates {
+			choice.Candidates[i].Capabilities = slices.Clone(choice.Candidates[i].Capabilities)
+			choice.Candidates[i].Plan.Routes = slices.Clone(choice.Candidates[i].Plan.Routes)
+		}
+	}
+	result.Governance.OpenNodes = slices.Clone(input.Governance.OpenNodes)
+	result.Governance.WorkflowEdges = slices.Clone(input.Governance.WorkflowEdges)
+	result.Governance.WorkflowSelectors = slices.Clone(input.Governance.WorkflowSelectors)
+	result.Publication = input.Publication.Clone()
+	result.Tasks = make([]v1.Task, len(input.Tasks))
+	for index, t := range input.Tasks {
+		copy := t
+		copy.Nodes = slices.Clone(t.Nodes)
+		copy.Targets = slices.Clone(t.Targets)
+		copy.Models = slices.Clone(t.Models)
+		copy.Endpoints = maps.Clone(t.Endpoints)
+		copy.BodyDigests = maps.Clone(t.BodyDigests)
+		copy.NodeCostBounds = maps.Clone(t.NodeCostBounds)
+		copy.StreamContracts = maps.Clone(t.StreamContracts)
+		if t.ProviderProfile != nil {
+			profile := *t.ProviderProfile
+			copy.ProviderProfile = &profile
+		}
+		result.Tasks[index] = copy
+	}
+	result.Plans = make([]v1.ProviderPlan, len(input.Plans))
+	for index, p := range input.Plans {
+		copy := p
+		copy.Routes = slices.Clone(p.Routes)
+		result.Plans[index] = copy
 	}
 	return result, nil
 }

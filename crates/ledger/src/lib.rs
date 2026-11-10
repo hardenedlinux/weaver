@@ -32,7 +32,9 @@ pub use provider_delivery::{
     ProviderDelivery,
 };
 mod provider_catalog;
+mod provider_routing;
 pub use provider_catalog::ProviderCatalogProjection;
+pub use provider_routing::ProviderOperationCut;
 mod provider_oauth;
 mod provider_oauth_witness;
 mod provider_profiles;

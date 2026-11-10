@@ -95,7 +95,21 @@ impl SourceClient {
             .await?
         {
             crate::DerivationOutput::Nodes(nodes) => Ok(nodes),
-            crate::DerivationOutput::Indices(_) => Err(crate::SourceError::Contract.into()),
+            _ => Err(crate::SourceError::Contract.into()),
+        }
+    }
+    /// Compose detached source data on the existing bounded owner. No publication,
+    /// catalog installation or permission is obtained from this advisory result.
+    pub async fn compose(
+        &self,
+        input: crate::SourceComposition,
+    ) -> Result<crate::OwnedSource, SourceJobError> {
+        match self
+            .evaluate(crate::Derivation::Composition(Box::new(input)))
+            .await?
+        {
+            crate::DerivationOutput::Source(source) => Ok(source),
+            _ => Err(crate::SourceError::Contract.into()),
         }
     }
     async fn evaluate(
@@ -111,7 +125,7 @@ impl SourceClient {
                 _ = self.shared.shutdown.cancelled() => return Err(SourceJobError::Closed),
                 slot = capacity.acquire_owned() => slot.map_err(|_| SourceJobError::Closed)?,
             },
-            crate::Derivation::FactImpact { .. } => capacity
+            crate::Derivation::FactImpact { .. } | crate::Derivation::Composition(_) => capacity
                 .try_acquire_owned()
                 .map_err(|_| SourceJobError::Busy)?,
         };

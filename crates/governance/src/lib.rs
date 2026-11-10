@@ -6,6 +6,8 @@
 #![deny(unsafe_code)]
 extern crate self as weaver_governance;
 mod binding;
+mod composition;
+pub use composition::{RoutingCandidate, RoutingSelection, SourceComposition};
 mod catalog;
 mod host;
 mod source;

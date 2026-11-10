@@ -18,11 +18,14 @@ import (
 // BootstrapProducer joins native registered compilation to the existing exact
 // source reconciliation/publication and routing path. Compilation never sends.
 func BootstrapProducer(ctx context.Context, source, owner *gatewayclient.Client, producer string) (*Gateway, error) {
+	if owner == nil {
+		return nil, errors.New("operation authority role required")
+	}
 	return bootstrapProducer(ctx, source, owner, producer, nil)
 }
 
 func bootstrapProducer(ctx context.Context, source, owner *gatewayclient.Client, producer string, trace bootstrapTrace) (*Gateway, error) {
-	if source == nil || owner == nil {
+	if source == nil {
 		return nil, errors.New("source and operation authority roles required")
 	}
 	trace.phase("source-compile-start")
@@ -95,7 +98,7 @@ func compiledBundle(input *pb.SourceArtifact) (config.Bundle, error) {
 		}
 		bundle.Plans = append(bundle.Plans, plan)
 	}
-	return config.FreezeBundle(bundle)
+	return config.CloneArtifact(bundle)
 }
 func unknownFields(message proto.Message) bool { return len(message.ProtoReflect().GetUnknown()) != 0 }
 func cloneRevision(value *uint64) *uint64 {

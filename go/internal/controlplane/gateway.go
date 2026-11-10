@@ -39,6 +39,9 @@ type Gateway struct {
 // Bootstrap has no execution API calls. Unknown publication outcomes never activate ingress.
 // Task registration is persistent and idempotent, not an atomic multi-task transaction.
 func Bootstrap(ctx context.Context, source, owner *gatewayclient.Client, bundle config.Bundle) (*Gateway, error) {
+	if owner == nil {
+		return nil, errors.New("operation authority role required")
+	}
 	return bootstrap(ctx, source, owner, bundle, nil)
 }
 
@@ -51,12 +54,21 @@ func (trace bootstrapTrace) phase(name string) {
 }
 
 func bootstrap(ctx context.Context, source, owner *gatewayclient.Client, bundle config.Bundle, trace bootstrapTrace) (*Gateway, error) {
-	if source == nil || owner == nil {
+	if source == nil {
 		return nil, errors.New("source and operation authority roles required")
 	}
-	frozen, err := config.FreezeBundle(bundle)
+	frozen, err := config.CloneConfiguration(bundle)
 	if err != nil {
 		return nil, err
+	}
+	selected, err := composeSourceBundle(ctx, source, frozen, false, "")
+	if err != nil {
+		return nil, err
+	}
+	if !frozen.SelectOnRequest {
+		frozen = selected
+	} else if len(frozen.Tasks) != 1 || len(frozen.Routing) != 1 || len(frozen.Tasks[0].Nodes) != 1 {
+		return nil, errors.New("request routing requires one original task and node")
 	}
 	return bootstrapFrozen(ctx, source, owner, frozen, trace)
 }
@@ -83,13 +95,10 @@ func bootstrapFrozen(ctx context.Context, source, owner *gatewayclient.Client, f
 	if err != nil {
 		return nil, err
 	}
-	if !frozen.SelectOnRequest {
-		trace.phase("task-registration-start")
-		for _, task := range frozen.Tasks {
-			if _, err = source.RPC.RegisterPublishedTask(source.Context(ctx), &pb.RegisterPublishedTaskRequest{Task: gatewayclient.Task(task), Publication: &pb.PublicationKey{OperationId: frozen.Publication.OperationID, Digest: digest}}); err != nil {
-				return nil, err
-			}
-		}
+	trace.phase("task-registration-start")
+	_, err = source.RPC.RegisterPublishedTask(source.Context(ctx), &pb.RegisterPublishedTaskRequest{Publication: &pb.PublicationKey{OperationId: frozen.Publication.OperationID, Digest: digest}, SourceScope: sourceCompositionRequest(frozen, false, "")})
+	if err != nil {
+		return nil, err
 	}
 	if receipt == nil {
 		trace.phase("publication-finalize-start")

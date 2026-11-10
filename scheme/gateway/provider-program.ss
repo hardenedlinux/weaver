@@ -43,24 +43,15 @@
 
 (def (capture bundle)
   (def schema (.ref (.ref bundle 'governance) 'schema))
-  (def nested? (equal? schema "weaver.session-nested.v1"))
-  (def choice? (equal? schema "weaver.session-choice.v1"))
-  (def dag? (or nested? choice? (equal? schema "weaver.session-dag.v1")))
-  (def session? (or dag? (equal? schema "weaver.session-workflow.v1")))
-  (unless (or session? (equal? schema "agentic-ai-lab.loop-governor.v1"))
-    (error "unsupported Weaver provider workflow"))
   (def publication (.ref bundle 'publication))
   (def policy (agentic-ai-lab-cedar-policy "weaver/runtime" (.ref publication 'policy)))
   (def profile
     (.o (:: @ AgenticAILabGovernanceProfile.)
         identity: "weaver/source" revision: "1" owner: "source-owner"
         policies: (.o runtime: policy)))
-  (def governor (make-loop-governor 'weaver (provider-source-strategy nested? dag? session?)
-                  (provider-source-budget nested? dag? session?)))
-  (def context
-    (if session?
-      (.o request: 'publish session: (if nested? (nested-workflow-session) (workflow-session dag? choice?)))
-      (.o request: 'publish)))
+  (def controls (provider-source-controls schema))
+  (def governor (car controls))
+  (def context (cadr controls))
   (def phase-observer (gateway-source-phase-observer))
   (when phase-observer (phase-observer "compile-begin"))
   (begin0

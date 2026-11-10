@@ -107,6 +107,7 @@ impl serde::Serialize for GovernorCut {
 /// Inert observations evaluated by the existing linked Scheme owner.
 #[derive(serde::Serialize)]
 pub enum Derivation {
+    Composition(Box<crate::SourceComposition>),
     Governor(Box<GovernorCut>),
     FactImpact {
         root: String,
@@ -116,6 +117,7 @@ pub enum Derivation {
 /// Detached node identities. Indices belong to the topology of this Governor request.
 #[derive(Debug, PartialEq, Eq)]
 pub enum DerivationOutput {
+    Source(crate::OwnedSource),
     Nodes(Vec<String>),
     Indices(Vec<usize>),
 }

@@ -31,6 +31,7 @@ pub(crate) struct Prepared {
     pub(crate) authority: SourceAuthority,
     wire_authority: Option<pb::SourceAuthorityView>,
     bound: BoundSource,
+    operations: std::collections::BTreeMap<String, usize>,
     session: Option<Arc<SessionTopology>>,
     operation_id: String,
     digest: String,
@@ -60,7 +61,15 @@ impl Prepared {
             .filter(|feed| !feed.workflow_path.is_empty())
             .map(|feed| SessionTopology::prepare(feed, bound.source().plans()).map(Arc::new))
             .transpose()?;
+        let operations = bound
+            .source()
+            .plans()
+            .iter()
+            .enumerate()
+            .map(|(index, plan)| (plan.node.clone(), index))
+            .collect();
         Ok(Self {
+            operations,
             producer: reply.producer.clone(),
             wire_authority: reply.authority.clone(),
             operation_id: publication.operation_id.clone(),
@@ -75,6 +84,25 @@ impl Prepared {
 
     pub(crate) fn source(&self) -> &OwnedSource {
         self.bound.source()
+    }
+
+    /// Resolve inert original data only; final ledger/Cedar admission remains fresh.
+    pub(crate) fn operation_plan(
+        &self,
+        family: &str,
+        node: &str,
+    ) -> Option<weaver_contracts::ProviderPlan> {
+        if family != self.source().task().family {
+            return None;
+        }
+        let mut plan = self
+            .source()
+            .plans()
+            .get(*self.operations.get(node)?)?
+            .clone();
+        plan.revision = self.revision;
+        plan.fence = self.fence;
+        Some(plan)
     }
 
     pub(crate) fn session(&self) -> Option<&Arc<SessionTopology>> {

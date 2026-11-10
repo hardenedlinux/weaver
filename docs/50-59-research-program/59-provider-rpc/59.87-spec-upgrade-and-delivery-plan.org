@@ -32,6 +32,371 @@ focused devrunner evidence/source-integrity controls and the architecture/
 requirement-trace checks. The complete devrunner race invocation exceeded its
 90-second submission-check limit; it is not counted as a full-suite pass.
 
+* Rust + Scheme responsibility audit and refactoring decision
+
+** Decision and evidence standard
+
+The production target is Rust + Scheme/POO/gerbil-ascent. Go is not a mandatory
+operation hop. Keep the existing Go implementation until its owned behavior
+has a qualified successor; this plan does not remove it. Retain Go development
+tooling for its concrete OpenSysML SDK reuse. Do not implement hypothetical
+cloud adapters solely to justify keeping a language.
+
+Architecture selection uses existing upstream implementation, public interface,
+conformance coverage and maintenance evidence. It does not require implementing
+two Weaver integrations or rebenchmarking established language ecosystems.
+Local checks establish correct Weaver integration and preserved authority;
+they do not prove the general value of Go, Rust or Kubernetes again.
+
+The target allocation is ArchitectureEvolution::RustSchemeAllocation with
+requirements RustSchemeRuntimeBoundary, CloudAdapterAuthorityBoundary and
+GoIntegrationLeverage. These are design requirements with documentary trace
+witnesses, not claims of implemented migration or behavioral proof. Existing
+WeaverExecution Go/Rust ports and measured cohorts describe today's path and
+remain valid until each consumer and model is migrated together.
+
+** R1 implementation: compose before sealing
+
+SchemeSourceComposition allocates source planning to the existing Scheme/POO
+application. The existing Rust startup catalog accepts exactly one of original
+or composition per entry. A composition contains source (the unmaterialized
+SourceData with empty plans/body/stream commitment maps) and routing (bounded
+selections/candidates with existing Go field names). It is trusted deployment
+data, not an RPC-selected module or policy. Rust prepares canonical plan/body
+digests and checked profile/request facts. Scheme uses gerbil-ascent to join
+allowed modules, capabilities and admissible offers, then ranks by exact rounded
+procurement cost, latency and canonical digest. It fills commitments and reuses the Session/Funflow/Governor pure topology
+projection for Workflow composition. Full source assessment stays at CompileSource,
+not before listener readiness.
+Rust validates the detached result as OwnedSource and independently checks that
+it preserves the supplied task/principal/profile/budget/endpoints/publication,
+explicit topology and concrete candidate membership before sealing. It does not
+reimplement ranking. Self-consistent substitutions remain rejected, even if
+all returned hashes agree. Catalog admission retains its existing authority bindings. Subsequent source captures retain exact
+SourceExpectation equality. No arbitrary callback is accepted from a request.
+
+The same tracked owner performs startup composition and later source work;
+there is no second VM or command transport. The catalog is installed only after
+composition and existing Workflow/feed checks succeed. Failure closes/drains
+through the existing runtime guard. This retains the existing source intent,
+publication, activation and final-use transactions unchanged.
+
+The catalog, file-source and dynamic catalog paths now consume composed typed
+projections. Go file handling decodes syntax and owns its data; bootstrap calls
+source-only ComposeSource instead of FreezeBundle. Dynamic materialization
+retains the existing immutable version/record cache and coalescing mutex, but
+calls the same RPC for a new projection. Rust reads the existing catalog through
+the source owner, projects its typed entries, and passes eligibility/ranking to
+the same Scheme owner. It compares the expected catalog version and current
+source authority both around derivation and before delivering the result. No
+source SQL grant remains held during Scheme evaluation. Each final operation
+still performs its original fresh Rust checks.
+
+AdvisorySourceComposition distinguishes this source-only RPC from CompileSource:
+it returns inert OwnedSource data and cannot install an approved producer,
+publish, enroll a source, resolve a barrier or mint a send permit. Complete
+static projections reuse Rust validation without a redundant Scheme inference.
+Undecided selections use the existing bounded source lane, fixed C ABI and
+application. A Scheme-enabled standalone deployment starts one tracked owner
+even without a producer catalog; no second VM or loader is introduced. Header
+and route checks reuse Rust contracts and the transport's HTTPS validation;
+the Anthropic Messages path guard is shared with final transport preparation.
+Independent SPEC review is copied as separately issued transport data, never
+recreated by Scheme. OpenSysML development tooling is retained.
+
+Existing Go Bundle/routing algorithms retain development/reference consumers;
+they are no longer called by deployed bootstrap or request materialization.
+The old local catalog model lives in its existing test file as an oracle rather
+than in the deployed adapter. R5 may remove remaining reference algorithms once
+their development consumers migrate. R2 direct ingress is recorded below; cloud adapters remain
+later stages; the current Go relay is not claimed to have disappeared.
+
+Validation for this R1 slice uses existing native entrypoints and four workers:
+- Native Scheme source suite, including exact cost/latency/digest ordering,
+  denied modules, latency bounds and integer overflow, passed.
+- The final real linked Weaver Scheme owner passed all 29 governance library
+  tests, including native index width/bounds, source-form exclusivity, independent
+  scope preservation and five self-consistent substitution refusals. ASP Rust
+  passed. The shared Anthropic endpoint unit test passed with the existing
+  commit-observer test feature. Production-feature all-target Clippy passed.
+- Go controlplane/config/routing race tests passed, including one semantic RPC
+  for four concurrent requests against the same new catalog projection.
+- The same frozen release passed four integration selections in 39.016 seconds:
+  source composition with partial release/revocation/dual restart; dynamic module
+  selection (complete, partial and deny, stale version and operation-role refusal,
+  including an invalid offer that must not suppress a valid alternative);
+  shared budget with SDK retry rejection; nested choice/parallel recovery and
+  skipping an inactive nested arm. Original per-stage limits were retained.
+- Failed attempts remain outside Git: an old frozen import path shadowed current
+  Scheme exports; initial POO fixture slots had cyclic names/string map keys;
+  startup improperly ran full source assessment before the 3-second listener
+  deadline; a sandbox refused loopback bind; a Go TestMain build exceeded its
+  runtime test alarm. Initial lint preparation also exceeded a 120-second tool
+  limit while filling Arrow compilation caches; isolated broker tests needed
+  their existing ledger commit-observer feature. ASP rejected the first nested
+  membership scan/control-flow shape; the final implementation uses an index and
+  named validation steps. These are not passes. Corrected wiring uses pure startup
+  topology projection and separate bounded release build followed by the existing
+  frozen-image test entry; no repeated cold dependency installation or widened
+  recovery deadline was used.
+
+The final strict linked-model/Project and named requirement-trace gates passed;
+the existing RPC generation and focused Scheme qualification driver checks passed.
+Compilation was measured separately under the existing 480-second build budget;
+the final business regression used a frozen executable and a 90-second runtime
+budget, with original per-stage limits unchanged. Native Scheme source tests use
+./build.ss compile --debug followed by gerbil test -g -v 5 t/gateway-source-test.ss.
+Native Rust owner tests use cargo test -p weaver-governance --features scheme-program
+--lib with four test threads. Go consumers use the existing integration,schemeintegration
+tag and frozen-image inputs, with parallel/cpu both four. No generated logs,
+local image hashes or machine-specific preparation paths are versioned.
+
+This is correctness/integration evidence, not a new submillisecond benchmark or
+exact-head CI result. The prior 1 ms and four-way readiness failures remain open.
+
+** R2 implementation: direct Rust operation ingress
+
+DirectRustOperationIngress and SourceBoundOperationPreparation refine the
+existing RustSchemeRuntimeBoundary. The default =weaver-control= command is
+source preparation; =prepare= names the same action. It opens no operation
+listener, needs no operation certificate/token and exits after known source
+activation. Operation clients connect directly to Rust's existing authenticated
+gRPC listener. Explicit =serve= retains the old relay for reference controls;
+its packaging retirement is R5. Go OpenSysML tooling and independently held
+review/metering keys remain separate responsibilities.
+
+| Stage | Implemented owner/mechanism | Acceptance |
+|-------+-----------------------------+------------|
+| R2-A source preparation and direct fixed operations | Existing source bootstrap, RegisterPublishedTask and ledger; exact fixed plans retained as inert declared data | Ordinary JSON source and compiled Weaver Scheme producer; source-only command exits; no Go process in response path; exact complete output; mutation refusal and restart replay refusal |
+| R2-B identity and delivery | Existing Rust TLS, provider_oauth, bounded output and broker; direct mode rejects supplied relay evidence before execution admission | Direct OAuth and explicit signed two-hop controls; cancellation, status, both encodings, every-row validation and complete/partial response controls |
+| R2-C default/consumer migration | Default prepare, generated source-scope RPC field and existing Rust operation listener; explicit serve for reference tests | Same frozen release; direct fixed and catalog operations; old relay comparison; shared-budget contention and native Workflow regression |
+| R2-D dynamic source custody | Existing source lane and ledger provider_operation_scopes; retained Scheme/POO/gerbil-ascent composition owner | Alternate candidate, four contenders, no duplicate effects, catalog replacement, cached-projection source retirement, restart and source/catalog cut negative controls |
+
+*** Declare, derive and register
+
+RegisterPublishedTask accepts exactly one existing Task or typed source_scope.
+Source scopes use the existing SourceCompositionRequest and preserve its original
+publication key. They are bounded authenticated-source declarations, never
+operation-supplied templates or module paths. Rust's ProviderOperationScope is
+an explicit tagged union: Fixed retains an exact task/plan/publication; Catalog
+retains the unmaterialized one-node task and its bounded candidates. The routing
+fact DTOs are shared Rust contracts and reexported by governance, rather than
+copied into a second ledger representation or a second selector.
+
+The existing ledger retains scope identity, source authority epoch, publication,
+content digest and exact declaration. Replays cannot replace scope bytes or
+silently rebind them to a later source. Fixed declarations use the existing
+original-task registration in the same deciding transaction. The publication
+must still commit before direct resolution. An interrupted preparation cannot fabricate a successful activation or bypass
+the ledger publication decision. Unknown replies remain subject to the existing
+publication-receipt reconciliation; a process response is not execution permission.
+
+An operation-only OperationResolver handle provides no source mutator or source
+credential to the operation listener. It reads one coherent source/publication
+cut on the existing bounded source lane. Fixed plans resolve without Scheme
+work. Catalog selection reads the current catalog, uses the existing affine
+Scheme owner and ASCENT rules, then rejoins the exact retained scope, source
+epoch, publication revision/fence and catalog version/content in the transaction
+that registers the selected task. Rust reuses ProviderPlan.matches and existing
+immutable task/origin registration; it does not duplicate eligibility/ranking.
+The current catalog must contain the exact selected commitment.
+
+The existing bounded projection retains one fixed original or one coalesced
+catalog result. A fixed hit returns immutable plan data with sealed activation
+coordinates, avoiding a source-lane transaction on every request; it is never a
+permission check. The broker still rejoins current authority on every effect.
+Catalog projections reuse inert OwnedSource data only for identical scope,
+catalog and revision/fence. Every catalog caller rereads source state and
+completes the registration transaction checks; a warmed catalog projection
+cannot survive source retirement.
+Task immutability remains: a newly selected alternative cannot rewrite an
+already registered original task or reopen a spent claim. After registration,
+existing broker admission independently decides current Cedar, profile,
+reservation, source/fact barriers, catalog binding and response release.
+
+An exact family/node key cannot contain plan overrides. Returned plans retain
+the original activation revision/fence; they are never rebased to the current
+head. Complete typed plans retain the prior direct protocol. No Go process,
+additional VM, database or per-frame Scheme call is introduced. The existing
+source owner, affine Scheme owner, ledger and broker retain their shutdown and
+resource custody.
+
+*** Finite verification and limits
+
+The final frozen release passed sixteen named native tests in 53.065 seconds
+within a 90-second test-process budget. These cover direct JSON and compiled
+Scheme preparation, two different selected candidate commitments, four-way
+request contention, complete/partial streams, Cedar denial, source retirement
+with a warmed projection and restart, catalog replacement/recovery, both frame
+encodings, malformed row rejection, cancellation, OAuth one/two-hop controls,
+shared quota, indeterminate failures without retry/fallback, nested Workflow and
+hard-fact withdrawal/restart/A-to-B-to-A. The ordinary JSON and catalog tests
+invoke the default command with source credentials only; the compiled producer
+also exercises explicit prepare. Old relay controls invoke serve explicitly.
+
+The direct file control warms a denied fixed original, then permits its node
+under a new policy and restores the earlier policy. The cached old plan cannot
+rebase to either new authority revision, send a request or reopen after restart.
+Partial-SSE failure also asserts the actual terminal gRPC failure status, rather
+than accepting a clean EOF or a local decoder error.
+
+Ledger unit controls reject stale catalog registration before task insertion,
+modified selected plans, source rotation after observation, silent scope
+rebinding and corrupted records; they verify exact current registration and
+restart idempotence. Existing source-owner tests retain priority handoff,
+cancelled waiters, ambiguous results, source rotation and natural cleanup.
+The same Scheme integration stage includes RustDirect tests; ledger tests use
+the existing Cargo test entry. No new runner or CI Bash orchestration is added.
+
+Compilation/preparation remains separate from runtime timing. Preserve existing
+480-second build, 3-second readiness, 10-second source, 12-second recovery and
+15-second drain budgets. Go test parallel/cpu and Rust test threads remain four.
+No cold dependency installation or repeated startup sampling is part of R2.
+
+Retain unfavorable evidence. An initial alternative-model fixture was correctly
+refused by its Cedar policy, which only allowed model-a. The corrected independent
+alternative changes the admitted request body, retains that policy, and asserts
+the different original commitment. Original controls were not relaxed. A prior
+broad development-runner invocation hit its 75-second total watchdog; related
+focused model/stage controls passed, not the whole package. A sandboxed client
+check also failed loopback binding; the same relevant race packages were rerun
+with local-network access. None of these is an exact-head CI-green claim.
+The current observer-backed backpressure control passed in 11.115 seconds
+under its separate 60-second process budget, after observer preparation was
+measured separately. It uses a separate test executable and is not included in
+the frozen-server identity or a pure-runtime latency claim.
+The previous submillisecond performance gate remains open.
+
+R3 still owns further startup/configuration consolidation. R4 cloud adapters
+and R5 reference/packaging removal are separate work; neither is required to
+route a default R2 operation through Go.
+
+** Current implementation and destination matrix
+
+| Existing owner | Actual responsibility | Target owner and reuse | Migration obligation |
+|----------------+-----------------------+------------------------+----------------------|
+| go/internal/controlplane/gateway.go ExecuteProvider | Explicit serve reference only; the default operation stream bypasses this Go method | Existing crates/server grpc_provider, grpc_delivery and broker output | Direct authenticated Rust ingress; preserve cancellation, trailers, order, full-release and backpressure |
+| controlplane/server.go, deployment.go | TLS peer/token checks, bounded listeners, environment loading, bootstrap custody | server rpc_security, grpc_listeners, runtime, shutdown and entrypoint | Equivalent principal identities, source/operation listener separation, bounded admission and natural drain; default prepare exits; direct fixed/catalog and explicit relay controls passed locally |
+| controlplane/provider_oauth.go | Bind incoming verified TLS sender to forwarded delegated credential | Rust provider_oauth and direct-ingress security | Redesign trusted first-hop binding explicitly; never copy caller-supplied relay metadata or remove child-grant binding |
+| controlplane/source_compile.go, deployment_source.go | Invoke existing source compilation, decode typed artifact, bootstrap | Rust governance_deployment, source_artifact, governance owner | One admitted artifact path; existing Build Packages ABI, exact source/version and failed/unknown activation custody retained |
+| config/bundle.go, freeze.go, routing/selection.go | Workflow validation, freeze, materialize request, capability/cost/latency selection with digest tie-break | Scheme gateway objects/contracts/provider-program, POO and gerbil-ascent | Preserve deterministic tie-break, overflow-safe pricing, no-eligible rejection and original scope; ASCENT derives eligibility, existing Scheme functions order candidates; Rust independently validates authority and numeric bounds |
+| routing/compile.go, provider.go, streaming/contract.go | Construct/refine proposals, digests and stream obligations | Scheme owns composition; Rust contracts owns canonical encoding, bounds and final checks | Golden wire/digest and rejection vectors; avoid a new semantic selector or third canonical representation |
+| config/provider_import.go, provider_yaml.go, provider_profile.go | Decode external formats and reviewed catalog mappings | Rust decoding adapter feeding existing typed source input; Scheme owns profile interpretation | Reuse current source contract, limits and review binding; TOML/YAML/JSON are syntax, not new planning languages |
+| controlplane/provider_catalog.go | Catalog currentness, projection cache and registration | Rust source_owner/ledger/catalog admission; Scheme object projection | Cache only exact version-bound immutable projections, never permission; no second cache or ledger |
+| gatewayclient | RPC client, publication/source operations, Arrow observation decoding | Existing Rust RPC/contracts/encoding; generated client retained only for remaining Go consumers | Arrow limits and malformed-batch controls remain at actual consumer; do not convert columnar data to row objects just for forwarding |
+| metering/issuer.go and cmd/weaver-meter | Independent terminal-usage signing and settlement | Separate issuer role, optionally implemented in Rust | Preserve independent key custody, deterministic application ID and restart idempotence; do not fold signer into gateway authority |
+| specreview/producer.go | Deployment-qualified SPEC catalog binding and independent review signing | Separate review role using existing SPEC outputs and Rust contracts | Preserve pinned artifact, audience/epoch and independent keys; Scheme cannot self-approve a migration |
+| telemetry/metrics.go | Admission/completion/frame counters | Rust telemetry plus bounded protocol export | Equivalent meanings; no synchronous collector dependency in frame loop |
+| cmd/weaver-import-provider | Operator import utility | Rust adapter + existing Scheme profile entry | Preserve explicit review; no hot-path interpreter or second build entry |
+| internal/devrunner, go/dev, cmd/weaver-dev | OpenSysML analysis/rendering, finite orchestration, Go reference/negative controls | Retain now; use existing SDK and runners | No rewrite merely for language uniformity; Go-less production can coexist with Go development tools |
+| go/api | Generated RPC and Go-side contract/reference code | Keep generated bindings for live consumers; Rust contract is execution owner | Remove handwritten duplicates only after all callers and reference tests have a replacement |
+
+Current go/go.mod contains OpenSysML, Arrow, gRPC, Protobuf and format handling;
+it does not contain Kubernetes client-go/controller-runtime, Helm or Istio.
+Thus current production Go forwarding and semantic duplication have concrete
+maintenance cost; present cloud-native SDK reuse is not their justification.
+This is a source/dependency finding, not a claim that Go is generally slow.
+
+** Cloud-native integration beyond Kubernetes
+
+| Evidence already available | Architectural conclusion | Weaver boundary |
+|----------------------------+--------------------------+-----------------|
+| kube-rs supplies client, watcher/reflector, controller runtime and CRD derive; Praxis Grid declares kube client/derive/runtime and k8s-openapi | Rust supports the required controller building blocks without a Go process | Default Rust Kubernetes adapter; API bindings do not alone certify Gateway API conformance |
+| Agentgateway Go dependency set includes client-go, controller-runtime, Gateway API, Istio, Helm and Go xDS | A Go controller can aggregate substantial existing Go integration code | Retain this option for a concrete required integration, without duplicating Scheme policy |
+| Helm pkg/action exposes Go release lifecycle machinery | Embedded Helm release management can justify an isolated Go deployment adapter | Prefer externally managed chart deployment when embedding is unnecessary; do not port Helm release semantics to Rust |
+| containerd supplies a high-level Go client and remote service APIs | Rich SDK behavior and protocol access are different reuse levels | Gateway does not become a container orchestrator by default; use external runtime boundary, or justify an owned Go adapter for required high-level behavior |
+| OpenTelemetry Collector is a separately deployable component; Rust has an OTel SDK | Reuse the Collector regardless of its implementation language | Rust emits supported telemetry; do not embed/rewrite Collector processors merely to remove Go |
+| Envoy external authorization uses a published service protocol | Go-based ecosystem participants can interoperate across language boundaries | Typed protocol adapter where needed; policy outage semantics explicit; final local authority remains in Rust |
+
+References (capability evidence, not Weaver qualification):
+- https://github.com/kube-rs/kube
+- https://github.com/praxis-proxy/grid/blob/main/Cargo.toml
+- https://github.com/agentgateway/agentgateway/blob/main/go.mod
+- https://github.com/helm/helm/blob/main/pkg/action/action.go
+- https://github.com/containerd/containerd/blob/main/client/client.go
+- https://opentelemetry.io/docs/collector/
+- https://opentelemetry.io/docs/languages/rust/
+- https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/security/ext_authz_filter
+
+A Go-native cloud project is not evidence that every client must be Go. First
+choose supported protocol reuse or deployment of the existing component; choose
+a Go SDK when its higher-level lifecycle behavior materially avoids implementing
+that behavior ourselves. This decision is made from upstream evidence and the
+required product surface, without a mandatory local comparative experiment.
+An optional adapter owns only translation, SDK lifecycle and observations;
+Scheme owns business semantics, Rust owns deciding effects. Do not add a generic
+plugin host, sidecar fleet, xDS server or cloud abstraction in anticipation.
+
+** Operation and adaptation paths
+
+Target operation path:
+client -> existing Rust authenticated ingress -> bounded admission -> existing
+prepared projection / bounded Scheme owner derivation when needed -> current
+ledger/Cedar/claim/reservation checks -> broker/provider -> Rust response release.
+Reuse the current Session/frontier/claim/reservation transactions. Complete
+released responses drive Scheme Governor progression; receipt notification is
+not permission to send. Do not build a new Workflow runtime in the adapter.
+The placement of checks remains governed by existing final-use contracts; this
+sequence does not allow external I/O inside a deciding ledger transaction.
+
+Target configuration/fact path:
+weaver.toml or authenticated cloud observation -> Rust syntax/source adapter ->
+existing source lane and persisted ledger intent -> Scheme/POO composition and
+ASCENT impact/readiness derivation -> existing preparation/publication/activation
+transactions -> observed status. Rust verifies exact source revision and intent
+prefix before unblocking use. Preparation uses native SDK Build Packages and
+existing owner/C ABI; no module scan, per-request compile or alternate builder.
+
+Kubernetes resource identity is cluster + kind + namespace + name + UID.
+Track opaque resourceVersion and generation as source observation coordinates;
+never compare resourceVersion lexicographically as a ledger revision. A coherent
+admitted snapshot maps to existing source identity. Duplicate/reordered events,
+410/relist, deletion/recreation, reconnect and A-to-B-to-A require currentness
+checks. Coalesce recomputation demand, never accepted hard-fact intent. Status
+reports observed generation and admitted/prepared/active/refused state separately;
+a Status write or observedGeneration is not an activation receipt. Scope RBAC
+and secret access to the adapter's owned resources.
+
+Adapter queues, retries, shutdown and credentials have separate bounded owners.
+No Kubernetes API call or reconciliation is required to forward a response frame.
+On disconnection the existing configured fact validity/barrier policy decides
+whether an admitted image remains usable; no new blanket offline allowance.
+An in-process Rust adapter is not automatically isolated from Tokio or Scheme
+owner contention: preserve separate queues/concurrency budgets and track tasks
+through normal shutdown. No unlimited mailbox or retry storm.
+
+** Ordered migration and finite acceptance
+
+| Stage | Deliverable using existing owners | Acceptance before retirement |
+|-------+-----------------------------------+------------------------------|
+| R0 allocation (this change) | SysML target, source audit, upstream evidence and authority map | Existing strict linked-model and named trace gates; design-only status explicit |
+| R1 semantic consolidation | Move Go selection/freeze composition to existing Scheme gateway contracts and gerbil-ascent; keep Rust canonical guards | Existing selection/rejection vectors, deterministic ties, overflow, missing facts, source-budget and replacement properties; do not shadow-execute effects |
+| R2 direct Rust operation | Expose equivalent external operation on existing server; reuse broker streaming, TLS/authentication and ledger | Existing Snake Oil workloads: allowed/denied, malformed Arrow, cancellation, partial/complete SSE release, shared quota concurrency, fallback/retry binding; direct OAuth first-hop negative controls; same release and original benchmark thresholds |
+| R3 source/bootstrap consolidation | Existing Rust source and governance owners prepare/publish/activate without Go relay | Existing unknown activation, restart, hard-fact withdrawal and A-to-B-to-A controls; exact source checks and 10/12/15 second limits retained |
+| R4 first required cloud integration | Rust kube-rs adapter feeding source lane, Scheme reconcile and existing ledger | Finite event schedule for duplicate/reorder/relist/recreate/restart/revocation; no duplicate activation, correct Status and bounded shutdown; supported API versions and RBAC declared |
+| R5 production Go retirement | Remove obsolete relay/config/routing runtime owners and packaging after consumers migrate | SysML Project runtime inventories, generated client consumers, trust keys, operational docs and deployment all agree; development tooling and independently justified adapters decided separately |
+
+Each stage is its own reviewable change. Reuse native module tests, Rust tests,
+existing Go integration/reference controls and OpenSysML rather than inventing a
+new acceptance harness. No hundreds of cold-start trials and no ecosystem
+benchmark campaign. Select the smallest existing suite covering changed behavior,
+use four workers for comparable existing runtime tests, stop at the first failed
+stage and preserve its result. Separate compilation, owner startup, hot execution
+and network delivery. Existing performance gates remain open until their exact
+consumer paths pass; eliminating a Go relay does not by itself solve the measured
+3.419--3.605 ms Scheme-owner tail.
+
+The existing TestProjectArchitecture and TestSysMLSDKAndRequirementTrace
+gates passed for this linked-model change. This qualifies model structure and
+named trace coverage only. R1 composition and R2 direct ingress have passed
+local acceptance. Their behavioral evidence is recorded above. R3 startup
+consolidation, R4 cloud integration and R5 retirement have separate gates.
+
+Production approval/site replay remain separate deployment gaps. No production
+Go code is deleted by this architecture decision; no hypothetical Go adapter is
+added. Final removal follows proven replacement of the existing behavior, not
+new experiments to establish general ecosystem benefits.
+
 * Runtime delivery plan
 
 ** Execution from a published plan

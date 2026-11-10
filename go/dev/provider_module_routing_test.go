@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
-//go:build integration && !windows
+//go:build integration && schemeintegration && !windows
 
 package dev
 
@@ -41,12 +41,19 @@ func (c lostCatalogReply) PublishProviderCatalog(ctx context.Context, req *pb.Pr
 func TestProviderModuleSelectionBindsOriginal(t *testing.T) {
 	t.Setenv("WEAVER_STORAGE_JOURNAL", "mvcc")
 	for _, mode := range []string{"complete", "partial", "deny"} {
-		t.Run(mode, func(t *testing.T) { checkImportedProvider(t, mode) })
+		t.Run(mode, func(t *testing.T) { checkImportedProvider(t, mode, false) })
 	}
 }
-func checkImportedProvider(t *testing.T, mode string) {
+func TestProviderRustDirectCatalogSelection(t *testing.T) {
+	t.Setenv("WEAVER_STORAGE_JOURNAL", "mvcc")
+	for _, mode := range []string{"complete", "alternate", "partial", "deny"} {
+		t.Run(mode, func(t *testing.T) { checkImportedProvider(t, mode, true) })
+	}
+}
+func checkImportedProvider(t *testing.T, mode string, direct bool) {
 	t.Helper()
 	handler := completeSSE
+
 	if mode == "partial" {
 		handler = func(w http.ResponseWriter, _ *http.Request) {
 			w.Header().Set("Content-Type", "text/event-stream")
@@ -76,6 +83,17 @@ func checkImportedProvider(t *testing.T, mode string) {
 		}
 		return "WEAVER_METERING=" + string(data)
 	})
+	if _, err := f.client.RPC.ComposeSource(f.client.Context(t.Context()), &pb.SourceCompositionRequest{}); status.Code(err) != codes.PermissionDenied {
+		t.Fatalf("operation caller entered semantic composition: %v", err)
+	}
+	if _, err := f.admin.RPC.ComposeSource(f.admin.Context(t.Context()), &pb.SourceCompositionRequest{UseCatalog: true, ExpectedCatalogVersion: "unexpected"}); status.Code(err) != codes.FailedPrecondition {
+		t.Fatalf("stale catalog coordinate entered composition: %v", err)
+	}
+	if direct {
+		if _, err := f.client.RPC.RegisterPublishedTask(f.client.Context(t.Context()), &pb.RegisterPublishedTaskRequest{SourceScope: &pb.SourceCompositionRequest{}}); status.Code(err) != codes.PermissionDenied {
+			t.Fatalf("operation caller declared source scope: %v", err)
+		}
+	}
 	bundle := controlBundle(t, f)
 	selected := append([]string(nil), bundle.Governance.OpenNodes[:1]...)
 	bundle.Governance.OpenNodes = selected
@@ -94,22 +112,36 @@ func checkImportedProvider(t *testing.T, mode string) {
 		bundle.Publication.Policy += `
 forbid(principal, action == Weaver::Action::"invokeProvider", resource) when { context.family == "control" };`
 	}
+	invalid := qualified
+	invalid.Body = `{}` // Ineligible offer must not suppress the valid module.
 	cheap := qualified
 	cheap.Model = "model-b"
 	cheap.Body = strings.Replace(cheap.Body, "model-a", "model-b", 1)
+	chosen := qualified
+	if mode == "alternate" {
+		cheap = qualified
+		cheap.Body = strings.Replace(cheap.Body, "hello", "alternate", 1)
+		chosen = cheap
+	}
 	bundle.Plans = nil
 	bundle.SelectOnRequest = true
 	bundle.Routing = []routing.Selection{{
 		Node: qualified.Node, AllowedModules: []string{"basic", "premium"}, Required: []string{"quality"},
 		MaxLatencyMillis: 100, MaxProcurementCost: 100, UserTokenRates: [4]uint64{0, 0, 0, 100000},
 		Candidates: []routing.Candidate{
+			{Module: "premium", Capabilities: []string{"quality"}, LatencyMillis: 1, TokenBounds: [4]uint64{64, 0, 0, 32}, Plan: invalid},
 			{Module: "basic", LatencyMillis: 10, TokenBounds: [4]uint64{64, 0, 0, 32}, Plan: cheap},
 			{Module: "premium", Capabilities: []string{"quality"}, LatencyMillis: 40, ProcurementRates: [4]uint64{1_000_000}, TokenBounds: [4]uint64{64, 0, 0, 32}, Plan: qualified},
 		},
 	}}
 	control := newControlProcess(t, f, writeControlBundle(t, f, bundle, "json"))
-	control.start(t)
-	t.Cleanup(func() { control.stop(t) })
+	if direct {
+		control.prepare(t)
+		control.client = f.client
+	} else {
+		control.start(t)
+		t.Cleanup(func() { control.stop(t) })
+	}
 	ctx, cancel := context.WithTimeout(t.Context(), 12*time.Second)
 	defer cancel()
 	source := f.admin
@@ -129,7 +161,7 @@ forbid(principal, action == Weaver::Action::"invokeProvider", resource) when { c
 				"procurement_rates": [4]uint64{rate}, "token_bounds": [4]uint64{64, 0, 0, 32}},
 		}
 	}
-	chosenDigest, _ := qualified.Digest()
+	chosenDigest, _ := chosen.Digest()
 	change := func(parent string, rate uint64) *pb.ProviderCatalogChange {
 		metadata, err := json.Marshal(entry(rate))
 		if err != nil {
@@ -137,7 +169,7 @@ forbid(principal, action == Weaver::Action::"invokeProvider", resource) when { c
 		}
 		litellm, err := json.Marshal(map[string]any{"model_list": []any{
 			map[string]any{"model_name": "premium", "litellm_params": map[string]string{
-				"model": "openai/" + qualified.Model, "api_base": strings.TrimSuffix(qualified.Routes[0].Endpoint, "/chat/completions"),
+				"model": "openai/" + chosen.Model, "api_base": strings.TrimSuffix(chosen.Routes[0].Endpoint, "/chat/completions"),
 				"api_key": "os.environ/WEAVER_TEST_KEY",
 			}},
 		}})
@@ -146,7 +178,7 @@ forbid(principal, action == Weaver::Action::"invokeProvider", resource) when { c
 		}
 		record, err := config.ImportProviderCatalog(litellm, config.ProfileJSON, config.ProviderImportReview{
 			Parent: parent, Bindings: map[string]config.ProviderImportBinding{
-				"premium": {Plan: qualified, Credential: "os.environ/WEAVER_TEST_KEY", Entry: metadata},
+				"premium": {Plan: chosen, Credential: "os.environ/WEAVER_TEST_KEY", Entry: metadata},
 			},
 		})
 		if err != nil {
@@ -189,7 +221,15 @@ forbid(principal, action == Weaver::Action::"invokeProvider", resource) when { c
 	if status.Code(err) != codes.FailedPrecondition || f.primary.Load() != 0 {
 		t.Fatalf("stale quote admitted: %v", err)
 	}
-	if _, err := control.client.Execute(ctx, cheap, pb.Encoding_PROTOBUF, 1, func(*pb.Event) error { return nil }); status.Code(err) != codes.InvalidArgument || f.primary.Load() != 0 {
+	expectedCode := codes.InvalidArgument
+	if direct {
+		expectedCode = codes.FailedPrecondition
+	}
+	unselected := cheap
+	if mode == "alternate" {
+		unselected = qualified
+	}
+	if _, err := control.client.Execute(ctx, unselected, pb.Encoding_PROTOBUF, 1, func(*pb.Event) error { return nil }); status.Code(err) != expectedCode || f.primary.Load() != 0 {
 		t.Fatalf("unselected model reached provider: %v", err)
 	}
 	execute := func(ctx context.Context, wantFrames bool) error {
@@ -208,7 +248,7 @@ forbid(principal, action == Weaver::Action::"invokeProvider", resource) when { c
 			if err != nil {
 				return err
 			}
-			if !wantFrames || frame.GetModel() != qualified.Model {
+			if !wantFrames || frame.GetModel() != chosen.Model {
 				return errors.New("unexpected provider frame")
 			}
 			seen = true
@@ -231,9 +271,28 @@ forbid(principal, action == Weaver::Action::"invokeProvider", resource) when { c
 		if successes != 0 || f.primary.Load() != 0 {
 			t.Fatalf("import bypassed Cedar invocation: successes=%d calls=%d", successes, f.primary.Load())
 		}
+		if direct {
+			next := secondaryClient(t, f.pki)
+			token := sha256.Sum256([]byte(f.admin.Token))
+			if _, err := f.admin.RotateSource(ctx, v1.SourceRotation{OperationID: "retire-routing-source", ExpectedEpoch: 0, NextCertificate: next.Certificate[0], NextCredentialSHA256: hex.EncodeToString(token[:])}); err != nil {
+				t.Fatal(err)
+			}
+			if err := execute(ctx, false); status.Code(err) != codes.FailedPrecondition {
+				t.Fatalf("retired source reused cached projection: %v", err)
+			}
+			f.stop(t)
+			f.start(t)
+			control.client = f.client
+			if err := execute(ctx, false); status.Code(err) != codes.FailedPrecondition {
+				t.Fatalf("restart restored retired source: %v", err)
+			}
+			if f.primary.Load() != 0 {
+				t.Fatal("retired source sent provider traffic")
+			}
+		}
 		return
 	}
-	if (mode == "complete" && successes != 1) || (mode == "partial" && successes != 0) || f.primary.Load() != 1 {
+	if ((mode == "complete" || mode == "alternate") && successes != 1) || (mode == "partial" && successes != 0) || f.primary.Load() != 1 {
 		t.Fatalf("expected a single provider dispatch: successes=%d calls=%d", successes, f.primary.Load())
 	}
 	withdrawal, err := json.Marshal(map[string]any{"parent": current.Version, "entries": map[string]any{}})
@@ -241,16 +300,22 @@ forbid(principal, action == Weaver::Action::"invokeProvider", resource) when { c
 		t.Fatal(err)
 	}
 	withdrawn := current
-	if mode == "complete" {
+	if mode == "complete" || mode == "alternate" {
 		withdrawn, err = publish(&pb.ProviderCatalogChange{Record: withdrawal})
 		if err != nil {
 			t.Fatal(err)
 		}
 	}
-	control.stop(t)
+	if !direct {
+		control.stop(t)
+	}
 	f.stop(t)
 	f.start(t)
-	control.start(t)
+	if direct {
+		control.client = f.client
+	} else {
+		control.start(t)
+	}
 	retry, stop := context.WithTimeout(t.Context(), 12*time.Second)
 	defer stop()
 	if err := execute(retry, false); status.Code(err) != codes.FailedPrecondition {

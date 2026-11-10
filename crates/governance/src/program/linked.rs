@@ -37,6 +37,7 @@ unsafe extern "C" {
     fn weaver_governor_ready_steps_v1(root: i64) -> i64;
     fn weaver_hard_fact_impact_v1(root: i64) -> i64;
     fn weaver_capture_source_v1(root: i64) -> i64;
+    fn weaver_compose_source_v1(root: i64) -> i64;
     fn weaver_governance_ready_v1(root: i64) -> i64;
     fn weaver_install_source_cancel_v1(callback: *const std::ffi::c_void);
 }
@@ -91,5 +92,14 @@ pub(super) fn fact_impact<'r>(
 ) -> Result<RootedSchemeObject<'r>, GerbilError> {
     // SAFETY: fixed same-graph rooted call transfers one fresh result root.
     let export = unsafe { runtime.bind_object_export(weaver_hard_fact_impact_v1) }?;
+    export.call(input).into_result()
+}
+
+pub(super) fn compose<'r>(
+    runtime: &'r GerbilRuntime,
+    input: &RootedSchemeObject<'_>,
+) -> Result<RootedSchemeObject<'r>, GerbilError> {
+    // SAFETY: fixed same-graph rooted export; input and result stay on this owner.
+    let export = unsafe { runtime.bind_object_export(weaver_compose_source_v1) }?;
     export.call(input).into_result()
 }

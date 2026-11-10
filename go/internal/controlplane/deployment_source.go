@@ -7,6 +7,7 @@ package controlplane
 import (
 	"context"
 	"errors"
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -48,4 +49,21 @@ func (input deploymentSource) bootstrap(ctx context.Context, source, operation *
 		return bootstrapProducer(ctx, source, operation, input.producer, trace)
 	}
 	return bootstrap(ctx, source, operation, input.bundle, trace)
+}
+
+func loadDeploymentSource() (deploymentSource, error) {
+	input, err := selectDeploymentSource(os.LookupEnv)
+	if err != nil || input.producer != "" {
+		return input, err
+	}
+	data, err := readBoundFile(input.path)
+	if err != nil {
+		return deploymentSource{}, err
+	}
+	format := config.ProfileJSON
+	if ext := strings.ToLower(filepath.Ext(input.path)); ext == ".yaml" || ext == ".yml" {
+		format = config.ProfileYAML
+	}
+	input.bundle, err = config.DecodeConfiguration(data, format)
+	return input, err
 }

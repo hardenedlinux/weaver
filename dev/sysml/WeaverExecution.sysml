@@ -810,6 +810,7 @@ package WeaverExecution {
                This action grants no publication, consumption or transport right. */
         }
         action deriveCandidate : DeriveSemanticCandidate;
+        action composeSource : ArchitectureEvolution::ComposeSourceBeforeSeal;
         action prepareObject : ControllerObjectLifecycle::PrepareObject;
         action replaceObject : ControllerObjectLifecycle::PrepareObjectReplacement;
         action reuseObject : ControllerObjectLifecycle::ReuseObjectProjection;
@@ -871,8 +872,8 @@ package WeaverExecution {
         port effectObservations : ~PolicyEvidenceDesign::EffectObservationPort;
     }
     part def GoControlAdapter {
-        attribute overviewName : String = "Route proposal";
-        attribute overviewSummary : String = "Suggest a provider";
+        attribute overviewName : String = "Source transport";
+        attribute overviewSummary : String = "Carry prepared source data";
         attribute overviewGlyph : String = "route-choice";
         private action def OrchestrateSourcePublication {
             in item candidate : PolicyEvidenceDesign::SourceCommand;
@@ -881,24 +882,28 @@ package WeaverExecution {
                current-source commands; reconcile uncertain outcomes by identity. */
         }
         action publishCandidate : OrchestrateSourcePublication;
-        doc /* Preserve the semantic original through configuration normalization,
+        doc /* The Scheme catalog path copies an already composed projection;
+           it does not run Go routing or interpret Workflow. File-source and dynamic
+           catalog requests now delegate composition through the same source-only
+           RPC. Remaining Go Bundle algorithms serve development/reference callers.
+           Preserve the semantic original through configuration normalization,
            protocol aliasing and authenticated publication. JSON/YAML populates
            the same admitted contracts; it cannot define another authorization
            language. Routing, retries and fallback select candidates within that
            original. Go neither invents original task keys from session labels
            nor treats compile/publication acknowledgments as final-use permits. */
-        attribute displayName : String = "Go / Control + routing";
+        attribute displayName : String = "Go / Configuration transport";
         attribute leanDeclaration : String = "CedarPooSpec.Gateway.Context";
         attribute leanFields : String = "scope,policyRevision,ownerEpoch,historyRevision,factFloor";
         attribute securityName : String = "Go / Source publication";
         attribute securityGlyph : String = "publication";
         attribute securityResponsibility : String = "Carry the original context\nPublish over authenticated gRPC\nUnknown replies stay unresolved";
-        attribute responsibility : String = "Cloud + protocol integration\nOne owned source image\nAuthenticated publication + routing";
+        attribute responsibility : String = "Source preparation + optional adapters\nOne owned source image\nNo default response forwarding";
         attribute glyph : String = "routing";
         attribute visualRole : String = "selection";
         doc /* BootstrapProducer receives the server's typed CompileSource
            artifact over authenticated gRPC and reobserves source authority.
-           Its bounded typed projection freezes and validates one owned image, then
+           Its bounded typed projection copies one already composed owned image, then
            shares the private publication implementation with file configuration.
            It neither JSON-roundtrips nor repeats normalization across these
            internal functions. No borrowed protobuf container escapes. Source
@@ -907,27 +912,36 @@ package WeaverExecution {
            selects exactly one approved producer or JSON/YAML data file; Scheme
            files cannot launch a compiler, and producer failure cannot fall back
            to a file. The Rust deployment still must install its approved graph. */
-        doc /* Refine routine node and routing preferences; emit typed data with
-           no send capability. Carry configuration/capture commitments and
+        doc /* R2 default/explicit prepare reuses source bootstrap without an
+           operation credential, frontend listener or response forwarding, then
+           exits. Fixed and catalog-selected clients use the existing Rust
+           operation listener. Source-owned typed declarations persist in the
+           existing ledger; the narrow operation resolver cannot publish source
+           authority. Catalog derivation rejoins current source, publication and
+           catalog in the registration transaction. Fixed plans and selected
+           originals retain their exact activation coordinates. Explicit serve
+           remains for reference controls until R5. */
+        doc /* Carry routine node and routing preference data without selecting
+           candidates or interpreting Workflow; emit typed data with no send capability. Carry configuration/capture commitments and
            authenticated original source identity over gRPC. Reconcile ambiguity;
            never evaluate Scheme, manage GC roots or forward foreign pointers. */
-        doc /* Go's target value is cloud/protocol integration, not a language
-           monopoly on Kubernetes or networking. Own discovery/watch/reconcile,
-           bounded ingress connections and protocol adapters, routing candidates,
-           source-outcome recovery and cloud lifecycle integration. Reuse the Go
-           ecosystem instead of implementing a duplicate Rust control adapter.
-           Ingress TLS/cloud-management credentials are distinct from provider
-           execution secrets. A provider SDK that performs its own final request
-           cannot bypass Rust; only inert encoding/metadata facilities may be
-           reused here without another governed transport refinement. */
+        doc /* Rust/Scheme is the target production core. Kubernetes observation
+           and protocol adapters default to Rust; Scheme/POO/gerbil-ascent owns
+           composition and inference. Retain an optional Go adapter only when
+           a required maintained Go SDK contributes concrete lifecycle behavior.
+           Choose this from upstream interfaces and implementation evidence,
+           not a mandatory local ecosystem comparison experiment. Go-native
+           external services can be reused through supported protocols. Do not
+           implement duplicate Rust/Go adapters for the same integration.
+           Ingress/cloud credentials remain separate from execution secrets. */
         doc /* Informer caches, health probes and SDK observations are candidates,
            not authoritative Policy/history facts. Re-list/reconnect preserves
            original identities and unresolved intent; all final deciding joins
-           remain Rust-owned. Current Go code implements config/routing/RPC
-           recovery, not Kubernetes controllers or complete protocol discovery.
-           Target ecosystem integrations must earn their cost through measurable
-           adapter reuse and operator behavior; a pure forwarding layer provides
-           insufficient justification. No Go-versus-Rust speed claim follows. */
+           remain Rust-owned. Current Go handles file syntax, typed transport,
+           immutable projection caching and RPC recovery, not Kubernetes
+           controllers or semantic routing. Development/reference functions
+           remain outside the deployed planning call path. This allocation
+           does not claim a Go-versus-Rust speedup or submillisecond acceptance. */
         doc /* Existing provider responses support default Protobuf events and
            optional Arrow IPC batches over the same gRPC stream. This is not a
            Flight service or end-to-end zero-copy path. Schema, row/range binding,

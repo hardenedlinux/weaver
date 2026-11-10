@@ -14,7 +14,9 @@ package ProviderRpc {
            The deciding Turso scope joins active grant status with Cedar and the
            original claim before dispatch or response release. Revocation retains
            unknown holds, and credential renewal cannot reopen consumption.
-       Go projects its actual verified ingress certificate. Rust authenticates
+       Direct Rust ingress observes the actual TLS sender and rejects supplied
+       relay evidence. In explicit relay mode Go projects its verified ingress
+       certificate. Rust authenticates
        the relay TLS sender and prepares the signed grant lineage before the
        shared-domain lock. Each deciding scope matches the exact deployment,
        root and leaf records, reads both tombstones, checks current time and
@@ -33,7 +35,7 @@ package ProviderRpc {
         doc /* Go proposes an exact original task, body and ordered route commitment. Rust selects one permitted configured route before durable consumption. */
     }
     requirement def UnambiguousProviderRequestBounds {
-        doc /* Go rejects unsupported request shapes; Rust independently admits exactly one original token cap in the range 1 through 4096 before reservation or dispatch. Source commitments cannot qualify competing caps. Neither cap nor usage observations authorize monetary settlement. */
+        doc /* Rust admits supported request shapes and independently admits exactly one original token cap in the range 1 through 4096 before reservation or dispatch. Source commitments cannot qualify competing caps. Neither cap nor usage observations authorize monetary settlement. */
     }
     requirement def SourceProviderProfileBinding {
         doc /* Rust retains only immutable Cedar literals and parsed subject/
@@ -50,9 +52,9 @@ package ProviderRpc {
            evaluation before any queue callback. No read image crosses a write,
            capacity wait, transaction boundary, publication cut or owner restart.
            The prepare burn and final release remain distinct durable scopes.
-           Go config/publication/Routing and Rust final sends can be qualified
-           without Scheme preparation; this does not qualify a new Scheme
-           dependency or alter its source-currentness contract. */
+           Static source publication and final Rust sends can be qualified without
+           Scheme inference. Undecided routing uses the installed Scheme owner;
+           neither path changes source-currentness or final-use contracts. */
         doc /* Authenticated source registration atomically binds an immutable profile artifact and original task. Plans commit the exact profile digest. Fresh Cedar evaluates protocol, profile digest and validated request facts before final sends. */
     }
     requirement def ClosedProviderRequestSchema {
@@ -68,7 +70,8 @@ package ProviderRpc {
         doc /* Durable consume and dispatch burn precede the only possible provider request. RPC retry, redirect, fallback, restart and cancellation never reopen a consumed root. */
     }
     requirement def TransportAndExecutionLatencySeparation {
-        doc /* Go forwards authenticated Protobuf request envelopes over
+        doc /* The direct client sends authenticated Protobuf requests to Rust.
+           The retained Go relay forwards authenticated Protobuf envelopes over
            gRPC. The streaming response carries either a Protobuf event
            or an Arrow IPC batch inside each Protobuf frame. The Go relay
            forwards frames unchanged. The Go client decodes Arrow only
@@ -81,7 +84,9 @@ package ProviderRpc {
            upstream wait and terminal wall time as execution intervals. */
     }
     requirement def ProviderSchedulerOwnership {
-        doc /* Go owns verified ingress, local admission limits, relay
+        doc /* Direct Rust ingress owns TLS identity, bounded worker admission,
+           backpressure and cancellation without a Go response hop.
+           For retained relay sessions Go owns verified ingress, local admission limits, relay
            backpressure and cancellation propagation. Rust owns provider
            worker admission, authoritative domain contention, resource
            lifetime and every deciding scope. Go has no authority to
@@ -202,13 +207,56 @@ package ProviderRpc {
     port def EventPort { out item delta : StreamEvent; }
     port def FramePort { out item encoded : EncodedFrame; }
     port def PublicationPort { out item authority : AuthorityPublication; }
-    part def SourcePublisher { port authority : PublicationPort; }
-    part def RustSourceIngress { port authority : ~PublicationPort; port published : PublicationPort; }
-    part def RustSourceWorker { port command : ~PublicationPort; port decided : PublicationPort; }
-    part def GoRoutingControl {
-        doc /* RPC view of the existing Go cloud/protocol integration owner.
-           Kubernetes watches, SDK health and discovered routes are typed source
-           candidates. Go validates/consumes response data under the original
+    item def SourceCompositionInput {
+        item configuration : ArchitectureEvolution::UnsealedSourceComposition;
+    }
+    item def SourceCompositionObservation {
+        doc /* Inert source projection, not a publication or consumed permit. */
+    }
+    port def CompositionPort {
+        out item input : SourceCompositionInput;
+        in item result : SourceCompositionObservation;
+    }
+    item def OperationSourceDeclaration {
+        item publication : AuthorityPublication;
+        item fixedOriginal : OriginalPlan[0..*];
+        item candidateScope : SourceCompositionInput[0..1];
+        doc /* Exactly one fixed original set or bounded catalog candidate scope;
+           Rust's tagged ProviderOperationScope enforces this representation.
+           The declaration is source-owned data, not an operation capability. */
+    }
+    port def OperationSourcePort { out item declaration : OperationSourceDeclaration; }
+    port def OperationResolutionPort {
+        in item key : OriginalPlan;
+        out item selected : OriginalPlan;
+    }
+    part def SourcePublisher {
+        port authority : PublicationPort;
+        port composition : CompositionPort;
+        port declaration : OperationSourcePort;
+    }
+    part def RustSourceIngress {
+        port authority : ~PublicationPort;
+        port published : PublicationPort;
+        port composition : ~CompositionPort;
+        port declaration : ~OperationSourcePort;
+        port retained : OperationSourcePort;
+        requirement advisory : ArchitectureEvolution::AdvisorySourceComposition;
+        doc /* ComposeSource authenticates this source ingress, rechecks source
+           authority/catalog version around bounded Scheme work, and returns
+           inert data. It neither stages publication nor installs a producer. */
+    }
+    part def RustSourceWorker {
+        port command : ~PublicationPort;
+        port decided : PublicationPort;
+        port declaration : ~OperationSourcePort;
+        port resolution : OperationResolutionPort;
+        requirement custody : ArchitectureEvolution::SourceBoundOperationPreparation;
+    }
+    part def GoSourceTransport {
+        doc /* RPC view of the current Go syntax/projection and transport owner.
+           Configuration and catalog candidates are composed by Rust/Scheme;
+           cloud discovery is a later adapter integration. Go validates/consumes response data under the original
            stream context, applies bounded backpressure and propagates cancellation.
            Compiled route slices, outbound Task maps/slices and the stream
            observer's plan are private typed copies. Copy before invoking RPC or
@@ -220,7 +268,19 @@ package ProviderRpc {
         port proposal : PlanPort;
         port received : ~FramePort;
     }
-    part def RustGrpcOwner { port proposal : ~PlanPort; port forwarded : PlanPort; }
+    part def RustGrpcOwner {
+        port proposal : ~PlanPort;
+        port forwarded : PlanPort;
+        port resolution : ~OperationResolutionPort;
+    }
+    part def DirectOperationClient {
+        doc /* An external operation caller, with no source/publication rights.
+           A complete plan or declared family/node key is an inert proposal;
+           the Rust owner resolves only activated original data and all existing
+           deciding guards still apply. No Go process receives the response. */
+        port proposal : PlanPort;
+        port received : ~FramePort;
+    }
     /* Request construction is inert. The fresh deciding scope owns connect,
        TLS and exactly one fixed-length HTTP request. WriteSeal observes accepted
        plaintext plus successful TLS flush, then permanently rejects every new
@@ -261,8 +321,13 @@ package ProviderRpc {
         port frames : ~FramePort;
         port stream : FramePort;
     }
-    part providerPath {
-        part control : GoRoutingControl;
+    part directProviderPath {
+        doc /* R2 direct deployment alternative over the same owner types,
+           not another runtime, listener or ledger. Source preparation is a prior
+           phase and may exit; each operation has its own authenticated stream.
+           Deferred selection rejoins source/catalog state in the source lane. */
+        requirement direct : ArchitectureEvolution::DirectRustOperationIngress;
+        part client : DirectOperationClient;
         part source : SourcePublisher;
         part publication : RustSourceIngress;
         part sourceStore : RustSourceWorker;
@@ -271,6 +336,36 @@ package ProviderRpc {
         part guard : RustCedarRelease;
         part encoding : ProtobufOrArrowEncoder;
         part output : RustBoundedOutput;
+        connect source.composition to publication.composition;
+        connect source.declaration to publication.declaration;
+        connect publication.retained to sourceStore.declaration;
+        connect sourceStore.resolution to rpc.resolution;
+        connect source.authority to publication.authority;
+        connect publication.published to sourceStore.command;
+        connect sourceStore.decided to broker.authority;
+        connect client.proposal to rpc.proposal;
+        connect rpc.forwarded to broker.proposal;
+        connect broker.response to encoding.response;
+        connect encoding.frames to guard.prepared;
+        connect guard.authorized to output.frames;
+        connect output.stream to client.received;
+    }
+    part providerPath {
+        doc /* Explicit serve reference deployment, retained for relay controls;
+           directProviderPath is the default R2 operation deployment. */
+        part control : GoSourceTransport;
+        part source : SourcePublisher;
+        part publication : RustSourceIngress;
+        part sourceStore : RustSourceWorker;
+        part rpc : RustGrpcOwner;
+        part broker : RustProviderBroker;
+        part guard : RustCedarRelease;
+        part encoding : ProtobufOrArrowEncoder;
+        part output : RustBoundedOutput;
+        connect source.composition to publication.composition;
+        connect source.declaration to publication.declaration;
+        connect publication.retained to sourceStore.declaration;
+        connect sourceStore.resolution to rpc.resolution;
         connect control.proposal to rpc.proposal;
         connect source.authority to publication.authority;
         connect publication.published to sourceStore.command;

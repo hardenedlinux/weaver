@@ -117,6 +117,7 @@ fn phase(input: &Derivation) -> usize {
 fn verify(output: DerivationOutput, topology: &GovernorTopology, phase: usize) {
     let mut nodes = match output {
         DerivationOutput::Nodes(nodes) => nodes,
+        DerivationOutput::Source(_) => panic!("source reply cannot advance a Governor"),
         DerivationOutput::Indices(indices) => indices
             .into_iter()
             .map(|i| topology.nodes.get(i).expect("bound index").clone())

@@ -32,6 +32,7 @@ mod session_workflow;
 mod shutdown;
 mod single_provider;
 mod source_artifact;
+mod source_composition;
 mod source_identity;
 mod source_owner;
 mod telemetry;

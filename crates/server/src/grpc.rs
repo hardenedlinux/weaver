@@ -31,11 +31,13 @@ pub(crate) struct Gateway {
     ingress: Ingress,
     peer: [u8; 32],
     operation_peer: [u8; 32],
+    pub(crate) routing: crate::source_owner::OperationResolver,
     pub(crate) transport: ProviderTransport,
     pub(crate) admission: Admission,
     pub(crate) runtime: RuntimeOwner,
     pub(crate) metering_enabled: bool,
     pub(crate) provider_oauth_enabled: bool,
+    pub(crate) provider_oauth_relay: bool,
 }
 #[derive(Clone)]
 enum Ingress {
@@ -121,12 +123,14 @@ async fn serve_owned(
         Ingress::Operation,
         admission.clone(),
         runtime.clone(),
+        source_worker.client.operation_resolver(),
     );
     let source = Gateway::new(
         &settings,
         Ingress::Source(source_worker.client.clone()),
         admission,
         runtime.clone(),
+        source_worker.client.operation_resolver(),
     );
     let session = operation.clone();
     let operation = serve_listener(
@@ -250,6 +254,7 @@ impl Gateway {
         ingress: Ingress,
         admission: Admission,
         runtime: RuntimeOwner,
+        routing: crate::source_owner::OperationResolver,
     ) -> Self {
         let (peer, credential) = match ingress.role() {
             RpcRole::Operation => (settings.security.peer_sha256, settings.owner.token_sha256),
@@ -259,6 +264,7 @@ impl Gateway {
             ),
         };
         Self {
+            routing,
             config: settings.owner.clone(),
             credential,
             ingress,
@@ -269,6 +275,10 @@ impl Gateway {
             runtime,
             metering_enabled: settings.metering.is_some(),
             provider_oauth_enabled: settings.provider_oauth.is_some(),
+            provider_oauth_relay: settings
+                .provider_oauth
+                .as_ref()
+                .is_some_and(|config| config.relay_certificate_sha256.is_some()),
         }
     }
     pub(crate) fn authenticate<T>(
@@ -572,6 +582,59 @@ impl pb::gateway_server::Gateway for Gateway {
         }))
     }
     type ExecuteProviderStream = ResponseStream;
+    async fn compose_source(
+        &self,
+        request: Request<pb::SourceCompositionRequest>,
+    ) -> std::result::Result<Response<pb::SourceCompositionReply>, Status> {
+        let caller = self.source_identity(&request)?;
+        let input = request.into_inner();
+        let source = self.ingress.source()?;
+        let before = source.authority(caller.clone()).await?;
+        let use_catalog = input.use_catalog;
+        let snapshot = if use_catalog {
+            source.provider_catalog(caller.clone()).await?
+        } else {
+            None
+        };
+        let version = snapshot
+            .as_ref()
+            .map(|(version, _)| version.as_str())
+            .unwrap_or("")
+            .to_owned();
+        if input.expected_catalog_version != version {
+            return Err(Status::failed_precondition(
+                "composition catalog version changed",
+            ));
+        }
+        let output = crate::source_composition::compose(
+            &self.runtime,
+            input,
+            snapshot.as_ref().map(|(_, bytes)| bytes.as_slice()),
+        )
+        .await?;
+        if source.authority(caller.clone()).await? != before || self.runtime.closing() {
+            return Err(Status::permission_denied(
+                "source authority changed during composition",
+            ));
+        }
+        if use_catalog
+            && source
+                .provider_catalog(caller)
+                .await?
+                .as_ref()
+                .map(|(version, _)| version.as_str())
+                .unwrap_or("")
+                != version
+        {
+            return Err(Status::failed_precondition(
+                "composition catalog version changed",
+            ));
+        }
+        Ok(Response::new(pb::SourceCompositionReply {
+            artifact: Some(crate::source_artifact::artifact_data(output.data())),
+            catalog_version: version,
+        }))
+    }
     async fn compile_source(
         &self,
         request: Request<pb::ProducerRequest>,
@@ -617,6 +680,7 @@ impl pb::gateway_server::Gateway for Gateway {
             })?,
             _=self.runtime.cancellation()=>return Err(Status::unavailable("source compilation closed")),
         };
+        crate::source_composition::validate_transport(bound.source())?;
         // No source SQL lane is retained while foreign code runs. Re-observe the
         // actual caller after completion; a captured old observation is not use.
         let after = source.authority(caller).await?;
@@ -667,7 +731,11 @@ impl pb::gateway_server::Gateway for Gateway {
         request: Request<pb::OperationKey>,
     ) -> std::result::Result<Response<pb::ProviderReceipt>, Status> {
         self.authenticate(&request, RpcRole::Operation)?;
-        let oauth = crate::provider_oauth::observe(self.provider_oauth_enabled, &request)?;
+        let oauth = crate::provider_oauth::observe(
+            self.provider_oauth_enabled,
+            self.provider_oauth_relay,
+            &request,
+        )?;
         let slot = self.admission.observation()?;
         let key = request.into_inner();
         let config = self.config.clone();
@@ -736,6 +804,76 @@ impl pb::gateway_server::Gateway for Gateway {
     ) -> std::result::Result<Response<pb::Empty>, Status> {
         let caller = self.source_identity(&request)?;
         let registration = request.into_inner();
+        if let Some(wire) = registration.source_scope {
+            if registration.task.is_some()
+                || wire.use_catalog
+                || !wire.expected_catalog_version.is_empty()
+            {
+                return Err(Status::invalid_argument("source registration shape"));
+            }
+            let key = registration
+                .publication
+                .ok_or(Status::invalid_argument("original publication missing"))?;
+            let input = crate::source_composition::decode(wire)?;
+            if input.source.publication.operation_id != key.operation_id
+                || input.source.publication.digest().map_err(status)? != key.digest
+            {
+                return Err(Status::invalid_argument("source publication mismatch"));
+            }
+            let selected =
+                crate::source_composition::compose_typed(&self.runtime, input.clone(), None)
+                    .await?;
+            if input.routing.is_empty() {
+                for plan in selected.plans() {
+                    self.ingress
+                        .source()?
+                        .register_operation_source(
+                            caller.clone(),
+                            weaver_contracts::ProviderOperationScope::Fixed {
+                                task: selected.task().clone(),
+                                plan: plan.clone(),
+                                publication: selected.publication().clone(),
+                            },
+                        )
+                        .await?;
+                }
+            } else {
+                if input.source.tasks.len() != 1
+                    || !input.source.plans.is_empty()
+                    || input.routing.len() != 1
+                    || input.source.governance.family != input.source.tasks[0].family
+                    || input.source.governance.open_nodes != input.source.tasks[0].nodes
+                    || !input.source.governance.workflow_edges.is_empty()
+                    || !input.source.governance.workflow_selectors.is_empty()
+                    || self.runtime.single_provider().is_some()
+                {
+                    return Err(Status::invalid_argument("deferred source scope mismatch"));
+                }
+                let scope = weaver_contracts::ProviderRoutingScope {
+                    task: input
+                        .source
+                        .tasks
+                        .into_iter()
+                        .next()
+                        .ok_or(Status::invalid_argument("source task missing"))?,
+                    selection_schema: input.source.governance.schema,
+                    selection: input
+                        .routing
+                        .into_iter()
+                        .next()
+                        .ok_or(Status::invalid_argument("source selection missing"))?,
+                    publication: input.source.publication,
+                };
+                self.ingress
+                    .source()?
+                    .register_operation_source(
+                        caller,
+                        weaver_contracts::ProviderOperationScope::Catalog { routing: scope },
+                    )
+                    .await?;
+            }
+            return Ok(Response::new(pb::Empty {}));
+        }
         let task = registration
             .task
             .ok_or(Status::invalid_argument("task missing"))?;

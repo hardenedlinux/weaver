@@ -108,6 +108,28 @@ func newControlProcess(t testing.TB, f *fixture, path string) *controlProcess {
 	t.Cleanup(func() { c.stop(t) })
 	return c
 }
+
+// Source preparation needs no operation credential or Go ingress socket.
+func (c *controlProcess) prepare(t testing.TB) {
+	t.Helper()
+	ctx, cancel := context.WithTimeout(t.Context(), 15*time.Second)
+	defer cancel()
+	command := exec.CommandContext(ctx, c.image)
+	for _, value := range os.Environ() {
+		if !strings.HasPrefix(value, "WEAVER_CONTROL_") {
+			command.Env = append(command.Env, value)
+		}
+	}
+	for _, value := range c.env {
+		name, _, _ := strings.Cut(value, "=")
+		if strings.HasPrefix(name, "WEAVER_CONTROL_AUTHORITY_SOURCE_") || name == "WEAVER_CONTROL_AUTHORITY_CA" || name == "WEAVER_CONTROL_AUTHORITY_SERVER_NAME" || name == "WEAVER_CONTROL_CONFIG" || name == "WEAVER_CONTROL_PRODUCER" {
+			command.Env = append(command.Env, value)
+		}
+	}
+	if output, err := command.CombinedOutput(); err != nil {
+		t.Fatalf("source-only preparation: %v: %s", err, output)
+	}
+}
 func (c *controlProcess) start(t testing.TB) {
 	t.Helper()
 	log, err := os.OpenFile(filepath.Join(c.directory, "control.log"), os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
@@ -119,7 +141,7 @@ func (c *controlProcess) start(t testing.TB) {
 		log.Close()
 		t.Fatal(err)
 	}
-	child := exec.Command(c.image)
+	child := exec.Command(c.image, "serve")
 	child.Env = append(os.Environ(), c.env...)
 	child.Stdout, child.Stderr = log, log
 	if os.Getenv("WEAVER_TEST_CONTROL_HEAP") == "1" {
@@ -534,7 +556,7 @@ func exerciseControlSourceReplyLoss(t *testing.T, source func(*testing.T, *fixtu
 	go func() { exited <- server.Serve(listener) }()
 	t.Cleanup(func() { server.Stop(); <-exited })
 	c.env = append(c.env, "WEAVER_CONTROL_AUTHORITY_SOURCE_ADDRESS="+listener.Addr().String())
-	child := exec.Command(controlBinary)
+	child := exec.Command(controlBinary, "serve")
 	child.Env = append(os.Environ(), c.env...)
 	log, err := os.Create(filepath.Join(c.directory, "lost-publication.log"))
 	if err != nil {

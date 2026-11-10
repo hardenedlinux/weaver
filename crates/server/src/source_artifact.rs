@@ -7,12 +7,16 @@ use crate::pb;
 use weaver_contracts::{ProviderPlan, ProviderProfile, ProviderRoute, Publication, Task};
 use weaver_governance::{BoundSource, SourceData, SourceSelection};
 pub(crate) fn artifact(bound: &BoundSource) -> pb::SourceArtifact {
+    artifact_data(bound.source().data())
+}
+/// Typed projection only; the caller retains source provenance and authority checks.
+pub(crate) fn artifact_data(data: &SourceData) -> pb::SourceArtifact {
     let SourceData {
         governance,
         tasks,
         plans,
         publication,
-    } = bound.source().data();
+    } = data;
     let SourceSelection {
         schema,
         family,

@@ -43,6 +43,22 @@ const SessionDAGSchema = "weaver.session-dag.v1"
 
 const SessionWorkflowSchema = "weaver.session-workflow.v1"
 
+// DecodeConfiguration handles external syntax only. Rust/Scheme composes its meaning.
+func DecodeConfiguration(data []byte, format ProfileFormat) (Bundle, error) {
+	if len(data) == 0 || len(data) > 8<<20 {
+		return Bundle{}, errors.New("source bundle bound")
+	}
+	source, err := sourceJSON(data, format)
+	if err != nil {
+		return Bundle{}, err
+	}
+	bundle, err := v1.DecodeSource[Bundle](source)
+	if err != nil {
+		return Bundle{}, err
+	}
+	return CloneConfiguration(bundle)
+}
+
 func DecodeBundle(data []byte, format ProfileFormat) (Bundle, error) {
 	var zero Bundle
 	if len(data) == 0 || len(data) > 8<<20 {

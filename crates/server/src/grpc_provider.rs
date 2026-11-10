@@ -44,16 +44,15 @@ impl Gateway {
         if predecessors.is_empty() && !session {
             return Ok(Vec::new());
         }
-        let source = self
+        let prepared = self
             .runtime
             .single_provider()
             .filter(|lifecycle| lifecycle.activated())
             .and_then(|lifecycle| lifecycle.ready.get())
-            .map(crate::single_provider::Prepared::source)
             .ok_or(Status::failed_precondition(
                 "compiled workflow has not activated",
             ))?;
-        let selection = &source.data().governance;
+        let selection = &prepared.source().data().governance;
         let matches_path = if session {
             selection.schema == feed.session_schema() && selection.open_nodes == feed.workflow_path
         } else {
@@ -73,23 +72,18 @@ impl Gateway {
             ));
         }
         let admitted = |node: &str| {
-            source
-                .plans()
-                .iter()
-                .find(|p| p.family == selection.family && p.node == node)
+            prepared
+                .operation_plan(&selection.family, node)
                 .ok_or(Status::failed_precondition(
                     "compiled workflow plan missing",
                 ))
         };
-        if admitted(&successor.node)? != successor {
+        if admitted(&successor.node)? != *successor {
             return Err(Status::failed_precondition(
                 "successor differs from compiled original",
             ));
         }
-        predecessors
-            .into_iter()
-            .map(|node| admitted(node).cloned())
-            .collect()
+        predecessors.into_iter().map(admitted).collect()
     }
 
     pub(super) async fn execute_provider_stream(
@@ -97,7 +91,11 @@ impl Gateway {
         request: Request<pb::ProviderRequest>,
     ) -> std::result::Result<Response<ResponseStream>, Status> {
         self.authenticate(&request, RpcRole::Operation)?;
-        let oauth = crate::provider_oauth::observe(self.provider_oauth_enabled, &request)?;
+        let oauth = crate::provider_oauth::observe(
+            self.provider_oauth_enabled,
+            self.provider_oauth_relay,
+            &request,
+        )?;
         if !cfg!(feature = "llm-provider") {
             return Err(Status::unimplemented("LLM provider feature disabled"));
         }
@@ -112,11 +110,35 @@ impl Gateway {
         {
             return Err(Status::invalid_argument("response batch bound"));
         }
-        let plan = plan(
-            request
-                .plan
-                .ok_or(Status::invalid_argument("plan missing"))?,
-        )?;
+        let proposed = request
+            .plan
+            .ok_or(Status::invalid_argument("plan missing"))?;
+        let mut catalog = request.catalog_version;
+        let plan = if operation_key_only(&proposed) {
+            if let Some(plan) = self
+                .runtime
+                .single_provider()
+                .filter(|provider| provider.activated())
+                .and_then(|provider| provider.ready.get())
+                .and_then(|prepared| prepared.operation_plan(&proposed.family, &proposed.node))
+            {
+                plan
+            } else {
+                let (plan, observed) = self
+                    .routing
+                    .resolve(&self.runtime, proposed.family, proposed.node, &catalog)
+                    .await?;
+                if !catalog.is_empty() && catalog != observed {
+                    return Err(Status::failed_precondition(
+                        "provider catalog coordinate changed",
+                    ));
+                }
+                catalog = observed;
+                plan
+            }
+        } else {
+            plan(proposed)?
+        };
         let predecessors = self.workflow_predecessors(&plan)?;
         if self
             .runtime
@@ -139,7 +161,7 @@ impl Gateway {
             StreamSettings {
                 arrow,
                 batch_rows: request.batch_rows,
-                catalog: request.catalog_version,
+                catalog,
             },
         )
         .map(Response::new)
@@ -456,4 +478,15 @@ impl Gateway {
             self.runtime.cancellation(),
         ))
     }
+}
+
+fn operation_key_only(plan: &pb::ProviderPlan) -> bool {
+    plan.profile.is_empty()
+        && plan.profile_commitment.is_empty()
+        && plan.model.is_empty()
+        && plan.body.is_empty()
+        && plan.routes.is_empty()
+        && plan.ceiling == 0
+        && plan.revision == 0
+        && plan.fence == 0
 }

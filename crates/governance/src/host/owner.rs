@@ -39,7 +39,9 @@ impl SourceInbox {
                 crate::Derivation::Governor(cut) => {
                     derive(owner, cut).map(crate::DerivationOutput::Nodes)
                 }
-                crate::Derivation::FactImpact { .. } => Err(SourceError::Contract),
+                crate::Derivation::FactImpact { .. } | crate::Derivation::Composition(_) => {
+                    Err(SourceError::Contract)
+                }
             },
         );
     }
@@ -115,7 +117,9 @@ impl SourceInbox {
             let derive_ns = finished.duration_since(started).as_nanos();
             let cut_sha256 = match input {
                 crate::Derivation::Governor(cut) => trace_digest(cut),
-                crate::Derivation::FactImpact { .. } => trace_digest(input),
+                crate::Derivation::FactImpact { .. } | crate::Derivation::Composition(_) => {
+                    trace_digest(input)
+                }
             };
             let ready_sha256 = match (input, result.as_ref().ok()) {
                 (_, Some(crate::DerivationOutput::Nodes(nodes))) => Some(trace_digest(nodes)),

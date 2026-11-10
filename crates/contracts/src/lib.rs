@@ -25,6 +25,11 @@ pub use metering::{
 };
 mod provider;
 mod provider_catalog;
+mod provider_routing;
+pub use provider_routing::{
+    ProviderOperationBinding, ProviderOperationScope, ProviderRoutingScope, RoutingCandidate,
+    RoutingSelection,
+};
 mod provider_oauth;
 pub use provider_catalog::{CatalogEntry, ProviderCatalog};
 pub use provider_oauth::{
