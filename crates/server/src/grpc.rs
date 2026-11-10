@@ -319,6 +319,15 @@ impl Gateway {
 }
 #[tonic::async_trait]
 impl pb::gateway_server::Gateway for Gateway {
+    async fn inspect_hard_fact(
+        &self,
+        request: Request<pb::Empty>,
+    ) -> Result<Response<pb::HardFactFeedState>, Status> {
+        let caller = self.source_identity(&request)?;
+        let state = self.ingress.source()?.inspect_fact(caller).await?;
+        Ok(Response::new(Self::fact_feed_state(state)))
+    }
+
     async fn stage_hard_fact(
         &self,
         request: Request<pb::HardFactIntent>,

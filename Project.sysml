@@ -103,8 +103,7 @@ package WeaverProject {
         part 'go/dev' : ForbiddenRuntimeRoot;
         part 'go/internal/devrunner' : ForbiddenRuntimeRoot;
         part prod : RuntimeAssetRoot;
-        part 'go/cmd/weaver-control' : RuntimeGoEntry;
-        part 'go/cmd/weaver-import-provider' : RuntimeGoEntry;
+        part 'go/dev/controlref' : DevelopmentGoEntry;
         part 'go/cmd/weaver-meter' : RuntimeGoEntry;
         part 'go/cmd/weaver-dev' : DevelopmentGoEntry;
         part 'scheme' : RuntimeSourceRoot;
@@ -474,9 +473,9 @@ package WeaverProject {
            execution, durable CAS and qualified storage/transport adapters. */
         part cedarLibrary : WeaverExecution::CedarSecurityFrameworks;
         part semantics : WeaverExecution::SchemeSemanticPublisher;
-        part control : WeaverExecution::GoControlAdapter;
-        doc /* Go deployment chooses an authenticated approved-producer RPC or
-           a JSON/YAML data file, exclusively. It never launches Scheme. Rust's
+        part control : WeaverExecution::SourceControlAdapter;
+        doc /* Rust preparation chooses an authenticated approved-producer RPC or
+           a JSON/YAML data file, exclusively. Rust's
            default production program installation remains a delivery gate;
            qualification graphs do not silently become production semantics. */
         part policy : WeaverExecution::RustPolicy;
@@ -755,9 +754,8 @@ package WeaverProject {
 
         part 'go/api/v1' : GoPackage;
         part 'go/api/gateway/v1' : GoPackage;
-        part 'go/cmd/weaver-control' : GoPackage;
+        part 'go/dev/controlref' : GoPackage;
         part 'go/cmd/weaver-dev' : GoPackage;
-        part 'go/cmd/weaver-import-provider' : GoPackage;
         part 'go/cmd/weaver-meter' : GoPackage;
         part 'go/dev' : GoPackage;
         part 'go/internal/config' : GoPackage;
@@ -791,6 +789,8 @@ package WeaverProject {
                or production Governance capability is introduced. */
         }
 
+        part 'prod/kubernetes/provideravailability.crd.yaml' : File;
+        part 'prod/kubernetes/provideravailability.rbac.yaml' : File;
         part 'prod/policies/provider/ProviderReview.lean' : File;
         part 'prod/policies/provider/schema.json' : File;
         part 'prod/policies/provider/provider.cedar' : File;
@@ -844,7 +844,7 @@ package WeaverProject {
 
     allocation governanceCode allocate Architecture::semantics to Layout::'scheme/governance';
     allocation configurationCode allocate Architecture::semantics to Layout::'scheme/gateway';
-    allocation controlCode allocate Architecture::control to Layout::'go/internal/controlplane';
+    allocation controlCode allocate Architecture::control to Layout::'crates/server';
     allocation cedarCode allocate Architecture::policy to Layout::'crates/policy';
     allocation cedarBridgeCode allocate Architecture::policy to Layout::'crates/policy-ffi';
     allocation ledgerCode allocate Architecture::ledger to Layout::'crates/ledger';

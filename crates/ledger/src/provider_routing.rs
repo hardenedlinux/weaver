@@ -50,7 +50,12 @@ fn binding(
 }
 
 fn cut(connection: &Connection, bound: ProviderOperationBinding) -> Result<ProviderOperationCut> {
-    if crate::source_authority::current(connection)?.as_ref() != Some(&bound.authority) {
+    let catalog_scope = matches!(&bound.scope, ProviderOperationScope::Catalog { .. });
+    // A fixed task already belongs to its committed publication. A catalog
+    // scope can register a new task, so its declaring source must still be current.
+    if catalog_scope
+        && crate::source_authority::current(connection)?.as_ref() != Some(&bound.authority)
+    {
         return Err(Error::Denied);
     }
     let publication = bound.scope.publication();
@@ -71,14 +76,13 @@ fn cut(connection: &Connection, bound: ProviderOperationBinding) -> Result<Provi
     if receipt.revision != Some(revision) || receipt.fence != Some(fence) {
         return Err(Error::Conflict("routing publication no longer current"));
     }
-    let (catalog_version, catalog) =
-        if matches!(&bound.scope, ProviderOperationScope::Catalog { .. }) {
-            let (version, catalog) = crate::provider_catalog::current(connection)?
-                .ok_or(Error::Conflict("provider catalog unavailable"))?;
-            (version, Some(catalog))
-        } else {
-            (String::new(), None)
-        };
+    let (catalog_version, catalog) = if catalog_scope {
+        let (version, catalog) = crate::provider_catalog::current(connection)?
+            .ok_or(Error::Conflict("provider catalog unavailable"))?;
+        (version, Some(catalog))
+    } else {
+        (String::new(), None)
+    };
     Ok(ProviderOperationCut {
         binding: bound,
         catalog_version,

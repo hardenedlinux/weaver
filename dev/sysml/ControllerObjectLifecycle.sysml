@@ -143,7 +143,7 @@ package ControllerObjectLifecycle {
     part def Publication :> Assessment {
         attribute :>> phase = Phase::publication;
         attribute :>> runtimeMechanism = Mechanism::authorityImplemented;
-        attribute :>> sourceOwner = "WeaverExecution::GoControlAdapter;WeaverExecution::RustLedger";
+        attribute :>> sourceOwner = "WeaverExecution::SourceControlAdapter;WeaverExecution::RustLedger";
         attribute :>> displayName = "Publish";
         attribute :>> responsibility = "Exists: durable CAS\nMissing: fact projection";
         attribute :>> currentSource = "go/internal/controlplane/gateway.go;crates/ledger/src/publication.rs;crates/ledger/src/task_origins.rs";

@@ -69,3 +69,33 @@ pub(crate) fn evidence(e: pb::DeltaReview) -> Result<DeltaReview, Status> {
         .map_err(|_| Status::invalid_argument("review evidence bounds"))?;
     Ok(evidence)
 }
+
+pub(crate) fn evidence_message(e: DeltaReview) -> pb::DeltaReview {
+    let disposition = match e.disposition {
+        DeltaDisposition::Bootstrap => pb::DeltaDisposition::Bootstrap,
+        DeltaDisposition::NoExecutionGain => pb::DeltaDisposition::NoExecutionGain,
+        DeltaDisposition::ExplicitApproval => pb::DeltaDisposition::ExplicitApproval,
+    };
+    pb::DeltaReview {
+        review: Some(pb::PublicationReview {
+            publication: Some(pb::PublicationKey {
+                operation_id: e.review.publication.operation_id,
+                digest: e.review.publication.digest,
+            }),
+            parent: e.review.parent.map(|p| pb::AuthorityParent {
+                revision: p.revision,
+                fence: p.fence,
+                policy_digest: p.policy_digest,
+                schema_digest: p.schema_digest,
+            }),
+            artifact: e.review.artifact,
+        }),
+        audience: e.audience,
+        reviewer_epoch: e.reviewer_epoch,
+        source_epoch: e.source_epoch,
+        source_identity_digest: e.source_identity_digest,
+        disposition: disposition as i32,
+        delta: e.delta,
+        signature: e.signature,
+    }
+}

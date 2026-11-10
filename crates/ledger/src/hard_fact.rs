@@ -6,7 +6,7 @@ use std::collections::BTreeSet;
 
 use crate::{
     Ledger,
-    persistence::{begin, driver::Connection, exec, maybe_current, params},
+    persistence::{begin, driver::Connection, exec, maybe_current, params, read_all_current},
     source_authority,
     store::{db, integer},
 };
@@ -22,6 +22,16 @@ const MAX_PENDING: u64 = 64;
 pub enum FactPreparation {
     Pending(FactWork),
     Resolved(FactResolution),
+}
+
+pub struct FactFeedState {
+    pub domain: String,
+    pub source_epoch: u64,
+    pub floor: u64,
+    pub revision: u64,
+    pub snapshot: String,
+    pub available: Option<bool>,
+    pub pending: Vec<(FactBarrier, bool)>,
 }
 
 struct Head {
@@ -430,6 +440,81 @@ impl Ledger {
             _ => return Err(Error::Conflict("hard fact feed deployment changed")),
         }
         tx.commit().map_err(db)
+    }
+
+    /// Observe the installed cut and the exact ordered barriers for source recovery.
+    pub fn inspect_fact_feed(&mut self) -> Result<FactFeedState> {
+        let tx = begin(&mut self.connection).map_err(db)?;
+        let head = head(&tx)?.ok_or(Error::Denied)?;
+        authorize(&tx, self.source.as_ref(), &head.feed)?;
+        let available = if head.revision == 0 {
+            None
+        } else {
+            Some(
+                crate::persistence::one_current(
+                    &tx,
+                    "SELECT NOT EXISTS(SELECT 1 FROM json_each(unavailable) WHERE value=?1)
+                 FROM main.hard_fact_feed WHERE singleton=1",
+                    params![head.feed.root.clone()],
+                    |row| row.get::<bool>(0),
+                )
+                .map_err(db)?,
+            )
+        };
+        let mut pending = Vec::new();
+        if let Some(tail) = tail(&tx, &head)? {
+            let rows = read_all_current(
+                &tx,
+                "SELECT original,barrier FROM main.hard_fact_intents
+                 WHERE resolution IS NULL LIMIT ?1",
+                params![(MAX_PENDING + 1) as i64],
+                |row| Ok((row.get::<String>(0)?, row.get::<String>(1)?)),
+            )
+            .map_err(db)?;
+            let mut entries = rows
+                .into_iter()
+                .map(|(intent, barrier)| {
+                    Ok((
+                        decode::<FactIntent>(intent.as_bytes())?,
+                        decode::<FactBarrier>(barrier.as_bytes())?,
+                    ))
+                })
+                .collect::<Result<Vec<_>>>()?;
+            entries.sort_unstable_by_key(|(_, barrier)| barrier.revision);
+            if entries.len() as u64 != tail.revision - head.revision
+                || entries.last().map(|(_, barrier)| barrier) != Some(&tail)
+            {
+                return Err(Error::Conflict("hard fact pending sequence changed"));
+            }
+            let mut revision = head.revision;
+            let mut snapshot = head.snapshot.as_str();
+            for (intent, barrier) in &entries {
+                if revision.checked_add(1) != Some(barrier.revision)
+                    || snapshot != intent.previous_snapshot
+                    || intent.snapshot()? != barrier.snapshot
+                    || intent.operation_id != barrier.operation_id
+                    || intent.revision != barrier.revision
+                    || intent.source_epoch != head.feed.authority.epoch
+                    || intent.source_epoch != barrier.source_epoch
+                    || intent.domain != head.feed.domain
+                {
+                    return Err(Error::Conflict("hard fact pending sequence changed"));
+                }
+                revision = barrier.revision;
+                snapshot = &barrier.snapshot;
+                pending.push((barrier.clone(), intent.available));
+            }
+        }
+        tx.commit().map_err(db)?;
+        Ok(FactFeedState {
+            domain: head.feed.domain,
+            source_epoch: head.feed.authority.epoch,
+            floor: head.floor,
+            revision: head.revision,
+            snapshot: head.snapshot,
+            available,
+            pending,
+        })
     }
 
     /// Stage the exact original and install the pending barrier before a worker sees the intent.

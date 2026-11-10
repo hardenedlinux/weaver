@@ -20,10 +20,13 @@ mod grpc_hard_fact;
 mod grpc_listeners;
 mod grpc_output;
 mod grpc_provider;
+#[cfg(feature = "kubernetes")]
+mod kubernetes;
 pub mod pb;
 #[cfg(all(test, unix))]
 #[path = "../tests/unit/provider_commit.rs"]
 mod provider_commit_tests;
+mod provider_import;
 mod provider_oauth;
 mod review_wire;
 mod rpc_security;
@@ -33,8 +36,10 @@ mod shutdown;
 mod single_provider;
 mod source_artifact;
 mod source_composition;
+mod source_file;
 mod source_identity;
 mod source_owner;
+mod source_prepare;
 mod telemetry;
 #[cfg(test)]
 #[path = "../tests/unit/fixtures.rs"]

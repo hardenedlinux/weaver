@@ -507,7 +507,11 @@ package ArchitectureEvolution {
            listener receives a narrow resolver, never a source credential.
            Fixed plans are inert original data; reuse their sealed projection
            without a source-lane transaction on each hit. All fresh execution
-           guards remain broker/ledger decisions. Catalog derivation uses the
+           guards remain broker/ledger decisions. Publisher credential rotation
+           retires the old mutation identity. An already registered fixed task
+           stays bound to its committed publication, with the same outcome on
+           cache hit, cold lookup or restart. Object withdrawal changes deciding
+           authority through publication or the hard-fact barrier. Catalog derivation uses the
            existing affine Scheme/POO/gerbil-ascent owner. Coalesce identical
            immutable projections; never cache permission. Before registering a
            selected task, one existing ledger transaction rejoins the exact
@@ -583,10 +587,20 @@ package ArchitectureEvolution {
         attribute retirementCondition : String;
         item evidence : EvidenceAxis[0..*];
     }
+    item def ProviderAvailabilityObservation :> CloudResourceObservation {
+        attribute available : Boolean;
+        doc /* The namespaced ProviderAvailability resource exposes one desired
+           fact. Deployment binds its namespace, name and UID to one admitted
+           hard-fact feed. Kubernetes status reflects a resolved ledger cut.
+           A replacement UID needs an explicit binding. A watch event triggers
+           a fresh read before the adapter stages withdrawal. The source-only
+           recovery view returns pending barriers in ledger order. Stage the
+           newly observed intent before resolving older pending work. */
+    }
     action def IngestCloudObservation {
         in item observation : CloudResourceObservation;
         out item cut : ReconciliationCut;
-        doc /* Target Rust kube-rs or protocol adapter feeds existing source lane.
+        doc /* The Rust kube-rs adapter feeds the existing source lane.
            Observation admission precedes Scheme ReconcileObjectSet. No watch
            callback directly publishes or executes an effect. */
     }

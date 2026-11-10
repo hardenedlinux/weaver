@@ -7,6 +7,25 @@ use tonic::{Response, Status};
 use weaver_contracts::SourceIdentity;
 
 impl Gateway {
+    pub(crate) fn fact_feed_state(state: weaver_ledger::FactFeedState) -> pb::HardFactFeedState {
+        pb::HardFactFeedState {
+            domain: state.domain,
+            source_epoch: state.source_epoch,
+            floor: state.floor,
+            revision: state.revision,
+            snapshot: state.snapshot,
+            available: state.available,
+            pending: state
+                .pending
+                .into_iter()
+                .map(|(barrier, available)| pb::PendingHardFact {
+                    barrier: Some(Self::fact_barrier(barrier)),
+                    available,
+                })
+                .collect(),
+        }
+    }
+
     fn fact_barrier(barrier: weaver_contracts::FactBarrier) -> pb::HardFactBarrier {
         pb::HardFactBarrier {
             operation_id: barrier.operation_id,

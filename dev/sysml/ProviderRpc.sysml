@@ -71,7 +71,7 @@ package ProviderRpc {
     }
     requirement def TransportAndExecutionLatencySeparation {
         doc /* The direct client sends authenticated Protobuf requests to Rust.
-           The retained Go relay forwards authenticated Protobuf envelopes over
+           The Go reference relay forwards authenticated Protobuf envelopes over
            gRPC. The streaming response carries either a Protobuf event
            or an Arrow IPC batch inside each Protobuf frame. The Go relay
            forwards frames unchanged. The Go client decodes Arrow only

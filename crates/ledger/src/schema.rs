@@ -45,6 +45,8 @@ CREATE TABLE IF NOT EXISTS hard_fact_feed (
  pending TEXT REFERENCES hard_fact_intents(operation_id), unavailable TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS hard_fact_intents (
  operation_id TEXT PRIMARY KEY, original TEXT NOT NULL, barrier TEXT NOT NULL, resolution TEXT);
+CREATE INDEX IF NOT EXISTS hard_fact_pending_intents ON hard_fact_intents(operation_id)
+ WHERE resolution IS NULL;
 CREATE TABLE IF NOT EXISTS authority_review_requirements (
  operation_id TEXT PRIMARY KEY, digest TEXT NOT NULL, parent TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS authority_reviews (

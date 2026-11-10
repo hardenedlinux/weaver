@@ -54,7 +54,7 @@ pub use source_authority::{
     SourceAuthority, SourceIdentity, SourceRotation, SourceRotationOutcome, SourceRotationReceipt,
 };
 mod stream;
-pub use json::decode;
+pub use json::{decode, decode_bounded};
 pub use model::{
     Error, MAX_BODY_BYTES, MAX_CREDITS, Outcome, Proposal, Receipt, Result, Task, body_digest,
     identifier,

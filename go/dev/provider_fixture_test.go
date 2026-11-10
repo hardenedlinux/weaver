@@ -122,7 +122,7 @@ func TestMain(m *testing.M) {
 	if benchmark == "" {
 		controlArgs = append(controlArgs, "-race")
 	}
-	controlArgs = append(controlArgs, "-o", controlBinary, "./cmd/weaver-control")
+	controlArgs = append(controlArgs, "-o", controlBinary, "./dev/controlref")
 	controlBuild := exec.Command(filepath.Join(runtime.GOROOT(), "bin/go"), controlArgs...)
 	controlBuild.Dir, controlBuild.Stdout, controlBuild.Stderr = repo, os.Stderr, os.Stderr
 	if err := controlBuild.Run(); err != nil {

@@ -126,6 +126,10 @@ enum Command {
         slot: OwnedSemaphorePermit,
     },
 
+    InspectFact {
+        reply: oneshot::Sender<Result<weaver_ledger::FactFeedState>>,
+        slot: OwnedSemaphorePermit,
+    },
     StageFact {
         intent: FactIntent,
         reply: oneshot::Sender<Result<FactBarrier>>,
@@ -266,6 +270,14 @@ impl SourceWorker {
     }
 }
 impl SourceOwner {
+    pub(crate) async fn inspect_fact(
+        &self,
+        caller: SourceIdentity,
+    ) -> std::result::Result<weaver_ledger::FactFeedState, Status> {
+        self.submit_priority(caller, |reply, slot| Command::InspectFact { reply, slot })
+            .await
+    }
+
     pub(crate) async fn stage_fact(
         &self,
         caller: SourceIdentity,
@@ -669,11 +681,6 @@ impl SourceOwner {
             }
         };
         if let Some(plan) = cached {
-            if !expected.is_empty() {
-                return Err(Status::failed_precondition(
-                    "fixed original has no selected catalog coordinate",
-                ));
-            }
             return Ok((plan.as_ref().clone(), String::new()));
         }
         let observed = self
@@ -687,11 +694,6 @@ impl SourceOwner {
             .ok_or(Status::failed_precondition(
                 "source routing scope unavailable",
             ))?;
-        if !expected.is_empty() && expected != observed.catalog_version {
-            return Err(Status::failed_precondition(
-                "provider catalog coordinate changed",
-            ));
-        }
         if let weaver_contracts::ProviderOperationScope::Fixed { plan, .. } =
             &observed.binding.scope
         {
@@ -700,6 +702,11 @@ impl SourceOwner {
             plan.fence = observed.fence;
             *self.routing.lock().await = Some(OperationProjection::Fixed(Arc::new(plan.clone())));
             return Ok((plan, String::new()));
+        }
+        if !expected.is_empty() && expected != observed.catalog_version {
+            return Err(Status::failed_precondition(
+                "provider catalog coordinate changed",
+            ));
         }
         let mut projection = self.routing.lock().await;
         let reusable = match projection.as_ref() {
@@ -1002,6 +1009,11 @@ fn process(
                 let result = ledger.with_authenticated_source(&caller, |ledger| {
                     ledger.register_provider_source(&scope)
                 });
+                answer(ledger, reply, result, slot)?;
+            }
+            Command::InspectFact { reply, slot } => {
+                let result =
+                    ledger.with_authenticated_source(&caller, |ledger| ledger.inspect_fact_feed());
                 answer(ledger, reply, result, slot)?;
             }
             Command::StageFact {

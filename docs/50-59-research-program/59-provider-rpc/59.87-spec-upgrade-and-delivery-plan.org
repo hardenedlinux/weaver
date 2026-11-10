@@ -271,6 +271,55 @@ R3 still owns further startup/configuration consolidation. R4 cloud adapters
 and R5 reference/packaging removal are separate work; neither is required to
 route a default R2 operation through Go.
 
+** R3 startup and source handoff
+
+Publisher credential rotation changes the source mutation identity. A fixed task
+already registered under its committed publication keeps the original activation
+revision and fence. Cold lookup, a warmed projection and restart must make the
+same original available to the broker. Withdrawal uses the existing publication
+or hard-fact decision path. A catalog scope still needs its declaring epoch when
+it registers a selected task.
+
+Qualify =weaver-server prepare= first with an approved Weaver Scheme producer
+and the existing Snake Oil deployment. The command uses the separate source TLS
+identity, checks the compiled source's authority, and verifies publication key,
+revision and fence on the existing stage, register and commit path. Retry from
+the exact publication receipt after ambiguous replies. Continue with
+=weaver.toml= after the original native entry passes. Treat file configuration
+and independent review as explicit input paths in the migration inventory.
+
+The scoped baseline commit =156c89a9bb460040e1cc43ad65113e6022466889= passed the
+repository hook. Its isolated archive matched all 11,336 tracked files and
+passed the project architecture, SysML trace and shared RPC schema controls.
+The snapshot exceeded the existing 480-second build budget during native
+Scheme object compilation. The candidate built through the working-tree entry and
+passed the fixed-plan handoff controls and the first Rust preparation and
+operation call. The first reply-loss diagnostic run
+reached the three-second listener bound in the staging case and the ten-second
+CompileSource bound before staging in the publication case. Preserve those
+outcomes separately from the later same-image cohort. That cohort passed
+both reply-loss controls, direct environment and TOML preparation, and all
+three fixed-plan handoff modes. Its first process exceeded the three-second
+listener readiness deadline before the main marker. The bounded single-case
+follow-up on the same image passed hard-fact withdrawal, exact pending-barrier
+recovery and A-to-B-to-A. The whole cohort remains open.
+
+** R4 Kubernetes source observation
+
+The Weaver-owned =ProviderAvailability= resource is bound by namespace, name and
+UID. The Rust watcher reads the current resource after events, stages a new
+intent before resolving older pending work, and writes status with an exact
+resource-version precondition. The feed observation API authenticates the
+existing source credential and returns the installed cut and pending barriers.
+
+The initial Kubernetes-feature build exceeded the 480-second budget. The
+subsequent incremental build completed in 2m39s. On that release, the
+hard-fact withdrawal/restart/A-to-B-to-A case passed in 10.97s and the Kubernetes
+loopback case passed in 6.75s. The latter exercises adapter restart, duplicate
+delivery, expired watch and relist, replacement-UID withdrawal and one real
+provider execution. It uses a local API fixture and the real source lane,
+Scheme impact, ledger and broker. Live Kubernetes deployment remains separate.
+
 ** Current implementation and destination matrix
 
 | Existing owner | Actual responsibility | Target owner and reuse | Migration obligation |
@@ -287,15 +336,42 @@ route a default R2 operation through Go.
 | metering/issuer.go and cmd/weaver-meter | Independent terminal-usage signing and settlement | Separate issuer role, optionally implemented in Rust | Preserve independent key custody, deterministic application ID and restart idempotence; do not fold signer into gateway authority |
 | specreview/producer.go | Deployment-qualified SPEC catalog binding and independent review signing | Separate review role using existing SPEC outputs and Rust contracts | Preserve pinned artifact, audience/epoch and independent keys; Scheme cannot self-approve a migration |
 | telemetry/metrics.go | Admission/completion/frame counters | Rust telemetry plus bounded protocol export | Equivalent meanings; no synchronous collector dependency in frame loop |
-| cmd/weaver-import-provider | Operator import utility | Rust adapter + existing Scheme profile entry | Preserve explicit review; no hot-path interpreter or second build entry |
+| Offline LiteLLM import | Operator import utility | Rust =weaver-server import-provider= and existing catalog contract | Preserve explicit review, original plan digest and no publication side effects |
 | internal/devrunner, go/dev, cmd/weaver-dev | OpenSysML analysis/rendering, finite orchestration, Go reference/negative controls | Retain now; use existing SDK and runners | No rewrite merely for language uniformity; Go-less production can coexist with Go development tools |
 | go/api | Generated RPC and Go-side contract/reference code | Keep generated bindings for live consumers; Rust contract is execution owner | Remove handwritten duplicates only after all callers and reference tests have a replacement |
 
+The checked-in relay build consumer is =go/dev/provider_fixture_test.go=.
+It builds =go/dev/controlref= under the development boundary. Deployment uses
+=weaver-server prepare= for approved producers and JSON/YAML files. Both use
+the existing source checks and durable publication path, and JSON/YAML files
+can carry independently issued review evidence. The Rust offline LiteLLM import
+emits the existing catalog proposal record. =weaver-meter= and the independent
+review issuer have separate key custody and consumers.
+
+R5 acceptance uses the existing =go/dev= integration entry with
+=TestProviderRustDirectFilePreparation=,
+=TestProviderRustDirectCatalogSelection= and
+=TestProviderRustDirectReviewedCatalogImport=. The cases cover signed JSON and
+TOML-selected YAML sources, catalog replacement and guarded execution, and an
+offline proposal equal to the existing reviewed Go import. The independent
+review tests cover signature interoperability and rejection of changed signed
+coordinates. Metering application and review recovery are separate integration
+cases. The Go entry list and the production asset boundary verify which
+packages remain reachable from =weaver-meter=.
+
+Verification source, fixtures and acceptance commands are versioned with the
+implementation. Release executables and generated receipts remain local
+outputs. The harness can compare a release SHA-256 to bind multiple cases
+to the same Cargo executable.
+
+When the Cargo target is cleaned, regenerate the Policy FFI pkg-config
+record with the existing =policy_pkg_config= example. Its selected library
+must exist through Scheme staging and consumer verification.
+
 Current go/go.mod contains OpenSysML, Arrow, gRPC, Protobuf and format handling;
 it does not contain Kubernetes client-go/controller-runtime, Helm or Istio.
-Thus current production Go forwarding and semantic duplication have concrete
-maintenance cost; present cloud-native SDK reuse is not their justification.
-This is a source/dependency finding, not a claim that Go is generally slow.
+The former Go gateway used the shared RPC protocol and carried no cloud-native
+SDK integration. The retained Go command owns independent metering.
 
 ** Cloud-native integration beyond Kubernetes
 

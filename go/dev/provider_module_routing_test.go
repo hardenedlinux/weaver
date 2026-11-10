@@ -136,7 +136,7 @@ forbid(principal, action == Weaver::Action::"invokeProvider", resource) when { c
 	}}
 	control := newControlProcess(t, f, writeControlBundle(t, f, bundle, "json"))
 	if direct {
-		control.prepare(t)
+		control.prepareUsing(t, serverBinary, "prepare")
 		control.client = f.client
 	} else {
 		control.start(t)

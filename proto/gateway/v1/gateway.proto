@@ -30,6 +30,7 @@ service Gateway {
   rpc InspectSourceAuthority(Empty) returns (SourceAuthorityView);
   rpc RotateSourceAuthority(SourceRotationRequest) returns (SourceRotationReceipt);
   // Dedicated deployment-admitted feed. Resolve accepts only the exact durable barrier.
+  rpc InspectHardFact(Empty) returns (HardFactFeedState);
   rpc StageHardFact(HardFactIntent) returns (HardFactBarrier);
   rpc ResolveHardFact(HardFactBarrier) returns (FactBarrierResolution);
   // Preparation only. Actual ingress/source state selects an installed original;
@@ -73,6 +74,20 @@ message HardFactBarrier {
   string snapshot = 4;
   uint64 floor = 5;
   string pending_prefix = 6;
+}
+message PendingHardFact {
+  HardFactBarrier barrier = 1;
+  bool available = 2;
+}
+message HardFactFeedState {
+  string domain = 1;
+  uint64 source_epoch = 2;
+  uint64 floor = 3;
+  uint64 revision = 4;
+  string snapshot = 5;
+  optional bool available = 6;
+  // Exact durable barriers in resolution order.
+  repeated PendingHardFact pending = 7;
 }
 message FactBarrierResolution {
   HardFactBarrier barrier = 1;

@@ -90,7 +90,7 @@ package ControlActivation {
     requirement def GovernorSourceHandoff {
         doc /* Allocate original semantics and derivation constraints to
            WeaverExecution::SchemeSemanticPublisher, authenticated publication
-           orchestration to GoControlAdapter, Cedar evaluation to RustPolicy,
+           orchestration to SourceControlAdapter, Cedar evaluation to RustPolicy,
            durable assignment/consumption to RustLedger and external bytes to
            RustFinalBroker/HttpsExecutor. SourceCommand remains the shared lane.
            Independent original identity is a premise still requiring runtime

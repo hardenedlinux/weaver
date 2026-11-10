@@ -252,7 +252,7 @@ package WeaverResearchReaderViews {
         attribute glyph : String = "routine";
     }
     part def rpcCore_control :> ReaderNode {
-        attribute displayName : String = "Go control RPC";
+        attribute displayName : String = "Rust source RPC";
         attribute responsibility : String = "Carry the bound proposal";
         attribute glyph : String = "routing";
         attribute illustration : String = "route-choice";

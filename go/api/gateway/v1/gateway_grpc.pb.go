@@ -43,6 +43,7 @@ const (
 	Gateway_RegisterPublicationReview_FullMethodName = "/weaver.gateway.v1.Gateway/RegisterPublicationReview"
 	Gateway_InspectSourceAuthority_FullMethodName    = "/weaver.gateway.v1.Gateway/InspectSourceAuthority"
 	Gateway_RotateSourceAuthority_FullMethodName     = "/weaver.gateway.v1.Gateway/RotateSourceAuthority"
+	Gateway_InspectHardFact_FullMethodName           = "/weaver.gateway.v1.Gateway/InspectHardFact"
 	Gateway_StageHardFact_FullMethodName             = "/weaver.gateway.v1.Gateway/StageHardFact"
 	Gateway_ResolveHardFact_FullMethodName           = "/weaver.gateway.v1.Gateway/ResolveHardFact"
 	Gateway_CompileSource_FullMethodName             = "/weaver.gateway.v1.Gateway/CompileSource"
@@ -81,6 +82,7 @@ type GatewayClient interface {
 	InspectSourceAuthority(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*SourceAuthorityView, error)
 	RotateSourceAuthority(ctx context.Context, in *SourceRotationRequest, opts ...grpc.CallOption) (*SourceRotationReceipt, error)
 	// Dedicated deployment-admitted feed. Resolve accepts only the exact durable barrier.
+	InspectHardFact(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*HardFactFeedState, error)
 	StageHardFact(ctx context.Context, in *HardFactIntent, opts ...grpc.CallOption) (*HardFactBarrier, error)
 	ResolveHardFact(ctx context.Context, in *HardFactBarrier, opts ...grpc.CallOption) (*FactBarrierResolution, error)
 	// Preparation only. Actual ingress/source state selects an installed original;
@@ -327,6 +329,16 @@ func (c *gatewayClient) RotateSourceAuthority(ctx context.Context, in *SourceRot
 	return out, nil
 }
 
+func (c *gatewayClient) InspectHardFact(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*HardFactFeedState, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(HardFactFeedState)
+	err := c.cc.Invoke(ctx, Gateway_InspectHardFact_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *gatewayClient) StageHardFact(ctx context.Context, in *HardFactIntent, opts ...grpc.CallOption) (*HardFactBarrier, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(HardFactBarrier)
@@ -435,6 +447,7 @@ type GatewayServer interface {
 	InspectSourceAuthority(context.Context, *Empty) (*SourceAuthorityView, error)
 	RotateSourceAuthority(context.Context, *SourceRotationRequest) (*SourceRotationReceipt, error)
 	// Dedicated deployment-admitted feed. Resolve accepts only the exact durable barrier.
+	InspectHardFact(context.Context, *Empty) (*HardFactFeedState, error)
 	StageHardFact(context.Context, *HardFactIntent) (*HardFactBarrier, error)
 	ResolveHardFact(context.Context, *HardFactBarrier) (*FactBarrierResolution, error)
 	// Preparation only. Actual ingress/source state selects an installed original;
@@ -514,6 +527,9 @@ func (UnimplementedGatewayServer) InspectSourceAuthority(context.Context, *Empty
 }
 func (UnimplementedGatewayServer) RotateSourceAuthority(context.Context, *SourceRotationRequest) (*SourceRotationReceipt, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RotateSourceAuthority not implemented")
+}
+func (UnimplementedGatewayServer) InspectHardFact(context.Context, *Empty) (*HardFactFeedState, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method InspectHardFact not implemented")
 }
 func (UnimplementedGatewayServer) StageHardFact(context.Context, *HardFactIntent) (*HardFactBarrier, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StageHardFact not implemented")
@@ -915,6 +931,24 @@ func _Gateway_RotateSourceAuthority_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Gateway_InspectHardFact_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GatewayServer).InspectHardFact(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Gateway_InspectHardFact_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GatewayServer).InspectHardFact(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Gateway_StageHardFact_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(HardFactIntent)
 	if err := dec(in); err != nil {
@@ -1141,6 +1175,10 @@ var Gateway_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RotateSourceAuthority",
 			Handler:    _Gateway_RotateSourceAuthority_Handler,
+		},
+		{
+			MethodName: "InspectHardFact",
+			Handler:    _Gateway_InspectHardFact_Handler,
 		},
 		{
 			MethodName: "StageHardFact",

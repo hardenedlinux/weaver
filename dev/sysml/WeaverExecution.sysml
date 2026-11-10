@@ -871,7 +871,7 @@ package WeaverExecution {
         port derivedFacts : ~PolicyEvidenceDesign::DerivedFactsPort;
         port effectObservations : ~PolicyEvidenceDesign::EffectObservationPort;
     }
-    part def GoControlAdapter {
+    part def SourceControlAdapter {
         attribute overviewName : String = "Source transport";
         attribute overviewSummary : String = "Carry prepared source data";
         attribute overviewGlyph : String = "route-choice";
@@ -883,44 +883,44 @@ package WeaverExecution {
         }
         action publishCandidate : OrchestrateSourcePublication;
         doc /* The Scheme catalog path copies an already composed projection;
-           it does not run Go routing or interpret Workflow. File-source and dynamic
+           using the Rust source client. File-source and dynamic
            catalog requests now delegate composition through the same source-only
            RPC. Remaining Go Bundle algorithms serve development/reference callers.
            Preserve the semantic original through configuration normalization,
            protocol aliasing and authenticated publication. JSON/YAML populates
            the same admitted contracts; it cannot define another authorization
            language. Routing, retries and fallback select candidates within that
-           original. Go neither invents original task keys from session labels
+           original. The adapter never invents original task keys from session labels
            nor treats compile/publication acknowledgments as final-use permits. */
-        attribute displayName : String = "Go / Configuration transport";
+        attribute displayName : String = "Rust / Configuration transport";
         attribute leanDeclaration : String = "CedarPooSpec.Gateway.Context";
         attribute leanFields : String = "scope,policyRevision,ownerEpoch,historyRevision,factFloor";
-        attribute securityName : String = "Go / Source publication";
+        attribute securityName : String = "Rust / Source publication";
         attribute securityGlyph : String = "publication";
         attribute securityResponsibility : String = "Carry the original context\nPublish over authenticated gRPC\nUnknown replies stay unresolved";
         attribute responsibility : String = "Source preparation + optional adapters\nOne owned source image\nNo default response forwarding";
         attribute glyph : String = "routing";
         attribute visualRole : String = "selection";
-        doc /* BootstrapProducer receives the server's typed CompileSource
+        doc /* Rust prepare receives the server's typed CompileSource
            artifact over authenticated gRPC and reobserves source authority.
            Its bounded typed projection copies one already composed owned image, then
            shares the private publication implementation with file configuration.
            It neither JSON-roundtrips nor repeats normalization across these
            internal functions. No borrowed protobuf container escapes. Source
            staging, task registration and publication still use existing CAS;
-           response admission is not permission for a later send. RunFromEnv
+           response admission is not permission for a later send. The source client
            selects exactly one approved producer or JSON/YAML data file; Scheme
            files cannot launch a compiler, and producer failure cannot fall back
            to a file. The Rust deployment still must install its approved graph. */
-        doc /* R2 default/explicit prepare reuses source bootstrap without an
+        doc /* Rust prepare reuses source bootstrap without an
            operation credential, frontend listener or response forwarding, then
            exits. Fixed and catalog-selected clients use the existing Rust
            operation listener. Source-owned typed declarations persist in the
            existing ledger; the narrow operation resolver cannot publish source
            authority. Catalog derivation rejoins current source, publication and
            catalog in the registration transaction. Fixed plans and selected
-           originals retain their exact activation coordinates. Explicit serve
-           remains for reference controls until R5. */
+           originals retain their exact activation coordinates. The Go relay
+           lives under the development boundary for reference controls. */
         doc /* Carry routine node and routing preference data without selecting
            candidates or interpreting Workflow; emit typed data with no send capability. Carry configuration/capture commitments and
            authenticated original source identity over gRPC. Reconcile ambiguity;
@@ -1305,7 +1305,7 @@ package WeaverExecution {
     action def Consume;
     action def GuardAndSend;
     action def RecoverOutcome {
-        doc /* Go observes the Rust-owned durable result under the frozen
+        doc /* The source client observes the durable result under the frozen
            publication identity and digest before submitting an absent decision.
            A known result is read-only recovery. Unknown or rejected results do
            not activate ingress. A historical receipt never replaces current
@@ -1318,7 +1318,7 @@ package WeaverExecution {
     }
     part gateway : Gateway {
         part semanticPublisher : SchemeSemanticPublisher;
-        part controlAdapter : GoControlAdapter;
+        part controlAdapter : SourceControlAdapter;
         part policy : RustPolicy;
         part ledger : RustLedger;
         part broker : RustFinalBroker;

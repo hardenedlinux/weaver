@@ -724,6 +724,15 @@ func TestProviderControlCompiledAssetsStagingReplyLossAndRestart(t *testing.T) {
 	exerciseControlSourceReplyLoss(t, nil, true, compiledControlSources(true))
 }
 
+func TestProviderRustDirectPreparationLostReplies(t *testing.T) {
+	t.Run("staging", func(t *testing.T) {
+		exerciseSourceReplyLoss(t, nil, true, compiledControlSources(true), serverBinary)
+	})
+	t.Run("publication", func(t *testing.T) {
+		exerciseSourceReplyLoss(t, nil, false, compiledControlSources(true), serverBinary)
+	})
+}
+
 func TestProviderControlCompiledAssetsPartialRequestAndRestart(t *testing.T) {
 	f := newFixture(t, partialRequestDisconnect, true)
 	bundle := controlBundle(t, f)
@@ -857,6 +866,19 @@ func TestProviderControlCompiledCatalogRequiresExactSourceEpoch(t *testing.T) {
 // The preparation command has source credentials only and exits before any
 // operation request. All frames then travel directly from the Rust listener.
 func TestProviderRustDirectPreparedOperationWithoutGoRelay(t *testing.T) {
+	checkDirectPreparedOperation(t, "", false)
+}
+
+func TestProviderRustDirectPreparationCommand(t *testing.T) {
+	checkDirectPreparedOperation(t, serverBinary, false)
+}
+
+func TestProviderRustDirectPreparationFromTOML(t *testing.T) {
+	checkDirectPreparedOperation(t, serverBinary, true)
+}
+
+func checkDirectPreparedOperation(t *testing.T, preparationImage string, useTOML bool) {
+	t.Helper()
 	f := newFixture(t, completeSSE, false)
 	bundle := controlBundle(t, f)
 	f.env = append(f.env, "WEAVER_GOVERNANCE_RETIRE_ON_ACTIVATION=1")
@@ -866,18 +888,12 @@ func TestProviderRustDirectPreparedOperationWithoutGoRelay(t *testing.T) {
 	control.useProducer(policy.producer)
 	ctx, cancel := context.WithTimeout(t.Context(), 15*time.Second)
 	defer cancel()
-	command := exec.CommandContext(ctx, control.image, "prepare")
-	for _, value := range os.Environ() {
-		if !strings.HasPrefix(value, "WEAVER_CONTROL_") {
-			command.Env = append(command.Env, value)
-		}
+	if preparationImage == "" {
+		preparationImage = control.image
 	}
-	for _, value := range control.env {
-		name, _, _ := strings.Cut(value, "=")
-		if strings.HasPrefix(name, "WEAVER_CONTROL_AUTHORITY_SOURCE_") || name == "WEAVER_CONTROL_AUTHORITY_CA" ||
-			name == "WEAVER_CONTROL_AUTHORITY_SERVER_NAME" || name == "WEAVER_CONTROL_CONFIG" || name == "WEAVER_CONTROL_PRODUCER" {
-			command.Env = append(command.Env, value)
-		}
+	command := control.prepareCommand(ctx, preparationImage, "prepare")
+	if useTOML {
+		command = sourceTOMLCommand(t, control, command)
 	}
 	if output, err := command.CombinedOutput(); err != nil {
 		t.Fatalf("source-only preparation: %v: %s", err, output)
@@ -927,16 +943,83 @@ func TestProviderRustDirectPreparedOperationWithoutGoRelay(t *testing.T) {
 	}
 }
 
-// JSON source preparation also retains exact plans for direct operation keys;
+func sourceTOMLCommand(t *testing.T, control *controlProcess, command *exec.Cmd, kubernetes ...string) *exec.Cmd {
+	t.Helper()
+	settings := make(map[string]string)
+	environment := command.Env[:0]
+	for _, value := range command.Env {
+		name, text, _ := strings.Cut(value, "=")
+		if strings.HasPrefix(name, "WEAVER_CONTROL_") {
+			settings[name] = text
+			continue
+		}
+		environment = append(environment, value)
+	}
+	const tokenEnv = "WEAVER_TEST_PREPARATION_TOKEN"
+	var config strings.Builder
+	config.WriteString("[source]\n")
+	for _, field := range []struct{ key, env string }{
+		{"producer", "WEAVER_CONTROL_PRODUCER"},
+		{"file", "WEAVER_CONTROL_CONFIG"},
+		{"address", "WEAVER_CONTROL_AUTHORITY_SOURCE_ADDRESS"},
+		{"server_name", "WEAVER_CONTROL_AUTHORITY_SERVER_NAME"},
+		{"ca", "WEAVER_CONTROL_AUTHORITY_CA"},
+		{"certificate", "WEAVER_CONTROL_AUTHORITY_SOURCE_CERT"},
+		{"key", "WEAVER_CONTROL_AUTHORITY_SOURCE_KEY"},
+	} {
+		value := settings[field.env]
+		if (field.key == "producer" || field.key == "file") && (len(kubernetes) != 0 || value == "") {
+			continue
+		}
+		if field.key == "ca" || field.key == "certificate" || field.key == "key" || field.key == "file" {
+			var err error
+			value, err = filepath.Rel(control.directory, value)
+			if err != nil {
+				t.Fatal(err)
+			}
+		}
+		config.WriteString(field.key + " = " + strconv.Quote(value) + "\n")
+	}
+	config.WriteString("token_env = " + strconv.Quote(tokenEnv) + "\n")
+	for _, section := range kubernetes {
+		config.WriteString(section)
+	}
+	path := filepath.Join(control.directory, "weaver.toml")
+	if err := os.WriteFile(path, []byte(config.String()), 0600); err != nil {
+		t.Fatal(err)
+	}
+	command.Args = append(command.Args, "--config", path)
+	command.Env = append(environment, tokenEnv+"="+settings["WEAVER_CONTROL_AUTHORITY_SOURCE_TOKEN"])
+	return command
+}
+
+// File source preparation also retains exact plans for direct operation keys;
 // it does not rely on the optional compiled single-provider retirement profile.
 func TestProviderRustDirectFilePreparation(t *testing.T) {
+	for _, format := range []string{"json", "yaml"} {
+		t.Run(format, func(t *testing.T) { checkDirectFilePreparation(t, format) })
+	}
+}
+
+func checkDirectFilePreparation(t *testing.T, format string) {
+	t.Helper()
 	f := newFixture(t, completeSSE, false)
 	bundle := controlBundle(t, f)
 	originalPolicy := bundle.Publication.Policy
 	bundle.Publication.Policy += `
 forbid(principal, action == Weaver::Action::"invokeProvider", resource) when { context.family == "control" && context.node == "next" };`
-	control := newControlProcess(t, f, writeControlBundle(t, f, bundle, "json"))
-	control.prepare(t)
+	control := newControlProcess(t, f, writeControlBundle(t, f, bundle, format))
+	if format == "yaml" {
+		ctx, cancel := context.WithTimeout(t.Context(), 15*time.Second)
+		command := sourceTOMLCommand(t, control, control.prepareCommand(ctx, serverBinary, "prepare"))
+		output, err := command.CombinedOutput()
+		cancel()
+		if err != nil {
+			t.Fatalf("source-only preparation from TOML file: %v: %s", err, output)
+		}
+	} else {
+		control.prepareUsing(t, serverBinary, "prepare")
+	}
 	ctx, cancel := context.WithTimeout(t.Context(), 12*time.Second)
 	defer cancel()
 	run := func() error {
@@ -993,5 +1076,58 @@ forbid(principal, action == Weaver::Action::"invokeProvider", resource) when { c
 	f.start(t)
 	if err := run(); err == nil || f.primary.Load() != 1 {
 		t.Fatal("restart replayed file original", err)
+	}
+}
+
+func TestProviderRustDirectFixedPlanSurvivesSourceHandoff(t *testing.T) {
+	for _, mode := range []string{"warm", "cold", "restart"} {
+		t.Run(mode, func(t *testing.T) {
+			f := newFixture(t, completeSSE, false)
+			bundle := controlBundle(t, f)
+			newControlProcess(t, f, writeControlBundle(t, f, bundle, "json")).prepare(t)
+			ctx, cancel := context.WithTimeout(t.Context(), 12*time.Second)
+			defer cancel()
+			call := func(catalog string) error {
+				stream, err := f.client.RPC.ExecuteProvider(f.client.Context(ctx), &pb.ProviderRequest{
+					Plan: &pb.ProviderPlan{Family: "control", Node: "next"}, BatchRows: 1, CatalogVersion: catalog,
+				})
+				if err != nil {
+					return err
+				}
+				for {
+					frame, err := stream.Recv()
+					if err == io.EOF {
+						return nil
+					}
+					if err != nil {
+						return err
+					}
+					if frame.GetEvent() == nil {
+						t.Fatal("expected protobuf event")
+					}
+				}
+			}
+			if mode == "warm" {
+				// Resolve the original while rejecting the caller's catalog precondition.
+				if err := call(strings.Repeat("a", 64)); status.Code(err) != codes.FailedPrecondition || f.primary.Load() != 0 {
+					t.Fatalf("catalog precondition consumed fixed plan: %v", err)
+				}
+			}
+			next := secondaryClient(t, f.pki)
+			token := sha256.Sum256([]byte(f.admin.Token))
+			rotation := v1.SourceRotation{OperationID: "fixed-source-handoff", ExpectedEpoch: 0, NextCertificate: next.Certificate[0], NextCredentialSHA256: hex.EncodeToString(token[:])}
+			if receipt, err := f.admin.RotateSource(ctx, rotation); err != nil || receipt.GetAuthority().GetEpoch() != 1 {
+				t.Fatalf("source handoff: %v %v", receipt, err)
+			}
+			if _, err := f.admin.SourceAuthority(ctx); status.Code(err) != codes.PermissionDenied {
+				t.Fatalf("retired source retained mutation identity: %v", err)
+			}
+			if mode == "restart" {
+				restartWithSourceCertificate(t, f, next)
+			}
+			if err := call(""); err != nil || f.primary.Load() != 1 || f.backup.Load() != 0 {
+				t.Fatalf("fixed publication changed after source handoff: sends=%d error=%v", f.primary.Load(), err)
+			}
+		})
 	}
 }

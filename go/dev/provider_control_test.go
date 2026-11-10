@@ -111,10 +111,21 @@ func newControlProcess(t testing.TB, f *fixture, path string) *controlProcess {
 
 // Source preparation needs no operation credential or Go ingress socket.
 func (c *controlProcess) prepare(t testing.TB) {
+	c.prepareUsing(t, c.image)
+}
+
+func (c *controlProcess) prepareUsing(t testing.TB, image string, args ...string) {
 	t.Helper()
 	ctx, cancel := context.WithTimeout(t.Context(), 15*time.Second)
 	defer cancel()
-	command := exec.CommandContext(ctx, c.image)
+	command := c.prepareCommand(ctx, image, args...)
+	if output, err := command.CombinedOutput(); err != nil {
+		t.Fatalf("source-only preparation: %v: %s", err, output)
+	}
+}
+
+func (c *controlProcess) prepareCommand(ctx context.Context, image string, args ...string) *exec.Cmd {
+	command := exec.CommandContext(ctx, image, args...)
 	for _, value := range os.Environ() {
 		if !strings.HasPrefix(value, "WEAVER_CONTROL_") {
 			command.Env = append(command.Env, value)
@@ -126,9 +137,7 @@ func (c *controlProcess) prepare(t testing.TB) {
 			command.Env = append(command.Env, value)
 		}
 	}
-	if output, err := command.CombinedOutput(); err != nil {
-		t.Fatalf("source-only preparation: %v: %s", err, output)
-	}
+	return command
 }
 func (c *controlProcess) start(t testing.TB) {
 	t.Helper()
@@ -486,7 +495,12 @@ func (p *publicationReplyLoss) RegisterTask(ctx context.Context, in *pb.Register
 }
 func (p *publicationReplyLoss) CompileSource(ctx context.Context, in *pb.ProducerRequest) (*pb.CompiledSource, error) {
 	source := p.sourceClient()
-	return source.RPC.CompileSource(source.Context(ctx), in)
+	started := time.Now()
+	reply, err := source.RPC.CompileSource(source.Context(ctx), in)
+	if p.observeCompile != nil {
+		p.observeCompile(time.Since(started), err)
+	}
+	return reply, err
 }
 func (p *publicationReplyLoss) RegisterPublishedTask(ctx context.Context, in *pb.RegisterPublishedTaskRequest) (*pb.Empty, error) {
 	source := p.sourceClient()
@@ -529,6 +543,10 @@ func TestProviderControlStagingReplyLossCannotActivateOrLosePending(t *testing.T
 }
 
 func exerciseControlSourceReplyLoss(t *testing.T, source func(*testing.T, *fixture, config.Bundle) string, loseStage bool, policies controlPolicySources) {
+	exerciseSourceReplyLoss(t, source, loseStage, policies, "")
+}
+
+func exerciseSourceReplyLoss(t *testing.T, source func(*testing.T, *fixture, config.Bundle) string, loseStage bool, policies controlPolicySources, preparationImage string) {
 	t.Helper()
 	f := newFixture(t, completeSSE, false)
 	bundle := controlBundle(t, f)
@@ -551,6 +569,19 @@ func exerciseControlSourceReplyLoss(t *testing.T, source func(*testing.T, *fixtu
 	}
 	server := grpc.NewServer(grpc.Creds(credentials.NewTLS(&tls.Config{Certificates: []tls.Certificate{certificate}, ClientCAs: f.pki.root, ClientAuth: tls.RequireAndVerifyClientCert, MinVersion: tls.VersionTLS13})))
 	proxy := &publicationReplyLoss{source: f.admin, loseStage: loseStage}
+	if preparationImage != "" {
+		proxy.observeCompile = func(elapsed time.Duration, err error) {
+			t.Logf("source compile RPC elapsed=%s status=%v", elapsed, err)
+			if err != nil {
+				data, _ := os.ReadFile(filepath.Join(f.directory, "server.log"))
+				for _, line := range strings.Split(string(data), "\n") {
+					if strings.HasPrefix(line, "weaver scheme phase=") {
+						t.Log(line)
+					}
+				}
+			}
+		}
+	}
 	pb.RegisterGatewayServer(server, proxy)
 	exited := make(chan error, 1)
 	go func() { exited <- server.Serve(listener) }()
@@ -558,6 +589,17 @@ func exerciseControlSourceReplyLoss(t *testing.T, source func(*testing.T, *fixtu
 	c.env = append(c.env, "WEAVER_CONTROL_AUTHORITY_SOURCE_ADDRESS="+listener.Addr().String())
 	child := exec.Command(controlBinary, "serve")
 	child.Env = append(os.Environ(), c.env...)
+	if preparationImage != "" {
+		child = c.prepareCommand(t.Context(), preparationImage, "prepare")
+	}
+	recoverSource := func() {
+		if preparationImage == "" {
+			c.start(t)
+			return
+		}
+		c.prepareUsing(t, preparationImage, "prepare")
+		c.client = f.client
+	}
 	log, err := os.Create(filepath.Join(c.directory, "lost-publication.log"))
 	if err != nil {
 		t.Fatal(err)
@@ -614,7 +656,7 @@ func exerciseControlSourceReplyLoss(t *testing.T, source func(*testing.T, *fixtu
 	f.stop(t)
 	f.start(t)
 	proxy.replaceSource(f.admin)
-	c.start(t)
+	recoverSource()
 	ctx, cancel = context.WithTimeout(context.Background(), 12*time.Second)
 	defer cancel()
 	if _, err = c.client.Execute(ctx, bundle.Plans[0], pb.Encoding_PROTOBUF, 1, func(*pb.Event) error { return nil }); err != nil {
@@ -635,7 +677,7 @@ func exerciseControlSourceReplyLoss(t *testing.T, source func(*testing.T, *fixtu
 	f.stop(t)
 	f.start(t)
 	proxy.replaceSource(f.admin)
-	c.start(t)
+	recoverSource()
 	cancel()
 	ctx, cancel = context.WithTimeout(context.Background(), 12*time.Second)
 	defer cancel()
@@ -659,7 +701,7 @@ func exerciseControlSourceReplyLoss(t *testing.T, source func(*testing.T, *fixtu
 	f.stop(t)
 	f.start(t)
 	proxy.replaceSource(f.admin)
-	c.start(t)
+	recoverSource()
 	cancel()
 	ctx, cancel = context.WithTimeout(context.Background(), 12*time.Second)
 	defer cancel()

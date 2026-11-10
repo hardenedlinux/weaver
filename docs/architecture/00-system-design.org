@@ -48,8 +48,8 @@ owned parts of the system to which those contracts apply.
 | Element | Core architectural role | Relationship to the execution chain |
 |---------+-------------------------+-------------------------------------|
 | Scheme / POO | Governance authoring, composition, source and lifecycle ownership | Selects the admitted policy closure and supplies owner-bound operation/currentness contracts |
-| Go | Current typed transport; OpenSysML development tooling; optional justified SDK integration | Carries source proposals and observations; no deployed semantic selector, Workflow interpreter or execution right |
-| Rust | Reference authority integration, durable coordinator and constrained broker | Enforces consumption, ledger transitions, unique claims and final transport guards |
+| Go | OpenSysML development tooling, reference controls and independent signing | Reference clients exercise the same typed protocol. The signing service owns its separate keys |
+| Rust | Source preparation, durable coordination and constrained broker | Enforces consumption, ledger transitions, unique claims and final transport guards |
 | Cedar | Shared authorization language and selected evaluation kernel | Evaluates the complete required permission questions on the bound operation; allow alone cannot send |
 | Quint | Concurrent/fault state model | Models consumption, commit, claim, send, recovery and cloud-update races across all implementation owners |
 | Lean / cedar-poo-spec | Semantic foundation and preservation obligations | Reuses owned definitions and proves meaningful projection/transition properties under stated physical premises |
@@ -163,17 +163,17 @@ state transition or a field named =signature= or =durability= cannot establish
 cryptographic verification, serialized consumption, or durable storage. Preserve
 these host obligations when reusing the existing semantic APIs.
 
-** Go: typed transport, development tools and selected SDK reuse
+** Source transport, development tools and selected SDK reuse
 
-The default Go command performs source preparation and exits; operation clients
+The Rust =weaver-server prepare= command performs source preparation and exits. Operation clients
 connect directly to the existing Rust listener. JSON/YAML and compiled Scheme
 sources declare exact fixed plans or a bounded catalog selector through the
 existing authenticated source RPC. The existing ledger retains those source
 scopes. Rust resolves fixed plans directly; dynamic selection uses the existing
 Scheme/POO/ASCENT owner and rejoins current source/publication/catalog state in
 the task-registration transaction. Reused projections carry no permission.
-Go's explicit =serve= path remains for reference controls and later R5 retirement.
-R1's remaining Bundle/routing functions serve development/reference callers.
+The Go relay and remaining Bundle/routing functions serve development reference
+controls under the development boundary.
 
 OpenSysML development analysis/rendering remains Go because the project already
 reuses its SDK. Future production Go adapters need a concrete required library

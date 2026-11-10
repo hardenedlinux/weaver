@@ -142,7 +142,7 @@ It does not introduce another permission or transport owner.
 |-----------+------------------------------|
 | Go routing | =go/internal/routing=: source-bound request and ordered route proposal |
 | Scheme semantics | =scheme/=: reusable functions and Agentic AI Lab Governance/Governor POO values; current delivery freezes a task/plan artifact through inert Rust Policy C FFI |
-| Go control service | =go/cmd/weaver-control=: acknowledged source activation, frozen routing and authenticated streaming proxy |
+| Source preparation | =weaver-server prepare=: authenticated source activation. =go/dev/controlref= preserves the old proxy for reference controls. |
 | Go RPC client | =go/internal/gatewayclient=: explicit mTLS, no application retry, sequence and receipt checks |
 | Shared wire contract | =proto/gateway/v1/gateway.proto=: typed proposals, roles, observations and encoding choice |
 | Rust contracts | =crates/contracts=: immutable provider commitments and closed native event/outcome types |

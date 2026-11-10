@@ -499,7 +499,7 @@ and [[https://docs.litellm.ai/docs/proxy/architecture][LiteLLM request architect
 
 ** Import external provider configuration
 
-Run =weaver-import-provider json|yaml LITELLM_FILE REVIEW_JSON= to emit
+Run =weaver-server import-provider json|yaml LITELLM_FILE REVIEW_JSON= to emit
 the existing catalog proposal record on stdout. The review manifest is
 JSON with a =parent= digest and =bindings= keyed by the external model
 alias. Each binding has a concrete Weaver =plan=, an inert

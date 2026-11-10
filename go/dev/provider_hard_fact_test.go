@@ -73,7 +73,7 @@ func TestProviderControlHardFactWithdrawalRestartAndABA(t *testing.T) {
 	// before testing facts, rather than leaving an unrelated Policy barrier open.
 	c := newControlProcess(t, f, writeControlBundle(t, f, bundle, "json"))
 	c.useProducer(sources.producer)
-	c.start(t)
+	c.prepareUsing(t, serverBinary, "prepare")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
 	defer cancel()
@@ -104,8 +104,22 @@ func TestProviderControlHardFactWithdrawalRestartAndABA(t *testing.T) {
 		}
 		return result
 	}
+	inspect := func() *pb.HardFactFeedState {
+		t.Helper()
+		state, err := f.admin.RPC.InspectHardFact(f.admin.Context(ctx), &pb.Empty{})
+		if err != nil || state.GetDomain() != "availability" || state.GetSourceEpoch() != 0 {
+			t.Fatalf("inspect hard fact: %v %v", state, err)
+		}
+		return state
+	}
 
 	blocked("before first admitted fact")
+	if state := inspect(); state.Available != nil || state.GetRevision() != 0 || len(state.Pending) != 0 {
+		t.Fatalf("genesis reported an installed fact: %v", state)
+	}
+	if _, err := f.client.RPC.InspectHardFact(f.client.Context(ctx), &pb.Empty{}); err == nil {
+		t.Fatal("operation credential inspected the hard-fact feed")
+	}
 	intent := &pb.HardFactIntent{OperationId: "fact-a", Domain: "availability", Revision: 1,
 		PreviousSnapshot: strings.Repeat("0", 64), Available: proto.Bool(true)}
 	if _, err := f.client.RPC.StageHardFact(f.client.Context(ctx), intent); err == nil {
@@ -129,11 +143,21 @@ func TestProviderControlHardFactWithdrawalRestartAndABA(t *testing.T) {
 	blocked("withdrawal pending")
 	f.stop(t)
 	f.start(t)
+	state := inspect()
+	if state.Available == nil || !state.GetAvailable() || state.GetRevision() != a.Revision ||
+		state.GetSnapshot() != a.Snapshot || state.GetFloor() != b.Floor || len(state.Pending) != 1 ||
+		!proto.Equal(state.Pending[0].GetBarrier(), b) || state.Pending[0].GetAvailable() {
+		t.Fatalf("restart did not recover the original withdrawal and installed cut: %v", state)
+	}
 	if retry := stage(withdrawal); !proto.Equal(retry, b) {
 		t.Fatal("restart or lost stage reply changed the durable barrier")
 	}
 	blocked("withdrawal pending after restart")
 	resolve(b)
+	if state := inspect(); state.Available == nil || state.GetAvailable() ||
+		state.GetRevision() != b.Revision || len(state.Pending) != 0 {
+		t.Fatalf("withdrawal not installed: %v", state)
+	}
 	blocked("withdrawal resolved")
 
 	restoration := &pb.HardFactIntent{OperationId: "fact-a-again", Domain: intent.Domain, Revision: 3,

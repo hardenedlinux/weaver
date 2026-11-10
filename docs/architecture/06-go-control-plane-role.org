@@ -5,7 +5,7 @@
 #+title: Rust, Scheme and Go: Runtime and Cloud Integration Boundaries
 #+language: en
 #+date: 2026-11-10
-#+property: STATUS R1-R2-locally-verified-later-stages-planned
+#+property: STATUS local-delivery
 #+options: toc:2
 
 * Architecture decision
@@ -14,9 +14,10 @@ The production target is Rust + Scheme/POO/gerbil-ascent. Rust owns network I/O,
 bounded queues, durable state and final effects. Scheme owns higher-order
 configuration, object composition, rule inference and Workflow semantics. Go
 is optional for concrete integration/development reuse; it is not a required
-planning hop in the target architecture. R2's default source-preparation command
-exits before fixed or catalog-selected operations reach Rust directly. Only
-explicit =serve= retains the Go relay for reference controls and R5 retirement.
+planning hop in the target architecture. =weaver-server prepare= exits after
+source activation. Fixed and catalog-selected operations enter Rust directly.
+The former Go gateway command lives under =go/dev/controlref= for reference
+controls.
 
 The model authority is [[file:../../dev/sysml/ArchitectureEvolution.sysml][ArchitectureEvolution::RustSchemeAllocation]],
 linked to [[file:../../dev/sysml/WeaverExecution.sysml][WeaverExecution]] and the existing source, ledger and object-lifecycle
@@ -28,15 +29,15 @@ latency gate or establish exact-head GitHub CI.
 
 | Responsibility | Owner and existing mechanism |
 |----------------+------------------------------|
-| Decode external JSON/YAML syntax and copy typed data | Existing Go file adapter; no semantic selection |
+| Decode external JSON/YAML syntax and copy typed data | Rust source preparation decodes into the existing Scheme composition contract |
 | Candidate eligibility, exact rounded cost/latency/digest ranking | Scheme POO records and gerbil-ascent on the existing affine owner |
 | Session topology, nested choice/parallel/join and ready-node derivation | Existing Scheme Session/Funflow/Governor and ASCENT |
 | Canonical plan/body commitments and request/profile/endpoint guards | Rust contracts and shared HTTPS transport guard |
-| Configuration/source proposal delivery | Existing authenticated source gRPC; Go currently transports the data |
+| Configuration/source proposal delivery | Rust source preparation uses the existing authenticated source gRPC |
 | Catalog observation and typed fact projection | Existing Rust source owner and ledger; no second database |
 | Immutable projection reuse | Existing version/record cache and bounded coalescing; no cached permission |
 | Publication, exact source/currentness, claim, reservation, hard-fact barriers | Existing Rust deciding transactions |
-| Credentialed request, streamed response release, fallback and uncertain outcomes | Existing Rust broker/runtime; R2 fixed/catalog callers connect directly, retained relay callers use serve |
+| Credentialed request, streamed response release, fallback and uncertain outcomes | Existing Rust broker/runtime and direct authenticated ingress |
 | Independently issued SPEC review and terminal usage signatures | Existing separate issuer custody; language migration cannot merge keys |
 | OpenSysML analysis, model rendering and development drivers | Go, retained for direct existing SDK reuse |
 
@@ -61,7 +62,7 @@ observed version and recheck it afterward. Full source assessment remains in
 CompileSource; pure composition does not delay listener readiness with module
 source evaluation. Rust keeps fresh deciding checks at actual use.
 
-The Go adapter copies independent SPEC review data without regenerating it.
+The Rust file adapter copies independent SPEC review data without regenerating it.
 A new candidate or source response cannot self-approve the publication it
 suggests. See [[file:09-code-as-policy.org][Code as Policy]], [[file:05-authorization-execution-protocol.org][authorization-to-execution coordination]] and
 [[file:13-go-adapter-broker-boundary.org][adapter-to-broker custody]].
@@ -103,7 +104,7 @@ Language choice follows the required integration and its existing evidence:
 | Agentgateway's Go controller dependencies include Kubernetes, Gateway API, Istio, Helm and xDS | Go can aggregate substantial integration machinery when those exact capabilities are required |
 | Helm pkg/action provides release lifecycle APIs | An embedded Helm lifecycle can justify a separate Go deployment adapter; ordinary chart installation need not be embedded |
 | containerd exposes a rich Go client and remote service APIs | Choose protocol access or a Go SDK by required lifecycle behavior; do not turn the gateway into a container orchestrator by default |
-| OpenTelemetry Collector is independently deployed and Rust has an SDK | Reuse the Collector through its interface; its Go implementation does not require embedding Go |
+| Praxis embeds request metrics, structured logging and optional OTLP tracing in its proxy. Agentgateway embeds metrics and configurable OTLP export in its Rust data plane. | Weaver's Rust runtime owns instrumentation and protocol export. A separately deployed Collector can receive, process and forward telemetry. |
 
 These decisions use upstream source/interfaces and maintenance evidence. Weaver
 need not implement both ecosystems or rerun generic ecosystem benchmarks to
@@ -138,3 +139,56 @@ Finite R1 evidence and remaining gates live in the delivery plan. Compile,
 listener readiness, first source assessment, hot execution and drain are separate
 measurements. The same release and original acceptance thresholds apply; a
 language-placement change alone does not satisfy the outstanding 1 ms target.
+
+The first R4 integration uses the Weaver-owned
+[[file:../../prod/kubernetes/provideravailability.crd.yaml][ProviderAvailability resource]]
+in =weaver.hardenedlinux.org/v1alpha1=. Its namespace, name and UID identify
+the bound resource. =spec.available= is the requested hard fact. The =status=
+subresource records the observed generation and resolved ledger coordinates.
+Build =weaver-server= with the =kubernetes= feature and run
+=weaver-server reconcile-kubernetes --config weaver.toml= as a separate process.
+The example [[file:../../prod/kubernetes/provideravailability.rbac.yaml][namespaced RBAC]]
+binds its service account to one named resource. The gateway uses its existing
+hard-fact feed and source TLS credentials. The adapter uses the Kubernetes
+service account for the watch and =status= subresource.
+
+#+begin_src toml
+[source]
+address = "weaver-source.weaver-system.svc:7443"
+server_name = "weaver-source.weaver-system.svc"
+ca = "source-ca.pem"
+certificate = "source-client.pem"
+key = "source-client-key.pem"
+token_env = "WEAVER_SOURCE_TOKEN"
+
+[kubernetes]
+namespace = "weaver-system"
+name = "provider-availability"
+uid = "<uid assigned by Kubernetes>"
+domain = "availability"
+#+end_src
+
+The adapter reads the resource after watch events and relists. It uses the
+Kubernetes resource version for watch recovery and as a status write precondition.
+The ledger assigns its own source epoch, revision, snapshot and intent prefix.
+The adapter stages the latest observed change before resolving older pending
+intents. Deletion or a replacement UID requests withdrawal. A Kubernetes
+connection error leaves the last committed ledger decision in effect and retries
+the observation. The focused integration test uses a loopback Kubernetes API
+fixture and real source, ASCENT, ledger and broker paths. From the prepared
+Gerbil package environment, use the existing integration test entry:
+
+#+begin_src sh
+export WEAVER_GOVERNANCE_APPLICATION=hardenedlinux/weaver/scheme/gateway/provider-program
+export WEAVER_GOVERNANCE_APPLICATION_SOURCE="$PWD/scheme/gateway/provider-program.ss"
+timeout 480s cargo build --release --locked --offline -j4 -p weaver-server \
+  --bin weaver-server --features arrow,scheme-program,kubernetes
+release="$PWD/target/release/weaver-server"
+WEAVER_TEST_PREBUILT_PROVIDER_IMAGE="$release" \
+WEAVER_TEST_PROVIDER_IMAGE_SHA256="$(shasum -a 256 "$release" | cut -d ' ' -f1)" \
+  go -C go test -mod=readonly -parallel=4 -cpu=4 -count=1 -timeout=55s \
+  -tags=integration,schemeintegration,kubernetesintegration ./dev \
+  -run '^TestProviderKubernetesAvailability$'
+#+end_src
+
+See [[https://kubernetes.io/docs/reference/using-api/api-concepts/][Kubernetes API concepts]].

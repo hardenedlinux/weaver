@@ -8,10 +8,10 @@ use std::{collections::BTreeMap, io::Read};
 use tonic::transport::{Certificate, Identity, ServerTlsConfig};
 use weaver_broker::ProviderTransport;
 use weaver_contracts::{Error, Result};
-fn required(name: &str) -> Result<String> {
+pub(crate) fn required(name: &str) -> Result<String> {
     std::env::var(name).map_err(|_| Error::Invalid("required gRPC configuration missing"))
 }
-fn read_path(path: impl AsRef<std::path::Path>) -> Result<Vec<u8>> {
+pub(crate) fn read_path(path: impl AsRef<std::path::Path>) -> Result<Vec<u8>> {
     let mut bytes = Vec::new();
     std::fs::File::open(path)
         .map_err(|_| Error::Invalid("RPC configuration file"))?

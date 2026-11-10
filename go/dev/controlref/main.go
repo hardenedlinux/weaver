@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
-// Command weaver-control prepares source state; serve retains the reference relay.
+// Command controlref exercises the old Go source client and relay in acceptance.
 package main
 
 import (
@@ -19,7 +19,7 @@ func main() {
 	defer cancel()
 	action := controlplane.PrepareFromEnv
 	if len(os.Args) > 2 || (len(os.Args) == 2 && os.Args[1] != "prepare" && os.Args[1] != "serve") {
-		fmt.Fprintln(os.Stderr, "usage: weaver-control [prepare|serve]")
+		fmt.Fprintln(os.Stderr, "usage: controlref [prepare|serve]")
 		os.Exit(2)
 	}
 	if len(os.Args) == 2 && os.Args[1] == "serve" {

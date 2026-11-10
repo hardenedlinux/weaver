@@ -17,7 +17,7 @@ mod delta_registration;
 mod domains;
 mod execution_exposure;
 mod hard_fact;
-pub use hard_fact::FactPreparation;
+pub use hard_fact::{FactFeedState, FactPreparation};
 mod exposure_manifest;
 #[cfg(feature = "commit-observer")]
 pub use exposure_manifest::use_prepared_manifest_programs;

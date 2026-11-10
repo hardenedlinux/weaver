@@ -29,13 +29,14 @@ import (
 // Test-only mTLS relay loses the successful source reply after forwarding one RPC.
 type publicationReplyLoss struct {
 	pb.UnimplementedGatewayServer
-	source      *gatewayclient.Client
-	sourceMu    sync.RWMutex
-	calls       atomic.Int64
-	inspections atomic.Int64
-	stages      atomic.Int64
-	sourceViews atomic.Int64
-	loseStage   bool
+	source         *gatewayclient.Client
+	sourceMu       sync.RWMutex
+	calls          atomic.Int64
+	inspections    atomic.Int64
+	stages         atomic.Int64
+	sourceViews    atomic.Int64
+	loseStage      bool
+	observeCompile func(time.Duration, error)
 }
 
 func (s *publicationReplyLoss) sourceClient() *gatewayclient.Client {
