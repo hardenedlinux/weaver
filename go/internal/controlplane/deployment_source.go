@@ -43,9 +43,9 @@ func selectDeploymentSource(lookup func(string) (string, bool)) (deploymentSourc
 	return deploymentSource{path: path}, nil
 }
 
-func (input deploymentSource) bootstrap(ctx context.Context, source, operation *gatewayclient.Client) (*Gateway, error) {
+func (input deploymentSource) bootstrap(ctx context.Context, source, operation *gatewayclient.Client, trace bootstrapTrace) (*Gateway, error) {
 	if input.producer != "" {
-		return BootstrapProducer(ctx, source, operation, input.producer)
+		return bootstrapProducer(ctx, source, operation, input.producer, trace)
 	}
-	return Bootstrap(ctx, source, operation, input.bundle)
+	return bootstrap(ctx, source, operation, input.bundle, trace)
 }

@@ -58,6 +58,13 @@ func TestMain(m *testing.M) {
 		os.Exit(m.Run())
 	}
 	benchmark := flag.Lookup("test.bench").Value.String()
+	// These experiments build and run their own Cargo benchmark executable.
+	if benchmark == "" {
+		switch flag.Lookup("test.run").Value.String() {
+		case "^TestContentionPairs$", "^TestHeaderSealPairs$":
+			os.Exit(m.Run())
+		}
+	}
 	args, optimized, err := providerCargoBuildArgs(providerRuntimeFeatures, benchmark, os.LookupEnv)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -109,6 +116,9 @@ func TestMain(m *testing.M) {
 	}
 	controlBinary = filepath.Join(directory, "weaver-control")
 	controlArgs := []string{"-C", "go", "build", "-mod=readonly"}
+	if os.Getenv("WEAVER_TEST_CONTROL_HEAP") == "1" {
+		controlArgs = []string{"-C", "go", "test", "-c", "-mod=readonly", "-tags=integration"}
+	}
 	if benchmark == "" {
 		controlArgs = append(controlArgs, "-race")
 	}
@@ -119,6 +129,16 @@ func TestMain(m *testing.M) {
 		os.RemoveAll(directory)
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
+	}
+	image, err := os.ReadFile(controlBinary)
+	if err != nil {
+		os.RemoveAll(directory)
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	fmt.Fprintf(os.Stderr, "test-owned Go control image sha256=%x\n", sha256.Sum256(image))
+	if os.Getenv("WEAVER_TEST_CONTROL_HEAP") == "1" {
+		fmt.Fprintf(os.Stderr, "Go control heap observation image sha256=%x\n", sha256.Sum256(image))
 	}
 	result := m.Run()
 	os.RemoveAll(directory)
@@ -402,6 +422,37 @@ func (f *fixture) start(t testing.TB) {
 	}
 	f.child = exec.Command(f.binary, f.arguments...)
 	f.child.Env = append(os.Environ(), f.env...)
+	if slices.Contains(f.env, "WEAVER_TEST_RUST_HEAP_ARM=1") {
+		library := os.Getenv("WEAVER_TEST_RUST_HEAP_LIBRARY")
+		if runtime.GOOS != "darwin" || !filepath.IsAbs(library) || os.Getenv("DYLD_INSERT_LIBRARIES") != "" {
+			log.Close()
+			t.Fatal("native heap counter requires Darwin and exclusive ownership of an absolute interposer path")
+		}
+		path := filepath.Join(f.directory, "rust-heap.counter")
+		if err := os.WriteFile(path, make([]byte, 72), 0600); err != nil {
+			log.Close()
+			t.Fatal(err)
+		}
+		f.child.Env = append(f.child.Env, "DYLD_INSERT_LIBRARIES="+library, "WEAVER_TEST_RUST_HEAP_COUNTER="+path)
+		if root := os.Getenv("WEAVER_TEST_RUST_HEAP_STACK_ROOT"); root != "" {
+			if !filepath.IsAbs(root) {
+				log.Close()
+				t.Fatal("native allocation stacks require an absolute evidence directory")
+			}
+			path := filepath.Join(f.directory, "rust-heap.stacks")
+			file, err := os.OpenFile(path, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0600)
+			if err != nil {
+				log.Close()
+				t.Fatal(err)
+			}
+			sizeErr := file.Truncate(24 + 65536*208)
+			if closeErr := file.Close(); sizeErr != nil || closeErr != nil {
+				log.Close()
+				t.Fatalf("native stack profile file: %v, %v", sizeErr, closeErr)
+			}
+			f.child.Env = append(f.child.Env, "WEAVER_TEST_RUST_HEAP_STACKS="+path)
+		}
+	}
 	if !slices.Contains(f.env, "WEAVER_TEST_PROVIDER_SCOPE_TRACE=1") {
 		f.child.Stdout = log
 	}
@@ -410,6 +461,7 @@ func (f *fixture) start(t testing.TB) {
 		log.Close()
 		t.Fatal(err)
 	}
+	t.Logf("Rust owner startup process-spawn elapsed=%s", time.Since(started))
 	f.exited = make(chan error, 1)
 	child, exited := f.child, f.exited
 	go func() { err := child.Wait(); log.Close(); exited <- err }()

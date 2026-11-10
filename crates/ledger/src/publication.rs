@@ -87,7 +87,7 @@ pub(crate) fn receipt_record(
     connection: &crate::persistence::driver::Connection,
     operation_id: &str,
 ) -> Result<Option<(String, String)>> {
-    let record: Option<(String, String)> = crate::persistence::maybe(
+    let record: Option<(String, String)> = crate::persistence::maybe_prepared(
         connection,
         "SELECT digest,receipt FROM authority_publications WHERE operation_id=?1",
         crate::persistence::params![(operation_id).to_owned()],

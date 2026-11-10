@@ -12,6 +12,8 @@ pub(crate) mod scheduler;
 pub(crate) use catalog::engine_metadata;
 #[cfg(any(test, feature = "commit-observer"))]
 pub mod commit_observer;
+#[cfg(feature = "commit-observer")]
+mod driver_observer;
 mod query;
 mod scope;
 mod scope_keys;
@@ -23,6 +25,8 @@ mod session;
 mod timing;
 pub use mrr_data_backend::turso_driver::{self as driver, Error, Result, Row, params};
 pub use owner::Journal;
+pub(crate) use query::maybe_prepared;
+pub(crate) use query::read_all_manifest;
 #[cfg(feature = "commit-observer")]
 pub use query::use_cached_currentness_plans;
 pub use query::{exec, maybe, one, read_all, script};
@@ -34,6 +38,9 @@ pub(crate) use scope::ProviderScopePhase;
 pub use scope::{WriteScope, begin};
 pub(crate) use scope::{
     begin_family, begin_provider_admission, begin_provider_lifecycle, begin_provider_progress,
+    begin_workflow_observation,
 };
 pub use session::{LedgerCustody, Session};
+#[cfg(feature = "commit-observer")]
+pub use timing::provider_observation_nanos;
 pub use timing::{Timing, TransactionTimings};

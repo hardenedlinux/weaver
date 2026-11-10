@@ -30,6 +30,80 @@ fn fixture(path: &std::path::Path) -> (Ledger, ProviderPlan) {
     fixture_nodes(path, &["infer"])
 }
 
+#[test]
+fn terminal_provider_plan_keeps_original_ceiling_across_restart() {
+    use weaver_ledger::persistence::{Session, exec, one};
+
+    let temp = tempfile::tempdir().expect("directory");
+    let path = temp.path().join("terminal-plan.db");
+    let (mut ledger, plan) = fixture_nodes(&path, &["infer", "second"]);
+    let mut second = plan.clone();
+    second.node = "second".into();
+    ledger.enqueue_provider(&plan).expect("reserve first");
+    ledger.enqueue_provider(&second).expect("reserve second");
+    let targets = BTreeSet::from(["primary".into()]);
+    let permit = ledger
+        .consume_provider("f", "infer", &targets)
+        .expect("consume");
+    ledger
+        .dispatch_provider(&permit, || Ok(()))
+        .expect("dispatch");
+    ledger
+        .complete_provider(&permit, "protobuf")
+        .expect("complete");
+    drop(permit);
+    ledger.close().expect("close");
+
+    let storage = Session::open(&path).expect("restart storage");
+    let stored: String = one(
+        &storage,
+        "SELECT plan FROM provider_runs WHERE family='f' AND node='infer'",
+        (),
+        |row| row.get(0),
+    )
+    .expect("terminal plan");
+    assert_eq!(stored, r#"{"ceiling":4}"#);
+
+    let mut restarted = Ledger::open(&path).expect("restart ledger");
+    let receipt = restarted
+        .provider_receipt("f", "infer")
+        .expect("read terminal receipt")
+        .expect("terminal receipt retained");
+    assert_eq!(receipt.digest, plan.digest().expect("original digest"));
+    assert_eq!(receipt.state, weaver_contracts::ProviderState::Complete);
+    assert!(restarted.consume_provider("f", "infer", &targets).is_err());
+    let update = "UPDATE provider_runs SET plan=?1 WHERE family='f' AND node='infer'";
+    exec(&storage, update, [r#"{"ceiling":3}"#]).expect("corrupt terminal ceiling");
+    assert!(restarted.consume_provider("f", "second", &targets).is_err());
+    exec(&storage, update, [stored.as_str()]).expect("restore terminal ceiling");
+    restarted
+        .consume_provider("f", "second", &targets)
+        .expect("consume second");
+    assert_eq!(restarted.held("f").expect("shared hold"), 8);
+}
+
+#[test]
+fn reusing_physical_connection_rejects_old_provider_dispatch() {
+    let temp = tempfile::tempdir().expect("directory");
+    let (mut ledger, plan) = fixture(&temp.path().join("reused-provider.db"));
+    ledger.enqueue_provider(&plan).expect("original hold");
+    let permit = ledger
+        .consume_provider("f", "infer", &BTreeSet::from(["primary".into()]))
+        .expect("consume");
+    let mut next = ledger
+        .park_provider_connection()
+        .expect("healthy physical connection")
+        .checkout()
+        .expect("fresh logical session");
+    let mut calls = 0;
+    assert!(next.dispatch_provider(&permit, || {
+        calls += 1;
+        Ok(())
+    }).is_err());
+    assert_eq!(calls, 0);
+    assert_eq!(next.held("f").expect("original hold"), 4);
+}
+
 fn fixture_nodes(path: &std::path::Path, nodes: &[&str]) -> (Ledger, ProviderPlan) {
     fixture_with_ceiling(path, nodes, 4)
 }

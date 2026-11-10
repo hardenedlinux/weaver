@@ -71,3 +71,36 @@ proptest::proptest! {
         }
     }
 }
+#[test]
+fn provider_connection_checkout_respects_execution_capacity_and_close() {
+    use tokio_util::sync::CancellationToken;
+    let store = tempfile::tempdir().expect("store");
+    let path = store.path().join("provider-capacity.db");
+    let admission = super::Admission::new(4);
+    let shutdown = CancellationToken::new();
+    let mut workers = Vec::new();
+    for _ in 0..4 {
+        let slot = admission.execution().expect("worker permit");
+        let (ledger, reused) = admission
+            .checkout_provider(&path, &shutdown)
+            .expect("new lease");
+        assert!(!reused);
+        workers.push((slot, ledger));
+    }
+    assert!(admission.execution().is_err());
+    for (slot, ledger) in workers {
+        admission.park_provider(ledger, &shutdown);
+        drop(slot);
+    }
+    assert_eq!(admission.provider_idle.lock().expect("idle").len(), 4);
+    let slot = admission.execution().expect("new permit");
+    let (ledger, reused) = admission
+        .checkout_provider(&path, &shutdown)
+        .expect("reused lease");
+    assert!(reused);
+    shutdown.cancel();
+    admission.park_provider(ledger, &shutdown);
+    assert!(admission.checkout_provider(&path, &shutdown).is_err());
+    assert_eq!(admission.provider_idle.lock().expect("idle").len(), 3);
+    drop(slot);
+}

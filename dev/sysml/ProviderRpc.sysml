@@ -168,6 +168,14 @@ package ProviderRpc {
     }
     requirement def OwnedSourceConnection {
         doc /* A tracked blocking worker exclusively owns one reusable source connection. Command capacity stays held through SQL completion despite caller loss, then returns before the command acknowledgment is observable. Quiescent boundaries and fresh CAS reads prevent stale snapshot reuse. Storage or close failure terminates the owner and cannot produce successful drain acknowledgment. */
+        doc /* Catalogue inspection and published task registration can wait
+           in three bounded slots. One separate priority reservation has
+           precedence for publication, source rotation and hard-fact work.
+           Waiting expires after 50 ms. Cancellation before grant creates
+           no command. The owner authenticates each command when it executes.
+           The fact preparation acknowledgment returns command capacity
+           before Scheme derivation. Its result needs a separate deciding
+           source command with current authority and durable barrier checks. */
     }
     requirement def FinalInvocationCancellation {
         doc /* A pre-lock cancellation read is not final send admission. After durable dispatch burn and the final deciding lock/current Cedar guard, Rust rechecks the original output context immediately before transport entry. Unknown execution retains its hold; new contexts cannot reuse the burned invocation. Already admitted transport is not retroactively unsent. */

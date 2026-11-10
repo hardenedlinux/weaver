@@ -75,7 +75,10 @@ impl SourceClient {
         Ok(SourceJob::new(receiver, self.shared.clone(), state, cancel))
     }
     /// Wait for space on the bounded Scheme owner so a Session wake is not lost.
-    pub async fn derive(&self, input: crate::GovernorCut) -> Result<Vec<String>, SourceJobError> {
+    pub async fn derive(
+        &self,
+        input: crate::GovernorCut,
+    ) -> Result<crate::DerivationOutput, SourceJobError> {
         self.evaluate(crate::Derivation::Governor(Box::new(input)))
             .await
     }
@@ -84,13 +87,23 @@ impl SourceClient {
         &self,
         work: &weaver_contracts::FactWork,
     ) -> Result<Vec<String>, SourceJobError> {
-        self.evaluate(crate::Derivation::FactImpact {
-            root: work.root.clone(),
-            dependencies: work.dependencies.clone(),
-        })
-        .await
+        match self
+            .evaluate(crate::Derivation::FactImpact {
+                root: work.root.clone(),
+                dependencies: work.dependencies.clone(),
+            })
+            .await?
+        {
+            crate::DerivationOutput::Nodes(nodes) => Ok(nodes),
+            crate::DerivationOutput::Indices(_) => Err(crate::SourceError::Contract.into()),
+        }
     }
-    async fn evaluate(&self, input: crate::Derivation) -> Result<Vec<String>, SourceJobError> {
+    async fn evaluate(
+        &self,
+        input: crate::Derivation,
+    ) -> Result<crate::DerivationOutput, SourceJobError> {
+        let started = super::governor_timing().then(std::time::Instant::now);
+        let governor = matches!(&input, crate::Derivation::Governor(_));
         let capacity = self.capacity.clone();
         let slot = match &input {
             crate::Derivation::Governor(_) => tokio::select! {
@@ -102,6 +115,7 @@ impl SourceClient {
                 .try_acquire_owned()
                 .map_err(|_| SourceJobError::Busy)?,
         };
+        let admitted = started.map(|_| std::time::Instant::now());
         let (reply, receiver) = oneshot::channel();
         {
             let closed = self.shared.gate();
@@ -120,11 +134,27 @@ impl SourceClient {
                     mpsc::error::TrySendError::Closed(_) => SourceJobError::Closed,
                 })?;
         }
-        tokio::select! {
+        let reply = tokio::select! {
             biased;
-            _ = self.shared.shutdown.cancelled() => Err(SourceJobError::Closed),
-            result = receiver => result.map_err(|_| SourceJobError::Closed)?.map_err(SourceJobError::from),
+            _ = self.shared.shutdown.cancelled() => return Err(SourceJobError::Closed),
+            result = receiver => result.map_err(|_| SourceJobError::Closed)?,
+        };
+        if let (true, Some(started), Some(admitted), Some([queued, owner, finished, sent])) =
+            (governor, started, admitted, reply.timing)
+        {
+            let received = std::time::Instant::now();
+            eprintln!(
+                "weaver-governor-roundtrip capacity_ns={} submit_ns={} wait_ns={} derive_ns={} trace_ns={} response_ns={} total_ns={}",
+                admitted.duration_since(started).as_nanos(),
+                queued.duration_since(admitted).as_nanos(),
+                owner.duration_since(queued).as_nanos(),
+                finished.duration_since(owner).as_nanos(),
+                sent.duration_since(finished).as_nanos(),
+                received.duration_since(sent).as_nanos(),
+                received.duration_since(started).as_nanos(),
+            );
         }
+        reply.result.map_err(SourceJobError::from)
     }
     /// Close admission and wake callers/owner. This is not drain acknowledgment;
     /// an active synchronous compiler must return and clean its VM naturally.

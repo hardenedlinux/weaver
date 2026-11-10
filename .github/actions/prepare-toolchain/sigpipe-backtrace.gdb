@@ -16,7 +16,7 @@ commands
   silent
   set $weaver_sigpipe_events = $weaver_sigpipe_events + 1
   if $weaver_sigpipe_events <= 16
-    printf "WEAVER-NATIVE-SIGPIPE event=%d\n", $weaver_sigpipe_events
+    printf "WEAVER-SIGPIPE event=%d\n", $weaver_sigpipe_events
     thread
     bt 24
     if $weaver_sigpipe_events == 1

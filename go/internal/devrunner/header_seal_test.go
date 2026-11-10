@@ -18,7 +18,7 @@ func headerEvidence(t *testing.T) string {
 	var out strings.Builder
 	fmt.Fprintf(&out, "weaver-header-seal-image sha256=%s profile=release\n", strings.Repeat("a", 64))
 	for i := 0; i < 24; i++ {
-		timing := &TransactionTimings{ProviderRequest: TimingSample{1, 10}, ProviderQueue: TimingSample{3, 5}, Commit: TimingSample{1, 5}, TransactionHold: TimingSample{1, 20}}
+		timing := &TransactionTimings{ProviderRequest: TimingSample{1, 10}, ProviderQueue: TimingSample{1, 5}, Commit: TimingSample{1, 5}, TransactionHold: TimingSample{1, 20}}
 		row := HeaderSealSample{Block: i / 4, Slot: i % 4, Delayed: i%4 == 1 || i%4 == 2, Optimized: true, CPUs: 12, Wall: 100, Held: 4, Events: 3, Calls: i + 1, Timings: timing}
 		data, err := json.Marshal(row)
 		if err != nil {
@@ -41,7 +41,7 @@ func TestHeaderSealEvidenceRejectsIncompleteAndCorruptPairs(t *testing.T) {
 	check := func(selector uint8) bool {
 		lines := strings.Split(strings.TrimSpace(valid), "\n")
 		index := 1 + int(selector)%24
-		switch selector % 7 {
+		switch selector % 8 {
 		case 0:
 			lines = append(lines[:index], lines[index+1:]...)
 		case 1:
@@ -56,6 +56,8 @@ func TestHeaderSealEvidenceRejectsIncompleteAndCorruptPairs(t *testing.T) {
 			lines[0] = strings.Replace(lines[0], "release", "dev", 1)
 		case 6:
 			lines[0] = ""
+		case 7:
+			lines[index] = strings.Replace(lines[index], `"provider_queue":{"attempts":1`, `"provider_queue":{"attempts":3`, 1)
 		}
 		_, err := ReadHeaderSealEvidence(strings.NewReader(strings.Join(lines, "\n")), 12)
 		return err != nil

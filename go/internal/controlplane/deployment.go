@@ -191,7 +191,7 @@ func RunFromEnv(ctx context.Context) error {
 	}
 	defer source.Connection.Close()
 	trace("source-channel-connected")
-	gateway, err := input.bootstrap(startup, source, operation)
+	gateway, err := input.bootstrap(startup, source, operation, trace)
 	if err != nil {
 		return err
 	}

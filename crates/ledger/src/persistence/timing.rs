@@ -19,6 +19,11 @@ impl Timing {
             .nanos
             .saturating_add(u64::try_from(elapsed.as_nanos()).unwrap_or(u64::MAX));
     }
+    #[cfg(feature = "commit-observer")]
+    pub(super) fn merge(&mut self, sample: Self) {
+        self.attempts = self.attempts.saturating_add(sample.attempts);
+        self.nanos = self.nanos.saturating_add(sample.nanos);
+    }
 }
 /// Intervals overlap: never sum them into a critical-path latency or a receipt.
 /// Reset on session replacement; failed attempts are included, not just successes.
@@ -29,10 +34,28 @@ pub struct TransactionTimings {
     pub domain_wait: Timing,
     pub authority_span: Timing,
     pub transaction_begin: Timing,
+    #[cfg(feature = "commit-observer")]
+    pub transaction_begin_poll: Timing,
+    #[cfg(feature = "commit-observer")]
+    pub transaction_begin_cpu: Timing,
+    #[cfg(feature = "commit-observer")]
+    pub transaction_begin_prepare: Timing,
+    #[cfg(feature = "commit-observer")]
+    pub transaction_begin_prepare_cpu: Timing,
+    #[cfg(feature = "commit-observer")]
+    pub transaction_begin_pending: u64,
     pub owner_gate_hold: Timing,
     pub domain_hold: Timing,
     pub transaction_hold: Timing,
     pub commit: Timing,
+    #[cfg(feature = "commit-observer")]
+    pub commit_poll: Timing,
+    #[cfg(feature = "commit-observer")]
+    pub commit_cpu: Timing,
+    #[cfg(feature = "commit-observer")]
+    pub commit_sync: Timing,
+    #[cfg(feature = "commit-observer")]
+    pub commit_pending: u64,
     pub rollback: Timing,
     pub provider_oauth_prepare: Timing,
     pub provider_oauth_check: Timing,
@@ -71,7 +94,63 @@ pub(super) fn measure<T>(sample: &mut Timing, run: impl FnOnce() -> T) -> T {
     result
 }
 
+/// Host monotonic timestamp shared by the Rust and Go test processes.
+#[cfg(feature = "commit-observer")]
+pub fn provider_observation_nanos() -> u128 {
+    let stamp = rustix::time::clock_gettime(rustix::time::ClockId::Monotonic);
+    stamp.tv_sec as u128 * 1_000_000_000 + stamp.tv_nsec as u128
+}
+
+#[cfg(feature = "commit-observer")]
+pub(super) fn thread_cpu_time() -> Option<Duration> {
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    {
+        use rustix::time::{ClockId, clock_gettime};
+        clock_gettime(ClockId::ThreadCPUTime).try_into().ok()
+    }
+    #[cfg(not(any(target_os = "linux", target_os = "macos")))]
+    None
+}
+
+#[cfg(feature = "commit-observer")]
+pub(super) fn observe_polls<F: std::future::Future>(
+    future: F,
+    wall: &mut Timing,
+    cpu: &mut Timing,
+    pending: &mut u64,
+) -> F::Output {
+    let mut future = std::pin::pin!(future);
+    futures_executor::block_on(std::future::poll_fn(|cx| {
+        let result = measure(wall, || {
+            let start = thread_cpu_time();
+            let result = future.as_mut().poll(cx);
+            if let (Some(start), Some(end)) = (start, thread_cpu_time())
+                && let Some(elapsed) = end.checked_sub(start)
+            {
+                cpu.record(elapsed);
+            }
+            result
+        });
+        if result.is_pending() {
+            *pending = pending.saturating_add(1);
+        }
+        result
+    }))
+}
+
 impl TransactionTimings {
+    #[cfg(feature = "commit-observer")]
+    pub(super) fn begin_driver_counters(&self) -> [u64; 6] {
+        [
+            self.transaction_begin_poll.nanos,
+            self.transaction_begin_cpu.nanos,
+            self.transaction_begin_prepare.nanos,
+            self.transaction_begin_prepare_cpu.nanos,
+            self.transaction_begin_pending,
+            self.transaction_begin_poll.attempts,
+        ]
+    }
+
     /// Subtract observations from this same live session. Not a recovery check.
     pub fn since(self, earlier: Self) -> Self {
         fn delta(now: Timing, old: Timing) -> Timing {
@@ -86,10 +165,39 @@ impl TransactionTimings {
             domain_wait: delta(self.domain_wait, earlier.domain_wait),
             authority_span: delta(self.authority_span, earlier.authority_span),
             transaction_begin: delta(self.transaction_begin, earlier.transaction_begin),
+            #[cfg(feature = "commit-observer")]
+            transaction_begin_poll: delta(
+                self.transaction_begin_poll,
+                earlier.transaction_begin_poll,
+            ),
+            #[cfg(feature = "commit-observer")]
+            transaction_begin_cpu: delta(self.transaction_begin_cpu, earlier.transaction_begin_cpu),
+            #[cfg(feature = "commit-observer")]
+            transaction_begin_prepare: delta(
+                self.transaction_begin_prepare,
+                earlier.transaction_begin_prepare,
+            ),
+            #[cfg(feature = "commit-observer")]
+            transaction_begin_prepare_cpu: delta(
+                self.transaction_begin_prepare_cpu,
+                earlier.transaction_begin_prepare_cpu,
+            ),
+            #[cfg(feature = "commit-observer")]
+            transaction_begin_pending: self
+                .transaction_begin_pending
+                .saturating_sub(earlier.transaction_begin_pending),
             owner_gate_hold: delta(self.owner_gate_hold, earlier.owner_gate_hold),
             domain_hold: delta(self.domain_hold, earlier.domain_hold),
             transaction_hold: delta(self.transaction_hold, earlier.transaction_hold),
             commit: delta(self.commit, earlier.commit),
+            #[cfg(feature = "commit-observer")]
+            commit_poll: delta(self.commit_poll, earlier.commit_poll),
+            #[cfg(feature = "commit-observer")]
+            commit_cpu: delta(self.commit_cpu, earlier.commit_cpu),
+            #[cfg(feature = "commit-observer")]
+            commit_sync: delta(self.commit_sync, earlier.commit_sync),
+            #[cfg(feature = "commit-observer")]
+            commit_pending: self.commit_pending.saturating_sub(earlier.commit_pending),
             rollback: delta(self.rollback, earlier.rollback),
             provider_oauth_prepare: delta(
                 self.provider_oauth_prepare,

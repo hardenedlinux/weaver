@@ -134,11 +134,23 @@ const ORIGINAL: &str = "SELECT r.task_digest,r.binding_digest,t.record,o.binding
     JOIN tasks t ON t.family=r.family
     JOIN execution_origins o ON o.id=r.origin AND o.canonical_family=r.family
     LEFT JOIN task_publications p ON p.family=r.family WHERE r.family=?1";
+
+#[cfg(feature = "commit-observer")]
+thread_local! {
+    static PREPARE_ORIGINAL_PROGRAM: std::cell::Cell<bool> = const { std::cell::Cell::new(true) };
+}
+
+/// Select native original-task program preparation in the observed worker.
+#[cfg(feature = "commit-observer")]
+pub fn use_prepared_original_program(prepared: bool) {
+    PREPARE_ORIGINAL_PROGRAM.set(prepared);
+}
+
 fn read(
     connection: &persistence::driver::Connection,
     family: &str,
 ) -> Result<Option<ObservedOriginal>> {
-    persistence::maybe_current(connection, ORIGINAL, [family], |r| {
+    let decode = |r: &persistence::Row| {
         let publication = if let Some(operation_id) = r.get::<Option<String>>(6)? {
             Some(weaver_contracts::PublicationKey {
                 operation_id,
@@ -160,8 +172,12 @@ fn read(
             held: crate::store::integer(r, 8)?,
             budget: crate::store::integer(r, 9)?,
         })
-    })
-    .map_err(db)
+    };
+    #[cfg(feature = "commit-observer")]
+    if !PREPARE_ORIGINAL_PROGRAM.get() {
+        return persistence::maybe_current(connection, ORIGINAL, [family], decode).map_err(db);
+    }
+    persistence::maybe_prepared(connection, ORIGINAL, [family], decode).map_err(db)
 }
 
 fn verify(original: &Original) -> Result<u64> {

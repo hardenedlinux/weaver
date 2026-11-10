@@ -5,6 +5,14 @@
 //! One canonical provider invocation and affine response releases; no retry reset exists.
 #[path = "provider_admission.rs"]
 mod admission;
+#[path = "provider_scope.rs"]
+mod scope;
+pub(crate) use scope::{AdmissionRequest, OriginLifecycle, RangeProgress, shared_provider_reads};
+#[cfg(feature = "commit-observer")]
+pub use scope::{
+    use_conservative_range_invalidation, use_early_admission_barrier, use_exclusive_provider_reads,
+    use_full_lifecycle_invalidation,
+};
 #[path = "provider_release_group.rs"]
 mod release_group;
 pub use release_group::{MAX_PROVIDER_PREPARATION_RANGES, MAX_PROVIDER_PREPARATION_ROWS};
@@ -39,102 +47,6 @@ fn governor_commit_trace(phase: &str, plan: &ProviderPlan, transaction: Option<I
             "weaver-governor-commit {phase} {} {} {nanos} {wall} {tx_nanos}",
             plan.family, plan.node
         );
-    }
-}
-
-/// Sealed proof obligation for the two progress-only write paths in this module.
-/// No external caller or other ledger module can construct this token.
-/// Its transaction may only append fresh ranges/advance next_event, or CAS an
-/// exact unknown release to released. All authorization inputs stay unchanged.
-pub(crate) struct RangeProgress {
-    _sealed: (),
-}
-/// Unaccepted execution request. It cannot mutate shared facts or expose an
-/// authoritative outcome before the scheduler selects its writer turn.
-pub(crate) struct AdmissionRequest {
-    _sealed: (),
-}
-#[cfg(feature = "commit-observer")]
-thread_local! {
-    static EARLY_ADMISSION_BARRIER: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
-}
-/// Safe same-image control retaining closure while an admission request waits.
-#[cfg(feature = "commit-observer")]
-pub fn use_early_admission_barrier(early: bool) {
-    EARLY_ADMISSION_BARRIER.set(early);
-}
-impl AdmissionRequest {
-    pub(crate) fn wait_before_close(&self) -> bool {
-        #[cfg(feature = "commit-observer")]
-        {
-            !EARLY_ADMISSION_BARRIER.get()
-        }
-        #[cfg(not(feature = "commit-observer"))]
-        {
-            true
-        }
-    }
-}
-/// Sealed write-set obligation: only run state/target, dispatch marker or raw
-/// terminal usage changes; no reservation, history, quota or publication write.
-pub(crate) struct OriginLifecycle {
-    _sealed: (),
-}
-#[cfg(feature = "commit-observer")]
-thread_local! {
-    static FULL_LIFECYCLE_INVALIDATION: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
-}
-#[cfg(feature = "commit-observer")]
-/// Safe same-image test control: retain broad lifecycle invalidation.
-pub fn use_full_lifecycle_invalidation(full: bool) {
-    FULL_LIFECYCLE_INVALIDATION.set(full);
-}
-#[cfg(feature = "commit-observer")]
-thread_local! {
-    static EXCLUSIVE_PROVIDER_READS: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
-}
-/// Safe same-image control retaining full-domain exclusive read custody.
-#[cfg(feature = "commit-observer")]
-pub fn use_exclusive_provider_reads(exclusive: bool) {
-    EXCLUSIVE_PROVIDER_READS.set(exclusive);
-}
-pub(crate) fn shared_provider_reads() -> bool {
-    #[cfg(feature = "commit-observer")]
-    {
-        !EXCLUSIVE_PROVIDER_READS.get()
-    }
-    #[cfg(not(feature = "commit-observer"))]
-    {
-        true
-    }
-}
-impl OriginLifecycle {
-    pub(crate) fn origin_only(&self) -> bool {
-        #[cfg(feature = "commit-observer")]
-        {
-            !FULL_LIFECYCLE_INVALIDATION.get()
-        }
-        #[cfg(not(feature = "commit-observer"))]
-        {
-            true
-        }
-    }
-}
-#[cfg(feature = "commit-observer")]
-thread_local! {
-    static CONSERVATIVE_RANGE_INVALIDATION: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
-}
-/// Same-image safe control: treat exact progress writes as semantic mutations.
-#[cfg(feature = "commit-observer")]
-pub fn use_conservative_range_invalidation(conservative: bool) {
-    CONSERVATIVE_RANGE_INVALIDATION.set(conservative);
-}
-impl RangeProgress {
-    pub(crate) fn invalidates(&self) -> bool {
-        #[cfg(feature = "commit-observer")]
-        return CONSERVATIVE_RANGE_INVALIDATION.get();
-        #[cfg(not(feature = "commit-observer"))]
-        false
     }
 }
 
@@ -209,8 +121,8 @@ impl Ledger {
     }
     /// Enable bounded diagnostic observations for this ledger only.
     #[cfg(feature = "commit-observer")]
-    pub fn trace_provider_scopes(&mut self, family: &str) {
-        self.connection.trace_provider_scopes(family);
+    pub fn trace_provider_scopes(&mut self, family: &str, node: Option<&str>) {
+        self.connection.trace_provider_scopes(family, node);
     }
 
     /// Finish the complete bounded diagnostic stream after all deciding scopes.
@@ -359,12 +271,24 @@ impl Ledger {
         if progress.pending {
             return Err(Error::Conflict("response release unresolved"));
         }
-        crate::persistence::exec(
+        // Keep the original ceiling for exposure reconciliation. The full
+        // request is only needed by the queued dispatch path.
+        let completed = crate::persistence::exec(
             &tx,
-            "UPDATE provider_runs SET state='complete' WHERE family=?1 AND node=?2",
-            crate::persistence::params![permit.plan.family.to_owned(), permit.plan.node.to_owned()],
+            "UPDATE provider_runs
+             SET state='complete',plan=json_object('ceiling',json_extract(plan,'$.ceiling'))
+             WHERE family=?1 AND node=?2 AND state='unknown'
+               AND json_extract(plan,'$.ceiling')=?3",
+            crate::persistence::params![
+                permit.plan.family.as_str(),
+                permit.plan.node.as_str(),
+                permit.plan.ceiling as i64
+            ],
         )
         .map_err(db)?;
+        if completed != 1 {
+            return Err(Error::Conflict("original provider plan not retained"));
+        }
         if let Some(response) = response {
             crate::provider_workflow_choice::record_result(
                 &tx,
@@ -830,7 +754,45 @@ pub(crate) fn receipt(
     family: &str,
     node: &str,
 ) -> Result<Option<ProviderReceipt>> {
-    crate::persistence::maybe(c, "SELECT r.digest,r.state,r.target,r.reserved,t.held,r.next_event FROM provider_runs r JOIN tasks t ON t.family=r.family WHERE r.family=?1 AND r.node=?2", crate::persistence::params![(family).to_owned(),(node).to_owned()], |r|Ok(ProviderReceipt{family:family.into(),node:node.into(),digest:r.get(0)?,state:provider_state(r)?,target:r.get(2)?,reserved:integer(r,3)?,held:integer(r,4)?,events:integer(r,5)?})).map_err(db)
+    crate::persistence::maybe_prepared(c, "SELECT r.digest,r.state,r.target,r.reserved,t.held,r.next_event FROM provider_runs r JOIN tasks t ON t.family=r.family WHERE r.family=?1 AND r.node=?2", crate::persistence::params![family.to_owned(),node.to_owned()], |row| decode_receipt(row, family, node.to_owned())).map_err(db)
+}
+
+pub(crate) fn workflow_receipts(
+    c: &crate::persistence::driver::Connection,
+    family: &str,
+    nodes: &[&str],
+) -> Result<std::collections::BTreeMap<String, ProviderReceipt>> {
+    let nodes = serde_json::to_string(nodes).map_err(|_| Error::Invalid("Session nodes"))?;
+    let receipts = crate::persistence::read_all_current(
+        c,
+        "SELECT r.digest,r.state,r.target,r.reserved,t.held,r.next_event,r.node
+         FROM main.provider_runs r JOIN main.tasks t ON t.family=r.family
+         WHERE r.family=?1 AND r.node IN (SELECT value FROM json_each(?2))",
+        crate::persistence::params![family.to_owned(), nodes],
+        |row| decode_receipt(row, family, row.get(6)?),
+    )
+    .map_err(db)?;
+    Ok(receipts
+        .into_iter()
+        .map(|receipt| (receipt.node.clone(), receipt))
+        .collect())
+}
+
+fn decode_receipt(
+    row: &crate::persistence::Row,
+    family: &str,
+    node: String,
+) -> crate::persistence::Result<ProviderReceipt> {
+    Ok(ProviderReceipt {
+        family: family.into(),
+        node,
+        digest: row.get(0)?,
+        state: provider_state(row)?,
+        target: row.get(2)?,
+        reserved: integer(row, 3)?,
+        held: integer(row, 4)?,
+        events: integer(row, 5)?,
+    })
 }
 fn provider_state(row: &crate::persistence::Row) -> crate::persistence::Result<ProviderState> {
     let state: String = row.get(1)?;

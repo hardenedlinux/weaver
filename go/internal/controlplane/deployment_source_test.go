@@ -17,7 +17,7 @@ func TestUnavailableDeploymentProducerCannotUseDataFallback(t *testing.T) {
 	client := &gatewayclient.Client{RPC: rpc, Token: "source-token"}
 	// Even accidental internal coexistence cannot turn failure into fallback.
 	input := deploymentSource{producer: "approved", bundle: bundle}
-	_, err := input.bootstrap(context.Background(), client, client)
+	_, err := input.bootstrap(context.Background(), client, client, nil)
 	if err == nil || !reflect.DeepEqual(rpc.calls, []string{"compile"}) {
 		t.Fatal("producer failure fell back or published", rpc.calls, err)
 	}

@@ -119,6 +119,16 @@ package WeaverExecution {
            that transaction. Program reuse preserves the full domain join.
            The domain view and reservation reconciliation are scope-local.
            History equality, capacity, revocation, Policy and fence remain live. */
+        doc /* Target design. Prepare immutable provider execution inputs once
+           for the exact admitted publication and profile, using the existing
+           Scheme owner and Rust publication projection. Bind a prepared input
+           to the catalog version, source revision and fence, reviewed Policy
+           digest, profile digest, and original plan commitment. Carry owned
+           Rust data across the worker handoff. Validate the queued commitment
+           and join the current authority in the deciding transaction before
+           reuse. Reconstruct from durable source on a miss. Keep claims,
+           budget, history, revocation, cancellation and each Cedar decision
+           within the corresponding live custody. */
         doc /* Overlapping semantic writers serialize; certified provider work
            may share semantic reads while writing distinct original origins.
            Measure actual granted modes and reader/writer waits separately.
@@ -304,6 +314,32 @@ package WeaverExecution {
     }
 
     requirement def ProviderAdmissionTurn {
+        doc /* Native prepared-program reuse may retain only compatible SQL
+           programs. A singleton preflight must finish its cursor; each use
+           binds fresh parameters and reads current rows. The deciding scope
+           still compares every exact reviewed projection, task birth, fence
+           and pending barrier. A reused program or previous successful read
+           conveys no authority after replacement or projection loss. */
+        doc /* Original-task, birth-publication and provider-receipt reads must
+           finish their singleton cursors before releasing the native read.
+           Constraining singleton join order may reduce preflight planning work
+           without changing any predicate. Engine schema/root generation changes
+           may still require recompilation, especially across MVCC snapshots;
+           do not bypass compatibility to claim zero compilation. A frozen Rust
+           release A/B uses identical Go forwarding and workload in both arms,
+           separate from the existing Go-versus-direct-Rust comparison. */
+        doc /* Domain-key discovery also completes its native singleton cursor.
+           Reusing its SQL program cannot retain discovered roots across waits:
+           capture scheduler generation before the hint query and keep the
+           existing deciding-scope root and generation rechecks. Completing this
+           read avoids invalidating compatible prepared programs as a side effect
+           of abandoning an otherwise successful autocommit read. */
+        doc /* Retained-member and projected-member queries reuse only compatible
+           fixed SQL programs, prepared before provider admission where possible.
+           Each deciding use binds the current family, consumes the complete row
+           set, rejects duplicate members and verifies exact member bijection,
+           original ceilings and held-budget conservation. A preparation success
+           or a previous matching set is never a substitute for those fresh reads. */
         doc /* A pending execution request has no accepted authority outcome,
            native claim, reservation or semantic publication. It waits in the
            existing bounded runtime lane and conflicting-writer FIFO without
@@ -331,6 +367,12 @@ package WeaverExecution {
            before serving ingress. Runtime catalogue selection retains it. Unknown
            activation never becomes readiness. Connection release changes no
            authority view, claim, hold, publication or pending-intent outcome. */
+        doc /* Runtime catalogue requests read current source authority independently.
+           Concurrent requests for the same exact version and record bytes share
+           one immutable projection. Registration and deciding admission still
+           validate the current source and catalogue. The Rust source owner can
+           return the current ledger bytes directly after matching the version
+           and bytes of its previously verified canonical response. */
     }
 
     part def ProviderAdmissionOverlapExperiment {
@@ -699,6 +741,28 @@ package WeaverExecution {
            existing receipts. A queued claim may resume and an unknown outcome
            stops progression. Pending and resolved withdrawals block affected
            successors until a new available revision is admitted. */
+        doc /* Rust prepares immutable node and predecessor bindings with the
+           compiled original. Session uses them after exact publication
+           activation and resolves candidates in the compiled path order.
+           The existing Scheme Governor owner can retain its ASCENT program.
+           A wake reads a coherent durable cut. Ledger observation batches
+           availability and receipts for the original family in one transaction,
+           reuses its deployed topology and origin to verify each completed
+           node's committed transition and branch decision, and verifies its
+           release and metering evidence. The observation
+           reconciles the shared budget and history once in that transaction.
+           WAL observation opens a deferred snapshot under the same authority
+           closure. Claim and reservation use the deciding transaction.
+           Target design. Send changing relations to the retained owner with
+           the publication identity and cut. An incremental
+           update must name its base cut and carry retractions. An identity or
+           base mismatch requires a coherent full observation. Rebuild from the
+           durable frontier after owner loss. */
+        doc /* The Governor returns candidate node identities for the same cut.
+           Rust resolves them against the prepared plans. Admission atomically
+           validates the current cut and complete releases, records any branch
+           decision and acquires the claim and reservation. Reuse of a prepared
+           plan or a retained derivation cannot supply authority for an effect. */
     }
     requirement def DevelopmentPolicy {
         doc /* ASP Rust is a deny-mode Cargo test dependency and is absent from the runtime graph. */
@@ -1004,6 +1068,15 @@ package WeaverExecution {
            Rust validates provenance and equality; it cannot infer whether two
            entirely relabeled tasks are the same original from body equality.
            Retain claim, domain lineage and unknown holds across source handoff.
+           The default Gateway deployment uses one authoritative Turso store.
+           Claim and accounting views share this store. Provider SSE payloads
+           use bounded runtime buffers. Persist release intervals and digests,
+           and persist the typed terminal result needed for a Workflow choice.
+           Provider completion reduces the stored plan to its original ceiling
+           in the terminal transaction. The run digest and independent claim
+           still bind exposure. Queued and unresolved runs retain their plan.
+           Arrow frames are an output format. Keep analytical projections in
+           memory or approved exports, outside the deciding authority boundary.
            Model allocation does not close the authentic-key issuance gap. */
         attribute leanDeclaration : String = "CedarPooSpec.Gateway.ZeroTrust.Proposal";
         attribute leanFields : String = "before,receipt,contextBound,authorityId,after,consumption";

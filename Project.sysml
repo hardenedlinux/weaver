@@ -133,7 +133,7 @@ package WeaverProject {
         part def SchemeArtifactDeclaration;
         part def RustArtifactMaterializer;
         part def ReproducibleInput;
-        part def NativeBuildProduct;
+        part def CargoAndGerbilBuildProduct;
         part def VerificationRun;
         part def DerivedView;
         part def LocalQualification;
@@ -165,7 +165,7 @@ package WeaverProject {
                checked-in recipe and a reproducibility check. Site data, local
                digests, and individual execution verdicts stay outside Git. */
         }
-        part nativeBuild : NativeBuildProduct {
+        part cargoAndGerbilBuild : CargoAndGerbilBuildProduct {
             doc /* Cargo and Gerbil Build Packages prepare and reuse their own
                outputs. The release consumer selects exact executable, linked
                image and package closure. Toolchain clean operates on owned
@@ -553,7 +553,7 @@ package WeaverProject {
         part '.github/workflows/ci.yml' : File;
         part '.github/workflows/verify-suite.yml' : File;
         part '.github/actions/prepare-toolchain/action.yml' : File;
-        part '.github/actions/prepare-toolchain/native-owner.gdb' : File;
+        part '.github/actions/prepare-toolchain/sigpipe-backtrace.gdb' : File;
         part 'scheme/policy/cedar-ffi.ss' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.24-telemetry-service.org' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.25-openshell-and-tao3k-ecosystem.org' : File;

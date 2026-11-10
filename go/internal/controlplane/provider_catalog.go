@@ -5,12 +5,14 @@
 package controlplane
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
 
 	pb "github.com/HardenedLinux/weaver/go/api/gateway/v1"
 	"github.com/HardenedLinux/weaver/go/internal/config"
+	"github.com/HardenedLinux/weaver/go/internal/gatewayclient"
 	"github.com/HardenedLinux/weaver/go/internal/routing"
 )
 
@@ -26,27 +28,81 @@ type catalogEntry struct {
 	} `json:"quote"`
 }
 
-func (g *Gateway) materializeProvider(ctx context.Context) (config.Bundle, string, error) {
+// A projection owns its input and selected bundle. It carries no authority.
+type catalogProjection struct {
+	version      string
+	record       []byte
+	bundle       config.Bundle
+	registration *pb.RegisterPublishedTaskRequest
+}
+
+func (g *Gateway) materializeProvider(ctx context.Context) (*catalogProjection, string, error) {
 	snapshot, err := g.source.RPC.InspectProviderCatalog(g.source.Context(ctx), &pb.Empty{})
 	if err != nil {
-		return config.Bundle{}, "", err
+		return nil, "", err
 	}
-	bundle := *g.deferred
-	if snapshot.Version != "" {
-		var catalog struct {
-			Entries map[string]catalogEntry `json:"entries"`
-		}
-		if len(snapshot.Record) > 262144 || json.Unmarshal(snapshot.Record, &catalog) != nil {
-			return config.Bundle{}, "", errors.New("invalid provider catalog")
-		}
-		selection, err := catalogSelection(bundle.Routing[0], catalog.Entries)
-		if err != nil {
-			return config.Bundle{}, "", err
-		}
-		bundle.Routing = []routing.Selection{selection}
-	}
-	selected, err := bundle.MaterializeRequest()
+	selected, err := g.projectCatalog(snapshot)
 	return selected, snapshot.Version, err
+}
+
+func (g *Gateway) projectCatalog(snapshot *pb.ProviderCatalogSnapshot) (*catalogProjection, error) {
+	if snapshot.Version == "" {
+		selected, err := g.deferred.MaterializeRequest()
+		if err != nil {
+			return nil, err
+		}
+		return &catalogProjection{bundle: selected, registration: g.catalogRegistration(selected)}, nil
+	}
+	if current := g.cachedCatalog(snapshot); current != nil {
+		return current, nil
+	}
+	// Requests still read the catalog independently. Share the projection
+	// work when they arrive together with the same new snapshot.
+	g.catalogBuildMu.Lock()
+	defer g.catalogBuildMu.Unlock()
+	if current := g.cachedCatalog(snapshot); current != nil {
+		return current, nil
+	}
+	selected, err := projectCatalog(*g.deferred, snapshot.Record)
+	if err != nil {
+		return nil, err
+	}
+	projection := &catalogProjection{
+		version: snapshot.Version, record: bytes.Clone(snapshot.Record), bundle: selected,
+		registration: g.catalogRegistration(selected),
+	}
+	g.catalog.Store(projection)
+	return projection, nil
+}
+
+func (g *Gateway) catalogRegistration(selected config.Bundle) *pb.RegisterPublishedTaskRequest {
+	// This request owns the wire projection. Concurrent RPCs marshal it read-only.
+	return &pb.RegisterPublishedTaskRequest{
+		Task: gatewayclient.Task(selected.Tasks[0]), Publication: g.publication,
+	}
+}
+
+func (g *Gateway) cachedCatalog(snapshot *pb.ProviderCatalogSnapshot) *catalogProjection {
+	current := g.catalog.Load()
+	if current != nil && current.version == snapshot.Version && bytes.Equal(current.record, snapshot.Record) {
+		return current
+	}
+	return nil
+}
+
+func projectCatalog(bundle config.Bundle, record []byte) (config.Bundle, error) {
+	var catalog struct {
+		Entries map[string]catalogEntry `json:"entries"`
+	}
+	if len(record) > 262144 || json.Unmarshal(record, &catalog) != nil {
+		return config.Bundle{}, errors.New("invalid provider catalog")
+	}
+	selection, err := catalogSelection(bundle.Routing[0], catalog.Entries)
+	if err != nil {
+		return config.Bundle{}, err
+	}
+	bundle.Routing = []routing.Selection{selection}
+	return bundle.MaterializeRequest()
 }
 
 func catalogSelection(source routing.Selection, entries map[string]catalogEntry) (routing.Selection, error) {

@@ -171,12 +171,13 @@ pub(crate) fn observe(
     tx: &WriteScope<'_>,
     family: &str,
     origin: &str,
+    nodes: Option<&[String; 4]>,
 ) -> Result<Option<WorkflowChoiceObservation>> {
-    let Some(nodes) = crate::hard_fact::choice_nodes(tx, family)? else {
+    let Some(nodes) = nodes else {
         return Ok(None);
     };
-    let (result, decision) = read_basis(tx, family, origin, &nodes)?;
-    let [_, left, right, join] = nodes;
+    let (result, decision) = read_basis(tx, family, origin, nodes)?;
+    let [_, left, right, join] = nodes.clone();
     Ok(Some(WorkflowChoiceObservation {
         arms: [left, right],
         join,
@@ -249,10 +250,21 @@ pub(crate) fn require(
     origin: &str,
     digest: &str,
 ) -> Result<()> {
-    let Some(nodes) = crate::hard_fact::choice_nodes(tx, &plan.family)? else {
+    let nodes = crate::hard_fact::choice_nodes(tx, &plan.family)?;
+    require_in_choice(tx, plan, origin, digest, nodes.as_ref())
+}
+
+pub(crate) fn require_in_choice(
+    tx: &WriteScope<'_>,
+    plan: &ProviderPlan,
+    origin: &str,
+    digest: &str,
+    nodes: Option<&[String; 4]>,
+) -> Result<()> {
+    let Some(nodes) = nodes else {
         return Ok(());
     };
-    let (_, decision) = read_basis(tx, &plan.family, origin, &nodes)?;
+    let (_, decision) = read_basis(tx, &plan.family, origin, nodes)?;
     let decision = decision.ok_or(Error::Conflict("workflow choice is uncommitted"))?;
     if plan.node == nodes[3] {
         let valid: bool = crate::persistence::one_current(

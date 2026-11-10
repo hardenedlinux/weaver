@@ -12,7 +12,8 @@ mod source;
 pub use binding::{BoundSource, SourceExpectation};
 pub use catalog::{ApprovedProducer, CatalogError, ProducerCatalog, ProducerClient};
 pub use host::{
-    Derivation, GovernorCut, SourceClient, SourceInbox, SourceJob, SourceJobError, source_lane,
+    Derivation, DerivationOutput, GovernorCut, GovernorTopology, SourceClient, SourceInbox,
+    SourceJob, SourceJobError, source_lane,
 };
 pub use source::{MAX_SOURCE_BYTES, OwnedSource, SourceData, SourceError, SourceSelection};
 

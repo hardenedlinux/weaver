@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
+//! Read current provider catalogs and verify their published content.
+
 use crate::{
     Ledger,
     persistence::{self, driver},
@@ -12,14 +14,26 @@ use weaver_contracts::{Error, MAX_CREDITS, ProviderCatalog, Result};
 pub(crate) fn current(
     connection: &driver::Connection,
 ) -> Result<Option<(String, ProviderCatalog)>> {
-    let record: Option<(String, String)> = persistence::maybe(
+    current_record(connection)?
+        .map(|(digest, record)| {
+            let catalog = decode(&digest, &record)?;
+            Ok((digest, catalog))
+        })
+        .transpose()
+}
+
+#[cfg(test)]
+#[path = "../tests/unit/provider_catalog.rs"]
+mod tests;
+
+fn current_record(connection: &driver::Connection) -> Result<Option<(String, String)>> {
+    persistence::maybe(
         connection,
         "SELECT digest,record FROM provider_catalog_publications ORDER BY revision DESC LIMIT 1",
         (),
         |row| Ok((row.get(0)?, row.get(1)?)),
     )
-    .map_err(db)?;
-    record.map(decode).transpose()
+    .map_err(db)
 }
 
 pub(crate) fn historical(connection: &driver::Connection, digest: &str) -> Result<ProviderCatalog> {
@@ -30,21 +44,53 @@ pub(crate) fn historical(connection: &driver::Connection, digest: &str) -> Resul
         |row| row.get(0),
     )
     .map_err(db)?;
-    decode((digest.to_owned(), record)).map(|(_, catalog)| catalog)
+    decode(digest, &record)
 }
 
-fn decode((digest, record): (String, String)) -> Result<(String, ProviderCatalog)> {
+fn decode(digest: &str, record: &str) -> Result<ProviderCatalog> {
     let catalog: ProviderCatalog = weaver_contracts::decode(record.as_bytes())?;
     if catalog.digest()? != digest {
         return Err(Error::Conflict("provider catalog content mismatch"));
     }
-    Ok((digest, catalog))
+    Ok(catalog)
+}
+
+/// One source owner's verified wire projection. Current source authority and
+/// current stored bytes must be read before it can be reused.
+#[derive(Default)]
+pub struct ProviderCatalogProjection {
+    canonical: Option<(String, Vec<u8>)>,
+}
+
+impl ProviderCatalogProjection {
+    fn project(&mut self, version: String, record: String) -> Result<(String, Vec<u8>)> {
+        if self.canonical.as_ref().is_some_and(|(digest, bytes)| {
+            *digest == version && bytes.as_slice() == record.as_bytes()
+        }) {
+            return Ok((version, record.into_bytes()));
+        }
+        let canonical = decode(&version, &record)?.record()?;
+        self.canonical = (canonical.len() <= 262_144 && canonical == record.as_bytes())
+            .then(|| (version.clone(), canonical.clone()));
+        Ok((version, canonical))
+    }
 }
 
 impl Ledger {
     pub fn provider_catalog(&self) -> Result<Option<(String, ProviderCatalog)>> {
         crate::source_authority::require(&self.connection, self.source.as_ref())?;
         current(&self.connection)
+    }
+
+    /// Read and verify the current catalog for the authenticated source RPC.
+    pub fn inspect_provider_catalog(
+        &self,
+        projection: &mut ProviderCatalogProjection,
+    ) -> Result<Option<(String, Vec<u8>)>> {
+        crate::source_authority::require(&self.connection, self.source.as_ref())?;
+        current_record(&self.connection)?
+            .map(|(version, record)| projection.project(version, record))
+            .transpose()
     }
 
     pub fn publish_provider_catalog(&mut self, catalog: &ProviderCatalog) -> Result<String> {

@@ -20,17 +20,15 @@ func contentionFixture(t *testing.T) []ContentionSample {
 	for _, profile := range contentionProfiles {
 		for block := 0; block < 6; block++ {
 			for slot := 0; slot < 4; slot++ {
-				timing := TransactionTimings{TransactionBegin: TimingSample{Attempts: 2, Nanos: 1}, TransactionHold: TimingSample{Attempts: 2, Nanos: 2}, Commit: TimingSample{Attempts: 2, Nanos: 1}, ProviderRequest: TimingSample{Attempts: 1, Nanos: 1}}
+				timing := TransactionTimings{TransactionBegin: TimingSample{Attempts: 2, Nanos: 1}, TransactionHold: TimingSample{Attempts: 2, Nanos: 2}, AuthoritySpan: TimingSample{Attempts: 2, Nanos: 2}, Commit: TimingSample{Attempts: 2, Nanos: 1}, ProviderRequest: TimingSample{Attempts: 1, Nanos: 1}}
 				if profile != "wal-writer" {
-					timing.OwnerGateWait.Attempts = 2
-					timing.OwnerGateHold.Attempts = 2
 					timing.DomainWait.Attempts = 2
 					timing.DomainKeys.Attempts = 2
 					timing.DomainHold.Attempts = 2
 				}
 				second := timing
 				if profile == "mvcc-publication" {
-					second = TransactionTimings{OwnerGateWait: TimingSample{Attempts: 1}, OwnerGateHold: TimingSample{Attempts: 1}, TransactionBegin: TimingSample{Attempts: 1}, TransactionHold: TimingSample{Attempts: 1}, Commit: TimingSample{Attempts: 1}}
+					second = TransactionTimings{OwnerGateWait: TimingSample{Attempts: 1}, OwnerGateHold: TimingSample{Attempts: 1}, TransactionBegin: TimingSample{Attempts: 1}, TransactionHold: TimingSample{Attempts: 1}, AuthoritySpan: TimingSample{Attempts: 1}, Commit: TimingSample{Attempts: 1}}
 				}
 				rows = append(rows, ContentionSample{Profile: profile, Optimized: true, Block: block, Slot: slot, Contended: slot == 1 || slot == 2, Observation: ContentionObservation{First: timing, Second: second}})
 			}
@@ -59,7 +57,7 @@ func TestContentionEvidenceRejectsPartialReorderedOrDebugObservations(t *testing
 	property := func(raw uint8, fault uint8) bool {
 		rows := append([]ContentionSample(nil), original...)
 		index := int(raw) % len(rows)
-		switch fault % 5 {
+		switch fault % 7 {
 		case 0:
 			rows = append(rows[:index], rows[index+1:]...)
 		case 1:
@@ -70,6 +68,10 @@ func TestContentionEvidenceRejectsPartialReorderedOrDebugObservations(t *testing
 			rows[index].Slot = 99
 		case 4:
 			rows = append(rows, rows[index])
+		case 5:
+			rows[index].Observation.First.OwnerGateHold.Attempts = 2
+		case 6:
+			rows[index].Observation.First.AuthoritySpan.Attempts = 0
 		}
 		_, err := ReadContentionEvidence(strings.NewReader(contentionLog(t, rows)))
 		return err != nil

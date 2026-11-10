@@ -19,6 +19,8 @@ mod execution_exposure;
 mod hard_fact;
 pub use hard_fact::FactPreparation;
 mod exposure_manifest;
+#[cfg(feature = "commit-observer")]
+pub use exposure_manifest::use_prepared_manifest_programs;
 mod metering;
 mod metering_credentials;
 mod provider;
@@ -30,6 +32,7 @@ pub use provider_delivery::{
     ProviderDelivery,
 };
 mod provider_catalog;
+pub use provider_catalog::ProviderCatalogProjection;
 mod provider_oauth;
 mod provider_oauth_witness;
 mod provider_profiles;
@@ -75,6 +78,8 @@ mod stream_ranges;
 mod stream_state;
 mod task_publication;
 pub use store::{Dispatch, Ledger};
+#[cfg(feature = "commit-observer")]
+pub use store::ParkedProviderConnection;
 pub(crate) use store::{db, integer};
 pub use stream_custody::{StreamClaim, StreamOwner};
 pub use stream_ranges::RangePermit;
@@ -83,7 +88,7 @@ pub use stream_ranges::RangePermit;
 asp_rust::asp_rust_cargo_test_gate!(mode = deny, config = asp_rust::default_asp_rust_config());
 
 #[cfg(feature = "commit-observer")]
-pub use task_origins::use_locked_original_evidence;
+pub use task_origins::{use_locked_original_evidence, use_prepared_original_program};
 
 #[cfg(feature = "commit-observer")]
 pub use domains::use_fresh_provider_domain_plan;

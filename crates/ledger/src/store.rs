@@ -18,6 +18,17 @@ pub struct Ledger {
     pub(crate) source: Option<weaver_contracts::SourceIdentity>,
 }
 
+/// Physical custody only. A new request must establish a fresh logical Ledger.
+#[cfg(feature = "commit-observer")]
+pub struct ParkedProviderConnection(Session);
+
+#[cfg(feature = "commit-observer")]
+impl ParkedProviderConnection {
+    pub fn checkout(self) -> Result<Ledger> {
+        Ledger::from_connection(self.0)
+    }
+}
+
 /// Unforgeable within the public API, deliberately not Clone or serializable.
 pub struct Dispatch {
     proposal: Proposal,
@@ -45,6 +56,9 @@ impl Ledger {
     pub fn open(path: impl AsRef<Path>) -> Result<Self> {
         let mut connection = Session::open(path).map_err(db)?;
         connection.initialize_ledger().map_err(db)?;
+        Self::from_connection(connection)
+    }
+    fn from_connection(connection: Session) -> Result<Self> {
         // A missing retained manifest cannot be reconstructed from outcome rows.
         // Older images require explicit authoritative recovery, never backfill.
         let _: Vec<String> = crate::persistence::read_all(
@@ -64,6 +78,18 @@ impl Ledger {
             session,
             source: None,
         })
+    }
+
+    /// Return physical custody after a known provider completion. A poisoned or
+    /// source-authorized logical session is ineligible.
+    #[cfg(feature = "commit-observer")]
+    pub fn park_provider_connection(mut self) -> Result<ParkedProviderConnection> {
+        self.require_quiescent()?;
+        if self.source.is_some() {
+            return Err(Error::Conflict("source session cannot park as provider"));
+        }
+        self.connection.reset_provider_request();
+        Ok(ParkedProviderConnection(self.connection))
     }
 
     /// Trusted publication CAS. It cannot be called through the adapter wire protocol.

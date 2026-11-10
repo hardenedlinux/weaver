@@ -361,11 +361,14 @@ func runStageObserved(ctx context.Context, root, directory string, environment [
 		result.Lean, proofErr = readLeanEvidence(root, source, filepath.Join(directory, result.Log))
 		err = errors.Join(err, proofErr)
 	}
+	// Go benchmarks label rows with the effective GOMAXPROCS inherited
+	// by the child. The separate Rust header-seal report uses host CPUs.
+	goCPUs := runtime.GOMAXPROCS(0)
 	if stage.Name == "runtime-projection-benchmark" && err == nil && closeErr == nil {
-		result.GoBenchmarks, err = readGoBenchmarks(filepath.Join(directory, result.Log), runtime.NumCPU(), sourceAdmissionBenchmarks...)
+		result.GoBenchmarks, err = readGoBenchmarks(filepath.Join(directory, result.Log), goCPUs, sourceAdmissionBenchmarks...)
 	}
 	if stage.Name == "published-pipeline-benchmark" && err == nil && closeErr == nil {
-		result.PipelineBenchmarks, err = readPipelineBenchmarks(filepath.Join(directory, result.Log), runtime.NumCPU(), "BenchmarkGatewayPublishedPipeline/registered")
+		result.PipelineBenchmarks, err = readPipelineBenchmarks(filepath.Join(directory, result.Log), goCPUs, "BenchmarkGatewayPublishedPipeline/registered")
 		result.Details = "Real Go/Cedar/Rust path; Scheme preparation excluded, not a latency qualification."
 	}
 	if stage.Name == "execution-contention-pair" && err == nil && closeErr == nil {
@@ -383,20 +386,20 @@ func runStageObserved(ctx context.Context, root, directory string, environment [
 	}
 
 	if stage.Name == "execution-header-wait-pair" && err == nil && closeErr == nil {
-		result.PipelineBenchmarks, err = readProviderPairBenchmarks(filepath.Join(directory, result.Log), runtime.NumCPU(), "BenchmarkGatewayHeaderWaitPair", "immediate", "delayed")
+		result.PipelineBenchmarks, err = readProviderPairBenchmarks(filepath.Join(directory, result.Log), goCPUs, "BenchmarkGatewayHeaderWaitPair", "immediate", "delayed")
 		result.Details = "Six complete same-image ABBA blocks; fully consumed HTTPS request, immediate versus 30ms delayed headers. Sensitivity control, not an early-unlock speedup."
 	}
 
 	if stage.Name == "execution-streaming-pair" && err == nil && closeErr == nil {
-		result.PipelineBenchmarks, err = readStreamingPairBenchmarks(filepath.Join(directory, result.Log), runtime.NumCPU())
+		result.PipelineBenchmarks, err = readStreamingPairBenchmarks(filepath.Join(directory, result.Log), goCPUs)
 		result.Details = "Six complete same-image ABBA blocks, Arrow rows=1 versus rows=32; not a before/after implementation speedup."
 	}
 	if stage.Name == "runtime-pipeline-benchmark" && err == nil && closeErr == nil {
-		result.PipelineBenchmarks, err = readPipelineBenchmarks(filepath.Join(directory, result.Log), runtime.NumCPU())
+		result.PipelineBenchmarks, err = readPipelineBenchmarks(filepath.Join(directory, result.Log), goCPUs)
 		result.Details = "Complete functional pipeline samples; no end-to-end speedup or non-regression qualification."
 	}
 	if stage.Name == "grpc-benchmark" && err == nil && closeErr == nil {
-		result.GoBenchmarks, err = readGoBenchmarks(filepath.Join(directory, result.Log), runtime.NumCPU())
+		result.GoBenchmarks, err = readGoBenchmarks(filepath.Join(directory, result.Log), goCPUs)
 	}
 	if (stage.Name == "storage-final-benchmark" || stage.Name == "telemetry-benchmark" || stage.Name == "execution-policy-benchmark" || stage.Name == "execution-ledger-benchmark" || stage.Name == "execution-provider-benchmark" || stage.Name == "execution-encoding-benchmark") && err == nil && closeErr == nil {
 		cases := storageBenchmarkCases

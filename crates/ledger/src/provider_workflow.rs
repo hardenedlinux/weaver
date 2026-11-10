@@ -4,7 +4,9 @@
 //! Compiled workflow edges using the existing provider claim and response outcome.
 use crate::{
     Ledger,
-    persistence::{WriteScope, begin_family, exec, one_current, params},
+    persistence::{
+        WriteScope, begin_family, begin_workflow_observation, exec, one_current, params,
+    },
     provider_workflow_choice::{self as choice, ChoiceBasis, WorkflowChoiceObservation},
     provider_workflow_nested::{self as nested, NestedDraft, NestedObservation},
     store::{db, integer},
@@ -48,10 +50,8 @@ pub struct WorkflowObservation {
 fn released_response(
     tx: &WriteScope<'_>,
     predecessor: &ProviderPlan,
-    domains: &weaver_contracts::DomainView,
+    digest: &str,
 ) -> Result<ReleasedResponse> {
-    let digest = predecessor.digest()?;
-    require_winner(tx, predecessor, &digest)?;
     // The provider owner records 2 only after the actual dispatch callback.
     // The earlier burn (1) does not establish that a response was observed.
     let released_events = one_current(
@@ -65,7 +65,7 @@ fn released_response(
         params![
             predecessor.family.clone(),
             predecessor.node.clone(),
-            digest.clone(),
+            digest,
             predecessor.ceiling as i64
         ],
         |row| integer(row, 0),
@@ -76,9 +76,8 @@ fn released_response(
         }
         other => db(other),
     })?;
-    crate::execution_exposure::provider(tx, predecessor, &digest, domains, None, None)?;
     Ok(ReleasedResponse {
-        digest,
+        digest: digest.to_owned(),
         reserved: predecessor.ceiling,
         released_events,
     })
@@ -88,10 +87,9 @@ fn prepare(
     tx: &WriteScope<'_>,
     predecessors: &[ProviderPlan],
     successor: &ProviderPlan,
+    current: (Vec<String>, u64, String),
 ) -> Result<ProviderProgression> {
-    let (mut expected, fact_floor, fact_snapshot) =
-        crate::hard_fact::workflow_cut(tx, &successor.family, &successor.node)?
-            .ok_or(Error::Conflict("provider workflow not admitted"))?;
+    let (mut expected, fact_floor, fact_snapshot) = current;
     let domains = crate::domains::provider_view(tx, &successor.family)?;
     let choice = choice::prepare(
         tx,
@@ -129,7 +127,11 @@ fn prepare(
         .iter()
         .map(|plan| {
             crate::hard_fact::require_available(tx, &plan.family, &plan.node)?;
-            released_response(tx, plan, &domains)
+            let digest = plan.digest()?;
+            require_winner(tx, plan, &digest)?;
+            let release = released_response(tx, plan, &digest)?;
+            crate::execution_exposure::provider(tx, plan, &digest, &domains, None, None)?;
+            Ok(release)
         })
         .collect::<Result<Vec<_>>>()?;
     let successor_digest = successor.digest()?;
@@ -176,7 +178,9 @@ impl Ledger {
         observed: Option<&WorkflowObservation>,
     ) -> Result<ProviderProgression> {
         let tx = begin_family(&mut self.connection, &successor.family).map_err(db)?;
-        let proposal = prepare(&tx, predecessors, successor)?;
+        let current = crate::hard_fact::workflow_cut(&tx, &successor.family, &successor.node)?
+            .ok_or(Error::Conflict("provider workflow not admitted"))?;
+        let proposal = prepare(&tx, predecessors, successor, current)?;
         if observed.is_some_and(|cut| {
             cut.floor != proposal.fact_floor || cut.snapshot != proposal.fact_snapshot
         }) {
@@ -190,38 +194,65 @@ impl Ledger {
         let [root, successor, ..] = plans else {
             return Err(Error::Invalid("Session plan set"));
         };
-        let tx = begin_family(&mut self.connection, &root.family).map_err(db)?;
-        let (_, floor, snapshot) =
-            crate::hard_fact::workflow_cut(&tx, &root.family, &successor.node)?
-                .ok_or(Error::Conflict("Session fact cut unavailable"))?;
+        if plans.iter().any(|plan| plan.family != root.family) {
+            return Err(Error::Invalid("Session plans span multiple families"));
+        }
+        let tx = begin_workflow_observation(&mut self.connection, &root.family).map_err(db)?;
+        let nodes: Vec<_> = plans.iter().map(|plan| plan.node.as_str()).collect();
+        let facts = crate::hard_fact::observe_workflow(
+            &tx,
+            &root.family,
+            &successor.node,
+            nodes.iter().copied(),
+        )?;
         let domains = crate::domains::provider_view(&tx, &root.family)?;
+        let origin = &domains.stamp.origin;
+        let choice_nodes = facts.feed.choice_nodes();
         let mut cut = WorkflowObservation {
             complete: vec![],
-            available: vec![],
+            available: facts.available,
             pending: vec![],
-            choice: choice::observe(&tx, &root.family, &domains.stamp.origin)?,
-            nested: nested::observe(&tx, &root.family, &domains.stamp.origin)?,
-            floor,
-            snapshot,
+            choice: choice::observe(&tx, &root.family, origin, choice_nodes)?,
+            nested: nested::observe(&tx, origin, &facts.feed)?,
+            floor: facts.floor,
+            snapshot: facts.snapshot,
         };
+        let receipts = crate::provider::workflow_receipts(&tx, &root.family, &nodes)?;
+        // This read-only transaction has one deployment, including its absence.
+        // Load it only after the first complete node proves its release.
+        let mut metering = None;
         for plan in plans {
-            match crate::hard_fact::require_available(&tx, &plan.family, &plan.node) {
-                Ok(Some(_)) => cut.available.push(plan.node.clone()),
-                Err(Error::Conflict(_)) => {}
-                Ok(None) => return Err(Error::Conflict("Session fact scope changed")),
-                Err(error) => return Err(error),
-            }
-            match crate::provider::receipt(&tx, &plan.family, &plan.node)? {
+            match receipts.get(&plan.node) {
                 Some(receipt) if receipt.digest != plan.digest()? => {
                     return Err(Error::Conflict("Session plan changed"));
                 }
                 Some(receipt) if receipt.state == ProviderState::Complete => {
-                    released_response(&tx, plan, &domains)?;
+                    let digest = &receipt.digest;
+                    if !facts.feed.workflow_predecessors(&plan.node).is_empty() {
+                        require_transition(&tx, plan, origin, digest)?;
+                        choice::require_in_choice(&tx, plan, origin, digest, choice_nodes)?;
+                        nested::require_in_graph(&tx, plan, origin, digest, &facts.feed)?;
+                    }
+                    released_response(&tx, plan, digest)?;
+                    if metering.is_none() {
+                        metering = Some(crate::metering::deployment(&tx)?);
+                    }
+                    crate::execution_exposure::provider_metering_with_deployment(
+                        &tx,
+                        plan,
+                        digest,
+                        metering.as_ref().and_then(Option::as_ref),
+                    )?;
                     cut.complete.push(plan.node.clone());
                 }
                 Some(receipt) if receipt.state == ProviderState::Unknown => {}
                 _ => cut.pending.push(plan.node.clone()),
             }
+        }
+        // Each complete run proved its exact digest and reservation. Shared
+        // exposure and history describe the whole family in this read scope.
+        if !cut.complete.is_empty() {
+            crate::domains::require_view(&tx, &domains, None)?;
         }
         tx.commit().map_err(db)?;
         Ok(cut)
@@ -233,11 +264,18 @@ pub(crate) fn require_admission(
     plan: &ProviderPlan,
     proposal: Option<&ProviderProgression>,
 ) -> Result<()> {
-    let governed = crate::hard_fact::workflow_cut(tx, &plan.family, &plan.node)?.is_some();
-    match (governed, proposal) {
-        (false, None) => Ok(()),
-        (true, Some(proposal)) if prepare(tx, &proposal.predecessors, plan)? == *proposal => Ok(()),
-        _ => Err(Error::Conflict("provider workflow frontier changed")),
+    let current = crate::hard_fact::workflow_cut(tx, &plan.family, &plan.node)?;
+    let retained = match (current, proposal) {
+        (None, None) => true,
+        (Some(current), Some(proposal)) => {
+            prepare(tx, &proposal.predecessors, plan, current)? == *proposal
+        }
+        _ => false,
+    };
+    if retained {
+        Ok(())
+    } else {
+        Err(Error::Conflict("provider workflow frontier changed"))
     }
 }
 
@@ -308,16 +346,26 @@ pub(crate) fn require_winner(tx: &WriteScope<'_>, plan: &ProviderPlan, digest: &
         let origin = crate::domains::provider_view(tx, &plan.family)?
             .stamp
             .origin;
-        let valid: bool = one_current(tx,
-            "SELECT EXISTS(SELECT 1 FROM main.provider_workflow_transitions WHERE origin=?1 AND successor=?2 AND successor_digest=?3)",
-            params![origin.clone(), plan.node.clone(), digest.to_owned()], |row| row.get(0)).map_err(db)?;
-        if !valid {
-            return Err(Error::Conflict(
-                "provider successor has no committed transition",
-            ));
-        }
+        require_transition(tx, plan, &origin, digest)?;
         choice::require(tx, plan, &origin, digest)?;
         nested::require_entry(tx, plan, &origin, digest)?;
+    }
+    Ok(())
+}
+
+fn require_transition(
+    tx: &WriteScope<'_>,
+    plan: &ProviderPlan,
+    origin: &str,
+    digest: &str,
+) -> Result<()> {
+    let valid: bool = one_current(tx,
+        "SELECT EXISTS(SELECT 1 FROM main.provider_workflow_transitions WHERE origin=?1 AND successor=?2 AND successor_digest=?3)",
+        params![origin, plan.node.as_str(), digest], |row| row.get(0)).map_err(db)?;
+    if !valid {
+        return Err(Error::Conflict(
+            "provider successor has no committed transition",
+        ));
     }
     Ok(())
 }

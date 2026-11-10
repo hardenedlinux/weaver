@@ -111,8 +111,9 @@ fn single_provider_activation_requires_the_exact_committed_cut() {
     let bound = weaver_governance::SourceExpectation::capture(&original)
         .bind(original.clone())
         .expect("bound original");
-    let prepared = crate::single_provider::Prepared::new(&Default::default(), authority(), bound)
-        .expect("prepared");
+    let prepared =
+        crate::single_provider::Prepared::new(&Default::default(), authority(), bound, None)
+            .expect("prepared");
     let receipt = PublicationReceipt {
         operation_id: publication.operation_id.clone(),
         digest: publication.digest().expect("publication"),

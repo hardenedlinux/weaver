@@ -41,10 +41,9 @@ func TestContentionPairs(t *testing.T) {
 	var output bytes.Buffer
 	fmt.Fprintf(&output, "weaver-contention-image sha256=%s profile=release\n", digest)
 	output.Write(data)
-	evidence, err := devrunner.ReadContentionEvidence(&output)
-	if err != nil {
+	t.Logf("weaver-contention-image sha256=%s profile=release", digest)
+	t.Log(string(data))
+	if _, err := devrunner.ReadContentionEvidence(&output); err != nil {
 		t.Fatal(err)
 	}
-	t.Logf("weaver-contention-image sha256=%s profile=release", evidence.ImageSHA256)
-	t.Log(string(data))
 }

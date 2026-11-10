@@ -5,7 +5,7 @@
 ;;; Fixed linked ABI. The approved application is an explicit build graph root.
 ;;; No application, Governor, Profile, module path or Policy is selected by RPC.
 (import :std/ffi
-        (only-in :clan/poo/object .get)
+        (only-in :clan/poo/object .get .o)
         :gerbil-scheme-rust/scheme/runtime
         (only-in "./func.ss" governor-ready-steps make-retained-governor gateway-source-cancelled?)
         (only-in "./program.ss" make-gateway-program hard-fact-affected)
@@ -38,7 +38,16 @@
 (def (derive-request value)
   (with-catch (lambda (_) #f)
     (lambda ()
-      (source-data->scheme-value (derive-governor (scheme-value->source-data value))))))
+      (let (packed (table-ref value 'packed_facts #f))
+        (source-data->scheme-value
+          (if packed
+            (begin
+              (unless (and retained-governor? (= (table-length value) 3))
+                (error "Packed Governor cut requires a retained binding"))
+              (derive-governor (.o topology_binding: (table-ref value 'topology_binding)
+                                  indexed_result: (table-ref value 'indexed_result))
+                               packed))
+            (derive-governor (scheme-value->source-data value))))))))
 (def (fact-impact-request value)
   (with-catch (lambda (_) #f)
     (lambda ()

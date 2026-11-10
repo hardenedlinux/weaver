@@ -58,7 +58,8 @@ impl RuntimeOwner {
         derive: impl FnMut(
             &mut C,
             &weaver_governance::Derivation,
-        ) -> std::result::Result<Vec<String>, SourceError>
+        )
+            -> std::result::Result<weaver_governance::DerivationOutput, SourceError>
         + Send
         + 'static,
     ) -> Result<GovernanceWorker> {

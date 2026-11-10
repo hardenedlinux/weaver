@@ -308,14 +308,14 @@ fn check_workflow_rechecks_prepared_floor(nested: bool) {
     let stale = ledger
         .prepare_provider_progression(&predecessor, &successor)
         .expect("first frontier");
-    project(
+    let b = project(
         &mut ledger,
         &FactIntent {
             operation_id: "second-fact".into(),
             revision: 2,
             previous_snapshot: a.snapshot,
             expected_floor: a.floor,
-            ..intent
+            ..intent.clone()
         },
     );
     assert!(
@@ -334,14 +334,14 @@ fn check_workflow_rechecks_prepared_floor(nested: bool) {
             ..predecessor.clone()
         })
         .collect();
+    let cut = ledger.observe_workflow(&plans).expect("frontier");
+    assert_eq!(cut.available, nodes);
+    assert_eq!(cut.complete, ["infer"]);
+    assert_eq!(cut.pending, nodes[1..]);
     if nested {
-        let cut = ledger
-            .observe_workflow(&plans)
-            .expect("frontier")
-            .nested
-            .expect("nested graph");
-        assert!(cut.decisions.is_empty());
-        assert!(!cut.predecessors.contains_key("join"));
+        let graph = cut.nested.expect("nested graph");
+        assert!(graph.decisions.is_empty());
+        assert!(!graph.predecessors.contains_key("join"));
     }
     let current = ledger
         .prepare_provider_progression(&predecessor, &successor)
@@ -361,7 +361,69 @@ fn check_workflow_rechecks_prepared_floor(nested: bool) {
         .enqueue_provider_progression(&successor, "", None, Some(&replay))
         .expect("exact replay");
     assert_eq!(ledger.held("f").expect("one successor hold"), 8);
-    if nested {
+    if !nested {
+        let permit = ledger
+            .consume_provider("f", "second", &BTreeSet::from(["primary".into()]))
+            .expect("consume successor");
+        ledger
+            .dispatch_provider(&permit, || Ok(()))
+            .expect("dispatch successor");
+        let release = ledger
+            .prepare_provider_release(&permit, "response", "protobuf", 1)
+            .expect("prepare successor response");
+        ledger
+            .release_provider(&permit, release, "protobuf", |_| Ok(()))
+            .expect("release successor response");
+        ledger
+            .complete_provider_with_result(&permit, "protobuf", None, None)
+            .expect("complete successor");
+        assert_eq!(
+            ledger.observe_workflow(&plans).expect("frontier").complete,
+            ["infer", "second"]
+        );
+        let mut storage =
+            weaver_ledger::persistence::Session::open(&path).expect("fault injection");
+        weaver_ledger::persistence::exec(
+            &storage,
+            "INSERT INTO metering_deployment(singleton,record) VALUES(1,'{}')",
+            (),
+        )
+        .expect("change metering deployment after a completed observation");
+        assert!(
+            ledger.observe_workflow(&plans).is_err(),
+            "a new frontier transaction must read the current deployment"
+        );
+        weaver_ledger::persistence::exec(&storage, "DELETE FROM metering_deployment", ())
+            .expect("restore deployment");
+        assert_eq!(
+            ledger
+                .observe_workflow(&plans)
+                .expect("restored frontier")
+                .complete,
+            ["infer", "second"]
+        );
+        let fault = weaver_ledger::persistence::begin(&mut storage).expect("open WAL writer");
+        weaver_ledger::persistence::exec(
+            &fault,
+            "DELETE FROM provider_workflow_transitions WHERE successor=?1",
+            ["second"],
+        )
+        .expect("remove successor transition");
+        assert_eq!(
+            ledger
+                .observe_workflow(&plans)
+                .expect("committed frontier")
+                .complete,
+            ["infer", "second"]
+        );
+        fault.commit().expect("commit missing transition");
+        assert!(matches!(
+            ledger.observe_workflow(&plans),
+            Err(weaver_contracts::Error::Conflict(
+                "provider successor has no committed transition"
+            ))
+        ));
+    } else {
         ledger.close().expect("close");
         let mut ledger = Ledger::open(&path).expect("reopen");
         let cut = ledger
@@ -378,5 +440,39 @@ fn check_workflow_rechecks_prepared_floor(nested: bool) {
         );
         assert!(!cut.predecessors.contains_key("join"));
         assert_eq!(ledger.held("f").expect("preserved winner hold"), 8);
+        ledger
+            .with_authenticated_source(&caller, |ledger| {
+                let barrier = ledger.stage_fact_intent(&FactIntent {
+                    operation_id: "withdraw-after-reopen".into(),
+                    revision: 3,
+                    previous_snapshot: b.snapshot,
+                    expected_floor: b.floor,
+                    available: false,
+                    ..intent
+                })?;
+                let pending = ledger.observe_workflow(&plans)?;
+                assert!(pending.available.is_empty());
+                assert_eq!(pending.complete, ["infer"]);
+                let FactPreparation::Pending(work) = ledger.prepare_fact_projection(&barrier)?
+                else {
+                    panic!("expected pending withdrawal");
+                };
+                ledger.resolve_fact_projection(&work, affected.clone())?;
+                let withdrawn = ledger.observe_workflow(&plans)?;
+                assert!(withdrawn.available.is_empty());
+                assert_eq!(withdrawn.complete, ["infer"]);
+                assert_eq!(withdrawn.pending, nodes[1..]);
+                Ok(())
+            })
+            .expect("withdrawal fences batched frontier after reopen");
+        let storage = weaver_ledger::persistence::Session::open(&path).expect("fault injection");
+        weaver_ledger::persistence::exec(&storage, "DELETE FROM domain_history", ())
+            .expect("remove shared history");
+        assert!(matches!(
+            ledger.observe_workflow(&plans),
+            Err(weaver_contracts::Error::Conflict(
+                "original domain history missing or inconsistent"
+            ))
+        ));
     }
 }

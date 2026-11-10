@@ -36,8 +36,8 @@ func TestProviderControlGovernorPerformance(t *testing.T) {
 	cohort := os.Getenv("WEAVER_TEST_GOVERNOR_COHORT")
 	switch cohort {
 	case "":
-		t.Skip("select the preregistered aa, replay, or retained cohort")
-	case "aa", "replay", "retained":
+		t.Skip("select the preregistered aa, replay, retained, transport, indices, preopen, packed, or changed cohort")
+	case "aa", "replay", "retained", "transport", "indices", "preopen", "packed", "changed":
 	default:
 		t.Fatal("unknown Governor performance cohort", cohort)
 	}
@@ -53,7 +53,12 @@ func TestProviderControlGovernorPerformance(t *testing.T) {
 				t.Parallel()
 				trials[i] = governorTrial{
 					arm: arm, replay: cohort == "replay" && arm == "B",
-					retained: cohort == "retained" && arm == "B",
+					retained:       cohort == "changed" || cohort == "packed" || cohort == "preopen" || cohort == "indices" || cohort == "transport" || (cohort == "retained" && arm == "B"),
+					fullCut:        cohort == "transport" && arm == "A",
+					namedResult:    cohort == "indices" && arm == "A",
+					preopen:        cohort == "changed" || cohort == "packed" || (cohort == "preopen" && arm == "B"),
+					packedFacts:    cohort == "changed" || (cohort == "packed" && arm == "B"),
+					changedSources: cohort == "changed" && arm == "B",
 				}
 				runNestedSession(t, false, &trials[i])
 			})
@@ -208,6 +213,31 @@ func runNestedSession(t *testing.T, outerRight bool, trial *governorTrial) {
 			f.env = append(f.env, "WEAVER_TEST_GOVERNOR_RETAINED=1")
 		} else {
 			f.env = append(f.env, "WEAVER_TEST_GOVERNOR_RETAINED=0")
+		}
+		if trial.fullCut {
+			f.env = append(f.env, "WEAVER_TEST_GOVERNOR_FULL_CUT=1")
+		} else {
+			f.env = append(f.env, "WEAVER_TEST_GOVERNOR_FULL_CUT=0")
+		}
+		if trial.namedResult {
+			f.env = append(f.env, "WEAVER_TEST_GOVERNOR_NAMED_RESULT=1")
+		} else {
+			f.env = append(f.env, "WEAVER_TEST_GOVERNOR_NAMED_RESULT=0")
+		}
+		if trial.preopen {
+			f.env = append(f.env, "WEAVER_TEST_GOVERNOR_PREOPEN=1")
+		} else {
+			f.env = append(f.env, "WEAVER_TEST_GOVERNOR_PREOPEN=0")
+		}
+		if trial.changedSources {
+			f.env = append(f.env, "WEAVER_TEST_GOVERNOR_CHANGED_SOURCES=1")
+		} else {
+			f.env = append(f.env, "WEAVER_TEST_GOVERNOR_CHANGED_SOURCES=0")
+		}
+		if trial.packedFacts {
+			f.env = append(f.env, "WEAVER_TEST_GOVERNOR_PACKED_FACTS=1")
+		} else {
+			f.env = append(f.env, "WEAVER_TEST_GOVERNOR_PACKED_FACTS=0")
 		}
 	}
 	f.env = append(f.env, credentials,

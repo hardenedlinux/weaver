@@ -19,11 +19,16 @@ import (
 )
 
 type governorTrial struct {
-	arm          string
-	replay       bool
-	retained     bool
-	innerJoinCut string
-	outerJoinCut string
+	arm            string
+	replay         bool
+	retained       bool
+	fullCut        bool
+	namedResult    bool
+	preopen        bool
+	changedSources bool
+	packedFacts    bool
+	innerJoinCut   string
+	outerJoinCut   string
 }
 
 func (trial governorTrial) offerReplay(ctx context.Context, f *fixture, producer string) <-chan error {
@@ -76,6 +81,11 @@ func (trial *governorTrial) finish(t *testing.T, f *fixture, c *controlProcess) 
 	var modeObserved bool
 	var derivations int
 	var ownerDecisions int
+	var transports, resultModes, factModes, relationModes, roundtrips, resolutions int
+	var lastRoundtrip uint64
+	var reducedSources bool
+	var ascentMode string
+	var hasGovernorFFI bool
 	var innerJoinCut, outerJoinCut string
 	readyDigest := func(result string) string {
 		digest := sha256.Sum256([]byte(result))
@@ -119,11 +129,32 @@ func (trial *governorTrial) finish(t *testing.T, f *fixture, c *controlProcess) 
 		t.Logf("governor trial arm=%s replay=%t status=failed drain_ns=%d", trial.arm, trial.replay, drain.Nanoseconds())
 		return
 	}
+	preparing, prepared, preparedRules := false, false, false
 	for _, line := range lines {
 		if !strings.HasPrefix(line, "weaver-governor-") {
 			continue
 		}
 		fields := strings.Fields(line)
+		if fields[0] == "weaver-governor-preopen" {
+			switch {
+			case len(fields) == 2 && fields[1] == "begin" && trial.preopen && !preparing && !prepared && derivations == 0:
+				preparing = true
+			case len(fields) == 4 && fields[1] == "end" && fields[2] == "ok=true" && preparing && preparedRules:
+				preparing, prepared = false, true
+			default:
+				t.Fatal("invalid Governor preparation trace", line)
+			}
+			continue
+		}
+		if preparing {
+			if fields[0] == "weaver-governor-ascent" {
+				if preparedRules || len(fields) != 4 || fields[3] != "mode=open" {
+					t.Fatal("preparation did not open exactly one ASCENT session", line)
+				}
+				preparedRules = true
+			}
+			continue
+		}
 		switch fields[0] {
 		case "weaver-governor-mode":
 			if len(fields) != 2 || fields[1] != mode {
@@ -135,18 +166,103 @@ func (trial *governorTrial) finish(t *testing.T, f *fixture, c *controlProcess) 
 			if trial.retained {
 				// The scenario keeps its topology fixed while release facts change.
 				expected = "open"
-				if derivations > 0 {
+				if derivations > 0 || prepared {
 					expected = "replace"
 				}
+			}
+			if trial.changedSources && expected == "replace" && len(fields) == 4 && fields[3] == "mode=reuse" {
+				expected = "reuse"
 			}
 			if len(fields) != 4 || fields[3] != "mode="+expected {
 				t.Fatalf("Governor decision %d expected %s: %s", derivations+1, expected, line)
 			}
+			ascentMode = expected
 			derivations++
+		case "weaver-governor-relations":
+			if len(fields) != 2 || !strings.HasPrefix(fields[1], "count=") {
+				t.Fatal("invalid Governor source count", line)
+			}
+			count := parse(strings.TrimPrefix(fields[1], "count="))
+			if relationModes >= derivations || count > 7 ||
+				(!trial.changedSources && count != 7) ||
+				(ascentMode == "reuse" && count != 0) ||
+				(ascentMode != "reuse" && count == 0) {
+				t.Fatal("unexpected Governor source replacement", line)
+			}
+			reducedSources = reducedSources || count < 7
+			relationModes++
+		case "weaver-governor-roundtrip":
+			if len(fields) != 8 || roundtrips >= derivations {
+				t.Fatal("unmatched Governor roundtrip", line)
+			}
+			var sum uint64
+			for i, key := range []string{"capacity_ns=", "submit_ns=", "wait_ns=", "derive_ns=", "trace_ns=", "response_ns="} {
+				if !strings.HasPrefix(fields[i+1], key) {
+					t.Fatal("invalid Governor roundtrip phase", line)
+				}
+				sum += parse(strings.TrimPrefix(fields[i+1], key))
+			}
+			lastRoundtrip = parse(strings.TrimPrefix(fields[7], "total_ns="))
+			if sum != lastRoundtrip || lastRoundtrip == 0 {
+				t.Fatal("Governor roundtrip phases do not cover the call", line)
+			}
+			roundtrips++
+		case "weaver-governor-resolve":
+			if len(fields) != 5 || resolutions >= roundtrips {
+				t.Fatal("unmatched Governor resolution", line)
+			}
+			elapsed := parse(strings.TrimPrefix(fields[1], "elapsed_ns="))
+			prepare := parse(strings.TrimPrefix(fields[2], "prepare_ns="))
+			roundtrip := parse(strings.TrimPrefix(fields[3], "roundtrip_ns="))
+			validate := parse(strings.TrimPrefix(fields[4], "validate_ns="))
+			if elapsed != prepare+roundtrip+validate || roundtrip < lastRoundtrip {
+				t.Fatal("Governor resolution phases do not cover the call", line)
+			}
+			resolutions++
+		case "weaver-governor-transport":
+			expected := "full"
+			if trial.retained && !trial.fullCut {
+				expected = "compact"
+				if transports == 0 && !prepared {
+					expected = "bind"
+				}
+			}
+			if len(fields) != 2 || fields[1] != "mode="+expected {
+				t.Fatalf("Governor transport %d expected %s: %s", transports+1, expected, line)
+			}
+			transports++
+		case "weaver-governor-result":
+			expected := "named"
+			if trial.retained && !trial.fullCut && !trial.namedResult {
+				expected = "indexed"
+			}
+			if len(fields) != 2 || fields[1] != "mode="+expected {
+				t.Fatalf("Governor result %d expected %s: %s", resultModes+1, expected, line)
+			}
+			resultModes++
+		case "weaver-governor-facts":
+			expected := "named"
+			if trial.packedFacts && (prepared || factModes > 0) {
+				expected = "packed"
+			}
+			if len(fields) != 2 || fields[1] != "mode="+expected {
+				t.Fatalf("Governor facts %d expected %s: %s", factModes+1, expected, line)
+			}
+			factModes++
+		case "weaver-governor-ffi":
+			if hasGovernorFFI || len(fields) != 4 {
+				t.Fatal("unmatched Governor FFI observation", line)
+			}
+			hasGovernorFFI = true
 		case "weaver-governor-owner":
 			if len(fields) != 6 || fields[3] != "ok=true" {
 				t.Fatal("invalid or failed Governor owner decision", line)
 			}
+			// Fact impact uses the same owner but does not enter Governor FFI.
+			if !hasGovernorFFI {
+				continue
+			}
+			hasGovernorFFI = false
 			ownerDecisions++
 			cut := readDigest(fields[4], "cut_sha256=")
 			ready := readDigest(fields[5], "ready_sha256=")
@@ -171,30 +287,31 @@ func (trial *governorTrial) finish(t *testing.T, f *fixture, c *controlProcess) 
 			}
 			at := parse(fields[2])
 			if at == 0 {
-				t.Fatal("zero native compile timestamp", line)
+				t.Fatal("zero Scheme compile timestamp", line)
 			}
 			switch fields[1] {
 			case "begin":
 				if begin != 0 {
-					t.Fatal("duplicate native compile entry", line)
+					t.Fatal("duplicate Scheme compile entry", line)
 				}
 				begin = at
 			case "end":
 				if end != 0 {
-					t.Fatal("duplicate native compile exit", line)
+					t.Fatal("duplicate Scheme compile exit", line)
 				}
 				end = at
 			default:
-				t.Fatal("unknown native compile boundary", line)
+				t.Fatal("unknown Scheme compile boundary", line)
 			}
 		}
 	}
 	if !modeObserved {
 		t.Fatal("missing Scheme Governor mode observation")
 	}
-	if derivations < 2 || ownerDecisions != derivations || innerJoinCut == "" || outerJoinCut == "" {
+	if preparing || prepared != trial.preopen || hasGovernorFFI || derivations < 2 || ownerDecisions != derivations || transports != derivations || resultModes != derivations || factModes != derivations || relationModes != derivations || roundtrips < 2 || resolutions < 2 || resolutions > roundtrips || roundtrips > derivations || (trial.changedSources && !reducedSources) || innerJoinCut == "" || outerJoinCut == "" {
 		t.Fatalf("incomplete Governor decision trace: ASCENT=%d owner=%d inner cut=%q outer cut=%q", derivations, ownerDecisions, innerJoinCut, outerJoinCut)
 	}
+	t.Logf("governor observations derived=%d replied=%d resolved=%d", derivations, roundtrips, resolutions)
 	a, b := commits["release/fork-a"], commits["release/fork-b"]
 	innerRelease, innerReserve := commits["release/inner-finish"], commits["reserve/inner-finish"]
 	outer := commits["reserve/finish"]
@@ -204,7 +321,7 @@ func (trial *governorTrial) finish(t *testing.T, f *fixture, c *controlProcess) 
 	}
 	overlap := a.wall < begin && begin < b.wall && b.wall < end
 	if begin == 0 || end <= begin || end >= a.wall {
-		t.Fatalf("unexpected native compile entry: replay=%t fork-a=%d begin=%d fork-b=%d end=%d", trial.replay, a.wall, begin, b.wall, end)
+		t.Fatalf("unexpected Scheme compile entry: replay=%t fork-a=%d begin=%d fork-b=%d end=%d", trial.replay, a.wall, begin, b.wall, end)
 	}
 	trial.innerJoinCut = innerJoinCut
 	trial.outerJoinCut = outerJoinCut

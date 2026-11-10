@@ -9,6 +9,7 @@ go 1.25.0
 require (
 	github.com/Open-MBEE/OpenSysML v0.10.1
 	github.com/apache/arrow-go/v18 v18.4.1
+	golang.org/x/sys v0.45.0
 	google.golang.org/grpc v1.75.0
 	google.golang.org/protobuf v1.36.11
 	gopkg.in/yaml.v3 v3.0.1
@@ -26,7 +27,6 @@ require (
 	golang.org/x/mod v0.35.0 // indirect
 	golang.org/x/net v0.53.0 // indirect
 	golang.org/x/sync v0.20.0 // indirect
-	golang.org/x/sys v0.45.0 // indirect
 	golang.org/x/telemetry v0.0.0-20260409153401-be6f6cb8b1fa // indirect
 	golang.org/x/text v0.37.0 // indirect
 	golang.org/x/tools v0.44.0 // indirect

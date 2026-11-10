@@ -63,7 +63,9 @@ func ReadHeaderSealEvidence(input io.Reader, cpus int) (*HeaderSealEvidence, err
 				return nil, fmt.Errorf("invalid header-seal coordinates/exposure at %d", n)
 			}
 			timing := row.Timings
-			if timing.ProviderRequest.Attempts != 1 || timing.ProviderQueue.Attempts != 3 || timing.Commit.Attempts == 0 || timing.Rollback.Attempts != 0 || timing.ProviderRequest.Nanos == 0 || timing.TransactionHold.Nanos < timing.ProviderRequest.Nanos || row.Wall < timing.TransactionHold.Nanos {
+			// One snapshot stages the first frame under the writer. The
+			// remaining frames use their committed delivery receipts.
+			if timing.ProviderRequest.Attempts != 1 || timing.ProviderQueue.Attempts != 1 || timing.Commit.Attempts == 0 || timing.Rollback.Attempts != 0 || timing.ProviderRequest.Nanos == 0 || timing.TransactionHold.Nanos < timing.ProviderRequest.Nanos || row.Wall < timing.TransactionHold.Nanos {
 				return nil, fmt.Errorf("invalid header-seal timing scope")
 			}
 			result.Samples = append(result.Samples, row)

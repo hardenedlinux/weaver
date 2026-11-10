@@ -3,12 +3,17 @@
 // SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 //! One startup preparation, exact durable activation, and natural compiler retirement.
-use crate::{grpc::Gateway, grpc_contracts::status, pb, source_owner::SourceOwner};
-use std::sync::OnceLock;
-use tokio::sync::Mutex;
+use crate::{
+    grpc::Gateway, grpc_contracts::status, pb, session_workflow::SessionTopology,
+    source_owner::SourceOwner,
+};
+use std::sync::{Arc, OnceLock};
+use tokio::sync::{Mutex, OnceCell};
 use tokio_util::sync::CancellationToken;
 use tonic::Status;
-use weaver_contracts::{PublicationOutcome, PublicationReceipt, SourceAuthority, SourceIdentity};
+use weaver_contracts::{
+    FactFeed, PublicationOutcome, PublicationReceipt, SourceAuthority, SourceIdentity,
+};
 use weaver_governance::{BoundSource, OwnedSource};
 
 #[derive(Default)]
@@ -18,6 +23,7 @@ pub(crate) struct SingleProvider {
     retire: CancellationToken,
     retired: CancellationToken,
     live: CancellationToken,
+    preopened: OnceCell<()>,
 }
 
 pub(crate) struct Prepared {
@@ -25,6 +31,7 @@ pub(crate) struct Prepared {
     pub(crate) authority: SourceAuthority,
     wire_authority: Option<pb::SourceAuthorityView>,
     bound: BoundSource,
+    session: Option<Arc<SessionTopology>>,
     operation_id: String,
     digest: String,
     revision: u64,
@@ -36,6 +43,7 @@ impl Prepared {
         reply: &pb::CompiledSource,
         authority: SourceAuthority,
         bound: BoundSource,
+        feed: Option<&FactFeed>,
     ) -> weaver_contracts::Result<Self> {
         let publication = bound.source().publication();
         let revision = match publication.expected_revision {
@@ -48,6 +56,10 @@ impl Prepared {
             None => 0,
         };
         let digest = publication.digest()?;
+        let session = feed
+            .filter(|feed| !feed.workflow_path.is_empty())
+            .map(|feed| SessionTopology::prepare(feed, bound.source().plans()).map(Arc::new))
+            .transpose()?;
         Ok(Self {
             producer: reply.producer.clone(),
             wire_authority: reply.authority.clone(),
@@ -57,11 +69,16 @@ impl Prepared {
             fence: publication.fence,
             authority,
             bound,
+            session,
         })
     }
 
     pub(crate) fn source(&self) -> &OwnedSource {
         self.bound.source()
+    }
+
+    pub(crate) fn session(&self) -> Option<&Arc<SessionTopology>> {
+        self.session.as_ref()
     }
 
     pub(crate) fn reply(&self) -> pb::CompiledSource {
@@ -126,10 +143,26 @@ impl Gateway {
         };
         if prepared.matches_commit(receipt)
             && prepared.authority.identity == caller
-            && prepared.authority == source.authority(caller).await?
+            && prepared.authority == source.authority(caller.clone()).await?
         {
-            if self.runtime.fact_feed().is_some() {
+            if let Some(feed) = self.runtime.fact_feed() {
                 if let Some(lifecycle) = self.runtime.single_provider() {
+                    if feed.workflow_dag
+                        && governor_preopen_enabled()
+                        && let Some(topology) = prepared.session()
+                    {
+                        lifecycle
+                            .preopened
+                            .get_or_init(|| async {
+                                if let Ok(governor) = self.runtime.governor() {
+                                    topology.preopen(&governor).await;
+                                }
+                            })
+                            .await;
+                        if prepared.authority != source.authority(caller).await? {
+                            return Ok(());
+                        }
+                    }
                     lifecycle.activate_governor();
                     self.runtime.wake_session();
                 }
@@ -142,4 +175,11 @@ impl Gateway {
         }
         Ok(())
     }
+}
+
+fn governor_preopen_enabled() -> bool {
+    std::env::var("WEAVER_TEST_GOVERNOR_PREOPEN").as_deref() == Ok("1")
+        && std::env::var("WEAVER_TEST_GOVERNOR_RETAINED").as_deref() == Ok("1")
+        && std::env::var("WEAVER_TEST_GOVERNOR_FULL_CUT").as_deref() != Ok("1")
+        && std::env::var("WEAVER_TEST_GOVERNOR_NAMED_RESULT").as_deref() != Ok("1")
 }

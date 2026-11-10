@@ -267,3 +267,167 @@ async fn review_context_uses_provisioned_metadata_and_does_not_publish() {
     runtime.drain().await;
     worker.finish().await.expect("natural drain");
 }
+
+#[tokio::test]
+async fn bounded_catalog_wait_releases_cancelled_waiter_and_preserves_active_slot() {
+    use std::{future::Future, task::Poll};
+    let (sender, _receiver) = tokio::sync::mpsc::channel(1);
+    let source = SourceOwner {
+        sender,
+        capacity: Arc::new(Semaphore::new(1)),
+        waiting: Arc::new(Semaphore::new(3)),
+        next_mutation: Arc::new(super::MutationHandoff::default()),
+    };
+    let held = source.command_slot(false).await.expect("active slot");
+    let mut first = Box::pin(source.command_slot(true));
+    let mut second = Box::pin(source.command_slot(true));
+    let mut third = Box::pin(source.command_slot(true));
+    std::future::poll_fn(|cx| {
+        assert!(first.as_mut().poll(cx).is_pending());
+        assert!(second.as_mut().poll(cx).is_pending());
+        assert!(third.as_mut().poll(cx).is_pending());
+        Poll::Ready(())
+    })
+    .await;
+    let full = source.command_slot(true).await.expect_err("wait bound");
+    assert_eq!(full.message(), "source command wait limit");
+    drop(first);
+    assert_eq!(source.waiting.available_permits(), 1);
+    assert_eq!(source.capacity.available_permits(), 0);
+    assert_eq!(
+        source
+            .command_slot(false)
+            .await
+            .expect_err("write remains bounded")
+            .message(),
+        "source command lane full"
+    );
+    drop(held);
+    let next = second.await.expect("oldest remaining waiter");
+    assert_eq!(source.capacity.available_permits(), 0);
+    drop(next);
+    drop(third.await.expect("last waiter"));
+    assert_eq!(source.waiting.available_permits(), 3);
+    assert_eq!(source.capacity.available_permits(), 1);
+}
+
+#[tokio::test]
+async fn cancelled_priority_wait_does_not_send_a_source_command() {
+    use std::{future::Future, task::Poll};
+    let (sender, mut receiver) = tokio::sync::mpsc::channel(1);
+    let source = SourceOwner {
+        sender,
+        capacity: Arc::new(Semaphore::new(1)),
+        waiting: Arc::new(Semaphore::new(3)),
+        next_mutation: Arc::new(super::MutationHandoff::default()),
+    };
+    let held = source.command_slot(false).await.expect("active slot");
+    let mut command = Box::pin(source.publish(caller(), change("cancel", None)));
+    std::future::poll_fn(|cx| {
+        assert!(command.as_mut().poll(cx).is_pending());
+        Poll::Ready(())
+    })
+    .await;
+    assert!(source.next_mutation.pending());
+    assert_eq!(
+        source
+            .priority_slot()
+            .await
+            .expect_err("one priority waiter")
+            .message(),
+        "source mutation wait limit"
+    );
+    drop(command);
+    assert!(!source.next_mutation.pending());
+    assert!(matches!(
+        receiver.try_recv(),
+        Err(tokio::sync::mpsc::error::TryRecvError::Empty)
+    ));
+    assert_eq!(source.capacity.available_permits(), 0);
+    assert_eq!(
+        source
+            .priority_slot()
+            .await
+            .expect_err("bounded wait")
+            .message(),
+        "source command wait expired"
+    );
+    assert!(!source.next_mutation.pending());
+    drop(held);
+    drop(source.priority_slot().await.expect("reservation returned"));
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+async fn source_rotation_commits_before_queued_catalog_reads_recheck_identity() {
+    use std::{future::Future, task::Poll};
+    let directory = tempfile::tempdir().expect("store");
+    let runtime = RuntimeOwner::new();
+    let path = directory.path().join("source.db");
+    let mut setup = Ledger::open(&path).expect("source enrollment store");
+    setup
+        .with_authenticated_source(&caller(), |_| Ok(()))
+        .expect("enroll first source");
+    setup.close().expect("finish enrollment");
+    let worker = SourceOwner::start(runtime.clone(), slot(), path)
+        .await
+        .expect("owner");
+    let source = worker.client.clone();
+    let mut current = caller();
+    for epoch in 0..3 {
+        let next = weaver_contracts::SourceIdentity {
+            certificate_sha256: weaver_contracts::body_digest(&format!("rotation-leaf-{epoch}")),
+            public_key_sha256: weaver_contracts::body_digest(&format!("rotation-key-{epoch}")),
+            credential_sha256: weaver_contracts::body_digest(&format!("rotation-token-{epoch}")),
+        };
+        let held = source.command_slot(false).await.expect("active slot");
+        let mut reads =
+            std::array::from_fn::<_, 3, _>(|_| Box::pin(source.provider_catalog(current.clone())));
+        let mut rotation = Box::pin(source.rotate(
+            current.clone(),
+            weaver_contracts::SourceRotation {
+                operation_id: format!("rotate-catalog-{epoch}"),
+                expected_epoch: epoch,
+                next: next.clone(),
+            },
+        ));
+        std::future::poll_fn(|cx| {
+            for read in &mut reads {
+                assert!(read.as_mut().poll(cx).is_pending());
+            }
+            assert!(rotation.as_mut().poll(cx).is_pending());
+            Poll::Ready(())
+        })
+        .await;
+        drop(held);
+        std::future::poll_fn(|cx| {
+            for read in &mut reads {
+                assert!(read.as_mut().poll(cx).is_pending());
+            }
+            Poll::Ready(())
+        })
+        .await;
+        let receipt = rotation.await.expect("rotation commit");
+        assert_eq!(
+            receipt.outcome,
+            weaver_contracts::SourceRotationOutcome::Committed
+        );
+        let [a, b, c] = reads;
+        let (a, b, c) = tokio::join!(a, b, c);
+        for read in [a, b, c] {
+            assert_eq!(
+                read.expect_err("retired identity cannot read").code(),
+                tonic::Code::PermissionDenied
+            );
+        }
+        assert!(
+            source
+                .provider_catalog(next.clone())
+                .await
+                .expect("new identity")
+                .is_none()
+        );
+        current = next;
+    }
+    runtime.drain().await;
+    worker.finish().await.expect("natural source drain");
+}

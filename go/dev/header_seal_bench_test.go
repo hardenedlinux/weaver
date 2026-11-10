@@ -56,9 +56,9 @@ func TestHeaderSealPairs(t *testing.T) {
 
 	fmt.Fprintf(&output, "weaver-header-seal-image sha256=%s profile=release\n", digest)
 	output.Write(data)
+	t.Logf("weaver-header-seal-image sha256=%s profile=release", digest)
+	t.Log(string(data))
 	if _, err := devrunner.ReadHeaderSealEvidence(&output, runtime.NumCPU()); err != nil {
 		t.Fatal(err)
 	}
-	t.Logf("weaver-header-seal-image sha256=%s profile=release", digest)
-	t.Log(string(data))
 }

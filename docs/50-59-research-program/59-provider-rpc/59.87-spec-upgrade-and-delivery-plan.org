@@ -6,12 +6,2218 @@
 #+LANGUAGE: en
 #+OPTIONS: toc:2
 
-* Active priority
+* Runtime checkpoint for architecture review
 
-Deliver the Rust, Go and Cedar execution path first. Scheme reader/bootstrap and
-prepared-scope optimization is being handled by its upstream owner; consume that
-work only after it is ready. Keep current Scheme interfaces and dependency pins.
-See the current Rust/Go/Cedar delivery section below for this implementation.
+This checkpoint submits the current Runtime improvements for review. It does
+not qualify the submillisecond target or promote retained execution defaults.
+Scheme/POO and ASCENT retain planning and inference; Rust retains deciding
+authority, exact source/currentness checks, reservation and final effects.
+
+The prepared nested candidate reduced the fixed four-worker owner's P99 from
+3.787--4.132 ms to 3.419--3.605 ms. The original target remains below 1 ms.
+GC attribution and the topology-bound program specialization are recorded
+below, alongside unfavorable controls and the unchanged eight-cell Gateway
+gates. The module-native replacement property, source-budget rejection,
+26 governance library tests, SysML checks and sequential restart/withdrawal/
+cancellation controls passed. Both four-way source readiness waves failed
+before Governor derivation under the unchanged CompileSource deadline.
+
+Further performance work is deferred for architecture review. Existing
+10-second CompileSource, 12-second recovery and 15-second drain limits remain.
+Local qualification does not establish exact-head GitHub CI or production
+approval. Generated execution evidence remains outside versioned source.
+
+Submission checks on the staged snapshot passed the controlplane race tests,
+focused devrunner evidence/source-integrity controls and the architecture/
+requirement-trace checks. The complete devrunner race invocation exceeded its
+90-second submission-check limit; it is not counted as a full-suite pass.
+
+* Runtime delivery plan
+
+** Execution from a published plan
+
+Prepare the immutable execution inputs at publication. Scheme and POO
+own the declarative plan, source and profile projection, and ASCENT
+owns derivation over Workflow topology and facts. Rust owns the
+validated execution representation, transaction scheduling, Cedar
+evaluation and effects. Publish owned Rust data through the current
+typed boundary, keyed by the exact catalog version, source revision
+and fence, reviewed Policy digest, profile digest and plan commitment.
+Use the existing Go static and dynamic projections as ingress bindings.
+
+Today the broker has separate enqueue, consume and dispatch steps.
+Consume loads and decodes the queued plan and then selects a route,
+checks its authority and proves the original claim. The first runtime
+candidate carries an immutable plan and commitment across the existing
+enqueue-to-consume handoff. Reuse the exact encoding already produced
+by enqueue. Consume checks both the queued digest and the stored bytes
+inside its transaction, then joins current authority. The stable plan
+digest excludes the observation revision and fence, so test a byte
+mismatch with the same digest. A miss or restart uses the existing
+durable decode path. Prepare and reuse parsed Policy and
+immutable Cedar inputs with exact publication identity. Invoke Cedar
+with live facts for each effect. Keep the current authority checks,
+claim, shared exposure, revocation barrier, affine send and unknown
+outcome handling in their deciding scopes.
+
+For Workflow, retain the topology and rule program in the existing
+Governor owner. A wake applies the changed facts from the durable cut
+and returns ready node identities with that cut. Rust joins the
+identities to prepared plans and rechecks the frontier, claim and
+reservation together. The retained owner can be reconstructed after
+restart from the durable frontier. Measure complete-cut transfer before
+replacing it with deltas, then compare identical cuts and ready sets
+with the fresh path. Use the existing owner for that comparison.
+
+Qualify local execution phases and upstream elapsed time separately.
+Use the existing ready-frame envelope in =ProviderEgressReadyBudget=
+for local egress, and keep request-to-first-frame, throughput and the
+registered eight-case limits for the complete path. Test the first
+candidate with exact-source and stale-fence controls, duplicate claim,
+withdrawal, unknown outcome, restart and bounded backpressure before
+expanding the optimization to dispatch or release. Keep cold package
+build and CompileSource measurements in the lifecycle record.
+
+** Measurement and current evidence
+
+Qualify steady-state execution on published objects. Reuse the maintained
+=bench-execution= entries for direct Rust versus Go, admission overlap and
+streaming. Record the optimized image, source state, four-worker workload,
+host observations and complete receipts. Prepare the store, publish sources
+and establish channels before timing requests. Keep CompileSource, recovery
+and natural exit as separate lifecycle gates at 10, 12 and 15 seconds.
+
+Record request-to-first-frame, inter-frame and complete-stream latency
+separately from the Rust queue-to-client interval. Compare shared and
+independent domains and measure immediate and paced SSE separately before
+changing batching. Attribute Rust admission and release to queueing, lock
+wait, transaction hold and output backpressure. Compare Go's ordinary route
+with the dynamic catalog path, including versioned catalog decode, selection
+and task registration. Reuse immutable projections under exact identity and
+retain fresh current-authority checks at the deciding transaction.
+
+The execution evidence reader records the current transaction timing fields.
+WAL reports no MVCC scheduler grants. In MVCC, a provider transaction
+records a domain grant and a publication transaction records a global
+grant. Each deciding transaction retains its separate authority span.
+The header-delay comparison requires all three released events and one
+guarded first-frame callback for the committed response snapshot. The
+scheduled encoding report counts delivery revalidation scopes and emits
+their latency percentiles only when the run observes such scopes.
+
+Qualify Workflow separately on matched complete-release, hard-fact and DAG
+inputs. Partition frontier observation, owner wait, rooted FFI, ASCENT
+preparation and evaluation, and durable claim/reservation. Retained state
+must preserve withdrawal, inactive-branch isolation and the one-time join.
+Use the existing owner and compare mailbox costs on the actual workload
+before changing its architecture.
+
+The local release diagnostic uses Weaver's linked provider program and the
+existing nested Workflow entry. Run one four-owner A/A wave and one ABBA
+fresh/retained wave, with the same Rust image and matched Governor cut and
+ready-set digests at both joins. The owner trace distinguishes a Governor
+FFI decision from hard-fact impact work on the same mailbox. Report the
+first retained open separately from subsequent replacements. The local
+retained comparison removes repeated rule construction at the measured
+joins. Its observed owner queue is small relative to rule setup, frontier
+observation and claim. Retain the existing mailbox and keep retained mode
+available for the formal site gate in 59.64. The local sample has two
+owners per treatment. Use it for phase attribution and run the original
+withdrawal, restart and inactive-branch controls with both derivation modes.
+
+The current linked release completed one fresh A/A wave and one
+fresh/retained ABBA wave with matching input and ready-set digests for
+both joins, including across the two waves. The retained owner paid
+the initial rule preparation on open and reused its session at the
+measured joins. The observed owner wait was measured in microseconds,
+while fresh rule preparation at the joins was measured in tens of
+milliseconds. Use the bounded sample for phase attribution and keep
+the same owner. On that same image, both derivation modes passed
+hard-fact withdrawal and restart through A→B→A, nested recovery and
+inactive-branch isolation, and source cancellation with owner drain.
+The deployment-site statistical gate remains separate.
+
+*** From Scheme decisions to Rust execution
+
+The local release timings distinguish rule preparation from a live decision.
+Fresh join rule setup took 74–77 ms. Retained joins took 0.61–0.79 ms in
+the rooted FFI call, which includes the ASCENT evaluation. Owner queue
+wait was 7–8 µs. On those joins the ledger frontier read took 4.60–5.61 ms
+and the claim transaction 2.10–2.93 ms. The first retained open still
+paid about 77.5 ms of setup. These timings describe Workflow joins on a
+bounded matched cohort. Provider request-to-first-frame is a different
+clock and includes upstream and transport work.
+
+Keep ordinary provider dispatch on the Rust projection path. The existing
+first-frame traces put some hundred-millisecond excursions in Rust
+enqueue or transaction preparation, with a large wall-time versus
+thread-CPU gap. Separate scheduler wait, ledger begin and hold, and
+provider transport for each ranked request. Move deterministic preparation
+to publication, then compare the same immutable projection through
+direct Rust and Go ingress. Keep live Cedar and durable admission in
+their current authority scopes. The ordinary dispatch and response-frame
+paths do not require a Workflow Governor round trip.
+
+*** Prepared Governor and Rust consumption
+
+The prepared-index release used the SDK revision pinned by Weaver and
+the same four-owner release image in its fresh/retained wave. Across
+the two owners per treatment and the two joins, fresh ASCENT setup
+took 75.7–79.1 ms. The retained joins spent 0.74–1.01 ms in the rooted
+call, 111–155 µs building the Scheme input, and 6–12 µs waiting for the
+owner. The first retained open spent 82–85 ms in setup. This is local
+phase attribution. The upper end of the retained call alone already
+exceeds the sub-millisecond computation target.
+
+Use =ArchitectureEvolution::DerivePreparedGovernorCandidates= for the
+next comparison. The existing single-provider =Prepared= object
+already holds the Rust node and predecessor indexes. Before the first
+live graph wake, prepare the matching Scheme topology and ASCENT
+program on the existing owner. Bind them to the exact activated
+publication and owner epoch. Keep the first-open cost in preparation
+and record it separately. On wake, pass one coherent mutable cut
+through the rooted ABI. The cut contains complete-release evidence,
+availability, pending nodes and structured selector results and
+decisions. Return candidate indices in the namespace of that
+publication. Rust checks the binding, resolves the indices against
+its prepared plans in compiled order and sends the candidates through
+the existing transactional admission path. Claim and reserve still
+depend on live authority and exact release, fact and frontier evidence.
+
+Compare the existing retained complete-cut call against the prepared
+topology and full mutable cut on the same release. Match the semantic
+cut, ready nodes and selected predecessors before comparing times.
+Time coherent cut to resolved Rust candidates as a single interval,
+including queue, marshalling, inference and resolution. Time release
+to observation and release to committed reservation separately.
+Record rejection of an old publication or owner binding alongside
+withdrawal, restart, A→B→A, duplicate wake and one-time join controls.
+Use a full current cut after rebind. Consider deltas only if this
+comparison attributes meaningful cost to transfer or relation
+replacement.
+
+The retained Scheme owner now projects the static node and selector
+topology once per distinct graph. Every wake replaces the full set of
+mutable relations. A changed graph or a failed derivation discards
+the projection and session together. The retained compact transport
+binds the topology from the activated Rust prepared object on its
+first graph wake. Subsequent calls on that owner carry the binding
+number and the complete mutable relations. The owner rejects a compact
+call whose binding is missing or stale. Compact results echo the binding
+and carry indices into the prepared Rust plans. Rust checks the binding
+and bounds before resolving them in compiled order. Full-cut mode
+retains named results. The opt-in activation preparation binds the
+topology and opens one retained session with an empty cut after
+matching the durable publication receipt. Source authority is checked
+again after the wait. The first live decision still consumes the
+complete current ledger cut. Separately,
+reduce the ledger observation and reservation cost using their own
+phase traces. The provider transport and frame release paths continue
+to use their existing latency and throughput gates.
+
+The linked release passed the four-owner WAL A/A and fresh/retained
+waves and the four-owner MVCC fresh/retained wave. Both join cuts and
+ready sets matched the previous release. Both modes passed withdrawal,
+A→B→A, nested restart, inactive-arm isolation and owner cancellation.
+The observed maxima for CompileSource, nested scenario recovery and
+wave drain were 8.79 s, 7.98 s and 1.55 s. Across the four retained
+WAL join observations, the rooted call took 1.09–1.96 ms and input
+construction took 201–281 µs. This release has no retained-without-
+projection-cache arm. The result qualifies behavior and leaves the
+sub-millisecond computation target open.
+
+The next WAL ABBA compared full and compact transport on one release,
+with ASCENT retained in both arms. Each arm contributed two owners and
+four matched join observations. FFI input construction median moved
+from 170.3 to 68.3 µs. Rooted call median moved from 0.713 to 0.630 ms.
+The two joins matched their semantic cut and candidate digests in
+both arms. This cohort does not establish a P99. The separate MVCC
+wave failed trace completeness when a shutdown write split an ASCENT
+record. Preserve that failed wave and rerun the release gates after
+the shutdown trace emits a complete record in one write.
+
+The repaired release passed all four-owner WAL and MVCC waves,
+both modes' lifecycle controls, and the linear, parallel DAG and
+conditional entries. All 16 instrumented trials retained complete
+shutdown records. The observed WAL lifecycle maxima were 7.02 s for
+CompileSource, 9.69 s for nested scenario recovery, and 1.20 s for
+natural drain. In the repaired WAL ABBA, input construction median
+moved from 126.9 to 69.7 µs and rooted call median moved from
+0.789 to 0.803 ms. The repeated evidence supports a reduction in
+input construction on the local workload. The compact arm's longest
+join sample was 1.051 ms across owner wait, input, rooted call and
+output, before Rust candidate resolution. Keep the local P99 target
+open and measure direct candidate indices separately.
+
+The next WAL ABBA held compact input transport and retained ASCENT
+constant and changed the result representation. Both joins matched
+the original cut and named candidate digests. Across four join
+observations per arm, observed-cut to resolved Rust steps median
+moved from 1.061 to 0.957 ms. The longest indexed sample took
+1.587 ms, including 1.354 ms in the rooted Scheme call and 7.5 µs
+in output conversion. The sample supports direct, checked plan
+indexing and leaves the sub-millisecond P99 target open.
+WAL, MVCC, recovery, withdrawal and the linked Scheme binding
+controls passed. The Rust package test reached its 180-second build
+limit before running. A separate rustc control ran the same bounds
+and binding validator in isolation. The later current-cut qualification ran
+the original package Governor filter successfully. Its binding/index
+negative control and owner capacity/shutdown control both passed. Preserve
+the earlier build timeouts.
+
+The next compact indexed comparison moved the first ASCENT open to
+verified activation. The two WAL control owners spent 80.68 and
+138.00 ms on their first live resolution. The two preopened owners
+spent 0.95 and 1.54 ms there, with 79.83 and 82.29 ms recorded
+separately for activation preparation. Both joins matched their
+cut and candidate digests in WAL and MVCC. The move isolates the
+first-open cost from live resolution. Keep the mode opt-in while
+the complete deployment gate remains open.
+
+The next compact comparison held activation preparation and indexed
+results constant. On the hot path, the candidate sends the complete
+seven-relation cut in one bounded bytevector using indices from the
+active binding. The first bind still carries the full topology. The
+named and packed arms matched the two join cuts and candidate
+digests in WAL and MVCC. In the four WAL join observations per arm,
+input construction median moved from 86.1 to 28.1 µs and cut-to-Rust
+resolution median from 0.980 to 0.871 ms. The longest packed sample
+took 1.772 ms, including 1.315 ms in the rooted Scheme call. Keep the
+packed mode opt-in and the sub-millisecond P99 target open. The
+retained ASCENT session accepts batches of changed source relations.
+Compare a complete cut against a change-only replacement within the
+same verified binding, including retractions, before choosing it.
+
+The following opt-in comparison uses the installed ASCENT session's
+batch replacement and clean-result APIs. Both arms receive the complete
+packed cut. The candidate compares all seven dynamic relations within
+the retained binding, replaces changed relations, and reuses a completed
+result for an identical input. The owner records its previous input only
+after successful completion and clears it on binding replacement or an
+exception. Effect admission still checks the current ledger.
+
+The four-owner WAL ABBA wave observed seven replacements per live
+baseline decision. Candidate decisions replaced zero to four relations.
+Two identical-input decisions reused the clean session. The two join
+digests matched in WAL and MVCC. A/A, fresh/retained, withdrawal,
+restart, A-to-B-to-A, owner cancellation, linear, parallel and conditional
+Workflow controls and the two SysML checks passed on the same release.
+The Scheme controls cover empty-relation retraction and duplicate cuts.
+
+In four WAL join observations per arm, complete-cut resolution median
+was 5.267 ms for full replacement and 3.977 ms for changed replacement.
+ASCENT run median was 1.415 and 1.189 ms. Maximum resolution was
+7.530 and 14.120 ms. The longest candidate observation included 6.657 ms
+of owner wait and 1.482 ms in the Scheme call. These small descriptive
+samples leave the sub-millisecond tail gate open. Keep changed
+replacement opt-in. Next attribute the remaining resolution time around
+owner submission, response delivery and Tokio resumption before
+choosing a scheduling change.
+
+The next release records continuous timestamps across capacity admission,
+submission, owner queue, derivation, owner diagnostics and reply resumption.
+Rust resolution also records preparation, the complete asynchronous call,
+and candidate validation. Each returned call must have exactly matching
+phase sums. Shutdown may cancel the final wake after owner derivation
+finishes. Record derived, replied and resolved counts separately and check
+the complete calls used by both admitted joins.
+
+The first local trace-count assertion incorrectly required these three
+counts to match at shutdown. Preserve that failed wave. The corrected
+four-owner A/A, fresh/retained and changed-source ABBA waves and MVCC
+wave passed against the same release image. The source lane's ten unit
+controls passed, including capacity, cancellation and terminal closure.
+Reuse the same-image withdrawal, restart, owner drain and Workflow
+controls with their origin and content digests.
+
+In four WAL join observations per arm, full replacement resolved in
+0.892 ms median and 1.107 ms maximum. Changed replacement resolved in
+0.791 ms median and 0.920 ms maximum. Its median owner queue was
+14.625 µs, owner derivation 664.438 µs, owner diagnostics 29.333 µs,
+and reply resumption 7.417 µs. Median input construction was 23.833 µs
+and the rooted Scheme call 594.042 µs. Individual phase medians describe
+different observations and must not be summed into an example call.
+
+The same candidate's frontier-read median was 1.979 ms and claim
+transaction median 2.567 ms. Prioritize attribution and optimization of
+those ledger operations while retaining the current source, receipt and
+claim checks. Keep the changed-source mode opt-in. Four observations per
+arm leave the P99 gate open.
+
+The next ledger candidate reads and decodes metering deployment once
+within each Workflow observation transaction. It loads the value after
+the first complete node proves its response release and also retains an
+absent deployment for that transaction. Each complete node still checks
+its own quota reservation and quote with the existing metering owner.
+The value is discarded with the observation. The deciding admission
+entry continues to read its deployment independently.
+
+The three focused Workflow ledger tests and both SysML checks passed.
+The complete ledger integration suite passed all 136 tests with four
+test threads in 20.27 seconds. Its first sandbox run passed 133 tests
+and denied the three real TCP tests permission to open sockets.
+Preserve that result alongside the full run with local network access.
+The new fault control changes deployment after a successful observation,
+requires the next observation to reject the damaged record, restores
+deployment and requires observation to succeed again. The candidate
+passed four-owner A/A and fresh/retained, both withdrawal and owner
+cancellation modes, and linear, DAG and conditional native controls.
+
+The packed WAL and MVCC cohorts failed the original ten-second
+CompileSource gate before reaching steady-state measurement. Module
+view preparation took about 7.0–7.5 seconds wall time and 4.4–4.7 seconds
+CPU time in the sampled owners. The twelve-core host's recorded
+one-minute load average rose from 7.22 before the baseline waves to
+31.07 afterwards. These observations leave attribution and full
+qualification open. Preserve the failed cohorts and the original
+budgets. Complete qualified runtime comparisons when source preparation
+can pass that gate. A metering latency claim also requires an isolated
+comparison against rereading deployment.
+
+The next admission candidate reuses the current hard-fact cut already
+read by its deciding transaction. Admission previously read that cut to
+classify a governed node, then progression preparation read and decoded
+the same feed again. Both preparation entries now read their own current
+cut and pass it into the private preparation routine. Admission compares
+the resulting complete progression with the retained proposal before
+reservation. Availability, source authority, released predecessor
+responses, current decisions, domain exposure, Policy and budget checks
+continue through their existing owners.
+
+The candidate release built and passed all 136 ledger integration tests
+with four test threads in 26.81 seconds, including the existing stale
+fact prefix, withdrawal, duplicate claim and restart controls. Both
+SysML checks passed. The first build exposed an ownership error from
+moving the cut in a Rust match guard. The corrected implementation
+performs preparation in the match arm and retains the same conflict
+result. Preserve the initial compiler diagnostic.
+
+During package qualification, the twelve-core host recorded one-minute
+load averages of 38.20 during the build and 19.09 after the ledger suite.
+At the subsequent native run its one-minute load was 6.85. The source
+diff, input digests and staged release hash matched the built candidate.
+
+That release passed WAL four-owner A/A, fresh/retained and packed
+changed-source ABBA, the four-owner MVCC wave, both modes of withdrawal,
+A-to-B-to-A, restart and owner cancellation, and linear, parallel and
+conditional Workflow controls. Both joins matched their reference cut
+and candidate digests. The recorded WAL CompileSource maximum was
+6.919 seconds, nested recovery maximum 10.338 seconds, and natural
+drain maximum 1.213 seconds, within the original 10/12/15-second gates.
+The two selected Rust Governor package tests also passed.
+
+The same-image changed-source arm resolved its four join observations
+in 0.917 ms median and 1.097 ms maximum. Full replacement was
+0.843 ms median and 1.187 ms maximum. Retain the changed-source
+opt-in and the open sub-millisecond tail gate. The candidate's
+frontier-read and claim-transaction medians were 1.938 and 2.450 ms.
+These observations qualify behavior and describe this release. They
+do not isolate the latency effect of metering reuse or the removed
+feed reread. A causal latency claim requires a same-image read-strategy
+comparison.
+
+1. Prepare the published Workflow once. Rust builds node-to-plan and
+   predecessor indexes with the compiled original and uses them after
+   exact publication activation. A Session wake borrows the prepared
+   plans for the ledger observation. It resolves returned candidate nodes
+   in compiled path order and copies only their plans and active
+   predecessors for admission. Bind the retained Scheme topology and
+   ASCENT program to the exact activated Workflow. Measure activation
+   and first open separately from steady-state wakes.
+2. Shorten the durable observation. The batched family transaction reads
+   availability and receipts for the requested node set together with the
+   existing fact cut and branch decisions. It checks each completed node's
+   release and metering evidence and reconciles shared exposure and history
+   once in that transaction. Preserve exact
+   plan commitments, the fact floor and snapshot, and coherent branch decisions.
+   Measure database reads and transaction time separately from the
+   Rust projection and FFI. The admission transaction remains the
+   deciding check for current releases, facts, winner, claim and reserve.
+3. Send changing relations to ASCENT once the observation is cheaper.
+   First compare a full set of mutable relations with the existing
+   complete-cut call. Introduce deltas only when measured transfer or
+   evaluation warrants them. A delta names its exact publication,
+   base and target cuts, including retractions. A stale base, owner
+   restart or publication change triggers a full coherent observation.
+   Compare selected arms and ready sets for equal cuts before comparing
+   timings. Reuse the existing mailbox and rooted ABI for this work.
+
+Keep the existing linked four-owner Workflow entry for the comparison.
+Use one optimized image, a fixed nested Workflow and the same
+release/fact sequence. Require matching cut and ready-set identities,
+one-time joins and claims, no inactive-arm effects, and the original
+withdrawal, restart and A→B→A controls. Report release-to-ready and
+release-to-durable-claim separately. Evaluate sub-millisecond P99
+for the prepared local computation from an already observed cut to
+Rust candidate resolution. The ledger observation, durable claim and
+complete provider path each get their own measurements. The existing
+ready-frame and provider acceptance budgets still apply to their
+respective clocks.
+
+The first frontier batch kept both retained join cut and ready-set digests
+equal to the archived linked Workflow reference. Four retained join frontier
+observations ranged from 3.88 to 4.72 ms in the candidate, versus 4.60 to
+5.61 ms in the archive. These are separate release images. Use them to
+verify the observed sets and guide a same-image latency comparison.
+The candidate passed the four-owner A/A and fresh/retained waves, both
+derivation modes for withdrawal and A→B→A, nested recovery, inactive-arm
+isolation and owner drain, and both SysML checks. The measured maxima for
+CompileSource, nested scenario recovery and wave drain were 9.73 s,
+7.85 s and 1.25 s respectively.
+
+The prepared Rust indexes passed the same four-owner waves with matching
+cut and ready-set digests against the batched frontier reference. The
+linear, parallel DAG and conditional Session entries passed on the
+candidate image, including malformed structured-result rejection.
+Both derivation modes passed withdrawal, A→B→A, nested restart, inactive
+branch isolation and owner drain. CompileSource, nested scenario
+recovery and wave drain peaked at 6.18 s, 7.69 s and 1.13 s on their
+respective clocks. The SysML trace covers the preparation boundary.
+The same-image diagnostic ran two four-owner ABBA waves with the original
+HTTPS fixture and retained ASCENT in every arm. One wave changed only
+the frontier read strategy. The other changed only post-FFI candidate
+resolution. Both joins matched the cut, ready set and ordered selected
+predecessors across all trials. Frontier median fell from 5.234 to
+4.609 ms and candidate resolution median fell from 6.50 to 5.56 µs.
+Each median uses four observations from the nine-node fixture.
+Resolution timing starts after FFI and excludes the earlier plan
+copies removed by preparation. Use the result to prioritize the
+remaining ledger observation costs before changing the Scheme boundary.
+
+A four-owner retained wave split the observation transaction into
+open, head, availability, branch reads, receipt lookup, winner proof,
+release proof, exposure and commit. It matched both join cuts and ready
+sets from the prepared-index release. The median observation was
+3.89 ms at the inner join and 4.28 ms at the outer join. Per-node
+exposure checks accounted for 1.27 and 1.58 ms respectively, the
+largest measured phase at both joins. Complete nodes shared the same
+authoritative domain view. The candidate checks exact release and
+metering per node and reconciles shared exposure and history once
+within the same transaction. The deciding admission scope retains
+its existing validation.
+
+The four-owner same-image ABBA held ASCENT retained and matched the
+two join cuts and ready sets in every trial. With two observations per
+arm at each join, exposure median moved from 1.45 to 0.37 ms at the
+inner join and from 1.82 to 0.36 ms at the outer join. Whole observation
+medians moved from 4.36 to 3.54 ms and from 5.14 to 3.39 ms respectively.
+This cohort locates the effect within the ledger and does not establish
+a tail limit. The ledger negative control rejects a missing shared
+history after restart and fact withdrawal. The candidate release passed
+the four-owner A/A and fresh/retained waves with the prepared-index
+join digests, both derivation modes for withdrawal and A→B→A, nested
+restart and owner cancellation, and both SysML checks. The measured
+maxima were 7.86 s for CompileSource, 8.27 s for nested recovery
+and 1.54 s for natural drain.
+
+The next observation reuses one deployed fact feed and one origin
+inside the frontier transaction for choice, nested reachability and
+completed-node winner checks. Every governed complete node still
+proves its exact committed transition, decision and release. The
+ledger test completes a successor, removes its transition and checks
+that frontier observation rejects the image. Four-owner A/A and
+fresh/retained waves match the previous join digests. Linear, parallel
+DAG, conditional and nested controls pass on the candidate image.
+CompileSource, nested recovery and natural drain peaked at 7.94 s,
+8.17 s and 1.08 s. The four candidate retained observations range from
+2.52 to 2.83 ms. The preceding release provides a behavioral reference
+on the same commit.
+
+The retained four-owner ABBA used one diagnostic image and changed
+only the frontier observation implementation. Both joins matched
+the candidate release's cut and ready-set digests. Inner observation
+medians were 3.038 and 3.050 ms for reread and reuse. Outer medians
+were 3.978 and 2.883 ms, with two observations per arm. The outer
+reference included a 5.095 ms sample and a 2.862 ms sample, which
+overlapped the reuse range of 2.822–2.944 ms. Keep the transaction-local
+reuse for its reduced read count. This wave does not establish a
+repeatable latency improvement or a P99 limit. The next attribution
+should separate frontier scope acquisition from native transaction
+open and branch evidence reads before considering a custody change.
+
+The retained four-owner WAL and MVCC waves used the same release
+diagnostic image and matched both join digests from the candidate
+release. In WAL the inner and outer native BEGIN medians were
+0.822 and 0.919 ms. In MVCC they were 0.721 and 0.636 ms. The MVCC
+domain-key discovery medians were 0.263 and 0.258 ms, while scheduler
+grant wait was 0.167 µs at both joins. Closing authority took less
+than 1 µs at the median. Nested branch reads took 0.296–0.447 ms
+across the four journal and join combinations. Authority span
+overlaps the observation and must be reported separately. These
+waves measure phase costs on the local fixture. Keep the authority
+scope and evaluate any change to transaction opening against the
+full observation time, including the first read and cut currentness.
+
+The retained four-owner WAL ABBA used the same image and authority
+closure for IMMEDIATE and DEFERRED observation. At the inner and
+outer joins, open plus first fact read fell from 0.888 and 1.285 ms
+to 0.131 and 0.206 ms. Whole observation medians fell from 2.790
+and 3.614 ms to 2.186 and 2.315 ms. Each arm contributes two
+observations at each join. Both join digests matched the reference
+release. The deferred diagnostic passed nested restart, hard-fact
+withdrawal and A→B→A, and owner cancellation. The dedicated
+WAL Workflow observation entry uses this deferred snapshot.
+Admission, claim and reservation retain their existing transaction
+behavior, and the MVCC family path continues to use CONCURRENT.
+The candidate passed the original WAL waves and native controls,
+the four-owner MVCC fresh/retained regression, and both SysML checks.
+The ledger fault test observes the committed frontier during an
+uncommitted transition deletion and rejects the next observation
+after commit. Both journals matched the reference join digests.
+WAL CompileSource, nested recovery and natural drain peaked at
+7.09 s, 8.01 s and 1.21 s on their separate clocks.
+
+The first local release comparison uses =BenchmarkProviderGoControlPair=
+and =BenchmarkProviderGoControlPacedPair= with the same Rust fixture image.
+The paced input sends the same thirteen logical events with a requested
+ten-millisecond spacing between writes. The first event is immediate, and
+usage and completion share the final write. Receipt and invocation checks
+cover every stream. The shared Protobuf cohort shows a larger first-frame
+tail than the native queue-to-client tail in both paths. Join timings for
+the same request before attributing that gap to Go, admission or dispatch.
+Independent percentile estimates do not partition one request.
+
+The source-priority release completed the direct Rust and Go ingress
+matrix on one frozen production image. Each case used 128 streams per
+path in alternating four-request waves. All eight cases preserved
+receipts, held budgets and exact HTTPS dispatch counts. Applying the
+registered ratios to the path comparison, four met both limits.
+Independent immediate Protobuf missed both with first-frame P99
+ratio 1.250 and throughput ratio 0.925. Independent paced Protobuf
+and shared immediate Arrow and paced Protobuf missed first-frame
+P99. The Rust and Go process CPU and combined benchmark-driver
+allocations were captured separately from startup.
+
+The separate same-source observed image completed all eight cases.
+Six met both ratios. In the two observed shared paced misses, the
+ranked Go request's enqueue domain wait was 14.04 ms for Protobuf
+and 13.04 ms for Arrow, compared with 2.65 ms and below 1 µs for
+the respective ranked direct requests. Go-front time was 0.78 ms
+for Protobuf and 9.10 ms for Arrow. These ranks are joined to
+their own phase observations and characterize the observed image.
+The production independent Protobuf misses still require attribution
+on a comparable replay. The five slow-consumer controls cover
+capacity wait, cancellation, revocation, recovery and the pending
+range crash boundary. A same-source optimization still needs the
+original both-order gate.
+
+The maintained Go control pair entries now consume the frozen production
+image already staged and verified by TestMain when no specialized
+diagnostic pair is selected. The production fixture launches its normal
+CLI and records both Rust and Go control image hashes. Diagnostic pairs
+retain the instrumented WIF owner. Production matrix reproduction uses
+the normal benchmark entry directly.
+
+The first direct-entry production matrix completed all eight cells in
+62.817 seconds on the qualified current-cut Rust release. Each path
+completed 128 streams per cell in alternating four-request waves,
+covering 2,048 total streams. Every cell passed its original receipt,
+held budget, history, event count and exact HTTPS dispatch checks.
+The wrong frozen-hash control failed before control activation and both
+SysML checks passed.
+
+Five cells met the registered first-frame P99 ratio of at most 1.10 and
+throughput ratio of at least 0.95. Independent immediate Protobuf missed
+throughput at 0.935. Independent paced Protobuf missed first-frame P99
+at 1.396. Shared paced Protobuf missed first-frame P99 at 3.270, with
+Go at 166.4 ms and direct Rust at 50.88 ms. All four Arrow cells met
+both ratios. CPU and combined driver allocation metrics are retained
+for every cell, with activation outside the request interval.
+
+Keep the three failing cells and the original limits. Attribute the
+ranked shared paced Protobuf request through admission and first-frame
+delivery before choosing another execution optimization. This matrix
+uses a different image from the earlier source-priority matrix and
+does not establish a cross-release speedup.
+
+The next focused replay applies the existing Go first-frame probe to
+the shared paced Protobuf cell. It fixes the qualified Rust release
+and uses the same diagnostic Go image with the probe disabled and
+enabled. The diagnostic overlay is generated from the current Go
+sources. Each mode completes 128 streams per path and retains original
+receipt, budget and HTTPS invocation checks.
+
+All 128 probed Go requests joined their client and proxy timestamps by
+family and node. At the probed Go P99 request, total first-frame time
+was 66.590 ms. Client-to-Go was 0.421 ms, Go work before its Rust call
+0.005 ms, waiting for the Rust-facing frame 65.784 ms, and forwarding
+to client arrival 0.380 ms. The intervals belong to that same request
+and sum to its total. The RPC wait includes Rust execution, local gRPC
+and upstream transport.
+
+The plain diagnostic replay recorded direct/Go first-frame P99 at
+78.023/132.847 ms. The probed replay recorded 83.682/66.590 ms, reversing
+the path ordering. Keep the original production cell's 50.88/166.4 ms
+and its failure. This replay locates the probed sample at the
+Rust-facing boundary. Attribution of the earlier failed rank and
+separation of Rust admission, store and transport remain open.
+
+The same-source Rust observation replay joined 128 requests and 3,712
+scopes for shared paced Protobuf. Its ranked request took 88.521 ms,
+including 28.835 ms before worker entry, 26.667 ms at enqueue and
+9.370 ms at consume. The enqueue scope reported 15.425 ms of domain
+wait. Its upstream transport took 1.222 ms.
+
+The holder join exposed an observation boundary issue. A peer's scope
+reported 9.308 ms of hold, while its pre-Drop releasing timestamp
+covered 3.922 ms. That timestamp precedes the scheduler mutex and
+lease removal. Preserve the sample and treat that endpoint as a
+release request.
+
+The observed scope timeline now appends a versioned release extension
+with requested, scheduler-locked, lease-removed, waiters-notified and
+returned timestamps. Collection uses the existing commit-observer
+feature and requested timeline. Removed is sampled under the scheduler
+lock. Returned is sampled after unlocking and can include rescheduling.
+The original fields remain available to existing decoders.
+
+The package ASP gate required provider scope obligations to have a
+separate owner. RangeProgress, AdmissionRequest, OriginLifecycle and
+their existing diagnostic controls moved into provider_scope.rs.
+The provider facade retains the existing paths and provider-only token
+construction. The library suite passed 61 tests with one existing
+ignored test, the ledger integration suite passed all 136 tests, both
+SysML checks passed, and the normal release built.
+
+The corrected-clock replay again joined 128 requests and 3,712 scopes.
+Its ranked first-frame request took 75.573 ms, including 55.709 ms
+at consume. The consume scheduler wait was 48.791 ms. Conflicting
+admission leases overlapped 48.762 ms of that interval. One peer's
+admission contributed 45.273 ms of overlap and recorded a 42.172 ms
+commit. That commit completed in one poll with zero Pending returns.
+Poll wall was 42.172 ms, thread CPU 0.140 ms and observed sync wall
+0.068 ms. The remaining commit poll wall still requires I/O and
+scheduling attribution.
+
+The largest release measurement gap in this replay was 32.333 µs.
+It did not reproduce the earlier 5.387 ms gap. Preserve both captures.
+Use the existing Turso Unix I/O spans to partition the long commit
+poll before changing transaction or custody boundaries. These are
+observation-profile results and leave the production matrix's three
+misses open.
+
+** Runtime architecture priority
+
+The SDK mailbox benchmark establishes an available low-overhead owner
+mechanism. It does not establish Weaver request latency: one message,
+one rule evaluation, a durable reservation and a complete HTTPS stream
+are different operations. Preserve separate clocks for cut-to-candidate,
+release-to-durable-claim and request-to-first-frame. The existing target
+below one millisecond applies to cut-to-candidate, including queueing,
+ABI conversion, ASCENT and checked Rust result conversion. Neither
+network pacing nor durable commit is covered by that target.
+
+| Boundary | Current implementation or evidence | Next change and acceptance boundary |
+|----------+------------------------------------+-------------------------------------|
+| Preparation to activation | Compiled Scheme, fixed owner and opt-in ASCENT preopen; first-live open moved from 80--138 ms to activation | Complete readiness before publishing the exact binding; compile remains outside the live decision clock |
+| Preparation to live work | SourceInbox handles Compile and Derive in one blocking loop | Qualify isolation of preparation from the serving owner through the existing tracked-owner lifecycle; priority alone cannot preempt an executing compile |
+| Rust to Scheme | Full packed seven-relation cut and checked candidate indices exist as opt-in modes | Retain the prepared topology and replace changed relations; require equal candidates and binding rejection controls before default adoption |
+| Repeated decision | Retained ASCENT supports changed replacements and identical-input result reuse | Key reuse by active publication binding and the complete current input; clear on replacement, retraction and errors; ledger still checks current authority |
+| Concurrent decisions | Bounded mailbox and thread-affine VM already exist | Partition independent sessions across assigned owners only when owner queueing dominates; preserve frontier/claim serialization and bounded capacity |
+| Scheme result to effect | Rust validates candidates and claims with current facts in ledger transactions | Keep an index result as a proposal; stale results never authorize dispatch or release barriers |
+| Shared admission | A measured tail waited on conflicting leases, including a long commit poll with little thread CPU | Attribute commit I/O and scheduling first; moving blocking work off Tokio does not release an authority lease, and unknown outcomes retain custody |
+| Bulk data | Arrow C Data is an available batch boundary | Use for columnar workloads where ownership and conversion justify it; small indexed Workflow cuts do not need an Arrow conversion |
+
+This is an implementation order, not a claim that the target is met.
+First remove first-use preparation from live execution, then eliminate
+repeated input/result construction and relation replacement, then
+address measured owner contention and lease-holding waits. Scheme/POO
+continues to compose programs and object behavior; ASCENT derives from
+current facts; Rust admits effects. Compiling all rules into a second
+Rust policy implementation would duplicate these responsibilities.
+
+The preopen, packed and changed-replacement modes have correctness
+evidence but remain opt-in. Four join observations per arm cannot
+establish a sub-millisecond P99. Do not promote them from a mailbox
+throughput number or broaden their acceptance claim to the three
+failed production SSE cells.
+
+** Commit I/O attribution follow-up
+
+The existing commit-observer now captures Turso Unix spans during the
+observed commit poll: pread, pwrite, pwritev, sync, size and truncate.
+Record their interval union separately from per-kind intervals, with
+wall time, current-thread CPU and span counts. Kind intervals may
+overlap. These are instrumented spans on the polling thread, not a
+system-wide syscall trace. An empty observation does not prove no I/O.
+
+The native control initializes the session and schema before enabling
+observation, then commits a real insert. It caught static callsite
+filter caching that hid previously encountered writes. A dynamic
+filter fixes that observation error; the initial failed test remains
+in local evidence. The corrected library suite passed 62 tests with
+one existing ignored test, all 136 ledger integration tests passed,
+and the default production release built with the same SHA256 as
+before this observer-only change.
+
+One bounded four-worker replay completed in 53.854 seconds and joined
+all 128 traced requests and 3,712 scopes. A 29.223 ms commit included
+29.162 ms in observed Unix spans, predominantly a 29.126 ms sync span
+with 0.050 ms thread CPU. A different 37.785 ms commit included only
+4.588 ms of observed I/O. The latter's remaining wall time is still
+unattributed; do not assign it to the filesystem or Scheme.
+
+The ranked request took 198.559 ms, including 29.850 ms of consume
+domain wait, 92.657 ms outside measured upstream transport during
+dispatch and 32.949 ms from headers to queue. This is a new observation
+profile, not a reproduction or explanation of the original production
+rank. It provides no basis to claim a universal fsync bottleneck or
+completed performance optimization. Retain the production failures
+and investigate the measured boundaries without weakening durability.
+
+** Review preflight program and cursor reuse
+
+The working candidate's production review preflight uses the existing native
+prepared-statement transport for its legacy-profile predicate and
+review projection. A prepared singleton read reaches Done before
+dropping the cursor, rejects an unexpected second row, and creates a
+fresh parameter-bound cursor on every use. Compatibility and program
+invalidation remain Turso responsibilities. No policy result, row
+snapshot or authority approval is cached by Weaver.
+
+The first native control rejected a simple API substitution: changing
+only the projection to prepare_cached left three native preparation
+calls on both cold and warm invocations. Keep that failed control.
+With both fixed preflight queries reused and singleton cursors completed,
+the same-connection control records three preparations cold and zero
+warm. It verifies current candidates before and after a real replacement
+publication, then rejects loss of the review-authority projection.
+Additional native cases check fresh parameter binding, empty results
+and multiple-row rejection. All 64 library tests and 136 ledger
+integration tests passed; one pre-existing ignored test is unchanged.
+
+The deciding transaction still compares the exact review image,
+publication request and receipt, schema, policy, key epochs, source
+association and supplied revision/fence. Native program reuse does not
+prove end-to-end performance or reuse across an incompatible connection
+context. The normal fixed-release eight-cell matrix remains a separate
+gate, including wrong-image rejection and the original direct/Go limits.
+
+The candidate's normal production matrix completed all eight cells and
+2,048 streams in 65.365 seconds, with the same normal Go control image
+as the prior production matrix. Both SysML checks and wrong-image
+rejection passed. Five cells met both original ratios. Independent
+immediate Protobuf and Arrow missed first-frame P99 at 1.127 and
+1.291 times direct Rust; shared immediate Protobuf missed first-frame
+P99 at 2.307 and throughput at 0.892. All four paced cells passed.
+Keep these failures alongside the earlier production failures. Different
+failed cells across runs do not prove that an earlier cause was fixed.
+
+On that exact candidate release, the original four-owner A/A,
+fresh/retained and packed WAL waves matched the prior inner/outer
+cut and candidate digests. Four packed MVCC trials matched them too.
+Both derivation modes passed nested restart, hard-fact withdrawal,
+A-to-B-to-A and source cancellation/drain. Across these wave samples,
+CompileSource peaked at 7.020 s, scenario recovery at 7.941 s and
+natural drain at 1.222 s, within the unchanged 10/12/15-second limits.
+
+Keep the change as a working candidate pending the original performance
+gate and a matched-release A/B. The native zero-prepare result covers
+immediate repeated preflight on one compatible connection. It does
+not prove reuse survives the complete enqueue/receipt/consume path.
+Inspect that consumer lifecycle and native compatibility invalidation
+before another matrix; do not repeat the same matrix hoping for a pass.
+
+** Consumer cursor lifetime and frozen release A/B
+
+The native consumer control disproved extrapolation from immediately
+repeated preflight. After actual enqueue and receipt, WAL needed three
+new review preparations; after consumption it needed two. An independent
+receipt read or an ordinary table scalar read caused three, while an
+empty committed writer caused zero in that WAL probe. The exact failed
+controls remain in the local packet.
+
+The candidate completes the existing original-task, task-publication,
+publication-receipt and provider-receipt singleton reads through the SDK
+prepared-query transport. Original-task preparation is now the default;
+its existing diagnostic switch still selects the fresh reference.
+Every cursor rebinds parameters and reads current rows. Publication
+signatures, original commitments and deciding comparisons are unchanged.
+The native consumer fixture binds a real committed birth publication,
+executes enqueue and consume, and checks that a subsequent exact Policy
+projection change is rejected with the original hold still present.
+
+WAL then records zero review preparations after both actual phases.
+MVCC still records two after each. The original hypothesis of zero
+after both journals is false; do not bypass SDK compatibility or claim
+MVCC reuse from the WAL result. The regression enforces WAL reuse and
+currentness on both journals. All 65 library and 136 integration tests
+passed, with one existing ignored library test unchanged.
+
+For remaining planning work, only the preflight projection uses a
+fixed CROSS JOIN order over the existing singleton and indexed keys.
+The shared predicate macro keeps every original join condition,
+JSON check and epoch bound. The deciding exact-image comparison and
+general reviewed-head requirement keep their original predicates.
+
+The existing production benchmark accepts an optional frozen Rust
+baseline image and digest. It stages and verifies that image before
+activation; its two arms use the same normal Go forwarding binary.
+The default benchmark still compares Go with direct Rust. Both modes
+retain the original eight cells, four concurrent requests, 128 streams
+per arm per cell, alternating arm order, exact receipts, 13 events and
+one real HTTPS invocation per stream. Both wrong-image controls passed.
+
+In the frozen Rust release A/B, all eight cells met the unchanged
+P99 ratio ceiling 1.10 and throughput floor 0.95. Rust CPU per stream
+fell in every cell, by 11.1--30.0%; throughput rose by 4.5--44.9%.
+First-frame P99 ratios ranged from 0.485 to 1.066. These are observed
+cohort results for the combined cursor and planning changes, not an
+attribution of each gain or a population P99 guarantee.
+
+The separate original Go-versus-direct gate passed correctness in all
+eight cells but met both performance limits in only three. The five
+misses remain: independent immediate Arrow, shared immediate Protobuf
+and Arrow, and independent/shared paced Arrow. A passing Rust A/B does
+not close the forwarding comparison.
+
+The same-release four-owner A/A failed its original ten-second
+CompileSource deadline: native owner calls took 10.409--10.436 s and
+readiness reported cancellation. Its source-module view phase consumed
+most of the preparation interval. No replacement wave was run. The
+fresh/retained comparison, both derivation modes for withdrawal,
+nested restart, A-to-B-to-A and cancellation, and packed WAL/MVCC
+waves passed. The all-groups lifecycle verifier correctly refused to
+issue a passing receipt because A/A failed. Keep this preparation
+failure separate from steady Runtime and preserve 10/12/15-second
+limits. The candidate remains unqualified for overall promotion.
+
+** Arrow forwarding attribution and domain discovery cursor
+
+Two focused Arrow cases kept the production Rust image fixed and
+compared plain/probed Go builds from one observation image: independent
+immediate output and shared paced output, four concurrent requests and
+128 streams per path per case. All 1,024 streams completed with the
+original receipts and real HTTPS calls. Post-measurement logs joined
+client start/receive with Go ingress, RPC submission, first receive,
+send start and send return. Send return is an overlapping observation;
+it is not required to precede client receipt.
+
+First-send wall P99 was 22 and 44 microseconds in the two probed cases.
+Their Go P99-ranked requests took 31.630 and 69.722 ms. Most time was
+between submitting the Rust RPC and receiving its first frame. The
+relative direct/Go tail ordering changed between plain and probed
+waves, so these captures do not explain an earlier failed rank.
+
+A second Go observation split RPC creation/submission from the first
+Recv wait. RPC setup at the ranked requests was 37 and 28 microseconds;
+first-receive waits were 19.007 and 202.668 ms. This interval includes
+remote execution, gRPC transport, local decoding and scheduling. It is
+not a measurement of Rust execution alone. There is no measured basis
+here for replacing Go serialization or its send path.
+
+The existing Rust observation entry then joined 128 shared paced Arrow
+requests and 1,408 scopes, with the same current Rust source but a
+separate optimized test/commit-observer image. Its ranked request took
+163.943 ms: enqueue 48.625, consume 16.580, guarded dispatch outside
+transport 25.276, upstream transport 22.968 and headers-to-first-batch
+46.136 ms. The two domain waits totaled 45.675 ms. Conflicting active
+leases covered 35.514 ms; one peer admission recorded a 9.700 ms commit,
+including 7.707 ms of observed Unix I/O spans. Keep interval overlap,
+per-thread I/O coverage and the four-row pacing boundary explicit.
+Observed Rust CPU was 57.66 ms/stream with tracing versus 38.12 without;
+do not transfer these instrumented durations to the production failure.
+
+Following the admission path exposed another abandoned singleton read:
+MVCC lock-key discovery used the general first-row domain-view reader.
+It discarded the cursor after its first row, invalidating compatible
+prepared programs despite the existing prewarm. The domain-view and
+provider-view readers now reuse the existing complete singleton
+transport. Query predicates, fresh parameters and row decoding are
+unchanged. Scheduler generation remains captured before the discovery
+query; root and generation checks remain inside the deciding protocol.
+
+The published-task consumer control now records zero review
+preparations after enqueue and consume on both WAL and MVCC. The
+previous MVCC two-prepare result was an unresolved observation, not
+proof that engine compatibility required those two compilations.
+This change removes that consumer-side invalidation without bypassing
+the SDK's genuine compatibility checks. All 65 library tests and 136
+ledger integration tests passed, with one existing ignored test.
+
+On the new frozen release, the single-change Rust A/B met both original
+ratios in seven of eight cells. Independent paced Arrow missed
+first-frame P99 at 1.139 times reference; its throughput ratio was
+0.999. CPU per stream decreased in seven cells and increased 1.3% in
+shared immediate Protobuf. The separate original Go/direct gate met
+both limits in four of eight cells. Preserve every miss and keep the
+candidate pending overall performance qualification.
+
+The same-release four-owner A/A, fresh/retained, packed WAL/MVCC,
+withdrawal, nested restart, A-to-B-to-A and source cancellation/drain
+checks passed with the prior join identities. The WAL wave maximum
+CompileSource was 8.780 s, scenario recovery 7.852 s and natural drain
+1.149 s, within unchanged budgets. This new-head pass does not erase
+the preceding 10.409--10.436 s preparation failures or establish that
+a Rust query change repaired Scheme preparation variability.
+
+** Prepared nested rule specialization
+
+The retained program now partially applies the existing canonical rule
+objects to an immutable wholly nested topology. Selection requires retained
+execution, nonempty nested-node coverage of every node and empty flat arm/join
+projections. Other topologies and the full fresh oracle keep their original
+program. The specialization removes the three empty private flat relations
+=choice-made=, =skip= and =missing=, their rules, and the flat-ready rule whose
+negative nested-node guard cannot hold. It reconstructs the program through
+ASCENT's public =gerbil-ascent-program= constructor, not a second evaluator or
+unchecked mutation of an admitted session.
+
+All source-bearing declarations and seven mutable input groups remain.
+Input/derived/output limits remain 640/768/1408. Empty private declarations
+contribute no source rows. Retained topology replacement still resets the
+session, and ASCENT still prepares, checks and atomically publishes source
+replacements. Preparation selects 21 relations/14 rules instead of 24/21.
+There is no new mode switch or production-default change.
+
+The module-native suite passed. A seeded property checks 32 sequences of eight
+snapshot replacements against eight cached full-fresh results, including
+branch choices, parallel/join cuts, deletion and restored availability. The
+original source-budget rejection message also matches fresh evaluation, and a
+subsequent valid cut succeeds. Existing topology/binding replacement, packed
+bounds and withdrawal/A-to-B-to-A cases remain part of that suite. These are
+finite witnesses, not an exhaustive equivalence proof.
+
+Two frozen optimized benchmark images ran baseline/candidate/candidate/baseline
+through the unchanged quiet four-worker owner profile, 128 calls per arm.
+Each native image had matching expected candidates. Baseline P50 was
+1.067--1.092 ms and candidate P50 0.909--0.910 ms. Baseline P99 was
+3.787--4.132 ms and candidate P99 3.419--3.605 ms. Both candidate P99 values
+still fail the unchanged 1 ms target. The added baseline/candidate usage arms
+recorded 8/7 calls with collection; one pair does not establish a general
+allocation-rate reduction. The baseline usage arm also had slow no-GC calls,
+so preserve it and do not generalize the previous cohort's GC-only attribution.
+Whole-process CPU includes preparation and is not a hot CPU comparison.
+
+This is a bounded consumer-side reduction of prepared program work. It does
+not isolate the source reader's VM heap, remove all update allocation, qualify
+Gateway latency, or close the original eight-cell end-to-end gates. The native
+release built in 1 minute 42 seconds; the benchmark image built in 1 minute
+27 seconds, both inside the unchanged build budget. All 26 governance library
+tests, the ASP gate and SysML/requirement-trace checks passed.
+
+The same frozen native release passed hard-fact withdrawal/restart/A-to-B-to-A,
+both nested-recovery/skip scenarios and active source-cancellation drain.
+However, both preregistered four-way fresh/retained and changed-source waves
+failed readiness during CompileSource. All eight owners reached source
+selection but were canceled before module-view admission and Governor
+derivation under the unchanged 10-second request deadline. Preserve both
+failed waves; do not rerun until a pass or treat the sequential controls as
+their substitute. This batch is not a complete native qualification.
+
+The failure location precedes the prepared rule factory. It does not by itself
+prove the new source text/import had no preparation cost, and host load alone
+is not an explanation. Reuse the existing private reader stage measurements
+and package-owned source mechanisms for a source-path audit before another
+four-way startup run. Compilation, reader preparation and live derivation
+remain distinct costs, with their original budgets and failed evidence.
+
+** Owner GC attribution through the existing SDK
+
+The pinned SDK's public =gerbil_scheme_rust_objects_usage= C ABI already
+provides four GC and four OS counters; its objects benchmark uses the same
+entry. The Weaver owner benchmark now reuses that interface on the live affine
+owner, with a small benchmark-only FFI leaf. It adds no Scheme export, runtime
+callback, SDK change, Gambit change, forced collection or heap setting.
+=WEAVER_TEST_GOVERNOR_USAGE=1= samples before/after each evaluation. Both
+snapshots are outside the derive interval, and their overhead remains inside
+request/reply/queue latency. The diagnostic remains disabled by default.
+
+One frozen image ran quiet-before, usage-1, usage-2 and quiet-after: the same
+32 four-way waves and 128 calls per arm as the preceding warm profile. All
+512 expected-result checks, interval joins and natural exits passed.
+
+| Arm | Submission-to-owned-result P99 | Calls with GC | Calls over 1 ms inside owner |
+|-----+--------------------------------+---------------+------------------------------|
+| quiet-before | 3.722 ms | not observed | not attributed |
+| usage-1 | 3.747 ms | 8 of 128 | 8, all with GC |
+| usage-2 | 3.692 ms | 8 of 128 | 8, all with GC |
+| quiet-after | 3.847 ms | not observed | not attributed |
+
+Across the two diagnostic arms, every owner interval over 1 ms contained one
+collection. GC wall time was 1.799--2.165 ms and accounted for 78.0--81.5% of
+each associated slow owner interval. No-GC owner maxima were 0.561/0.494 ms.
+This attributes most measured slow-call time to collection in this cohort;
+it does not identify the allocating constructor or establish every production
+tail's cause. The collector may run during input conversion, Scheme inference
+or result conversion inside the measured evaluation.
+
+Observed Scheme heap capacity was 20,146,464--21,195,040 bytes. That is capacity,
+not live data, per-call allocation or retained program size. OS CPU and context
+switch counters cover the whole process, not only the VM thread. RSS is an
+absolute high-water mark. Do not substitute any of these for physical
+allocation accounting. Quiet controls still miss the unchanged 1 ms target;
+neither diagnostics nor the earlier finite P99 ratios promote a default.
+
+The next consumer-side optimization should reduce work/objects using the
+prepared immutable topology and the existing Scheme relational composition
+API. The current nested topology projection marks every node as nested, making
+the flat-ready rule inactive; the combined program nevertheless declares both
+flat and nested rule families. Audit a prepared specialization against the
+original full program, including original input/derived/output bounds,
+deletions and failure behavior, before changing it. Keep ASCENT's prospective
+snapshot, completed-result admission and atomic engine publication intact.
+
+There is also a distinct architecture seam. Weaver's =SchemeCompiler= uses
+=GerbilRuntime::initialize_program=, and its existing source lane runs capture
+and inference on that same owner. The SDK's =InstancePool= uses explicit private
+images and claims a different process backend. =claim_linked= and =claim_images=
+are mutually exclusive. Adding a pool beside the existing linked VM is not a
+supported isolation design. If prepared specialization is insufficient, assess
+a whole-backend migration using SDK image/Build Package APIs, with separate
+source and bounded execution image roots. Reuse native conversion capabilities
+and preserve publication/owner binding and ledger rechecks; do not add another
+loader, serialization service or consumer-owned VM implementation. This is a
+design option, not an implemented migration or a proven GC improvement.
+
+** Quiet resident-owner benchmark
+
+The existing =scheme_conversion= target now includes a finite owner profile,
+selected with =WEAVER_TEST_GOVERNOR_OWNER_BENCH=1=. Its required feature is
+=scheme-program=, allowing the actual approved Weaver application. The old
+=scheme-qualification= feature still implies that feature for the original
+conversion profile. Qualification and an explicit approved application remain
+mutually exclusive; the initial rejected build is retained as evidence of that
+guard. No build-manager or SDK admission rule is relaxed.
+
+The profile uses the existing =source_lane= and cancellable Governor owner
+loop on one tracked Tokio blocking job, with four Tokio workers and capacity
+four. One VM is prepared per process. It reuses the nine-node nested/parallel
+topology from =runNestedSession=, then performs 32 waves of four snapshots:
+parallel fork, inner join, outer join and withdrawal of a parent availability
+fact. Every reply must match its exact expected candidates. Source capture,
+ledger authority, reservation, provider traffic and network are excluded.
+Preparation and natural owner drain have their own clocks and deadlines.
+
+The measured path disables verbose per-request timers and logs in both arms.
+Owner records use a preallocated Rust vector. Unique snapshot identity and
+wave join each submission and reply to its owner start/finish, and interval
+nesting is checked. Queue includes admission and dispatch; owner derivation
+includes Rust input construction, Scheme evaluation and Rust output conversion;
+reply includes return scheduling. Do not add independent percentile values.
+
+One frozen optimized benchmark image ran the complete A1/B1/B2/A2 order,
+128 measured calls each. A is fresh/full/named and B is
+retained/packed/indexed/changed-relations. All 512 expected-result checks and
+natural exits passed. This compares composite execution paths; it does not
+attribute the entire improvement solely to ASCENT or solely to transport.
+
+| Arm | Submission-to-owned-result P50 | P99 | Owner derivation P99 | Queue P99 |
+|-----+--------------------------------+-----+----------------------+-----------|
+| A1 | 276.175 ms | 527.363 ms | 231.693 ms | 372.017 ms |
+| B1 | 1.038 ms | 4.047 ms | 2.878 ms | 3.324 ms |
+| B2 | 1.091 ms | 3.809 ms | 2.580 ms | 3.427 ms |
+| A2 | 285.803 ms | 518.579 ms | 227.353 ms | 405.926 ms |
+
+These are nearest-rank percentiles over fixed finite samples. The fresh and
+retained repeated-arm P99 max/min ratios were 1.017 and 1.063, respectively;
+they do not establish repeatability for the original eight Gateway cells.
+The prepared retained path improves this local latency profile substantially
+but fails the unchanged submillisecond hot-decision target in both B arms.
+No production default or broad performance acceptance is promoted.
+
+Preparation was 145--182 ms and owner drain 0.075--0.108 ms in this profile.
+Process CPU receipts include preparation and drain and are not per-decision
+CPU measurements. The complete four-process experiment took about 29 seconds;
+these are 512 warm decisions, not 512 VM or source cold starts.
+
+Retained slow owner samples occurred about every four waves, across several
+snapshot types. Their periodicity suggests an allocation/GC hypothesis, not
+a measured GC attribution. Inspect supported Scheme statistics and replacement
+allocation before changing heap policy or adding VM shards. The installed
+ASCENT replacement path prepares a prospective source snapshot and an updated
+engine before publishing accepted state. Preserve that failure-atomic boundary;
+do not bypass it to reduce the observed latency.
+
+Build once through the existing target, freeze the resulting binary, and set
+the three mode variables consistently for each preregistered arm:
+
+#+begin_src sh
+WEAVER_TEST_GOVERNOR_OWNER_BENCH=1 \
+WEAVER_TEST_GOVERNOR_RETAINED=1 \
+WEAVER_TEST_GOVERNOR_PACKED_FACTS=1 \
+WEAVER_TEST_GOVERNOR_CHANGED_SOURCES=1 \
+cargo bench --locked --offline -p weaver-governance \
+  --features scheme-program --bench scheme_conversion
+#+end_src
+
+Use the existing approved-application/SDK environment; leave verbose Governor
+timing unset. A uses zero for the three mode variables. Each invocation emits
+one JSON sample set after natural owner cleanup. Original Criterion conversion
+groups remain the default when the owner profile selector is absent.
+
+All 26 governance library tests and the ASP gate passed with this addition.
+The preceding same-core release's Workflow, withdrawal/restart/A-to-B-to-A and
+cancellation controls remain separate evidence; no extra cold-source matrix
+was run for this benchmark-only addition.
+
+** Bound Governor index consumption
+
+The indexed reply is one exact owner-generation binding followed by at most
+64 node indices. The previous general source deserializer limited every
+vector to 64 entries, rejecting the full 65-entry binding-prefixed reply.
+It also rooted each index and copied a general integer magnitude before
+converting an intermediate unsigned vector to indices.
+
+The consumer now borrows elements from the SDK's rooted collection snapshot.
+It checks the exact full-width generation once, reads bounded fixnum indices
+without per-element roots or general integer buffers, and produces owned
+Rust indices before dropping the snapshot. Count, type and foreign-index
+checks remain mandatory. Repeated candidates retain the existing downstream
+sort/deduplicate contract; current frontier, authority and reservation checks
+remain in the deciding transaction. This does not change the Scheme ABI,
+retained-mode defaults, SDK revision or Gambit sources.
+
+The native same-owner control covers empty and full result sets, reversed
+order, repeated candidates, the complete unsigned generation range, stale
+bindings, wrong scalar/collection shapes, oversized integers and counts,
+and successful use after rejection. The former general decoder remains an
+explicit negative reference for the 65-entry case. All 26 governance library
+tests pass, including this real linked-VM control and the existing ASP gate.
+The production release build completed in 2 minutes 25 seconds within its
+unchanged build budget. The same frozen release passed the existing four-way
+changed-source Workflow wave and the retained/packed nested-recovery,
+hard-fact withdrawal/restart/A-to-B-to-A and cancellation controls. The SysML
+architecture and requirement-trace checks also passed. These are separate
+correctness and lifecycle checks, not an output-latency or end-to-end win.
+
+The four-way wave still observed 10.4--13.6 ms complete predecessor-to-join
+intervals. Its 32 compact observations recorded 1.55--5.55 ms ledger
+observation spans and 5.1--19.4 microseconds output processing. Optional
+diagnostic work before owner reply reached 2 ms. These are individual phase
+ranges under unrelated host load; do not add their maxima or treat them as
+production percentiles. They locate remaining work beyond result decoding.
+Retain the previous failed end-to-end matrices and equal-image tail control;
+no performance gate is promoted by this batch.
+
+The derivation implementation is separated into bounded fact projection,
+topology projection, binding transition, rooted invocation and result
+acceptance. Topology fields use a fixed array rather than introducing a new
+heap allocation. Detailed clocks remain optional, and no new Actor layer,
+transport service, authorization cache or Runtime result cache is introduced.
+
+** Member-set program reuse and equal-image control
+
+Repeated retained-member verification still compiled both fixed
+manifest queries inside the deciding transaction. The native before
+control recorded three preparations: committed members, projected
+members and an independent metering read. The candidate reuses the
+existing manifest query transport and SDK prepared programs, including
+preparation before provider admission. The production and observed
+default now agree; the existing diagnostic switch still selects the
+fresh reference. Compatibility remains SDK-owned and failed prewarming
+does not waive the subsequent deciding read.
+
+Each verification binds its current family and consumes the complete
+row sets. Exact retained/projected member bijection, duplicate rejection,
+original ceilings, applied release and held-budget conservation remain
+unchanged. The native test switches to a registered empty peer family,
+then corrupts the current provider reservation and requires rejection.
+Rollback retains the original hold. On WAL and MVCC, repeated
+verification now records one preparation, solely the metering read;
+the two manifest preparations are gone. All 66 library and 136 ledger
+integration tests passed, with one existing ignored library test.
+
+The frozen Rust release A/B retained all eight original cells and
+2,048 streams through identical Go forwarding. Rust CPU per stream
+decreased in all eight cells, by 0.7--9.5%, but only five met both
+original end-to-end ratios. Independent immediate Protobuf/Arrow
+missed first-frame P99 at 1.782/1.166 times reference; shared paced
+Protobuf missed at 1.434. Throughput met the floor in all eight.
+The separate original Go/direct comparison met both limits in two
+of eight cells. These are failed performance gates, not permission
+to promote a native compilation-count improvement.
+
+One additional finite control used the identical frozen Rust binary
+and identical Go forwarding in both arms for shared immediate Protobuf.
+Both image digests were verified before activation, and each arm ran
+the original 128 streams with four concurrent requests. P99 was
+52.77/59.16 ms: ratio 1.121, exceeding the unchanged 1.10 ceiling.
+Throughput ratio was 0.996 and Rust CPU ratio 0.973. The equal-image
+control itself fails the tail gate. This identifies a repeatability
+limitation for that cell; it neither explains every failed A/B rank
+nor establishes noise bounds for all eight cells. Keep the original
+gates and the failed control. Do not rerun until a pass or infer a
+code regression solely from an unmatched tail ratio.
+
+The same-head Scheme fresh/retained comparison, retained cancellation,
+withdrawal/restart/A-to-B-to-A and packed WAL/MVCC groups passed. The
+four-owner A/A and fresh nested-recovery readiness failed during
+source compilation under the original deadline. The all-groups
+lifecycle verifier refused a passing receipt. Preserve these failures
+separately from the Runtime improvement and keep 10/12/15-second limits.
+
+The upstream check read PR 18's remote head and found it equal to the
+consumer pin bfe803f597a15a3654b70a64c3a039980c31da8a. The dirty local
+SDK checkout and its branches were preserved. This batch changes no
+SDK or Gambit sources. Before another performance candidate, qualify
+measurement repeatability and inspect the expensive source module-view
+phase through the existing Module System interface.
+[[https://github.com/tao3k/gerbil-scheme-rust/pull/18][Scheme SDK PR 18]]
+
+The focused independent Protobuf replay kept the production Rust
+image fixed. The Go probe joined 128 completed streams per path
+and pacing case by original family and node using the host monotonic
+clock. At the Go P99-ranked request, waiting for the Rust gRPC
+frame accounted for 30.678 of 30.998 ms in the immediate case and
+27.788 of 28.181 ms in the paced case. The Go handler's work
+before its Rust RPC was 3–4 µs at those ranks. Plain and probed
+waves reversed the relative direct and Go P99 ordering. The join
+locates time at the Rust-facing boundary. It does not attribute the
+prior gap to the proxy or distinguish Rust execution from its local
+gRPC and upstream transport. Keep the earlier matrix failures.
+
+A separate process-allocation replay instrumented both paths while
+retaining the same production Rust image. In the independent
+Protobuf immediate case, the Rust allocator received about 180,000
+calls and 38.3 MB of requested bytes per stream on either path.
+Paced streams recorded about 291,000 calls and 61.1 MB requested.
+The Go proxy recorded 247 objects and 14.2 KB per immediate stream,
+and 319 objects and 22.4 KB per paced stream. These are allocation
+counters over the measured window, not resident memory or a latency
+gate. The comparable Rust counts and the first-frame join prioritize
+Rust work on this fixture. Keep the other matrix cases separate.
+
+The focused release-program comparison used one observed release
+image and Go forwarding in both arms. It varied only cached
+preparation of the exact release lookup and mark statements.
+Four Protobuf cases ran in both orders, with 128 streams per arm
+per case and fresh bindings in each deciding transaction.
+Seven of eight cases used less Rust CPU per stream, and all
+met the throughput ratio. The reverse-order independent immediate
+and paced cases missed the first-frame ratio at 1.134 and 1.327.
+The immediate ranked sample added 2.14 ms at enqueue. The paced
+sample added 8.67 ms in upstream transport, of which 4.86 ms
+was TCP connection time. Keep the optimization diagnostic.
+The five slow-consumer controls passed with cached programs.
+The focused Protobuf run leaves the Arrow and full promotion
+gates open.
+
+The same-image upstream TLS comparison let one Snake Oil peer
+issue session tickets and disabled tickets on the other. The
+existing database-connection reuse diagnostic is a separate
+mechanism. Both HTTPS arms opened a new TCP socket for every
+request. The default Rust TLS configuration resumed 124–125 of
+128 sessions in each of the eight Protobuf pairs, and the
+ticket-disabled peer observed zero resumptions. TLS P50 fell by
+24–37 percent with tickets. TCP connect P50 remained in the
+0.145–0.187 ms range across both arms. End-to-end first-frame
+and throughput met both ratios in only three pairs, with the
+largest added ranked phases distributed across enqueue, consume,
+upstream transport and headers-to-queue. The local TLS saving
+does not explain the first-frame tail. Preserve the existing
+fresh-socket guard, and keep TLS tickets distinct from any future
+HTTP connection reuse design. The original no-retry and
+partial-request restart controls passed.
+
+The local first-frame diagnostic joins the existing Rust handoff and transport
+observations to the client by family and original node. It checks complete,
+unique and ordered observations, then reports the phase times of the actual
+request at the first-frame P99 rank. In the shared paced Protobuf replay the
+largest phase for both paths is the broker interval remaining after the
+observed TCP, TLS, write and response-header timers. This residual contains
+admission, consumption, request preparation, guarded dispatch and untimed
+work. Measure those boundaries before selecting a change. Different host
+loads and diagnostic builds remain separate observations.
+
+Monotonic native stage timings now split the first-frame observation into
+enqueue, consume, request preparation and guarded dispatch. TCP, TLS and
+request-write timers are removed from the dispatch interval before joining
+the phases. A wall-clock diagnostic with an overlapping interval failed and
+is retained. The corrected shared paced replay identifies enqueue and
+consume as the two largest local phases on both sampled P99 requests.
+
+The same-image control with both arms through Go tested omitting the
+post-commit receipt read that the broker discards. Both arms retained the
+same send counts, complete streams and durable holds. The candidate showed
+slower admission and first-frame tails in this run. Preserve the experiment
+and retain the existing broker path while inspecting the work inside
+admission and consumption.
+
+The enqueue and consume observations now retain deltas from their own
+ledger session. Domain wait, native transaction begin and transaction
+hold are separate counters. Cedar and preparation counters can nest
+inside broader intervals and must not be added to them. In the observed
+Go-routed first-frame P99 request, native begin dominates enqueue and
+domain wait dominates consume. Keep the deciding scheduler and authority
+order while investigating the native begin path. This sample does not
+attribute the whole native begin interval to a Turso lock.
+
+The follow-up observer wraps the same Turso transaction future and counts
+polls and Pending returns. The four Protobuf cases use shared and independent
+domains with immediate and paced responses. Each accepted enqueue and
+consume has one matching BEGIN observation. The measured slow begins
+complete in one poll, with little time outside it. The next diagnostic
+must separate synchronous driver work, engine contention and OS
+descheduling inside that poll. Keep MVCC snapshot creation under the
+existing scheduler and authority barriers.
+
+Thread CPU accounting on the same observed poll separates two costs. The
+longest wall-clock BEGIN in the four-cohort replay used little CPU on its
+own thread. Most BEGIN calls above the one-millisecond floor still spent
+at least half their time on that thread. Enqueue has a higher CPU median
+than consume in every cohort. Both use the same connection for a given
+request, with enqueue first. Measure connection initialization, SQL
+preparation and first-write execution separately before choosing a
+reuse boundary. Time outside the thread's CPU can include synchronous
+blocking and OS scheduling. The clock alone cannot identify a lock.
+
+The observed release follows Turso 0.8.3's own SQL preparation span
+inside the transaction future. Join one span per BEGIN, and record
+Ledger open separately. The larger part of the first BEGIN CPU remains
+after preparation. In this Turso version the transaction opcode opens
+the connection-local TEMP pager on first use. Test that cause with
+disposable connections under the existing writer scope. A read of the
+TEMP schema before the grant keeps the file spill policy. The isolated
+memory-mode control also changes sort and hash spill behavior, so keep
+its results separate from a candidate for provider execution.
+
+The native TEMP pager probe compares the first and second BEGIN on each
+disposable connection. A read of the empty TEMP schema moves most of
+the first-BEGIN work before the domain grant, with additional total
+work in this isolated probe. Treat prewarming as a lock-hold candidate.
+Require a paired HTTPS test for shared and independent domains before
+changing the runtime default. Keep the existing journal, FULL synchronous
+mode, foreign-key enforcement and bounded file spill policy.
+
+The same-image A/B ran both arms through Go and measured file-backed TEMP
+prewarming before the writer grant. It lowered BEGIN CPU across all four
+cases. Both shared cases missed the hold target. Immediate shared SSE
+missed the queue target, and paced shared SSE missed the first-frame
+target. The prewarming candidate was removed. The deciding transaction
+continues to initialize TEMP on first use. The MRR Data reusable writer
+design in 59.66 owns an opaque metadata transaction API. Its private
+physical lease cannot directly host Weaver's deciding SQL scopes. Use
+the lifecycle obligations in 59.66 to assess reuse of physical custody
+under Weaver's existing execution permits.
+
+Bound the candidate to the provider execution lane and tie the total of
+active and idle connections to its existing permit count. Each checkout
+must build a fresh logical Ledger session with a new dispatch identity,
+fresh cancellation and no retained request evidence. The physical
+connection is eligible for return only after a completed provider stream
+and verified autocommit. Discard on any error, cancellation, unknown
+commit or unwinding. Stop checkout on runtime close and release idle
+connections after tracked workers drain. Test stale dispatch identity
+and unknown-commit discard before the paired HTTPS measurement.
+
+The local physical-reuse candidate runs under the provider execution
+permit in the observed server. It clears request custody before parking
+and constructs a new logical Ledger on checkout. Native controls deny
+an old dispatch after checkout and refuse to park an applied but
+unacknowledged commit. The first same-image comparison met the reuse
+and BEGIN CPU thresholds. Independent immediate SSE missed both
+first-frame and throughput thresholds. The matched first-frame tail
+was spent mainly inside the admission commit on the reused connection.
+Keep reuse confined to qualification. Measure that commit separately
+from BEGIN and require the full original performance gate before
+adoption.
+
+The focused immediate-SSE replay observes the native COMMIT future and
+the Unix sync span in the same request. Record poll wall, thread CPU,
+Pending returns and sync spans separately. Pending can represent a
+coordinator yield. Sync spans count calls on the observed thread and
+do not enumerate the physical files. The previous independent-domain
+long commit did not recur in the focused run. Its result remains in
+the adoption record. A focused replay leaves paced coverage and the
+full reuse gate pending.
+
+The release-buffer candidate reused only the bounded event vectors
+after encoding, guarded release and Workflow result capture. A partial
+next range retained its contents, and Protobuf and Arrow owned the
+encoded payloads independently of the vectors. The same-image
+comparison reduced explicit vector allocations in the observed cases.
+Several cases exceeded the first-frame gate, and one lacked the
+required native preparation span. Preserve those outcomes and the
+partial receipt. The candidate was removed. The observed first-frame
+tails included work before the first reusable group, so the recorded
+ratios alone do not attribute that regression to vector reuse.
+
+The driver observer uses a single dispatcher for the prepare and Unix
+sync callsites. Each thread selects the expected span inside the
+transaction measurement. The process accounting mode snapshots the
+same Rust and Go child PIDs after readiness and after the offered work.
+The four Go control processes are summed per arm. The benchmark driver's
+Go heap deltas cover both arms and the local HTTPS fixture, so they
+describe the harness window. Keep these separate from component
+allocation benchmarks and from the unmeasured Rust and Go child heaps.
+
+The Go child heap diagnostic runs the existing control executable
+entry in a test image and reads native cumulative allocation
+counters through private process pipes. Read each child after
+readiness and again before shutdown. Four idle controls per arm and
+the direct Rust arm recorded zero Go child heap allocation during
+their respective windows. The Go forwarding arm allocated 13.7 to
+15.9 kB and 125 to 297 objects per completed stream across the eight
+cases. Those counts include the whole Go forwarding process and do
+not identify the allocating call sites. The Rust child heap remains
+unmeasured. The production control image continues to build through
+its ordinary entry.
+
+The wire-binding experiment compared the Protobuf request directly
+with the admitted static plan before forwarding. Its isolated
+binding allocated zero objects for both tested request sizes.
+Whole-process allocation varied across the eight native cases.
+Shared paced Protobuf exceeded its allocation limit, three cases
+missed first-frame limits, and one also missed throughput. The exact
+binding, race and native controls passed. Preserve the two Go
+images and comparison while retaining the existing runtime entry.
+Use process-level allocation call sites to select the next
+forwarding change.
+
+The Go allocation profile uses a separate intrusive run. Capture
+native allocs profiles before and after the steady workload in each
+child and retain the direct Rust arm as an idle Go control. Subtract
+the baseline profile per arm and exclude stacks rooted in the
+profile writer. Profile sampling and forced collection change the
+allocation totals, so use these deltas for call-site attribution.
+In both shared paced encodings, reconstructing the outbound
+Protobuf plan accounted for exactly seven objects and 656 bytes
+per stream. The receive stack accounted for about 4.4 kB per
+Protobuf stream and 7.2 kB per Arrow stream. These cumulative
+stacks can overlap. Evaluate retaining the already approved outbound
+plan at publication before changing the gRPC decoding boundary.
+
+The published outbound comparison built both Go images with the
+same counter-only observer and used the same Rust release. The
+candidate retained one owned Protobuf plan per static operation
+and allocated a separate envelope per request. Shared paced
+Protobuf fell from 302.1 to 274.4 Go heap objects per stream, but
+independent immediate Arrow missed both tail and throughput
+limits and independent paced Protobuf missed its tail limit.
+Exact matching, concurrent marshaling under race detection,
+and native negative controls passed after adapting the bootstrap
+microbenchmark to the candidate's message type. Retain the
+existing runtime entry and archive the candidate.
+
+The Darwin allocator diagnostic attached a test-only counter to
+the same Rust release image. It counted successful calls and
+requested bytes at four imported libc allocation entrypoints.
+All idle deltas were zero. Across four paced cases it observed
+about 161,000 to 526,000 calls and 34.5 to 109.1 MB requested
+per stream. These are cumulative requests, including realloc
+requests. Internal allocator calls and other allocators are outside
+this scope. The counter increased Rust CPU by 56 to 64 percent.
+Keep the plain arm for latency and throughput. Attribute the
+allocation sites before choosing changes to Turso or frame handling.
+
+The same-image stack sample attributes allocation calls rather
+than CPU time. Across the two shared paced cases, approximately
+90 percent of sampled calls had a Turso frame and 62 to 67 percent
+were in statement preparation. Nearly all preparation samples
+included a parser or translator frame. The largest named callers
+through the currentness helper were original task reconciliation
+and member manifest reads. Keep the deciding reads and their exact
+checks. Evaluate fixed-program preparation at those callers before
+changing frame encoding or widening reuse. The first symbolization
+used the interposer's image address and was discarded. The repeat
+identified the executable by its Mach-O type and verified that
+selection with a separate four-allocation probe.
+
+The published DataFusion Parquet point-read study attributes about
+12 percent of CPU to logical planning and 50 percent to physical
+planning in its measured configuration. Its custom physical plan
+reuse improves the sampled lookup workload. DuckDB separately
+documents direct Arrow analysis and vectorized execution. Use that
+published evidence if a separate analytical workload is requested.
+The default Gateway deployment has one Turso store. It uses compatible
+prepared programs with fresh bindings. Arrow is an output and
+interchange format. Exports can feed a consumer through the existing
+boundary when it needs them.
+[[https://datafusion.apache.org/blog/2026/10/24/point-queries/#prepared-statements][DataFusion point reads]] · [[https://duckdb.org/2021/12/03/duck-arrow][DuckDB Arrow integration]]
+
+The combined original-task and manifest preparation diagnostic
+rebinds the same three fixed statements to current transactions.
+In shared paced Protobuf, original-task P50 fell from 0.519 to
+0.271 ms and process CPU from 91.17 to 75.23 ms per stream.
+With the same allocator counter loaded in both arms, observed calls
+fell by 24 percent for Protobuf and 19 percent for Arrow. Use the
+plain arms for the latency gates. Three cases still missed first
+frame and one also missed throughput. Keep this mode diagnostic.
+
+The first-use manifest experiment compared eager and lazy preparation
+with original-task programs prepared in both arms. In four independent
+cases the preflight P50 fell by 12 to 20 percent. Both Arrow cases
+exceeded the existing first-frame limit, and three cases increased
+median domain hold. Keep the existing diagnostic modes and retain
+this comparison as evidence of work moved into the first deciding read.
+
+The paced HTTPS diagnostic pairs light and traced Rust workers on the
+same release image, with Go forwarding in both arms. Process CPU is
+similar in the four cases even though their first-frame tails vary.
+Shared Protobuf remains the most CPU-intensive case with tracing off.
+A separate intrusive stack sample observes allocation, Turso SQL
+translation, currentness queries and MVCC access. Use the existing
+physical SQL-program comparison to isolate repeat preparation. Every
+guard must still bind its parameters and read the current transaction.
+Wall-clock stack samples include sleeping threads. Keep their counts
+separate from CPU shares and from allocation totals.
+
+The fixed SQL-program comparison uses the same release worker, new
+bindings and current transaction rows in both arms. Across eight
+four-way HTTPS cases, the cache lowered Rust CPU per stream in each
+case. Shared paced Protobuf fell from 96.17 to 69.61 ms per stream at
+the same throughput. Two Arrow cases exceeded the first-frame P99
+limit. The shared immediate tail included longer enqueue and consume
+spans on the affected request. This observation does not isolate the
+cause of the tail. The measured native chain also hit its existing
+operation-channel startup deadline in the independent domain. Keep
+the SQL cache comparison diagnostic and track startup separately.
+
+The focused Arrow repeat uses the same optimized image and the same
+first-frame and throughput limits. The shared immediate tail did not
+recur. The shared paced case exceeded its first-frame limit. On that
+P99 request the largest added span was enqueue domain wait, while
+headers-to-queue was slightly shorter. The two runs support tracking
+the lock holder and its transaction stage alongside the waiter before
+changing shared-domain scheduling. The measured Go control chain now
+uses the benchmark's optimized WIF image. Both settings passed its
+existing startup and exit gates on that image. The earlier debug-image
+startup failure remains in the original receipt.
+
+The shared paced Arrow diagnostic joins each request's scope records
+by scheduler ordinal and uses one monotonic clock per release worker.
+The sample immediately before grant release gives a conservative
+measure of conflicting holder overlap. The five longest enqueue
+waits per arm were covered primarily by earlier admission scopes.
+The longest wait in each arm overlapped three earlier admissions.
+Their transaction holds were longer than their commits. This run
+passed the focused first-frame and throughput limits and did not
+reproduce the previous long tail. Preserve the earlier failure and
+use the holder spans to investigate work inside the admission
+transaction before changing the scheduler.
+
+The history comparison experiment matched each current history row
+directly against the verified original member map for its origin.
+Both arms read the same rows and checked the exact origin, node,
+member, event and digest. The experiment avoided flattening the two
+maps. The eight-case same-image run missed its enqueue hold target
+and exceeded first-frame or throughput limits in multiple cases.
+The host had elevated load during the run. Preserve those receipts
+and keep the existing comparison. Investigate the original member
+projection and reservation statements separately inside the deciding
+transaction.
+
+The admission timeline splits the exact domain view into original
+task verification, member manifest comparison and history comparison.
+It records reservation writes separately. In both shared paced
+encodings and both SQL-program settings, the manifest span grew
+from the first eight waves to the last eight. Reservation medians
+stayed within 0.32 to 0.37 ms. The manifest was the largest measured
+part of the exact view. Keep comparing exact original identities,
+digests, ceilings and settled exposure from current rows. Target the
+intermediate projected manifest and its repeated decoding before
+changing the reservation writes or shared-domain custody.
+
+The streamed projection experiment reused the original member map
+and marked each live projected member once. It retained the same
+SQL projection, digest and ceiling decoding, settlement subtraction,
+and exact history comparison. Removing the intermediate row vector
+and second map did not lower shared paced Protobuf manifest P50.
+Two immediate independent cases missed the first-frame limit and
+one missed the throughput limit. Preserve the receipts and retain
+the existing projection. The manifest corruption controls passed.
+The separate shared-budget control hit its existing startup deadline
+before making a provider call. The next comparison should target the
+number of live statements per shared domain, keeping the exact
+per-origin member and history checks.
+
+The shared-domain batch reads the original and projected member
+rows with two live statements selected by the current budget or
+history root. It preserves individual origin, settlement, and
+history checks. Shared paced Protobuf manifest P50 increased from
+0.743 to 0.852 ms. Shared immediate Arrow also missed both
+the first-frame and throughput limits. Turso selected the budget and
+history indexes and the three family indexes. It expanded the root
+selection in each branch of the union, so the SQL statement count
+understates the lookup work. The budget-only and history-only
+sibling substitution controls passed. Keep the per-origin statements
+for the deciding path.
+
+The fixed manifest-program experiment warms two compatible Turso
+programs on the request connection before acquiring domain custody.
+It rebinds each origin and reads current rows inside the deciding
+transaction. All eight cases lowered manifest P50. Shared paced
+Protobuf lowered manifest P50 from 0.769 to 0.551 ms and Rust
+CPU from 84.45 to 79.14 ms per stream at unchanged throughput.
+Both paced Arrow cases missed the first-frame limit. Keep the
+comparison diagnostic and reproduce the Arrow tails against a
+same-setting control before promoting it.
+
+The paced Arrow follow-up used the identical optimized image. In
+the fresh/fresh control the two arms differed by 4.6 percent at
+independent first-frame P99 and 8.5 percent at shared first-frame
+P99. Both were within the registered limit. In the new fresh/prepared
+pair both paced Arrow cases passed first-frame and throughput limits.
+Keep the original eight-case failure. The focused repeat supports a
+full matrix repeat under the same controls before changing the runtime
+default.
+
+The independent full-matrix repeat lowered manifest P50 in all eight
+cases, including shared paced Protobuf from 0.772 to 0.580 ms.
+Three cases missed the first-frame limit and independent immediate
+Arrow also missed throughput. The matched shared paced Arrow tail
+spent 49.42 ms in upstream transport compared with 0.70 ms in the
+reference tail, while enqueue was shorter. The matched independent
+immediate Arrow tail added time before Rust worker admission.
+Keep preparation diagnostic. Extend the matched request breakdown to
+separate connection establishment, TLS, write and response headers.
+
+The first-frame receipt now verifies that the four transport durations
+sum to the matching request's upstream interval. The Arrow diagnostic
+did not reproduce the earlier 49 ms transport sample. The shared paced
+prepared tail spent 15.58 ms upstream, including 9.07 ms awaiting
+headers and 4.86 ms in TLS. Its consume stage also grew. The independent
+paced tail grew while its upstream time fell. Retain the four-case
+receipt and its three first-frame failures. Connect, TLS and the
+write/seal remain inside the modeled guard. Header wait stays after
+commit and carries no authority.
+
+Static Go dispatch keeps the exact independently owned plan admitted at
+publication. Each request compares its original key, profile, commitment,
+model, ceiling, ordered routes and body against that plan. The forwarded
+revision and fence come from publication. The separately maintained
+configuration validator still checks the entire plan before ownership
+transfer, and Rust applies current authority at execution. The Go binding
+microbenchmark compares the previous request projection with this exact
+match using distinct body storage. Its timing covers the binding step.
+Native controls cover restart, revocation, shared budget and publication
+outcomes through the actual service.
+
+Dynamic Go dispatch reads the authenticated catalog on each request and
+registers the resulting original task against its publication before forwarding.
+It retains one immutable local projection for an exact catalog version and
+identical record bytes. A version or byte change takes the existing projection
+path, and a failed read or invalid projection refuses routing. Rust still
+checks the catalog version in admission. The projection comparison uses
+separate input and retained buffers, and covers a single entry and the same
+entry with 64 KiB of padding. The native comparison holds the Rust release
+image fixed and races four requests against one original in each of the
+complete, partial and Cedar-denied cases. It checks source withdrawal and
+restart through the existing HTTPS integration fixture.
+
+Concurrent misses recheck the retained version and bytes after acquiring
+projection custody. One request builds the projection for an identical
+snapshot. A hit stays on the atomic read path. The custody applies to local
+projection only, after the source RPC and before registration.
+
+The Go projection also owns the Protobuf task registration request
+for its exact catalog record and publication. Hot requests reuse the
+read-only wire object. They still inspect the authenticated catalog,
+match the exact version and bytes, issue registration, and forward the
+current catalog version to Rust admission. The dual-order local
+binding comparison reduced 667–694 ns to 177–210 ns and 23 to 9
+allocations per call. It measures work before transport. Both Go
+variants passed the same release HTTPS control with four contenders
+for complete, partial and denied outcomes. The race and SysML checks
+passed, and the Go hot-path change is in the working tree.
+
+A follow-up timed the existing four-contender HTTPS waves after
+catalog activation. In each of the complete, partial and Cedar-denied
+cases, three contenders stopped at catalog inspection before
+projection, and one reached the Rust operation RPC. The three
+forwarded requests spent 0.77–1.95 ms in catalog inspection,
+0.16–0.21 ms in local projection and 2.34–3.63 ms in task registration.
+This was the first projection after activation, not the earlier hot
+binding benchmark. The Go timings include both RPCs' transport and
+server work. They do not record the original inspect status or prove
+that all nine refusals had the same cause. Reuse the source owner's
+existing custody in the next timing comparison to separate admission,
+transaction execution and reply before changing the command lane.
+
+The source-owner observation retained the original gRPC status and
+matched the Go waves to the Rust command trace. Seven of twelve
+requests were refused at inspection with =ResourceExhausted= and
+the exact source-lane-full reason. Two other contenders completed
+inspection but stopped at registration without a registration
+command executing. One reached the operation RPC in each case.
+The register failure status was not retained in this sample.
+
+In the complete and partial cases, the admitted registration commands
+spent 1.85–2.03 ms executing, including 1.72–1.83 ms holding the
+transaction and 57–61 µs committing. In the denied case the command
+spent 9.01 ms from submission to owner dequeue and 4.05 ms executing.
+The paired inspection also spent 4.37 ms before dequeue. Answering
+took under 5 µs in all six admitted inspections and registrations
+of the forwarded paths. Separate the accepted command's scheduler
+delay from the rejection at capacity. These single-original waves
+do not establish the behavior of four independent dynamic operations.
+Test that workload before changing admission behavior or adding
+source command capacity.
+
+The independent-operation follow-up used four Go owners and four
+original family/node keys on the same Rust source owner. The two
+arms used the same release image and equivalent fixture inputs.
+They used separate API quota keys with sufficient shared user and
+tenant capacity. The serial arm completed all four. With simultaneous
+starts, one completed and three received the exact source-lane-full
+inspection refusal. The refused requests emitted no frames and had
+no provider claim. Both arms verified the upstream invocation count.
+Serial first frames arrived in 19.30–21.85 ms, and the sole concurrent
+completion had a 21.57 ms first frame. This distinguishes rejection
+under contention from slower service for the accepted request in
+this sample.
+
+The fixture also confirmed that the management connection and four
+dynamic Go owners cannot occupy the four-connection source listener
+together. Publish and register the review before closing the
+management connection, then start the four owners with separately
+owned configurations. Keep the connection cap distinct from the
+command capacity in the next comparison. The original setup
+failures remain separate from measured requests.
+
+The bounded-wait experiment kept one executing source command
+and allowed at most three waiting catalog inspections or published
+task registrations for up to 50 ms. Both orders ran on one release
+image. The reference completed one of four independent operations
+in each order. The candidate completed all four in both orders.
+Candidate first frames took 41.65–57.32 ms compared with 22.59 and
+36.32 ms for the only two reference completions. The measured
+candidate source path took 5.53–31.56 ms. Compare completion counts
+and accepted latency separately.
+
+The cancellation control drops a waiting future and observes the
+return of its waiting permit while the active permit stays held.
+The same-original HTTPS controls still enforce exactly one
+invocation, retain partial exposure, and deny a forbidden provider.
+Keep the experiment isolated. The semaphore's waiter handoff can
+deny an immediate publication or withdrawal attempt before the
+next waiting read executes. Qualify mutation progress under
+continuous catalog arrivals before considering adoption.
+
+The reserved-handoff candidate retains one executing command, three
+catalog waiters, and one separate mutation reservation. A catalog
+waiter yields a handed-off permit while that reservation is present.
+The first implementation made waiters compete for the reservation
+mutex after release and could expire healthy readers. Keep that
+failure receipt. The revised reservation has a single mutation
+owner and notifies readers on release. Waiting or cancelling still
+creates no source command until the active permit is obtained.
+
+The deterministic control reproduced FIFO refusal while a catalog
+waiter held the next handoff. The revised mode gave that turn to
+the reserved mutation. In three real owner rotations, each with
+three queued catalog reads, the rotation committed first. All nine
+reads from retired identities were denied, and each new identity
+could read. The owner drained naturally. Both modes completed all
+four independent HTTPS operations on the same release image. The
+candidate also passed the complete, partial and denied same-original
+cases. Nine source owner checks and two SysML checks passed.
+The next ABBA used a single release diagnostic image and three authenticated
+catalog readers. Each reader had completed four inspections and all three
+had a call in flight when the catalog withdrawal began. Both FIFO attempts
+returned ResourceExhausted. Both reserved-handoff attempts committed in
+0.58–0.69 ms. All 144 inspections completed in each wave. The successful
+withdrawals denied both direct execution with the previously registered
+original and old catalog version and dynamic Go routing. No provider
+invocation occurred until restoration and the original completion
+control.
+
+A linked Scheme release then compared FIFO, mutation priority, and
+priority that also covers the authenticated read that prepares a
+hard-fact resolution. Three readers repeatedly inspected the catalog
+head on the same source lane. The hard-fact fixture has no published
+catalog, so the inspection exercises current-row and authority reads.
+The published catalog projection is covered by the preceding test.
+After each reader had completed four calls, the experiment staged
+withdrawal under pressure, restarted, and resolved it under renewed
+pressure. FIFO refused both first attempts in both waves. Mutation
+priority admitted staging and refused both resolution calls at the
+source lane. Covering the preparation read admitted both operations
+in both waves, with staging at 0.88–1.11 ms and resolution at
+6.67–7.05 ms. All 144 inspections succeeded in each pressure window.
+Both successful phases denied execution before the readers drained,
+and the original A→B→A control restored exactly one dispatch. Reference
+refusals were retried after the readers drained solely to verify
+recovery. Keep source-slot custody separate from Scheme derivation.
+
+The linked runtime enables the bounded handoff at the existing source
+owner. Catalog inspection and published registration can wait in
+three slots. One separate priority reservation covers the tested
+publication and rotation commands and hard-fact prepare, stage and
+resolve. A wait expires at 50 ms and has no command before the grant.
+The fact preparation command returns its permit before Scheme
+derivation. The final resolution takes a separate slot and rechecks
+the exact durable barrier. The source-owner tests cover cancelled
+and expired waits and identity rotation ahead of queued readers.
+
+The release regression reused the original Go ingress and HTTPS
+fixture. Four independent dynamic operations completed with five
+frames each and retained their exact claims. Catalog withdrawal
+committed at 0.66 ms, and hard-fact stage and resolution committed at
+0.83 and 12.21 ms, on the first attempts under the bounded reader
+load. All 144 inspections completed in each of the three pressure
+windows. The original partial response, Cedar denial and source
+ingress credential controls passed. This sample verifies bounded
+progress and custody and does not establish a latency percentile.
+On that image the original four-owner WAL A/A and fresh/retained
+waves matched the deferred-observation reference join digests.
+Both modes passed the withdrawal, nested restart and owner drain
+controls. CompileSource, nested recovery and natural exit peaked
+at 6.59 s, 7.70 s and 1.37 s respectively.
+
+The Rust source owner retains one verified canonical catalog response.
+Each inspection still authenticates the source and reads the current row.
+The owner can return that row's bytes directly on an exact version and
+byte match. A changed record goes through typed decoding, digest
+verification and canonical serialization. An older noncanonical record
+still returns canonical bytes. The typed reads in deciding admission and
+Workflow use the existing verification path.
+
+In the fixed-release catalog comparison, the 64-entry response had
+23,001 bytes. Single-caller inspection P50 fell in both candidate runs,
+while the observed single-caller P99 rose. Under four simultaneous
+readers the one-slot source lane admitted 32 of 128 requests in each
+run and refused the other 96. Accepted-request P50 and P99 fell in both
+candidate runs. Keep these inspection samples separate from provider
+stream first-frame and release qualification.
+
+The admission-overlap control retains the existing pressure worker and
+separates the admission barrier from the authority span. Its selected turn
+shortens the measured barrier, while pressure still raises queue-to-Go
+latency. The immediate Arrow ABBA control measures a lower median send
+interval with coalescing. Keep both results scoped to their workloads and
+retain the paced observations before changing the batching default.
+
+The follow-up shared-domain overlap used the original four-owner,
+64-range entry and 128 streams per arm. Without the pressure worker,
+selected closure moved admission-barrier P99 from 21.14 to 9.40 ms
+while authority-span P99 moved from 29.99 to 43.25 ms and completion
+throughput moved from 16.29 to 14.67 streams/s. With pressure,
+barrier P99 moved from 19.90 to 15.32 ms and queue-to-Go P99 moved
+from 9.62 to 5.86 ms. These are separate local workload observations.
+
+The shared paced Arrow trace joined 256 requests to 2,816 scopes
+on the same observed release. The two longest selected-closure
+admission waits were 48.24 and 44.71 ms. Both overlapped the same
+41.56 ms exclusive admission holder for 41.55 ms. That holder spent
+38.93 ms opening the native transaction and 2.63 ms after opening.
+This identifies a shared blocker for those requests. The next
+diagnostic should join driver preparation, poll CPU and pending
+time to the specific native BEGIN outlier before changing lock
+custody. Retain exact current authority at the deciding scope.
+
+The next observed release added those counters to each existing
+scope timeline. The same shared paced Arrow entry recorded 128
+admissions per arm. Median BEGIN was 1.43 ms in both arms. Four
+observations exceeded 10 ms across the two arms. Every admission
+BEGIN completed on one poll without Pending. The four outliers
+spent 11.19–20.19 ms in BEGIN, with 0.82–1.76 ms of thread CPU and
+0.14–1.00 ms in Turso preparation. At the longest selected-closure
+wait of 59.72 ms, two exclusive admissions with long BEGINs held
+the overlapping scope for 22.58 and 14.68 ms. This locates most of
+the outlier time inside a synchronous poll outside SQL preparation.
+Distinguish synchronous waits from OS preemption with a thread
+state trace on the same workload before choosing an optimization.
+
+An Instruments capture on the same observed image joined all 256
+scope and timeline log writes from the traced arm to their kernel
+thread. Its one admission BEGIN above 10 ms took 17.04 ms. Across
+the 17.03 ms interval common to the timing bounds, the thread was
+blocked for 16.10 ms and preempted for 8.3 µs. A 16.25 ms mkdir
+call ran in Turso's ensure_temp_database path through the transaction
+opcode and tempfile directory creation. The capture locates one
+tail event.
+
+The follow-up tested that connection-local initialization before the
+grant on the same observed image. Both arms used selected closure,
+four owners and 128 shared paced Arrow streams. The candidate
+initialized TEMP in all 128 admissions with the same spill policy
+and FULL durability. BEGIN P99 fell from 1.91 to 0.32 ms. Exclusive
+hold P99 rose from 5.81 to 7.29 ms and enqueue P99 rose from 21.32
+to 25.23 ms. First-frame P99 moved from 76.22 to 82.81 ms and
+throughput from 26.44 to 26.42 streams/s, within the original
+first-frame and throughput limits for this one case. The two
+longest candidate holds spent 6.97 and 7.22 ms after BEGIN,
+including 3.94 and 4.22 ms in current-claim checks. Neither arm
+reproduced the earlier long BEGIN. Native authority controls passed.
+Archive the experiment and retire the diagnostic switch. Further
+work on these ranked holds should split current-claim reads from
+validation inside the deciding transaction.
+
+The next four-owner shared paced Arrow comparison measured membership
+lookup and both manifest reads separately inside the claim check.
+An indexed UNION ALL membership query included overlapping origins
+once and preserved disjoint budget and history membership. It met
+the case's first-frame and throughput limits. Membership median
+rose from 43 to 51 µs and claim P99 was 4.48 versus 4.50 ms.
+The first-frame and admission-hold improvements in this cohort are
+larger than the membership interval. Keep the separate indexed
+membership reads and retain the timing split. In the reference,
+the manifest median was 0.669 ms, including 0.571 ms in the two
+reads. The median per-request remainder was 0.096 ms, including
+validation and metering settlement checks. This selects manifest
+read execution for the next attribution on the admission path.
+
+The admission driver split recorded 512 committed and 512 projected
+reads per arm across 128 shared paced Arrow streams. No read returned
+Pending. Fresh preparation medians were 44 µs for the four committed
+reads and 151 µs for the four projected reads. The existing prepared
+program mode moved both medians to zero inside the transaction.
+Poll wall outside preparation remained close, from 157 to 153 µs
+for committed and 211 to 208 µs for projected. Total manifest read
+median fell from 0.566 to 0.366 ms. The same-image first-frame P99
+and throughput ratios were 0.778 and 1.040 in this focused cell.
+The longest fresh projected read group spent 6.13 ms in polls with
+0.49 ms of thread CPU, including only 0.15 ms in preparation.
+Preparation reuse reduces the median cost. The long poll gap still
+requires separate attribution.
+
+The same prepared-program image then ran the full eight-case matrix
+in both orders, with 128 streams per arm per case. All eight passed
+in the first order and four passed in reverse. Reverse independent
+immediate Protobuf missed both limits. Independent immediate Arrow
+missed throughput, and shared immediate Arrow and independent paced
+Protobuf missed first-frame P99. Both shared paced encodings passed
+in both orders. Keep the existing opt-in mode and preserve the full
+matrix. The driver split supports the preparation saving on the
+focused workload while the two-order result leaves adoption open.
+
+* Local Rust, Go and Scheme integration baseline
+
+Develop and qualify the Rust and Go execution path locally while ASCENT is being
+refactored. Use the existing Scheme application through the native SDK and keep
+its local source path available for integration work. CI, dependency cold
+preparation and ASCENT optimization are outside this delivery sequence. The
+release and approved site replay gates below apply when release qualification
+resumes.
+
+** 1. Establish the local Rust and Go baseline
+
+Start with the Rust contract, Cedar policy, ledger and broker libraries. Use
+their existing unit and property tests with the locked Cargo graph. Run the Go
+control plane, gateway client, routing and stream packages under the race
+detector. Use four test workers and the configured Go toolchain. Keep each
+failure with its exact command and host, and resolve it at the owning layer
+before broadening the run. The existing =check-rust= and =check-go= entries are
+the broader local regression gates after a focused change passes.
+
+#+begin_src sh
+cargo test --locked --offline -j 4 -p weaver-contracts -p weaver-policy \
+  -p weaver-ledger -p weaver-broker --lib -- --test-threads=4
+go -C go test -parallel=4 -count=1 -race ./internal/controlplane \
+  ./internal/gatewayclient ./internal/routing ./internal/streaming
+#+end_src
+
+The first vertical slice is source withdrawal and nested Session recovery.
+[[file:../../../dev/sysml/ControllerObjectLifecycle.sysml][ControllerObjectLifecycle]]
+owns source identity and preparation. [[file:../../../dev/sysml/ControlActivation.sysml][ControlActivation]]
+owns activation boundaries. [[file:../../../dev/sysml/StreamingExecution.sysml][StreamingExecution]]
+allocates the release path. Use the existing tests to verify that Go preserves
+the release receipt, Rust checks the frontier, claim and reservation, and the
+Scheme Governor selects only branches enabled by the current facts. Exercise the
+real gRPC and provider path for withdrawal, restart and a join that runs once.
+
+** 2. Connect local Scheme sources through the existing owners
+
+Keep an already prepared =GERBIL_PATH= as the reference environment. For an
+edited dependency, use a separate development package prefix under the ignored
+verification cache. Reuse prepared inputs for the other dependencies and use
+=gerbil pkg link --global-env <package> <checkout>= in that prefix. Gerbil
+requires the destination package slot to be free before linking it. Record the
+resolved path, revision and worktree state of each linked source in the local
+receipt. Read local checkout paths from the developer environment.
+
+Linking selects the package source. Build the affected modules through the
+package's native entry and let SDK Build Packages stage the application library
+for the Rust test. Use that library in =GERBIL_LOADPATH= before the rest of the
+prepared libraries. Check the selected module and loaded product in the actual
+consumer so a stale compiled dependency cannot masquerade as the linked
+candidate. Start with the current package interface for Rust and Go work.
+Exercise the refactored ASCENT checkout as a candidate when its interface
+builds. Attribute source-linked results to that checkout and keep release-pin
+qualification separate.
+
+** 3. Verify Rust and Scheme integration and measure the affected path
+
+Use the existing SDK owner tests followed by the focused Go test
+=TestProviderControlSessionNestedChoiceAndParallelRecovery=. Pair it with
+=TestProviderControlHardFactWithdrawalRestartAndABA= when touching source or
+ledger authority. Set up the [[file:../../../crates/governance/README.org][Gerbil Scheme SDK environment]]
+and reuse the prepared policy pkg-config metadata before invoking the Go
+fixture:
+
+#+begin_src sh
+go -C go test -parallel=4 -json -count=1 -race -tags=integration,schemeintegration \
+  -timeout=10m ./dev -run '^TestProviderControl(SessionNestedChoiceAndParallelRecovery|HardFactWithdrawalRestartAndABA)$'
+#+end_src
+
+Keep the existing 12-second recovery and 15-second natural exit bounds. Run the
+affected native suite once after focused correctness passes. For performance
+changes, define the sample count, comparison and pass criteria before running.
+Use the same local workload on a fixed host and record preparation, native
+compile, first load, steady-state execution and restart separately. Keep the
+generated receipts and failed samples under the verification cache. A cold
+dependency installation is needed only to qualify that installation path.
+
+The first open checkpoint is the registered =CompileSource= RPC after the
+authenticated source channel connects. The startup trace distinguishes
+compilation and response validation from publication inspection, task
+registration and finalization. On the prepared reference image the startup
+failure reproduces at the Rust server's existing 10-second RPC deadline,
+before publication. Use the existing Reader metrics to compare import and
+bootstrap wall time with CPU time under a measured host load. Keep the same
+reference image and the original failure receipts when assessing a candidate.
+Control readiness precedes the nested workflow's own recovery clock.
+
+The next candidate uses the Core Reader's narrower runtime context catalog
+and its declared POO revision in an isolated package prefix. Qualify the
+producer's existing Reader and compiler Context tests first. They check that
+the Reader captures its own Context, excludes build entry roots, and still
+rejects changed source inputs. Then rebuild the affected downstream package
+products and compare the same Weaver fixture and startup phases with the
+prepared reference. Attribute the comparison to the complete Core and POO
+candidate pair. Record host load with each sample and retain the original
+startup, recovery and shutdown limits.
+
+The candidate Core is the source revision named by the prepared Lab checkout's
+Core gitlink. Its declared POO revision and the existing ASCENT revision were
+built in the candidate prefix, and the SDK manifest confirms use of that prefix
+for the native modules. The local functional suite and native owner tests pass.
+The fixed-load startup comparison shows fewer Reader role imports on the
+candidate. Both builds met the RPC deadline in that comparison, with different
+background host loads. Keep the earlier timeout evidence and treat the
+comparison as a bounded local check. The ASCENT refactor has a separate Core
+dependency selection. An isolated build of its committed refactor stopped at
+Module publication admission. Its relations, inference and evidence roles
+declare the earlier Yuanxu contract object, while the Lab-selected Core
+requires a native POO Type for a scope contract. The local Weaver candidate
+therefore uses the previously qualified ASCENT package. Admit the refactor
+after its owner supplies compatible role declarations and the native consumer
+passes the same session and withdrawal controls.
+
+The existing CPU pressure fixture did not reproduce the reference timeout.
+Samples taken during the original source compilation path identified phase
+modules entering Gambit's dynamic loader. Module identity and the generated
+code explain the bypass: the SDK installs its redirect in the VM's value
+binding for =load=, while the compiled Gerbil loader calls the primitive
+binding directly. The native two-module control exercises both bindings and
+checks that unrelated carriers still load normally.
+
+Qualify the loader candidate in a private SDK copy using the same package
+sources, Weaver fixture and deadlines. Compare the actual loaded module
+identities and record uninstrumented timing separately from the process
+samples. Verify publication, the nested selection controls and natural exit
+before running the affected suite. The installed SDK remains the reference
+until the candidate is validated in the consumer. Keep the VM-local binding
+and normal fallback semantics in any SDK implementation.
+
+The first private SDK build passes the affected four-worker Go suite,
+including source withdrawal and A→B→A, nested choice recovery and a single
+join. Rust tests from the same build pass the owner cleanup and owned VM
+capture checks.
+
+The source qualification uses Gerbil's =src/gerbil/runtime/loader.ss= from
+the prepared SDK revision. At the carrier load inside =load-module=, evaluate
+=((##global-var-ref 'load) path)= to honor the SDK's VM-local binding. Use
+Gerbil's optimizing compiler to emit static Scheme, then the SDK's matching
+Gambit compiler to emit C and the object. Compare exported symbols and inspect
+the generated binding. Stage that source and those products in the private
+SDK, and let the existing Weaver Build Packages entry link the provider.
+
+Both source-built variants pass the focused native gRPC control with the same
+Core, POO and ASCENT. The link-input digests differ at the loader and the
+compiler timestamps of two rebuilt fixtures. The diagnostic snapshots show
+the candidate uses fewer dynamic carriers and retains the fallback. Keep
+process samples separate from the uninstrumented RPC timings. The paired runs
+verify the loading mechanism under the observed host conditions. They do not
+estimate startup tail latency.
+
+The source-built candidate's full run with Reader stage accounting still
+misses the existing =CompileSource= deadline on several cases. The affected
+cases fail during readiness, before the scenario recovery clock starts.
+Preserve the failing image, host observations and timing receipt. The
+partial-request case passes a separate same-image diagnostic replay with
+fewer dynamic carriers and continued expander and POO work. With accounting
+disabled, the same image passes the default four-worker integration entry,
+including restart, withdrawal and the nested join. The Rust owner and VM
+checks pass on binaries from that same build. The runs encounter different
+host loads, so they cannot isolate accounting overhead. Keep the deadline
+failure receipts as the reference for the next candidate. Attribute the
+Reader's remaining compiler Context imports and role expansion while
+retaining source and authority checks.
+
+On the same image, a default/stage/stage/default sequence of the original
+partial-request restart case passes all four runs. The first compile and the
+restart overlap in timing across both settings. Treat this as a bounded
+accounting control with the host observations, separate from the earlier
+failed full run. For the next candidate, follow the Lab-selected Core's
+separation of role-initializer and published Scope support. Its native
+controls must retain currentness for mutated or missing initialization inputs
+before the actual Weaver consumer can use the candidate.
+
+The Lab-selected initialization-support Core passes the 17 native Reader
+and compiler controls. The consumer uses that isolated Core and Lab, the
+same POO artifacts, and the established ASCENT source rebuilt against the
+candidate. The native plan and test-owned image confirm the candidate
+Reader and linked dependency inputs. The focused provider run and the
+same-image default regression pass, including partial request recovery,
+withdrawal, A→B→A and the nested one-time join. The linked Rust owner and VM
+tests and existing OpenSysML requirement trace also pass. Candidate results
+cover the observed local conditions. The earlier stage-accounting timeouts
+remain separate evidence for the readiness tail.
+
+The same candidate image passes all four previously failing scenarios with
+stage accounting enabled, then passes the complete affected suite with the
+same accounting configuration. The replay partitions the six startup traces
+into the authenticated compile RPC, bundle decode, publication and authority
+reconciliation. It also retains the subsequent Governor owner calls and
+restart traces separately. The Go workspace race suite passes. These runs
+qualify the local source-linked candidate under the existing deadlines. The
+earlier run encountered different host load and remains a failed receipt.
+Release distribution and matched site performance qualification retain
+their separate gates.
+
+The later locally available ASCENT refactor also refuses at native
+=module/publication= scope admission when linked against the qualified Core
+and POO. Keep the established ASCENT source in the local candidate. Admission
+of the refactored package and its upstream performance work remain separate
+from the completed local consumer gate.
+
+The SDK =bfe803f= debug owner test linked even though the separate
+server binary hit a Darwin linker bus error. Its first direct run
+rejected the original during source selection. With its own staged
+package library restored to the runtime load path, the same test
+binary captured both authenticated source results. Each Scheme
+capture took about 3.52 seconds. The deployment frontend still
+missed its existing three-second activation dial because the second
+capture completed after that deadline. The two failures belong to
+lifecycle qualification. Preserve the original 10-second
+=CompileSource=, 12-second recovery and 15-second natural-exit gates.
+
+A bounded replay reused the exact SDK =bfe803f= debug owner image
+and its staged Scheme load path. The original owner integration
+passed, including authenticated Go bootstrap and deployment,
+source rotation during an in-flight compile, refusal of the late
+artifact and natural owner drain. The two successful captures
+before rotation took 1.70 and 1.67 seconds, with 1.60 and 1.50
+seconds elapsed at module-view resolution. The intentionally
+declined warm-up and the post-rotation capture are separate
+observations. The earlier three-second dial failure remains on
+record. This one replay does not establish a startup tail bound.
+The archived four-owner Workflow release used SDK =9aa4de6=.
+Qualify the 12-second recovery on the current pin's own release.
+
+The =bfe803f= release then completed the original four-owner
+A/A and fresh/retained waves, and both derivation modes passed the
+hard-fact withdrawal, restart and A→B→A control, nested choice
+and join controls, inactive-branch isolation and cancellation
+with natural owner drain. Both joins matched their cut and ready
+digests across all eight trials. Wave CompileSource peaked at
+6.65 seconds and measured drain at 1.12 seconds. The two nested
+restart scenarios ended at 7.98 and 7.53 seconds on the scenario
+clock, within 12 seconds. The preceding release build took
+5 minutes 42 seconds and is separate from those clocks. Both
+SysML checks passed.
+
+In the fresh/retained wave, the retained owner paid about 77.5 ms
+of setup at open. Join setup was zero thereafter, versus 74–77 ms
+in the fresh arms. Retained join FFI calls took 0.61–0.79 ms,
+frontier reads 4.60–5.61 ms, and claim transactions 2.10–2.93 ms.
+Retained owner waits at the joins were 7–8 µs. Keep the current
+owner mechanism and scope the timing result to this bounded local
+wave. Site performance and the provider promotion matrix retain
+their independent gates.
 
 * Maintained baseline
 
@@ -27,7 +2233,7 @@ The Rust SDK selection now follows the inspected
 package operations, tool environment and archive contract replace downstream
 tool preparation. The already selected Agentic AI Lab cohort is now declared in
 the single root Scheme dependency instead of separate Go checkout arguments.
-Continue delivery in [[https://github.com/hardenedlinux/weaver/pull/1][Weaver PR 1]]; do not open another integration PR.
+[[https://github.com/hardenedlinux/weaver/pull/1][Weaver PR 1]] records that integration baseline.
 
 Compared with Weaver's previous SPEC selection, this revision changes
 typed SDK preparation, source-body correspondence, literal-context construction
@@ -90,7 +2296,7 @@ package failure or a killed test is FAIL. Keep the existing
 runtime and lifecycle gates, all generated cases and host-derived core count.
 Do not use forced exit, package uninstall or a changed dependency pin as a retry.
 
-*** Producer-owned native link inputs
+*** SDK package link inputs
 
 The observed missing-libcrypto failure originates in a low-level SDK staging
 path that omitted the package owner's pkg-config declaration and retained an
@@ -331,7 +2537,7 @@ declare Scheme end-to-end acceptance or stable performance improvement.
 #+CAPTION: The imported Zero Trust contract constrains actual Gateway use.
 [[file:../../architecture/diagrams/00d-zero-trust-overview.svg]]
 
-* Native Runtime measurements
+* Scheme owner string encoding measurements
 
 Two complete runs each contain fourteen cases and thirty samples per case.
 External Rust dependencies use opt-level 3; the qualification application retains
@@ -580,12 +2786,11 @@ behavior, units and complete sample inventory. A PASS is not performance
 admission against a throughput, percentile or non-regression threshold. The
 existing higher performance-qualification contract remains separate.
 
-* Current delivery priority: Rust, Go and Cedar
+* Rust, Go and Cedar delivery record
 
-Scheme reader/bootstrap and prepared-scope optimization is upstream owner work
-and is deferred from this change. Keep its current source interface and package
-selection. No Scheme source or dependency pin is changed. Rust/Go execution must
-remain independently testable while that upstream work proceeds.
+This delivery batch used the existing Scheme source interface and package
+selection while the upstream owner handled reader and prepared-scope work.
+The local delivery sequence above specifies how to test linked candidates.
 
 ** Typed Cedar facts on the execution path
 
@@ -764,6 +2969,980 @@ The bounded source worker also intentionally orders authority publication; this
 change adds neither parallel source publication nor automatic transaction retry.
 Future contention work must measure those waits and preserve their shared-domain
 linearization instead of splitting shared constraints for throughput.
+
+** Provider terminal retention
+
+The queued run holds the bound request for dispatch. An unresolved run
+retains its plan and dispatch state. Completion replaces the plan with its
+original ceiling in the same transaction as terminal state and any typed
+result or usage. The historical exposure projection still compares the
+ceiling and plan digest with the independent committed claim. Existing
+terminal rows with full plans follow the same projection.
+
+Use the shared-domain Arrow case of =BenchmarkProviderGoControlPair= to
+measure terminal plan bytes separately from the main database and MVCC
+journal. Capture both direct and proxy arms after verified completion and
+natural shutdown. Open a copy through the native ledger session for the
+logical inventory.
+
+For runtime qualification, build both versions from the same source
+snapshot with only the terminal update changed. Run both through the same
+Go forwarding path and alternate which arm starts each four-request wave.
+The first eight-case matrix completed seven cases within the existing
+first-frame and throughput limits. Shared immediate Protobuf failed the
+native observation check because a completed BEGIN poll had no recorded
+prepare span. Treat that case as incomplete and retain the original
+failure. The logical storage result and the runtime qualification have
+separate acceptance criteria.
+
+The regression test opens a Turso session outside the observer after
+registering its scoped tracing dispatcher. When that is the only registered
+dispatcher, tracing can cache the unobserved callsite's interest as disabled.
+Keeping a silent dispatcher registered makes the callsite consider both
+dispatchers. The scoped observer still records only the requested driver span.
+The rerun completed all eight cases with complete observations. Independent
+immediate Protobuf exceeded the first-frame limit. Its ranked request spent
+more time in admission and upstream transport. The complete run still
+failed the runtime gate.
+
+The same-image follow-up switches only the terminal write in an observed
+release. The compact/compact controls stayed within the original limits
+in independent immediate Protobuf and shared immediate Arrow. All eight
+full/compact cases produced receipts and met the throughput limit, while
+four missed first-frame P99. The measured tail changes include upstream
+transport, worker scheduling and consumption. The largest stage differs
+by case. The shared Arrow storage copy confirmed the intended terminal
+record in both arms. Keep the failed performance decision separate from
+the verified logical storage reduction.
+
+The bounded same-image and reverse-order controls did not reproduce the
+independent immediate Protobuf first-frame miss. Shared immediate Arrow
+reproduced the gap increase in reverse order, while a later handoff join
+showed similar client gap P99 in both arms. In that joined run the two
+longest client gaps of each arm accrued before Rust handoff. Use the
+per-frame join and shared-domain wait to investigate the release path.
+These focused observations do not replace the eight-case runtime gate.
+
+The paced SSE calibration used the same compact write in both positions.
+Three of the four cells differed by more than 10% in first-frame P99.
+The later position was faster in all four cells even though the first
+position of each four-request wave alternated. Swapping the two write
+treatments in the same release left only shared paced Protobuf above
+the original first-frame limit. Its compact/full ratio was 1.118,
+compared with 1.279 in the original order. Throughput passed in every
+paced cell in both orders. In shared paced Protobuf, worker wait was
+the largest phase difference in the original order, while admission
+was largest in the reverse order. Keep the original failed matrix and
+use the ranked stream's lock timeline to test the shared-domain lead.
+
+The shared paced Protobuf timeline reproduced the miss. The compact
+arm's ranked request waited 7.49 ms for admission and 8.72 ms for
+consumption. Conflicting admission holds overlapped 6.90 ms and
+3.16 ms of those waits, respectively. The same request also spent
+14.32 ms committing its first range preparation, compared with
+0.14 ms in the full arm's ranked request. Consumption commit itself
+took less than 0.10 ms in both arms. The next commit observation must
+separate driver polling, thread CPU and sync time at first-range
+preparation before changing the write or custody boundary.
+
+The follow-up observed 128 first-range commits per arm. Medians were
+0.078 and 0.076 ms for compact and full. The slowest compact commit
+took 8.40 ms, with 0.116 ms in polls, two Pending returns and no
+observed sync on that thread. A different compact commit took 1.79 ms,
+including 1.63 ms in a sync span. These are distinct sources of
+commit wall time. The first-range commits of the ranked first-frame
+requests were below 0.10 ms in both arms. The compact request waited
+14.12 ms for admission, with 12.78 ms overlapping earlier admission
+custody from one peer, and spent 9.98 ms waiting for its worker. The
+peer spent 4.18 ms opening its transaction and held it for 8.60 ms.
+The observed claim and manifest intervals were 6.29 ms and 3.32 ms
+within that hold and overlap. Continue attribution on those two
+queues while preserving the durable first-range cut.
+
+One same-image experiment combined the original and live manifest
+reads for each family into a single tagged =UNION ALL= statement.
+Both arms used compact terminal writes, the same deciding transaction
+and the same digest, ceiling, settlement and history checks. Shared
+paced Protobuf manifest P50 stayed effectively flat. Independent
+manifest P50 increased by 8.1%, and first-frame P99 exceeded the
+existing gate in both cells. The duplicate-member and corrupted
+projection controls passed. Keep the combined read isolated and
+retain the two existing reads.
+
+The worker-dispatch calibration separately timed the runtime gate,
+the interval from Tokio submission to closure entry, and the Ledger
+admission wait. The eight arms each completed 128 paced streams.
+Runtime gate P99 reached 8.44 ms. Every submission-to-entry sample
+above 1 ms ran on a thread that had already executed tracked jobs.
+This interval includes both Tokio wake-up and host scheduling.
+
+The tracked-submit candidate registers a =TaskTracker= token under
+the gate and releases the gate before calling Tokio. Shutdown,
+executor custody and output backpressure controls passed. Across
+both treatment orders, gate P99 fell from 0.53–8.42 ms to at most
+7 microseconds. Independent Protobuf and shared Arrow missed
+first-frame P99 in one order. All four paced cells passed in the
+reverse order and throughput passed in both. Retain the failed
+cohorts and keep the candidate isolated pending order-balanced
+first-frame qualification.
+
+The full eight-cell follow-up ran with each treatment position once
+on the same image. The candidate passed four cells when first and five
+when second. Runtime gate P99 was at most 13 microseconds in the
+candidate, while independent paced Arrow exceeded first-frame P99
+in both orders. Its ranked candidate requests spent 203.22 and
+15.29 ms from Tokio submission to closure entry on previously used
+threads. Their Ledger admission waits were below 2 microseconds.
+Host load was elevated and the original limits still apply. Keep
+the candidate isolated. A separate shutdown control paused after
+the tracking token was registered and before Tokio submission.
+Drain stayed pending with the execution slot held. Resuming
+submission after cancellation skipped the callback, returned the
+slot and allowed drain to finish.
+
+The independent paced Arrow diagnostic used an isolated Tokio 1.53.1
+build to join each request to the blocking pool's submission lock,
+enqueue, dequeue and closure entry. Across both treatment orders and
+arms, submission-lock P99 was 8.88–13.93 ms, queue residence P99
+was 6.85–17.21 ms, and dequeue-to-closure P99 was at most 23
+microseconds. Each arm's slowest handoff saw an empty queue and two
+or three idle workers when the submitter obtained the pool lock.
+The pool had nine threads against a cap of 516. These observations
+direct further work toward lock-holder and worker wake timing.
+The candidate-first run missed both runtime limits and the reverse
+run passed. The diagnostic leaves the original performance decision
+in force.
+
+The follow-up linked submission waits to the last recorded pool lock
+holder and recorded the condition-variable return on the dequeuing
+worker. The four longest submission-lock waits across the two arms
+and orders were 10.07–20.93 ms. In each case the last recorded holder
+was a dequeue and overlapped less than 0.34 microseconds of the wait.
+This lower bound leaves earlier holders and submitter scheduling open.
+In the candidate's longest queued samples, the submitter released
+the lock within 0.25 microseconds of notification, and the dequeuing
+worker reacquired it about 9.14 and 12.78 ms after notification. The
+common condition variable permits only a timing association. The
+candidate-first cell again missed first-frame P99, the reverse cell
+passed, and both throughput ratios passed. Shortening the observed
+notify-to-unlock interval alone has little room to reduce these tails.
+
+The Provider scheduling comparison registered the same tracking token
+and released the same gate in both arms. One arm used the blocking
+pool directly. The other queued a Tokio task that entered
+=block_in_place= before running the same closure. In the two-case
+diagnostic, both treatment orders passed independent paced Arrow and
+shared paced Protobuf. Independent paced Arrow first-frame P99 was
+47–49% lower in the candidate. The original eight-cell matrix then
+passed four cells with the candidate first and six with it second.
+Shared immediate Protobuf missed throughput in both orders, and
+independent paced Protobuf missed first-frame P99 in both. The latter
+ranked requests spent less time waiting for their worker in both
+orders, with the largest increases after worker entry. Shared
+immediate Protobuf's admission hold median and Rust CPU per stream
+were similar in both arms. Keep the scheduling candidate isolated.
+The tracked-but-not-submitted shutdown and backpressure controls
+passed on the comparison image.
+
+The range-digest experiment reused a request-local JSON buffer. It
+kept the exact serialized bytes, SHA-256 and release ordering. The
+digest equality test covered a large escaped Unicode payload followed
+by smaller ranges using the same buffer. Backpressure controls passed.
+Shared immediate Protobuf met both limits in both treatment orders.
+Independent paced Protobuf missed the first-frame limit with the
+candidate first and met it in reverse. In the miss, the ranked
+request spent most of the added time before frame preparation,
+particularly in admission and upstream transport. Process CPU
+did not improve consistently. Retain the focused comparison and
+keep the buffer candidate isolated.
+
+The Provider claim insert experiment removed the separate occupied-key
+read. The existing =(family,node)= primary key rejected a conflicting
+insert before any budget or history update. WAL and MVCC controls
+verified that occupied request, stream and provider claims kept their
+original contents, budget and history. Reservation P50 fell in all four
+focused cohorts by 0.6–11.6%, and Rust CPU per stream fell by 1.6–3.5%.
+All first-frame ratios passed. Shared immediate Protobuf missed
+throughput in the reverse order at 0.919 of baseline, with an inter-frame
+P99 ratio of 1.860. Keep the candidate isolated and attribute that
+frame gap before widening the comparison.
+
+The same-image frame-gap replay joined all 1,536 consecutive gaps per
+arm to the Rust handoff, receipt acknowledgment, receiver acceptance
+and Go receipt. Inter-frame P99 was 0.821 and 0.800 of baseline in the
+two orders, so the earlier increase did not recur. Most of each
+candidate ranked gap accrued between Rust handoffs. In this replay
+the first-frame limit failed in both orders. The largest added
+interval on the ranked request was consumption with the candidate
+first and admission with the candidate second. Keep both observations
+and the original failed throughput cohort. The wall-clock join
+measures handoff and transit deltas, while the per-request scope totals
+remain separate from exact scope overlap with a frame gap.
+
+The queued-row reuse experiment selected the plan, digest and reservation
+in one read inside consumption. It checked the requested family and node
+against the plan, then compared the selected digest and reservation against
+the committed claim. The three substitution controls rejected each mismatch
+and preserved the queued rows and hold. The first control setup was retained
+after policy rejected its test node. The corrected control used a permitted
+second node.
+
+With one release image and 128 streams per arm per cohort, three of four
+cohorts met the first-frame and throughput limits. In the reverse-order
+independent paced Protobuf cohort, first-frame P99 rose from 56.19 to
+121.30 ms and throughput fell from 26.73 to 25.15 streams/s. Claim P50
+fell from 0.607 to 0.544 ms in that cohort, while consumption transaction
+P99 rose from 6.20 to 13.89 ms. On the two requests ranked at first-frame
+P99, the 41.14 ms consumption increase included 21.37 ms more publication
+preparation before the transaction and 3.85 ms more transaction hold.
+Keep the candidate isolated and the full matrix gated. Split review-head
+and task-birth preparation on the existing path before selecting the next
+change. The ranked requests identify where time accrued in the failed
+sample. They do not establish the cause of the publication preparation tail.
+
+The split preparation replay used the existing two-read consumption in both
+arms of the same release. All 512 measured preparation spans had a reviewed
+head and a bound birth receipt. Across the two orders, consumption review
+preparation P50 was 3.61–3.65 ms wall and 3.50–3.54 ms thread CPU. Birth
+preparation P50 was 0.047–0.049 ms wall. The review stage accounted for
+most preparation time in both ranked first-frame requests from the
+observed arm. The extra observation arm missed the first-frame limit in one
+order and the throughput limit in the other. Use these timings for phase
+attribution and retain both failures. This replay did not reproduce the
+25.45 ms preparation span from the queued-row candidate.
+
+Admission and consumption already share one Ledger connection for a Provider
+request. The review preflight runs the same fixed SQL through fresh query
+preparation in both phases. Compare reusing only the connection's compiled
+review query, with a fresh cursor and current rows in each phase. Keep the
+existing exact review, birth, authority and fence comparisons in the deciding
+transaction. The phase replay identifies review preparation as the next
+target. It does not distinguish SQL compilation from query execution.
+
+The compiled review query candidate passed the repeated-read mutation check
+and the task-birth controls. Its four targeted cohorts met the first-frame
+and throughput limits. The full matrix on the same image kept one
+unjoinable observation failure in the first order. Of the 15 cohorts with
+complete measurements, 11 met both limits. The four misses were in
+immediate SSE and all missed the first-frame limit. Independent immediate
+Arrow missed in both orders at 1.607 and 1.439 times the reference.
+The larger increase on the ranked request was enqueue in the first order
+and consumption in the second. The candidate stays isolated. Separate
+missing trace observations from ordering failures in subsequent diagnostics
+and use the retained immediate cohorts to investigate the two outer stages.
+
+Joining the ranked requests to their scheduler grants separates several
+sources of delay. For independent immediate Arrow in the first order,
+the 30.24 ms increase in enqueue included 19.34 ms more commit wall time
+and 0.11 ms more commit thread CPU. In the reverse order, headers to
+first queue contributed the largest increase in both Arrow misses
+(25.33 ms independent and 42.52 ms shared). The independent Protobuf miss
+spent 37.55 ms more in publication preparation before the enqueue
+transaction. These intervals describe the ranked requests. They do not
+identify a single cause across the failed cohorts.
+
+An immediate Arrow diagnostic then measured response headers, first
+queue and scheduler scopes on one monotonic clock. It joined all 512
+requests across the two domains and two same-path arms. The median
+headers-to-queue interval was 3.42–3.65 ms for independent domains and
+6.52–6.63 ms for a shared domain. The median time before the first
+release scope was under 0.07 ms in all four arms. Preparation and final
+queue hold accounted for most of the interval, including the requests
+ranked by first-frame P99. The independent same-path pair exceeded the
+first-frame ratio limit at 1.190. Retain that result as diagnostic
+variation. The next candidate compares ordered projected rows directly
+with the exact retained claim map to avoid building a second tree in
+each deciding transaction. It retains the separate prepare and final
+queue guards, duplicate rejection, checked totals and settlement checks.
+
+The ordered member comparison passed all 24 exposure controls. Three of
+four immediate Arrow cohorts met the existing limits. In the first-order
+independent cohort, throughput fell from 55.08 to 51.38 streams/s
+(0.933 of reference). The first final queue transaction P50 increased
+27.5%, and Rust CPU per stream increased 3.5%. Manifest medians moved in
+both directions across orders and stages. Keep the candidate isolated.
+Read completed worker traces after the fixture's natural exit, outside
+the measured interval. The exact-window diagnostic and the member
+comparison both used this order and retained complete traces.
+
+The next phase diagnostic retained the exact manifest and separated
+the two SQL reads, committed-member decoding, projected-map construction,
+settlement and final comparison. In the independent immediate Arrow
+cohort, the median per-request share of measured thread CPU in the SQL
+reads was 85.2% in both first-frame transactions. Map construction,
+committed decoding and exact comparison together accounted for 4.3–4.4%.
+The shared cohort failed the first-frame trace join. Its projected
+response-header wall timestamp was 3.157 ms later than the sampled
+queue wall timestamp. Preserve that failure and join the Rust and Go
+first-frame events on a shared host monotonic clock.
+
+With the shared clock, the fixed-release diagnostic joined all 512
+requests. Across independent and shared Arrow, the two reads accounted
+for 85.5–86.1% of measured CPU at the first prepare and queue
+transactions. The projected read used the most CPU in all four
+comparisons. In shared Arrow its P50 was 0.836 ms in prepare and
+0.477 ms in queue. Retain the exact comparison and measure driver SQL
+preparation separately from row execution and decoding. The clock
+change applies to request-to-first-frame attribution in the test entry.
+The diagnostic's arm ratios measure variation with the extra clocks.
+
+The next same-image diagnostic used Turso's preparation span to split
+the projected read for the first prepare and queue scopes. It matched
+one preparation per independent domain and four per shared domain in
+each observed scope. Across the four scope/domain combinations, the
+median per-request CPU shares were 39.2–39.8% for SQL preparation,
+5.5–6.6% for typed row decoding, and 52.8–54.8% for the remaining
+cursor work and observation overhead. The instrumented arm missed
+independent first-frame and shared throughput limits. Keep both
+measurements as diagnostics. The next comparison prepares only the
+projected query on first use of the existing connection, with no
+extra preparation before the deciding scope. Each use binds the
+current family and opens a fresh cursor.
+
+In the same shared Arrow diagnostic, the remaining cursor-and-observer
+CPU increased between the first and last eight waves from 0.169 to
+0.609 ms in prepare and from 0.138 to 0.496 ms in queue. Preparation
+CPU decreased slightly in both comparisons. Keep request ordinal as a
+workload grouping and measure live row counts before assigning the
+growth to a specific operator.
+
+Preparing only the projected query on first use passed 25 correctness
+controls and reduced the manifest P50 in every measured first prepare
+and queue scope. The reduction ranged from 6.0% to 34.6%. Both first-order
+cohorts met the existing limits. In reverse order, independent and
+shared first-frame P99 reached 2.058 and 1.579 times reference, and
+shared throughput fell to 0.874. Keep the candidate isolated.
+The independent ranked request held its first preparation scope for
+169.80 ms, with 0.22 ms attributed to the manifest and 0.13 ms to commit.
+The shared ranked request waited 173.66 ms for admission. Peer grants
+overlapped 129.99 ms of that wait, with 43.67 ms outside those observed
+scopes. Split the outstanding preparation wall time from thread CPU
+and instrument the range staging statements. The peer overlap is a
+timing bound and does not assign the residual to a specific lock.
+
+The next diagnostic measured transaction wall and thread CPU alongside
+progress reads, the live Policy guard, range inserts and cursor update.
+It did not reproduce the 169.80 ms hold. The longest independent first
+preparation took 16.51 ms wall and 3.03 ms thread CPU, including a
+13.20 ms Policy guard with 1.79 ms CPU. The longest shared preparation
+took 20.84 ms wall and 7.40 ms CPU, including 13.71 ms in claim
+verification. Median range inserts and cursor updates each stayed
+below 0.16 ms. The shared instrumented arm missed the first-frame
+limit. Preserve that result and target the repeated Cedar inputs,
+keeping a fresh context and an error-free allow for each actual row.
+
+The shared Cedar-input candidate passed 56 correctness checks,
+including comparison with the original per-row evaluations and the
+grouped rollback, withdrawal and recovery paths. Cedar P50 decreased
+in six of eight first preparation and queue measurements, stayed flat
+in one, and increased 9.0% in the other. Only one of the four HTTPS
+cohorts met both original limits. The first-order independent cohort
+missed both, with first-frame P99 at 2.158 times reference and
+throughput at 0.765. The ranked request added 114.93 ms in enqueue,
+including 81.98 ms in publication preparation and 41.56 ms in
+transaction begin. The added BEGIN thread CPU was 0.69 ms. In the
+reverse shared cohort the ranked request's first preparation hold
+increased from 23.15 to 49.16 ms. Keep the candidate isolated and
+preserve the separate stage observations.
+
+The admission replay joined publication preparation and BEGIN on the same
+1,024 requests across ordinary and controlled pressure runs. The longest
+ordinary review preparation took 137.61 ms wall and 8.07 ms thread CPU.
+The longest ordinary BEGIN took 20.24 ms wall and 1.57 ms CPU. The
+longest BEGIN in every arm completed in one poll without Pending.
+The four pressure workers actually used 1.62–1.66 CPU cores. They did
+not reproduce a larger maximum than ordinary load. Both paths retain
+substantial off-CPU intervals. Poll timing alone does not distinguish
+synchronous engine waits from host scheduling. Use the exact review
+query plan to select work that can be removed in the common case.
+
+On the reviewed-head control, Turso labels the MAX epoch predicate
+as a scan. The bytecode shows that it positions at the last key and
+jumps directly to aggregate finalization, skipping the reverse-iteration
+opcode. The descending LIMIT 1 form also stops after that key.
+The alternate upper-bound absence probe adds a correlated lookup.
+
+The correlated upper-bound probe passed ten controls, including 32
+retained key epochs and rejection after rotation. It missed both
+performance limits in all four Arrow cohorts. Throughput was
+0.689–0.827 of reference, and Rust CPU per stream increased 24–45%.
+Publication preparation also took longer on each ranked request.
+Keep the aggregate path. The indexed-probe label does not predict the
+cost of the full query, and the bytecode rules out retained-key traversal
+as the common-case cause. Split compilation and execution of the
+complete review projection before changing its joins.
+
+The split on the current projection joined 512 Arrow requests and
+checked one Turso preparation per observed admission or consumption.
+Across both domains and arms, median per-request compilation accounted
+for 95.6–96.7% of the projection's thread CPU. Typed row decoding
+accounted for about 0.1–0.2%. The shared diagnostic pair exceeded the
+first-frame limit. Keep that observation separate from optimization
+acceptance. The next comparison constrains the order of the
+singleton and key-bound joins while preserving the same SQL
+predicates, snapshot and deciding-scope comparisons.
+
+The constrained-order candidate passed nine review and birth
+controls. The reviewed-head fixture retained indexed lookup for the
+singleton, publication, review, delta and key tables. The original
+and constrained projections returned the same Policy on the current
+fixture and agreed after each injected row change. In four targeted
+immediate Arrow cohorts, median compilation CPU fell from
+2.11–4.51 ms to 0.28–0.65 ms. All four cohorts met both original
+limits. The full eight-case comparison uses the same image and
+the same two orders.
+
+The full comparison completed all 16 cohorts with matched traces.
+Compilation CPU P50 decreased in all 32 admission and consumption
+groups, by 82.1–90.7%. Rust CPU per stream decreased in all 16
+cohorts, by 2.4–22.8%. Ten cohorts passed both end-to-end limits.
+Shared paced Protobuf missed throughput in both orders, and five
+cohorts missed first-frame P99. Keep the candidate isolated. Among
+the ranked misses, the largest added interval was worker setup in
+one, consumption in two, and headers to queue in three. The
+largest was 157.01 ms of worker setup in shared paced Arrow, while
+both publication-preparation stages on that request were shorter.
+Retain these matched requests when separating worker setup,
+consumption and release tails from the compilation improvement.
+
+The worker setup diagnostic used the fixed reviewed-head query in both
+arms and joined 512 paced Arrow requests. Setup P50 was 0.282–0.295 ms.
+The Ledger open interval including cancellation setup accounted for
+0.198–0.213 ms, principal and observer setup accounted for
+0.064–0.067 ms, and remaining setup accounted for 0.006–0.007 ms.
+The longest setup was 2.80 ms with 0.43 ms of thread CPU.
+The 157.01 ms difference from the full matrix did not recur. Both
+same-path pairs met the registered limits. Preserve the original
+failure and investigate the repeated shared paced Protobuf throughput
+miss with the per-frame clock and scope intervals.
+
+The two-order shared paced Protobuf replay joined 512 requests and
+6,144 consecutive frame gaps. The throughput ratios were 1.013 and
+1.125, so the prior throughput misses did not recur. In three of the
+four requests ranked at inter-frame P99, the prepare and final queue
+holds covered at least 98% of the Rust handoff interval. The other
+ranked gap included 9.74 ms outside its own scopes and a 5.43 ms
+increase in handoff-to-client transit. Keep the original complete
+matrix as the promotion gate. The Go benchmark measures consecutive
+client receives with its monotonic clock, and retains the original
+cross-process observations for handoff attribution.
+
+The largest individual gap in the first candidate arm had a
+104.43 ms Rust handoff interval, including 95.07 ms in preparation
+hold. In the reverse order, the largest candidate client gap was
+80.50 ms with a 15.56 ms handoff interval and a 64.94 ms increase
+in transit. Measure preparation CPU and delivery acknowledgment
+separately in subsequent attribution.
+
+The acknowledgment replay joined 6,656 frames across both orders on
+the same host monotonic clock. Across the four arms, P99 ranged from
+0.55–1.52 ms for queue to acknowledgment, 0.59–2.10 ms for
+acknowledgment to receiver acceptance, and 1.66–5.39 ms for receiver
+to Go. Receiver lock wait P99 was below 0.42 µs. The longest reverse
+candidate gap included a preparation transaction of 69.22 ms wall
+and 3.43 ms thread CPU. Claim verification accounted for 46.19 ms
+wall, including 40.24 ms in the manifest. Within the manifest, the
+current projected read accounted for 39.63 ms wall and 0.52 ms
+thread CPU. Transit was shorter than for the preceding frame.
+The reverse pair missed first-frame P99 at 1.373 of reference.
+Both throughput ratios met the diagnostic
+limit. Keep the complete matrix as the acceptance gate. Separate
+manifest execution and off-CPU time in the next preparation trace.
+
+The projected-read poll trace joined all 512 requests and 6,656 frames
+across both orders. Its longest projected read was 6.73 ms. SQL
+preparation accounted for 6.49 ms wall and 0.51 ms thread CPU. All four
+polls in that read returned ready, with 5 µs outside the polls. The
+39.63 ms read did not recur. The timing locates the measured delay
+within preparation and leaves the cause of its off-CPU time unresolved.
+Throughput met the gate in both orders. Reverse first-frame P99 again
+missed, at 1.455 of reference.
+
+The next same-image pair used fixed review joins in both arms and
+reused only the projected-members SQL program in the candidate. Each
+execution bound the current family and read rows in the deciding
+transaction. In each order, 1,408 preparation scopes per arm overlapped
+an observed frame interval. Their median projected read fell from
+0.529 to 0.299 ms and from 0.511 to 0.308 ms. Candidate preparation
+P99 recorded no SQL compilation, while one candidate read still took
+19.14 ms with no compilation and four ready polls. All 24 exposure
+controls, four backpressure controls, and two SysML checks passed.
+
+Throughput ratios were 0.990 and 1.020. First-frame P99 ratios were
+4.600 and 0.796. Keep the candidate isolated. For the first-order
+candidate at P99, 149.34 ms elapsed before handoff and 8.35 ms after.
+Its 56.94 ms from response headers to queue included 47.95 ms in the
+first preparation hold and 8.24 ms in the final queue hold. The
+preparation transaction used 6.53 ms thread CPU across 47.32 ms wall.
+Its claim check included 17.55 ms in history verification and 0.93 ms
+in the current projected read. Before changing the history query,
+separate its expected-map construction, current SQL preparation and
+cursor polls, and row comparison at the first-range transaction.
+Preserve the full-matrix failure and both focused orders.
+
+The history trace used the same SQL and release path in both A/A
+arms. It observed 512 first-range preparations and 6,144 preparation
+scopes in total. Across the four arms, median first-range history
+verification took 0.267–0.293 ms. The current row read took
+0.245–0.265 ms, expected-map construction took 6.7–7.9 µs, and row
+comparison took 8.3–9.3 µs. No history-read poll returned Pending.
+The longest history check took 47.10 ms. One ready poll accounted
+for 47.03 ms wall and 1.08 ms thread CPU, including 17.50 ms wall
+and 0.147 ms thread CPU in SQL preparation. This locates the delay
+inside the synchronous part of the driver poll. Distinguishing
+thread scheduling from blocking inside that poll requires additional
+evidence.
+
+The longest history check belonged to a different request than the
+reverse-order first-frame P99. The ranked request spent only
+0.443 ms in its own first-range history check. Even with the same
+path in both arms, reverse-order first-frame P99 was 76.01 versus
+194.40 ms and throughput stayed within 2%. Use the original
+eight-case matrix to characterize same-path variation before
+interpreting the next SQL candidate's end-to-end effect. Keep the
+registered acceptance limits for candidate promotion.
+
+The same-path matrix completed all eight cases in both orders, using
+one image and 128 streams per arm per case. Across the 16 pairs,
+swapping the slower and faster labels as needed to measure spread,
+12 exceeded the first-frame limit and three exceeded the throughput
+limit. The largest first-frame ratio was 3.80 and the lowest
+slow-to-fast throughput ratio was 0.848, both in independent
+immediate Protobuf in the reverse order. This records variation under
+the observed host load. Candidate acceptance still requires the
+original one-direction limits in both orders.
+
+The first-frame trace joined the enqueue and consume transactions for
+all 32 ranked requests in the same-path matrix. Among the 12 pairs
+with excess first-frame spread, the largest added phase was enqueue
+in three, consume in three, upstream transport in two, queue to client
+in two, worker setup in one, and dispatch outside transport in one.
+In the largest spread, consume accounted for 54.72 ms of the
+82.91 ms difference. The slow consume transaction held for 51.91 ms
+with 3.46 ms of thread CPU. BEGIN and COMMIT each took less than
+0.08 ms. Cedar accounted for 12.02 ms wall time, and the claim check
+took 0.43 ms. Preserve these matched observations when attributing
+wall time in the consume transaction. Its thread CPU and hold time
+are distinct measurements.
+
+The focused consume trace joined 512 independent immediate Protobuf
+requests across two same-path orders. Median consume hold was
+3.69–4.69 ms. Median queued-plan read and decode was 36–38 µs,
+route selection was 1.50–2.65 ms, and Cedar within route selection
+was 0.065–0.121 ms. The longest transaction held for 58.96 ms and
+used 4.14 ms of thread CPU. Its claim check took 53.62 ms wall
+and 1.25 ms thread CPU. Treat the prepared-plan handoff as a bounded
+CPU optimization. Continue investigating the longer route and claim
+holds with the existing currentness checks enabled.
+
+The prepared-plan candidate joins exact queued bytes and the durable
+digest before borrowing the enqueue plan. A mismatch takes the normal
+decode path under current authority. A changed fence with an unchanged
+digest was rejected, preserving the queued receipt and original hold.
+Restoring the original bytes allowed one consumption. All 29 Rust
+controls and two SysML checks passed. The focused two-order A/B reduced
+the median queued-read CPU by 3.2–3.7 µs and the median digest and
+winner phase CPU by 6.9–7.4 µs. Total median consume CPU increased
+by 25–32 µs. Both first-frame and throughput ratios met the
+registered limits in the focused cell. This result leaves the
+candidate isolated for the full matrix.
+
+The full prepared-plan matrix completed both orders and all eight
+cases. Nine of 16 cohorts met both limits. Six exceeded first-frame
+P99 and four missed throughput. Plan-read CPU P50 fell in all 16
+cohorts by 1.3–6.5 µs, and digest and winner CPU fell by 5.8–8.2 µs.
+Total consume CPU P50 fell in ten cohorts. Keep the candidate isolated.
+The largest added first-frame phase in the seven misses was consume
+in three, enqueue in two and upstream transport in two. In the three
+consume cases, the ranked candidate requests spent at most 0.081 ms
+reading the plan and 9.02–12.90 ms holding the transaction. Route
+selection and claim verification accounted for most of that hold.
+Keep the archived same-path variation and currentness controls when
+testing the next reduction in repeated authority preparation.
+
+The route trace joined 1,024 immediate Protobuf requests across
+independent and shared domains in two same-path orders. Median route
+CPU was 1.45–1.69 ms. Current publication and task birth used
+0.356–0.401 ms, the domain view used 0.307–0.396 ms, and the profile
+and task floor used 0.330–0.359 ms. Task decode and Cedar binding
+used 0.102–0.111 ms, and Cedar itself used 0.069–0.083 ms.
+The same-path pairs missed the throughput limit twice and the
+first-frame limit once. Separate profile SQL preparation, row
+execution and typed decode before deciding whether to reuse the
+profile preparation or its SQL program. The transaction must still
+match the exact registry record and verify the current task floor.
+
+The profile SQL comparison completed 1,024 immediate Protobuf
+requests across both orders and domain shapes. Median profile CPU
+fell from 390–451 µs to 237–270 µs. Floor-query preparation used
+283–332 µs in the reference and 151–169 µs in the candidate. Typed
+profile decode and digest used 9–12 µs in both arms. Every consume
+scope still recorded driver preparation for both statements. The
+observed reduction therefore does not establish a compilation-free
+hit. Check the prepare count and statement context across admission
+and consumption before choosing the next reuse boundary.
+Only one of four cohorts met both registered end-to-end limits.
+Keep this candidate isolated. All 37 Rust controls and both SysML
+checks passed.
+
+The prepare counters matched both scopes for all 1,024 requests.
+For each profile statement, enqueue prepared once in both arms.
+Consume prepared twice in the ordinary arm and once in the cached
+arm. All observed root prepares happened before reading rows, with
+zero execution-time reprepare spans. The ordered fixture tries a
+Cedar-denied route before its allowed primary on consume. The
+cache removes the second compilation within consume while the
+common reads still repeat. The next candidate retains a successful
+publication, profile and task read only within that same transaction,
+then evaluates each eligible route with its own Cedar request. A
+failed common read is retried for the next eligible route as before.
+The comparison uses ordinary SQL in both arms to isolate this change.
+
+The route-input candidate completed 1,024 requests with the ordered
+denial and one successful primary invocation per request. Both
+profile statements prepared once per consume in the candidate and
+twice in the reference. Median route CPU fell by 0.304–0.775 ms
+and median consume CPU fell by 0.363–1.254 ms across the four
+cohorts. Both independent pairs met both end-to-end limits. Both
+shared pairs missed throughput at 0.916 and 0.943 of reference,
+and the candidate-first shared pair also missed first-frame P99.
+Keep the candidate isolated at the focused gate. All 37 Rust
+controls and both SysML checks passed.
+
+Rejoining the archived shared paced Protobuf trace gives 6,656
+monotonic frame observations. None required receiver refresh.
+Queue-to-Tonic P99 was 1.076–2.572 ms across the four arms, and
+acknowledgment-to-Tonic P99 was 0.535–1.840 ms. The receiver's
+measured turn P99 was 9.6–12.1 µs. This interval starts after
+frame preparation and includes the queue-to-acknowledgment wait.
+The ready-frame envelope needs a separate eligibility timestamp
+after credit and current authority are available. Record that
+timestamp alongside scheduling and receiver acceptance before
+qualifying the 1 ms target.
+
+Two shared paced Protobuf A/A orders on the same image joined 6,656
+frames from the ledger acknowledgment through Tonic acceptance. Of
+these, 5,065 were polled at least once before acknowledgment. No
+closed-authority polls or receiver refreshes were observed. Across
+the four arms, P99 from the later of acknowledgment and the preceding
+frame's acceptance to the accepting poll was 1.343–2.793 ms. P99 from
+that poll to Tonic acceptance was 13–14 µs. The earlier timestamp is
+a lower bound on eligibility for a frame with reserved capacity.
+These measurements exclude frame preparation and do not establish
+continuous authority or qualify the 1 ms envelope.
+
+Compare a producer-held inert frame and reserved permit against the
+current pre-commit channel publication. Keep staging inside the
+existing transaction and make the frame visible to the receiver only
+after the commit outcome is known and acknowledgment succeeds.
+Preserve the final authority check, cancellation and unknown-outcome
+handling, and the existing capacity bound. Time staging, acknowledgment,
+channel visibility, and receiver acceptance separately. Use both run
+orders to test whether one publication per deliverable frame reduces
+receiver wakeups and the delivery tail.
+
+The isolated candidate passed both orders of the four-worker shared
+paced Protobuf pair. The same release image ran both arms with 128
+streams and 1,664 frames per arm in each order. Pre-acknowledgment
+polls affected 1,242 and 1,309 reference frames and zero candidate
+frames. Acknowledgment-to-Tonic P99 fell from 3.177 to 2.120 ms and
+from 4.260 to 3.747 ms. One candidate frame in the second order
+encountered closed authority. First-frame P99 was 1.000 and 0.850
+of reference and throughput was 0.979 and 1.043 of reference.
+Client inter-frame P99 moved in both directions, from 20.26 to
+21.36 ms and from 40.33 to 36.73 ms.
+
+The original backpressure properties passed in the reference arm.
+In the candidate, the same property faults left the channel empty
+before acknowledgment, with an acknowledged frame observable after
+the successful outcome. The five slow-consumer scenarios and both
+SysML checks passed on the local qualification path. The injected
+crash for the candidate occurs after private staging and before commit.
+The held permit is discarded before sending a terminal status on
+producer failure. Keep the candidate isolated pending the eight-case
+both-order gate. The measurements leave the 1 ms delivery target open.
+
+The eight-case matrix completed both orders on that release image.
+The frame join covered 34,816 observations across both arms. The
+reference polled 9,805 frames before acknowledgment, and the
+candidate polled zero. Acknowledgment-to-Tonic P99 fell in 13 of
+16 pairs. Ten pairs met both original end-to-end limits. Six missed
+first-frame P99, and two of those also missed throughput. The largest
+first-frame ratio was 2.491, with throughput at 0.832 of reference,
+in independent immediate Arrow in the second order. Keep confirmed
+publication isolated.
+
+Consume accounted for the largest added phase in four of the six
+ranked first-frame misses. In the two shared paced Arrow misses,
+candidate owner-gate waits were 32.23 and 63.57 ms against 5.46 and
+0.0003 ms in the corresponding reference requests. In the two
+independent Arrow misses dominated by consume, the candidate
+transaction held for 17.18 and 24.22 ms with 5.33 and 4.08 ms of
+thread CPU. These ranked comparisons use different request
+identities in each arm. They locate the observed tail without
+establishing that the publication change caused it. For the next
+candidate, separate owner-gate delay from transaction hold and
+identify which work occupied the gate before changing scheduling.
+
+The archived shared paced Arrow cases joined 5,632 scopes from 512
+requests by scheduler ordinal. In the two ranked candidate consume
+waits, observed conflicting grants covered 22.94 of 32.23 ms and
+54.47 of 63.57 ms. All five observed holders were peer enqueue
+admissions with exclusive custody. Earlier conflicting tickets were
+visible without a traced active conflict for another 5.28 and
+6.15 ms. The remaining 4.02 and 2.95 ms were uncovered by the trace.
+Compatible origin-write scopes from other families were excluded,
+even when they overlapped the wait.
+
+The five holders took 10.64–16.66 ms of transaction wall time,
+5.15–6.66 ms of transaction thread CPU, and 1.01–7.88 ms to begin.
+Commit ranged from 0.24 to 4.03 ms. This prioritizes the complete
+enqueue custody interval, including BEGIN, for the next comparison.
+Keep FIFO order and the exclusive shared reservation boundary.
+Compare work that can be moved before custody only when the deciding
+transaction can rejoin the exact authoritative inputs. Distinguish
+elapsed time outside thread CPU from measured engine waits before
+selecting a scheduling change.
+
+The enqueue task-reuse candidate retains the decoded task already
+verified by original-task preparation. The Cedar binding may use it
+only when the record reread in the deciding transaction matches the
+prepared bytes. A mismatch or unavailable preparation falls back to
+current-record decoding. The guard still builds its binding for the
+actual route and evaluates current Cedar, and original-task, claim
+and reservation checks retain their existing custody.
+
+Both orders of the independent and shared paced Arrow pair completed
+on one release image. The enqueue hold P99 fell by 16.8–28.1% in the
+four pairs. All four passed throughput. Three passed first-frame P99,
+and shared Arrow in the second order rose from 202.0 to 224.3 ms
+against the 1.10 limit. The ranked candidate's headers-to-first-queue
+interval was 100.64 ms against 42.49 ms. The first prepare hold was
+67.52 ms against 9.61 ms, including a candidate prepare commit of
+61.45 ms against 0.40 ms. These are different ranked requests.
+The result leaves the candidate isolated and the exact prepare-commit
+wait unattributed. All 136 ledger controls, four server backpressure
+checks and two SysML checks passed.
+
+The first-prepare follow-up joined 512 commits to the existing Turso
+poll and Unix sync counters on one observed release image. The earlier
+61.45 ms commit did not recur. The largest was 3.28 ms, almost all
+inside one poll, with 0.078 ms of thread CPU and 0.030 ms in the
+observed sync span. Other commits spent 2.71 ms in sync or 3.10 ms
+between polls after Pending. These counters distinguish the measured
+shapes without assigning unsampled time to a specific engine lock.
+
+The reverse-order first-frame miss recurred at 118.2 versus 99.6 ms.
+Both ranked first prepare commits stayed below 0.10 ms. The larger
+interval was dispatch outside upstream transport, at 55.41 versus
+8.66 ms. The ranked candidate's guarded-send scope held for 49.92 ms
+with 5.55 ms of transaction thread CPU and a 0.55 ms commit. Its
+scheduler wait was below 1 µs. Attribute the remaining guarded-send
+span before altering either the send seal or range durability.
+This run is a diagnostic and leaves the task-reuse candidate isolated.
+Four backpressure checks and two SysML checks passed on the image.
+
+The guarded-send follow-up reused both shared paced Arrow orders and
+joined 512 transactions to live guard, request callback, callback
+record and commit measurements. The 49.92 ms hold did not recur.
+The longest hold was 25.46 ms, with 17.27 ms in the callback and
+0.34 ms of callback thread CPU. Its claim check took 3.72 ms and
+its commit took 3.56 ms. Among the other three arm maxima, the claim
+check was the largest measured part, at 7.53, 2.49 and 5.80 ms.
+The callback does include existing connection and write stages.
+The current join does not partition its longest off-CPU interval
+among those stages. The separate thread CPU clock brackets the wall
+measurement and exceeded it by up to 4 µs on short substeps.
+
+Both focused orders met the original end-to-end limits under this
+observer. Keep the earlier failures and keep task reuse isolated.
+Use the exact live claim reconciliation and the callback's existing
+connect, TLS, write and seal boundaries for separate follow-ups.
+Do not move application writes or their seal outside current authority.
+
+The callback follow-up retained the existing Rust transport trace in
+the Go benchmark output after measurement. It used the same release
+image and joined all 512 callback, transport and claim observations.
+Of 28 callbacks lasting at least 2 ms, 27 spent at least 90% of their
+wall time in TCP connect plus TLS. In the 11.73 ms maximum, connect
+took 6.23 ms, TLS 5.42 ms, and write through seal 0.021 ms. The
+largest callback interval outside the measured transport stages was
+0.41 ms. Keep connect, TLS and write under the invocation guard as
+specified. The measurement supplies no basis for optimizing seal
+CPU or moving a network effect across that boundary.
+
+Among the 20 longest claim checks, the manifest was the largest
+observed component in 18, and the two manifest SQL reads exceeded
+decode in 19. The longest claim spent 6.87 ms in the committed read
+and 4.27 ms in the history check. This selects SQL read execution
+and waiting for the next claim comparison. Prior prepared-program
+and combined-query failures remain relevant. The first-order
+first-frame ratio was 1.248 and failed the existing limit. The
+second order passed both limits. This remains diagnostic.
+
+The manifest driver follow-up paired 512 guarded sends and all four
+family reads per query in each send. Neither query returned Pending
+across the 4,096 observed reads. The largest interval outside polls
+was 73 µs. The longest projected read was 9.56 ms, including 7.81 ms
+inside the SQL preparation span. Its preparation thread CPU was
+0.43 ms. A 5.06 ms committed read spent 5.01 ms inside the driver
+polls outside the preparation span. These are different tail shapes.
+The poll and preparation clocks do not distinguish preemption from
+synchronous engine blocking.
+
+Median poll thread CPU was 0.355 ms for the four committed reads and
+0.521 ms for the four projected reads. Median per-request preparation
+shares were 21% and 41%, respectively. Test reducing the repeated
+per-family driver calls separately from prepared-program reuse.
+Keep the live rows, original digests, duplicate checks, and full
+budget/history membership as the deciding inputs. Both first-frame
+ratios missed the original limit under elevated host load. The first
+order also missed throughput. Keep the diagnostic isolated and do
+not use these ratios for promotion.
+
+The bounded committed-manifest candidate reads the two to four
+families already selected by the live budget root in one query.
+It keeps separate projected, settlement and history checks and
+rejects a missing peer claim without releasing either hold.
+Both shared paced Arrow orders verified one committed read per
+guarded send in the candidate and four in the reference. Median
+preparation CPU fell from 58–61 to 16–17 µs, but median poll CPU
+outside preparation rose from 213–217 to 534–546 µs. The first
+order missed first-frame and throughput at 1.183 and 0.922 of
+reference. The second order passed both limits. Keep the candidate
+isolated. All 137 ledger checks, four backpressure checks and
+two SysML checks passed.
+
+On the pinned Turso driver and the same composite primary key,
+both plans report an indexed search. Bytecode for the batch
+=IN= form builds an ephemeral index with four inserts before
+the family seeks. A four-branch =UNION ALL= plan showed four
+direct seeks and no ephemeral index. This is plan evidence only.
+Compare its live execution and compilation cost before selecting
+a batched shape.
+
+The indexed UNION ALL candidate kept one committed read per shared
+guarded send. In the focused paced Arrow comparison its median
+committed poll CPU was 230 and 239 µs against 287 and 249 µs.
+Median preparation CPU also fell in both orders. Committed read
+wall P99 rose from 0.70 to 1.03 ms and from 0.54 to 1.60 ms.
+Both original end-to-end limits passed in both focused orders.
+All 137 ledger checks, including the missing peer claim control,
+four backpressure checks and two SysML checks passed. Use that
+exact image for the full matrix before deciding promotion.
+
+The full matrix completed all 16 pairs on that image. Eleven
+passed both original limits. Five missed first-frame P99, and two
+of those also missed throughput. The shared candidate made 1,024
+committed reads against 4,096 in its reference and reduced median
+committed poll CPU in six of eight shared pairs. Both shared
+misses were Protobuf in the first order. For their ranked requests,
+dispatch outside measured transport had the largest added interval,
+at 3.25 and 19.48 ms. Three independent pairs missed with the same
+single-family SQL in both arms. Keep the candidate isolated.
+The focused and full samples establish a local SQL benefit in
+several cases, with insufficient evidence for end-to-end promotion.
+
+Keep the Governor and the frame delivery loop on separate schedules.
+The existing Scheme/POO owner retains the compiled topology and ASCENT
+rules. On complete release, activation or fact resolution it derives
+the ready node identities and the evidence used for the decision.
+Rust consumes that result through the existing owner boundary and
+checks its fact version and receipts when committing the claim and
+reservation. Frame delivery uses the established Rust credit and
+authority path. Measure warm Governor derivation and its Rust
+consumption separately from the acknowledged-frame tail. An upstream
+mailbox throughput measurement establishes only the transport result
+for its own workload.
+
+The shared immediate Arrow follow-up joined each handoff and scheduler
+scope on a single monotonic clock. Several first-to-second frame gaps
+in both arms spent nearly all their time inside their own range
+preparation and final queue transactions. Observed scheduler wait was
+small, including the overlap with peer completions. Original claim
+and manifest reads occupied most of the measured claim verification
+interval. Optimize that work inside each current transaction first.
+Preparation and final queue remain separate authority checks across
+the intervening output preparation boundary.
+
+The bounded peer precheck decodes and hashes up to three peer originals
+before consumption. Each deciding transaction still reads the current
+peer row and uses the prepared digest verification only on exact record
+equality. In the shared immediate Arrow comparison, original verification
+P50 fell by about a third in both range phases. First-frame P99 exceeded
+the existing limit, and the original preflight for that ranked request
+took longer. Keep this candidate isolated. Combine the preflight reads
+before testing whether the lock-hold saving survives end to end.
+
+A follow-up uses one bounded preflight query for the current task and
+the peer originals. The shared immediate Arrow trace still shortened
+the deciding original verification. Preflight P50 rose from 0.17 to
+2.26 ms. In the separate eight-case matrix, four cases met the
+registered limits, three missed first-frame limits, and one failed the
+existing operation-channel startup deadline before measurement. Keep
+the candidate isolated. The current deciding read and exact record
+comparison remain the authority boundary.
+
+The request-local variant retains peer verification only after a
+successful current read. It adds no preflight statement. The shared
+Arrow comparison reduced original verification P50 in both range
+transactions while preflight P50 was effectively unchanged. First-frame
+P99 still exceeded the limit. The ranked request spent more time in
+dispatch outside measured transport, while the two arms had different
+worker wait and transport intervals. Keep this candidate isolated and
+retain the joined request trace for dispatch attribution.
+
+The dispatch follow-up joined the original burn and guarded send scopes
+to each request. The longest dispatch observations included both active
+transaction holds and scheduler wait. Much of the observed conflicting
+hold during those waits came from an exclusive admission in the same
+shared domain. The candidate first-frame P99 request in this run spent
+most of its time in consumption, including both a long wait and a long
+current-read transaction. Its commit was short. Use same-thread CPU
+observations to separate the long transaction wall interval from CPU
+work before changing the scheduler or the affine dispatch boundary.
+
+The same-image shared Arrow controls now pair transaction wall time with
+the current thread's CPU clock. Without added pressure, the longest
+consume transactions spent almost all of their wall interval on the
+calling thread. Four existing pressure workers increased some off-CPU
+intervals, but the longest consume in each arm was still mostly CPU.
+The longest guarded send in that run included a measured transport write
+comparable to its off-CPU interval. The earlier 128 ms consume outlier
+did not recur. Keep the controls separate from the acceptance matrix and
+prioritize the current-read CPU work that the controls actually observed.
+
+The settlement-read variant adds applied metering rows to the current
+per-family reservation projection. It still verifies each settlement
+against the original usage and subtracts only its validated release.
+The shared immediate Arrow comparison removed one SQL statement per
+family. Manifest medians changed little, Rust CPU per stream rose, and
+the observed inter-frame tail increased. Keep this query shape isolated.
+One focused first-frame and throughput comparison is insufficient to
+qualify the change.
+
+The indexed-existence follow-up reads settlement presence with each
+current budget or history membership row. When present, the original
+settlement verification still runs. In shared immediate Arrow, manifest
+medians fell modestly, while transaction medians stayed similar or rose.
+First-frame P99 and completion rate improved in that wave, but Rust CPU
+per request and the frame-gap P99 rose. Keep the candidate isolated
+and retain the separate budget-only and history-only negative controls.
+Turso selected both root indexes and the existing covering settlement
+index. The negative controls rejected orphan settlement rows in both
+root memberships, including when only one root was shared.
+
+The startup follow-up froze the same observed server image and used the
+existing fresh-image and restart test. Across the unprofiled controls,
+process spawn returned in about two milliseconds, while first runtime
+entry on a fresh copy took roughly 0.75 to 0.93 seconds. Listener binding
+took about one millisecond after runtime entry. Same-file restart entered
+the runtime in about ten milliseconds. The ABBA copy and clone attempt
+comparison did not eliminate the first-execution interval. A separate
+sample observed the main thread at dyld entry and during image preparation
+before Rust main. This locates the sampled delay before the Gateway
+runtime. The original three-second failure remains unqualified because
+the sample did not reproduce that failure.
 
 ** Executable correspondence and acceptance
 
@@ -1088,7 +4267,7 @@ commits, then asserts zero stale rows across both streams (or ten current rows
 without revoke), unchanged holds and no recovery replay. Waiting for response
 headers is not a valid premise for publication exclusion after request sealing.
 
-** Native commit acknowledgment and process-crash refinement
+** Ledger commit acknowledgment and crash recovery
 
 The former post-callback deciding transaction was read-only. It now records
 =provider_runs.dispatched=2= before the native commit; =1= remains the earlier

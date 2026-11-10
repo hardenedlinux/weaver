@@ -116,7 +116,7 @@ impl Provider {
             }
         });
         Self {
-            runtime: fixture_runtime::fixture_runtime(None),
+            runtime: fixture_runtime::fixture_runtime(Some(4)),
             address,
             endpoint: format!("https://localhost:{}/v1/chat/completions", address.port()),
             pem,

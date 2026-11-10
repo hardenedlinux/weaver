@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 //! One local ordered fact feed. Staging and installation are separate authority transactions.
+use std::collections::BTreeSet;
+
 use crate::{
     Ledger,
     persistence::{begin, driver::Connection, exec, maybe_current, params},
@@ -143,6 +145,67 @@ pub(crate) fn require_available(
 fn selects(feed: &FactFeed, node: &str) -> bool {
     (feed.workflow_choice && node == feed.root)
         || feed.workflow_selectors.iter().any(|row| row[0] == node)
+}
+
+pub(crate) struct WorkflowFacts {
+    pub(crate) feed: FactFeed,
+    pub(crate) floor: u64,
+    pub(crate) snapshot: String,
+    pub(crate) available: Vec<String>,
+}
+
+/// Read the exact deployed topology and availability in one observation.
+pub(crate) fn observe_workflow<'a>(
+    c: &Connection,
+    family: &str,
+    successor: &str,
+    nodes: impl IntoIterator<Item = &'a str>,
+) -> Result<WorkflowFacts> {
+    let (record, floor, snapshot, revision, pending, unavailable) = maybe_current(
+        c,
+        "SELECT record,floor,snapshot,revision,pending IS NOT NULL,unavailable
+         FROM main.hard_fact_feed WHERE singleton=1 AND family=?1",
+        params![family.to_owned()],
+        |row| {
+            Ok((
+                row.get::<String>(0)?,
+                integer(row, 1)?,
+                row.get::<String>(2)?,
+                integer(row, 3)?,
+                row.get::<bool>(4)?,
+                row.get::<String>(5)?,
+            ))
+        },
+    )
+    .map_err(db)?
+    .ok_or(Error::Conflict("Session fact scope changed"))?;
+    let feed: FactFeed = decode(record.as_bytes())?;
+    if feed.family != family || feed.workflow_predecessors(successor).is_empty() {
+        return Err(Error::Conflict("Session fact cut unavailable"));
+    }
+    let mut available = Vec::new();
+    if revision != 0 && !pending {
+        let unavailable: BTreeSet<String> = decode(unavailable.as_bytes())?;
+        available.extend(
+            nodes
+                .into_iter()
+                .filter(|node| !unavailable.contains(*node))
+                .map(str::to_owned),
+        );
+    }
+    if !available.is_empty() {
+        match source_authority::current(c) {
+            Ok(authority) if authority.as_ref() == Some(&feed.authority) => {}
+            Ok(_) | Err(Error::Conflict(_)) => available.clear(),
+            Err(error) => return Err(error),
+        }
+    }
+    Ok(WorkflowFacts {
+        feed,
+        floor,
+        snapshot,
+        available,
+    })
 }
 
 pub(crate) fn is_workflow_selector(c: &Connection, family: &str, node: &str) -> Result<bool> {

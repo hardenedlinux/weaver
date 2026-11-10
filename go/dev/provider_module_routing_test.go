@@ -214,22 +214,27 @@ forbid(principal, action == Weaver::Action::"invokeProvider", resource) when { c
 			seen = true
 		}
 	}
-	done := make(chan error, 2)
-	for range 2 {
+	const contenders = 4
+	done := make(chan error, contenders)
+	for range contenders {
 		go func() {
 			done <- execute(ctx, true)
 		}()
 	}
-	first, other := <-done, <-done
+	var successes int
+	for range contenders {
+		if <-done == nil {
+			successes++
+		}
+	}
 	if mode == "deny" {
-		if first == nil || other == nil || f.primary.Load() != 0 {
-			t.Fatalf("import bypassed Cedar invocation: %v %v", first, other)
+		if successes != 0 || f.primary.Load() != 0 {
+			t.Fatalf("import bypassed Cedar invocation: successes=%d calls=%d", successes, f.primary.Load())
 		}
 		return
 	}
-	if (mode == "complete" && first != nil && other != nil) ||
-		(mode == "partial" && (first == nil || other == nil)) || f.primary.Load() != 1 {
-		t.Fatalf("expected a single provider dispatch: %v %v, calls=%d", first, other, f.primary.Load())
+	if (mode == "complete" && successes != 1) || (mode == "partial" && successes != 0) || f.primary.Load() != 1 {
+		t.Fatalf("expected a single provider dispatch: successes=%d calls=%d", successes, f.primary.Load())
 	}
 	withdrawal, err := json.Marshal(map[string]any{"parent": current.Version, "entries": map[string]any{}})
 	if err != nil {

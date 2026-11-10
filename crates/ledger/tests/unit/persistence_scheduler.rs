@@ -17,6 +17,26 @@ fn scope(roots: [u8; 3]) -> Scope {
     Scope::Domains(roots.map(|id| id.to_string()).into())
 }
 
+#[cfg(feature = "commit-observer")]
+#[test]
+fn observed_release_covers_lease_removal_without_retaining_a_grant() {
+    use crate::persistence::scope_trace::{capturing_release, observe_release};
+
+    let scheduler = Scheduler::default();
+    let grant = scheduler.acquire(Scope::All, None).expect("grant");
+    let release = observe_release(|| drop(grant)).expect("observed release");
+    assert!(release.requested <= release.locked);
+    assert!(release.locked <= release.removed);
+    assert!(release.removed <= release.notified);
+    assert!(release.notified <= release.returned);
+    let state = scheduler.state.lock().expect("scheduler");
+    assert!(state.active.is_empty());
+    assert_eq!(state.generation, 1);
+    drop(state);
+    assert!(!capturing_release());
+    assert!(observe_release(|| {}).is_none());
+}
+
 proptest! {
     #[test]
     fn grants_depend_only_on_exact_older_or_active_conflicts(

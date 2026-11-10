@@ -183,16 +183,38 @@ impl Grant<'_> {
 
 impl Drop for Grant<'_> {
     fn drop(&mut self) {
+        #[cfg(feature = "commit-observer")]
+        let requested = super::scope_trace::capturing_release().then(std::time::Instant::now);
         let mut state = self
             .scheduler
             .state
             .lock()
             .unwrap_or_else(std::sync::PoisonError::into_inner);
+        #[cfg(feature = "commit-observer")]
+        let locked = requested.map(|_| std::time::Instant::now());
         state.active.retain(|ticket| ticket.id != self.id);
         if self.global {
             state.generation += 1;
         }
+        #[cfg(feature = "commit-observer")]
+        let removed = requested.map(|_| std::time::Instant::now());
         self.scheduler.changed.notify_all();
+        #[cfg(feature = "commit-observer")]
+        {
+            let notified = requested.map(|_| std::time::Instant::now());
+            drop(state);
+            if let (Some(requested), Some(locked), Some(removed), Some(notified)) =
+                (requested, locked, removed, notified)
+            {
+                super::scope_trace::record_release(super::scope_trace::ReleaseTiming {
+                    requested,
+                    locked,
+                    removed,
+                    notified,
+                    returned: std::time::Instant::now(),
+                });
+            }
+        }
     }
 }
 

@@ -47,7 +47,7 @@ harness = false
 [[bench]]
 name = "scheme_conversion"
 harness = false
-required-features = ["scheme-qualification"]
+required-features = ["scheme-program"]
 
 # Unsafe is scoped to the fixed Gerbil linker/export binding module; all typed
 # conversion, lifecycle, catalog and source ownership code retains deny mode.

@@ -24,6 +24,7 @@ pub enum ProviderScopePhase {
 
 enum Change<'a> {
     Semantic,
+    WorkflowObservation,
     Admission(&'a crate::provider::AdmissionRequest),
     Progress(&'a crate::provider::RangeProgress),
     Lifecycle(&'a crate::provider::OriginLifecycle),
@@ -47,9 +48,17 @@ pub struct WriteScope<'a> {
     current_birth: Cell<super::Timing>,
     current_profile: Cell<super::Timing>,
     current_claim: Cell<super::Timing>,
+    #[cfg(feature = "commit-observer")]
+    claim_membership: Cell<super::Timing>,
+    #[cfg(feature = "commit-observer")]
+    manifest_reads: Cell<super::Timing>,
+    #[cfg(feature = "commit-observer")]
+    manifest_driver: [Cell<[u64; 8]>; 2],
     current_history: Cell<super::Timing>,
     current_manifest: Cell<super::Timing>,
     current_original: Cell<super::Timing>,
+    #[cfg(feature = "commit-observer")]
+    current_reservation: Cell<super::Timing>,
     cedar: Cell<super::Timing>,
     owner_entered: Option<Instant>,
     domains_entered: Option<Instant>,
@@ -78,6 +87,20 @@ pub fn begin_family<'a>(session: &'a mut Session, family: &str) -> driver::Resul
         None,
         ProviderScopePhase::Other,
         Change::Semantic,
+    )
+}
+
+/// Open the snapshot used to derive inert Workflow candidates.
+pub(crate) fn begin_workflow_observation<'a>(
+    session: &'a mut Session,
+    family: &str,
+) -> driver::Result<WriteScope<'a>> {
+    start(
+        session,
+        Some(family),
+        None,
+        ProviderScopePhase::Other,
+        Change::WorkflowObservation,
     )
 }
 /// Queued execution waits for its deciding turn before closing. MVCC rechecks
@@ -187,7 +210,7 @@ fn start<'a>(
                 .owner
                 .authority
                 .close_lifecycle(close_scope.clone(), proof)?,
-            Change::Semantic | Change::Admission(_) => {
+            Change::Semantic | Change::WorkflowObservation | Change::Admission(_) => {
                 session.owner.authority.close(close_scope.clone())?
             }
         })
@@ -266,18 +289,44 @@ fn start<'a>(
     } else {
         authority.map(|close| (close, authority_entered))
     };
-    let parallel = concurrent && family.is_some();
+    use driver::transaction::TransactionBehavior;
+    let behavior = if concurrent && family.is_some() {
+        TransactionBehavior::Concurrent
+    } else if matches!(change, Change::WorkflowObservation) {
+        TransactionBehavior::Deferred
+    } else {
+        TransactionBehavior::Immediate
+    };
     // The mutable Session borrow provides exclusive custody for the whole scope.
-    let native = super::timing::measure(&mut session.timings.transaction_begin, || {
-        block_on(driver::transaction::Transaction::new_unchecked(
-            &session.connection,
-            if parallel {
-                driver::transaction::TransactionBehavior::Concurrent
-            } else {
-                driver::transaction::TransactionBehavior::Immediate
-            },
-        ))
-    })?;
+    #[cfg(feature = "commit-observer")]
+    let begin_before = session.timings.transaction_begin.nanos;
+    #[cfg(feature = "commit-observer")]
+    let driver_before = scope_trace
+        .as_ref()
+        .filter(|trace| trace.has_timeline())
+        .map(|_| session.timings.begin_driver_counters());
+    let native = begin_driver_transaction(
+        &session.connection,
+        behavior,
+        &mut session.timings,
+        #[cfg(feature = "commit-observer")]
+        scope_trace.is_some(),
+    )?;
+    #[cfg(feature = "commit-observer")]
+    if let Some(trace) = scope_trace.as_mut() {
+        trace.opened(
+            session
+                .timings
+                .transaction_begin
+                .nanos
+                .saturating_sub(begin_before),
+            session.timings.commit.nanos,
+            driver_before.map_or([0; 6], |before| {
+                let after = session.timings.begin_driver_counters();
+                std::array::from_fn(|i| after[i].saturating_sub(before[i]))
+            }),
+        );
+    }
     let (authority, authority_entered) = if let Some(authority) = authority {
         authority
     } else {
@@ -318,9 +367,17 @@ fn start<'a>(
         current_birth: Cell::default(),
         current_profile: Cell::default(),
         current_claim: Cell::default(),
+        #[cfg(feature = "commit-observer")]
+        claim_membership: Cell::default(),
+        #[cfg(feature = "commit-observer")]
+        manifest_reads: Cell::default(),
+        #[cfg(feature = "commit-observer")]
+        manifest_driver: Default::default(),
         current_history: Cell::default(),
         current_manifest: Cell::default(),
         current_original: Cell::default(),
+        #[cfg(feature = "commit-observer")]
+        current_reservation: Cell::default(),
         cedar: Cell::default(),
         owner_entered,
         domains_entered,
@@ -329,6 +386,58 @@ fn start<'a>(
         grant,
         #[cfg(any(test, feature = "commit-observer"))]
         observer: session.commit_observer.clone(),
+    })
+}
+
+fn begin_driver_transaction<'a>(
+    connection: &'a driver::Connection,
+    behavior: driver::transaction::TransactionBehavior,
+    timings: &mut super::TransactionTimings,
+    #[cfg(feature = "commit-observer")] observed: bool,
+) -> driver::Result<driver::transaction::Transaction<'a>> {
+    let future = driver::transaction::Transaction::new_unchecked(connection, behavior);
+    super::timing::measure(&mut timings.transaction_begin, || {
+        #[cfg(feature = "commit-observer")]
+        if observed {
+            use super::driver_observer::{DriverSpan, observe};
+            let (result, prepare, prepare_cpu) = observe(DriverSpan::Prepare, || {
+                super::timing::observe_polls(
+                    future,
+                    &mut timings.transaction_begin_poll,
+                    &mut timings.transaction_begin_cpu,
+                    &mut timings.transaction_begin_pending,
+                )
+            });
+            timings.transaction_begin_prepare.merge(prepare);
+            timings.transaction_begin_prepare_cpu.merge(prepare_cpu);
+            return result;
+        }
+        block_on(future)
+    })
+}
+fn commit_driver_transaction(
+    native: driver::transaction::Transaction<'_>,
+    timings: &mut super::TransactionTimings,
+    #[cfg(feature = "commit-observer")] observed: Option<&mut super::scope_trace::Granted<'_>>,
+) -> driver::Result<()> {
+    let future = native.commit();
+    super::timing::measure(&mut timings.commit, || {
+        #[cfg(feature = "commit-observer")]
+        if let Some(trace) = observed {
+            use super::driver_observer::observe_commit;
+            let (result, sync, io) = observe_commit(trace.has_timeline(), || {
+                super::timing::observe_polls(
+                    future,
+                    &mut timings.commit_poll,
+                    &mut timings.commit_cpu,
+                    &mut timings.commit_pending,
+                )
+            });
+            timings.commit_sync.merge(sync);
+            trace.committed_io(io);
+            return result;
+        }
+        block_on(future)
     })
 }
 impl WriteScope<'_> {
@@ -455,6 +564,49 @@ impl WriteScope<'_> {
     pub(crate) fn provider_claim<T>(&self, run: impl FnOnce() -> T) -> T {
         observe(&self.current_claim, run)
     }
+    pub(crate) fn provider_claim_membership<T>(&self, run: impl FnOnce() -> T) -> T {
+        #[cfg(feature = "commit-observer")]
+        if self
+            .scope_trace
+            .as_ref()
+            .is_some_and(|trace| trace.has_timeline())
+        {
+            return observe(&self.claim_membership, run);
+        }
+        run()
+    }
+    pub(crate) fn provider_manifest_reads<T>(&self, run: impl FnOnce() -> T) -> T {
+        #[cfg(feature = "commit-observer")]
+        if self
+            .scope_trace
+            .as_ref()
+            .is_some_and(|trace| trace.has_timeline())
+        {
+            return observe(&self.manifest_reads, run);
+        }
+        run()
+    }
+    #[cfg(feature = "commit-observer")]
+    pub(super) fn observe_manifest_driver<F: std::future::Future>(
+        &self,
+        projected: bool,
+        future: F,
+    ) -> F::Output {
+        if !self
+            .scope_trace
+            .as_ref()
+            .is_some_and(|trace| trace.has_timeline())
+        {
+            return block_on(future);
+        }
+        let (result, sample) = super::driver_observer::observe_read(future);
+        let counter = &self.manifest_driver[usize::from(projected)];
+        let previous = counter.get();
+        counter.set(std::array::from_fn(|i| {
+            previous[i].saturating_add(sample[i])
+        }));
+        result
+    }
     pub(crate) fn provider_original<T>(&self, run: impl FnOnce() -> T) -> T {
         observe(&self.current_original, run)
     }
@@ -463,6 +615,18 @@ impl WriteScope<'_> {
     }
     pub(crate) fn provider_history<T>(&self, run: impl FnOnce() -> T) -> T {
         observe(&self.current_history, run)
+    }
+    #[cfg(feature = "commit-observer")]
+    pub(crate) fn provider_reservation<T>(&self, run: impl FnOnce() -> T) -> T {
+        if self
+            .scope_trace
+            .as_ref()
+            .is_some_and(|trace| trace.has_timeline())
+        {
+            observe(&self.current_reservation, run)
+        } else {
+            run()
+        }
     }
     pub(crate) fn provider_cedar<T>(&self, run: impl FnOnce() -> T) -> T {
         observe(&self.cedar, run)
@@ -484,7 +648,12 @@ impl WriteScope<'_> {
             .native
             .take()
             .ok_or_else(|| driver::Error::Misuse("transaction already ended".into()))?;
-        match super::timing::measure(&mut self.timings.commit, || block_on(native.commit())) {
+        match commit_driver_transaction(
+            native,
+            self.timings,
+            #[cfg(feature = "commit-observer")]
+            self.scope_trace.as_mut(),
+        ) {
             Ok(()) => {
                 if let Some(config) = self.quota_update.take() {
                     *self.quota_projection.lock().map_err(super::owner::error)? = Some(config);
@@ -544,7 +713,8 @@ impl Drop for WriteScope<'_> {
             self.poisoned.store(true, Ordering::Release);
             let _ = release_failed_transaction(self.connection);
         }
-        self.timings.transaction_hold.record(self.entered.elapsed());
+        let transaction_hold = self.entered.elapsed();
+        self.timings.transaction_hold.record(transaction_hold);
         for (total, sample) in [
             (
                 &mut self.timings.provider_oauth_check,
@@ -583,6 +753,20 @@ impl Drop for WriteScope<'_> {
         self.timings
             .authority_span
             .record(self.authority_entered.elapsed());
+        #[cfg(feature = "commit-observer")]
+        let releasing = self.scope_trace.as_ref().map(|_| Instant::now());
+        #[cfg(feature = "commit-observer")]
+        let release = if self
+            .scope_trace
+            .as_ref()
+            .is_some_and(|trace| trace.has_timeline())
+        {
+            super::scope_trace::observe_release(|| drop(self.grant.take()))
+        } else {
+            drop(self.grant.take());
+            None
+        };
+        #[cfg(not(feature = "commit-observer"))]
         drop(self.grant.take());
         if let Some(entered) = self.domains_entered {
             self.timings.domain_hold.record(entered.elapsed());
@@ -591,8 +775,25 @@ impl Drop for WriteScope<'_> {
             self.timings.owner_gate_hold.record(entered.elapsed());
         }
         #[cfg(feature = "commit-observer")]
-        if let Some(trace) = self.scope_trace.take() {
-            trace.record(self.authority_entered.elapsed());
+        if let (Some(trace), Some(releasing)) = (self.scope_trace.take(), releasing) {
+            trace.record(super::scope_trace::Completion {
+                authority_span: self.authority_entered.elapsed(),
+                releasing,
+                transaction_nanos: u64::try_from(transaction_hold.as_nanos()).unwrap_or(u64::MAX),
+                commit_total: self.timings.commit.nanos,
+                admission_nanos: [
+                    self.current_claim.get().nanos,
+                    self.current_original.get().nanos,
+                    self.current_manifest.get().nanos,
+                    self.current_history.get().nanos,
+                    self.current_reservation.get().nanos,
+                    self.cedar.get().nanos,
+                    self.claim_membership.get().nanos,
+                    self.manifest_reads.get().nanos,
+                ],
+                manifest_driver: self.manifest_driver.each_ref().map(Cell::get),
+                release,
+            });
         }
     }
 }

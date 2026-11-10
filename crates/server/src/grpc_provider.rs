@@ -183,6 +183,15 @@ impl Gateway {
             .cloned();
         let session_root = wakeup.is_some() && workflow.predecessors.is_empty();
         #[cfg(test)]
+        let trace_scopes = std::env::var_os("WEAVER_TEST_PROVIDER_SCOPE_TRACE").is_some();
+        #[cfg(test)]
+        let reuse = std::env::var_os("WEAVER_TEST_REUSE_PROVIDER_CONNECTION").is_some();
+        #[cfg(test)]
+        let custody = self.admission.clone();
+        #[cfg(test)]
+        let queued_ticks =
+            trace_scopes.then(weaver_ledger::persistence::provider_observation_nanos);
+        #[cfg(test)]
         let queued_at = std::time::Instant::now();
         let job = self
             .runtime
@@ -193,6 +202,13 @@ impl Gateway {
                 let result = (|| {
                     #[cfg(test)]
                     let open_started = std::time::Instant::now();
+                    #[cfg(test)]
+                    let (mut ledger, reused) = if reuse {
+                        custody.checkout_provider(&config.database, &output.shutdown)?
+                    } else {
+                        (Ledger::open(&config.database)?, false)
+                    };
+                    #[cfg(not(test))]
                     let mut ledger = Ledger::open(&config.database)?;
                     let client = output.cancelled.clone();
                     let server = output.shutdown.clone();
@@ -205,6 +221,14 @@ impl Gateway {
                     #[cfg(test)]
                     weaver_ledger::persistence::use_cached_currentness_plans(
                         std::env::var("WEAVER_TEST_CACHE_CURRENTNESS_PLANS").as_deref() == Ok("1"),
+                    );
+                    #[cfg(test)]
+                    weaver_ledger::use_prepared_manifest_programs(
+                        std::env::var("WEAVER_TEST_PREPARED_MANIFEST_PROGRAMS").as_deref() == Ok("1"),
+                    );
+                    #[cfg(test)]
+                    weaver_ledger::use_prepared_original_program(
+                        std::env::var("WEAVER_TEST_PREPARED_ORIGINAL_PROGRAM").as_deref() == Ok("1"),
                     );
                     #[cfg(test)]
                     weaver_ledger::use_locked_publication_review(
@@ -238,10 +262,11 @@ impl Gateway {
                         std::env::var_os("WEAVER_TEST_CONSERVATIVE_RANGE_INVALIDATION").is_some(),
                     );
                     #[cfg(test)]
-                    let trace_scopes = std::env::var_os("WEAVER_TEST_PROVIDER_SCOPE_TRACE").is_some();
-                    #[cfg(test)]
                     if trace_scopes {
-                        ledger.trace_provider_scopes(&plan.family);
+                        let node = std::env::var_os("WEAVER_TEST_PROVIDER_SCOPE_TIMELINE")
+                            .is_some()
+                            .then_some(plan.node.as_str());
+                        ledger.trace_provider_scopes(&plan.family, node);
                     }
                     #[cfg(test)]
                     weaver_ledger::use_cached_release_programs(
@@ -251,7 +276,10 @@ impl Gateway {
                     {
                         crate::grpc_output::take_encoding_nanos();
                         crate::grpc_output::take_transport();
+                        crate::grpc_output::take_broker_phases();
+                        crate::grpc_output::take_admission_ledger();
                         crate::grpc_output::take_handoffs();
+                        crate::grpc_output::take_first_queue_ticks();
                         crate::grpc_output::take_deliveries();
                     }
                     let progression = if workflow.predecessors.is_empty() {
@@ -259,6 +287,8 @@ impl Gateway {
                     } else {
                         Some(ledger.prepare_workflow_candidate(&workflow.predecessors, &plan, workflow.observed.as_deref())?)
                     };
+                    #[cfg(test)]
+                    let broker_started = std::time::Instant::now();
                     let execution = weaver_broker::execute_provider_progression(
 
                         &mut ledger,
@@ -342,7 +372,8 @@ impl Gateway {
                     if trace_scopes {
                         eprintln!("weaver-provider-encode {} {}", plan.family, crate::grpc_output::take_encoding_nanos());
                         use std::fmt::Write;
-                        if let Some(phases) = crate::grpc_output::take_transport() {
+                        let transport_phases = crate::grpc_output::take_transport();
+                        if let Some((phases, _)) = transport_phases {
                             let mut line = format!("weaver-provider-transport {}", plan.family);
                             for stage in [phases.connect, phases.tls, phases.write, phases.headers] {
                                 let _ = write!(line, " {}:{}:{}", stage.nanos, u8::from(stage.attempted), u8::from(stage.completed));
@@ -352,7 +383,30 @@ impl Gateway {
 
                         ledger.finish_provider_scope_trace();
                         let mut handoff = format!("weaver-provider-handoff {}", plan.family);
-                        for (sequence, time) in crate::grpc_output::take_handoffs() {
+                        let handoffs = crate::grpc_output::take_handoffs();
+                        let admission_ledger = crate::grpc_output::take_admission_ledger();
+                        if let (Some(queued), Some((phases, headers)), Some(first), Some(admission_ledger)) =
+                            (queued_ticks, transport_phases, crate::grpc_output::take_first_queue_ticks(), admission_ledger)
+                        {
+                            let [connect, tls, write, response_head] =
+                                [phases.connect, phases.tls, phases.write, phases.headers]
+                                    .map(|stage| u128::from(stage.nanos));
+                            let write_transport = connect + tls + write;
+                            let transport = write_transport + response_head;
+                            let [enqueue, consume, prepare, dispatch] =
+                                crate::grpc_output::take_broker_phases();
+                            let mut first_frame = format!(
+                                "weaver-provider-first-frame {} {} {queued} {} {} {headers} {first} {transport} {enqueue} {consume} {prepare} {dispatch} {write_transport} {open_nanos} {} {connect} {tls} {write} {response_head}",
+                                plan.family,
+                                plan.node,
+                                worker_started.duration_since(queued_at).as_nanos(),
+                                broker_started.duration_since(worker_started).as_nanos(),
+                                u8::from(reused),
+                            );
+                            crate::grpc_output::append_admission_ledger(&mut first_frame, admission_ledger);
+                            eprintln!("{first_frame}");
+                        }
+                        for (sequence, time) in handoffs {
                             let _ = write!(handoff, " {sequence}:{time}");
                         }
                         eprintln!("{handoff}");
@@ -363,6 +417,10 @@ impl Gateway {
                         }
                         eprintln!("{delivery}");
 
+                    }
+                    #[cfg(test)]
+                    if reuse && execution.is_ok() && !output.cancelled.is_cancelled() {
+                        custody.park_provider(ledger, &output.shutdown);
                     }
                     execution
                 })();

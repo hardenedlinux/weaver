@@ -18,11 +18,53 @@ use weaver_contracts::{
 };
 use weaver_ledger::{FactPreparation, Ledger};
 
+type CatalogRead = Result<Option<(String, Vec<u8>)>>;
+
 #[derive(Clone)]
 pub(crate) struct SourceOwner {
     sender: mpsc::Sender<Envelope>,
     capacity: Arc<Semaphore>,
+    waiting: Arc<Semaphore>,
+    next_mutation: Arc<MutationHandoff>,
 }
+#[derive(Default)]
+struct MutationHandoff {
+    pending: std::sync::atomic::AtomicBool,
+    released: tokio::sync::Notify,
+}
+impl MutationHandoff {
+    fn pending(&self) -> bool {
+        self.pending.load(std::sync::atomic::Ordering::Acquire)
+    }
+
+    fn reserve(&self) -> Option<MutationReservation<'_>> {
+        use std::sync::atomic::Ordering;
+        self.pending
+            .compare_exchange(false, true, Ordering::AcqRel, Ordering::Acquire)
+            .ok()
+            .map(|_| MutationReservation(self))
+    }
+
+    async fn released(&self) {
+        loop {
+            let released = self.released.notified();
+            if !self.pending() {
+                return;
+            }
+            released.await;
+        }
+    }
+}
+struct MutationReservation<'a>(&'a MutationHandoff);
+impl Drop for MutationReservation<'_> {
+    fn drop(&mut self) {
+        self.0
+            .pending
+            .store(false, std::sync::atomic::Ordering::Release);
+        self.0.released.notify_waiters();
+    }
+}
+
 struct Envelope {
     caller: SourceIdentity,
     command: Command,
@@ -74,7 +116,7 @@ enum Command {
     },
 
     ReadCatalog {
-        reply: oneshot::Sender<Result<Option<(String, weaver_contracts::ProviderCatalog)>>>,
+        reply: oneshot::Sender<CatalogRead>,
         slot: OwnedSemaphorePermit,
     },
     PublishCatalog {
@@ -181,7 +223,7 @@ impl SourceOwner {
         caller: SourceIdentity,
         intent: FactIntent,
     ) -> std::result::Result<FactBarrier, Status> {
-        self.submit(caller, |reply, slot| Command::StageFact {
+        self.submit_priority(caller, |reply, slot| Command::StageFact {
             intent,
             reply,
             slot,
@@ -193,7 +235,7 @@ impl SourceOwner {
         caller: SourceIdentity,
         barrier: FactBarrier,
     ) -> std::result::Result<FactPreparation, Status> {
-        self.submit(caller, |reply, slot| Command::PrepareFact {
+        self.submit_priority(caller, |reply, slot| Command::PrepareFact {
             barrier,
             reply,
             slot,
@@ -206,7 +248,7 @@ impl SourceOwner {
         work: FactWork,
         affected: Vec<String>,
     ) -> std::result::Result<FactResolution, Status> {
-        self.submit(caller, |reply, slot| Command::ResolveFact {
+        self.submit_priority(caller, |reply, slot| Command::ResolveFact {
             work,
             affected,
             reply,
@@ -414,6 +456,8 @@ impl SourceOwner {
             client: Self {
                 sender,
                 capacity: Arc::new(Semaphore::new(1)),
+                waiting: Arc::new(Semaphore::new(3)),
+                next_mutation: Arc::new(MutationHandoff::default()),
             },
             job,
         })
@@ -423,11 +467,89 @@ impl SourceOwner {
         caller: SourceIdentity,
         make: impl FnOnce(oneshot::Sender<Result<T>>, OwnedSemaphorePermit) -> Command,
     ) -> std::result::Result<T, Status> {
-        let slot = self
-            .capacity
+        self.submit_with_wait(caller, false, make).await
+    }
+    async fn command_slot(&self, wait: bool) -> std::result::Result<OwnedSemaphorePermit, Status> {
+        if let Ok(slot) = self.capacity.clone().try_acquire_owned()
+            && !self.next_mutation.pending()
+        {
+            return Ok(slot);
+        }
+        if !wait {
+            return Err(Status::resource_exhausted("source command lane full"));
+        }
+        let _waiting = self
+            .waiting
             .clone()
             .try_acquire_owned()
-            .map_err(|_| Status::resource_exhausted("source command lane full"))?;
+            .map_err(|_| Status::resource_exhausted("source command wait limit"))?;
+        self.wait_slot(async {
+            loop {
+                let slot = self
+                    .capacity
+                    .clone()
+                    .acquire_owned()
+                    .await
+                    .map_err(|_| Status::unavailable("source owner stopped"))?;
+                if !self.next_mutation.pending() {
+                    return Ok(slot);
+                }
+                // Yield this handoff to the reserved mutation. Retain only the
+                // bounded waiting slot while the mutation reaches the owner.
+                drop(slot);
+                self.next_mutation.released().await;
+            }
+        })
+        .await
+    }
+    async fn wait_slot(
+        &self,
+        future: impl std::future::Future<Output = std::result::Result<OwnedSemaphorePermit, Status>>,
+    ) -> std::result::Result<OwnedSemaphorePermit, Status> {
+        tokio::select! {
+            biased;
+            _ = self.sender.closed() => Err(Status::unavailable("source owner stopped")),
+            slot = tokio::time::timeout(std::time::Duration::from_millis(50), future) =>
+                slot.map_err(|_| Status::resource_exhausted("source command wait expired"))?,
+        }
+    }
+    async fn priority_slot(&self) -> std::result::Result<OwnedSemaphorePermit, Status> {
+        let _next = self
+            .next_mutation
+            .reserve()
+            .ok_or_else(|| Status::resource_exhausted("source mutation wait limit"))?;
+        self.wait_slot(async {
+            self.capacity
+                .clone()
+                .acquire_owned()
+                .await
+                .map_err(|_| Status::unavailable("source owner stopped"))
+        })
+        .await
+    }
+    async fn submit_priority<T>(
+        &self,
+        caller: SourceIdentity,
+        make: impl FnOnce(oneshot::Sender<Result<T>>, OwnedSemaphorePermit) -> Command,
+    ) -> std::result::Result<T, Status> {
+        let slot = self.priority_slot().await?;
+        self.submit_acquired(caller, slot, make).await
+    }
+    async fn submit_with_wait<T>(
+        &self,
+        caller: SourceIdentity,
+        wait: bool,
+        make: impl FnOnce(oneshot::Sender<Result<T>>, OwnedSemaphorePermit) -> Command,
+    ) -> std::result::Result<T, Status> {
+        let slot = self.command_slot(wait).await?;
+        self.submit_acquired(caller, slot, make).await
+    }
+    async fn submit_acquired<T>(
+        &self,
+        caller: SourceIdentity,
+        slot: OwnedSemaphorePermit,
+        make: impl FnOnce(oneshot::Sender<Result<T>>, OwnedSemaphorePermit) -> Command,
+    ) -> std::result::Result<T, Status> {
         let (reply, receiver) = oneshot::channel();
         self.sender
             .try_send(Envelope {
@@ -451,11 +573,13 @@ impl SourceOwner {
         task: Task,
         publication: Option<PublicationKey>,
     ) -> std::result::Result<(), Status> {
-        self.submit(caller, |reply, slot| Command::Register {
-            task: Box::new(task),
-            publication,
-            reply,
-            slot,
+        self.submit_with_wait(caller, publication.is_some(), |reply, slot| {
+            Command::Register {
+                task: Box::new(task),
+                publication,
+                reply,
+                slot,
+            }
         })
         .await
     }
@@ -464,7 +588,7 @@ impl SourceOwner {
         caller: SourceIdentity,
         change: Publication,
     ) -> std::result::Result<PublicationReceipt, Status> {
-        self.submit(caller, |reply, slot| Command::Publish {
+        self.submit_priority(caller, |reply, slot| Command::Publish {
             change,
             reply,
             slot,
@@ -476,7 +600,7 @@ impl SourceOwner {
         caller: SourceIdentity,
         change: Publication,
     ) -> std::result::Result<PublicationKey, Status> {
-        self.submit(caller, |reply, slot| Command::Stage {
+        self.submit_priority(caller, |reply, slot| Command::Stage {
             change,
             reply,
             slot,
@@ -496,7 +620,7 @@ impl SourceOwner {
         caller: SourceIdentity,
         change: Publication,
     ) -> std::result::Result<PublicationKey, Status> {
-        self.submit(caller, |reply, slot| Command::StageReviewed {
+        self.submit_priority(caller, |reply, slot| Command::StageReviewed {
             change,
             reply,
             slot,
@@ -530,16 +654,19 @@ impl SourceOwner {
     pub(crate) async fn provider_catalog(
         &self,
         caller: SourceIdentity,
-    ) -> std::result::Result<Option<(String, weaver_contracts::ProviderCatalog)>, Status> {
-        self.submit(caller, |reply, slot| Command::ReadCatalog { reply, slot })
-            .await
+    ) -> std::result::Result<Option<(String, Vec<u8>)>, Status> {
+        self.submit_with_wait(caller, true, |reply, slot| Command::ReadCatalog {
+            reply,
+            slot,
+        })
+        .await
     }
     pub(crate) async fn publish_catalog(
         &self,
         caller: SourceIdentity,
         catalog: weaver_contracts::ProviderCatalog,
     ) -> std::result::Result<String, Status> {
-        self.submit(caller, |reply, slot| Command::PublishCatalog {
+        self.submit_priority(caller, |reply, slot| Command::PublishCatalog {
             catalog,
             reply,
             slot,
@@ -558,7 +685,7 @@ impl SourceOwner {
         caller: SourceIdentity,
         change: SourceRotation,
     ) -> std::result::Result<SourceRotationReceipt, Status> {
-        self.submit(caller, |reply, slot| Command::Rotate {
+        self.submit_priority(caller, |reply, slot| Command::Rotate {
             change,
             reply,
             slot,
@@ -630,6 +757,7 @@ fn process(
     cancel: CancellationToken,
     session_wakeup: Option<Arc<tokio::sync::Notify>>,
 ) -> Result<()> {
+    let mut catalog_projection = weaver_ledger::ProviderCatalogProjection::default();
     loop {
         let command = handle.block_on(async {
             tokio::select! {
@@ -712,8 +840,9 @@ fn process(
                 answer(ledger, reply, result, slot)?;
             }
             Command::ReadCatalog { reply, slot } => {
-                let result =
-                    ledger.with_authenticated_source(&caller, |ledger| ledger.provider_catalog());
+                let result = ledger.with_authenticated_source(&caller, |ledger| {
+                    ledger.inspect_provider_catalog(&mut catalog_projection)
+                });
                 answer(ledger, reply, result, slot)?;
             }
             Command::PublishCatalog {

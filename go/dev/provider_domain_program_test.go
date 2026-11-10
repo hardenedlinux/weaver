@@ -233,6 +233,8 @@ type domainStreamTransport struct {
 	frames, messageBytes int
 	recv, decode         time.Duration
 	received             map[uint64]int64
+	firstTick            int64
+	frameGaps            []time.Duration
 }
 
 func readDomainProgramStream(ctx context.Context, f *fixture, plan v1.ProviderPlan, encoding pb.Encoding, rows uint32) (int, domainStreamTransport, error) {
@@ -244,6 +246,10 @@ func readDomainProgramStreamWithClient(ctx context.Context, client *gatewayclien
 }
 
 func readDomainProgramStreamObserved(ctx context.Context, client *gatewayclient.Client, plan v1.ProviderPlan, encoding pb.Encoding, rows uint32, onFirst func()) (int, domainStreamTransport, error) {
+	return readDomainProgramStreamTimed(ctx, client, plan, encoding, rows, onFirst, nil)
+}
+
+func readDomainProgramStreamTimed(ctx context.Context, client *gatewayclient.Client, plan v1.ProviderPlan, encoding pb.Encoding, rows uint32, onFirst func(), observeFirst func() int64) (int, domainStreamTransport, error) {
 	timing := domainStreamTransport{received: make(map[uint64]int64)}
 	stream, err := client.RPC.ExecuteProvider(client.Context(ctx), &pb.ProviderRequest{
 		Plan: gatewayclient.Plan(plan), Encoding: encoding, BatchRows: rows,
@@ -252,10 +258,19 @@ func readDomainProgramStreamObserved(ctx context.Context, client *gatewayclient.
 		return 0, timing, err
 	}
 	next, done := 0, false
+	var previous time.Time
 	for {
 		started := time.Now()
 		frame, err := stream.Recv()
 		received := time.Now()
+		if err == nil && observeFirst != nil {
+			if previous.IsZero() {
+				timing.firstTick = observeFirst()
+			} else {
+				timing.frameGaps = append(timing.frameGaps, received.Sub(previous))
+			}
+			previous = received
+		}
 		timing.recv += received.Sub(started)
 		if err == io.EOF && done {
 			return next, timing, nil

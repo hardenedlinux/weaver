@@ -36,7 +36,9 @@ impl SourceInbox {
             owner,
             |owner, original, _| compile(owner, original),
             |owner, input| match input {
-                crate::Derivation::Governor(cut) => derive(owner, cut),
+                crate::Derivation::Governor(cut) => {
+                    derive(owner, cut).map(crate::DerivationOutput::Nodes)
+                }
                 crate::Derivation::FactImpact { .. } => Err(SourceError::Contract),
             },
         );
@@ -50,7 +52,10 @@ impl SourceInbox {
             &OwnedSource,
             &CancellationToken,
         ) -> Result<OwnedSource, SourceError>,
-        mut derive: impl FnMut(&mut C, &crate::Derivation) -> Result<Vec<String>, SourceError>,
+        mut derive: impl FnMut(
+            &mut C,
+            &crate::Derivation,
+        ) -> Result<crate::DerivationOutput, SourceError>,
     ) {
         while let Some(command) = self.receiver.blocking_recv() {
             if *self.shared.gate() {
@@ -93,25 +98,37 @@ impl SourceInbox {
     fn execute_derivation(
         &self,
         input: &crate::Derivation,
-        reply: tokio::sync::oneshot::Sender<Result<Vec<String>, SourceError>>,
+        reply: tokio::sync::oneshot::Sender<super::state::DerivationReply>,
         queued: Option<std::time::Instant>,
-        derive: impl FnOnce() -> Result<Vec<String>, SourceError>,
+        derive: impl FnOnce() -> Result<crate::DerivationOutput, SourceError>,
     ) {
         if reply.is_closed() {
             return;
         }
         let started = queued.map(|queued| (queued, std::time::Instant::now()));
         let result = derive();
+        let finished = started.map(|_| std::time::Instant::now());
         if matches!(result, Err(SourceError::Scheme)) {
             self.shared.stop();
         }
-        if let Some((queued, started)) = started {
-            let derive_ns = started.elapsed().as_nanos();
+        if let (Some((queued, started)), Some(finished)) = (started, finished) {
+            let derive_ns = finished.duration_since(started).as_nanos();
             let cut_sha256 = match input {
                 crate::Derivation::Governor(cut) => trace_digest(cut),
                 crate::Derivation::FactImpact { .. } => trace_digest(input),
             };
-            let ready_sha256 = result.as_ref().ok().map(trace_digest);
+            let ready_sha256 = match (input, result.as_ref().ok()) {
+                (_, Some(crate::DerivationOutput::Nodes(nodes))) => Some(trace_digest(nodes)),
+                (
+                    crate::Derivation::Governor(cut),
+                    Some(crate::DerivationOutput::Indices(indices)),
+                ) => indices
+                    .iter()
+                    .map(|&index| cut.topology.nodes.get(index))
+                    .collect::<Option<Vec<_>>>()
+                    .map(|nodes| trace_digest(&nodes)),
+                _ => None,
+            };
             eprintln!(
                 "weaver-governor-owner wait_ns={} derive_ns={derive_ns} ok={} cut_sha256={cut_sha256} ready_sha256={}",
                 started.duration_since(queued).as_nanos(),
@@ -119,7 +136,10 @@ impl SourceInbox {
                 ready_sha256.as_deref().unwrap_or("unavailable"),
             );
         }
-        let _ = reply.send(result);
+        let timing = started.zip(finished).map(|((queued, started), finished)| {
+            [queued, started, finished, std::time::Instant::now()]
+        });
+        let _ = reply.send(super::state::DerivationReply { result, timing });
     }
     fn execute(
         &self,

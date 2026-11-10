@@ -15,8 +15,55 @@ use weaver_contracts::{Error, ProviderEvent, ProviderRoute, Result};
 thread_local! {
     static HANDOFFS: std::cell::RefCell<Vec<(u64, u128)>> = const { std::cell::RefCell::new(Vec::new()) };
     static DELIVERIES: std::cell::RefCell<Vec<weaver_ledger::DeliveryObservation>> = const { std::cell::RefCell::new(Vec::new()) };
-    static TRANSPORT: std::cell::Cell<Option<weaver_broker::ProviderTransportPhases>> = const { std::cell::Cell::new(None) };
+    static TRANSPORT: std::cell::Cell<Option<(weaver_broker::ProviderTransportPhases, u128)>> = const { std::cell::Cell::new(None) };
+    static FIRST_QUEUE_TICKS: std::cell::Cell<Option<u128>> = const { std::cell::Cell::new(None) };
+    static BROKER_PHASES: std::cell::Cell<[u128; 4]> = const { std::cell::Cell::new([0; 4]) };
+    static ADMISSION_LEDGER: std::cell::Cell<Option<[weaver_ledger::TransactionTimings; 2]>> = const { std::cell::Cell::new(None) };
     static ENCODING_NANOS: std::cell::Cell<u128> = const { std::cell::Cell::new(0) };
+}
+
+#[cfg(test)]
+pub(crate) fn append_admission_ledger(
+    first_frame: &mut String,
+    admission_ledger: [weaver_ledger::TransactionTimings; 2],
+) {
+    use std::fmt::Write;
+    for timing in admission_ledger {
+        for nanos in [
+            timing.owner_gate_wait.nanos,
+            timing.domain_wait.nanos,
+            timing.transaction_begin.nanos,
+            timing.domain_hold.nanos,
+            timing.transaction_hold.nanos,
+            timing.commit.nanos,
+            timing.provider_cedar.nanos,
+            timing.provider_publication_prepare.nanos,
+            timing.provider_original_prepare.nanos,
+            timing.provider_domain_prepare.nanos,
+            timing.transaction_begin_poll.nanos,
+            timing.transaction_begin_cpu.nanos,
+            timing.transaction_begin_prepare.nanos,
+            timing.transaction_begin_prepare_cpu.nanos,
+            timing.commit_poll.nanos,
+            timing.commit_cpu.nanos,
+            timing.commit_sync.nanos,
+        ] {
+            let _ = write!(first_frame, " {nanos}");
+        }
+        let _ = write!(
+            first_frame,
+            " {} {} {} {} {} {} {} {} {}",
+            timing.transaction_begin_poll.attempts,
+            timing.transaction_begin_pending,
+            timing.transaction_begin_cpu.attempts,
+            timing.transaction_begin_prepare.attempts,
+            timing.transaction_begin_prepare_cpu.attempts,
+            timing.commit_poll.attempts,
+            timing.commit_pending,
+            timing.commit_cpu.attempts,
+            timing.commit_sync.attempts,
+        );
+    }
 }
 
 #[cfg(test)]
@@ -35,8 +82,23 @@ pub(crate) fn take_deliveries() -> Vec<weaver_ledger::DeliveryObservation> {
 }
 
 #[cfg(test)]
-pub(crate) fn take_transport() -> Option<weaver_broker::ProviderTransportPhases> {
+pub(crate) fn take_transport() -> Option<(weaver_broker::ProviderTransportPhases, u128)> {
     TRANSPORT.with(|phases| phases.take())
+}
+
+#[cfg(test)]
+pub(crate) fn take_first_queue_ticks() -> Option<u128> {
+    FIRST_QUEUE_TICKS.with(|slot| slot.take())
+}
+
+#[cfg(test)]
+pub(crate) fn take_broker_phases() -> [u128; 4] {
+    BROKER_PHASES.with(|phases| phases.replace([0; 4]))
+}
+
+#[cfg(test)]
+pub(crate) fn take_admission_ledger() -> Option<[weaver_ledger::TransactionTimings; 2]> {
+    ADMISSION_LEDGER.with(|phases| phases.take())
 }
 
 /// Only Output constructs the packet. Other server owners cannot inspect or
@@ -83,7 +145,25 @@ pub(crate) struct PreparedFrame {
 impl ProviderOutput for Output {
     #[cfg(test)]
     fn observe_transport(&self, phases: weaver_broker::ProviderTransportPhases) {
-        TRANSPORT.with(|slot| slot.set(Some(phases)));
+        let timestamp = weaver_ledger::persistence::provider_observation_nanos();
+        TRANSPORT.with(|slot| slot.set(Some((phases, timestamp))));
+    }
+    #[cfg(test)]
+    fn observe_admission(
+        &self,
+        enqueue_nanos: u128,
+        consume_nanos: u128,
+        ledger: [weaver_ledger::TransactionTimings; 2],
+    ) {
+        BROKER_PHASES.with(|phases| phases.set([enqueue_nanos, consume_nanos, 0, 0]));
+        ADMISSION_LEDGER.with(|phases| phases.set(Some(ledger)));
+    }
+    #[cfg(test)]
+    fn observe_dispatch(&self, prepare_nanos: u128, dispatch_nanos: u128) {
+        BROKER_PHASES.with(|phases| {
+            let [enqueue, consume, ..] = phases.get();
+            phases.set([enqueue, consume, prepare_nanos, dispatch_nanos]);
+        });
     }
     type PreparedFrame = PreparedFrame;
     type Slot = mpsc::OwnedPermit<std::result::Result<InertFrame, tonic::Status>>;
@@ -204,6 +284,14 @@ impl ProviderOutput for Output {
         }
         let (producer, proof) = receipt.split();
         self.pending = Some(producer);
+        #[cfg(test)]
+        if prepared.first == 0 && std::env::var_os("WEAVER_TEST_PROVIDER_SCOPE_TRACE").is_some() {
+            FIRST_QUEUE_TICKS.with(|slot| {
+                slot.set(Some(
+                    weaver_ledger::persistence::provider_observation_nanos(),
+                ));
+            });
+        }
         #[cfg(test)]
         if std::env::var_os("WEAVER_TEST_PROVIDER_SCOPE_TRACE").is_some()
             && let Ok(time) = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH)

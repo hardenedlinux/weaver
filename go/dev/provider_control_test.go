@@ -65,13 +65,15 @@ when { context.family == "control" && ["infer", "next"].contains(context.node) &
 }
 
 type controlProcess struct {
-	fixture            *fixture
-	ingress            *testPKI
-	env                []string
-	address, directory string
-	child              *exec.Cmd
-	exited             chan error
-	client             *gatewayclient.Client
+	fixture               *fixture
+	ingress               *testPKI
+	env                   []string
+	address, directory    string
+	child                 *exec.Cmd
+	exited                chan error
+	client                *gatewayclient.Client
+	heapInput, heapOutput *os.File
+	image                 string
 }
 
 func newControlProcess(t testing.TB, f *fixture, path string) *controlProcess {
@@ -96,7 +98,7 @@ func newControlProcess(t testing.TB, f *fixture, path string) *controlProcess {
 	leaf, token := sha256.Sum256(f.pki.client.Certificate[0]), sha256.Sum256([]byte(ownerToken))
 	settings := map[string]string{"CONFIG": path, "SERVER_CERT": filepath.Join(d, "server"), "SERVER_KEY": filepath.Join(d, "server-key"), "CLIENT_CA": filepath.Join(d, "ca"), "PEER_SHA256": hex.EncodeToString(leaf[:]), "TOKEN_SHA256": hex.EncodeToString(token[:]), "LISTEN": address,
 		"AUTHORITY_CA": filepath.Join(d, "ca"), "AUTHORITY_OPERATION_CERT": filepath.Join(d, "operation"), "AUTHORITY_OPERATION_KEY": filepath.Join(d, "operation-key"), "AUTHORITY_SOURCE_CERT": filepath.Join(d, "source"), "AUTHORITY_SOURCE_KEY": filepath.Join(d, "source-key"), "AUTHORITY_OPERATION_TOKEN": ownerToken, "AUTHORITY_SOURCE_TOKEN": adminToken, "AUTHORITY_OPERATION_ADDRESS": f.address, "AUTHORITY_SOURCE_ADDRESS": f.sourceAddress, "AUTHORITY_SERVER_NAME": "localhost"}
-	c := &controlProcess{fixture: f, address: address, directory: d}
+	c := &controlProcess{fixture: f, address: address, directory: d, image: controlBinary}
 	for name, value := range settings {
 		c.env = append(c.env, "WEAVER_CONTROL_"+name+"="+value)
 	}
@@ -117,9 +119,27 @@ func (c *controlProcess) start(t testing.TB) {
 		log.Close()
 		t.Fatal(err)
 	}
-	child := exec.Command(controlBinary)
+	child := exec.Command(c.image)
 	child.Env = append(os.Environ(), c.env...)
 	child.Stdout, child.Stderr = log, log
+	if os.Getenv("WEAVER_TEST_CONTROL_HEAP") == "1" {
+		if os.Getenv("WEAVER_TEST_CONTROL_PROFILE_ROOT") != "" {
+			child.Env = append(child.Env, "WEAVER_TEST_CONTROL_PROFILE_DIR="+c.directory)
+		}
+		input, err := child.StdinPipe()
+		if err != nil {
+			log.Close()
+			t.Fatal(err)
+		}
+		child.Stdout = nil
+		output, err := child.StdoutPipe()
+		if err != nil {
+			input.Close()
+			log.Close()
+			t.Fatal(err)
+		}
+		c.heapInput, c.heapOutput = input.(*os.File), output.(*os.File)
+	}
 	if err := child.Start(); err != nil {
 		log.Close()
 		t.Fatal(err)

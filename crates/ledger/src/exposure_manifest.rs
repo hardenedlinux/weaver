@@ -72,24 +72,73 @@ impl<'de> Deserialize<'de> for Members {
 }
 pub(crate) type Family = BTreeMap<(String, String, String), Member>;
 
+const COMMITTED: &str = "SELECT node,kind,reservations FROM execution_claims WHERE family=?1";
+const PROJECTED: &str =
+    "SELECT node,'' AS member,digest,reserved,'request' AS kind,json_extract(proposal,'$.ceiling') AS original FROM operations WHERE family=?1
+     UNION ALL SELECT node,message,digest,reserved,'stream',json_extract(proposal,'$.ceiling') FROM stream_messages WHERE family=?1
+     UNION ALL SELECT node,'',digest,reserved,'provider',json_extract(plan,'$.ceiling') FROM provider_runs WHERE family=?1";
+
+#[cfg(feature = "commit-observer")]
+thread_local! {
+    static PREPARE_MANIFEST_PROGRAMS: std::cell::Cell<bool> = const { std::cell::Cell::new(true) };
+}
+
+/// Select fixed manifest program preflight in the observed worker.
+#[cfg(feature = "commit-observer")]
+pub fn use_prepared_manifest_programs(prepared: bool) {
+    PREPARE_MANIFEST_PROGRAMS.set(prepared);
+}
+
+pub(crate) fn warm_programs(connection: &persistence::driver::Connection) {
+    if prepared_programs() {
+        for sql in [COMMITTED, PROJECTED] {
+            let _ = futures_executor::block_on(connection.prepare_cached(sql));
+        }
+    }
+}
+
+fn prepared_programs() -> bool {
+    #[cfg(feature = "commit-observer")]
+    {
+        PREPARE_MANIFEST_PROGRAMS.get()
+    }
+    #[cfg(not(feature = "commit-observer"))]
+    {
+        true
+    }
+}
+
+fn read_members<T>(
+    tx: &WriteScope<'_>,
+    sql: &'static str,
+    family: &str,
+    decode: impl FnMut(&persistence::Row) -> persistence::driver::Result<T>,
+) -> Result<Vec<T>> {
+    tx.provider_manifest_reads(|| {
+        let rows = persistence::read_all_manifest(
+            tx,
+            sql,
+            family,
+            prepared_programs(),
+            sql == PROJECTED,
+            decode,
+        );
+        rows.map_err(db)
+    })
+}
+
 fn conflict() -> Error {
     Error::Conflict("original claims or shared execution exposure not retained")
 }
 
 fn committed(tx: &WriteScope<'_>, family: &str) -> Result<Family> {
-    let rows = persistence::read_all_current(
-        tx,
-        "SELECT node,kind,reservations FROM execution_claims WHERE family=?1",
-        [family],
-        |r| {
-            Ok((
-                r.get::<String>(0)?,
-                r.get::<String>(1)?,
-                r.get::<String>(2)?,
-            ))
-        },
-    )
-    .map_err(db)?;
+    let rows = read_members(tx, COMMITTED, family, |r| {
+        Ok((
+            r.get::<String>(0)?,
+            r.get::<String>(1)?,
+            r.get::<String>(2)?,
+        ))
+    })?;
     let mut result = Family::new();
     for (node, kind, body) in rows {
         if !matches!(kind.as_str(), "request" | "stream" | "provider") {
@@ -112,11 +161,16 @@ fn committed(tx: &WriteScope<'_>, family: &str) -> Result<Family> {
 }
 
 fn projected(tx: &WriteScope<'_>, family: &str) -> Result<(Family, u64)> {
-    let rows=persistence::read_all_current(tx,
-        "SELECT node,'' AS member,digest,reserved,'request' AS kind,json_extract(proposal,'$.ceiling') AS original FROM operations WHERE family=?1
-         UNION ALL SELECT node,message,digest,reserved,'stream',json_extract(proposal,'$.ceiling') FROM stream_messages WHERE family=?1
-         UNION ALL SELECT node,'',digest,reserved,'provider',json_extract(plan,'$.ceiling') FROM provider_runs WHERE family=?1",
-        [family],|r|Ok((r.get::<String>(0)?,r.get::<String>(1)?,r.get::<String>(2)?,integer(r,3)?,r.get::<String>(4)?,integer(r,5)?))).map_err(db)?;
+    let rows = read_members(tx, PROJECTED, family, |r| {
+        Ok((
+            r.get::<String>(0)?,
+            r.get::<String>(1)?,
+            r.get::<String>(2)?,
+            integer(r, 3)?,
+            r.get::<String>(4)?,
+            integer(r, 5)?,
+        ))
+    })?;
     let mut result = Family::new();
     let mut total = 0u64;
     for (node, id, digest, ceiling, kind, original) in rows {

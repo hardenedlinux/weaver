@@ -40,17 +40,42 @@ func (sample *TimingSample) UnmarshalJSON(data []byte) error {
 }
 
 type TransactionTimings struct {
-	OwnerGateWait    TimingSample `json:"owner_gate_wait"`
-	DomainKeys       TimingSample `json:"domain_keys"`
-	DomainWait       TimingSample `json:"domain_wait"`
-	TransactionBegin TimingSample `json:"transaction_begin"`
-	OwnerGateHold    TimingSample `json:"owner_gate_hold"`
-	DomainHold       TimingSample `json:"domain_hold"`
-	TransactionHold  TimingSample `json:"transaction_hold"`
-	Commit           TimingSample `json:"commit"`
-	Rollback         TimingSample `json:"rollback"`
-	ProviderRequest  TimingSample `json:"provider_request"`
-	ProviderQueue    TimingSample `json:"provider_queue"`
+	OwnerGateWait              TimingSample  `json:"owner_gate_wait"`
+	DomainKeys                 TimingSample  `json:"domain_keys"`
+	DomainWait                 TimingSample  `json:"domain_wait"`
+	AuthoritySpan              TimingSample  `json:"authority_span"`
+	TransactionBegin           TimingSample  `json:"transaction_begin"`
+	TransactionBeginPoll       *TimingSample `json:"transaction_begin_poll,omitempty"`
+	TransactionBeginCPU        *TimingSample `json:"transaction_begin_cpu,omitempty"`
+	TransactionBeginPrepare    *TimingSample `json:"transaction_begin_prepare,omitempty"`
+	TransactionBeginPrepareCPU *TimingSample `json:"transaction_begin_prepare_cpu,omitempty"`
+	TransactionBeginPending    *uint64       `json:"transaction_begin_pending,omitempty"`
+	OwnerGateHold              TimingSample  `json:"owner_gate_hold"`
+	DomainHold                 TimingSample  `json:"domain_hold"`
+	TransactionHold            TimingSample  `json:"transaction_hold"`
+	Commit                     TimingSample  `json:"commit"`
+	CommitPoll                 *TimingSample `json:"commit_poll,omitempty"`
+	CommitCPU                  *TimingSample `json:"commit_cpu,omitempty"`
+	CommitSync                 *TimingSample `json:"commit_sync,omitempty"`
+	CommitPending              *uint64       `json:"commit_pending,omitempty"`
+	Rollback                   TimingSample  `json:"rollback"`
+	ProviderOAuthPrepare       TimingSample  `json:"provider_oauth_prepare"`
+	ProviderOAuthCheck         TimingSample  `json:"provider_oauth_check"`
+	ProviderDomain             TimingSample  `json:"provider_domain"`
+	ProviderDomainPrepare      TimingSample  `json:"provider_domain_prepare"`
+	ProviderPending            TimingSample  `json:"provider_pending"`
+	ProviderReview             TimingSample  `json:"provider_review"`
+	ProviderBirth              TimingSample  `json:"provider_birth"`
+	ProviderPublicationPrepare TimingSample  `json:"provider_publication_prepare"`
+	ProviderProfile            TimingSample  `json:"provider_profile"`
+	ProviderClaim              TimingSample  `json:"provider_claim"`
+	ProviderHistory            TimingSample  `json:"provider_history"`
+	ProviderManifest           TimingSample  `json:"provider_manifest"`
+	ProviderOriginal           TimingSample  `json:"provider_original"`
+	ProviderOriginalPrepare    TimingSample  `json:"provider_original_prepare"`
+	ProviderCedar              TimingSample  `json:"provider_cedar"`
+	ProviderRequest            TimingSample  `json:"provider_request"`
+	ProviderQueue              TimingSample  `json:"provider_queue"`
 }
 type ContentionObservation struct {
 	First  TransactionTimings `json:"first"`
@@ -109,28 +134,28 @@ func ReadContentionEvidence(input io.Reader) (*ContentionEvidence, error) {
 			for i, timing := range []TransactionTimings{row.Observation.First, row.Observation.Second} {
 				attempts := uint64(2)
 				requests := uint64(1)
-				if publication && i == 1 {
+				global := publication && i == 1
+				if global {
 					attempts = 1
 					requests = 0
 				}
-				if timing.TransactionBegin.Attempts != attempts || timing.Commit.Attempts != attempts || timing.TransactionHold.Attempts != attempts || timing.ProviderRequest.Attempts != requests || timing.ProviderQueue.Attempts != 0 || timing.Rollback.Attempts != 0 || timing.TransactionHold.Nanos < timing.ProviderRequest.Nanos {
+				if timing.TransactionBegin.Attempts != attempts || timing.Commit.Attempts != attempts || timing.TransactionHold.Attempts != attempts || timing.AuthoritySpan.Attempts != attempts || timing.ProviderRequest.Attempts != requests || timing.ProviderQueue.Attempts != 0 || timing.Rollback.Attempts != 0 || timing.TransactionHold.Nanos < timing.ProviderRequest.Nanos || timing.AuthoritySpan.Nanos < timing.TransactionHold.Nanos {
 					return nil, fmt.Errorf("invalid deciding-scope observation")
 				}
-				if row.Profile == "wal-writer" {
-					if timing.DomainWait.Attempts != 0 || timing.OwnerGateWait.Attempts != 0 {
-						return nil, fmt.Errorf("WAL observations claim MVCC locks")
-					}
-				} else {
-					if timing.OwnerGateWait.Attempts != attempts || timing.OwnerGateHold.Attempts != attempts {
-						return nil, fmt.Errorf("missing publication gate observation")
-					}
-					domains := attempts
-					if publication && i == 1 {
-						domains = 0
-					}
-					if timing.DomainWait.Attempts != domains || timing.DomainHold.Attempts != domains || timing.DomainKeys.Attempts != domains {
-						return nil, fmt.Errorf("missing shared-domain observation")
-					}
+				// The MVCC scheduler grants one scope per transaction.
+				// Publication takes the global scope, provider sends take
+				// domain scopes, and WAL takes neither.
+				var owners, domains uint64
+				if global {
+					owners = attempts
+				} else if row.Profile != "wal-writer" {
+					domains = attempts
+				}
+				if timing.OwnerGateWait.Attempts != owners || timing.OwnerGateHold.Attempts != owners {
+					return nil, fmt.Errorf("invalid publication gate observation")
+				}
+				if timing.DomainWait.Attempts != domains || timing.DomainHold.Attempts != domains || timing.DomainKeys.Attempts != domains {
+					return nil, fmt.Errorf("invalid shared-domain observation")
 				}
 			}
 			result.Samples = append(result.Samples, row)

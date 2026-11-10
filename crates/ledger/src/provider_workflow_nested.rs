@@ -9,7 +9,7 @@ use crate::{
     store::db,
 };
 use std::collections::BTreeMap;
-use weaver_contracts::{Error, ProviderPlan, Result, WorkflowRoute};
+use weaver_contracts::{Error, FactFeed, ProviderPlan, Result, WorkflowRoute};
 
 /// Complete selector observations and the active predecessors of eligible nodes.
 pub struct NestedObservation {
@@ -154,12 +154,13 @@ fn active_parents(
 
 pub(crate) fn observe(
     tx: &WriteScope<'_>,
-    family: &str,
     origin: &str,
+    graph: &FactFeed,
 ) -> Result<Option<NestedObservation>> {
-    crate::hard_fact::nested_feed(tx, family)?
-        .map(|graph| load(tx, family, origin, &graph).map(|(observed, _)| observed))
-        .transpose()
+    if graph.workflow_selectors.is_empty() {
+        return Ok(None);
+    }
+    load(tx, &graph.family, origin, graph).map(|(observed, _)| Some(observed))
 }
 
 pub(crate) fn prepare(
@@ -221,6 +222,16 @@ pub(crate) fn require_entry(
     let Some(graph) = crate::hard_fact::nested_feed(tx, &plan.family)? else {
         return Ok(());
     };
+    require_in_graph(tx, plan, origin, digest, &graph)
+}
+
+pub(crate) fn require_in_graph(
+    tx: &WriteScope<'_>,
+    plan: &ProviderPlan,
+    origin: &str,
+    digest: &str,
+    graph: &FactFeed,
+) -> Result<()> {
     let Some([selector, left, right]) = graph
         .workflow_selectors
         .iter()

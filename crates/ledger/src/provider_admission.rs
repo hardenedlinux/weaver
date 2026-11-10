@@ -121,7 +121,12 @@ fn store_authorized_provider_plan(
     let selected = any_authorized(tx, plan, "admitProvider", None, publication)?;
     tx.provider_claim(|| crate::domains::require_view(tx, &selected.domains, original))?;
     if new_claim {
-        reserve_provider_claim(tx, plan, digest, encoded, catalog, &selected.domains)?;
+        let reserve =
+            || reserve_provider_claim(tx, plan, digest, encoded, catalog, &selected.domains);
+        #[cfg(feature = "commit-observer")]
+        tx.provider_reservation(reserve)?;
+        #[cfg(not(feature = "commit-observer"))]
+        reserve()?;
     } else {
         crate::persistence::exec(
             tx,

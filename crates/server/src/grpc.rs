@@ -639,8 +639,13 @@ impl pb::gateway_server::Gateway for Gateway {
             ));
         }
         if let Some(lifecycle) = lifecycle {
-            let prepared =
-                crate::single_provider::Prepared::new(&reply, after, bound).map_err(status)?;
+            let prepared = crate::single_provider::Prepared::new(
+                &reply,
+                after,
+                bound,
+                self.runtime.fact_feed(),
+            )
+            .map_err(status)?;
             lifecycle
                 .ready
                 .set(prepared)
@@ -891,12 +896,9 @@ impl pb::gateway_server::Gateway for Gateway {
     ) -> std::result::Result<Response<pb::ProviderCatalogSnapshot>, Status> {
         let caller = self.source_identity(&request)?;
         let snapshot = self.ingress.source()?.provider_catalog(caller).await?;
-        let Some((version, catalog)) = snapshot else {
+        let Some((version, record)) = snapshot else {
             return Ok(Response::new(pb::ProviderCatalogSnapshot::default()));
         };
-        let record = catalog
-            .record()
-            .map_err(|_| Status::internal("provider catalog serialization"))?;
         Ok(Response::new(pb::ProviderCatalogSnapshot {
             version,
             record,

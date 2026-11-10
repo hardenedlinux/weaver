@@ -119,16 +119,18 @@ async fn governor_observation_waits_for_capacity_or_shutdown() {
             .submit(original())
             .expect("occupy the only slot");
         let observation = owner.client.derive(crate::GovernorCut {
-            nodes: vec!["next".into()],
-            edges: vec![],
+            topology: Arc::new(crate::GovernorTopology {
+                nodes: vec!["next".into()],
+                edges: vec![],
+                choice_arms: vec![],
+                choice_join: vec![],
+                nested_selectors: vec![],
+            }),
             complete: vec![],
             available: vec!["next".into()],
             pending: vec!["next".into()],
-            choice_arms: vec![],
-            choice_join: vec![],
             choice_result: vec![],
             choice_decided: vec![],
-            nested_selectors: vec![],
             nested_results: vec![],
             nested_decisions: vec![],
         });
@@ -150,7 +152,10 @@ async fn governor_observation_waits_for_capacity_or_shutdown() {
         if close_owner {
             assert_eq!(result, Err(SourceJobError::Closed));
         } else {
-            assert_eq!(result.expect("derived"), ["next"]);
+            assert_eq!(
+                result.expect("derived"),
+                crate::DerivationOutput::Nodes(vec!["next".into()])
+            );
         }
     }
 }

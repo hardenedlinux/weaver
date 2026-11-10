@@ -261,6 +261,12 @@ func reportProviderRangeScopes(b *testing.B, arm *providerTailArm, name string, 
 			}
 		}
 		label := name + "-" + phase
+		b.ReportMetric(float64(len(waits))/float64(len(arm.streams)), label+"-scopes/stream")
+		// Delivery revalidation is conditional on the current receipt and
+		// capacity. With no such scopes there is no latency sample.
+		if len(waits) == 0 {
+			continue
+		}
 		b.ReportMetric(tailMillis(waits, 99), label+"-wait-p99-ms")
 		b.ReportMetric(tailMillis(holds, 99), label+"-hold-p99-ms")
 		b.ReportMetric(millis(atP99Wait), label+"-wait-at-stream-p99-ms")

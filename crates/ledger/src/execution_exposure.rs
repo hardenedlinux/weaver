@@ -5,7 +5,7 @@
 //! One deciding projection for all retained execution kinds; never repairs authority.
 use crate::persistence::WriteScope;
 use crate::store::db;
-use weaver_contracts::{Error, MessageBinding, Proposal, ProviderPlan, Result};
+use weaver_contracts::{Error, MessageBinding, MeteringDeployment, Proposal, ProviderPlan, Result};
 
 pub(crate) enum ClaimKind {
     Request,
@@ -129,11 +129,29 @@ pub(crate) fn provider(
         |r| r.get(0),
     ).map_err(db)?;
     require(matches)?;
-    if let Some(config) = crate::metering::deployment(tx)? {
-        crate::provider_quota::require(tx, &config, &plan.family, &plan.node)?;
-        crate::metering::require_quote(tx, &config, plan, digest)?;
-    }
+    provider_metering(tx, plan, digest)?;
     crate::domains::require_view(tx, current, prepared)
+}
+
+pub(crate) fn provider_metering(
+    tx: &WriteScope<'_>,
+    plan: &ProviderPlan,
+    digest: &str,
+) -> Result<()> {
+    provider_metering_with_deployment(tx, plan, digest, crate::metering::deployment(tx)?.as_ref())
+}
+
+pub(crate) fn provider_metering_with_deployment(
+    tx: &WriteScope<'_>,
+    plan: &ProviderPlan,
+    digest: &str,
+    deployment: Option<&MeteringDeployment>,
+) -> Result<()> {
+    if let Some(config) = deployment {
+        crate::provider_quota::require(tx, config, &plan.family, &plan.node)?;
+        crate::metering::require_quote(tx, config, plan, digest)?;
+    }
+    Ok(())
 }
 
 fn require(retained: bool) -> Result<()> {

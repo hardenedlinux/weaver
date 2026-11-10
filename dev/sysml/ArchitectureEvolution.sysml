@@ -89,6 +89,86 @@ package ArchitectureEvolution {
            preparation at exact activation. Hard-fact projection keeps its
            linked Scheme owner while the Session is active. */
     }
+    item def GovernorPublicationBinding {
+        item workflow : PolicyEvidenceDesign::PreparedSessionWorkflow;
+        attribute publicationIdentity : String;
+        attribute ownerEpoch : String;
+        doc /* Target binding for the retained ASCENT program and the Rust
+           plan index. The Workflow's ordered node identities define indices
+           only within this binding. Prepare rule and topology state after
+           source admission and before admitting the first live graph wake.
+           A replacement or owner restart requires a new binding. Rich POO
+           composition remains in Scheme; its stable executable projection
+           and retained rule session are prepared once per binding. Opening
+           the first rule session on a live wake violates this target readiness
+           boundary. This is a design obligation, not a production-default or
+           submillisecond acceptance claim. */
+    }
+    item def GovernorFrontierBinding {
+        attribute publicationIdentity : String;
+        attribute frontierIdentity : String;
+        item facts : PolicyEvidenceDesign::FactUseContext;
+        doc /* Identity of one coherent ledger observation, including complete
+           release and committed selector evidence. The retained program
+           applies this cut's mutable relations, including removals. */
+    }
+    item def GovernorCandidates {
+        attribute publicationIdentity : String;
+        attribute ownerEpoch : String;
+        attribute frontierIdentity : String;
+        attribute nodeIndex : Integer[0..64];
+        doc /* Advisory indices resolved against the matching Rust plan index
+           in compiled order. The deciding transaction checks current facts,
+           release evidence and frontier before claim and reservation. The
+           indexed ABI has one exact generation followed by at most 64 node
+           indices: the binding is not part of the candidate-count bound.
+           Keep the SDK snapshot rooted while borrowing its elements; reject
+           stale generations, wrong shapes and foreign indices before use. */
+    }
+    action def DerivePreparedGovernorCandidates {
+        in item prepared : GovernorPublicationBinding;
+        in item cut : GovernorFrontierBinding;
+        out item candidates : GovernorCandidates;
+        doc /* Target specialization of AdvanceGovernedRoutine. Reuse the
+           fixed owner and rooted ABI. Compare a full mutable relation set
+           first. Invalidate retained state on owner or publication change.
+           Recover from the durable frontier before resuming derivation.
+           Cross the ABI once per coherent frontier with bounded typed facts
+           and receive bounded node indices; avoid repeated topology transfer
+           and per-node calls. Replacements include removals. Repeated wake
+           demand may be coalesced, but source intents, complete receipts,
+           branch decisions and claims must remain durable. Measure owner
+           capacity and queue wait separately from input construction, rooted
+           call and result materialization. The proposed local hot-decision
+           P99 target is below one millisecond including owner waiting, on a
+           declared graph/fact bound and four-way workload. Network/provider
+           latency and durable deciding transactions have separate clocks and
+           acceptance. Existing finite observations do not qualify this target.
+           Rust still rechecks current authority and reserves in its deciding
+           transaction; a fast advisory result cannot waive that transaction.
+           The existing scheme_conversion benchmark also hosts a quiet finite
+           source-lane profile: one prepared owner, four Tokio workers, complete
+           snapshots of the nine-node nested Workflow, and matched per-request
+           submission/start/finish/reply clocks. Join by snapshot and wave,
+           check interval nesting, and report preparation and natural owner
+           drain separately. These advisory-only inputs confer no ledger
+           authority and do not qualify Gateway latency or source admission.
+           Optional owner-local SDK usage snapshots correlate collection counts
+           and GC duration with individual calls without a Scheme callback or
+           per-call logging. Heap capacity and RSS high-water are not live
+           allocation. Keep quiet controls around diagnostics. The current
+           linked owner shares source capture and inference in one VM; private
+           image isolation would require an explicit SDK backend migration,
+           not mixing InstancePool with the process-global linked backend.
+           A prepared retained program may specialize an immutable wholly
+           nested topology with no flat arms/joins: omit only empty private
+           flat relations and the flat rules whose guards cannot hold. Keep
+           every source-bearing declaration, mutable source name and original
+           fact limit. Reconstruct through ASCENT's canonical public program
+           factory and retain its admission/replacement transaction. The full
+           fresh program is the semantic and failure reference. A topology or
+           owner replacement must rebuild the chosen program. */
+    }
     action def AdvanceGovernedRoutine {
         in item original : PolicyEvidenceDesign::SemanticCommitment;
         in item workflow : PolicyEvidenceDesign::PreparedSessionWorkflow[0..1];
@@ -214,12 +294,35 @@ package ArchitectureEvolution {
         attribute :>> phase = ControllerObjectLifecycle::Phase::reuse;
         attribute :>> nativeAsset = "Fixed Scheme owner, bounded SourceClient, ASCENT Session and durable provider frontier";
         attribute :>> learningWitness = "SDK Mailbox separates native entry from repeated work in one VM";
-        attribute :>> reuseSeam = "AdvanceGovernedRoutine;IncrementalRelations;BoundedOperations;Governor release preregistration in 59.64-governance-capture-ownership.org";
+        attribute :>> reuseSeam = "AdvanceGovernedRoutine;DerivePreparedGovernorCandidates;IncrementalRelations;BoundedOperations;Governor release preregistration in 59.64-governance-capture-ownership.org";
         attribute :>> causalMechanism = "Relational reuse targets computation; persistent batches target foreign entry; isolation targets queue delay caused by source preparation";
         attribute :>> cost = "Retained relations, queue residence, invalidation, independent image lifecycle and drain";
         attribute :>> preservedBoundary = "Complete release precedes proposal; exact facts and current frontier govern claim and reservation; coalesce only wakeups";
         attribute :>> falsifier = "Matched workload has no reproducible improvement from durable release to committed reservation, or admission and owner-drain controls regress";
         attribute :>> qualificationOwner = "WeaverProject::AssuranceResponsibilities::implementation";
+        doc /* Target P99 below one millisecond from a coherent observed cut
+           to resolved Rust candidates, including queue residence, ABI
+           conversion and ASCENT. Also measure release to observation and
+           release to durable claim separately. Keep provider first-frame,
+           ready-frame and throughput gates on their respective clocks. */
+        doc /* Runtime design priority: prepare and bind the compiled program,
+           topology and retained relations before activation. Keep one bounded
+           affine runtime per assigned owner; do not create a VM per decision.
+           SourceInbox currently serializes Compile and Derive. A live derivation
+           owner must not wait behind source compilation; qualify preparation
+           isolation using the existing tracked-owner lifecycle before adoption.
+           Stable publication binding plus complete current facts identify reuse;
+           selector retraction and A-to-B-to-A must invalidate dependent results.
+           Coalesce recomputation demand only, never receipts or authority intents.
+           Share no mutable VM across owners. Partition independent sessions only
+           after exact frontier and ledger claim controls remain satisfied.
+           Packed facts and checked candidate indices bound ABI conversion.
+           Arrow is appropriate for column batches, not required for small cuts.
+           A fast mailbox is not evidence of low durable claim latency. Attribute
+           shared admission wait to actual lease holders and commit I/O before
+           changing custody; asynchronous waiting alone cannot shorten a lease.
+           Do not infer a sub-millisecond network or durable-commit guarantee
+           from the cut-to-candidate target. */
         doc /* The matched release workload retains the 12-second recovery
            window and the 15-second natural exit fence. A readiness timeout
            before the workload is a failed trial. Resolve any claimed

@@ -1781,6 +1781,152 @@ execution budget. The ordinary source RPC remains the explicitly trusted
 administrative profile; full semantic-adapter restrictions on that profile are
 not newly claimed by the startup mechanism.
 
+** Deployment paths for Weaver's Scheme application
+
+The Weaver checkout supplies the initializer
+=hardenedlinux/weaver/scheme/gateway/provider-program= in
+=scheme/gateway/provider-program.ss=. Use Build Packages and the
+=scheme-program= server feature with both application settings at build time:
+
+#+begin_src sh
+export WEAVER_GOVERNANCE_APPLICATION=hardenedlinux/weaver/scheme/gateway/provider-program
+export WEAVER_GOVERNANCE_APPLICATION_SOURCE="$PWD/scheme/gateway/provider-program.ss"
+cargo build --locked --release -p weaver-server --bin weaver-server --features arrow,scheme-program
+#+end_src
+
+Put generated qualification data under =.cache/weaver-deployment-qualification/=.
+For a persistent local instance, use an explicit data directory such as
+=.data/weaver/=. For a Linux service, =/var/lib/weaver/= is the recommended
+default layout. An installation with an assigned persistent volume may
+choose a different root. Keep the catalog and the ledger at separate paths
+within that root and grant access to the service account.
+
+| Process | Existing setting | Example |
+|---------+------------------+---------|
+| Rust authority | =WEAVER_GOVERNANCE_CATALOG= | =/var/lib/weaver/governance/catalog.json= |
+| Rust authority | =WEAVER_DB= | =/var/lib/weaver/weaver.db= |
+| Go Control | =WEAVER_CONTROL_PRODUCER= | Exact =name= of a catalog entry |
+
+A deployment launcher can read its own =weaver.toml= and export these
+settings. Weaver's two native entry points read the environment, and the
+catalog itself uses the existing strict JSON decoder. The producer and
+=WEAVER_CONTROL_CONFIG= selections are mutually exclusive. Retain the
+existing TLS, authority credentials and listener settings for each role.
+
+Keep the Scheme package library from the same release build with the
+server image. The linked C ABI provides the executable bindings, and
+Yuanxu's runtime source Reader uses the Gerbil library interfaces to
+resolve module imports during preparation. Set =GERBIL_PATH= to the
+deployed Gerbil prefix, including its package source store. Put the
+release's package library on the native =GERBIL_LOADPATH= before the
+SDK library. This keeps source preparation bound to the deployed
+release and its selected packages.
+
+The built-in provider program derives =init.ss= from the source path
+recorded by Gerbil during compilation. Keep the selected Weaver source
+tree available at that recorded path when deploying this entry point.
+
+** Development validation and release performance qualification
+
+The long repeated-cold-start campaign and its proposed fixed-shard replacement
+are withdrawn from the active development plan. Retain the raw failed attempts
+and their original verdicts. Withdrawal does not turn an incomplete or failed
+cohort into acceptance. The dedicated shard entry and statistical CLI introduced
+for that plan have been removed; the existing native Go integration entry remains.
+
+The primary Governor measurement starts after Control readiness. Repeating
+whole-process cold preparation for every hot-path observation makes the dominant
+execution cost unrelated to the intended contrast. The choice of 200 blocks was
+not supported by an explicit effect-size, variance and confidence calculation.
+Freezing that number did not establish that it was an appropriate design.
+Distributing the same work across more runners would not correct this mismatch.
+
+Use three distinct scopes through the existing owners and public entry points:
+
+1. Cold preparation: build the release once through Build Packages and the linked
+   C ABI. Measure process startup, Reader preparation, source/version admission,
+   object preparation and activation separately. Diagnose one bounded original
+   request before repeating a campaign. Compilation is a separate build cost.
+2. Prepared-owner performance: compare fresh and retained derivation over the same
+   exact source/fact snapshots inside an already prepared owner. Report queue,
+   conversion, FFI, ASCENT setup/run and ledger costs separately from preparation
+   and shutdown. Repeated requests are within-owner observations, not independent
+   process replicas; the final analysis must retain that clustering.
+3. Native semantic regression: run the existing concurrent claim, complete release,
+   selected-branch join, restart, withdrawal, ABA and source/version refusal cases.
+   Keep four workers and the existing 12-second recovery / 15-second natural-exit
+   bounds. Preserve failures and natural-exit evidence. These cases establish
+   behavior; repeating each case hundreds of times is not a tail estimate.
+
+For a focused source-preparation diagnosis, the built-in provider can enable
+=WEAVER_TEST_SOURCE_PROFILE=. It uses Core's existing
+=call-with-module-source-operation-measurement= with stage accounting and
+reports the private scalar table after capture returns or throws. It installs
+no source observer or admission callback. The flag is disabled by default.
+Nested stage spans are inclusive and must not be summed as disjoint costs.
+The VM allocation account is signed runtime accounting, not physical allocation.
+Instrumented output is diagnostic evidence, not an uninstrumented latency claim.
+
+Core's existing =GERBIL_BUILD_VERBOSE=2= trace separates compiler tool
+imports, catalog traversal and source enrollment. The linked Weaver request
+identified =building/build-projection= as the largest root import during
+Reader bootstrap, even though the request performs no build. The candidate
+scope is the runtime catalog only. The complete Core bootstrap spec and its
+build product selection must retain all roots and native source checks.
+
+An isolated runtime catalog candidate passed the ordinary Core build and a
+focused check that common entries retain the same native Context identities.
+It did not pass the maintained publication gate: its test import exceeded
+the existing idle limit before assertions, while the unmodified baseline
+completed that gate. This is a refused candidate, not a source mutation
+rejection or a measured speedup. Adoption still requires the original Core
+resolution and projection gates, real downstream qualification, and the
+linked Weaver native cases under their existing limits.
+
+First repair a reproducible defect using a focused bounded native case. A broader
+performance campaign starts only after correctness and preparation are stable,
+with a justified independent-replica count, within-owner request count, treatment,
+minimum effect, confidence method and total execution budget preregistered.
+Do not retry an unchanged failing image to obtain a favorable cohort. Do not use
+small diagnostic samples as proof of a production p99 improvement. Record site
+approval and deployment gaps separately from local Snake Oil validation.
+
+Freeze the measured join, offered arrival schedule, request mix, observation
+window, maximum outstanding work, refusal rule and total campaign budget before
+collecting comparison data. Separate first ASCENT open from subsequent decisions
+within the prepared-owner window. Require matching Governor input and ready-node
+digests at the measured join, alongside the existing source and release checks.
+An incomplete wave or a mismatched cut remains in the run record and fails the
+matching gate. Keep inner and outer join observations separate within each
+owner block.
+
+For a fixed latency threshold, an exact one-sided 95% upper bound with zero
+violations is =1 - 0.05^(1/n)= for =n= independent Bernoulli observations.
+It takes at least 299 such observations to put that bound at or below 1%.
+Correlated decisions in one owner cannot be substituted into that calculation
+as independent observations. A paired p99 comparison instead needs a sample
+size and interval justified for its owner and time-window clustering, observed
+tail support, effect size, and allowed error. Use warm traffic to collect the
+within-owner distribution and preserve owner/window boundaries in analysis.
+Treat refusals, timeouts and shutdown failures as separate acceptance gates;
+retain the corresponding attempted operations and do not drop them from the
+cohort. If the frozen workload and time budget cannot support the selected
+interval, report the observed tail as descriptive and leave the p99 gate open.
+
+The linked application currently defaults to fresh derivation on one Scheme
+owner. Retained derivation remains a qualification setting pending the formal
+gates. The sealed single-provider DAG prepares before activation, and a
+subsequent authenticated source replay returns the prepared binding after a
+current-authority check. Continue evaluating Actor or multi-VM execution when
+owner traces show active preparation competing with derivation, or a repeated
+queue or FFI bottleneck on the admitted workload.
+
+The pull request Scheme job runs one pass of the existing native correctness
+suite with four Go test workers. Its selector explicitly skips
+=TestProviderControlGovernorPerformance= even when the caller sets
+=WEAVER_TEST_GOVERNOR_COHORT=. The original single-wave entry remains available
+for reproducing historical diagnostics.
+
 ** Governor release preregistration
 
 Protocol prepared. Site evidence, the execution selector and the statistical
@@ -1858,6 +2004,30 @@ Record production approval and workload replay as separate missing inputs until
 the site provides both. Freeze the numeric sample plan once those inputs support
 it. The default remains fresh derivation on one Scheme owner while qualification
 is pending.
+
+** Catalog installation
+
+Agent Gateway provides an operator-facing example of explicit file selection
+and read-only configuration mounts. Praxis uses the same validation path
+for its offline check and startup, and builds a new pipeline before swapping
+it in. [[https://agentgateway.dev/docs/standalone/latest/documentation/setup/update/][Agent Gateway configuration delivery]]
+[[https://github.com/praxis-proxy/praxis/blob/70f900cbff41124c9ac22dab504d63a239e0d4cb/docs/operating/configuration.md][Praxis configuration]]
+
+Deliver each reviewed catalog version as a read-only file. Validate the
+candidate through the native startup entry, then verify the source binding
+and activation outcome through the existing authenticated Control entry.
+A deployed source change still goes through Weaver's authority and ledger
+fences. The catalog is a startup input, and changes on disk have no activation
+effect until an explicit deployment operation consumes them.
+
+Generate a catalog from the existing approved =SourceData= for the site
+and the matching source authority epoch and credential fingerprints. The
+credential value and private key belong to the deployment's credential
+configuration. Publish the exact catalog bytes reviewed for that instance.
+Record the catalog digest, application module and source revision, SDK
+revision, server image digest, and site approval and activation records
+together. A catalog generated by the native integration entry binds its
+test authority and loopback endpoints and can accompany that run's receipt.
 
 ** Evidence and retained gaps
 
