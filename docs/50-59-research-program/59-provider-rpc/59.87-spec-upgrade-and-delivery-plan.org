@@ -356,6 +356,7 @@ review issuer have separate key custody and consumers.
 
 R5 acceptance uses the existing =go/dev= integration entry with
 =TestProviderRustDirectFilePreparation=,
+=TestProviderRustDirectFilePreparationLostReplies=,
 =TestProviderRustDirectCatalogSelection= and
 =TestProviderRustDirectReviewedCatalogImport=. The cases cover signed JSON and
 TOML-selected YAML sources, catalog replacement and guarded execution, and an
@@ -366,11 +367,14 @@ coordinates. Metering application and review recovery are separate integration
 cases. The Go entry list and the production asset boundary verify which
 packages remain reachable from =weaver-meter=.
 
-The offline import case passed against a Rust release built with =arrow,kubernetes=
-and no Scheme program. The positive JSON/YAML controls matched the Go proposal.
-Duplicate keys, custom YAML tags and trailing documents failed without emitting a
-proposal. Scheme-backed file preparation and catalog execution are separate
-release controls.
+On the same Rust release built with =arrow,kubernetes= at =0fe24eb0=, the
+ordinary integration suite passed signed JSON and TOML-selected YAML
+preparation, staging and publication reply-loss recovery, and warm, cold and
+restart lookups of an unused fixed node after publisher handoff. It also
+passed independent review and metering, and the offline JSON/YAML import
+matched the Go proposal. Duplicate keys, custom tags and trailing documents
+failed without emitting a proposal. Compiled Scheme preparation and dynamic
+catalog execution still require the Scheme release.
 
 Verification source, fixtures and acceptance commands are versioned with the
 implementation. Release executables and generated receipts remain local

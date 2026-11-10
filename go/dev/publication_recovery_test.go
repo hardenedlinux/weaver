@@ -56,6 +56,11 @@ func (s *publicationReplyLoss) InspectSourceAuthority(ctx context.Context, in *p
 	return source.RPC.InspectSourceAuthority(source.Context(ctx), in)
 }
 
+func (s *publicationReplyLoss) ComposeSource(ctx context.Context, in *pb.SourceCompositionRequest) (*pb.SourceCompositionReply, error) {
+	source := s.sourceClient()
+	return source.RPC.ComposeSource(source.Context(ctx), in)
+}
+
 func (s *publicationReplyLoss) InspectPublication(ctx context.Context, key *pb.PublicationKey) (*pb.PublicationReceipt, error) {
 	s.inspections.Add(1)
 	source := s.sourceClient()
