@@ -343,7 +343,7 @@ dependencies = [
  "nom",
  "num-traits",
  "rusticata-macros",
- "thiserror",
+ "thiserror 2.0.21",
  "time",
 ]
 
@@ -873,14 +873,14 @@ dependencies = [
  "itertools 0.15.0",
  "linked-hash-map",
  "linked_hash_set",
- "miette",
+ "miette 7.6.0",
  "ref-cast",
  "semver",
  "serde",
  "serde_json",
  "serde_with",
  "smol_str",
- "thiserror",
+ "thiserror 2.0.21",
 ]
 
 [[package]]
@@ -897,7 +897,7 @@ dependencies = [
  "lalrpop-util",
  "linked-hash-map",
  "linked_hash_set",
- "miette",
+ "miette 7.6.0",
  "nonempty",
  "ref-cast",
  "regex",
@@ -907,7 +907,7 @@ dependencies = [
  "serde_with",
  "smol_str",
  "stacker",
- "thiserror",
+ "thiserror 2.0.21",
  "unicode-security",
 ]
 
@@ -920,7 +920,7 @@ dependencies = [
  "cedar-policy-core",
  "itertools 0.15.0",
  "logos",
- "miette",
+ "miette 7.6.0",
  "pretty",
  "regex",
  "smol_str",
@@ -1436,7 +1436,7 @@ version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "10d60334b3b2e7c9d91ef8150abfb6fa4c1c39ebbcf4a81c2e346aad939fee3e"
 dependencies = [
- "thiserror",
+ "thiserror 2.0.21",
 ]
 
 [[package]]
@@ -2751,7 +2751,7 @@ dependencies = [
  "jni-sys",
  "log",
  "simd_cesu8",
- "thiserror",
+ "thiserror 2.0.21",
  "walkdir",
  "windows-link",
 ]
@@ -2818,7 +2818,7 @@ dependencies = [
  "jsonptr",
  "serde",
  "serde_json",
- "thiserror",
+ "thiserror 2.0.21",
 ]
 
 [[package]]
@@ -2831,7 +2831,7 @@ dependencies = [
  "pest_derive",
  "regex",
  "serde_json",
- "thiserror",
+ "thiserror 2.0.21",
 ]
 
 [[package]]
@@ -2915,7 +2915,7 @@ dependencies = [
  "serde",
  "serde-saphyr",
  "serde_json",
- "thiserror",
+ "thiserror 2.0.21",
  "tokio",
  "tokio-util",
  "tower",
@@ -2938,7 +2938,7 @@ dependencies = [
  "serde",
  "serde-value",
  "serde_json",
- "thiserror",
+ "thiserror 2.0.21",
 ]
 
 [[package]]
@@ -2962,7 +2962,7 @@ dependencies = [
  "pin-project",
  "serde",
  "serde_json",
- "thiserror",
+ "thiserror 2.0.21",
  "tokio",
  "tokio-util",
  "tracing",
@@ -3221,14 +3221,37 @@ dependencies = [
 
 [[package]]
 name = "miette"
+version = "5.10.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "59bb584eaeeab6bd0226ccf3509a69d7936d148cf3d036ad350abe35e8c6856e"
+dependencies = [
+ "miette-derive 5.10.0",
+ "once_cell",
+ "thiserror 1.0.69",
+ "unicode-width 0.1.14",
+]
+
+[[package]]
+name = "miette"
 version = "7.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5f98efec8807c63c752b5bd61f862c165c115b0a35685bdcfd9238c7aeb592b7"
 dependencies = [
  "cfg-if",
- "miette-derive",
+ "miette-derive 7.6.0",
  "serde",
  "unicode-width 0.1.14",
+]
+
+[[package]]
+name = "miette-derive"
+version = "5.10.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "49e7bc1560b95a3c4a25d03de42fe76ca718ab92d1a22a55b9b4cf67b3ae635c"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.119",
 ]
 
 [[package]]
@@ -4099,7 +4122,7 @@ dependencies = [
  "rustc-hash 2.1.3",
  "rustls",
  "socket2",
- "thiserror",
+ "thiserror 2.0.21",
  "tokio",
  "tracing",
  "web-time",
@@ -4122,7 +4145,7 @@ dependencies = [
  "rustls",
  "rustls-pki-types",
  "slab",
- "thiserror",
+ "thiserror 2.0.21",
  "tinyvec",
  "tracing",
  "web-time",
@@ -5206,11 +5229,31 @@ dependencies = [
 
 [[package]]
 name = "thiserror"
+version = "1.0.69"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b6aaf5339b578ea85b50e080feb250a3e8ae8cfcdff9a461c9ec2904bc923f52"
+dependencies = [
+ "thiserror-impl 1.0.69",
+]
+
+[[package]]
+name = "thiserror"
 version = "2.0.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "09e52cb86a36cede5cb101bf8908837b3e4c6e5e59fe7fd85c23fb56200d189e"
 dependencies = [
- "thiserror-impl",
+ "thiserror-impl 2.0.21",
+]
+
+[[package]]
+name = "thiserror-impl"
+version = "1.0.69"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4fee6c4efc90059e10f81e6d42c60a18f76588c3d74cb83a0b242a2b6c7504c1"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.119",
 ]
 
 [[package]]
@@ -5362,6 +5405,19 @@ dependencies = [
  "pin-project-lite",
  "slab",
  "tokio",
+]
+
+[[package]]
+name = "tokio_sse_codec"
+version = "0.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c1ef88f1ff8829edd1484d977b86426b47e26ee47cc6680da6068977c1e64cd3"
+dependencies = [
+ "bytes",
+ "miette 5.10.0",
+ "thiserror 1.0.69",
+ "tokio-util",
+ "tracing",
 ]
 
 [[package]]
@@ -5580,7 +5636,7 @@ checksum = "050686193eb999b4bb3bc2acfa891a13da00f79734704c4b8b4ef1a10b368a3c"
 dependencies = [
  "crossbeam-channel",
  "symlink",
- "thiserror",
+ "thiserror 2.0.21",
  "time",
  "tracing-subscriber",
 ]
@@ -5647,7 +5703,7 @@ version = "0.8.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f1cf9c519a3a971e845a42c870930557cb53c2368c5737d4c78f8fbfd0444e98"
 dependencies = [
- "thiserror",
+ "thiserror 2.0.21",
  "tracing",
  "tracing-subscriber",
  "turso_core",
@@ -5693,7 +5749,7 @@ dependencies = [
  "libloading",
  "libm",
  "loom",
- "miette",
+ "miette 7.6.0",
  "num-bigint",
  "num-traits",
  "pack1",
@@ -5716,7 +5772,7 @@ dependencies = [
  "strum",
  "strum_macros",
  "tempfile",
- "thiserror",
+ "thiserror 2.0.21",
  "tracing",
  "tracing-subscriber",
  "turso_ext",
@@ -5758,10 +5814,10 @@ checksum = "a69bb856ec8306ad7ed1c13fc61de6a79452bf646ca53d99bb4cc646d5bfc4ff"
 dependencies = [
  "bitflags 2.13.2",
  "memchr",
- "miette",
+ "miette 7.6.0",
  "strum",
  "strum_macros",
- "thiserror",
+ "thiserror 2.0.21",
  "turso_macros",
 ]
 
@@ -5809,7 +5865,7 @@ dependencies = [
  "roaring",
  "serde",
  "serde_json",
- "thiserror",
+ "thiserror 2.0.21",
  "tracing",
  "turso_core",
  "turso_parser",
@@ -6152,7 +6208,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sha2 0.10.9",
- "thiserror",
+ "thiserror 2.0.21",
 ]
 
 [[package]]
@@ -6166,7 +6222,7 @@ dependencies = [
  "proptest",
  "serde",
  "serde_json",
- "thiserror",
+ "thiserror 2.0.21",
  "tokio",
  "tokio-util",
  "weaver-contracts",
@@ -6204,6 +6260,25 @@ dependencies = [
  "weaver-contracts",
  "weaver-ledger",
  "weaver-policy",
+]
+
+[[package]]
+name = "weaver-llm"
+version = "0.1.0"
+dependencies = [
+ "asp-rust",
+ "async-stream",
+ "base64 0.22.1",
+ "bytes",
+ "criterion",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "tokio",
+ "tokio-stream",
+ "tokio-util",
+ "tokio_sse_codec",
 ]
 
 [[package]]
@@ -6551,7 +6626,7 @@ dependencies = [
  "oid-registry",
  "ring",
  "rusticata-macros",
- "thiserror",
+ "thiserror 2.0.21",
  "time",
 ]
 

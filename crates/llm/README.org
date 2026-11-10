@@ -1,0 +1,102 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+#+TITLE: Embedded model client
+#+LANGUAGE: en
+
+=weaver-llm= gives a Coding Harness direct, asynchronous model access. Construct
+one =Client= per application and reuse its HTTP pool on the caller's Tokio
+runtime. Each call supplies the exact completion endpoint, model and credential.
+The endpoint accepts HTTPS and loopback HTTP. Redirects and implicit retries are
+disabled. The exchange has a deadline and cumulative response byte limit.
+
+The client package has an independent Cargo dependency graph. Server admission,
+Cedar authorization, shared budgets, persistence, Scheme and Kubernetes belong
+to the Server composition. The Harness owns provider selection, its conversation,
+local tool authorization and tool execution. Agent Gateway 1.7 is the reference
+for provider coverage and wire behavior. This client starts with OpenAI Chat
+Completions, OpenAI-compatible endpoints that implement that contract, OpenAI
+Responses and Anthropic Messages. WebSocket and provider-specific auth flows
+are separate protocol work. See the [[https://github.com/agentgateway/agentgateway/releases/tag/v1.7.0][Agent Gateway 1.7 release]].
+
+| Client capability | OpenAI Chat / compatible | OpenAI Responses | Anthropic Messages |
+|-------------------+--------------------------+------------------+--------------------|
+| Text and function tools, buffered and SSE | Yes | Yes | Yes |
+| Explicit tool choice | Yes | Yes | Yes |
+| JSON Schema output | Yes | Yes | Yes |
+| Plain JSON object mode | Yes | Yes | Schema required |
+| User image URL or inline bytes | Yes | Yes | Yes |
+| Stateless encrypted reasoning replay | | Yes | |
+| Batch embeddings | Separate compatible embeddings URL | | |
+
+The table describes the client wire adapters. Provider and model selection
+determines which options are available in a deployment. For screenshots,
+attach =ImageInput= values to a user =Message=. The client sends HTTPS URLs
+to the provider or encodes inline PNG, JPEG, WebP and GIF bytes. Text is sent
+first, followed by the images in the order supplied.
+
+For tools, put function declarations in =Options::tools= and call
+=Client::stream_turn=. Use =TurnStream::into_stream= with =tokio_stream::StreamExt=
+to compose the turn with other asynchronous operations. Display =TurnEvent::Text= incrementally. On
+=TurnEvent::Finished=, check the finish reason and authorize the returned
+=ToolCall= values before executing them. Preserve those calls in an assistant
+message and append each tool result with its =tool_call_id= before starting
+the next turn. A dropped stream cancels the exchange. A truncated stream or
+invalid terminal frame returns an error and yields no executable calls.
+=Options::stream_usage= requests terminal usage from OpenAI-compatible endpoints
+that implement it. Anthropic usage comes from Messages stream events.
+SSE framing uses the same =tokio_sse_codec= as Agent Gateway. The client
+validates the provider's terminal event before making tool calls available.
+
+=Options::tool_choice= controls whether the provider may call a tool, must
+call one, or must use a named function from the declared tools.
+=Options::response_format= requests provider-enforced JSON output. A JSON
+Schema maps to all three protocol families. Plain JSON object mode maps to
+OpenAI Chat Completions and Responses. Availability depends on the selected
+model and the provider's supported schema subset. Assistant output remains text
+for the caller to parse after the turn finishes.
+
+Use =Client::embed= with an explicit OpenAI-compatible embeddings URL for
+batches of text or token IDs. The client returns one float vector per input
+in input order and checks the returned dimensions.
+
+The client distinguishes rate limits, context length errors and temporary
+upstream failures. For HTTP rate limits it exposes integer seconds from
+=Retry-After= when available. These errors inform caller decisions.
+Refusals and content filters return =Error::Refused=. A refused stream
+terminates without releasing tool calls or a normal completion event.
+
+For OpenAI Responses, attach the terminal =responses_output= to the assistant
+message. It preserves the ordered output items, including encrypted reasoning,
+for the next request. The client requests =store: false= and submits the
+conversation and corresponding tool results together. See the
+[[https://developers.openai.com/api/docs/guides/function-calling][OpenAI function calling guide]].
+
+=Client::complete= returns bounded text and completed function calls when
+tools are configured. The lower-level =Client::stream= yields HTTP body
+chunks that can split or combine SSE
+records. For Marlin, the adapter can translate its conversation at the existing
+=ModelGateway= boundary and deliver typed events to the Harness loop. The adapter
+is downstream of this package.
+
+The ignored =live_openai_responses_replays_reasoning_and_tool_output= test
+qualifies two OpenAI Responses turns under one 60-second deadline. Set
+=WEAVER_LIVE_OPENAI_RESPONSES=1=, =WEAVER_LIVE_OPENAI_MODEL= to an authorized
+reasoning model, and provide =OPENAI_API_KEY= through the environment.
+
+#+begin_src sh
+cargo test -p weaver-llm --locked --test client live_openai_responses_replays_reasoning_and_tool_output -- --ignored --exact
+#+end_src
+
+#+begin_src sh
+cargo test -p weaver-llm --locked --offline
+cargo test -p weaver-llm --locked --offline --test client warmed_turns_reuse_the_pool_under_concurrency -- --nocapture
+#+end_src
+
+The pool test fixes four Tokio workers, four concurrent callers and 128
+measured turns after one warmup per caller. It checks connection reuse and
+reports p50 and p99 for response headers, the first event, the complete turn,
+and the interval from the first event to terminal. Use =--release= to
+measure the optimized build. The measurements include the local HTTP exchange
+and fixture work.
