@@ -105,3 +105,54 @@ fn generation_controls_follow_each_provider_contract() -> TestResult {
     }
     Ok(())
 }
+
+#[test]
+fn anthropic_thinking_and_effort_are_typed_and_compose_with_format() -> TestResult {
+    use serde_json::json;
+    use weaver_llm::{AnthropicEffort, AnthropicThinking, ResponseFormat};
+    let messages = messages();
+    let mut options = Options {
+        max_tokens: Some(2048),
+        anthropic_thinking: Some(AnthropicThinking::Adaptive),
+        anthropic_effort: Some(AnthropicEffort::High),
+        response_format: Some(ResponseFormat::JsonSchema {
+            name: "marker".into(),
+            schema: json!({"type": "object"}),
+        }),
+        ..Options::default()
+    };
+    let encode = |options: &Options, protocol| {
+        Request {
+            model: "fixture",
+            messages: &messages,
+            options,
+        }
+        .encode(protocol, true)
+    };
+    let body: Value = serde_json::from_slice(&encode(&options, Protocol::Anthropic)?)?;
+    assert_eq!(body["thinking"], json!({"type": "adaptive"}));
+    assert_eq!(body["output_config"]["effort"], "high");
+    assert_eq!(body["output_config"]["format"]["type"], "json_schema");
+    assert!(encode(&options, Protocol::OpenAi).is_err());
+    assert!(encode(&options, Protocol::OpenAiResponses).is_err());
+    options.anthropic_thinking = Some(AnthropicThinking::Enabled {
+        budget_tokens: 1024,
+    });
+    let body: Value = serde_json::from_slice(&encode(&options, Protocol::Anthropic)?)?;
+    assert_eq!(
+        body["thinking"],
+        json!({"type": "enabled", "budget_tokens": 1024})
+    );
+    options.anthropic_thinking = Some(AnthropicThinking::Enabled {
+        budget_tokens: 1023,
+    });
+    assert!(encode(&options, Protocol::Anthropic).is_err());
+    options.anthropic_thinking = Some(AnthropicThinking::Enabled {
+        budget_tokens: 2048,
+    });
+    assert!(encode(&options, Protocol::Anthropic).is_err());
+    options.anthropic_thinking = Some(AnthropicThinking::Disabled);
+    let body: Value = serde_json::from_slice(&encode(&options, Protocol::Anthropic)?)?;
+    assert_eq!(body["thinking"], json!({"type": "disabled"}));
+    Ok(())
+}

@@ -46,11 +46,11 @@ enum Profile {
         protocol: WireProtocol,
         #[serde(default)]
         authentication: Authentication,
-        endpoint: String,
-        model: String,
+        endpoint: Option<String>,
+        model: Option<String>,
         timeout_ms: u64,
         max_response_bytes: usize,
-        credential: Credential,
+        credential: Option<Credential>,
     },
     Delegated {
         endpoint: String,
@@ -128,10 +128,17 @@ impl Configuration {
             let mut names = Vec::new();
             match profile {
                 Profile::Direct {
-                    credential: Credential::Static(source),
+                    credential: Some(Credential::Static(source)),
                     ..
                 } => {
                     names.extend(source.environment());
+                }
+                Profile::Direct {
+                    protocol: WireProtocol::Anthropic,
+                    credential: None,
+                    ..
+                } => {
+                    names.push("ANTHROPIC_API_KEY");
                 }
                 Profile::Delegated {
                     exchange,
@@ -239,12 +246,27 @@ impl Configuration {
         else {
             return Err(Error::Configuration);
         };
+        let (endpoint, model) = resolve_direct_target(
+            (*protocol).into(),
+            endpoint.as_deref(),
+            model.as_deref(),
+            |name| std::env::var(name).ok(),
+        )?;
         let mut endpoint =
-            Endpoint::new((*protocol).into(), endpoint)?.with_authentication(*authentication);
+            Endpoint::new((*protocol).into(), &endpoint)?.with_authentication(*authentication);
         if model.trim().is_empty() || model.len() > 1024 {
             return Err(Error::Configuration);
         }
         let client = Client::new(Duration::from_millis(*timeout_ms), *max_response_bytes)?;
+        let default_credential = matches!(protocol, WireProtocol::Anthropic).then(|| {
+            Credential::Static(SecretReference::Environment {
+                env: "ANTHROPIC_API_KEY".into(),
+            })
+        });
+        let credential = credential
+            .as_ref()
+            .or(default_credential.as_ref())
+            .ok_or(Error::Configuration)?;
         let credential = match credential {
             Credential::Static(source) => {
                 PreparedCredential::static_value(source.resolve(&self.directory).await?)?
@@ -261,7 +283,7 @@ impl Configuration {
                     oauth.as_ref().clone(),
                     &mut endpoint,
                     (*protocol).into(),
-                    model,
+                    &model,
                     &client,
                 )
                 .await?
@@ -271,7 +293,7 @@ impl Configuration {
                     openai.clone().into_oauth(),
                     &mut endpoint,
                     (*protocol).into(),
-                    model,
+                    &model,
                     &client,
                 )
                 .await?
@@ -281,21 +303,21 @@ impl Configuration {
                     copilot.clone().into_oauth(),
                     &mut endpoint,
                     (*protocol).into(),
-                    model,
+                    &model,
                     &client,
                 )
                 .await?
             }
             Credential::Oidc { oidc } => {
                 let oauth = discover_oidc(oidc.clone(), client.http.clone()).await?;
-                self.prepare_oauth(oauth, &mut endpoint, (*protocol).into(), model, &client)
+                self.prepare_oauth(oauth, &mut endpoint, (*protocol).into(), &model, &client)
                     .await?
             }
         };
         Ok(PreparedProfile {
             client,
             endpoint,
-            model: model.clone(),
+            model,
             credential,
         })
     }
@@ -364,6 +386,51 @@ impl Configuration {
     }
 }
 
+/// Resolve an explicit model and endpoint, filling absent Anthropic values from
+/// the supplied environment. Explicit configuration always takes precedence.
+///
+/// # Errors
+/// Returns a configuration error when a required value is missing or invalid.
+pub fn resolve_direct_target(
+    protocol: Protocol,
+    endpoint: Option<&str>,
+    model: Option<&str>,
+    read_env: impl Fn(&str) -> Option<String>,
+) -> Result<(String, String), Error> {
+    let model = match model {
+        Some(value) => value.to_owned(),
+        None if protocol == Protocol::Anthropic => {
+            read_env("ANTHROPIC_MODEL").ok_or(Error::Configuration)?
+        }
+        None => return Err(Error::Configuration),
+    };
+    let endpoint = match endpoint {
+        Some(value) => value.to_owned(),
+        None if protocol == Protocol::Anthropic => {
+            let base = read_env("ANTHROPIC_BASE_URL").ok_or(Error::Configuration)?;
+            if base.len() > 4096 {
+                return Err(Error::Configuration);
+            }
+            let mut url = reqwest::Url::parse(&base).map_err(|_| Error::Configuration)?;
+            if url.query().is_some() || url.fragment().is_some() {
+                return Err(Error::Configuration);
+            }
+            let path = url.path().trim_end_matches('/');
+            let path = if path.ends_with("/v1/messages") {
+                path.to_owned()
+            } else if path.ends_with("/v1") {
+                format!("{path}/messages")
+            } else {
+                format!("{path}/v1/messages")
+            };
+            url.set_path(&path);
+            url.to_string()
+        }
+        None => return Err(Error::Configuration),
+    };
+    Ok((endpoint, model))
+}
+
 /// An immutable connection with a pooled client and a private credential.
 /// Reload trusted configuration to rotate or change its destination.
 pub struct PreparedProfile {
@@ -409,6 +476,11 @@ impl std::fmt::Debug for PreparedProfile {
 }
 
 impl PreparedProfile {
+    /// Model identity bound to this prepared connection.
+    pub fn model(&self) -> &str {
+        &self.model
+    }
+
     /// Access the shared login, refresh and logout owner of an OAuth profile.
     pub fn oauth(&self) -> Option<&OAuthSession> {
         match &self.credential {

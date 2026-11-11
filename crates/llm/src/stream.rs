@@ -6,17 +6,39 @@
 
 use bytes::{Bytes, BytesMut};
 use serde_json::Value;
+use sha2::{Digest, Sha256};
 use std::collections::{BTreeMap, HashSet};
 use tokio_sse_codec::{Frame, SseDecoder};
 use tokio_util::codec::Decoder as _;
 
 use crate::{Error, EventStream, Protocol, ToolCall, Usage};
 
+/// A provider-returned thinking fragment. Debug formatting hides its content.
+#[derive(Eq, PartialEq)]
+pub struct ThinkingDelta(String);
+
+impl ThinkingDelta {
+    /// Returns the provider-returned fragment for explicit presentation.
+    pub fn as_str(&self) -> &str {
+        &self.0
+    }
+}
+
+impl std::fmt::Debug for ThinkingDelta {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("ThinkingDelta")
+            .field("bytes", &self.0.len())
+            .finish()
+    }
+}
+
 /// A provider-neutral event for a single assistant turn.
 #[derive(Debug, Eq, PartialEq)]
 pub enum TurnEvent {
     /// Text that can be displayed as it arrives.
     Text(String),
+    /// Provider-returned thinking, distinct from final-answer text.
+    Thinking(ThinkingDelta),
     /// Successful terminal event. The Harness can now execute these calls.
     Finished {
         /// Provider finish reason.
@@ -29,6 +51,8 @@ pub enum TurnEvent {
         tool_calls: Vec<ToolCall>,
         /// Opaque output for stateless Responses continuation.
         responses_output: Option<crate::ResponsesOutput>,
+        /// Ordered Anthropic content blocks for continuation, including thinking.
+        anthropic_output: Option<crate::AnthropicOutput>,
     },
 }
 
@@ -61,6 +85,8 @@ impl TurnStream {
                 usage: None,
                 anthropic_started: false,
                 anthropic_block: None,
+                anthropic_output: BTreeMap::new(),
+                responses_text: Sha256::new(),
             },
         }
     }
@@ -168,7 +194,8 @@ struct PartialCall {
 enum Block {
     Text,
     Tool,
-    Ignored,
+    Thinking,
+    RedactedThinking,
 }
 
 struct Decoder {
@@ -179,6 +206,8 @@ struct Decoder {
     usage: Option<Usage>,
     anthropic_started: bool,
     anthropic_block: Option<(u64, Block)>,
+    anthropic_output: BTreeMap<u64, Value>,
+    responses_text: Sha256,
 }
 
 impl Decoder {
@@ -193,7 +222,23 @@ impl Decoder {
         match self.protocol {
             Protocol::OpenAi => self.openai(&event),
             Protocol::Anthropic => self.anthropic(&event),
-            Protocol::OpenAiResponses => crate::responses::event(event),
+            Protocol::OpenAiResponses => {
+                let decoded = crate::responses::event(event)?;
+                match &decoded {
+                    Some(TurnEvent::Text(text)) => self.responses_text.update(text.as_bytes()),
+                    Some(TurnEvent::Finished {
+                        responses_output: Some(output),
+                        ..
+                    }) => {
+                        let expected = self.responses_text.clone().finalize();
+                        if !output.matches_streamed_text(&expected)? {
+                            return Err(Error::Response);
+                        }
+                    }
+                    _ => {}
+                }
+                Ok(decoded)
+            }
         }
     }
 
@@ -235,12 +280,25 @@ impl Decoder {
                 arguments,
             });
         }
+        let anthropic_output = if self.protocol == Protocol::Anthropic {
+            let blocks = std::mem::take(&mut self.anthropic_output)
+                .into_values()
+                .collect();
+            let (output, _, observed_calls) = crate::AnthropicOutput::parse(blocks)?;
+            if observed_calls != calls {
+                return Err(Error::Response);
+            }
+            Some(output)
+        } else {
+            None
+        };
         Ok(TurnEvent::Finished {
             reason,
             identity: self.identity.take(),
             usage: self.usage.take(),
             tool_calls: calls,
             responses_output: None,
+            anthropic_output,
         })
     }
 
@@ -325,7 +383,7 @@ impl Decoder {
                     .anthropic_block
                     .is_some_and(|(active, _)| event["index"].as_u64() == Some(active)) =>
             {
-                self.anthropic_block = None;
+                self.anthropic_stop()?;
                 Ok(None)
             }
             "message_delta" if self.anthropic_block.is_none() => {
@@ -360,14 +418,23 @@ impl Decoder {
             }
             "text" => (
                 Block::Text,
-                block["text"]
-                    .as_str()
+                Some(block["text"].as_str().ok_or(Error::Response)?)
                     .filter(|text| !text.is_empty())
                     .map(text_event),
             ),
-            "thinking" | "redacted_thinking" => (Block::Ignored, None),
+            "thinking" if block["thinking"].is_string() => (
+                Block::Thinking,
+                block["thinking"]
+                    .as_str()
+                    .filter(|text| !text.is_empty())
+                    .map(|text| TurnEvent::Thinking(ThinkingDelta(text.to_owned()))),
+            ),
+            "redacted_thinking" if block["data"].is_string() => (Block::RedactedThinking, None),
             _ => return Err(Error::Response),
         };
+        if self.anthropic_output.insert(index, block.clone()).is_some() {
+            return Err(Error::Response);
+        }
         self.anthropic_block = Some((index, kind));
         Ok(text)
     }
@@ -380,9 +447,11 @@ impl Decoder {
         }
         let delta = &event["delta"];
         match (block, required_string(&delta["type"])?) {
-            (Block::Text, "text_delta") => Ok(Some(text_event(
-                delta["text"].as_str().ok_or(Error::Response)?,
-            ))),
+            (Block::Text, "text_delta") => {
+                let text = delta["text"].as_str().ok_or(Error::Response)?;
+                self.append_anthropic_field(index, "text", text)?;
+                Ok(Some(text_event(text)))
+            }
             (Block::Tool, "input_json_delta") => {
                 let partial = self.tools.get_mut(&index).ok_or(Error::Response)?;
                 partial
@@ -390,9 +459,64 @@ impl Decoder {
                     .push_str(delta["partial_json"].as_str().ok_or(Error::Response)?);
                 Ok(None)
             }
-            (Block::Ignored, "thinking_delta" | "signature_delta") => Ok(None),
+            (Block::Thinking, "thinking_delta" | "signature_delta") => {
+                let field = if delta["type"] == "thinking_delta" {
+                    "thinking"
+                } else {
+                    "signature"
+                };
+                let part = delta[field].as_str().ok_or(Error::Response)?;
+                self.append_anthropic_field(index, field, part)?;
+                if field == "thinking" && !part.is_empty() {
+                    Ok(Some(TurnEvent::Thinking(ThinkingDelta(part.to_owned()))))
+                } else {
+                    Ok(None)
+                }
+            }
             _ => Err(Error::Response),
         }
+    }
+
+    fn append_anthropic_field(
+        &mut self,
+        index: u64,
+        field: &str,
+        value: &str,
+    ) -> Result<(), Error> {
+        let block = self
+            .anthropic_output
+            .get_mut(&index)
+            .and_then(Value::as_object_mut)
+            .ok_or(Error::Response)?;
+        let entry = block
+            .entry(field)
+            .or_insert_with(|| Value::String(String::new()));
+        let Value::String(text) = entry else {
+            return Err(Error::Response);
+        };
+        text.push_str(value);
+        Ok(())
+    }
+
+    fn anthropic_stop(&mut self) -> Result<(), Error> {
+        let (index, kind) = self.anthropic_block.take().ok_or(Error::Response)?;
+        if kind == Block::Tool {
+            let call = self.tools.get(&index).ok_or(Error::Response)?;
+            let input: Value = if call.arguments.is_empty() {
+                serde_json::json!({})
+            } else {
+                serde_json::from_str(&call.arguments).map_err(|_| Error::Response)?
+            };
+            if !input.is_object() {
+                return Err(Error::Response);
+            }
+            self.anthropic_output
+                .get_mut(&index)
+                .and_then(Value::as_object_mut)
+                .ok_or(Error::Response)?
+                .insert("input".into(), input);
+        }
+        Ok(())
     }
 
     fn start_tool(&mut self, index: u64, id: &str, name: &str) -> Result<(), Error> {

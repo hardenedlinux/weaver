@@ -65,6 +65,13 @@ Use =Client::embed= with an explicit OpenAI-compatible embeddings URL for
 batches of text or token IDs. The client returns one float vector per input
 in input order and checks the returned dimensions.
 
+For Anthropic Messages, a buffered assistant message carries its ordered
+=anthropic_output= content blocks, including signed or redacted thinking. For
+streaming turns, attach the terminal event's =anthropic_output= to the assistant
+message before continuing. Weaver checks that the visible text and tool calls
+still match those blocks. Debug formatting redacts the block contents. The
+caller must retain this data with the conversation; Weaver does not compress it.
+
 The client distinguishes rate limits, context length errors and temporary
 upstream failures. For HTTP rate limits it exposes integer seconds from
 =Retry-After= when available. These errors inform caller decisions.
@@ -186,7 +193,16 @@ env = "OPENAI_API_KEY"
 
 Supported protocol names are =openai-chat-completions=, =openai-responses=
 and =anthropic-messages=. Both the profile and configuration path come from
-trusted Harness startup settings. Supply the chosen model explicitly.
+trusted Harness startup settings. For an Anthropic direct profile, explicit
+=model= and =endpoint= win; missing fields use =ANTHROPIC_MODEL= and
+=ANTHROPIC_BASE_URL=. The base URL is expanded to =/v1/messages=, preserving
+an existing =/v1= or =/v1/messages= suffix. An omitted credential uses
+=ANTHROPIC_API_KEY=, which is included in =credential_environment()=. Other
+protocols still require explicit model, endpoint and credential. Environment
+values are resolved at =prepare= and the resulting profile is immutable.
+An Anthropic-compatible environment-backed profile with an optional OpenAI
+alternative is provided in [[file:example.toml][example.toml]]; callers select =anthropic=
+when invoking =prepare=. The client never compresses conversation context.
 The optional profile field =authentication = "bearer"= selects an explicit
 Authorization Bearer header. Its default, =provider_default=, uses Bearer for
 OpenAI and =x-api-key= for Anthropic API keys. Anthropic =sk-ant-oat= access
@@ -665,3 +681,15 @@ These finite models and sampled traces check the declared abstraction; they
 are not an exhaustive proof of the Rust implementation or external IO atomicity.
 All five models run through the existing CI plan. Rust properties run in the normal
 client Cargo tests, with no separate test runner or cold dependency install.
+
+** Anthropic thinking controls and stream events
+
+=Options::anthropic_thinking= selects adaptive, manual budget or disabled
+thinking, and =anthropic_effort= selects output effort. Availability varies by
+model and provider. Manual thinking requires at least 1024 tokens and a larger
+=max_tokens=; DeepSeek documents that it ignores the manual budget. Other
+protocols reject these Anthropic-specific options. Omitted controls defer to the
+provider. =TurnEvent::Thinking= yields provider-returned thinking separately
+from final-answer text. Its debug representation omits the content; callers
+choose whether to display or store it. Terminal =anthropic_output= remains
+necessary for lossless continuation, including signatures and redacted blocks.

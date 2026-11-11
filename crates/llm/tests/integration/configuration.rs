@@ -45,6 +45,7 @@ async fn prepared_profile_streams_after_inputs_are_removed() -> TestResult {
         while let Some(event) = stream.next_event().await? {
             match event {
                 weaver_llm::TurnEvent::Text(delta) => text.push_str(&delta),
+                weaver_llm::TurnEvent::Thinking(_) => {},
                 weaver_llm::TurnEvent::Finished { .. } => complete = true,
             }
         }
@@ -430,4 +431,91 @@ async fn dropping_a_turn_closes_an_incomplete_exchange() -> TestResult {
         Ok(())
     })
     .await?
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+async fn anthropic_config_precedes_environment_and_missing_fields_use_it() -> TestResult {
+    const CHILD: &str = "WEAVER_ANTHROPIC_CONFIG_CHILD";
+    const PATH: &str = "WEAVER_ANTHROPIC_CONFIG_PATH";
+    const REPLY: &str = concat!(
+        "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nConnection: close\r\n\r\n",
+        r#"{"id":"one","model":"fixture","role":"assistant","content":[{"type":"text","text":"Hi"}],"stop_reason":"end_turn","usage":{"input_tokens":1,"output_tokens":1}}"#,
+    );
+    timeout(WATCHDOG, async {
+        if std::env::var_os(CHILD).is_some() {
+            let config = Configuration::load(std::env::var(PATH)?).await?;
+            let names: Vec<_> = config.credential_environment().collect();
+            let expected = std::env::var("WEAVER_EXPECTED_CREDENTIAL_NAME")?;
+            assert!(names.contains(&expected.as_str()));
+            let prepared = config.prepare("local").await?;
+            let result = prepared.complete(&messages(), &Options::default()).await?;
+            assert_eq!(result.choices[0].message.content, "Hi");
+            return Ok(());
+        }
+        let dir = tempfile::tempdir()?;
+        let config_path = dir.path().join("weaver.toml");
+        for explicit in [true, false] {
+            let (url, observed) = upstream(REPLY).await?;
+            let mut document = String::from(
+                "[profiles.local]\nkind = \"direct\"\nprotocol = \"anthropic-messages\"\ntimeout_ms = 1000\nmax_response_bytes = 4096\n",
+            );
+            if explicit {
+                document.push_str(&format!("endpoint = \"{url}\"\nmodel = \"configured-model\"\n[profiles.local.credential]\nenv = \"WEAVER_EXPLICIT_KEY\"\n"));
+            }
+            tokio::fs::write(&config_path, document).await?;
+            let base = if explicit { "invalid://must-not-be-used".to_owned() } else { url.trim_end_matches("/model").to_owned() };
+            let output = Command::new(std::env::current_exe()?)
+                .args(["--exact", "configuration::anthropic_config_precedes_environment_and_missing_fields_use_it"])
+                .env(CHILD, "1").env(PATH, &config_path)
+                .env("ANTHROPIC_BASE_URL", base).env("ANTHROPIC_MODEL", "environment-model")
+                .env("ANTHROPIC_API_KEY", "fallback-secret").env("WEAVER_EXPLICIT_KEY", "explicit-secret")
+                .env("WEAVER_EXPECTED_CREDENTIAL_NAME", if explicit { "WEAVER_EXPLICIT_KEY" } else { "ANTHROPIC_API_KEY" })
+                .kill_on_drop(true).output().await?;
+            assert!(output.status.success(), "child configuration failed");
+            assert!(!String::from_utf8_lossy(&output.stdout).contains("secret"));
+            assert!(!String::from_utf8_lossy(&output.stderr).contains("secret"));
+            let (headers, body) = observed.await??;
+            let (path, model, secret) = if explicit { ("/model", "configured-model", "explicit-secret") }
+                else { ("/v1/messages", "environment-model", "fallback-secret") };
+            assert!(headers.starts_with(&format!("post {path} http/1.1\r\n")));
+            assert!(headers.contains(&format!("x-api-key: {secret}\r\n")));
+            assert_eq!(body["model"], model);
+        }
+        Ok::<_, Box<dyn std::error::Error>>(())
+    }).await?
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+async fn anthropic_invalid_explicit_values_do_not_fall_back() -> TestResult {
+    const CHILD: &str = "WEAVER_ANTHROPIC_INVALID_CHILD";
+    const PATH: &str = "WEAVER_ANTHROPIC_INVALID_PATH";
+    timeout(WATCHDOG, async {
+        if std::env::var_os(CHILD).is_some() {
+            let config = Configuration::load(std::env::var(PATH)?).await?;
+            assert!(matches!(config.prepare("local").await, Err(Error::Configuration)));
+            return Ok(());
+        }
+        let dir = tempfile::tempdir()?;
+        let path = dir.path().join("weaver.toml");
+        let base = "[profiles.local]\nkind = \"direct\"\nprotocol = \"anthropic-messages\"\ntimeout_ms = 1000\nmax_response_bytes = 4096\n";
+        for fields in [
+            "model = \"\"\nendpoint = \"https://configured.example/v1/messages\"\n",
+            "model = \"configured\"\nendpoint = \"\"\n",
+            "model = \"configured\"\nendpoint = \"https://configured.example/v1/messages\"\n[profiles.local.credential]\nenv = \"WEAVER_MISSING_EXPLICIT_CREDENTIAL\"\n",
+        ] {
+            tokio::fs::write(&path, format!("{base}{fields}")).await?;
+            let output = Command::new(std::env::current_exe()?)
+                .args(["--exact", "configuration::anthropic_invalid_explicit_values_do_not_fall_back"])
+                .env(CHILD, "1").env(PATH, &path)
+                .env("ANTHROPIC_BASE_URL", "https://environment.example")
+                .env("ANTHROPIC_MODEL", "environment-model")
+                .env("ANTHROPIC_API_KEY", "fallback-private-token")
+                .env_remove("WEAVER_MISSING_EXPLICIT_CREDENTIAL")
+                .kill_on_drop(true).output().await?;
+            assert!(output.status.success(), "child rejection check failed");
+            assert!(!String::from_utf8_lossy(&output.stdout).contains("fallback-private-token"));
+            assert!(!String::from_utf8_lossy(&output.stderr).contains("fallback-private-token"));
+        }
+        Ok::<_, Box<dyn std::error::Error>>(())
+    }).await?
 }
