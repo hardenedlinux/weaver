@@ -417,11 +417,27 @@ async fn source_rotation_commits_before_queued_catalog_reads_recheck_identity() 
         let [a, b, c] = reads;
         let (a, b, c) = tokio::join!(a, b, c);
         for read in [a, b, c] {
-            assert_eq!(
-                read.expect_err("retired identity cannot read").code(),
-                tonic::Code::PermissionDenied
-            );
+            let rejected = read.expect_err("retired identity cannot read");
+            match rejected.code() {
+                tonic::Code::PermissionDenied => {}
+                // Waiting has a real 50 ms bound, including the rotation commit.
+                // Expiration rejects admission before identity is evaluated.
+                tonic::Code::ResourceExhausted => {
+                    assert_eq!(rejected.message(), "source command wait expired");
+                }
+                other => panic!("unexpected queued-read rejection: {other:?}"),
+            }
         }
+        // Independently require the identity decision after the queue drains.
+        // A queue timeout alone must never satisfy the retirement assertion.
+        assert_eq!(
+            source
+                .provider_catalog(current.clone())
+                .await
+                .expect_err("retired identity must fail authentication")
+                .code(),
+            tonic::Code::PermissionDenied
+        );
         assert!(
             source
                 .provider_catalog(next.clone())
