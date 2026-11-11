@@ -143,7 +143,7 @@ checked through the in-process OpenSysML SDK.
 | Path | Contents |
 |------+----------|
 | =crates/= | Rust workspace libraries, server and per-crate benchmarks |
-| =go/= | Go control plane, gRPC clients and development tooling |
+| =go/= | OpenSysML tools, gRPC clients, reference controls and independent metering issuer |
 | =proto/= | Shared versioned Protobuf service definitions |
 | =scheme/= | Governance, Policy and Gateway modules |
 | =t/= | Scheme-owned tests and fixtures |
@@ -153,6 +153,10 @@ checked through the in-process OpenSysML SDK.
 
 The root =Cargo.toml= manages Rust crates; =go/go.mod= owns the single Go module.
 =gerbil.pkg=, =build.ss= and =init.ss= define the Scheme package.
+
+Coding Harnesses can embed [[file:crates/llm/README.org][weaver-llm]].
+Its =weaver.toml= profiles bind the provider, model and credentials before
+starting a pooled HTTP/SSE request.
 
 * Development
 

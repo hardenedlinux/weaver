@@ -4,44 +4,37 @@
 
 ;;; Native source fixture for cross-language integration; no Go governance DSL.
 (import :agentic-ai-lab/modules/loop-engine/control/governor
-        :agentic-ai-lab/modules/loop-engine/control/strategy
-        :agentic-ai-lab/modules/loop-engine/control/descriptor
         :agentic-ai-lab/modules/governance/interface
         (only-in :agentic-ai-lab/modules/authorization/providers/cedar/objects agentic-ai-lab-cedar-policy)
+        :hardenedlinux/weaver/scheme/gateway/provider-source
         (only-in :clan/poo/object .o .ref)
         :hardenedlinux/weaver/scheme/gateway/func)
-(export capture-control-fixture)
+(export capture-control-fixture prepare-control-fixture)
 
-;;; Local phase evidence only. Labels and SDK clocks contain no source data;
-;;; their presence cannot admit an artifact or certify natural process exit.
-(def (trace-phase label)
-  (let ((port (current-error-port)) (observed (time->seconds (current-time))))
-    (display "weaver scheme phase=" port) (display label port)
-    (display " real=" port) (display (real-time) port)
-    (display " cpu=" port) (display (cpu-time) port)
-    (display " wall-us=" port) (display (inexact->exact (floor (* observed 1000000))) port)
-    (newline port) (force-output port)))
-
-(trace-phase "fixture-module-ready")
+(trace-gateway-source-phase "fixture-module-ready")
 
 (def (capture-control-fixture init mode tasks plans publication asset-root)
   (control-fixture init mode tasks plans publication asset-root))
 
-(def (control-fixture init mode tasks plans publication asset-root)
-  (trace-phase "fixture-enter")
+(def (prepare-control-fixture init mode tasks plans publication asset-root)
+  (control-fixture init mode tasks plans publication asset-root #t))
+
+(def (control-fixture init mode tasks plans publication asset-root (preparation? #f))
+  (trace-gateway-source-phase "fixture-enter")
   (def prefixed? (string-prefix? "capture-" mode))
   (when prefixed? (set! mode (substring mode 8 (string-length mode))))
-  (def strategy
-    (make-loop-strategy-plan 'weaver-routing
-      (list (make-loop-pattern-descriptor 'infer "Original inference" '((level . l2)))
-            (make-loop-pattern-descriptor 'next "Original continuation" '((level . l2))))))
+  (def nested? (equal? mode "session-nested"))
+  (def choice? (equal? mode "session-choice"))
+  (def dag? (or nested? choice? (equal? mode "session-dag")))
+  (def session? (or dag? (equal? mode "session-workflow")))
+  (def strategy (provider-source-strategy nested? dag? session?))
   (def overrides
     (cond
       ((equal? mode "deny")
        '((shared-denylist . (infer)) (aggregate-budget . ((max-actionable . 2) (max-attempts . 1)))))
       ((equal? mode "clip") '((aggregate-budget . ((max-actionable . 1) (max-attempts . 1)))))
       ((equal? mode "invalid") '((aggregate-budget . ((max-actionable . -1)))))
-      (else '((aggregate-budget . ((max-actionable . 2) (max-attempts . 1)))))))
+      (else (provider-source-budget nested? dag? session?))))
   (def states (if (equal? mode "collision") '(((acting_on . infer))) '()))
   (def source-threat-model
     (if (equal? mode "threat")
@@ -58,7 +51,7 @@
           ((equal? mode "assets-only") (.o))
           (else (.o runtime: native-policy))))
   (def asset-values
-    (if (equal? mode "policy-only") '()
+    (if (or session? (equal? mode "policy-only")) '()
       (list (agentic-ai-lab-governance-source
               (if (equal? mode "policy-identity") "weaver/replacement" "weaver/runtime")
               (if (equal? mode "asset-traversal") "../policy.cedar" "policy.cedar")
@@ -85,9 +78,13 @@
                    (list (agentic-ai-lab-governance-threat "weaver/other-threat" 'low 'latent
                            (list (agentic-ai-lab-governance-precondition "weaver/input" #f #f))))))
               (else assessment))))))
-  (trace-phase "compile-begin")
-  (let ((result (capture-governed-gateway init (make-loop-governor 'weaver strategy overrides)
-                        profile (.o request: 'publish source_root: asset-root)
-                        states tasks plans publication)))
-    (trace-phase "source-captured")
+  (trace-gateway-source-phase "compile-begin")
+  (let ((result (parameterize ((gateway-source-phase-observer trace-gateway-source-phase))
+                  ((if preparation? prepare-governed-gateway capture-governed-gateway)
+                        init (make-loop-governor 'weaver strategy overrides)
+                        profile (if session?
+                                  (.o request: 'publish source_root: asset-root session: (if nested? (nested-workflow-session) (workflow-session dag? choice?)))
+                                  (.o request: 'publish source_root: asset-root))
+                        states tasks plans publication))))
+    (trace-gateway-source-phase "source-captured")
     result))

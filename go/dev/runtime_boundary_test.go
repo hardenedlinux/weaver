@@ -26,15 +26,29 @@ import (
 
 type runtimeBoundary struct {
 	forbiddenRoots, forbiddenReferences []string
+	resolvedPaths                       map[string]string
+}
+
+func (boundary runtimeBoundary) resolve(path string) string {
+	if resolved, ok := boundary.resolvedPaths[path]; ok {
+		return resolved
+	}
+	resolved, err := filepath.EvalSymlinks(path)
+	if err != nil {
+		resolved = path
+	}
+	if boundary.resolvedPaths != nil {
+		boundary.resolvedPaths[path] = resolved
+	}
+	return resolved
 }
 
 func insidePath(path, parent string) bool {
-	if canonical, err := filepath.EvalSymlinks(parent); err == nil {
-		parent = canonical
-	}
-	if canonical, err := filepath.EvalSymlinks(path); err == nil {
-		path = canonical
-	}
+	boundary := runtimeBoundary{}
+	return withinPath(boundary.resolve(path), boundary.resolve(parent))
+}
+
+func withinPath(path, parent string) bool {
 	relative, err := filepath.Rel(parent, path)
 	return err == nil && relative != ".." && !strings.HasPrefix(relative, ".."+string(filepath.Separator))
 }
@@ -51,23 +65,27 @@ func (boundary runtimeBoundary) reference(repository, source, reference string) 
 	for len(components) > 0 && (components[0] == "." || components[0] == "..") {
 		components = components[1:]
 	}
+	local := strings.Join(components, "/")
 	for _, forbidden := range boundary.forbiddenRoots {
-		local := strings.Join(components, "/")
 		if strings.EqualFold(local, forbidden) || strings.HasPrefix(strings.ToLower(local), strings.ToLower(forbidden)+"/") {
 			return fmt.Errorf("development asset in runtime input %s: %s", source, reference)
 		}
-		bases := []string{repository, filepath.Dir(source), filepath.Dir(filepath.Dir(source))}
-		for _, base := range bases {
-			candidate := reference
-			if !filepath.IsAbs(candidate) {
-				candidate = filepath.Join(base, filepath.FromSlash(reference))
-			}
-			if resolved, err := filepath.EvalSymlinks(candidate); err == nil {
-				candidate = resolved
-			}
-			if insidePath(filepath.Clean(candidate), filepath.Join(repository, forbidden)) {
+	}
+	bases := []string{repository, filepath.Dir(source), filepath.Dir(filepath.Dir(source))}
+	for _, base := range bases {
+		candidate := reference
+		if !filepath.IsAbs(candidate) {
+			candidate = filepath.Join(base, filepath.FromSlash(reference))
+		}
+		resolved := boundary.resolve(candidate)
+		candidate = boundary.resolve(filepath.Clean(resolved))
+		for _, forbidden := range boundary.forbiddenRoots {
+			if withinPath(candidate, boundary.resolve(filepath.Join(repository, forbidden))) {
 				return fmt.Errorf("runtime dependency resolves into %s: %s: %s", forbidden, source, reference)
 			}
+		}
+		if filepath.IsAbs(reference) {
+			break
 		}
 	}
 	return nil
@@ -152,7 +170,7 @@ func (boundary runtimeBoundary) source(repository, path string) error {
 func TestProjectArchitectureRuntimeAssetBoundary(t *testing.T) {
 	repository := root(t)
 	parts := projectParts(t)
-	boundary := runtimeBoundary{}
+	boundary := runtimeBoundary{resolvedPaths: make(map[string]string)}
 	var entries, developmentEntries, roots, inputs []string
 	assetRoots := 0
 	for _, part := range parts {
@@ -201,33 +219,36 @@ func TestProjectArchitectureRuntimeAssetBoundary(t *testing.T) {
 			inputs = append(inputs, build)
 		}
 	}
+	patterns := make([]string, 0, len(entries))
 	for _, entry := range entries {
 		relative, err := filepath.Rel(filepath.Join(repository, "go"), filepath.Join(repository, entry))
 		if err != nil {
 			t.Fatal(err)
 		}
-		stream := json.NewDecoder(bytes.NewReader(tool(t, filepath.Join(runtime.GOROOT(), "bin/go"), "-C", "go", "list", "-deps", "-json", "./"+filepath.ToSlash(relative))))
-		for {
-			var pkg struct {
-				Dir, ImportPath                   string
-				GoFiles, CgoFiles, IgnoredGoFiles []string
+		patterns = append(patterns, "./"+filepath.ToSlash(relative))
+	}
+	args := append([]string{"-C", "go", "list", "-deps", "-json"}, patterns...)
+	stream := json.NewDecoder(bytes.NewReader(tool(t, filepath.Join(runtime.GOROOT(), "bin/go"), args...)))
+	for {
+		var pkg struct {
+			Dir, ImportPath                   string
+			GoFiles, CgoFiles, IgnoredGoFiles []string
+		}
+		if err := stream.Decode(&pkg); err != nil {
+			if err == io.EOF {
+				break
 			}
-			if err := stream.Decode(&pkg); err != nil {
-				if err == io.EOF {
-					break
+			t.Fatal(err)
+		}
+		if err := boundary.reference(repository, pkg.Dir, pkg.ImportPath); err != nil {
+			t.Fatal(err)
+		}
+		if insidePath(pkg.Dir, repository) {
+			for _, name := range append(append(pkg.GoFiles, pkg.CgoFiles...), pkg.IgnoredGoFiles...) {
+				if strings.HasSuffix(name, "_test.go") {
+					continue
 				}
-				t.Fatal(err)
-			}
-			if err := boundary.reference(repository, pkg.Dir, pkg.ImportPath); err != nil {
-				t.Fatal(err)
-			}
-			if insidePath(pkg.Dir, repository) {
-				for _, name := range append(append(pkg.GoFiles, pkg.CgoFiles...), pkg.IgnoredGoFiles...) {
-					if strings.HasSuffix(name, "_test.go") {
-						continue
-					}
-					inputs = append(inputs, filepath.Join(pkg.Dir, name))
-				}
+				inputs = append(inputs, filepath.Join(pkg.Dir, name))
 			}
 		}
 	}
@@ -265,7 +286,10 @@ func TestProjectArchitectureRejectsRuntimeDevReferences(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	boundary := runtimeBoundary{[]string{"dev", "go/internal/devrunner"}, []string{"example/go/dev", ":example/dev", "weaver-dev"}}
+	boundary := runtimeBoundary{
+		forbiddenRoots:      []string{"dev", "go/internal/devrunner"},
+		forbiddenReferences: []string{"example/go/dev", ":example/dev", "weaver-dev"},
+	}
 	for _, path := range []string{"dev/proofs/review.cedar", "prod/policies/review.cedar"} {
 		if err := os.WriteFile(filepath.Join(repository, path), []byte("permit(principal,action,resource);"), 0o600); err != nil {
 			t.Fatal(err)

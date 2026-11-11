@@ -53,6 +53,21 @@ impl HttpsTransport {
         }
         Ok(())
     }
+    /// Validate the destination against the selected provider protocol before
+    /// preparation or effect consumption; source adapters reuse this same guard.
+    pub fn validate_provider_endpoint(
+        endpoint: &str,
+        protocol: weaver_contracts::ProviderProtocol,
+    ) -> Result<()> {
+        Self::validate_endpoint(endpoint)?;
+        if matches!(protocol, weaver_contracts::ProviderProtocol::Anthropic) {
+            let url = Url::parse(endpoint).map_err(|_| Error::Invalid("provider endpoint"))?;
+            if url.path() != "/v1/messages" || url.query().is_some() {
+                return Err(Error::Invalid("Anthropic Messages endpoint required"));
+            }
+        }
+        Ok(())
+    }
     // Deliberately crate-private: callers must pass through durable consumption.
     pub(crate) fn send(&self, p: &Proposal) -> SendObservation {
         if Self::validate_endpoint(&p.endpoint).is_err() {

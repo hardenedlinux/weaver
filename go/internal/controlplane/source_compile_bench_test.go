@@ -53,7 +53,7 @@ func BenchmarkCompiledSourceAdmission(b *testing.B) {
 					if bootstrap {
 						rpc.calls = rpc.calls[:0]
 						result, err := BootstrapProducer(context.Background(), client, client, "approved")
-						if err != nil || result.tasks[task.Family].BodyDigests[plan.Node] != task.BodyDigests[plan.Node] || len(rpc.calls) != 6 {
+						if err != nil || result.operations[[2]string{task.Family, plan.Node}].Body != plan.Body || len(rpc.calls) != 6 {
 							b.Fatal("local source bootstrap", err)
 						}
 					} else {

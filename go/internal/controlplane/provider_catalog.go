@@ -5,73 +5,62 @@
 package controlplane
 
 import (
+	"bytes"
 	"context"
-	"encoding/json"
-	"errors"
 
 	pb "github.com/HardenedLinux/weaver/go/api/gateway/v1"
 	"github.com/HardenedLinux/weaver/go/internal/config"
-	"github.com/HardenedLinux/weaver/go/internal/routing"
+	"github.com/HardenedLinux/weaver/go/internal/gatewayclient"
 )
 
-type catalogEntry struct {
-	Module       string    `json:"module"`
-	Capabilities []string  `json:"capabilities"`
-	Latency      uint64    `json:"latency_millis"`
-	UserRates    [4]uint64 `json:"user_rates"`
-	Quote        struct {
-		Tenant           string    `json:"tenant"`
-		ProcurementRates [4]uint64 `json:"procurement_rates"`
-		TokenBounds      [4]uint64 `json:"token_bounds"`
-	} `json:"quote"`
+// A projection owns its input and selected bundle. It carries no authority.
+type catalogProjection struct {
+	version      string
+	record       []byte
+	bundle       config.Bundle
+	registration *pb.RegisterPublishedTaskRequest
 }
 
-func (g *Gateway) materializeProvider(ctx context.Context) (config.Bundle, string, error) {
+func (g *Gateway) materializeProvider(ctx context.Context) (*catalogProjection, string, error) {
 	snapshot, err := g.source.RPC.InspectProviderCatalog(g.source.Context(ctx), &pb.Empty{})
 	if err != nil {
-		return config.Bundle{}, "", err
+		return nil, "", err
 	}
-	bundle := *g.deferred
-	if snapshot.Version != "" {
-		var catalog struct {
-			Entries map[string]catalogEntry `json:"entries"`
-		}
-		if len(snapshot.Record) > 262144 || json.Unmarshal(snapshot.Record, &catalog) != nil {
-			return config.Bundle{}, "", errors.New("invalid provider catalog")
-		}
-		selection, err := catalogSelection(bundle.Routing[0], catalog.Entries)
-		if err != nil {
-			return config.Bundle{}, "", err
-		}
-		bundle.Routing = []routing.Selection{selection}
-	}
-	selected, err := bundle.MaterializeRequest()
+	selected, err := g.composeCatalog(ctx, snapshot)
 	return selected, snapshot.Version, err
 }
 
-func catalogSelection(source routing.Selection, entries map[string]catalogEntry) (routing.Selection, error) {
-	selection := source
-	selection.Candidates = nil
-	tenant := ""
-	for _, candidate := range source.Candidates {
-		digest, err := candidate.Plan.Digest()
-		if err != nil {
-			return routing.Selection{}, err
-		}
-		entry, ok := entries[digest]
-		if !ok {
-			continue
-		}
-		// All concrete candidates for one original must use its tenant tariff.
-		if len(selection.Candidates) != 0 && (entry.UserRates != selection.UserTokenRates || entry.Quote.Tenant != tenant) {
-			return routing.Selection{}, errors.New("mixed catalog tariffs for original operation")
-		}
-		tenant = entry.Quote.Tenant
-		selection.UserTokenRates = entry.UserRates
-		candidate.Module, candidate.Capabilities = entry.Module, entry.Capabilities
-		candidate.LatencyMillis = entry.Latency
-		candidate.ProcurementRates, candidate.TokenBounds = entry.Quote.ProcurementRates, entry.Quote.TokenBounds
-		selection.Candidates = append(selection.Candidates, candidate)
+// Cache only immutable composition for the freshly observed exact catalog version.
+func (g *Gateway) composeCatalog(ctx context.Context, snapshot *pb.ProviderCatalogSnapshot) (*catalogProjection, error) {
+	if current := g.cachedCatalog(snapshot); current != nil {
+		return current, nil
 	}
-	return selection, nil
+	g.catalogBuildMu.Lock()
+	defer g.catalogBuildMu.Unlock()
+	if current := g.cachedCatalog(snapshot); current != nil {
+		return current, nil
+	}
+	selected, err := composeSourceBundle(ctx, g.source, *g.deferred, true, snapshot.Version)
+	if err != nil {
+		return nil, err
+	}
+	projection := &catalogProjection{version: snapshot.Version, record: bytes.Clone(snapshot.Record),
+		bundle: selected, registration: g.catalogRegistration(selected)}
+	g.catalog.Store(projection)
+	return projection, nil
+}
+
+func (g *Gateway) catalogRegistration(selected config.Bundle) *pb.RegisterPublishedTaskRequest {
+	// This request owns the wire projection. Concurrent RPCs marshal it read-only.
+	return &pb.RegisterPublishedTaskRequest{
+		Task: gatewayclient.Task(selected.Tasks[0]), Publication: g.publication,
+	}
+}
+
+func (g *Gateway) cachedCatalog(snapshot *pb.ProviderCatalogSnapshot) *catalogProjection {
+	current := g.catalog.Load()
+	if current != nil && current.version == snapshot.Version && bytes.Equal(current.record, snapshot.Record) {
+		return current
+	}
+	return nil
 }

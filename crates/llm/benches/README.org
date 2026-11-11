@@ -1,0 +1,21 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+#+TITLE: Embedded model client benchmark
+#+LANGUAGE: en
+
+* Workload
+
+Encode one borrowed text turn and its model identifier as an OpenAI
+Chat Completions request. Each iteration creates the outgoing JSON body.
+
+* Measurement boundary
+
+The measurement covers encoding and allocation of the request body.
+It excludes credential handling, HTTP, TLS and provider execution.
+
+* Entrypoints
+
+Use the workspace benchmark driver or
+=cargo bench -p weaver-llm --bench gateway --locked --offline -- --noplot=.

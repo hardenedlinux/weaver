@@ -2,6 +2,9 @@
 --
 -- SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
+import ProviderAdmissionTurn
+import ProviderReadCustody
+import ProviderLifecycleFootprint
 import ProviderSnapshotPublication
 import ProviderSemanticProgress
 import CedarPooSpec.Gateway.ZeroTrust
@@ -111,6 +114,56 @@ theorem published_snapshot_preserves_spec_final_use
 
 #print axioms published_snapshot_preserves_spec_final_use
 
+/-- Preserve the observer's cached predicate, then bind it to the CURRENT SPEC
+    actual state. Other origins may change the whole world; global invariants
+    come from the current reachable run, never equality with an old world. -/
+theorem peer_lifecycle_preserves_spec_final_use [DecidableEq Family]
+    (use : Gateway.ZeroTrust.FinalUse proposal)
+    (events : GatewayHeadCAS.Run c owner GatewayHeadCAS.initial use.actual)
+    (store : Weaver.ProviderLifecycleFootprint.Store Family)
+    (writer observer : Family) (next : Weaver.ProviderLifecycleFootprint.Local)
+    (distinct : observer ≠ writer)
+    (observe : GatewayHeadCAS.State → Weaver.ProviderLifecycleFootprint.View Family)
+    (current : observe use.actual = Weaver.ProviderLifecycleFootprint.view
+      (Weaver.ProviderLifecycleFootprint.transition store writer next) observer)
+    (allow : Weaver.ProviderLifecycleFootprint.View Family → Prop)
+    (qualified : allow (Weaver.ProviderLifecycleFootprint.view store observer)) :
+    allow (observe use.actual) ∧
+    (Gateway.ZeroTrust.specialize proposal (reachableDomain c)).required effect use.actual ∧
+    (∀ account, booked c use.actual.base account ≤ c.capacity account) ∧
+    (∀ key, (use.actual.base.messages key).claims ≤ 1 ∧
+      (use.actual.base.messages key).sends ≤ 1) ∧ original.Refines prepared.profile := by
+  refine ⟨?_, gateway_final_use_preserves_domain_contract use events⟩
+  rw [current, Weaver.ProviderLifecycleFootprint.different_origin_preserves_complete_view store writer observer next distinct]
+  exact qualified
+
+#print axioms peer_lifecycle_preserves_spec_final_use
+
+/-- Scheduler compatibility preserves only the declared observer read projection.
+    The current SPEC FinalUse and reachable run remain separate host obligations,
+    including currentness, owner fencing and the original shared exposure. -/
+theorem read_custody_preserves_spec_final_use
+    (use : Gateway.ZeroTrust.FinalUse proposal)
+    (events : GatewayHeadCAS.Run c owner GatewayHeadCAS.initial use.actual)
+    (reader : Weaver.ProviderReadCustody.Access)
+    (before after : Nat → Nat)
+    (steps : Weaver.ProviderReadCustody.Steps reader before after)
+    (observe : GatewayHeadCAS.State → Nat → Nat)
+    (current : observe use.actual = after)
+    (allow : (Nat → Nat) → Prop)
+    (depends : Weaver.ProviderReadCustody.ReadsOnly allow reader.reads)
+    (qualified : allow before) :
+    allow (observe use.actual) ∧
+    (Gateway.ZeroTrust.specialize proposal (reachableDomain c)).required effect use.actual ∧
+    (∀ account, booked c use.actual.base account ≤ c.capacity account) ∧
+    (∀ key, (use.actual.base.messages key).claims ≤ 1 ∧
+      (use.actual.base.messages key).sends ≤ 1) ∧ original.Refines prepared.profile := by
+  refine ⟨?_, gateway_final_use_preserves_domain_contract use events⟩
+  rw [current]
+  exact Weaver.ProviderReadCustody.finite_interleaving_preserves_policy steps depends qualified
+
+#print axioms read_custody_preserves_spec_final_use
+
 theorem head_cas_preserves_original_obligations
     (step : GatewayHeadCAS.Step c owner before after)
     (claimed : (before.base.messages key).claimed = true)
@@ -214,5 +267,32 @@ theorem staged_policy_excludes_actual_effect {Key : Type} [DecidableEq Key]
     (effectRequiresReady effect)
 
 #print axioms staged_policy_excludes_actual_effect
+
+/-- Waiting for a native writer turn is not a source-accepted semantic change.
+    Compose on the same actual state; this does not license an accepted pending
+    source intent or mutation between qualification and final delivery. -/
+theorem queued_admission_preserves_spec_final_use
+    (use : Gateway.ZeroTrust.FinalUse proposal)
+    (events : GatewayHeadCAS.Run c owner GatewayHeadCAS.initial use.actual)
+    (queued : Weaver.ProviderAdmissionTurn.State GatewayHeadCAS.State)
+    (same : queued.actual = use.actual) (requests : List Nat) :
+    (Gateway.ZeroTrust.specialize proposal (reachableDomain c)).required effect
+      (Weaver.ProviderAdmissionTurn.enqueueAll queued requests).actual ∧
+    (∀ account, booked c (Weaver.ProviderAdmissionTurn.enqueueAll queued requests).actual.base account ≤ c.capacity account) ∧
+    (∀ key, ((Weaver.ProviderAdmissionTurn.enqueueAll queued requests).actual.base.messages key).claims ≤ 1 ∧
+      ((Weaver.ProviderAdmissionTurn.enqueueAll queued requests).actual.base.messages key).sends ≤ 1) ∧
+    original.Refines prepared.profile := by
+  have unchanged : (Weaver.ProviderAdmissionTurn.enqueueAll queued requests).actual = use.actual := by
+    have step (s : Weaver.ProviderAdmissionTurn.State GatewayHeadCAS.State) :
+        (Weaver.ProviderAdmissionTurn.enqueueAll s requests).actual = s.actual := by
+      induction requests generalizing s with
+      | nil => rfl
+      | cons id rest ih =>
+        simpa only [Weaver.ProviderAdmissionTurn.enqueueAll, List.foldl_cons] using
+          (ih (Weaver.ProviderAdmissionTurn.enqueue s id)).trans (Weaver.ProviderAdmissionTurn.queue_preserves_actual s id)
+    exact (step queued).trans same
+  simpa only [unchanged] using gateway_final_use_preserves_domain_contract use events
+
+#print axioms queued_admission_preserves_spec_final_use
 
 end Weaver.DomainMigrationComposition

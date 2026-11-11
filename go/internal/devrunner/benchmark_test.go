@@ -14,7 +14,7 @@ import (
 )
 
 func TestBenchmarkPackagesRequireExactWorkspaceCoverage(t *testing.T) {
-	members := []string{"weaver-contracts", "weaver-governance", "weaver-governance-build", "weaver-policy", "weaver-policy-ffi", "weaver-ledger", "weaver-broker", "weaver-server", "weaver-telemetry"}
+	members := []string{"weaver-contracts", "weaver-governance", "weaver-governance-build", "weaver-policy", "weaver-policy-ffi", "weaver-ledger", "weaver-broker", "weaver-llm", "weaver-server", "weaver-telemetry"}
 	if err := ValidateBenchmarkPackages(members); err != nil {
 		t.Fatal(err)
 	}
@@ -59,8 +59,20 @@ func TestBenchmarkPlanChecksPackageContractBeforeMeasurement(t *testing.T) {
 
 func writeBenchmarkEstimate(t *testing.T, root, name string) {
 	t.Helper()
-	path := filepath.Join(root, "target/criterion", name, "new/estimates.json")
+	writeCriterionEstimate(t, root, name, name)
+}
+
+func writeCriterionEstimate(t *testing.T, root, name, directory string) {
+	t.Helper()
+	path := filepath.Join(root, "target/criterion", directory, "new/estimates.json")
 	if err := os.MkdirAll(filepath.Dir(path), 0700); err != nil {
+		t.Fatal(err)
+	}
+	identity, err := json.Marshal(map[string]string{"full_id": name, "directory_name": directory})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(filepath.Dir(path), "benchmark.json"), identity, 0600); err != nil {
 		t.Fatal(err)
 	}
 	if err := os.WriteFile(path, []byte(`{"mean":{"point_estimate":1,"confidence_interval":{"lower_bound":1,"upper_bound":1}}}`), 0600); err != nil {
@@ -194,5 +206,44 @@ func TestBenchmarkEvidenceRejectsUnmappedCase(t *testing.T) {
 	err := collectBenchmarks(filepath.Join(root, "target"), t.TempDir(), time.Unix(200, 0).UTC().Format(time.RFC3339Nano))
 	if err == nil || !strings.Contains(err.Error(), "unmapped") {
 		t.Fatalf("unmapped case accepted: %v", err)
+	}
+}
+
+func TestBenchmarkEvidenceUsesCriterionIdentity(t *testing.T) {
+	const name = "governance/producer_catalog_roundtrip/1"
+	const escaped = "governance_producer_catalog_roundtrip_1"
+	started := time.Unix(200, 0).UTC().Format(time.RFC3339Nano)
+	for _, fault := range []string{"", "duplicate", "stale", "wrong-directory"} {
+		t.Run(fault, func(t *testing.T) {
+			root, output := t.TempDir(), t.TempDir()
+			writeCriterionEstimate(t, root, name, escaped)
+			path := filepath.Join(root, "target/criterion", escaped, "new/benchmark.json")
+			switch fault {
+			case "duplicate":
+				writeCriterionEstimate(t, root, name, escaped+"_2")
+			case "stale":
+				if err := os.Chtimes(path, time.Unix(100, 0), time.Unix(100, 0)); err != nil {
+					t.Fatal(err)
+				}
+			case "wrong-directory":
+				if err := os.WriteFile(path, []byte(`{"full_id":"governance/producer_catalog_roundtrip/1","directory_name":"other"}`), 0600); err != nil {
+					t.Fatal(err)
+				}
+			}
+			err := collectBenchmarks(filepath.Join(root, "target"), output, started, name)
+			if fault != "" {
+				if err == nil {
+					t.Fatal("invalid Criterion identity accepted")
+				}
+				return
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			summary, err := os.ReadFile(filepath.Join(output, "benchmark-summary.org"))
+			if err != nil || !strings.Contains(string(summary), "| "+name+" | 30 |") {
+				t.Fatalf("missing canonical Criterion evidence: %v, %s", err, summary)
+			}
+		})
 	}
 }

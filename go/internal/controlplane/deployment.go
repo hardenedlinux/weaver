@@ -12,15 +12,12 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"github.com/HardenedLinux/weaver/go/internal/config"
 	"github.com/HardenedLinux/weaver/go/internal/gatewayclient"
 	"google.golang.org/grpc"
 	"io"
 	"log/slog"
 	"net"
 	"os"
-	"path/filepath"
-	"strings"
 	"time"
 )
 
@@ -120,23 +117,9 @@ func RunFromEnv(ctx context.Context) error {
 	}
 	bounded := BoundListener(listener)
 	defer bounded.Close()
-	input, err := selectDeploymentSource(os.LookupEnv)
+	input, err := loadDeploymentSource()
 	if err != nil {
 		return err
-	}
-	if input.producer == "" {
-		data, err := readBoundFile(input.path)
-		if err != nil {
-			return err
-		}
-		format := config.ProfileJSON
-		if ext := strings.ToLower(filepath.Ext(input.path)); ext == ".yaml" || ext == ".yml" {
-			format = config.ProfileYAML
-		}
-		input.bundle, err = config.DecodeBundle(data, format)
-		if err != nil {
-			return err
-		}
 	}
 	trace("configuration-ready")
 	authorityRoots, err := roots("WEAVER_CONTROL_AUTHORITY_CA")
@@ -191,9 +174,18 @@ func RunFromEnv(ctx context.Context) error {
 	}
 	defer source.Connection.Close()
 	trace("source-channel-connected")
-	gateway, err := input.bootstrap(startup, source, operation)
+	gateway, err := input.bootstrap(startup, source, operation, trace)
 	if err != nil {
 		return err
+	}
+	// Static published routing has no runtime source reads. Return its scarce
+	// authenticated connection after known activation, before serving ingress.
+	// A deferred catalogue keeps source custody; bootstrap errors return above.
+	if gateway.source == nil {
+		if err := source.Connection.Close(); err != nil {
+			return err
+		}
+		trace("bootstrap-source-channel-closed")
 	}
 	gateway.oauthRelay = oauthRelay
 	trace("authority-reconciled")
@@ -224,4 +216,42 @@ func RunFromEnv(ctx context.Context) error {
 		<-serving
 		return errors.New("control drain exceeded bound")
 	}
+}
+
+// PrepareFromEnv activates source state and exits. It opens no operation listener,
+// needs no operation credential, and cannot forward any provider frame.
+func PrepareFromEnv(ctx context.Context) error {
+	startup, cancel := context.WithTimeout(ctx, 15*time.Second)
+	defer cancel()
+	input, err := loadDeploymentSource()
+	if err != nil {
+		return err
+	}
+	ca, err := roots("WEAVER_CONTROL_AUTHORITY_CA")
+	if err != nil {
+		return err
+	}
+	key, err := pair("WEAVER_CONTROL_AUTHORITY_SOURCE")
+	if err != nil {
+		return err
+	}
+	address, err := required("WEAVER_CONTROL_AUTHORITY_SOURCE_ADDRESS")
+	if err != nil {
+		return err
+	}
+	token, err := required("WEAVER_CONTROL_AUTHORITY_SOURCE_TOKEN")
+	if err != nil {
+		return err
+	}
+	name, err := required("WEAVER_CONTROL_AUTHORITY_SERVER_NAME")
+	if err != nil {
+		return err
+	}
+	source, err := gatewayclient.Dial(startup, address, token, &tls.Config{RootCAs: ca, Certificates: []tls.Certificate{key}, ServerName: name, MinVersion: tls.VersionTLS13})
+	if err != nil {
+		return err
+	}
+	defer source.Connection.Close()
+	_, err = input.bootstrap(startup, source, nil, nil)
+	return err
 }

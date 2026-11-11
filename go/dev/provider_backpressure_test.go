@@ -41,12 +41,20 @@ var observedBuild struct {
 func observedServer(t testing.TB) string {
 	t.Helper()
 	observedBuild.Do(func() {
-		cmd := exec.Command("cargo", "test", "-p", "weaver-server", "--lib", "--features", "arrow", "--locked", "--offline", "--no-run", "--message-format=json")
+		cmd := exec.Command("cargo", "test", "--release", "-p", "weaver-server", "--lib", "--features", "arrow", "--locked", "--offline", "--no-run", "--message-format=json")
 		cmd.Dir = root(t)
 		var stderr bytes.Buffer
 		cmd.Stderr = &stderr
 		var err error
-		observedBuild.binary, err = buildCargoExecutable(cmd, cargoTarget{Name: "weaver_server", Kind: "lib", Test: true})
+		built, err := buildCargoExecutable(cmd, cargoTarget{Name: "weaver_server", Kind: "lib", Test: true, Optimized: true})
+		if err == nil {
+			observedBuild.binary = filepath.Join(filepath.Dir(serverBinary), "weaver-observed")
+			var digest string
+			digest, err = publishProviderImage(built, observedBuild.binary)
+			if err == nil {
+				t.Logf("observed provider image sha256=%s", digest)
+			}
+		}
 		if err != nil {
 			observedBuild.err = fmt.Errorf("observed test build: %w: %s", err, stderr.String())
 		}
@@ -209,11 +217,16 @@ func drainStream(stream grpc.ServerStreamingClient[pb.ProviderFrame], encoding p
 }
 func originalStillSpent(t *testing.T, f *fixture, before *pb.ProviderReceipt) {
 	t.Helper()
+	originalStillSpentWithCalls(t, f, before, 1)
+}
+
+func originalStillSpentWithCalls(t *testing.T, f *fixture, before *pb.ProviderReceipt, calls int64) {
+	t.Helper()
 	if _, _, err := execute(t, f, pb.Encoding_ARROW_IPC, 2); err == nil {
 		t.Fatal("reconnected RPC reopened original claim")
 	}
 	after := inspect(t, f)
-	if after.Digest != before.Digest || after.Events != before.Events || after.Held != 4 || f.primary.Load() != 1 || f.backup.Load() != 0 {
+	if after.Digest != before.Digest || after.Events != before.Events || after.Held != 4 || after.State != before.State || after.Reserved != before.Reserved || after.Target != before.Target || f.primary.Load() != calls || f.backup.Load() != 0 {
 		t.Fatalf("original outcome changed: before=%v after=%v calls=%d", before, after, f.primary.Load())
 	}
 }

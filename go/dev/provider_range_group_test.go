@@ -18,6 +18,8 @@ import (
 	pb "github.com/HardenedLinux/weaver/go/api/gateway/v1"
 )
 
+const providerUsageAndDone = "data: {\"id\":\"stream-1\",\"object\":\"chat.completion.chunk\",\"model\":\"model-a\",\"choices\":[],\"usage\":{\"total_tokens\":7}}\n\ndata: [DONE]\n\n"
+
 func burstProviderSSE(events int) http.HandlerFunc {
 	return func(w http.ResponseWriter, _ *http.Request) {
 		var burst strings.Builder
@@ -25,7 +27,7 @@ func burstProviderSSE(events int) http.HandlerFunc {
 			writeProviderChunk(&burst, "delta", false)
 		}
 		writeProviderChunk(&burst, "", true)
-		fmt.Fprint(&burst, "data: {\"id\":\"stream-1\",\"object\":\"chat.completion.chunk\",\"model\":\"model-a\",\"choices\":[],\"usage\":{\"total_tokens\":7}}\n\ndata: [DONE]\n\n")
+		burst.WriteString(providerUsageAndDone)
 		w.Header().Set("Content-Type", "text/event-stream")
 		fmt.Fprint(w, burst.String())
 	}

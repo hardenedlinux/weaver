@@ -43,7 +43,11 @@ const (
 	Gateway_RegisterPublicationReview_FullMethodName = "/weaver.gateway.v1.Gateway/RegisterPublicationReview"
 	Gateway_InspectSourceAuthority_FullMethodName    = "/weaver.gateway.v1.Gateway/InspectSourceAuthority"
 	Gateway_RotateSourceAuthority_FullMethodName     = "/weaver.gateway.v1.Gateway/RotateSourceAuthority"
+	Gateway_InspectHardFact_FullMethodName           = "/weaver.gateway.v1.Gateway/InspectHardFact"
+	Gateway_StageHardFact_FullMethodName             = "/weaver.gateway.v1.Gateway/StageHardFact"
+	Gateway_ResolveHardFact_FullMethodName           = "/weaver.gateway.v1.Gateway/ResolveHardFact"
 	Gateway_CompileSource_FullMethodName             = "/weaver.gateway.v1.Gateway/CompileSource"
+	Gateway_ComposeSource_FullMethodName             = "/weaver.gateway.v1.Gateway/ComposeSource"
 	Gateway_InspectProviderCatalog_FullMethodName    = "/weaver.gateway.v1.Gateway/InspectProviderCatalog"
 	Gateway_PublishProviderCatalog_FullMethodName    = "/weaver.gateway.v1.Gateway/PublishProviderCatalog"
 	Gateway_InspectTelemetry_FullMethodName          = "/weaver.gateway.v1.Gateway/InspectTelemetry"
@@ -77,9 +81,15 @@ type GatewayClient interface {
 	RegisterPublicationReview(ctx context.Context, in *DeltaReview, opts ...grpc.CallOption) (*ReviewRegistrationReceipt, error)
 	InspectSourceAuthority(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*SourceAuthorityView, error)
 	RotateSourceAuthority(ctx context.Context, in *SourceRotationRequest, opts ...grpc.CallOption) (*SourceRotationReceipt, error)
+	// Dedicated deployment-admitted feed. Resolve accepts only the exact durable barrier.
+	InspectHardFact(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*HardFactFeedState, error)
+	StageHardFact(ctx context.Context, in *HardFactIntent, opts ...grpc.CallOption) (*HardFactBarrier, error)
+	ResolveHardFact(ctx context.Context, in *HardFactBarrier, opts ...grpc.CallOption) (*FactBarrierResolution, error)
 	// Preparation only. Actual ingress/source state selects an installed original;
 	// request labels cannot supply authority, replacement source or module paths.
 	CompileSource(ctx context.Context, in *ProducerRequest, opts ...grpc.CallOption) (*CompiledSource, error)
+	// Authenticated source-only advisory composition; never publishes or installs an original.
+	ComposeSource(ctx context.Context, in *SourceCompositionRequest, opts ...grpc.CallOption) (*SourceCompositionReply, error)
 	InspectProviderCatalog(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ProviderCatalogSnapshot, error)
 	PublishProviderCatalog(ctx context.Context, in *ProviderCatalogChange, opts ...grpc.CallOption) (*ProviderCatalogSnapshot, error)
 	// Statistical process-local counters only; never durable execution evidence.
@@ -319,10 +329,50 @@ func (c *gatewayClient) RotateSourceAuthority(ctx context.Context, in *SourceRot
 	return out, nil
 }
 
+func (c *gatewayClient) InspectHardFact(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*HardFactFeedState, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(HardFactFeedState)
+	err := c.cc.Invoke(ctx, Gateway_InspectHardFact_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *gatewayClient) StageHardFact(ctx context.Context, in *HardFactIntent, opts ...grpc.CallOption) (*HardFactBarrier, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(HardFactBarrier)
+	err := c.cc.Invoke(ctx, Gateway_StageHardFact_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *gatewayClient) ResolveHardFact(ctx context.Context, in *HardFactBarrier, opts ...grpc.CallOption) (*FactBarrierResolution, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(FactBarrierResolution)
+	err := c.cc.Invoke(ctx, Gateway_ResolveHardFact_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *gatewayClient) CompileSource(ctx context.Context, in *ProducerRequest, opts ...grpc.CallOption) (*CompiledSource, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CompiledSource)
 	err := c.cc.Invoke(ctx, Gateway_CompileSource_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *gatewayClient) ComposeSource(ctx context.Context, in *SourceCompositionRequest, opts ...grpc.CallOption) (*SourceCompositionReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SourceCompositionReply)
+	err := c.cc.Invoke(ctx, Gateway_ComposeSource_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -396,9 +446,15 @@ type GatewayServer interface {
 	RegisterPublicationReview(context.Context, *DeltaReview) (*ReviewRegistrationReceipt, error)
 	InspectSourceAuthority(context.Context, *Empty) (*SourceAuthorityView, error)
 	RotateSourceAuthority(context.Context, *SourceRotationRequest) (*SourceRotationReceipt, error)
+	// Dedicated deployment-admitted feed. Resolve accepts only the exact durable barrier.
+	InspectHardFact(context.Context, *Empty) (*HardFactFeedState, error)
+	StageHardFact(context.Context, *HardFactIntent) (*HardFactBarrier, error)
+	ResolveHardFact(context.Context, *HardFactBarrier) (*FactBarrierResolution, error)
 	// Preparation only. Actual ingress/source state selects an installed original;
 	// request labels cannot supply authority, replacement source or module paths.
 	CompileSource(context.Context, *ProducerRequest) (*CompiledSource, error)
+	// Authenticated source-only advisory composition; never publishes or installs an original.
+	ComposeSource(context.Context, *SourceCompositionRequest) (*SourceCompositionReply, error)
 	InspectProviderCatalog(context.Context, *Empty) (*ProviderCatalogSnapshot, error)
 	PublishProviderCatalog(context.Context, *ProviderCatalogChange) (*ProviderCatalogSnapshot, error)
 	// Statistical process-local counters only; never durable execution evidence.
@@ -472,8 +528,20 @@ func (UnimplementedGatewayServer) InspectSourceAuthority(context.Context, *Empty
 func (UnimplementedGatewayServer) RotateSourceAuthority(context.Context, *SourceRotationRequest) (*SourceRotationReceipt, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RotateSourceAuthority not implemented")
 }
+func (UnimplementedGatewayServer) InspectHardFact(context.Context, *Empty) (*HardFactFeedState, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method InspectHardFact not implemented")
+}
+func (UnimplementedGatewayServer) StageHardFact(context.Context, *HardFactIntent) (*HardFactBarrier, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StageHardFact not implemented")
+}
+func (UnimplementedGatewayServer) ResolveHardFact(context.Context, *HardFactBarrier) (*FactBarrierResolution, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ResolveHardFact not implemented")
+}
 func (UnimplementedGatewayServer) CompileSource(context.Context, *ProducerRequest) (*CompiledSource, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CompileSource not implemented")
+}
+func (UnimplementedGatewayServer) ComposeSource(context.Context, *SourceCompositionRequest) (*SourceCompositionReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ComposeSource not implemented")
 }
 func (UnimplementedGatewayServer) InspectProviderCatalog(context.Context, *Empty) (*ProviderCatalogSnapshot, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method InspectProviderCatalog not implemented")
@@ -863,6 +931,60 @@ func _Gateway_RotateSourceAuthority_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Gateway_InspectHardFact_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GatewayServer).InspectHardFact(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Gateway_InspectHardFact_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GatewayServer).InspectHardFact(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Gateway_StageHardFact_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(HardFactIntent)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GatewayServer).StageHardFact(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Gateway_StageHardFact_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GatewayServer).StageHardFact(ctx, req.(*HardFactIntent))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Gateway_ResolveHardFact_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(HardFactBarrier)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GatewayServer).ResolveHardFact(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Gateway_ResolveHardFact_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GatewayServer).ResolveHardFact(ctx, req.(*HardFactBarrier))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Gateway_CompileSource_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ProducerRequest)
 	if err := dec(in); err != nil {
@@ -877,6 +999,24 @@ func _Gateway_CompileSource_Handler(srv interface{}, ctx context.Context, dec fu
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(GatewayServer).CompileSource(ctx, req.(*ProducerRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Gateway_ComposeSource_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SourceCompositionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GatewayServer).ComposeSource(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Gateway_ComposeSource_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GatewayServer).ComposeSource(ctx, req.(*SourceCompositionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1037,8 +1177,24 @@ var Gateway_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Gateway_RotateSourceAuthority_Handler,
 		},
 		{
+			MethodName: "InspectHardFact",
+			Handler:    _Gateway_InspectHardFact_Handler,
+		},
+		{
+			MethodName: "StageHardFact",
+			Handler:    _Gateway_StageHardFact_Handler,
+		},
+		{
+			MethodName: "ResolveHardFact",
+			Handler:    _Gateway_ResolveHardFact_Handler,
+		},
+		{
 			MethodName: "CompileSource",
 			Handler:    _Gateway_CompileSource_Handler,
+		},
+		{
+			MethodName: "ComposeSource",
+			Handler:    _Gateway_ComposeSource_Handler,
 		},
 		{
 			MethodName: "InspectProviderCatalog",

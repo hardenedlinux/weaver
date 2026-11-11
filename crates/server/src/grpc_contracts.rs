@@ -42,7 +42,26 @@ pub(crate) fn publication_receipt(
 pub(crate) fn status(_: Error) -> Status {
     Status::failed_precondition("native authority or state rejected")
 }
+/// Only static contract reasons may cross this boundary; storage, policy and
+/// codec errors can contain source or request data.
+pub(crate) fn rejection_reason(error: &Error) -> &'static str {
+    match error {
+        Error::Invalid(reason) | Error::Conflict(reason) => reason,
+        Error::Denied => "authorization denied",
+        _ => "native validation failed",
+    }
+}
+
+#[cfg(test)]
+#[path = "../tests/unit/grpc_rejection.rs"]
+mod rejection_tests;
 pub(crate) fn plan(p: pb::ProviderPlan) -> std::result::Result<ProviderPlan, Status> {
+    let plan = plan_data(p)?;
+    plan.validate().map_err(status)?;
+    Ok(plan)
+}
+/// Decode inert candidate fields; eligibility and final request guards remain separate.
+pub(crate) fn plan_data(p: pb::ProviderPlan) -> std::result::Result<ProviderPlan, Status> {
     let body = String::from_utf8(p.body)
         .map_err(|_| Status::invalid_argument("UTF-8 provider body required"))?;
     let plan = ProviderPlan {
@@ -64,7 +83,6 @@ pub(crate) fn plan(p: pb::ProviderPlan) -> std::result::Result<ProviderPlan, Sta
         revision: p.revision,
         fence: p.fence,
     };
-    plan.validate().map_err(status)?;
     Ok(plan)
 }
 pub(crate) fn task_contract(t: pb::Task) -> Task {

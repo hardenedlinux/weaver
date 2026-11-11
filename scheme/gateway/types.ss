@@ -2,15 +2,15 @@
 ;;;
 ;;; SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
-;;; Gateway configuration operations; actual routing compilation remains in Go.
+;;; Gateway semantic operations; Rust retains final validation and authority.
 (import (only-in :clan/poo/object .cc)
         (only-in :clan/poo/mop Function Bool)
         (only-in :clan/poo/type Record List Pair Or Symbol String Enum)
-        (only-in :yuanxu/object-types/contracts YuanxuContract.)
         (only-in :hardenedlinux/weaver/scheme/governance/types GovernanceScopeContract
                  GovernanceContext AgenticAILabGovernanceProfile)
         (only-in :agentic-ai-lab/modules/loop-engine/control/governor +loop-governor-type-contract+)
         (only-in :hardenedlinux/weaver/scheme/policy/types PolicyScopeContract)
+        (only-in "./derivation-types.ss" GatewayPreparation GatewayDerivation GatewayDerivationResult)
         "./contracts.ss")
 (export GatewayScopeContract GovernanceScopeContract PolicyScopeContract GatewaySourceProducer GatewayProgram)
 ;;; Gateway's typed projection of the upstream governor's state input. Selection
@@ -24,11 +24,17 @@
                close: (list (Function (list Bool) '())))
        identity: 'weaver/gateway/program sealed: #t))
 (def GatewayScopeContract
-  (.cc YuanxuContract. value-contract: (Record
+  (.cc (Record
          compile: (list (Function (list GatewayArtifact)
                                  (list +loop-governor-type-contract+ AgenticAILabGovernanceProfile
                                        GovernanceContext (List GovernorState)
                                        (List TaskContract) (List ProviderPlanContract) PublicationContract)))
+         prepare: (list (Function (list GatewayPreparation)
+                                 (list +loop-governor-type-contract+ AgenticAILabGovernanceProfile
+                                       GovernanceContext (List GovernorState)
+                                       (List TaskContract) (List ProviderPlanContract) PublicationContract)))
+         derive: (list (Function (list GatewayDerivationResult) (list GatewayArtifact)))
+         open-derivation: (list (Function (list GatewayDerivation) '()))
          emit: (list (Function (list Bool) (list GatewayArtifact)))
          capture: (list (Function (list GatewayArtifact) (list (Function (list Bool) '())))))
        identity: 'weaver/gateway/scope))

@@ -127,8 +127,14 @@ func TestProviderFailuresNeverRetryOrFallback(t *testing.T) {
 	for name, handler := range cases {
 		t.Run(name, func(t *testing.T) {
 			f := newFixture(t, handler, false)
-			if _, _, err := execute(t, f, pb.Encoding_PROTOBUF, 1); err == nil {
+			_, _, failure := execute(t, f, pb.Encoding_PROTOBUF, 1)
+			if failure == nil {
 				t.Fatal("indeterminate provider call succeeded")
+			}
+			// The partial upstream response must terminate with Rust's gRPC
+			// failure status, rather than clean EOF or a client decode error.
+			if name == "partial-sse" && status.Code(failure) != codes.FailedPrecondition {
+				t.Fatalf("terminal gRPC status lost: %v", failure)
 			}
 			if f.primary.Load() != 1 || f.backup.Load() != 0 || f.denied.Load() != 0 {
 				t.Fatal("failure caused a retry or fallback")

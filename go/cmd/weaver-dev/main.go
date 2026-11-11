@@ -26,10 +26,14 @@ func main() {
 func run() error {
 	goBinary := flag.String("go-bin", "", "Go executable; defaults to the compiling toolchain")
 	clean := flag.Bool("clean-source", false, "Require every verification input to match the same committed revision")
+	timeout := flag.Duration("timeout", 0, "Verification deadline including all native stages (zero disables it)")
 	view := flag.String("view", "", "Render one exact SysML-mapped D2 source; default renders the complete inventory")
 	flag.Parse()
+	if *timeout < 0 {
+		return errors.New("-timeout must be nonnegative")
+	}
 	if flag.NArg() != 1 {
-		return errors.New("usage: weaver-dev [-go-bin PATH] [-clean-source] qualify-policy|bootstrap|bootstrap-build|bootstrap-proofs|check|check-rust|check-go|check-policy|check-architecture|check-scheme|check-storage|check-telemetry|bench|bench-runtime|bench-execution|render-diagrams|check-diagrams|generate-rpc|prepare-ci-host")
+		return errors.New("usage: weaver-dev [-go-bin PATH] [-clean-source] qualify-policy|bootstrap|bootstrap-build|bootstrap-proofs|bootstrap-scheme|check|check-rust|check-go|check-policy|check-architecture|check-scheme|check-storage|check-telemetry|bench|bench-runtime|bench-execution|render-diagrams|check-diagrams|generate-rpc|prepare-ci-host")
 	}
 	if flag.Arg(0) == "prepare-ci-host" {
 		return devrunner.PrepareHostedCI(os.Stdout)
@@ -49,6 +53,11 @@ func run() error {
 	}
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
+	if *timeout > 0 {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, *timeout)
+		defer cancel()
+	}
 	if flag.Arg(0) == "qualify-policy" {
 		qualified, err := devrunner.QualifySpec(ctx, working)
 		if err != nil {

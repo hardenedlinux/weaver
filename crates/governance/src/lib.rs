@@ -6,12 +6,17 @@
 #![deny(unsafe_code)]
 extern crate self as weaver_governance;
 mod binding;
+mod composition;
+pub use composition::{RoutingCandidate, RoutingSelection, SourceComposition};
 mod catalog;
 mod host;
 mod source;
 pub use binding::{BoundSource, SourceExpectation};
 pub use catalog::{ApprovedProducer, CatalogError, ProducerCatalog, ProducerClient};
-pub use host::{SourceClient, SourceInbox, SourceJob, SourceJobError, source_lane};
+pub use host::{
+    Derivation, DerivationOutput, GovernorCut, GovernorTopology, SourceClient, SourceInbox,
+    SourceJob, SourceJobError, source_lane,
+};
 pub use source::{MAX_SOURCE_BYTES, OwnedSource, SourceData, SourceError, SourceSelection};
 
 #[cfg(feature = "scheme-vm")]

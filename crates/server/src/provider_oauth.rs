@@ -47,6 +47,7 @@ pub(crate) fn change(
 
 pub(crate) fn observe<T>(
     enabled: bool,
+    relay: bool,
     request: &Request<T>,
 ) -> Result<Option<ProviderOAuthUse>, Status> {
     let metadata = request.metadata();
@@ -59,6 +60,11 @@ pub(crate) fn observe<T>(
             ));
         }
         return Ok(None);
+    }
+    if !relay && metadata.contains_key("weaver-provider-oauth-ingress-cert") {
+        return Err(Status::unauthenticated(
+            "direct ingress cannot supply relay evidence",
+        ));
     }
     if metadata.get_all("weaver-provider-oauth").iter().count() != 1 {
         return Err(Status::unauthenticated(
@@ -119,3 +125,7 @@ pub(crate) fn observe<T>(
         ingress_certificate_sha256,
     }))
 }
+
+#[cfg(test)]
+#[path = "../tests/unit/provider_oauth_ingress.rs"]
+mod direct_ingress_tests;

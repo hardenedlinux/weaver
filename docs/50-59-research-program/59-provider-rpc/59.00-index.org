@@ -5,9 +5,9 @@
 #+TITLE: 59.00 Default gRPC Provider Gateway
 #+LANGUAGE: en
 
-[[file:59.87-spec-upgrade-and-delivery-plan.org][Current SPEC upgrade and ordered delivery gates]] aligns Rust and Lean on
-the retained owner review and prioritizes standard Scheme-to-provider acceptance
-before optimization or broader protocol coverage.
+[[file:59.87-spec-upgrade-and-delivery-plan.org][Local Rust, Go and Scheme delivery plan]] starts with Rust and Go
+regression, then verifies the native provider path with prepared and
+source-linked Scheme packages. It retains the release gates for later qualification.
 
 [[file:59.86-release-zero-trust-integration.org][Release closure and Gateway Zero Trust integration]] follows the released POO
 owners through standard Scheme qualification, the maintained SPEC dependency,
@@ -142,7 +142,7 @@ It does not introduce another permission or transport owner.
 |-----------+------------------------------|
 | Go routing | =go/internal/routing=: source-bound request and ordered route proposal |
 | Scheme semantics | =scheme/=: reusable functions and Agentic AI Lab Governance/Governor POO values; current delivery freezes a task/plan artifact through inert Rust Policy C FFI |
-| Go control service | =go/cmd/weaver-control=: acknowledged source activation, frozen routing and authenticated streaming proxy |
+| Source preparation | =weaver-server prepare=: authenticated source activation. =go/dev/controlref= preserves the old proxy for reference controls. |
 | Go RPC client | =go/internal/gatewayclient=: explicit mTLS, no application retry, sequence and receipt checks |
 | Shared wire contract | =proto/gateway/v1/gateway.proto=: typed proposals, roles, observations and encoding choice |
 | Rust contracts | =crates/contracts=: immutable provider commitments and closed native event/outcome types |

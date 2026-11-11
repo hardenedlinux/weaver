@@ -9,5 +9,7 @@ mod request;
 mod state;
 pub use client::{SourceClient, source_lane};
 pub use owner::SourceInbox;
+pub(crate) use owner::governor_timing;
 pub use request::{SourceJob, SourceJobError};
 use state::{Command, Phase, Reply, Shared, State, Work};
+pub use state::{Derivation, DerivationOutput, GovernorCut, GovernorTopology};

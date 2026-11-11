@@ -103,6 +103,63 @@ fn ready_results_keep_capacity_until_observed_and_close_fences_delivery() {
     ));
     owner.finish().expect("drained");
 }
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+async fn governor_observation_waits_for_capacity_or_shutdown() {
+    for close_owner in [false, true] {
+        let owner = Owner::start(1, |inbox| {
+            inbox.run_with_governor(
+                (),
+                |_, source| copied(source),
+                |_, cut| Ok(cut.pending.clone()),
+            );
+        });
+        let job = owner
+            .client
+            .submit(original())
+            .expect("occupy the only slot");
+        let observation = owner.client.derive(crate::GovernorCut {
+            topology: Arc::new(crate::GovernorTopology {
+                nodes: vec!["next".into()],
+                edges: vec![],
+                choice_arms: vec![],
+                choice_join: vec![],
+                nested_selectors: vec![],
+            }),
+            complete: vec![],
+            available: vec!["next".into()],
+            pending: vec!["next".into()],
+            choice_result: vec![],
+            choice_decided: vec![],
+            nested_results: vec![],
+            nested_decisions: vec![],
+        });
+        tokio::pin!(observation);
+        assert!(matches!(
+            observation
+                .as_mut()
+                .poll(&mut Context::from_waker(Waker::noop())),
+            Poll::Pending
+        ));
+        if close_owner {
+            owner.client.close();
+        } else {
+            job.await.expect("release the source slot");
+        }
+        let result = tokio::time::timeout(Duration::from_secs(3), observation)
+            .await
+            .expect("waiting Governor resumes");
+        if close_owner {
+            assert_eq!(result, Err(SourceJobError::Closed));
+        } else {
+            assert_eq!(
+                result.expect("derived"),
+                crate::DerivationOutput::Nodes(vec!["next".into()])
+            );
+        }
+    }
+}
+
 #[test]
 fn cancelled_running_work_keeps_its_slot_until_natural_return() {
     let (entered, started) = mpsc::channel();
@@ -130,6 +187,44 @@ fn cancelled_running_work_keeps_its_slot_until_natural_return() {
     ));
     drop(release);
     owner.finish().expect("natural finish");
+}
+#[test]
+fn active_compiler_observes_both_request_and_owner_cancellation() {
+    for close_owner in [false, true] {
+        let (entered, started) = mpsc::channel();
+        let (release, wait) = mpsc::channel();
+        let owner = Owner::start(1, move |inbox| {
+            inbox.run_with_cancellable_governor(
+                (),
+                |_, source, cancel| {
+                    entered.send(cancel.clone()).expect("active compiler token");
+                    wait.recv().expect("release compiler");
+                    copied(source)
+                },
+                |_, _| Err(SourceError::Contract),
+            )
+        });
+        let release = Release(Some(release));
+        let mut job = owner.client.submit(original()).expect("admitted");
+        let cancel = started
+            .recv_timeout(Duration::from_secs(5))
+            .expect("running");
+        assert!(!cancel.is_cancelled());
+        if close_owner {
+            owner.client.close();
+        } else {
+            job.cancel();
+        }
+        assert!(cancel.is_cancelled());
+        let expected = if close_owner {
+            SourceJobError::Closed
+        } else {
+            SourceJobError::Cancelled
+        };
+        assert!(matches!(runtime().block_on(job), Err(error) if error == expected));
+        drop(release);
+        owner.finish().expect("natural finish");
+    }
 }
 #[test]
 fn cancelled_queued_work_does_not_enter_the_compiler() {

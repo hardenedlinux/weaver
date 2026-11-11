@@ -16,7 +16,6 @@ import (
 	"path/filepath"
 	"runtime"
 	"sort"
-	"strconv"
 	"time"
 )
 
@@ -28,6 +27,12 @@ type Stage struct {
 	Name, Binary string
 	Args         []string
 }
+
+func (stage Stage) providerBuild() bool {
+	return stage.Name == "go-provider-server-build" || stage.Name == "go-provider-observer-build" ||
+		stage.Name == "scheme-provider-server-build"
+}
+
 type Result struct {
 	HeaderSeal         *HeaderSealEvidence `json:"headerSeal,omitempty"`
 	Contention         *ContentionEvidence `json:"contention,omitempty"`
@@ -132,13 +137,20 @@ func Run(ctx context.Context, config Config, output io.Writer) (report string, r
 	if config.RequireClean {
 		admission, revision := committedSource(ctx, root, directory, "committed-source-before", "", inputs)
 		receipt.Revision = revision
+		if interruption := ctx.Err(); interruption != nil {
+			admission.Status = interruptionStatus(interruption)
+			admission.Error = interruption.Error()
+		}
 		receipt.Stages = append(receipt.Stages, admission)
 		if admission.Status != "PASS" {
-			receipt.Status = "FAIL"
+			receipt.Status = admission.Status
 			if err := writeReceipt(directory, receipt); err != nil {
 				return directory, err
 			}
-			fmt.Fprintf(output, "FAIL %s\n", admission.Name)
+			fmt.Fprintf(output, "%s %s\n", admission.Status, admission.Name)
+			if ctx.Err() != nil {
+				return directory, ctx.Err()
+			}
 			return directory, errors.New("source does not match a committed revision")
 		}
 		fmt.Fprintf(output, "PASS %s\n", admission.Name)
@@ -147,6 +159,16 @@ func Run(ctx context.Context, config Config, output io.Writer) (report string, r
 		return directory, err
 	}
 	failed := false
+	if mode == "bootstrap-scheme" {
+		settings["GERBIL_BUILD_CORES"] = "4"
+		settings["CORCXXFLAGS_GAMBUILD"] = "-pipe -foptimize-sibling-calls -Wp,-U___SINGLE_HOST,-D___MULTIPLE_HOSTS -ftrack-macro-expansion=0"
+		settings["GAMBUILD_VERBOSE"] = "1"
+		settings["GAMBOPT"] = "debug=q5"
+		if inherited := os.Getenv("GAMBOPT"); inherited != "" {
+			settings["GAMBOPT"] = inherited + "," + settings["GAMBOPT"]
+		}
+		environment = Environment(settings)
+	}
 	if mode == "check-scheme" || mode == "bench-runtime" {
 		// These are Weaver's FFI link inputs and host resource policy, not
 		// a Scheme package installer or SDK discovery layer.
@@ -156,26 +178,39 @@ func Run(ctx context.Context, config Config, output io.Writer) (report string, r
 		if inherited := os.Getenv("PKG_CONFIG_PATH"); inherited != "" {
 			settings["PKG_CONFIG_PATH"] += string(os.PathListSeparator) + inherited
 		}
-		settings["GERBIL_BUILD_CORES"] = strconv.Itoa(runtime.NumCPU())
+		settings["GERBIL_BUILD_CORES"] = "4"
 		environment = Environment(settings)
 	}
+	var providerBuildFailure string
 	for _, stage := range stages {
 		if ctx.Err() != nil {
-			receipt.Status = "CANCELLED"
 			failed = true
 			break
 		}
-		result := runStage(ctx, root, directory, environment, stage)
+		var result Result
+		if (stage.Name == "go-provider-grpc-integration" || stage.Name == "policy-provider-spec-integration" ||
+			stage.Name == "scheme-rooted-sdk-integration" || stage.Name == "scheme-grpc-stream-integration") &&
+			providerBuildFailure != "" {
+			result = Result{Name: stage.Name, Status: "SKIP", Binary: stage.Binary, Args: stage.Args,
+				Error: "required native build did not pass: " + providerBuildFailure}
+		} else if mode == "bootstrap-scheme" {
+			result = runStageObserved(ctx, root, directory, environment, stage, false, nil, output)
+		} else {
+			result = runStage(ctx, root, directory, environment, stage)
+		}
 		receipt.Stages = append(receipt.Stages, result)
 		if result.Status != "PASS" {
 			failed = true
+			if stage.providerBuild() {
+				providerBuildFailure = stage.Name
+			}
 		}
 		if err := writeReceipt(directory, receipt); err != nil {
 			return directory, err
 		}
 		fmt.Fprintf(output, "%s %s\n", result.Status, result.Name)
 	}
-	if mode != "generate-rpc" {
+	if mode != "generate-rpc" && ctx.Err() == nil {
 		current := sourceCurrentness(root, directory, inputs)
 		receipt.Stages = append(receipt.Stages, current)
 		if current.Status != "PASS" {
@@ -186,10 +221,11 @@ func Run(ctx context.Context, config Config, output io.Writer) (report string, r
 	if mode == "bench" && !failed {
 		if err := collectCargoBenchmarks(ctx, root, directory, receipt.Started, environment); err != nil {
 			failed = true
+			receipt.Stages = append(receipt.Stages, Result{Name: "benchmark-evidence", Status: "FAIL", Error: err.Error()})
 			fmt.Fprintf(output, "FAIL benchmark artifacts: %v\n", err)
 		}
 	}
-	if config.RequireClean {
+	if config.RequireClean && ctx.Err() == nil {
 		admission, _ := committedSource(ctx, root, directory, "committed-source-after", receipt.Revision, inputs)
 		receipt.Stages = append(receipt.Stages, admission)
 		if admission.Status != "PASS" {
@@ -198,10 +234,10 @@ func Run(ctx context.Context, config Config, output io.Writer) (report string, r
 		fmt.Fprintf(output, "%s %s\n", admission.Status, admission.Name)
 	}
 	if ctx.Err() != nil {
-		receipt.Status = "CANCELLED"
+		receipt.Status = interruptionStatus(ctx.Err())
 		failed = true
 	}
-	if receipt.Status != "CANCELLED" {
+	if receipt.Status == "RUNNING" {
 		if refs, err := proofReferences(root, receipt.Stages); err != nil {
 			receipt.Stages = append(receipt.Stages, Result{Name: "proof-references", Status: "FAIL", Error: err.Error()})
 			failed = true
@@ -218,10 +254,18 @@ func Run(ctx context.Context, config Config, output io.Writer) (report string, r
 	}
 	fmt.Fprintf(output, "Result: %s\n", latestResultPath(root, mode))
 	if failed {
-		return directory, errors.New("verification did not pass; see the latest structured result")
+		return directory, errors.Join(errors.New("verification did not pass; see the latest structured result"), ctx.Err())
 	}
 	return directory, nil
 }
+
+func interruptionStatus(err error) string {
+	if errors.Is(err, context.DeadlineExceeded) {
+		return "TIMEOUT"
+	}
+	return "CANCELLED"
+}
+
 func runStage(ctx context.Context, root, directory string, environment []string, stage Stage) Result {
 	return runStageCapture(ctx, root, directory, environment, stage, true)
 }
@@ -229,23 +273,44 @@ func runStage(ctx context.Context, root, directory string, environment []string,
 // The direct-file arm is retained solely for paired tests of the historical
 // output boundary. Both arms use the same public command and admission rules.
 func runStageCapture(ctx context.Context, root, directory string, environment []string, stage Stage, streamSchemeOutput bool) Result {
-	return runStageObserved(ctx, root, directory, environment, stage, streamSchemeOutput, nil)
+	return runStageObserved(ctx, root, directory, environment, stage, streamSchemeOutput, nil, nil)
 }
 
-// Package functionality has a whole-suite budget; native Runtime is measured separately.
-const schemePackageTestTimeout = time.Minute
+// Package tests and the cold/hot build integration have separate budgets.
+const (
+	schemeModuleBuildTimeout     = 2 * time.Minute
+	schemePackageTestTimeout     = time.Minute
+	schemeModuleSelectionTimeout = 2 * time.Minute
+	schemeProviderBuildTimeout   = 8 * time.Minute
+)
 
-func runStageObserved(ctx context.Context, root, directory string, environment []string, stage Stage, streamSchemeOutput bool, onStart func(int)) Result {
+func runStageObserved(ctx context.Context, root, directory string, environment []string, stage Stage, streamSchemeOutput bool, onStart func(int), live io.Writer) Result {
 	tests := ""
+	testTimeout := schemePackageTestTimeout
+	// Cargo preparation shares the caller's suite deadline. Runtime test
+	// commands retain their own acceptance timeout after preparation.
+	deadline := time.Duration(0)
 	switch stage.Name {
+	case "scheme-module-build":
+		deadline = schemeModuleBuildTimeout
+	case "scheme-provider-server-build":
+		deadline = schemeProviderBuildTimeout
+	case "scheme-rooted-sdk-integration":
+		deadline = 5 * time.Minute
 	case "scheme-unit-tests":
 		tests = "t"
 	case "scheme-source-integration-tests":
 		tests = "t/integration"
+	case "scheme-module-selection-integration":
+		tests = "t/qualification/module-selection"
+		testTimeout = schemeModuleSelectionTimeout
 	}
 	if tests != "" {
+		deadline = testTimeout
+	}
+	if deadline != 0 {
 		var cancel context.CancelFunc
-		ctx, cancel = context.WithTimeout(ctx, schemePackageTestTimeout)
+		ctx, cancel = context.WithTimeout(ctx, deadline)
 		defer cancel()
 	}
 
@@ -257,6 +322,7 @@ func runStageObserved(ctx context.Context, root, directory string, environment [
 		return result
 	}
 	cmd := exec.CommandContext(ctx, stage.Binary, stage.Args...)
+	boundStageProcess(cmd)
 	result.ResolvedBinary = cmd.Path
 	if resolved, err := filepath.EvalSymlinks(cmd.Path); err == nil {
 		result.ResolvedBinary = resolved
@@ -264,8 +330,11 @@ func runStageObserved(ctx context.Context, root, directory string, environment [
 	cmd.Dir = root
 	cmd.Env = environment
 	var output io.Writer = log
+	if live != nil {
+		output = io.MultiWriter(log, live)
+	}
 	var observation *schemeOutput
-	if tests != "" && streamSchemeOutput {
+	if streamSchemeOutput && (tests != "" || stage.Name == "scheme-provider-server-build") {
 		observation = &schemeOutput{destination: log, started: started}
 		output = observation
 	}
@@ -278,6 +347,9 @@ func runStageObserved(ctx context.Context, root, directory string, environment [
 		}
 		err = cmd.Wait()
 	}
+	if err == nil {
+		err = ctx.Err()
+	}
 	finished := time.Now()
 	if observation != nil {
 		result.SchemeTiming = observation.timing(finished)
@@ -288,11 +360,14 @@ func runStageObserved(ctx context.Context, root, directory string, environment [
 		result.Lean, proofErr = readLeanEvidence(root, source, filepath.Join(directory, result.Log))
 		err = errors.Join(err, proofErr)
 	}
+	// Go benchmarks label rows with the effective GOMAXPROCS inherited
+	// by the child. The separate Rust header-seal report uses host CPUs.
+	goCPUs := runtime.GOMAXPROCS(0)
 	if stage.Name == "runtime-projection-benchmark" && err == nil && closeErr == nil {
-		result.GoBenchmarks, err = readGoBenchmarks(filepath.Join(directory, result.Log), runtime.NumCPU(), sourceAdmissionBenchmarks...)
+		result.GoBenchmarks, err = readGoBenchmarks(filepath.Join(directory, result.Log), goCPUs, sourceAdmissionBenchmarks...)
 	}
 	if stage.Name == "published-pipeline-benchmark" && err == nil && closeErr == nil {
-		result.PipelineBenchmarks, err = readPipelineBenchmarks(filepath.Join(directory, result.Log), runtime.NumCPU(), "BenchmarkGatewayPublishedPipeline/registered")
+		result.PipelineBenchmarks, err = readPipelineBenchmarks(filepath.Join(directory, result.Log), goCPUs, "BenchmarkGatewayPublishedPipeline/registered")
 		result.Details = "Real Go/Cedar/Rust path; Scheme preparation excluded, not a latency qualification."
 	}
 	if stage.Name == "execution-contention-pair" && err == nil && closeErr == nil {
@@ -310,34 +385,34 @@ func runStageObserved(ctx context.Context, root, directory string, environment [
 	}
 
 	if stage.Name == "execution-header-wait-pair" && err == nil && closeErr == nil {
-		result.PipelineBenchmarks, err = readProviderPairBenchmarks(filepath.Join(directory, result.Log), runtime.NumCPU(), "BenchmarkGatewayHeaderWaitPair", "immediate", "delayed")
+		result.PipelineBenchmarks, err = readProviderPairBenchmarks(filepath.Join(directory, result.Log), goCPUs, "BenchmarkGatewayHeaderWaitPair", "immediate", "delayed")
 		result.Details = "Six complete same-image ABBA blocks; fully consumed HTTPS request, immediate versus 30ms delayed headers. Sensitivity control, not an early-unlock speedup."
 	}
 
 	if stage.Name == "execution-streaming-pair" && err == nil && closeErr == nil {
-		result.PipelineBenchmarks, err = readStreamingPairBenchmarks(filepath.Join(directory, result.Log), runtime.NumCPU())
+		result.PipelineBenchmarks, err = readStreamingPairBenchmarks(filepath.Join(directory, result.Log), goCPUs)
 		result.Details = "Six complete same-image ABBA blocks, Arrow rows=1 versus rows=32; not a before/after implementation speedup."
 	}
 	if stage.Name == "runtime-pipeline-benchmark" && err == nil && closeErr == nil {
-		result.PipelineBenchmarks, err = readPipelineBenchmarks(filepath.Join(directory, result.Log), runtime.NumCPU())
+		result.PipelineBenchmarks, err = readPipelineBenchmarks(filepath.Join(directory, result.Log), goCPUs)
 		result.Details = "Complete functional pipeline samples; no end-to-end speedup or non-regression qualification."
 	}
 	if stage.Name == "grpc-benchmark" && err == nil && closeErr == nil {
-		result.GoBenchmarks, err = readGoBenchmarks(filepath.Join(directory, result.Log), runtime.NumCPU())
+		result.GoBenchmarks, err = readGoBenchmarks(filepath.Join(directory, result.Log), goCPUs)
 	}
 	if (stage.Name == "storage-final-benchmark" || stage.Name == "telemetry-benchmark" || stage.Name == "execution-policy-benchmark" || stage.Name == "execution-ledger-benchmark" || stage.Name == "execution-provider-benchmark" || stage.Name == "execution-encoding-benchmark") && err == nil && closeErr == nil {
 		cases := storageBenchmarkCases
 		if stage.Name == "execution-encoding-benchmark" {
-			cases = []string{"server_encoding_guard_hold/inside", "server_encoding_guard_hold/outside"}
+			cases = []string{"server/encoding_guard_hold/inside", "server/encoding_guard_hold/outside"}
 		}
 		if stage.Name == "execution-provider-benchmark" {
-			cases = []string{"broker_https_guarded_sse_three_events"}
+			cases = []string{"broker/https_guarded_sse_three_events"}
 		}
 		if stage.Name == "execution-ledger-benchmark" {
-			cases = []string{"ledger_provider_release/1", "ledger_provider_release/8", "ledger_provider_release/32"}
+			cases = providerReleaseBenchmarkCases
 		}
 		if stage.Name == "execution-policy-benchmark" {
-			cases = []string{"policy_context_json_local", "policy_context_literal_local", "policy_context_json_shared", "policy_context_literal_shared"}
+			cases = []string{"policy/context_json_local", "policy/context_literal_local", "policy/context_json_shared", "policy/context_literal_shared"}
 		}
 		if stage.Name == "telemetry-benchmark" {
 			cases = nil
@@ -367,7 +442,13 @@ func runStageObserved(ctx context.Context, root, directory string, environment [
 		code := cmd.ProcessState.ExitCode()
 		result.ExitCode = &code
 	}
-	if err == nil && closeErr == nil {
+	if interruption := ctx.Err(); interruption != nil {
+		result.Status = interruptionStatus(interruption)
+		if !errors.Is(err, interruption) {
+			err = errors.Join(err, interruption)
+		}
+		result.Error = fmt.Sprint(errors.Join(err, closeErr))
+	} else if err == nil && closeErr == nil {
 		result.Status = "PASS"
 	} else {
 		result.Error = fmt.Sprint(errors.Join(err, closeErr))

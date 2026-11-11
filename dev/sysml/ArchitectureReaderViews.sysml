@@ -21,8 +21,8 @@ package WeaverArchitectureReaderViews {
         attribute illustration : String = "task-contract";
     }
     part def boundaries_control :> ReaderNode {
-        attribute displayName : String = "Go control";
-        attribute responsibility : String = "Route and publish intent";
+        attribute displayName : String = "Rust source lane";
+        attribute responsibility : String = "Prepare and publish intent";
         attribute glyph : String = "routing";
         attribute illustration : String = "route-choice";
     }
@@ -57,12 +57,12 @@ package WeaverArchitectureReaderViews {
     view boundaries {
         attribute mappedFile : String = "docs/architecture/diagrams/01-system-boundaries.d2";
         attribute displayTitle : String = "Trace authority to the final writer";
-        attribute displaySubtitle : String = "Scheme supplies semantics. Go coordinates. Rust owns actual effects.";
+        attribute displaySubtitle : String = "Scheme supplies semantics. Rust coordinates publication and owns effects.";
         attribute displayEyebrow : String = "WEAVER / SCOPED READER VIEW";
         attribute readerQuestion : String = "Who owns meaning, coordination and actual effects?";
         attribute designAudience : String = "Gateway design and runtime reviewers";
         attribute designMedium : String = "GitHub at 830 CSS pixels";
-        attribute designMessage : String = "Scheme supplies semantics. Go coordinates. Rust owns actual effects.";
+        attribute designMessage : String = "Scheme supplies semantics. Rust coordinates publication and owns effects.";
         attribute designFocus : String = "p_writer";
         attribute visualThemes : String = "sketchbook,ocean,compact,reading";
         attribute visualOptions : String = "{\"elk.algorithm\":\"layered\",\"elk.direction\":\"DOWN\",\"elk.edgeRouting\":\"ORTHOGONAL\",\"elk.spacing.nodeNode\":\"16\",\"elk.layered.spacing.nodeNodeBetweenLayers\":\"27\"}";

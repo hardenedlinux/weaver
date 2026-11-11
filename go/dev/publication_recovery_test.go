@@ -29,13 +29,14 @@ import (
 // Test-only mTLS relay loses the successful source reply after forwarding one RPC.
 type publicationReplyLoss struct {
 	pb.UnimplementedGatewayServer
-	source      *gatewayclient.Client
-	sourceMu    sync.RWMutex
-	calls       atomic.Int64
-	inspections atomic.Int64
-	stages      atomic.Int64
-	sourceViews atomic.Int64
-	loseStage   bool
+	source         *gatewayclient.Client
+	sourceMu       sync.RWMutex
+	calls          atomic.Int64
+	inspections    atomic.Int64
+	stages         atomic.Int64
+	sourceViews    atomic.Int64
+	loseStage      bool
+	observeCompile func(time.Duration, error)
 }
 
 func (s *publicationReplyLoss) sourceClient() *gatewayclient.Client {
@@ -53,6 +54,11 @@ func (s *publicationReplyLoss) InspectSourceAuthority(ctx context.Context, in *p
 	s.sourceViews.Add(1)
 	source := s.sourceClient()
 	return source.RPC.InspectSourceAuthority(source.Context(ctx), in)
+}
+
+func (s *publicationReplyLoss) ComposeSource(ctx context.Context, in *pb.SourceCompositionRequest) (*pb.SourceCompositionReply, error) {
+	source := s.sourceClient()
+	return source.RPC.ComposeSource(source.Context(ctx), in)
 }
 
 func (s *publicationReplyLoss) InspectPublication(ctx context.Context, key *pb.PublicationKey) (*pb.PublicationReceipt, error) {

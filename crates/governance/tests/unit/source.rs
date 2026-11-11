@@ -33,3 +33,33 @@ proptest! {
         prop_assert!(OwnedSource::from_source(fixture::source()).is_ok());
     }
 }
+
+#[test]
+fn composed_original_rejects_mutated_wire_semantics_in_rust() {
+    for field in 0..6 {
+        let mut source = crate::source_fixture::source();
+        match field {
+            0 => source.governance.open_nodes[0] = "replacement".into(),
+            1 => source.tasks[0].nodes[0] = "replacement".into(),
+            2 => {
+                source.tasks[0].endpoints.insert(
+                    source.plans[0].routes[0].target.clone(),
+                    "https://replacement.invalid".into(),
+                );
+            }
+            3 => {
+                source.tasks[0]
+                    .provider_profile
+                    .as_mut()
+                    .expect("fixture profile")
+                    .max_output_tokens = 1
+            }
+            4 => source.plans[0].routes[0].endpoint = "https://replacement.invalid".into(),
+            _ => source.plans[0].body = "{}".into(),
+        }
+        assert!(
+            crate::OwnedSource::from_source(source).is_err(),
+            "field {field}"
+        );
+    }
+}

@@ -5,9 +5,9 @@
 // Local Scheme program lifecycle. Rust authenticates the installed graph and
 // binds the original; neither a closure nor a local result is a send permit.
 module GatewayProgram {
-  type State={phase:int,selected:int,original:int,inFlight:int,busy:bool,slot:bool,joined:bool,deliveries:List[bool],hold:int,sends:int,graphMember:bool,rootMatches:bool,catalogBound:bool,runtimeActive:bool,caller:int,image:int,validated:bool}
+  type State={phase:int,selected:int,original:int,inFlight:int,busy:bool,slot:bool,joined:bool,deliveries:List[bool],hold:int,sends:int,graphMember:bool,rootMatches:bool,catalogBound:bool,runtimeActive:bool,caller:int,image:int,validated:bool,advice:int,adviceGeneration:int,adviceCurrent:bool}
   var p:State
-  pure val initial={phase:0,selected:0,original:0,inFlight:0,busy:false,slot:false,joined:false,deliveries:List(),hold:6,sends:0,graphMember:false,rootMatches:false,catalogBound:false,runtimeActive:false,caller:0,image:0,validated:false}
+  pure val initial={phase:0,selected:0,original:0,inFlight:0,busy:false,slot:false,joined:false,deliveries:List(),hold:6,sends:0,graphMember:false,rootMatches:false,catalogBound:false,runtimeActive:false,caller:0,image:0,validated:false,advice:0,adviceGeneration:0,adviceCurrent:false}
   action init=p'=initial
   def safe=(p.validated implies p.image==p.original) and (p.busy==p.slot) and (p.busy==(p.inFlight>0)) and
     (p.phase==1 implies (p.selected>0 and p.selected==p.original)) and
@@ -37,7 +37,17 @@ module GatewayProgram {
   action freezeImage=all {p.phase==1,not(p.validated),p'=p.with("image",p.caller)}
   action validateImage=all {p.image>0,p.image==p.original,p'=p.with("validated",true)}
   action callerChange=p'=p.with("caller",2)
-  action step=any {freezeImage,validateImage,callerChange,observeGraphMember,matchRoot,bindCatalog,activateRuntime,install(1),install(2),rejectArgument,rejectInstall,installationFailure,begin,close,reenter,finish,failReturn,join}
+  // Advisory observations are deliberately independent of original binding.
+  // This finite abstraction models no ASCENT evaluator or completion deadline.
+  action deriveAdvice(id)=all {p.phase==1,id>0,p'=p.with("advice",id).with("adviceGeneration",p.adviceGeneration+1).with("adviceCurrent",true)}
+  action invalidateAdvice=p'=p.with("adviceCurrent",false).with("adviceGeneration",p.adviceGeneration+1)
+  action reuseAdvice=all {p.phase==1,p.adviceCurrent,p'=p}
+  action step=any {deriveAdvice(1),deriveAdvice(2),invalidateAdvice,reuseAdvice,freezeImage,validateImage,callerChange,observeGraphMember,matchRoot,bindCatalog,activateRuntime,install(1),install(2),rejectArgument,rejectInstall,installationFailure,begin,close,reenter,finish,failReturn,join}
+  run derivedAdviceCannotChangeImageOrSpendTest=init.then(install(1)).then(freezeImage).then(validateImage).then(deriveAdvice(2)).then(reuseAdvice).then(invalidateAdvice).expect(safe and p.image==1 and p.hold==6 and p.sends==0)
+  run invalidatedAdviceCannotBeReusedTest=init.then(install(1)).then(deriveAdvice(1)).then(invalidateAdvice).then(reuseAdvice.fail())
+  run closedAdviceCannotBeReusedTest=init.then(install(1)).then(deriveAdvice(1)).then(close).then(reuseAdvice.fail())
+  action unsafeAdviceAsImage=p'=p.with("image",p.advice)
+  run adviceAsOriginalCounterexampleTest=init.then(install(1)).then(freezeImage).then(validateImage).then(deriveAdvice(2)).then(unsafeAdviceAsImage).expect(not(safe))
   run graphMembershipDoesNotInitializeProducerTest=init.then(observeGraphMember).then(activateRuntime.fail())
   run readyWithoutCatalogCannotServeProducerTest=init.then(observeGraphMember).then(install(1)).then(activateRuntime.fail())
   run initializedCatalogCanActivateWithoutSpendingTest=init.then(observeGraphMember).then(matchRoot).then(install(1)).then(bindCatalog).then(activateRuntime).expect(safe and p.hold==6 and p.sends==0)

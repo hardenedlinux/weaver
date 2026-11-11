@@ -33,13 +33,43 @@ impl RuntimeOwner {
         F: FnOnce() -> Result<C> + Send + 'static,
         C: FnMut(&OwnedSource) -> std::result::Result<OwnedSource, SourceError> + 'static,
     {
+        self.start_governance_with_governor(
+            slot,
+            capacity,
+            initialize,
+            |compiler, original, _| compiler(original),
+            |_, _| Err(SourceError::Contract),
+        )
+        .await
+    }
+
+    pub(crate) async fn start_governance_with_governor<C: 'static>(
+        &self,
+        slot: Arc<OwnedSemaphorePermit>,
+        capacity: NonZeroUsize,
+        initialize: impl FnOnce() -> Result<C> + Send + 'static,
+        compile: impl FnMut(
+            &mut C,
+            &OwnedSource,
+            &tokio_util::sync::CancellationToken,
+        ) -> std::result::Result<OwnedSource, SourceError>
+        + Send
+        + 'static,
+        derive: impl FnMut(
+            &mut C,
+            &weaver_governance::Derivation,
+        )
+            -> std::result::Result<weaver_governance::DerivationOutput, SourceError>
+        + Send
+        + 'static,
+    ) -> Result<GovernanceWorker> {
         let (client, inbox) = source_lane(capacity);
         self.attach_governance(client.clone())?;
+        let runtime = self.clone();
         let mut starting = self.shutdown_guard();
-        let exit = self.shutdown_guard();
+        let mut exit = self.shutdown_guard();
         let (ready, receiver) = oneshot::channel();
         let job = self.spawn_blocking(slot, move |_| {
-            let _exit = exit;
             let compiler = match initialize() {
                 Ok(compiler) => compiler,
                 Err(error) => {
@@ -51,7 +81,16 @@ impl RuntimeOwner {
                 return Ok(());
             }
             // run drops the compiler (and its VM) before the tracked task ends.
-            inbox.run(compiler);
+            inbox.run_with_cancellable_governor(compiler, compile, derive);
+            crate::shutdown::trace("scheme-owner-cleaned");
+            if let Some(lifecycle) = runtime.single_provider()
+                && lifecycle.retirement_requested()
+            {
+                exit.disarm();
+                eprintln!("weaver governance stage=compiler-retired");
+                lifecycle.acknowledge_retirement();
+                runtime.wake_session();
+            }
             Ok(())
         })?;
         let initialized = receiver

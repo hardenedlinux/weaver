@@ -13,6 +13,11 @@ pub enum Cut {
     AfterRangePrepareCommit,
     BeforeDeliveryCommit,
     AfterDeliveryCommit,
+    BeforeAdmissionSchedule,
+    BeforeAdmissionCommit,
+    AfterAdmissionCommit,
+    BeforeLifecycleCommit,
+    AfterLifecycleCommit,
     BeforeSnapshotPublication,
     AfterSnapshotPublication,
 }
@@ -27,6 +32,10 @@ pub enum Decision {
 pub trait Observer: Send + Sync {
     /// Observe a real commit cut; native commit still owns its durable outcome.
     fn observe(&self, cut: Cut) -> Decision;
+    /// Unaccepted request after discovery, before scheduler/native custody.
+    fn admission_wait(&self, _family: &str) -> Decision {
+        Decision::Continue
+    }
 }
 impl crate::Ledger {
     /// Test-host custody only; never serialized or accepted from an RPC request.

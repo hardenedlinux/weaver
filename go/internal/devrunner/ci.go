@@ -27,7 +27,9 @@ func PrepareCITools(ctx context.Context, output io.Writer) error {
 	default:
 		return fmt.Errorf("unsupported CI suite %q", suite)
 	}
-	if os.Getenv("RUNNER_TEMP") == "" || os.Getenv("GITHUB_PATH") == "" { return fmt.Errorf("missing disposable runner paths") }
+	if os.Getenv("RUNNER_TEMP") == "" || os.Getenv("GITHUB_PATH") == "" {
+		return fmt.Errorf("missing disposable runner paths")
+	}
 	run := func(binary string, args ...string) error {
 		command := exec.CommandContext(ctx, binary, args...)
 		command.Stdout, command.Stderr = output, output
@@ -50,7 +52,7 @@ func PrepareCITools(ctx context.Context, output io.Writer) error {
 		}
 		packages := []string{"apt-get", "install", "-y", "--no-install-recommends", "build-essential", "ca-certificates", "pkg-config", "libssl-dev", "zlib1g-dev", "protobuf-compiler"}
 		if suite == "check-policy" {
-			packages = append(packages, "elan")
+			packages = append(packages, "elan", "cvc5", "zstd")
 		}
 		if err := run("sudo", packages...); err != nil {
 			return err
@@ -58,7 +60,7 @@ func PrepareCITools(ctx context.Context, output io.Writer) error {
 	case "darwin":
 		packages := []string{"install", "pkg-config", "openssl@3", "zlib", "protobuf"}
 		if suite == "check-policy" {
-			packages = append(packages, "elan")
+			packages = append(packages, "elan", "cvc5")
 		}
 		if err := run("brew", packages...); err != nil {
 			return err

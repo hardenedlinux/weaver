@@ -4,8 +4,8 @@
 
 #+title: Weaver Unified Gateway: System Design
 #+language: en
-#+date: 2026-10-18
-#+property: STATUS proposed
+#+date: 2026-11-10
+#+property: STATUS R1-implemented-target-planned
 #+options: toc:3
 
 * Decision summary
@@ -21,46 +21,21 @@ each resource boundary. The normative security baseline and review findings
 are in [[file:04-zero-trust-and-review.org][Zero Trust baseline and architecture review]]. This requirement does not
 assert that the current proposal already implements those protections.
 
-Scheme, Go, and Rust are selected for their respective ecosystem strengths.
-The architecture does not infer a language assignment from agentgateway's
-repository layout. Go is a serious candidate for network ingress, protocol
-adapters, service integrations, and cloud-native coordination. Rust is a
-strong candidate for bounded runtime kernels, native authorization integration,
-and forwarding workloads sensitive to allocation and memory ownership.
-Scheme retains the public POO-native governance and composition model.
+The target production core is Rust + Scheme/POO/gerbil-ascent. Scheme owns
+higher-order source composition, candidate inference and Workflow meaning;
+Rust owns the network/runtime, durable coordination and final effect guards.
+Go remains for its existing OpenSysML development SDK and concrete integration
+reuse, and currently relays requests until the direct-Rust ingress stage.
+It is not required for Kubernetes or for using Go-implemented cloud services.
 
-These are responsibility boundaries, not claims that a language is inherently
-faster or that it makes an implementation secure. Go and Rust forwarding
-placement remains subject to the matched experiment in
-[[file:03-performance-and-validation.org][Performance and validation]].
-
-Code as Policy is required for the Zero Trust baseline. Scheme owns POO
-composition, Cedar remains the selected authorization Provider boundary, and
-Go/Rust enforce the admitted artifact and operation contracts without defining
-competing policy semantics. The concrete closure and known error-admission gap
-are specified in [[file:09-code-as-policy.org][Code as Policy and Cedar integration]].
-
-The [[file:10-zero-trust-assurance.org][mandatory Quint and Lean framework]] binds this contract to cedar-poo-spec,
-existing POO proof owners, explicit transition/refinement obligations and
-concrete Scheme/Go/Rust evidence. FM1-FM12 remain pending. A source digest,
-certificate constructor, bounded model run or proof of pure guards alone
-cannot qualify the complete authorization-to-execution path.
-
-Cedar is the authorization kernel because it gives governed operations one
-explicit permission meaning and reuses the existing POO specification foundation.
-Scheme owns Governance and composition; Cedar does not replace that domain.
-The gateway must carry the decision through current source facts, history/budget
-coordination and the final credentialed effect. Quint examines fault/concurrency
-schedules, Lean states preservation obligations, and runtime controls establish
-the physical premises. See [[file:09-code-as-policy.org][why Cedar and formal assurance belong in the gateway]]
-and its core policy-to-execution diagram.
-
-Weaver is greenfield: existing Gateway APIs, old Policy encodings and native
-objects need no compatibility layer. Reuse owner semantics and source contracts
-against one deliberately selected baseline, then regenerate and qualify its
-consumers. Research pins document evidence rather than mandate legacy support.
-[[file:12-fm1-baseline-and-runtime-qualification.org][FM1 baseline selection]] distinguishes internal semantic/native consistency
-from backward compatibility and defines the direct migration boundary.
+R1 routes deployed configuration and dynamic selection through the existing
+Rust source lane and affine Scheme owner. Go decodes external syntax and copies
+typed projections. The complete allocation, implemented boundaries and staged
+retirement are in [[file:06-go-control-plane-role.org][language and cloud integration boundaries]] and the
+[[file:../50-59-research-program/59-provider-rpc/59.87-spec-upgrade-and-delivery-plan.org][delivery plan]]. Upstream interfaces and implementation evidence determine
+ecosystem reuse; local tests qualify integration behavior and runtime limits.
+Existing failed performance cohorts remain failures; this allocation does not
+establish submillisecond execution or remote CI qualification.
 
 * One architecture, three different kinds of responsibility
 
@@ -73,8 +48,8 @@ owned parts of the system to which those contracts apply.
 | Element | Core architectural role | Relationship to the execution chain |
 |---------+-------------------------+-------------------------------------|
 | Scheme / POO | Governance authoring, composition, source and lifecycle ownership | Selects the admitted policy closure and supplies owner-bound operation/currentness contracts |
-| Go | Cloud-native control services and selected network/protocol integrations | Reconciles infrastructure, integrates workload identity, distributes admitted publications and normalizes operations; cannot mint an execution right |
-| Rust | Reference authority integration, durable coordinator and constrained broker | Enforces consumption, ledger transitions, unique claims and final transport guards |
+| Go | OpenSysML development tooling, reference controls and independent signing | Reference clients exercise the same typed protocol. The signing service owns its separate keys |
+| Rust | Source preparation, durable coordination and constrained broker | Enforces consumption, ledger transitions, unique claims and final transport guards |
 | Cedar | Shared authorization language and selected evaluation kernel | Evaluates the complete required permission questions on the bound operation; allow alone cannot send |
 | Quint | Concurrent/fault state model | Models consumption, commit, claim, send, recovery and cloud-update races across all implementation owners |
 | Lean / cedar-poo-spec | Semantic foundation and preservation obligations | Reuses owned definitions and proves meaningful projection/transition properties under stated physical premises |
@@ -86,13 +61,12 @@ and Lean proof checking are not per-packet RPCs. An admitted profile may still
 require a Lean-native evaluator at operation time: proof checking and policy
 evaluation are distinct activities, and optimization must preserve that profile.
 
-The reference placement is deliberate: Go brings the Kubernetes/network/Gerbil toolchain
-integration ecosystem; Rust reuses the native authority boundary and provides
-explicit ownership for physical coordination; Scheme preserves POO-native
-Governance. Neither cloud readiness nor the implementation language confers
-trust. Moving a qualified adapter to Go does not move policy ownership or relax
-the final-send contract. The overview below shows this relationship; the
-[[file:09-code-as-policy.org][policy-to-wire contract]] specifies how it constrains actual egress.
+The allocation is deliberate: Rust owns bounded execution and default cloud
+adaptation; Scheme preserves POO-native Governance and gerbil-ascent inference.
+Go retains concrete development/integration reuse. Cloud readiness and language
+choice grant no authority. Supported protocols can connect external components
+without importing their implementation language. The overview below shows the
+owner relationships; [[file:09-code-as-policy.org][policy-to-wire contracts]] constrain actual egress.
 
 #+caption: Core ownership and assurance relationships; dashed links describe design contracts, not request traffic.
 [[file:diagrams/01-system-boundaries.svg]]
@@ -189,59 +163,51 @@ state transition or a field named =signature= or =durability= cannot establish
 cryptographic verification, serialized consumption, or durable storage. Preserve
 these host obligations when reusing the existing semantic APIs.
 
-** Go: networking, protocol integration, and cloud-native operation
+** Source transport, development tools and selected SDK reuse
 
-Go has a substantive network-runtime role available to Weaver. Its standard
-HTTP transport and reverse-proxy APIs, cancellation conventions, gRPC
-ecosystem, and cloud SDKs make it a candidate for network services and
-integration-heavy adapters. Kubernetes client and controller libraries add
-resource watching, reconciliation, leader election, and status publication.
-The source basis is listed as E1 through E5 in the comparison document.
+The Rust =weaver-server prepare= command performs source preparation and exits. Operation clients
+connect directly to the existing Rust listener. JSON/YAML and compiled Scheme
+sources declare exact fixed plans or a bounded catalog selector through the
+existing authenticated source RPC. The existing ledger retains those source
+scopes. Rust resolves fixed plans directly; dynamic selection uses the existing
+Scheme/POO/ASCENT owner and rejoins current source/publication/catalog state in
+the task-registration transaction. Reused projections carry no permission.
+The Go relay and remaining Bundle/routing functions serve development reference
+controls under the development boundary.
 
-Possible Go-owned components include:
+OpenSysML development analysis/rendering remains Go because the project already
+reuses its SDK. Future production Go adapters need a concrete required library
+surface, such as embedded Helm release lifecycle behavior, whose upstream code
+justifies keeping that adapter. Kubernetes is supported directly by Rust kube-rs;
+OTel Collector and other external services can be reused over supported protocols.
+Do not implement both ecosystems locally to prove established capabilities.
 
-- A complete HTTP/gRPC ingress and forwarding service, if qualified.
-- Protocol adapters or connectors whose mature SDKs reduce semantic risk.
-- Identity-provider, cloud-service, and service-discovery integrations.
-- Kubernetes resource ingestion and reconciliation.
-- Publication transport and operational administration.
+R2 supplies direct Rust ingress for fixed and catalog-selected operations, preserving
+first-hop OAuth identity, complete response release, trailers, cancellation and
+backpressure. R5 removes obsolete packaging after all consumers migrate.
+Independent review/metering issuer custody is a separate decision and cannot
+be merged into the runtime during language consolidation.
 
-The concrete initial Go role is cloud-native integration and operational network
-services, including backend discovery and publication/status distribution. Go
-ingress and selected connectors remain qualified candidates. The inspected
-upstream responsibilities and their relevance to an AI-native gateway are in
-[[file:06-go-control-plane-role.org][Go's cloud-native and Agent Gateway role]]. This establishes Go's value beyond
-an arbitrary language split without granting its controller effect authority.
+** Rust: bounded execution and cloud adaptation
 
-Go-owned ingress is a trusted enforcement component. Rust authorization does
-not compensate for a Go adapter mutating the authorized target or payload.
-Measure GC work, allocation, goroutine retention, and cancellation under
-slow clients; do not assume those costs disqualify Go in advance.
+Rust owns the current ledger, admission, source lane, broker and native authority
+integration. Reuse those owners and the upstream Cedar/SPEC contracts rather
+than copying their policy semantics. Rust/Tokio is also the default placement
+for Kubernetes and protocol adaptation, with explicit queue/concurrency and
+shutdown isolation from request processing.
 
-** Rust: bounded kernels, native integration, and forwarding candidates
+The existing SDK Build Packages mechanism builds the fixed Scheme application;
+the affine owner invokes it through rooted C ABI values. Configuration, source
+assessment, hot inference, network delivery and drain have separate lifecycles
+and budgets. A build is not a per-request operation. FFI and async ownership
+still require concrete lifetime and cancellation checks.
 
-Rust is the initial integration choice for the existing Cedar Rust authority
-and native Host boundary, since those components already exist in Rust/C/Lean.
-It is also a candidate for parsers, artifact checks, connection management,
-stream forwarding, and workloads requiring explicit ownership control.
-
-This does not imply copying the authority code into Weaver. Prefer an
-owner-maintained library or service contract with fixed artifact identities.
-Rust async tasks, queues, locks, and allocations still require budgets.
-An unsafe or FFI boundary requires its own ownership and lifecycle evidence.
-
-For the reference coordination topology, Rust owns the physical durable state
-adapter and minimal credentialed broker. Scheme retains the existing source,
-semantic transition, and local lifecycle ownership. This concrete reference
-assignment is defined in [[file:05-authorization-execution-protocol.org][Authorization-to-execution coordination]], while the
-Go/Rust forwarding comparison remains a separate decision.
-
-The exact owner contracts are refined in
-[[file:07-source-admission-ledger-fencing.org][Source admission, durable ledger, and fencing contracts]]. The current Scheme
-preflight is deliberately undecided; production source admission needs a
-distinct issued-family extension, not a wrapper that renames preflight as allow.
-The existing backend descriptor also needs a versioned coordination facet and
-physical qualification before its capabilities can support this ledger.
+Scheme retains semantic composition and local object/Workflow behavior; Rust
+performs current Cedar/ledger checks and owns physical effects. See
+[[file:05-authorization-execution-protocol.org][authorization-to-execution coordination]] and
+[[file:07-source-admission-ledger-fencing.org][source admission and ledger fencing]]. CompileSource's source assessment,
+ComposeSource's inert advisory projection and actual publication/consumption
+are distinct contracts. Neither source API response establishes permission.
 
 ** Cross-language boundary rules
 

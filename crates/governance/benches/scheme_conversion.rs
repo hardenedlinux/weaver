@@ -7,10 +7,16 @@ use criterion::{BenchmarkId, Criterion, SamplingMode, Throughput};
 use std::{hint::black_box, time::Duration};
 #[path = "../tests/unit/fixture.rs"]
 mod fixture;
+#[path = "support/governor_owner.rs"]
+mod governor_owner;
 #[path = "../tests/integration/program.rs"]
 mod program;
 
 fn main() {
+    if std::env::var("WEAVER_TEST_GOVERNOR_OWNER_BENCH").as_deref() == Ok("1") {
+        governor_owner::run();
+        return;
+    }
     let mut criterion = Criterion::default()
         .sample_size(30)
         .warm_up_time(Duration::from_secs(1))

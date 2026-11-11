@@ -131,7 +131,7 @@ fn synthetic_tls_exchange_coalesces_concurrent_refresh() {
         workspace_id: "wrkspc_fixture".into(),
     })
     .expect("fixture federation");
-    let runtime = crate::provider::test_runtime::fixture_runtime();
+    let runtime = crate::provider::test_runtime::fixture_runtime(Some(4));
     let io = IoRuntime {
         handle: runtime.handle().clone(),
     };

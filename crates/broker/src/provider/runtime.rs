@@ -4,6 +4,8 @@
 
 //! Guarded provider invocation; no retry, redirect, reconnect or automatic route fallback.
 use super::{anthropic_sse, openai_sse, wif};
+#[cfg(feature = "test-loopback")]
+use std::time::Instant;
 use std::{
     collections::{BTreeMap, BTreeSet},
     sync::Arc,
@@ -175,7 +177,7 @@ impl ProviderTransport {
         route: &ProviderRoute,
         protocol: ProviderProtocol,
     ) -> Result<super::request::PreparedRequest> {
-        crate::HttpsTransport::validate_endpoint(&route.endpoint)?;
+        crate::HttpsTransport::validate_provider_endpoint(&route.endpoint, protocol)?;
         let runtime = self.inner.runtime.clone();
         let token = if let Some(federation) = self.inner.federation.get(&route.target) {
             if !matches!(protocol, ProviderProtocol::Anthropic) || route.endpoint != wif::MESSAGES {
@@ -212,10 +214,36 @@ impl ProviderTransport {
 /// Starts at most one source-bound request. The callback receives bounded batches only
 /// under a fresh Cedar release guard; its error leaves the release and budget unknown.
 pub trait ProviderOutput {
+    /// Bounded local diagnostics, never evidence that a send did not happen.
+    fn observe_transport(&self, _phases: super::ProviderTransportPhases) {}
+    #[cfg(feature = "test-loopback")]
+    fn observe_admission(
+        &self,
+        _enqueue_nanos: u128,
+        _consume_nanos: u128,
+        _ledger: [weaver_ledger::TransactionTimings; 2],
+    ) {
+    }
+    #[cfg(feature = "test-loopback")]
+    fn observe_dispatch(&self, _prepare_nanos: u128, _dispatch_nanos: u128) {}
     type Slot;
     type PreparedFrame;
     fn stopped(&self) -> bool;
     fn reserve(&mut self) -> Result<Self::Slot>;
+    /// Advance local handoffs while waiting for upstream data and return the
+    /// original deadline of the oldest pending handoff.
+    fn service_delivery(
+        &mut self,
+        _ledger: &mut Ledger,
+        _permit: &ProviderDispatch,
+        _format: &str,
+    ) -> Result<Option<tokio::time::Instant>> {
+        Ok(None)
+    }
+    /// Poll the oldest pending handoff's state changes on the same reactor.
+    fn poll_delivery_ready(&self, _cx: &mut std::task::Context<'_>) -> std::task::Poll<()> {
+        std::task::Poll::Pending
+    }
     /// Reconcile bounded inert deliveries before waiting for actual output credit.
     fn reserve_for_delivery(
         &mut self,
@@ -308,12 +336,36 @@ pub struct ProviderExecutionAuthority<'a> {
     pub oauth: Option<&'a weaver_contracts::ProviderOAuthUse>,
 }
 
+/// The host's current authority inputs and optional prepared Session successor.
+pub struct ProviderExecutionAdmission<'a> {
+    pub authority: ProviderExecutionAuthority<'a>,
+    pub progression: Option<&'a weaver_ledger::ProviderProgression>,
+}
+
 /// Run the provider pipeline with the caller observation from authenticated RPC.
 pub fn execute_catalog_provider_with_oauth<O: ProviderOutput>(
     ledger: &mut Ledger,
     request: ProviderExecution<'_>,
     output: &mut O,
     authority: ProviderExecutionAuthority<'_>,
+) -> Result<()> {
+    execute_provider_progression(
+        ledger,
+        request,
+        output,
+        ProviderExecutionAdmission {
+            authority,
+            progression: None,
+        },
+    )
+}
+
+/// Use the existing provider pipeline with an optional sealed successor proposal.
+pub fn execute_provider_progression<O: ProviderOutput>(
+    ledger: &mut Ledger,
+    request: ProviderExecution<'_>,
+    output: &mut O,
+    admission: ProviderExecutionAdmission<'_>,
 ) -> Result<()> {
     if !cfg!(feature = "llm-provider") {
         return Err(Error::Invalid("LLM provider feature disabled"));
@@ -324,7 +376,6 @@ pub fn execute_catalog_provider_with_oauth<O: ProviderOutput>(
         format,
         batch_rows,
     } = request;
-    let ProviderExecutionAuthority { catalog, oauth } = authority;
     if !(1..=32).contains(&batch_rows)
         || !matches!(format, "protobuf" | "arrow")
         || output.stopped()
@@ -334,51 +385,93 @@ pub fn execute_catalog_provider_with_oauth<O: ProviderOutput>(
     for route in &plan.routes {
         crate::HttpsTransport::validate_endpoint(&route.endpoint)?;
     }
-    ledger.enqueue_provider_with_oauth(plan, catalog, oauth)?;
+    let permit = admit_and_consume(ledger, plan, transport, output, admission)?;
+    let result_capture = permit.expects_workflow_result().then(String::new);
+    let response = open_guarded(ledger, &permit, transport, output)?;
+    let (tokens, response) = super::range_output::relay(
+        ledger,
+        &permit,
+        output,
+        response,
+        format,
+        batch_rows,
+        result_capture,
+    )?;
+    output.drain_delivery(ledger, &permit, format)?;
+    ledger.complete_provider_with_result(&permit, format, tokens, response.as_deref())
+}
+
+fn admit_and_consume<O: ProviderOutput>(
+    ledger: &mut Ledger,
+    plan: &ProviderPlan,
+    transport: &ProviderTransport,
+    output: &O,
+    admission: ProviderExecutionAdmission<'_>,
+) -> Result<ProviderDispatch> {
+    let ProviderExecutionAuthority { catalog, oauth } = admission.authority;
+    #[cfg(feature = "test-loopback")]
+    let before_enqueue = ledger.transaction_timings();
+    #[cfg(feature = "test-loopback")]
+    let enqueue_started = Instant::now();
+    ledger.enqueue_provider_progression(plan, catalog, oauth, admission.progression)?;
+    #[cfg(feature = "test-loopback")]
+    let enqueue_nanos = enqueue_started.elapsed().as_nanos();
+    #[cfg(feature = "test-loopback")]
+    let after_enqueue = ledger.transaction_timings();
     if output.stopped() {
         return Err(Error::Conflict("cancelled before provider consumption"));
     }
+    #[cfg(feature = "test-loopback")]
+    let consume_started = Instant::now();
     let permit = ledger.consume_provider_with_oauth(
         &plan.family,
         &plan.node,
         &transport.eligible(),
         oauth,
     )?;
-    let response = open_guarded(ledger, &permit, transport, output)?;
-    let mut reader = match permit.protocol() {
-        ProviderProtocol::OpenAi => {
-            StreamDecoder::OpenAi(openai_sse::Decoder::new(response, &plan.model))
-        }
-        ProviderProtocol::Anthropic => {
-            StreamDecoder::Anthropic(anthropic_sse::Decoder::new(response, &plan.model))
-        }
-    };
-    super::range_output::relay(ledger, &permit, output, &mut reader, format, batch_rows)?;
-    output.drain_delivery(ledger, &permit, format)?;
-    ledger.complete_provider_with_usage(&permit, format, reader.terminal_tokens())
+    #[cfg(feature = "test-loopback")]
+    output.observe_admission(
+        enqueue_nanos,
+        consume_started.elapsed().as_nanos(),
+        [
+            after_enqueue.since(before_enqueue),
+            ledger.transaction_timings().since(after_enqueue),
+        ],
+    );
+    Ok(permit)
 }
 
-pub(super) enum StreamDecoder<R: std::io::Read> {
+pub(super) enum StreamDecoder<R: tokio::io::AsyncRead + Unpin> {
     OpenAi(openai_sse::Decoder<R>),
     Anthropic(anthropic_sse::Decoder<R>),
 }
 
-impl<R: std::io::Read> StreamDecoder<R> {
-    pub(super) fn next(&mut self) -> Result<ProviderEvent> {
-        match self {
-            Self::OpenAi(reader) => reader.next(),
-            Self::Anthropic(reader) => reader.next(),
+impl<R: tokio::io::AsyncRead + Unpin> StreamDecoder<R> {
+    pub(super) fn new(input: R, permit: &ProviderDispatch) -> Self {
+        let model = &permit.plan().model;
+        match permit.protocol() {
+            ProviderProtocol::OpenAi => Self::OpenAi(openai_sse::Decoder::new(input, model)),
+            ProviderProtocol::Anthropic => {
+                Self::Anthropic(anthropic_sse::Decoder::new(input, model))
+            }
         }
     }
 
-    pub(super) fn next_buffered(&mut self) -> Result<Option<ProviderEvent>> {
+    pub(super) async fn next(&mut self) -> Result<ProviderEvent> {
         match self {
-            Self::OpenAi(reader) => reader.next_buffered(),
-            Self::Anthropic(reader) => reader.next_buffered(),
+            Self::OpenAi(reader) => reader.next().await,
+            Self::Anthropic(reader) => reader.next().await,
         }
     }
 
-    fn terminal_tokens(&self) -> Option<[u64; 4]> {
+    pub(super) async fn next_buffered(&mut self) -> Result<Option<ProviderEvent>> {
+        match self {
+            Self::OpenAi(reader) => reader.next_buffered().await,
+            Self::Anthropic(reader) => reader.next_buffered().await,
+        }
+    }
+
+    pub(super) fn terminal_tokens(&self) -> Option<[u64; 4]> {
         match self {
             Self::OpenAi(reader) => reader.terminal_tokens,
             Self::Anthropic(reader) => Some(reader.tokens()),
@@ -396,19 +489,32 @@ fn open_guarded<O: ProviderOutput>(
         return Err(Error::Conflict("cancelled after provider consumption"));
     }
     // WIF exchange and request preparation occur outside the deciding send scope.
+    #[cfg(feature = "test-loopback")]
+    let prepare_started = Instant::now();
     let request = transport
         .prepare(permit.plan(), permit.route(), permit.protocol())?
         .with_oauth_expiration(permit.oauth_expires());
-    let sealed = ledger.dispatch_provider(permit, || {
+    #[cfg(feature = "test-loopback")]
+    let prepare_nanos = prepare_started.elapsed().as_nanos();
+    let phases = std::cell::Cell::new(super::ProviderTransportPhases::default());
+    let result = (|| {
+        #[cfg(feature = "test-loopback")]
+        let dispatch_started = Instant::now();
+        let sealed = ledger.dispatch_provider(permit, || {
+            if output.stopped() {
+                return Err(Error::Conflict("cancelled before provider invocation"));
+            }
+            request.write_and_seal(&phases)
+        })?;
+        #[cfg(feature = "test-loopback")]
+        output.observe_dispatch(prepare_nanos, dispatch_started.elapsed().as_nanos());
         if output.stopped() {
-            return Err(Error::Conflict("cancelled before provider invocation"));
+            return Err(Error::Conflict("cancelled after provider seal"));
         }
-        request.write_and_seal()
-    })?;
-    if output.stopped() {
-        return Err(Error::Conflict("cancelled after provider seal"));
-    }
-    sealed.wait_for_response_headers()
+        sealed.wait_for_response_headers(&phases)
+    })();
+    output.observe_transport(phases.get());
+    result
 }
 
 #[cfg(test)]

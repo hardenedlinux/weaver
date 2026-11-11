@@ -3,6 +3,16 @@
 // SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 //! One canonical provider invocation and affine response releases; no retry reset exists.
+#[path = "provider_admission.rs"]
+mod admission;
+#[path = "provider_scope.rs"]
+mod scope;
+pub(crate) use scope::{AdmissionRequest, OriginLifecycle, RangeProgress, shared_provider_reads};
+#[cfg(feature = "commit-observer")]
+pub use scope::{
+    use_conservative_range_invalidation, use_early_admission_barrier, use_exclusive_provider_reads,
+    use_full_lifecycle_invalidation,
+};
 #[path = "provider_release_group.rs"]
 mod release_group;
 pub use release_group::{MAX_PROVIDER_PREPARATION_RANGES, MAX_PROVIDER_PREPARATION_ROWS};
@@ -10,33 +20,33 @@ pub use release_group::{MAX_PROVIDER_PREPARATION_RANGES, MAX_PROVIDER_PREPARATIO
 use crate::persistence::{ProviderScopePhase, WriteScope};
 use crate::{Ledger, db, integer};
 use std::collections::BTreeSet;
+use std::{
+    sync::OnceLock,
+    time::{Instant, SystemTime, UNIX_EPOCH},
+};
 use weaver_contracts::{
     DomainView, Error, ProviderOAuthUse, ProviderPlan, ProviderReceipt, ProviderRoute,
     ProviderState, Result, Task,
 };
 
-/// Sealed proof obligation for the two progress-only write paths in this module.
-/// No external caller or other ledger module can construct this token.
-/// Its transaction may only append fresh ranges/advance next_event, or CAS an
-/// exact unknown release to released. All authorization inputs stay unchanged.
-pub(crate) struct RangeProgress {
-    _sealed: (),
+fn governor_timing() -> bool {
+    static ENABLED: OnceLock<bool> = OnceLock::new();
+    *ENABLED.get_or_init(|| std::env::var_os("WEAVER_TEST_GOVERNOR_TIMING").is_some())
 }
-#[cfg(feature = "commit-observer")]
-thread_local! {
-    static CONSERVATIVE_RANGE_INVALIDATION: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
-}
-/// Same-image safe control: treat exact progress writes as semantic mutations.
-#[cfg(feature = "commit-observer")]
-pub fn use_conservative_range_invalidation(conservative: bool) {
-    CONSERVATIVE_RANGE_INVALIDATION.set(conservative);
-}
-impl RangeProgress {
-    pub(crate) fn invalidates(&self) -> bool {
-        #[cfg(feature = "commit-observer")]
-        return CONSERVATIVE_RANGE_INVALIDATION.get();
-        #[cfg(not(feature = "commit-observer"))]
-        false
+
+fn governor_commit_trace(phase: &str, plan: &ProviderPlan, transaction: Option<Instant>) {
+    static EPOCH: OnceLock<Instant> = OnceLock::new();
+    if governor_timing() {
+        let nanos = EPOCH.get_or_init(Instant::now).elapsed().as_nanos();
+        let wall = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_nanos();
+        let tx_nanos = transaction.map_or(0, |start| start.elapsed().as_nanos());
+        eprintln!(
+            "weaver-governor-commit {phase} {} {} {nanos} {wall} {tx_nanos}",
+            plan.family, plan.node
+        );
     }
 }
 
@@ -53,10 +63,16 @@ pub struct ProviderDispatch {
     pub(super) original: Option<crate::task_origins::PreparedOriginal>,
     pub(super) oauth: Option<crate::provider_oauth::PreparedUse>,
     pub(super) oauth_expires: Option<u64>,
+    fact_cut: Option<crate::hard_fact::UseCut>,
 }
 impl ProviderDispatch {
     pub fn plan(&self) -> &ProviderPlan {
         &self.plan
+    }
+    pub fn expects_workflow_result(&self) -> bool {
+        self.fact_cut
+            .as_ref()
+            .is_some_and(|cut| cut.expects_workflow_result)
     }
     pub fn protocol(&self) -> weaver_contracts::ProviderProtocol {
         self.binding.protocol()
@@ -105,65 +121,14 @@ impl Ledger {
     }
     /// Enable bounded diagnostic observations for this ledger only.
     #[cfg(feature = "commit-observer")]
-    pub fn trace_provider_scopes(&mut self, family: &str) {
-        self.connection.trace_provider_scopes(family);
+    pub fn trace_provider_scopes(&mut self, family: &str, node: Option<&str>) {
+        self.connection.trace_provider_scopes(family, node);
     }
 
     /// Finish the complete bounded diagnostic stream after all deciding scopes.
     #[cfg(feature = "commit-observer")]
     pub fn finish_provider_scope_trace(&mut self) {
         self.connection.finish_provider_scope_trace();
-    }
-    pub fn enqueue_provider(&mut self, plan: &ProviderPlan) -> Result<ProviderReceipt> {
-        self.enqueue_catalog_provider(plan, "")
-    }
-
-    pub fn enqueue_catalog_provider(
-        &mut self,
-        plan: &ProviderPlan,
-        catalog: &str,
-    ) -> Result<ProviderReceipt> {
-        self.enqueue_provider_with_oauth(plan, catalog, None)
-    }
-
-    /// Bind the request observation before exposing any reservation or prior outcome.
-    pub fn enqueue_provider_with_oauth(
-        &mut self,
-        plan: &ProviderPlan,
-        catalog: &str,
-        oauth: Option<&ProviderOAuthUse>,
-    ) -> Result<ProviderReceipt> {
-        let digest = plan.digest()?;
-        let encoded = serde_json::to_string(plan)?;
-        let prepared = self
-            .connection
-            .prepare_provider_oauth(oauth, "provider:execute")?;
-        let publication = self.connection.prepare_provider_publication(&plan.family);
-        let original = self.connection.prepare_provider_original(&plan.family);
-        self.connection.prepare_provider_domain();
-        let tx =
-            crate::persistence::begin_family(&mut self.connection, &plan.family).map_err(db)?;
-        tx.check_provider_oauth(prepared.as_ref())?;
-        let new_claim = match receipt(&tx, &plan.family, &plan.node)? {
-            Some(old) if old.digest != digest => {
-                return Err(Error::Conflict("provider logical key already bound"));
-            }
-            Some(old) if old.state != ProviderState::Queued => return Ok(old),
-            Some(_) => false,
-            None => true,
-        };
-        store_authorized_provider_plan(
-            &tx,
-            plan,
-            (&digest, encoded),
-            catalog,
-            new_claim,
-            &publication?,
-            original.as_ref(),
-        )?;
-        tx.commit().map_err(db)?;
-        self.provider_receipt(&plan.family, &plan.node)?
-            .ok_or(Error::Conflict("provider receipt missing"))
     }
     /// Eligibility is a local Rust credential/configuration observation, never a provider call.
     pub fn consume_provider(
@@ -191,7 +156,14 @@ impl Ledger {
         #[cfg(feature = "commit-observer")]
         warm_release_programs(&self.connection);
         self.connection.prepare_provider_domain();
-        let tx = crate::persistence::begin_family(&mut self.connection, family).map_err(db)?;
+        let tx = crate::persistence::begin_provider_lifecycle(
+            &mut self.connection,
+            family,
+            None,
+            ProviderScopePhase::Other,
+            &OriginLifecycle { _sealed: () },
+        )
+        .map_err(db)?;
         let oauth_expires = tx.check_provider_oauth(prepared.as_ref())?;
         let (plan, selected, digest) = authorize_provider_consumption(
             &tx,
@@ -202,7 +174,7 @@ impl Ledger {
             original.as_ref(),
         )?;
         mark_provider_consumed(&tx, family, node, &selected.route.target)?;
-        tx.commit().map_err(db)?;
+        tx.commit_lifecycle().map_err(db)?;
         Ok(ProviderDispatch {
             plan,
             route: selected.route,
@@ -215,6 +187,7 @@ impl Ledger {
             original,
             oauth: prepared,
             oauth_expires,
+            fact_cut: selected.fact_cut,
         })
     }
     /// The exact consumed route and current authority serialize with the sole HTTPS request.
@@ -228,7 +201,7 @@ impl Ledger {
         self.check_provider_session(permit)?;
         burn_dispatch(&mut self.connection, permit)?;
         let (mut tx, domains) =
-            begin_provider_effect(&mut self.connection, permit, ProviderScopePhase::Other)?;
+            begin_lifecycle_effect(&mut self.connection, permit, ProviderScopePhase::Other)?;
         guard_live(&tx, permit, &domains, "invokeProvider", 0, "protobuf")?;
         let result = tx.request_effect(send)?;
         record_dispatch_callback(&tx, permit)?;
@@ -280,20 +253,50 @@ impl Ledger {
         format: &str,
         tokens: Option<[u64; 4]>,
     ) -> Result<()> {
+        self.complete_provider_with_result(permit, format, tokens, None)
+    }
+
+    pub fn complete_provider_with_result(
+        &mut self,
+        permit: &ProviderDispatch,
+        format: &str,
+        tokens: Option<[u64; 4]>,
+        response: Option<&str>,
+    ) -> Result<()> {
         self.check_provider_session(permit)?;
         let (tx, domains) =
-            begin_provider_effect(&mut self.connection, permit, ProviderScopePhase::Other)?;
+            begin_lifecycle_effect(&mut self.connection, permit, ProviderScopePhase::Other)?;
         let progress = release_progress(&tx, permit)?;
         guard_live(&tx, permit, &domains, "emitProvider", 0, format)?;
         if progress.pending {
             return Err(Error::Conflict("response release unresolved"));
         }
-        crate::persistence::exec(
+        // Keep the original ceiling for exposure reconciliation. The full
+        // request is only needed by the queued dispatch path.
+        let completed = crate::persistence::exec(
             &tx,
-            "UPDATE provider_runs SET state='complete' WHERE family=?1 AND node=?2",
-            crate::persistence::params![permit.plan.family.to_owned(), permit.plan.node.to_owned()],
+            "UPDATE provider_runs
+             SET state='complete',plan=json_object('ceiling',json_extract(plan,'$.ceiling'))
+             WHERE family=?1 AND node=?2 AND state='unknown'
+               AND json_extract(plan,'$.ceiling')=?3",
+            crate::persistence::params![
+                permit.plan.family.as_str(),
+                permit.plan.node.as_str(),
+                permit.plan.ceiling as i64
+            ],
         )
         .map_err(db)?;
+        if completed != 1 {
+            return Err(Error::Conflict("original provider plan not retained"));
+        }
+        if let Some(response) = response {
+            crate::provider_workflow_choice::record_result(
+                &tx,
+                &permit.plan,
+                progress.next,
+                response,
+            )?;
+        }
         if let Some(tokens) = tokens {
             crate::persistence::exec(
                 &tx,
@@ -306,7 +309,8 @@ impl Ledger {
             )
             .map_err(db)?;
         }
-        tx.commit().map_err(db)?;
+        tx.commit_lifecycle().map_err(db)?;
+        governor_commit_trace("release", &permit.plan, None);
         Ok(())
     }
     pub fn provider_receipt(&self, family: &str, node: &str) -> Result<Option<ProviderReceipt>> {
@@ -324,7 +328,7 @@ fn burn_dispatch(
     session: &mut crate::persistence::Session,
     permit: &ProviderDispatch,
 ) -> Result<()> {
-    let (tx, domains) = begin_provider_effect(session, permit, ProviderScopePhase::Other)?;
+    let (tx, domains) = begin_lifecycle_effect(session, permit, ProviderScopePhase::Other)?;
     guard_live(&tx, permit, &domains, "invokeProvider", 0, "protobuf")?;
     // Persist a separate affine dispatch burn: borrowing a handle cannot repeat this callback.
     let burn = crate::persistence::exec(
@@ -336,7 +340,7 @@ fn burn_dispatch(
     if burn != 1 {
         return Err(Error::Conflict("provider dispatch already burned"));
     }
-    tx.commit().map_err(db)?;
+    tx.commit_lifecycle().map_err(db)?;
     Ok(())
 }
 fn record_dispatch_callback(tx: &WriteScope<'_>, permit: &ProviderDispatch) -> Result<()> {
@@ -354,64 +358,6 @@ fn record_dispatch_callback(tx: &WriteScope<'_>, permit: &ProviderDispatch) -> R
     }
     Ok(())
 }
-fn store_authorized_provider_plan(
-    tx: &WriteScope<'_>,
-    plan: &ProviderPlan,
-    (digest, encoded): (&str, String),
-    catalog: &str,
-    new_claim: bool,
-    publication: &crate::provider_publication::Prepared,
-    original: Option<&crate::task_origins::PreparedOriginal>,
-) -> Result<()> {
-    let selected = any_authorized(tx, plan, "admitProvider", None, publication)?;
-    tx.provider_claim(|| crate::domains::require_view(tx, &selected.domains, original))?;
-    if new_claim {
-        reserve_provider_claim(tx, plan, digest, encoded, catalog, &selected.domains)?;
-    } else {
-        crate::persistence::exec(
-            tx,
-            "UPDATE provider_runs SET plan=?1 WHERE family=?2 AND node=?3",
-            crate::persistence::params![encoded, (plan.family).to_owned(), (plan.node).to_owned()],
-        )
-        .map_err(db)?;
-    }
-    Ok(())
-}
-
-fn reserve_provider_claim(
-    tx: &WriteScope<'_>,
-    plan: &ProviderPlan,
-    digest: &str,
-    encoded: String,
-    catalog: &str,
-    domains: &DomainView,
-) -> Result<()> {
-    crate::execution_exposure::retain_in_view(
-        tx,
-        crate::execution_exposure::ReservationClaim {
-            family: &plan.family,
-            node: &plan.node,
-            kind: crate::execution_exposure::ClaimKind::Provider,
-            member: "",
-            digest,
-            ceiling: plan.ceiling,
-        },
-        domains,
-    )?;
-    let held = crate::persistence::exec(
-        tx,
-        "UPDATE tasks SET held=held+?1 WHERE family=?2 AND ?1<=budget-held",
-        crate::persistence::params![(plan.ceiling as i64).to_owned(), (plan.family).to_owned()],
-    )
-    .map_err(db)?;
-    if held != 1 {
-        return Err(Error::Conflict("shared provider budget exhausted"));
-    }
-    crate::persistence::exec(tx, "INSERT INTO provider_runs(family,node,digest,plan,reserved,state) VALUES(?1,?2,?3,?4,?5,'queued')", crate::persistence::params![(plan.family).to_owned(),(plan.node).to_owned(),digest.to_owned(),encoded,(plan.ceiling as i64).to_owned()]).map_err(db)?;
-    crate::metering::bind(tx, plan, digest, catalog)?;
-    Ok(())
-}
-
 fn authorize_provider_consumption(
     tx: &WriteScope<'_>,
     family: &str,
@@ -432,6 +378,7 @@ fn authorize_provider_consumption(
     )?;
     let selected = any_authorized(tx, &plan, "invokeProvider", Some(eligible), publication)?;
     let digest = plan.digest()?;
+    crate::provider_workflow::require_winner(tx, &plan, &digest)?;
     tx.provider_claim(|| {
         crate::execution_exposure::provider(tx, &plan, &digest, &selected.domains, original, None)
     })?;
@@ -460,13 +407,19 @@ fn mark_provider_consumed(
     Ok(())
 }
 
-pub(super) fn begin_provider_effect<'a>(
+fn begin_lifecycle_effect<'a>(
     session: &'a mut crate::persistence::Session,
     p: &ProviderDispatch,
     phase: ProviderScopePhase,
 ) -> Result<(WriteScope<'a>, DomainView)> {
-    let tx = crate::persistence::begin_provider_use(session, &p.plan.family, &p.domains, phase)
-        .map_err(db)?;
+    let tx = crate::persistence::begin_provider_lifecycle(
+        session,
+        &p.plan.family,
+        Some(&p.domains),
+        phase,
+        &OriginLifecycle { _sealed: () },
+    )
+    .map_err(db)?;
     require_provider_effect(tx, p)
 }
 
@@ -513,6 +466,7 @@ fn require_provider_effect<'a>(
             "execution domain migrated; old permit fenced",
         ));
     }
+    crate::provider_workflow::require_winner(&tx, &p.plan, &p.digest)?;
     tx.provider_claim(|| {
         crate::execution_exposure::provider(
             &tx,
@@ -683,6 +637,7 @@ struct AuthorizedRoute {
     binding: weaver_policy::BoundProviderPolicy,
     profile: crate::provider_profiles::CheckedProfile,
     domains: DomainView,
+    fact_cut: Option<crate::hard_fact::UseCut>,
 }
 
 fn any_authorized(
@@ -696,6 +651,7 @@ fn any_authorized(
     if domains.canonical_family != p.family {
         return Err(Error::Conflict("family alias is not an executable origin"));
     }
+    let fact_cut = crate::hard_fact::require_available(tx, &p.family, &p.node)?;
     for route in &p.routes {
         if eligible.is_none_or(|set| set.contains(&route.target))
             && let Ok((binding, profile)) = guard(tx, p, route, action, &domains, publication)
@@ -705,6 +661,7 @@ fn any_authorized(
                 binding,
                 profile,
                 domains,
+                fact_cut,
             });
         }
     }
@@ -769,6 +726,9 @@ pub(super) fn guard_live_range(
     format: &str,
 ) -> Result<()> {
     tx.provider_pending(|| crate::publication_barrier::require_clear(tx))?;
+    if crate::hard_fact::require_available(tx, &p.plan.family, &p.plan.node)? != p.fact_cut {
+        return Err(Error::Conflict("provider permit has a stale hard fact cut"));
+    }
     tx.check_provider_oauth(p.oauth.as_ref())?;
     let source = p
         .publication
@@ -794,7 +754,45 @@ pub(crate) fn receipt(
     family: &str,
     node: &str,
 ) -> Result<Option<ProviderReceipt>> {
-    crate::persistence::maybe(c, "SELECT r.digest,r.state,r.target,r.reserved,t.held,r.next_event FROM provider_runs r JOIN tasks t ON t.family=r.family WHERE r.family=?1 AND r.node=?2", crate::persistence::params![(family).to_owned(),(node).to_owned()], |r|Ok(ProviderReceipt{family:family.into(),node:node.into(),digest:r.get(0)?,state:provider_state(r)?,target:r.get(2)?,reserved:integer(r,3)?,held:integer(r,4)?,events:integer(r,5)?})).map_err(db)
+    crate::persistence::maybe_prepared(c, "SELECT r.digest,r.state,r.target,r.reserved,t.held,r.next_event FROM provider_runs r JOIN tasks t ON t.family=r.family WHERE r.family=?1 AND r.node=?2", crate::persistence::params![family.to_owned(),node.to_owned()], |row| decode_receipt(row, family, node.to_owned())).map_err(db)
+}
+
+pub(crate) fn workflow_receipts(
+    c: &crate::persistence::driver::Connection,
+    family: &str,
+    nodes: &[&str],
+) -> Result<std::collections::BTreeMap<String, ProviderReceipt>> {
+    let nodes = serde_json::to_string(nodes).map_err(|_| Error::Invalid("Session nodes"))?;
+    let receipts = crate::persistence::read_all_current(
+        c,
+        "SELECT r.digest,r.state,r.target,r.reserved,t.held,r.next_event,r.node
+         FROM main.provider_runs r JOIN main.tasks t ON t.family=r.family
+         WHERE r.family=?1 AND r.node IN (SELECT value FROM json_each(?2))",
+        crate::persistence::params![family.to_owned(), nodes],
+        |row| decode_receipt(row, family, row.get(6)?),
+    )
+    .map_err(db)?;
+    Ok(receipts
+        .into_iter()
+        .map(|receipt| (receipt.node.clone(), receipt))
+        .collect())
+}
+
+fn decode_receipt(
+    row: &crate::persistence::Row,
+    family: &str,
+    node: String,
+) -> crate::persistence::Result<ProviderReceipt> {
+    Ok(ProviderReceipt {
+        family: family.into(),
+        node,
+        digest: row.get(0)?,
+        state: provider_state(row)?,
+        target: row.get(2)?,
+        reserved: integer(row, 3)?,
+        held: integer(row, 4)?,
+        events: integer(row, 5)?,
+    })
 }
 fn provider_state(row: &crate::persistence::Row) -> crate::persistence::Result<ProviderState> {
     let state: String = row.get(1)?;

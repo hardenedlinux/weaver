@@ -49,6 +49,7 @@ package WeaverProject {
     }
     requirement architectureViews : ArchitectureViewGrammar;
     part def File;
+    part def ExecutableFile :> File;
     part def IgnoredDirectory;
     part def Absent;
     part def RuntimeDependency;
@@ -72,11 +73,14 @@ package WeaverProject {
         part 'benches/README.org' : File;
     }
     part def SchemeModule {
+        doc /* The Scheme Module Interface and its native Contract own role
+           semantics. The native package build qualifies selected products. */
         part 'types.ss' : File;
         part 'objects.ss' : File;
         part 'func.ss' : File;
         part 'config.ss' : File;
         part 'interface.ss' : File;
+        part 'gerbil.pkg' : Absent;
     }
 
     package SourcePolicy {
@@ -99,8 +103,7 @@ package WeaverProject {
         part 'go/dev' : ForbiddenRuntimeRoot;
         part 'go/internal/devrunner' : ForbiddenRuntimeRoot;
         part prod : RuntimeAssetRoot;
-        part 'go/cmd/weaver-control' : RuntimeGoEntry;
-        part 'go/cmd/weaver-import-provider' : RuntimeGoEntry;
+        part 'go/dev/controlref' : DevelopmentGoEntry;
         part 'go/cmd/weaver-meter' : RuntimeGoEntry;
         part 'go/cmd/weaver-dev' : DevelopmentGoEntry;
         part 'scheme' : RuntimeSourceRoot;
@@ -111,12 +114,107 @@ package WeaverProject {
         part 'gerbil.pkg' : RuntimeInput;
         part 'github.com/HardenedLinux/weaver/go/dev' : ForbiddenRuntimeReference;
         part 'github.com/HardenedLinux/weaver/go/internal/devrunner' : ForbiddenRuntimeReference;
+        part 'github.com/Open-MBEE/OpenSysML' : ForbiddenRuntimeReference;
         part ':hardenedlinux/weaver/dev' : ForbiddenRuntimeReference;
         part 'weaver-dev' : ForbiddenRuntimeReference;
         doc /* Rust src/build inputs derive from Layout.RustPackage. Go inputs
            derive from the declared runtime entry dependency closure, including
            imports and embed directives. Development tools are outside that
            closure; a production import of one is rejected, never exempted. */
+    }
+
+    package ArtifactOrganization {
+        doc /* Project-wide custody and lifecycle. SysML allocates the
+           responsibilities. The intended executable declaration lives in
+           Gerbil Scheme through the Weaver Scheme/POO Module system.
+           Verification::Artifacts records the implemented CI paths until
+           the executable projection can be checked against the workflow. */
+        part def SchemeArtifactDeclaration;
+        part def RustArtifactMaterializer;
+        part def ReproducibleInput;
+        part def CargoAndGerbilBuildProduct;
+        part def VerificationRun;
+        part def DerivedView;
+        part def LocalQualification;
+        part def ReleaseBundle;
+        part def SiteRuntimeState;
+        part def SiteQualification;
+
+        part artifactPlan : SchemeArtifactDeclaration {
+            doc /* Typed POO objects declare artifact kinds, relative layout,
+               producers, identity bindings, publication scope and retention.
+               The existing Module Interface exports the checked plan.
+               Gerbil Build Packages compiles that export. Derive Rust input
+               and the CI publication inventory from the same plan. A change
+               to an admitted declaration invalidates both projections. */
+        }
+        part materialization : RustArtifactMaterializer {
+            doc /* Rust consumes the versioned Scheme plan over the existing
+               typed bridge or its build projection. Validate relative paths
+               and required identity before materializing a typed record.
+               Publish the immutable run record before advancing latest.
+               Go and native tools supply observations. GitHub can still
+               record early job failures before the native owner exists.
+               Neither observation path may override Scheme publication rules.
+               The Scheme declaration and Rust materializer are design work. */
+        }
+        part checkedInSources : ReproducibleInput {
+            doc /* Git owns source, schemas, locks, deterministic fixtures and
+               reproducible projections. A generated file in Git must have a
+               checked-in recipe and a reproducibility check. Site data, local
+               digests, and individual execution verdicts stay outside Git. */
+        }
+        part cargoAndGerbilBuild : CargoAndGerbilBuildProduct {
+            doc /* Cargo and Gerbil Build Packages prepare and reuse their own
+               outputs. The release consumer selects exact executable, linked
+               image and package closure. Toolchain clean operates on owned
+               outputs and does not remove verification evidence or site data. */
+        }
+        part verificationRuns : VerificationRun {
+            doc /* weaver-dev and native suites produce verification outcomes.
+               Rust materializes records from those observations under the
+               Scheme plan once implemented. Verification::Artifacts declares
+               the current local and CI paths. CI retains job attempts for seven days.
+               The remaining local design retains an immutable run by identity
+               before updating any latest view. A failed or incomplete attempt
+               remains separately addressable and never qualifies the input. */
+        }
+        part reportViews : DerivedView {
+            doc /* Org summaries and other views consume typed results. Views
+               inherit their evidence identity and can be regenerated. Scratch
+               is process-owned and cleaned on exit. Only structured diagnostics
+               and explicitly retained historical evidence survive cleanup. */
+        }
+        part localSnakeOil : LocalQualification {
+            doc /* Native Go integration owns local developer qualification.
+               Use .cache/weaver-deployment-qualification/ as its dedicated
+               root for generated catalogs, config and isolated ledgers. The
+               design gives each new run a private subdirectory and binds the
+               fixture and build identities in its typed result. Existing runs
+               and original verdicts stay where they were recorded. */
+        }
+        part deployableRelease : ReleaseBundle {
+            doc /* The release design freezes one digest-bound manifest for the
+               selected executable or image, Gerbil package library and
+               resolved closure, build inputs and toolchain revisions. The
+               deployment owner verifies the delivered bytes. Project CI
+               receipts alone cannot authorize release publication. */
+        }
+        part runtimeCustody : SiteRuntimeState {
+            doc /* The site launcher supplies settings and a selected catalog.
+               The Rust authority owns the persistent ledger. Keep catalog
+               and ledger at separate paths on the site's persistent storage.
+               A mutable ledger is bound to qualification by its admitted cut
+               or verified snapshot, never by copying a live database into CI. */
+        }
+        part formalQualification : SiteQualification {
+            doc /* Site approval, activation, catalog, replay and baseline cut
+               bind to the same immutable release before sampling. The
+               existing Governor preregistration governs A/A and retained A/B.
+               Site authority retains these records and formal verdicts
+               independently of CI expiry. Missing site records keep formal
+               qualification pending. */
+        }
     }
 
     package Verification {
@@ -135,11 +233,119 @@ package WeaverProject {
            not completion evidence. Go testing.F exercises protocol corruption;
            transcript checks do not prove SDK execution or final-send safety. */
         part rust : VerificationSuite { part 'check-rust' : VerificationMode; }
-        part go : VerificationSuite { part 'check-go' : VerificationMode; }
-        part scheme : VerificationSuite { part 'check-scheme' : VerificationMode; }
+        part go : VerificationSuite {
+            part 'check-go' : VerificationMode;
+            doc /* Prepare the ordinary provider and commit-observer images with
+               Cargo in separate five-minute stages before the Go Provider
+               integration suite. The same Cargo targets remain the fixture's
+               image authority. The integration package keeps its ten-minute
+               timeout and all existing recovery and natural-exit gates. */
+        }
+        part scheme : VerificationSuite {
+            part 'check-scheme' : VerificationMode;
+            doc /* Compile the qualification executable and Rust tests in one
+               Cargo graph before running the Rust or Go tests. The Go fixture
+               uses the normal executable reported by that graph. Give the
+               cold native build eight minutes for Rust and the linked Scheme
+               archive. Bound the Rust tests and Go suite separately. The
+               whole-suite watchdog leaves time for these stages and the
+               preceding package checks to retain independent results.
+               gerbil deps --install owns dependency resolution, source revisions
+               and native dependency builds from gerbil.pkg declarations.
+               Each dependency owns its own Build targets and package tests.
+               CI only selects the watchdog and invokes the package manager.
+               Native stdout/stderr line buffering exposes package boundaries
+               as they occur; buffered batches do not establish phase durations.
+               Dependency compilation uses gambuild-C's native host flags,
+               matching Parser's separate C procedure policy for both macro
+               and runtime phases. Retain release optimization and tail calls;
+               qualify unchanged workloads and limits before accepting it.
+               Native compiler command diagnostics and POSIX real/user/sys
+               totals distinguish configured flags and CPU work from wall time.
+               Dependency preparation uses four workers. Observe full dependency
+               cold preparation without an independent installation cutoff.
+               The Scheme job has a 120-minute infrastructure watchdog so full
+               preparation does not consume the separate 37-minute suite window;
+               other verification jobs retain their 65-minute watchdog.
+               Retain prior installation
+               timeouts as failed evidence. Native GC reports expose allocation
+               and heap progress during indexing; completion still requires the
+               package manager to exit successfully. This observation does not
+               relax target selection, the cold linked archive, recovery or
+               natural-exit gates. Record worker count, elapsed whole seconds
+               and exit code in the job receipt; the independent cap is null.
+               Run the selected package Build with a separate two-minute bound.
+               Retain SDK archive milestones and native Go failure events
+               with their stage receipts. The provider recovery and natural-exit
+               deadlines govern runtime. After a Linux rooted SDK integration
+               failure only, observe the already-built owner test once through
+               native GDB, bounded to four minutes. Require exactly one built
+               executable for this target; reject missing or ambiguous images.
+               Do not invoke Cargo after the private build environment retires.
+               Pass signals through unchanged and bound stack output. This diagnostic cannot
+               replace the failed suite receipt or qualify recovery deadlines. */
+        }
         part architecture : VerificationSuite { part 'check-architecture' : VerificationMode; }
-        part policy : VerificationSuite { part 'check-policy' : VerificationMode; }
+        part policy : VerificationSuite {
+            part 'check-policy' : VerificationMode;
+            doc /* Own the real SPEC provider integration because it consumes
+               Lean and CVC5. Run its stream-release, before-commit and
+               after-commit cases after the same native image build stages. */
+        }
         part benchmarks : VerificationSuite { part bench : VerificationMode; }
+
+        package Artifacts {
+            doc /* The repository owns reproducible inputs. Toolchains own build
+               products and caches. The verification owner publishes typed
+               receipts through one output directory. GitHub transports the
+               declared JSON paths as one artifact per job attempt.
+               ArtifactOrganization defines custody beyond verification. */
+            part def CIReceipt;
+            part def LocalResult;
+            part def ToolOutput;
+            part def ReleaseEvidence;
+
+            part '.cache/verification/ci-job.json' : CIReceipt {
+                doc /* The reusable workflow binds the run, attempt, PR head,
+                   actual checkout, runner and phase outcomes. Publish after
+                   failure as well as success. An absent checkout is explicit. */
+            }
+            part '.cache/verification/latest-bootstrap-build.json' : CIReceipt;
+            part '.cache/verification/latest-bootstrap-proofs.json' : CIReceipt;
+            part '.cache/verification/latest-bootstrap-scheme.json' : CIReceipt {
+                doc /* Native Gerbil dependency preparation records its exit
+                   and elapsed time separately from cold program verification. */
+            }
+            part '.cache/verification/latest-<suite>.json' : CIReceipt {
+                doc /* weaver-dev owns suite receipts. Preserve committed input
+                   digests, stage status, exit, duration and output digest.
+                   The native deadline precedes the GitHub step deadline so
+                   timeout evidence can finish publication. Native recovery
+                   and natural-exit acceptance keep their separate fences.
+                   Bench measurements remain separate from correctness claims. */
+            }
+            part '.cache/verification/spec/*/receipt.json' : CIReceipt {
+                doc /* The SPEC owner retains per-run verdicts and stage evidence
+                   alongside its typed catalog. Only the receipt is exported to CI. */
+            }
+            part '.cache/verification/spec/*/catalog.json' : LocalResult;
+            part '.cache/verification/latest-benchmark-summary.org' : LocalResult;
+            part transientProcessOutput : ToolOutput {
+                doc /* Native process owners use private temporary directories.
+                   Retain bounded diagnostics inside the typed receipt and clean
+                   the scratch directory when the producer finishes. */
+            }
+            part toolchainProducts : ToolOutput {
+                doc /* Cargo and Scheme Build Packages own compiled outputs.
+                   Their stores and caches are inputs to reproducibility checks
+                   where required. Ordinary jobs export the declared receipts. */
+            }
+            part approvedReleaseEvidence : ReleaseEvidence {
+                doc /* Site authority binds the deployable release and its
+                   manifest to approval, activation and workload identity.
+                   Production qualification follows the separate site protocol. */
+            }
+        }
     }
 
     package AssuranceResponsibilities {
@@ -267,9 +473,9 @@ package WeaverProject {
            execution, durable CAS and qualified storage/transport adapters. */
         part cedarLibrary : WeaverExecution::CedarSecurityFrameworks;
         part semantics : WeaverExecution::SchemeSemanticPublisher;
-        part control : WeaverExecution::GoControlAdapter;
-        doc /* Go deployment chooses an authenticated approved-producer RPC or
-           a JSON/YAML data file, exclusively. It never launches Scheme. Rust's
+        part control : WeaverExecution::SourceControlAdapter;
+        doc /* Rust preparation chooses an authenticated approved-producer RPC or
+           a JSON/YAML data file, exclusively. Rust's
            default production program installation remains a delivery gate;
            qualification graphs do not silently become production semantics. */
         part policy : WeaverExecution::RustPolicy;
@@ -340,12 +546,13 @@ package WeaverProject {
         part 'go/go.mod' : File;
         part 'go/go.sum' : File;
         part 'gerbil.pkg' : File;
-        part 'build.ss' : File;
+        part 'build.ss' : ExecutableFile;
         part 'init.ss' : File;
         part 'proto/gateway/v1/gateway.proto' : File;
         part '.github/workflows/ci.yml' : File;
         part '.github/workflows/verify-suite.yml' : File;
         part '.github/actions/prepare-toolchain/action.yml' : File;
+        part '.github/actions/prepare-toolchain/sigpipe-backtrace.gdb' : File;
         part 'scheme/policy/cedar-ffi.ss' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.24-telemetry-service.org' : File;
         part 'docs/50-59-research-program/59-provider-rpc/59.25-openshell-and-tao3k-ecosystem.org' : File;
@@ -454,6 +661,7 @@ package WeaverProject {
         part 'docs/50-59-research-program/59-provider-rpc/59.64-governance-capture-ownership.svg' : File;
 
         part 'crates/contracts' : RustPackage;
+        part 'crates/llm' : RustPackage;
         part 'crates/governance' : RustPackage {
             doc /* ApprovedProducer/ProducerCatalog seal a bounded local set of
                names, immutable original artifacts and source identity/epoch
@@ -525,6 +733,10 @@ package WeaverProject {
                Approved compiler factories construct non-Send Scheme VMs on its
                tracked blocking worker. Terminal shutdown closes source delivery;
                drain waits for natural factory/call return and VM cleanup.
+               Compiler teardown may overlap host Tokio/TLS writes. The SDK
+               cleanup boundary preserves process-wide host SIGPIPE disposition
+               throughout that overlap; an owner-only signal mask is insufficient.
+               The SDK archive owns the scoped binding to the paired Gambit ABI.
                One compiler owner is installed for this runtime incarnation;
                rejected duplicates cannot retire the current owner. This lifecycle
                run_from_env may install the compiled program and explicit startup
@@ -534,6 +746,7 @@ package WeaverProject {
             part 'weaver-governance' : RuntimeDependency;
             part 'weaver-ledger' : RuntimeDependency;
             part 'weaver-broker' : RuntimeDependency;
+            part 'weaver-llm' : RuntimeDependency;
             part 'weaver-telemetry' : RuntimeDependency;
         }
         part 'crates/telemetry' : RustPackage;
@@ -543,9 +756,8 @@ package WeaverProject {
 
         part 'go/api/v1' : GoPackage;
         part 'go/api/gateway/v1' : GoPackage;
-        part 'go/cmd/weaver-control' : GoPackage;
+        part 'go/dev/controlref' : GoPackage;
         part 'go/cmd/weaver-dev' : GoPackage;
-        part 'go/cmd/weaver-import-provider' : GoPackage;
         part 'go/cmd/weaver-meter' : GoPackage;
         part 'go/dev' : GoPackage;
         part 'go/internal/config' : GoPackage;
@@ -570,6 +782,7 @@ package WeaverProject {
                fixture. This object supplies no publication or send authority. */
         }
         part 't/gateway-contracts-test.ss' : File;
+        part 't/gateway-fact-impact-test.ss' : File;
         part 't/governance-test.ss' : File;
         part 't/policy-test.ss' : File;
         part 't/fixtures/governed-control.ss' : File {
@@ -578,6 +791,8 @@ package WeaverProject {
                or production Governance capability is introduced. */
         }
 
+        part 'prod/kubernetes/provideravailability.crd.yaml' : File;
+        part 'prod/kubernetes/provideravailability.rbac.yaml' : File;
         part 'prod/policies/provider/ProviderReview.lean' : File;
         part 'prod/policies/provider/schema.json' : File;
         part 'prod/policies/provider/provider.cedar' : File;
@@ -604,6 +819,8 @@ package WeaverProject {
         part 'dev/sysml/ProviderRpc.sysml' : File;
         part 'dev/sysml/ControlActivation.sysml' : File;
         part 'dev/sysml/PolicyEvidenceDesign.sysml' : File;
+        part 'dev/sysml/ControllerObjectLifecycle.sysml' : File;
+        part 'dev/sysml/ArchitectureEvolution.sysml' : File;
         part 'dev/sysml/runtime-trace.json' : File;
 
         part '.cache' : IgnoredDirectory;
@@ -618,6 +835,8 @@ package WeaverProject {
         part 'scheme/modules' : Absent;
         part 'scheme/weaver' : Absent;
         part 'scheme/gerbil.pkg' : Absent;
+        part 'dev/build.ss' : Absent;
+        part 'dev/gerbil.pkg' : Absent;
         part 'packages/server' : Absent;
         part 'packages/control' : Absent;
         part 'dev/models' : Absent;
@@ -627,7 +846,7 @@ package WeaverProject {
 
     allocation governanceCode allocate Architecture::semantics to Layout::'scheme/governance';
     allocation configurationCode allocate Architecture::semantics to Layout::'scheme/gateway';
-    allocation controlCode allocate Architecture::control to Layout::'go/internal/controlplane';
+    allocation controlCode allocate Architecture::control to Layout::'crates/server';
     allocation cedarCode allocate Architecture::policy to Layout::'crates/policy';
     allocation cedarBridgeCode allocate Architecture::policy to Layout::'crates/policy-ffi';
     allocation ledgerCode allocate Architecture::ledger to Layout::'crates/ledger';

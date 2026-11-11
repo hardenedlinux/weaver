@@ -6,10 +6,65 @@ use super::{SCHEMA, fixture};
 use proptest::{prop_assert, prop_assert_eq, proptest, test_runner::Config};
 use std::{
     collections::BTreeSet,
-    task::{Context, Poll, Waker},
+    sync::{
+        Arc,
+        atomic::{AtomicBool, Ordering},
+    },
+    task::{Context, Poll, Wake, Waker},
     time::{Duration, Instant},
 };
 use weaver_ledger::{DeliveryCursor, DeliveryWait, Ledger, persistence};
+
+#[derive(Default)]
+struct DeliveryWake(AtomicBool);
+
+impl Wake for DeliveryWake {
+    fn wake(self: Arc<Self>) {
+        self.0.store(true, Ordering::Relaxed);
+    }
+}
+
+#[test]
+fn expired_delivery_keeps_the_payload_inert() {
+    let directory = tempfile::tempdir().expect("store");
+    let path = directory.path().join("expired.db");
+    let _custody = persistence::Session::open_with_journal(&path, persistence::Journal::Wal)
+        .expect("native owner");
+    let (mut ledger, plan) = fixture(&path);
+    ledger.enqueue_provider(&plan).expect("reserve");
+    let permit = ledger
+        .consume_provider("f", "infer", &BTreeSet::from(["primary".into()]))
+        .expect("consume");
+    ledger
+        .dispatch_provider(&permit, || Ok(()))
+        .expect("dispatch burn");
+    let release = ledger
+        .prepare_provider_release(&permit, "expired-frame", "arrow", 1)
+        .expect("range");
+    let mut staged = None;
+    ledger
+        .release_provider_for_delivery(&permit, release, "arrow", |_, delivery| {
+            staged = Some(delivery.split());
+            Ok(())
+        })
+        .expect("native release committed");
+    let (producer, frame) = staged.expect("inert frame");
+    producer
+        .acknowledge(Instant::now() - Duration::from_secs(1))
+        .expect("acknowledged expired grant");
+    let mut cursor = DeliveryCursor::new(&plan).expect("receiver");
+    let cx = Context::from_waker(Waker::noop());
+    let mut payload = Some(42);
+    assert!(matches!(
+        cursor.poll(&frame, &cx, &mut payload),
+        Poll::Ready(Err(weaver_contracts::Error::Conflict(
+            "delivery grant expired"
+        )))
+    ));
+    assert_eq!(payload, Some(42));
+    drop((producer, frame, cursor));
+    ledger.close().expect("release worker");
+}
 
 proptest! {
     #![proptest_config(Config::with_cases(24))]
@@ -38,18 +93,25 @@ proptest! {
         let (producer, frame) = staged.expect("inert frame");
         prop_assert!(cursor.poll(&frame, &cx, &mut Some(())).is_pending(), "commit is not producer acknowledgment");
         producer.acknowledge(Instant::now()+Duration::from_secs(1)).expect("confirmed receipt");
+        let signal = Arc::new(DeliveryWake::default());
+        let waker = Waker::from(signal.clone());
+        let producer_cx = Context::from_waker(&waker);
+        prop_assert!(producer.poll_progress_ready(&producer_cx).is_pending());
         // A real different connection commits after validation and before the final owner turn.
         let tx = persistence::begin(&mut storage).expect("close real write");
         prop_assert!(cursor.poll(&frame, &cx, &mut Some(())).is_pending(), "closed lane admitted bytes");
         persistence::exec(&tx,"UPDATE tasks SET held=held WHERE family='f'",()).expect("same-view native write");
         tx.commit().expect("native commit");
         prop_assert!(cursor.poll(&frame, &cx, &mut Some(())).is_pending(), "old view skipped requalification");
+        prop_assert!(signal.0.swap(false, Ordering::Relaxed), "refresh did not wake the producer");
         prop_assert_eq!(producer.wait(|| false, Instant::now()+Duration::from_secs(1)).expect("refresh"), DeliveryWait::Refresh);
         if revoke { ledger.publish_typed(Some(0), "forbid(principal,action,resource);", SCHEMA, 2).expect("revoke"); }
         let refreshed = ledger.refresh_provider_delivery(&permit, &producer, "arrow");
         prop_assert_eq!(refreshed.is_ok(), !revoke);
         if !revoke {
+            prop_assert!(producer.poll_progress_ready(&producer_cx).is_pending());
             prop_assert!(matches!(cursor.poll(&frame, &cx, &mut Some(())), Poll::Ready(Ok(()))));
+            prop_assert!(signal.0.load(Ordering::Relaxed), "acceptance did not wake the producer");
             prop_assert!(matches!(cursor.poll(&frame, &cx, &mut Some(())), Poll::Ready(Err(_))), "range duplicated");
         }
         drop(producer); drop(frame); drop(cursor); drop(storage);

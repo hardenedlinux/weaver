@@ -22,13 +22,13 @@ http-body-util.workspace = true
 tokio.workspace = true
 tokio-rustls.workspace = true
 rustls-platform-verifier.workspace = true
-futures-executor.workspace = true
 rustls.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 [dev-dependencies]
 asp-rust.workspace = true
-criterion.workspace = true
+futures-executor.workspace = true
+criterion = { workspace = true, features = ["async_tokio"] }
 tempfile.workspace = true
 rcgen.workspace = true
 socket2.workspace = true

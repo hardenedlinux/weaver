@@ -17,7 +17,7 @@ struct Sample {
     held: u64,
     events: usize,
     calls: usize,
-    timings: weaver_ledger::persistence::TransactionTimings,
+    timings: weaver_ledger::TransactionTimings,
 }
 pub(super) fn run() {
     let provider = Provider::start();

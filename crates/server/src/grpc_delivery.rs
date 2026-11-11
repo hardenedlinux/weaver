@@ -92,14 +92,15 @@ impl Stream for ResponseStream {
                 }
                 Poll::Pending
             }
-            _ => {
+            Poll::Ready(Err(error)) => {
                 this.cancelled.cancel();
                 this.receiver.close();
                 this.staged = None;
                 this.ended = true;
-                Poll::Ready(Some(Err(Status::failed_precondition(
-                    "delivery authority changed; original reservation retained",
-                ))))
+                Poll::Ready(Some(Err(Status::failed_precondition(format!(
+                    "delivery authority changed; original reservation retained: {}",
+                    crate::grpc_contracts::rejection_reason(&error),
+                )))))
             }
         }
     }

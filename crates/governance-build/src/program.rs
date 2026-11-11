@@ -9,13 +9,17 @@ use gerbil_scheme_aot_build::{
     ProgramArchiveRequest, build_program_archive_with_contract, discover_gambit_gsc_from_env,
 };
 use std::{env, path::PathBuf};
-struct Progress;
-impl ProgramArchiveObserver for Progress {
+struct Progress<'a> {
+    output: &'a std::path::Path,
+}
+impl ProgramArchiveObserver for Progress<'_> {
     fn observe(&self, event: ProgramArchiveObservation<'_>) {
         eprintln!("governance-program: {event}");
     }
     fn observe_source_input(&self, path: &std::path::Path) {
-        println!("cargo:rerun-if-changed={}", path.display());
+        if !path.starts_with(self.output) {
+            println!("cargo:rerun-if-changed={}", path.display());
+        }
     }
 }
 struct BuildPaths {
@@ -56,14 +60,7 @@ impl BuildPaths {
             )
             .expect("approved application module")
         };
-        for source in [
-            root.join("build.ss"),
-            root.join("init.ss"),
-            root.join("scheme"),
-            application.source().to_path_buf(),
-        ] {
-            println!("cargo:rerun-if-changed={}", source.display());
-        }
+        println!("cargo:rerun-if-changed={}", application.source().display());
         let out = PathBuf::from(env::var_os("OUT_DIR").expect("Cargo output"));
         let stage = out.join("program");
         std::fs::create_dir_all(&stage).expect("program staging");
@@ -83,6 +80,8 @@ impl BuildPaths {
         let headers = [include.join("weaver_policy.h")];
         let required = [
             "gerbil-scheme-rust/scheme/runtime",
+            "gerbil-ascent/program/scheme-language",
+            "gerbil-ascent/program/session",
             "hardenedlinux/weaver/scheme/gateway/compiled",
             self.application.module(),
         ];
@@ -104,7 +103,7 @@ impl BuildPaths {
                     header_files: &headers,
                 }],
             },
-            &Progress,
+            &Progress { output: &self.out },
         )
         .expect("native program archive");
         for directive in receipt.cargo_directives {

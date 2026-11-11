@@ -8,47 +8,75 @@ package controlplane
 import (
 	"context"
 	"errors"
+	"io"
+	"slices"
+	"sync"
+	"sync/atomic"
+	"unicode/utf8"
+
 	pb "github.com/HardenedLinux/weaver/go/api/gateway/v1"
 	v1 "github.com/HardenedLinux/weaver/go/api/v1"
 	"github.com/HardenedLinux/weaver/go/internal/config"
 	"github.com/HardenedLinux/weaver/go/internal/gatewayclient"
-	"github.com/HardenedLinux/weaver/go/internal/routing"
 	"github.com/HardenedLinux/weaver/go/internal/telemetry"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"io"
-	"unicode/utf8"
 )
 
 type Gateway struct {
 	pb.UnimplementedGatewayServer
-	metrics     telemetry.Metrics
-	owner       *gatewayclient.Client
-	tasks       map[string]v1.Task
-	operations  map[[2]string]bool
-	view        v1.View
-	source      *gatewayclient.Client
-	deferred    *config.Bundle
-	publication *pb.PublicationKey
-	oauthRelay  bool
+	metrics        telemetry.Metrics
+	owner          *gatewayclient.Client
+	operations     map[[2]string]v1.ProviderPlan
+	source         *gatewayclient.Client
+	deferred       *config.Bundle
+	catalog        atomic.Pointer[catalogProjection]
+	catalogBuildMu sync.Mutex
+	publication    *pb.PublicationKey
+	oauthRelay     bool
 }
 
 // Bootstrap has no execution API calls. Unknown publication outcomes never activate ingress.
 // Task registration is persistent and idempotent, not an atomic multi-task transaction.
 func Bootstrap(ctx context.Context, source, owner *gatewayclient.Client, bundle config.Bundle) (*Gateway, error) {
-	if source == nil || owner == nil {
+	if owner == nil {
+		return nil, errors.New("operation authority role required")
+	}
+	return bootstrap(ctx, source, owner, bundle, nil)
+}
+
+type bootstrapTrace func(string)
+
+func (trace bootstrapTrace) phase(name string) {
+	if trace != nil {
+		trace(name)
+	}
+}
+
+func bootstrap(ctx context.Context, source, owner *gatewayclient.Client, bundle config.Bundle, trace bootstrapTrace) (*Gateway, error) {
+	if source == nil {
 		return nil, errors.New("source and operation authority roles required")
 	}
-	frozen, err := config.FreezeBundle(bundle)
+	frozen, err := config.CloneConfiguration(bundle)
 	if err != nil {
 		return nil, err
 	}
-	return bootstrapFrozen(ctx, source, owner, frozen)
+	selected, err := composeSourceBundle(ctx, source, frozen, false, "")
+	if err != nil {
+		return nil, err
+	}
+	if !frozen.SelectOnRequest {
+		frozen = selected
+	} else if len(frozen.Tasks) != 1 || len(frozen.Routing) != 1 || len(frozen.Tasks[0].Nodes) != 1 {
+		return nil, errors.New("request routing requires one original task and node")
+	}
+	return bootstrapFrozen(ctx, source, owner, frozen, trace)
 }
 
 // Both callers own a fully validated independent image. Keep this private:
 // it removes repeated local projection, never a source or final-use CAS.
-func bootstrapFrozen(ctx context.Context, source, owner *gatewayclient.Client, frozen config.Bundle) (*Gateway, error) {
+func bootstrapFrozen(ctx context.Context, source, owner *gatewayclient.Client, frozen config.Bundle, trace bootstrapTrace) (*Gateway, error) {
+	trace.phase("publication-inspect-start")
 	receipt, err := source.InspectPublication(ctx, frozen.Publication)
 	if err == nil && receipt.GetOutcome() == pb.PublicationOutcome_REJECTED {
 		return nil, gatewayclient.ErrPublicationRejected
@@ -57,6 +85,7 @@ func bootstrapFrozen(ctx context.Context, source, owner *gatewayclient.Client, f
 		if status.Code(err) != codes.NotFound {
 			return nil, err
 		}
+		trace.phase("publication-stage-start")
 		if err = source.StagePublication(ctx, frozen.Publication); err != nil {
 			return nil, err
 		}
@@ -66,15 +95,13 @@ func bootstrapFrozen(ctx context.Context, source, owner *gatewayclient.Client, f
 	if err != nil {
 		return nil, err
 	}
-	for _, task := range frozen.Tasks {
-		if frozen.SelectOnRequest {
-			break
-		}
-		if _, err = source.RPC.RegisterPublishedTask(source.Context(ctx), &pb.RegisterPublishedTaskRequest{Task: gatewayclient.Task(task), Publication: &pb.PublicationKey{OperationId: frozen.Publication.OperationID, Digest: digest}}); err != nil {
-			return nil, err
-		}
+	trace.phase("task-registration-start")
+	_, err = source.RPC.RegisterPublishedTask(source.Context(ctx), &pb.RegisterPublishedTaskRequest{Publication: &pb.PublicationKey{OperationId: frozen.Publication.OperationID, Digest: digest}, SourceScope: sourceCompositionRequest(frozen, false, "")})
+	if err != nil {
+		return nil, err
 	}
 	if receipt == nil {
+		trace.phase("publication-finalize-start")
 		receipt, err = source.FinalizePublication(ctx, frozen.Publication)
 		if err != nil {
 			return nil, err
@@ -83,18 +110,18 @@ func bootstrapFrozen(ctx context.Context, source, owner *gatewayclient.Client, f
 	if receipt.GetRevision() != frozen.View().Revision || receipt.GetFence() != frozen.View().Fence {
 		return nil, errors.New("source activation observation")
 	}
-	g := &Gateway{owner: owner, tasks: map[string]v1.Task{}, operations: map[[2]string]bool{}, view: frozen.View()}
-	for _, task := range frozen.Tasks {
-		g.tasks[task.Family] = task
-	}
+	trace.phase("publication-confirmed")
+	g := &Gateway{owner: owner, operations: make(map[[2]string]v1.ProviderPlan, len(frozen.Plans))}
+	view := frozen.View()
 	for _, plan := range frozen.Plans {
-		g.operations[[2]string{plan.Family, plan.Node}] = true
+		plan.Revision, plan.Fence = view.Revision, view.Fence
+		g.operations[[2]string{plan.Family, plan.Node}] = plan
 	}
 	if frozen.SelectOnRequest {
 		g.source = source
 		g.deferred = &frozen
 		g.publication = &pb.PublicationKey{OperationId: frozen.Publication.OperationID, Digest: digest}
-		g.operations[[2]string{frozen.Tasks[0].Family, frozen.Routing[0].Node}] = true
+		g.operations[[2]string{frozen.Tasks[0].Family, frozen.Routing[0].Node}] = v1.ProviderPlan{}
 	}
 	return g, nil
 }
@@ -112,7 +139,7 @@ func (g *Gateway) ExecuteProvider(in *pb.ProviderRequest, out pb.Gateway_Execute
 		return status.Error(codes.InvalidArgument, "provider proposal required")
 	}
 	p := in.Plan
-	if !g.operations[[2]string{p.Family, p.Node}] {
+	if _, registered := g.operations[[2]string{p.Family, p.Node}]; !registered {
 		return status.Error(codes.PermissionDenied, "unregistered operation")
 	}
 	routes := make([]v1.ProviderRoute, 0, len(p.Routes))
@@ -162,7 +189,7 @@ func (g *Gateway) InspectTelemetry(context.Context, *pb.Empty) (*pb.TelemetrySna
 }
 
 func (g *Gateway) Inspect(ctx context.Context, key *pb.OperationKey) (*pb.ProviderReceipt, error) {
-	if key == nil || !g.operations[[2]string{key.Family, key.Node}] {
+	if _, registered := g.operations[[2]string{key.GetFamily(), key.GetNode()}]; !registered {
 		return nil, status.Error(codes.PermissionDenied, "unregistered operation")
 	}
 	forward, err := g.providerContext(ctx)
@@ -174,11 +201,15 @@ func (g *Gateway) Inspect(ctx context.Context, key *pb.OperationKey) (*pb.Provid
 
 func (g *Gateway) compileProvider(ctx context.Context, proposal v1.ProviderPlan) (v1.ProviderPlan, string, error) {
 	if g.deferred == nil {
-		plan, err := routing.CompileProvider(g.tasks[proposal.Family], proposal, g.view)
-		if err != nil {
-			return plan, "", status.Error(codes.PermissionDenied, "source contract rejected")
+		original, registered := g.operations[[2]string{proposal.Family, proposal.Node}]
+		// Bootstrap validated and took ownership of the exact original. The
+		// Rust owner still checks current authority on the submitted plan.
+		if !registered || proposal.Profile != original.Profile || proposal.ProfileCommitment != original.ProfileCommitment ||
+			proposal.Model != original.Model || proposal.Ceiling != original.Ceiling ||
+			!slices.Equal(proposal.Routes, original.Routes) || proposal.Body != original.Body {
+			return v1.ProviderPlan{}, "", status.Error(codes.PermissionDenied, "source contract rejected")
 		}
-		return plan, "", nil
+		return original, "", nil
 	}
 	if proposal.Body != "" || proposal.Model != "" || proposal.Profile != "" ||
 		proposal.ProfileCommitment != "" || len(proposal.Routes) != 0 || proposal.Ceiling != 0 {
@@ -188,11 +219,9 @@ func (g *Gateway) compileProvider(ctx context.Context, proposal v1.ProviderPlan)
 	if err != nil {
 		return v1.ProviderPlan{}, "", status.Error(codes.FailedPrecondition, "source routing rejected")
 	}
-	_, err = g.source.RPC.RegisterPublishedTask(g.source.Context(ctx), &pb.RegisterPublishedTaskRequest{
-		Task: gatewayclient.Task(selected.Tasks[0]), Publication: g.publication,
-	})
+	_, err = g.source.RPC.RegisterPublishedTask(g.source.Context(ctx), selected.registration)
 	if err != nil {
 		return v1.ProviderPlan{}, "", err
 	}
-	return selected.Plans[0], catalog, nil
+	return selected.bundle.Plans[0], catalog, nil
 }

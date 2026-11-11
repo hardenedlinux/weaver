@@ -14,8 +14,8 @@ use weaver_contracts::{Error, Result};
 use weaver_ledger::{DeliveryProducer, DeliveryWait, Ledger, ProviderDispatch};
 
 pub(crate) struct PendingDelivery {
-    receipt: DeliveryProducer,
-    deadline: Instant,
+    pub(crate) receipt: DeliveryProducer,
+    pub(crate) deadline: Instant,
 }
 impl PendingDelivery {
     pub(crate) fn new(receipt: DeliveryProducer, deadline: Instant) -> Self {
@@ -52,7 +52,7 @@ impl Output {
         format: &str,
     ) -> Result<()> {
         while let Some(first) = self.deliveries.front() {
-            match first.receipt.wait(|| self.stopped(), first.deadline)? {
+            match self.wait_delivery(first, first.deadline)? {
                 DeliveryWait::Refresh => {
                     ledger.refresh_provider_delivery(permit, &first.receipt, format)?
                 }
@@ -60,6 +60,24 @@ impl Output {
             }
         }
         Ok(())
+    }
+    fn wait_delivery(&self, entry: &PendingDelivery, deadline: Instant) -> Result<DeliveryWait> {
+        loop {
+            if let Some(progress) = entry.receipt.progress()? {
+                return Ok(progress);
+            }
+            let stopped = || Error::Conflict("delivery cancelled or unavailable");
+            self.runtime.block_on(async {
+                tokio::select! {
+                    biased;
+                    () = self.cancelled.cancelled() => Err(stopped()),
+                    () = self.shutdown.cancelled() => Err(stopped()),
+                    () = self.sender.closed() => Err(stopped()),
+                    () = tokio::time::sleep_until(deadline.into()) => Err(stopped()),
+                    () = poll_fn(|cx| entry.receipt.poll_progress_ready(cx)) => Ok(()),
+                }
+            })?;
+        }
     }
     pub(crate) fn reserve_guarded(
         &mut self,
@@ -120,10 +138,7 @@ impl Output {
                         .deliveries
                         .front()
                         .ok_or(Error::Conflict("capacity without pending owner"))?;
-                    match first
-                        .receipt
-                        .wait(|| self.stopped(), deadline.min(first.deadline))?
-                    {
+                    match self.wait_delivery(first, deadline.min(first.deadline))? {
                         DeliveryWait::Accepted => self.completed_delivery(),
                         DeliveryWait::Refresh => refresh = true,
                     }

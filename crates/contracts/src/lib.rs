@@ -6,7 +6,14 @@
 mod delta_review;
 pub use delta_review::{DeltaDisposition, DeltaReview, PublicationReviewContext, ReviewAuthority};
 mod domains;
+mod hard_fact;
 pub use domains::{TaskAdmission, TaskAdmissionReceipt};
+pub use hard_fact::{
+    FactBarrier, FactFeed, FactIntent, FactResolution, FactWork, MAX_WORKFLOW_RESULT_BYTES,
+    ProviderWorkflow, SESSION_CHOICE_SCHEMA, SESSION_DAG_SCHEMA, SESSION_NESTED_SCHEMA,
+    SESSION_WORKFLOW_SCHEMA, WorkflowRoute, validate_session_choice, validate_session_dag,
+    validate_session_selectors,
+};
 mod json;
 pub use domains::{
     DomainBinding, DomainMigration, DomainMigrationReceipt, DomainStamp, DomainView,
@@ -18,6 +25,11 @@ pub use metering::{
 };
 mod provider;
 mod provider_catalog;
+mod provider_routing;
+pub use provider_routing::{
+    ProviderOperationBinding, ProviderOperationScope, ProviderRoutingScope, RoutingCandidate,
+    RoutingSelection,
+};
 mod provider_oauth;
 pub use provider_catalog::{CatalogEntry, ProviderCatalog};
 pub use provider_oauth::{
@@ -42,7 +54,7 @@ pub use source_authority::{
     SourceAuthority, SourceIdentity, SourceRotation, SourceRotationOutcome, SourceRotationReceipt,
 };
 mod stream;
-pub use json::decode;
+pub use json::{decode, decode_bounded};
 pub use model::{
     Error, MAX_BODY_BYTES, MAX_CREDITS, Outcome, Proposal, Receipt, Result, Task, body_digest,
     identifier,

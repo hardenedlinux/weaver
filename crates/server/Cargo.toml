@@ -13,6 +13,7 @@ weaver-governance.workspace = true
 weaver-ledger.workspace = true
 weaver-broker.workspace = true
 weaver-telemetry.workspace = true
+weaver-llm = { path = "../llm" }
 tokio.workspace = true
 tokio-util.workspace = true
 sha2.workspace = true
@@ -21,21 +22,36 @@ subtle.workspace = true
 tonic.workspace = true
 tonic-prost.workspace = true
 prost.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+serde-saphyr = "0.0.29"
+toml = { version = "1.1.8", default-features = false, features = ["parse", "serde"] }
 tokio-stream.workspace = true
 rustls.workspace = true
 arrow-array = { workspace = true, optional = true }
 arrow-schema = { workspace = true, optional = true }
 arrow-ipc = { workspace = true, optional = true }
 gerbil-scheme = { workspace = true, optional = true }
+futures-util = { version = "0.3", optional = true }
+k8s-openapi = { version = "0.28", features = ["v1_32"], optional = true }
+kube = { version = "4.2", features = ["runtime"], optional = true }
 [features]
 default = ["llm-provider"]
 llm-provider = ["weaver-broker/llm-provider"]
 scheme-program = ["weaver-governance/scheme-program"]
 arrow = ["dep:arrow-array", "dep:arrow-schema", "dep:arrow-ipc"]
+kubernetes = ["dep:futures-util", "dep:k8s-openapi", "dep:kube"]
 governance-qualification = ["scheme-program", "weaver-governance/scheme-qualification", "dep:gerbil-scheme"]
 [build-dependencies]
 tonic-prost-build.workspace = true
 [dev-dependencies]
+base64 = "0.22"
+jsonwebtoken = { version = "11.1.0", default-features = false, features = ["aws_lc_rs"] }
+rsa = "0.9.10"
+rand = "0.8"
+tokio-rustls.workspace = true
+url = "2"
+oauth2 = { version = "5.0.0", default-features = false }
 weaver-broker = { workspace = true, features = ["test-loopback"] }
 ring.workspace = true
 weaver-ledger = { workspace = true, features = ["commit-observer"] }
@@ -49,6 +65,10 @@ gerbil-scheme-sys.workspace = true
 [[bench]]
 name = "gateway"
 harness = false
+[[test]]
+name = "delegated_operation"
+path = "tests/integration/delegated_operation.rs"
+
 [[test]]
 name = "governance_owner"
 path = "tests/integration/governance_owner.rs"

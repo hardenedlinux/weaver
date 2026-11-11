@@ -38,3 +38,28 @@ func TestSchemeObservationPreservesChunkedOutputAndExitBoundary(t *testing.T) {
 		t.Fatal("fabricated a terminal marker or shutdown interval")
 	}
 }
+
+func TestSchemeObservationRetainsUnfinishedNativeArchivePhase(t *testing.T) {
+	var log bytes.Buffer
+	started := time.Now()
+	output := &schemeOutput{destination: &log, started: started}
+	chunks := []string{
+		"[other 0.1.0] governance-program: phase=static-archive state=complete\n",
+		"[weaver-governance 0.1.0] governance-program: phase=module-c-batch state=complete operation=generate C elapsedMs=1\n",
+		"[weaver-governance 0.1.0] governance-program: phase=native-object state=complete operation=compile module\n",
+		"[weaver-governance 0.1.0] governance-program: phase=native-object-batch state=st",
+		"art operation=compile program module objects subject=jobs=459 workers=4\n",
+	}
+	for _, chunk := range chunks {
+		if _, err := output.Write([]byte(chunk)); err != nil {
+			t.Fatal(err)
+		}
+	}
+	report := output.timing(started.Add(time.Second))
+	if len(report.Archive) != 2 || report.Archive[0].Phase != "module-c-batch" ||
+		report.Archive[0].State != "complete" || report.Archive[1].Phase != "native-object-batch" ||
+		report.Archive[1].State != "start" || report.Archive[1].At == "" ||
+		report.Archive[1].Subject != "jobs=459 workers=4" {
+		t.Fatalf("unexpected native archive milestones: %+v", report.Archive)
+	}
+}

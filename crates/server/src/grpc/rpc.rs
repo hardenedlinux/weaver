@@ -2,297 +2,46 @@
 //
 // SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
-//! Default Go-to-Rust RPC boundary. Agent credentials cannot publish original authority.
-use crate::grpc_contracts::{
-    compilation_status, domain_view, publication_receipt, status, task_contract,
-};
-use crate::grpc_listeners::{MeterMethod, MeterPaths, validate_listeners};
+//! Typed RPC methods for the authenticated Gateway service.
+use super::service::{Gateway, ResponseStream};
 use crate::{
-    ServerConfig,
-    admission::Admission,
-    connections, pb,
-    rpc_security::{GrpcConfig, GrpcListeners, RpcRole},
-    runtime::RuntimeOwner,
-    source_owner::SourceOwner,
+    grpc_contracts::{compilation_status, domain_view, publication_receipt, status, task_contract},
+    pb,
+    rpc_security::RpcRole,
 };
-use sha2::{Digest, Sha256};
-use std::future::Future;
-use subtle::ConstantTimeEq;
-use tokio::{net::TcpListener, sync::Semaphore};
 use tonic::{Request, Response, Status};
-use weaver_broker::ProviderTransport;
 use weaver_contracts::Error;
 use weaver_ledger::Ledger;
-#[derive(Clone)]
-pub(crate) struct Gateway {
-    pub(crate) config: ServerConfig,
-    credential: [u8; 32],
-    ingress: Ingress,
-    peer: [u8; 32],
-    operation_peer: [u8; 32],
-    pub(crate) transport: ProviderTransport,
-    pub(crate) admission: Admission,
-    pub(crate) runtime: RuntimeOwner,
-    pub(crate) metering_enabled: bool,
-    pub(crate) provider_oauth_enabled: bool,
-}
-#[derive(Clone)]
-enum Ingress {
-    Operation,
-    Source(SourceOwner),
-}
-impl Ingress {
-    fn role(&self) -> RpcRole {
-        match self {
-            Self::Operation => RpcRole::Operation,
-            Self::Source(_) => RpcRole::Source,
-        }
-    }
-    fn source(&self) -> std::result::Result<&SourceOwner, Status> {
-        match self {
-            Self::Source(owner) => Ok(owner),
-            Self::Operation => Err(Status::permission_denied(
-                "source owner unavailable on operation ingress",
-            )),
-        }
-    }
-}
-pub use crate::grpc_delivery::ResponseStream;
 
-/// Serve the default authenticated RPC profile and acknowledge shutdown only after drain.
-pub async fn serve_grpc(
-    listeners: GrpcListeners,
-    settings: GrpcConfig,
-    shutdown: impl std::future::Future<Output = ()> + Send + 'static,
-) -> weaver_contracts::Result<()> {
-    serve_grpc_with_runtime(listeners, settings, RuntimeOwner::new(), shutdown).await
-}
-/// Embed approved owners in the same tracked runtime as source/operation RPC.
-/// All attached owners must naturally drain before service completion.
-pub async fn serve_grpc_with_runtime(
-    listeners: GrpcListeners,
-    settings: GrpcConfig,
-    runtime: RuntimeOwner,
-    shutdown: impl std::future::Future<Output = ()> + Send + 'static,
-) -> weaver_contracts::Result<()> {
-    let _lifetime = runtime.shutdown_guard();
-    let result = match validate_listeners(&listeners, &settings) {
-        Ok(()) => {
-            let _ = rustls::crypto::ring::default_provider().install_default();
-            serve_owned(listeners, settings, runtime.clone(), shutdown).await
-        }
-        Err(error) => Err(error),
-    };
-    runtime.drain().await;
-    result
-}
-async fn serve_owned(
-    listeners: GrpcListeners,
-    settings: GrpcConfig,
-    runtime: RuntimeOwner,
-    shutdown: impl Future<Output = ()> + Send + 'static,
-) -> weaver_contracts::Result<()> {
-    let admission = Admission::new(settings.owner.max_in_flight);
-    let slot = admission
-        .publication()
-        .map_err(|_| Error::Conflict("source startup capacity"))?;
-    let source_worker = match SourceOwner::start_reviewed(
-        runtime.clone(),
-        slot,
-        settings.owner.database.clone(),
-        settings.review_authority.clone(),
-        settings.metering.clone(),
-        settings.provider_oauth.clone(),
-    )
-    .await
-    {
-        Ok(owner) => owner,
-        Err(error) => return Err(error),
-    };
-    let operation = Gateway::new(
-        &settings,
-        Ingress::Operation,
-        admission.clone(),
-        runtime.clone(),
-    );
-    let source = Gateway::new(
-        &settings,
-        Ingress::Source(source_worker.client.clone()),
-        admission,
-        runtime.clone(),
-    );
-    let operation = serve_listener(
-        listeners.operation,
-        operation,
-        settings.security.tls.clone(),
-    );
-    let source = serve_listener(listeners.source, source, settings.security.tls);
-    tokio::pin!(operation, source, shutdown);
-    let result = tokio::select! {
-        result = &mut operation => { runtime.request_shutdown(); result.and(source.await) },
-        result = &mut source => { runtime.request_shutdown(); result.and(operation.await) },
-        _ = &mut shutdown => {
-            runtime.request_shutdown();
-            let (operation, source) = tokio::join!(operation, source);
-            operation.and(source)
-        },
-    };
-    result.and(source_worker.finish().await)
-}
-
-async fn serve_listener(
-    listener: TcpListener,
-    gateway: Gateway,
-    tls: tonic::transport::ServerTlsConfig,
-) -> weaver_contracts::Result<()> {
-    let capacity = match gateway.ingress.role() {
-        RpcRole::Operation => connections::MAX_CONNECTIONS,
-        RpcRole::Source => connections::MAX_SOURCE_CONNECTIONS,
-    };
-    let close = gateway.runtime.clone();
-    let authenticated = gateway.clone();
-    let service = pb::gateway_server::GatewayServer::new(gateway)
-        .max_decoding_message_size(2 * 1024 * 1024)
-        .max_encoding_message_size(4 * 1024 * 1024);
-    let service = tonic::service::interceptor::InterceptedService::new(
-        service,
-        move |request: Request<()>| {
-            if request.extensions().get::<MeterMethod>().is_some() {
-                authenticated.meter_identity(&request)?;
-            } else {
-                authenticated.authenticate(&request, authenticated.ingress.role())?;
-            }
-            Ok(request)
-        },
-    );
-    let result = tonic::transport::Server::builder()
-        .timeout(std::time::Duration::from_secs(10))
-        .max_concurrent_streams(32)
-        .concurrency_limit_per_connection(32)
-        .http2_max_header_list_size(8192)
-        .initial_stream_window_size(65536)
-        .initial_connection_window_size(1048576)
-        .tls_config(tls.timeout(std::time::Duration::from_secs(3)))
-        .map_err(|_| Error::Invalid("gRPC TLS configuration"))?
-        .add_service(MeterPaths(service))
-        .serve_with_incoming_shutdown(
-            connections::Incoming::new(listener, std::sync::Arc::new(Semaphore::new(capacity))),
-            async move {
-                close.cancellation().await;
-            },
-        )
-        .await;
-    result.map_err(|_| Error::Conflict("gRPC server failed"))
-}
-impl Gateway {
-    fn bearer_hash<T>(request: &Request<T>) -> std::result::Result<[u8; 32], Status> {
-        let metadata = request.metadata();
-        if metadata.get_all("authorization").iter().count() != 1 {
-            return Err(Status::unauthenticated("credential required"));
-        }
-        let token = metadata
-            .get("authorization")
-            .and_then(|v| v.to_str().ok())
-            .and_then(|v| v.strip_prefix("Bearer "))
-            .filter(|v| !v.is_empty() && v.len() <= 256)
-            .ok_or(Status::unauthenticated("credential required"))?;
-        let actual: [u8; 32] = Sha256::digest(token.as_bytes()).into();
-        Ok(actual)
-    }
-    fn meter_identity<T>(
-        &self,
-        request: &Request<T>,
-    ) -> std::result::Result<weaver_contracts::SourceIdentity, Status> {
-        if self.runtime.closing() || self.ingress.role() != RpcRole::Source {
-            return Err(Status::permission_denied("meter ingress required"));
-        }
-        let certificate=request.extensions().get::<tonic::transport::server::TlsConnectInfo<tonic::transport::server::TcpConnectInfo>>()
-            .and_then(|tls|tls.peer_certs()).and_then(|chain|chain.first().cloned())
-            .ok_or(Status::unauthenticated("meter certificate required"))?;
-        crate::source_identity::certificate_identity(
-            certificate.as_ref(),
-            hex::encode(Self::bearer_hash(request)?),
-        )
-    }
-    fn source_identity<T>(
-        &self,
-        request: &Request<T>,
-    ) -> std::result::Result<weaver_contracts::SourceIdentity, Status> {
-        self.authenticate(request, RpcRole::Source)?;
-        let certificates=request.extensions().get::<tonic::transport::server::TlsConnectInfo<tonic::transport::server::TcpConnectInfo>>()
-            .and_then(|tls|tls.peer_certs()).ok_or(Status::unauthenticated("source certificate missing"))?;
-        let certificate = certificates
-            .first()
-            .ok_or(Status::unauthenticated("source certificate missing"))?;
-        crate::source_identity::certificate_identity(
-            certificate.as_ref(),
-            hex::encode(self.credential),
-        )
-    }
-    fn new(
-        settings: &GrpcConfig,
-        ingress: Ingress,
-        admission: Admission,
-        runtime: RuntimeOwner,
-    ) -> Self {
-        let (peer, credential) = match ingress.role() {
-            RpcRole::Operation => (settings.security.peer_sha256, settings.owner.token_sha256),
-            RpcRole::Source => (
-                settings.security.source_peer_sha256,
-                settings.security.admin_sha256,
-            ),
-        };
-        Self {
-            config: settings.owner.clone(),
-            credential,
-            ingress,
-            peer,
-            operation_peer: settings.security.peer_sha256,
-            transport: settings.provider.clone(),
-            admission,
-            runtime,
-            metering_enabled: settings.metering.is_some(),
-            provider_oauth_enabled: settings.provider_oauth.is_some(),
-        }
-    }
-    pub(crate) fn authenticate<T>(
-        &self,
-        request: &Request<T>,
-        role: RpcRole,
-    ) -> std::result::Result<(), Status> {
-        self.authenticate_request(request, role).inspect_err(|_| {
-            self.runtime
-                .telemetry()
-                .record(weaver_telemetry::Signal::RpcAuthRejected);
-        })
-    }
-    fn authenticate_request<T>(
-        &self,
-        request: &Request<T>,
-        role: RpcRole,
-    ) -> std::result::Result<(), Status> {
-        if self.runtime.closing() {
-            return Err(Status::unavailable("server closing"));
-        }
-        if self.ingress.role() != role {
-            return Err(Status::permission_denied(
-                "RPC method belongs to another ingress",
-            ));
-        }
-        let peer=request.extensions().get::<tonic::transport::server::TlsConnectInfo<tonic::transport::server::TcpConnectInfo>>()
-            .and_then(|tls|tls.peer_certs()).and_then(|certs|certs.first().map(|cert|Sha256::digest(cert.as_ref())));
-        if peer.is_none_or(|digest| !bool::from(digest.as_slice().ct_eq(&self.peer))) {
-            return Err(Status::unauthenticated("workload certificate rejected"));
-        }
-        let actual = Self::bearer_hash(request)?;
-        if !bool::from(actual.ct_eq(&self.credential)) {
-            return Err(Status::unauthenticated("credential rejected"));
-        }
-        Ok(())
-    }
-}
 #[tonic::async_trait]
 impl pb::gateway_server::Gateway for Gateway {
+    async fn inspect_hard_fact(
+        &self,
+        request: Request<pb::Empty>,
+    ) -> Result<Response<pb::HardFactFeedState>, Status> {
+        let caller = self.source_identity(&request)?;
+        let state = self.ingress.source()?.inspect_fact(caller).await?;
+        Ok(Response::new(Self::fact_feed_state(state)))
+    }
+
+    async fn stage_hard_fact(
+        &self,
+        request: Request<pb::HardFactIntent>,
+    ) -> Result<Response<pb::HardFactBarrier>, Status> {
+        let caller = self.source_identity(&request)?;
+        self.stage_fact_request(self.ingress.source()?, caller, request.into_inner())
+            .await
+    }
+
+    async fn resolve_hard_fact(
+        &self,
+        request: Request<pb::HardFactBarrier>,
+    ) -> Result<Response<pb::FactBarrierResolution>, Status> {
+        let caller = self.source_identity(&request)?;
+        self.resolve_fact_request(self.ingress.source()?, caller, request.into_inner())
+            .await
+    }
+
     async fn inspect_telemetry(
         &self,
         request: Request<pb::Empty>,
@@ -538,6 +287,59 @@ impl pb::gateway_server::Gateway for Gateway {
         }))
     }
     type ExecuteProviderStream = ResponseStream;
+    async fn compose_source(
+        &self,
+        request: Request<pb::SourceCompositionRequest>,
+    ) -> std::result::Result<Response<pb::SourceCompositionReply>, Status> {
+        let caller = self.source_identity(&request)?;
+        let input = request.into_inner();
+        let source = self.ingress.source()?;
+        let before = source.authority(caller.clone()).await?;
+        let use_catalog = input.use_catalog;
+        let snapshot = if use_catalog {
+            source.provider_catalog(caller.clone()).await?
+        } else {
+            None
+        };
+        let version = snapshot
+            .as_ref()
+            .map(|(version, _)| version.as_str())
+            .unwrap_or("")
+            .to_owned();
+        if input.expected_catalog_version != version {
+            return Err(Status::failed_precondition(
+                "composition catalog version changed",
+            ));
+        }
+        let output = crate::source_composition::compose(
+            &self.runtime,
+            input,
+            snapshot.as_ref().map(|(_, bytes)| bytes.as_slice()),
+        )
+        .await?;
+        if source.authority(caller.clone()).await? != before || self.runtime.closing() {
+            return Err(Status::permission_denied(
+                "source authority changed during composition",
+            ));
+        }
+        if use_catalog
+            && source
+                .provider_catalog(caller)
+                .await?
+                .as_ref()
+                .map(|(version, _)| version.as_str())
+                .unwrap_or("")
+                != version
+        {
+            return Err(Status::failed_precondition(
+                "composition catalog version changed",
+            ));
+        }
+        Ok(Response::new(pb::SourceCompositionReply {
+            artifact: Some(crate::source_artifact::artifact_data(output.data())),
+            catalog_version: version,
+        }))
+    }
     async fn compile_source(
         &self,
         request: Request<pb::ProducerRequest>,
@@ -548,6 +350,27 @@ impl pb::gateway_server::Gateway for Gateway {
             .map_err(|_| Status::invalid_argument("producer name invalid"))?;
         let source = self.ingress.source()?;
         let before = source.authority(caller.clone()).await?;
+        let lifecycle = self.runtime.single_provider();
+        let _prepare = match lifecycle {
+            Some(lifecycle) => Some(
+                lifecycle
+                    .prepare
+                    .try_lock()
+                    .map_err(|_| Status::resource_exhausted("provider preparation in progress"))?,
+            ),
+            None => None,
+        };
+        if let Some(prepared) = lifecycle.and_then(|lifecycle| lifecycle.ready.get()) {
+            if prepared.producer != producer || prepared.authority != before {
+                return Err(Status::permission_denied(
+                    "prepared provider binding changed",
+                ));
+            }
+            if self.runtime.closing() {
+                return Err(Status::unavailable("source compilation closed"));
+            }
+            return Ok(Response::new(prepared.reply()));
+        }
         let client = self
             .runtime
             .producers()
@@ -562,6 +385,7 @@ impl pb::gateway_server::Gateway for Gateway {
             })?,
             _=self.runtime.cancellation()=>return Err(Status::unavailable("source compilation closed")),
         };
+        crate::source_composition::validate_transport(bound.source())?;
         // No source SQL lane is retained while foreign code runs. Re-observe the
         // actual caller after completion; a captured old observation is not use.
         let after = source.authority(caller).await?;
@@ -575,13 +399,26 @@ impl pb::gateway_server::Gateway for Gateway {
         }
         let reply = pb::CompiledSource {
             producer,
-            authority: Some(crate::source_identity::view(after)?),
+            authority: Some(crate::source_identity::view(after.clone())?),
             artifact: Some(crate::source_artifact::artifact(&bound)),
         };
         if prost::Message::encoded_len(&reply) > 4 * 1024 * 1024 {
             return Err(Status::resource_exhausted(
                 "compiled source exceeds RPC response bound",
             ));
+        }
+        if let Some(lifecycle) = lifecycle {
+            let prepared = crate::single_provider::Prepared::new(
+                &reply,
+                after,
+                bound,
+                self.runtime.fact_feed(),
+            )
+            .map_err(status)?;
+            lifecycle
+                .ready
+                .set(prepared)
+                .map_err(|_| Status::internal("provider preparation already sealed"))?;
         }
         self.runtime
             .telemetry()
@@ -599,7 +436,11 @@ impl pb::gateway_server::Gateway for Gateway {
         request: Request<pb::OperationKey>,
     ) -> std::result::Result<Response<pb::ProviderReceipt>, Status> {
         self.authenticate(&request, RpcRole::Operation)?;
-        let oauth = crate::provider_oauth::observe(self.provider_oauth_enabled, &request)?;
+        let oauth = crate::provider_oauth::observe(
+            self.provider_oauth_enabled,
+            self.provider_oauth_relay,
+            &request,
+        )?;
         let slot = self.admission.observation()?;
         let key = request.into_inner();
         let config = self.config.clone();
@@ -668,6 +509,76 @@ impl pb::gateway_server::Gateway for Gateway {
     ) -> std::result::Result<Response<pb::Empty>, Status> {
         let caller = self.source_identity(&request)?;
         let registration = request.into_inner();
+        if let Some(wire) = registration.source_scope {
+            if registration.task.is_some()
+                || wire.use_catalog
+                || !wire.expected_catalog_version.is_empty()
+            {
+                return Err(Status::invalid_argument("source registration shape"));
+            }
+            let key = registration
+                .publication
+                .ok_or(Status::invalid_argument("original publication missing"))?;
+            let input = crate::source_composition::decode(wire)?;
+            if input.source.publication.operation_id != key.operation_id
+                || input.source.publication.digest().map_err(status)? != key.digest
+            {
+                return Err(Status::invalid_argument("source publication mismatch"));
+            }
+            let selected =
+                crate::source_composition::compose_typed(&self.runtime, input.clone(), None)
+                    .await?;
+            if input.routing.is_empty() {
+                for plan in selected.plans() {
+                    self.ingress
+                        .source()?
+                        .register_operation_source(
+                            caller.clone(),
+                            weaver_contracts::ProviderOperationScope::Fixed {
+                                task: selected.task().clone(),
+                                plan: plan.clone(),
+                                publication: selected.publication().clone(),
+                            },
+                        )
+                        .await?;
+                }
+            } else {
+                if input.source.tasks.len() != 1
+                    || !input.source.plans.is_empty()
+                    || input.routing.len() != 1
+                    || input.source.governance.family != input.source.tasks[0].family
+                    || input.source.governance.open_nodes != input.source.tasks[0].nodes
+                    || !input.source.governance.workflow_edges.is_empty()
+                    || !input.source.governance.workflow_selectors.is_empty()
+                    || self.runtime.single_provider().is_some()
+                {
+                    return Err(Status::invalid_argument("deferred source scope mismatch"));
+                }
+                let scope = weaver_contracts::ProviderRoutingScope {
+                    task: input
+                        .source
+                        .tasks
+                        .into_iter()
+                        .next()
+                        .ok_or(Status::invalid_argument("source task missing"))?,
+                    selection_schema: input.source.governance.schema,
+                    selection: input
+                        .routing
+                        .into_iter()
+                        .next()
+                        .ok_or(Status::invalid_argument("source selection missing"))?,
+                    publication: input.source.publication,
+                };
+                self.ingress
+                    .source()?
+                    .register_operation_source(
+                        caller,
+                        weaver_contracts::ProviderOperationScope::Catalog { routing: scope },
+                    )
+                    .await?;
+            }
+            return Ok(Response::new(pb::Empty {}));
+        }
         let task = registration
             .task
             .ok_or(Status::invalid_argument("task missing"))?;
@@ -718,11 +629,10 @@ impl pb::gateway_server::Gateway for Gateway {
     ) -> std::result::Result<Response<pb::PublicationReceipt>, Status> {
         let caller = self.source_identity(&request)?;
         let change = request.into_inner();
-        let receipt = self
-            .ingress
-            .source()?
+        let source = self.ingress.source()?;
+        let receipt = source
             .publish(
-                caller,
+                caller.clone(),
                 weaver_contracts::Publication {
                     operation_id: change.operation_id,
                     expected_revision: change.expected_revision,
@@ -731,6 +641,8 @@ impl pb::gateway_server::Gateway for Gateway {
                     fence: change.fence,
                 },
             )
+            .await?;
+        self.retire_prepared_provider(source, caller, &receipt)
             .await?;
         Ok(Response::new(publication_receipt(receipt)))
     }
@@ -804,11 +716,10 @@ impl pb::gateway_server::Gateway for Gateway {
     ) -> std::result::Result<Response<pb::PublicationReceipt>, Status> {
         let caller = self.source_identity(&request)?;
         let key = request.into_inner();
-        let receipt = self
-            .ingress
-            .source()?
+        let source = self.ingress.source()?;
+        let receipt = source
             .inspect(
-                caller,
+                caller.clone(),
                 weaver_contracts::PublicationKey {
                     operation_id: key.operation_id,
                     digest: key.digest,
@@ -818,6 +729,8 @@ impl pb::gateway_server::Gateway for Gateway {
             .ok_or(Status::not_found(
                 "publication decision not observed; absence is not abort",
             ))?;
+        self.retire_prepared_provider(source, caller, &receipt)
+            .await?;
         Ok(Response::new(publication_receipt(receipt)))
     }
     async fn inspect_provider_catalog(
@@ -826,12 +739,9 @@ impl pb::gateway_server::Gateway for Gateway {
     ) -> std::result::Result<Response<pb::ProviderCatalogSnapshot>, Status> {
         let caller = self.source_identity(&request)?;
         let snapshot = self.ingress.source()?.provider_catalog(caller).await?;
-        let Some((version, catalog)) = snapshot else {
+        let Some((version, record)) = snapshot else {
             return Ok(Response::new(pb::ProviderCatalogSnapshot::default()));
         };
-        let record = catalog
-            .record()
-            .map_err(|_| Status::internal("provider catalog serialization"))?;
         Ok(Response::new(pb::ProviderCatalogSnapshot {
             version,
             record,
@@ -910,7 +820,3 @@ impl pb::gateway_server::Gateway for Gateway {
         }))
     }
 }
-
-#[cfg(test)]
-#[path = "../tests/unit/grpc_ingress.rs"]
-mod ingress_tests;

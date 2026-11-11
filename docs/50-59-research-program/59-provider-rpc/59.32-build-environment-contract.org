@@ -21,6 +21,14 @@ Gerbil toolchain-discovered command, explicit relative and absolute selections, 
 links, and rejection of empty or non-executable selections. Optional process
 sampling requires an explicit =WEAVER_SCHEME_SAMPLER= environment selection.
 
+* Cargo workspace builds
+Use =cargo build --locked= for development and =cargo build --release --locked=
+for release builds. Weaver's local and CI entry points use Cargo's default
+workspace =target/= directory. The root =Cargo.toml= owns both profiles.
+Development builds set =opt-level= to 1 for workspace crates and 0 for external
+dependencies. Release builds set it to 3. Both profiles enable
+incremental compilation for workspace crates.
+
 * Cargo-owned FFI package metadata
 The Scheme root build obtains flags through the existing public
 =:std/make= functions =pkg-config-cflags= and =pkg-config-libs=. It does not

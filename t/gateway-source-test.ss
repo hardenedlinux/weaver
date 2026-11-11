@@ -5,7 +5,7 @@
 ;;; Source compilation checks stay in the native Scheme test suite.
 (import :std/test
         (only-in :std/error Error? Error-message)
-        (only-in :clan/poo/object .o .get .slot? object-slots-set!)
+        (only-in :clan/poo/object .o .get .ref .slot? object-slots-set!)
         (only-in :clan/poo/mop TypeError? validate sexp<-)
         (only-in ../scheme/gateway/contracts GatewayArtifact)
         (only-in :agentic-ai-lab/modules/governance/interface AgenticAILabGovernanceProfile. agentic-ai-lab-governance-source)
@@ -20,6 +20,7 @@
         (prefix-in :clan/poo/testing/property/generator generator.)
         (prefix-in :clan/poo/testing/property property.)
         (only-in :clan/poo/testing/property/test check-property)
+        (only-in ../scheme/gateway/provider-source compose-provider-configuration)
         ../scheme/gateway/func)
 (export gateway-source-test)
 
@@ -57,6 +58,29 @@
 
 (def gateway-source-test
   (test-suite "Stable source assessment projection"
+    (test-case "ASCENT routing filters modules and ranks exact cost then latency then digest"
+      (def source-plan plan)
+      (def (candidate module-name latency price digest-value)
+        (.o module: module-name capabilities: '("text") latency_ms: latency
+            procurement_rates: (list price 0 0 0) token_bounds: '(1000000 0 0 32)
+            plan: source-plan digest: digest-value body_digest: commitment))
+      (def (compose candidate-values (maximum 100))
+        (compose-provider-configuration
+          (.o source: (.o (:: @ bundle) tasks: (list (.o (:: @ task) body_digests: (.o) stream_contracts: (.o))) plans: '())
+              routing: (list (.o node: "infer" allowed_modules: '("allowed") required: '("text")
+                   max_latency_ms: maximum max_procurement_cost: 4 user_token_rates: '(0 0 0 0)
+                   candidates: candidate-values)))))
+      (def a (candidate "allowed" 10 2 (make-string 64 #\b)))
+      (def b (candidate "allowed" 10 2 commitment))
+      (def disallowed (candidate "other" 1 1 (make-string 64 #\0)))
+      (for-each
+        (lambda (candidates)
+          (check-equal? (.ref (.get (car (.get (compose candidates) tasks)) stream_contracts) 'infer) commitment))
+        (list (list a disallowed b) (list b a disallowed)))
+      (check-exception (compose (list disallowed)) Error?)
+      (check-exception (compose (list a) 9) Error?)
+      (check-exception (compose (list (candidate "allowed" 1 9223372036854775807
+                                                        commitment))) Error?))
     (test-case "program returns independent typed data without borrowing an ambient sink"
       (let* ((program (make-gateway-program)) (held #f)
              (text (string-copy (.get source-publication policy))) (original (string-copy text))

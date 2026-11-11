@@ -16,22 +16,34 @@
 (def measure-source? (getenv "WEAVER_TEST_SOURCE_MEASURE" #f))
 (def (produce bundle)
   (let ((init (path-expand "../../init.ss" (path-directory (this-source-file)))))
-    (capture-control-fixture init (if source-asset-root "assets-only" "policy-only")
+    (capture-control-fixture init
+      (cond ((equal? (.ref (.ref bundle 'governance) 'schema) "weaver.session-nested.v1") "session-nested")
+            ((equal? (.ref (.ref bundle 'governance) 'schema) "weaver.session-choice.v1") "session-choice")
+            ((equal? (.ref (.ref bundle 'governance) 'schema) "weaver.session-dag.v1") "session-dag")
+            ((equal? (.ref (.ref bundle 'governance) 'schema) "weaver.session-workflow.v1") "session-workflow")
+            (source-asset-root "assets-only")
+            (else "policy-only"))
       (.ref bundle 'tasks) (.ref bundle 'plans) (.ref bundle 'publication)
       (or source-asset-root "."))))
 (def (produce-measured bundle)
   ;; Upstream owns operation accounting. Emit only fixed metric keys/scalars;
   ;; profiling never supplies an approval, source cache or replacement result.
   (call-with-values
-    (lambda () (call-with-module-source-operation-measurement (lambda () (produce bundle))))
-    (lambda (result metrics)
+    (lambda ()
+      (call-with-module-source-operation-measurement
+        (lambda ()
+          (with-catch
+            (lambda (failure) (lambda () (raise failure)))
+            (lambda () (let ((result (produce bundle))) (lambda () result)))))
+        accounting?: 'stages))
+    (lambda (result-or-raise metrics)
       (hash-for-each
         (lambda (key value)
           (let ((port (current-error-port)))
             (display "weaver source metric=" port) (write key port)
             (display " value=" port) (write value port) (newline port))) metrics)
       (force-output (current-error-port))
-      result)))
+      (result-or-raise))))
 (unless (getenv "WEAVER_TEST_SKIP_PROGRAM_INSTALL" #f)
   (install-gateway-producer!
     (lambda (bundle) (if measure-source? (produce-measured bundle) (produce bundle)))))

@@ -82,15 +82,11 @@ func FuzzCompiledSourceOwnershipAndBinding(f *testing.F) {
 		if !reflect.DeepEqual(owned, expected) {
 			t.Fatal("source followed protobuf-owned storage")
 		}
-		_, err = compiledBundle(wire)
-		// A different expected revision is still consistent proposal data.
-		// Original provenance comes from the authenticated server's catalog;
-		// only the final publication CAS decides whether that parent is current.
-		if field%7 != 6 && err == nil {
-			t.Fatal("malformed binding accepted")
-		}
-		if field%7 == 6 && err != nil {
-			t.Fatal("valid proposal was mistaken for authority", err)
+		// The adapter owns the projection but does not reinterpret Workflow or
+		// recompute semantic commitments. Rust's source binding rejects changes.
+		// A changed revision remains a proposal for the final publication CAS.
+		if _, err = compiledBundle(wire); err != nil {
+			t.Fatal("bounded projection was mistaken for semantic authority", err)
 		}
 	})
 }
@@ -114,6 +110,11 @@ type sourceRPC struct {
 	failRegister bool
 }
 
+func (r *sourceRPC) ComposeSource(_ context.Context, request *pb.SourceCompositionRequest, _ ...grpc.CallOption) (*pb.SourceCompositionReply, error) {
+	// This test double projects the supplied artifact; real Rust/Scheme semantics
+	// are covered by the native owner and authenticated integration tests.
+	return &pb.SourceCompositionReply{Artifact: request.Source, CatalogVersion: request.ExpectedCatalogVersion}, nil
+}
 func (r *sourceRPC) CompileSource(context.Context, *pb.ProducerRequest, ...grpc.CallOption) (*pb.CompiledSource, error) {
 	r.calls = append(r.calls, "compile")
 	if r.failCompile {

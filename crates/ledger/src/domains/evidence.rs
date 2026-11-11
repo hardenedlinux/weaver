@@ -22,24 +22,9 @@ pub(crate) fn require_view(
     if current.canonical_family != current.family {
         return Err(Error::Conflict("alias has no independent original claim"));
     }
-    let rows = persistence::read_all_current(
-        tx,
-        "SELECT canonical_family FROM execution_origins WHERE budget_root=?1",
-        [current.stamp.budget_root.as_str()],
-        |r| r.get::<String>(0),
-    )
-    .map_err(db)?;
-    let origins = persistence::read_all_current(
-        tx,
-        "SELECT id,canonical_family FROM execution_origins WHERE history_root=?1",
-        [current.stamp.history_root.as_str()],
-        |r| Ok((r.get::<String>(0)?, r.get::<String>(1)?)),
-    )
-    .map_err(db)?;
-    let mut history_members: HistoryMembers = origins
-        .into_iter()
-        .map(|(origin, family)| (family, (origin, None)))
-        .collect();
+    let (rows, mut history_members) = tx.provider_claim_membership(|| {
+        membership(tx, &current.stamp.budget_root, &current.stamp.history_root)
+    })?;
     let mut held = 0u64;
     for member in rows {
         let (verified, amount) =
@@ -57,6 +42,32 @@ pub(crate) fn require_view(
         ));
     }
     require_history(tx, current, history_members, prepared)
+}
+
+fn membership(
+    tx: &WriteScope<'_>,
+    budget_root: &str,
+    history_root: &str,
+) -> Result<(Vec<String>, HistoryMembers)> {
+    let rows = persistence::read_all_current(
+        tx,
+        "SELECT canonical_family FROM execution_origins WHERE budget_root=?1",
+        [budget_root],
+        |r| r.get::<String>(0),
+    )
+    .map_err(db)?;
+    let origins = persistence::read_all_current(
+        tx,
+        "SELECT id,canonical_family FROM execution_origins WHERE history_root=?1",
+        [history_root],
+        |r| Ok((r.get::<String>(0)?, r.get::<String>(1)?)),
+    )
+    .map_err(db)?;
+    let history_members: HistoryMembers = origins
+        .into_iter()
+        .map(|(origin, family)| (family, (origin, None)))
+        .collect();
+    Ok((rows, history_members))
 }
 
 fn verified_family(

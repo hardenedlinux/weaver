@@ -72,9 +72,12 @@ vars: { d2-config: { data: { figure: |json
     "model8": "dev/sysml/CorrespondenceReaderView.sysml",
     "model9": "dev/sysml/ExecutionReaderViews.sysml",
     "proof0": "dev/proofs/cedar/DomainMigrationComposition.lean",
-    "proof1": "dev/proofs/lean/ProviderEgressWindow.lean",
-    "proof2": "dev/proofs/lean/ProviderSemanticProgress.lean",
-    "proof3": "dev/proofs/lean/ProviderSnapshotPublication.lean",
+    "proof1": "dev/proofs/lean/ProviderAdmissionTurn.lean",
+    "proof2": "dev/proofs/lean/ProviderEgressWindow.lean",
+    "proof3": "dev/proofs/lean/ProviderLifecycleFootprint.lean",
+    "proof4": "dev/proofs/lean/ProviderReadCustody.lean",
+    "proof5": "dev/proofs/lean/ProviderSemanticProgress.lean",
+    "proof6": "dev/proofs/lean/ProviderSnapshotPublication.lean",
     "sdkCapture": "dev/sysml/captures/WeaverViews-providerDeliveryJoin.json"
   },
   "copy": {},
@@ -106,7 +109,10 @@ vars: { d2-config: { data: { figure: |json
       "proof0",
       "proof1",
       "proof2",
-      "proof3"
+      "proof3",
+      "proof4",
+      "proof5",
+      "proof6"
     ],
     "evidenceRefs": []
   },
@@ -205,11 +211,11 @@ vars: { d2-config: { data: { figure: |json
   "modelSource": {
     "ref": "sdkCapture",
     "view": "WeaverViews::providerDeliveryJoin",
-    "modelHash": "0552676290a45913aa8d582f27f7a5d97b1650520252987d5fb202cafe8a7423",
+    "modelHash": "c637cf09173a79f88860780ded6bda42ff9f1a58e1ba64f11cfaaa253593938b",
     "portProjection": "owner",
     "labels": {
-      "n0": "Rust / close\nPolicy + OAuth + domains\nKeep every pending ID",
-      "n1": "Rust / qualify group\nPending clear; each row\nCedar + claim + domains",
+      "n0": "Rust / close\nQueued request / no cut\nAccepted edit / close first",
+      "n1": "Rust / qualify group\nRead shared; write origin\nCedar + claim + domains",
       "n2": "Turso / commit group\nBurn the bounded group\nPublish one qualified cut",
       "n3": "Rust / prepare frame\nExact bytes and next span\nReserve transport credit",
       "n4": "Rust / consume once\nLive cut + owner + expiry\nOne-use frame cursor",

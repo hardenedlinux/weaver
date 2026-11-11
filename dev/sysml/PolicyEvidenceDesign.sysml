@@ -366,6 +366,13 @@ package PolicyEvidenceDesign {
            backend/rule/query/input/limit semantics to factProjectionClosure;
            equal rows do not make evidence interchangeable. Incomplete, timed-out
            or out-of-scope nonmembership is unknown, never an allow/no-execution. */
+        doc /* Use the admitted Gerbil ASCENT Datalog rules inside the Scheme/POO
+           owner for impact, candidate eligibility and Workflow readiness.
+           Compose shared clauses at package expansion where possible. Each
+           consumer binds its own query and input scope. A retained Session may
+           replace source relations on the same rule and topology identity.
+           A changed rule or topology requires fresh admission, and a candidate
+           always carries the current input cut. */
         attribute backend : DerivationBackend;
         attribute engineClosure : String;
         attribute queryIdentity : String;
@@ -393,7 +400,11 @@ package PolicyEvidenceDesign {
            publisher credential is insufficient to assert arbitrary hard facts.
            Persist original intent and affected-domain barrier before trusting a
            replacement projection. Source revisions need their own admitted
-           ordering; do not sort timestamps or use Ascent/MRR generation as a fence. */
+           ordering; do not sort timestamps or use Ascent/MRR generation as a fence.
+           The local availability feed binds one original task and dependency
+           graph to a deployment-admitted source identity and epoch. It orders
+           durable commands within the ledger and carries no remote freshness
+           promise. The first projection is required before use. */
     }
     item def HardFactBarrier {
         item intent : HardFactIntent;
@@ -438,7 +449,11 @@ package PolicyEvidenceDesign {
            another pending intent keeps the domain blocked. Fact replacement is
            not covered by a fixed-fact Policy delta. Lost replies recover the
            original outcome. Continuations reuse the existing canonical-family
-           contract and cannot erase pending intent or reset original domains. */
+           contract and cannot erase pending intent or reset original domains.
+           The linked Weaver Scheme owner evaluates the bounded impact closure
+           using the Gerbil ASCENT package supplied by Agentic AI Lab. Owner
+           unavailability leaves the barrier pending. Only the oldest intent
+           can install, and a new intent invalidates the earlier work's prefix. */
     }
     item def PublicationCommand {
         doc /* At the existing publication CAS, compare operation/digest and the
@@ -666,9 +681,53 @@ package PolicyEvidenceDesign {
            complete evidence for its named scope, not merely a complete invocation.
            This target does not claim an external provider billing guarantee. */
     }
+    item def SessionWorkflowEdge {
+        attribute predecessorStep : String;
+        attribute successorStep : String;
+    }
+    item def PreparedSessionWorkflow {
+        attribute originalFamily : String;
+        attribute orderedProviderSteps : String[2..64] ordered;
+        item edges : SessionWorkflowEdge[0..64];
+        item selectors : PreparedSessionSelector[0..31];
+        doc /* The Session places a typed Yuanxu Funflow routine in its original
+           family. The Governor selection and original plans must contain exactly
+           those steps. The fixed source capture preserves their order. The
+           independently admitted hard-fact deployment must bind the same
+           nodes and graph dependencies. The projection carries
+           neither an effect observation nor permission to execute a step. */
+    }
+    item def PreparedSessionSelector {
+        attribute selectorStep : String;
+        attribute leftEntry : String;
+        attribute rightEntry : String;
+        doc /* Each conditional fork binds its own complete result to one of
+           two entries in the compiled topology. Parallel forks propagate all
+           active entries, including when nested inside a conditional arm. */
+    }
+    item def ReleasedWorkflowResult {
+        item release : EffectObservation;
+        attribute route : String;
+        attribute responseDigest : String;
+        doc /* The conditional Session accepts one bounded JSON route from the
+           completely released selector response. Its typed result and digest
+           commit with release completion. A partial or ambiguous result leaves
+           the branch undecided. */
+    }
+    item def SessionBranchDecision {
+        item selector : ReleasedWorkflowResult;
+        attribute selectedStep : String;
+        attribute selectedPlanDigest : String;
+        attribute factFloor : Integer;
+        attribute factSnapshot : String;
+        doc /* The original selector owns one decision slot. Its winner commits
+           with the selected arm's claim and reservation. The join requires
+           the committed selected predecessor and its complete release. */
+    }
     item def SessionProgressionProposal {
         item original : SemanticCommitment;
-        item predecessor : EffectObservation;
+        item predecessor : EffectObservation[1..64];
+        item branch : SessionBranchDecision[0..31];
         attribute successorStep : String;
         attribute transitionSlot : String;
         attribute expectedRoutineFrontier : String;
@@ -684,7 +743,33 @@ package PolicyEvidenceDesign {
            authoritative frontier. Atomically bind the frontier comparison,
            transition winner, successor claim/reservation and immutable outcome
            in existing admission; no local-advance then separate claim gap.
-           Use existing claims/outcomes, not a second Session ledger. */
+           Use existing claims/outcomes, not a second Session ledger.
+           The single-provider implementation specializes the linear Session
+           Workflow during Scheme preparation. After exact activation, Rust
+           instantiates the fixed complete-response predicate for each
+           adjacent edge with the actual release observation, predecessor winner
+           when applicable, current fact cut and original domain stamp. The
+           provider transaction compares the winner frontier and commits the
+           existing queued claim and reservation with the transition admission
+           outcome. The Session receives successor output through the existing
+           guarded local receiver. Durable completion wakes reconciliation.
+           On restart after reactivation, existing operation receipts identify
+           the first missing or queued successor. A wake carries no authority
+           and an unknown operation stops progression. An explicit Governor
+           edge retains the linked owner for authenticated hard-fact projection
+           after exact activation. The prepared original remains sealed, and
+           the successor must match its immutable plan and complete predecessor
+           release. For a fork/join Workflow the
+           prepared source binds the ordered nodes and every graph edge. The
+           live Scheme Governor uses ASCENT to select candidates from detached
+           ledger observations. A reconciliation waits for bounded Governor
+           capacity or owner shutdown. The ledger rechecks the detached cut
+           before admission. A conditional route joins the complete
+           selector release to its structured result. At a conditional join
+           only predecessors activated by durable branch decisions count.
+           Each proposal joins its required complete releases to one current
+           fact version. A join retains one winner, claim and reservation across
+           recovery. */
     }
     item def SourceCommand {
         item policyPublication : PublicationCommand[0..1];

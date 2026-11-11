@@ -2,238 +2,193 @@
 #
 # SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
-#+title: Go in Weaver and Agentgateway: Cloud-Native Role and Boundaries
+#+title: Rust, Scheme and Go: Runtime and Cloud Integration Boundaries
 #+language: en
-#+date: 2026-10-18
-#+property: STATUS source-reviewed-proposed-placement
-#+options: toc:3
-#+link: ag https://github.com/agentgateway/agentgateway/blob/955d56fae09b45f3cb8e85e797dbb1eb06134f77/%s
+#+date: 2026-11-10
+#+property: STATUS local-delivery
+#+options: toc:2
 
-* Answer and evidence boundary
+* Architecture decision
 
-Go's role is to make an AI-native gateway an operable network/cloud service:
-infrastructure discovery, resource reconciliation, identity integration,
-configuration distribution, deployment lifecycle, and potentially selected
-network adapters. It need not run an AI agent, implement model reasoning, or
-own the policy semantics to provide substantial value.
+The production target is Rust + Scheme/POO/gerbil-ascent. Rust owns network I/O,
+bounded queues, durable state and final effects. Scheme owns higher-order
+configuration, object composition, rule inference and Workflow semantics. Go
+is optional for concrete integration/development reuse; it is not a required
+planning hop in the target architecture. =weaver-server prepare= exits after
+source activation. Fixed and catalog-selected operations enter Rust directly.
+The former Go gateway command lives under =go/dev/controlref= for reference
+controls.
 
-The inspected agentgateway snapshot uses Go for its Kubernetes/controller and
-control-plane integration and Rust for its proxy runtime. That observation is
-not an argument that Weaver must use the same placement. The ecosystem rationale
-below is an inference from the inspected integrations, not a statement of the
-upstream authors' undocumented motives or a benchmark result.
+The model authority is [[file:../../dev/sysml/ArchitectureEvolution.sysml][ArchitectureEvolution::RustSchemeAllocation]],
+linked to [[file:../../dev/sysml/WeaverExecution.sysml][WeaverExecution]] and the existing source, ledger and object-lifecycle
+contracts. The [[file:../50-59-research-program/59-provider-rpc/59.87-spec-upgrade-and-delivery-plan.org][delivery plan]] records the implementation matrix, finite acceptance,
+failed evidence and retirement order. R1 does not qualify the outstanding 1 ms
+latency gate or establish exact-head GitHub CI.
 
-For reproducibility, a clone of the earlier fetched snapshot now exists at
-=.data/agentgateway=, with origin set to the upstream URL and HEAD fixed at
-=955d56fae09b45f3cb8e85e797dbb1eb06134f77=. It was cloned locally from the
-already fetched upstream reference, not refreshed to a new remote head.
-The research checkout is ignored and is not a Weaver runtime dependency.
+* Current ownership after R1
 
-* Code as Policy responsibility
+| Responsibility | Owner and existing mechanism |
+|----------------+------------------------------|
+| Decode external JSON/YAML syntax and copy typed data | Rust source preparation decodes into the existing Scheme composition contract |
+| Candidate eligibility, exact rounded cost/latency/digest ranking | Scheme POO records and gerbil-ascent on the existing affine owner |
+| Session topology, nested choice/parallel/join and ready-node derivation | Existing Scheme Session/Funflow/Governor and ASCENT |
+| Canonical plan/body commitments and request/profile/endpoint guards | Rust contracts and shared HTTPS transport guard |
+| Configuration/source proposal delivery | Rust source preparation uses the existing authenticated source gRPC |
+| Catalog observation and typed fact projection | Existing Rust source owner and ledger; no second database |
+| Immutable projection reuse | Existing version/record cache and bounded coalescing; no cached permission |
+| Publication, exact source/currentness, claim, reservation, hard-fact barriers | Existing Rust deciding transactions |
+| Credentialed request, streamed response release, fallback and uncertain outcomes | Existing Rust broker/runtime and direct authenticated ingress |
+| Independently issued SPEC review and terminal usage signatures | Existing separate issuer custody; language migration cannot merge keys |
+| OpenSysML analysis, model rendering and development drivers | Go, retained for direct existing SDK reuse |
 
-Go makes the policy service operable through Kubernetes/network ecosystem
-integration: bounded discovery, authenticated artifact delivery, workload
-identity, generation-aware status, and requested drain/replacement. It cannot
-turn controller acceptance, a callback acknowledgment, or a Pod deletion request
-into policy approval, source admission, physical retirement evidence, or a new
-emission handle. The admitted Code as Policy closure and its error behavior
-remain the same for a Go connector and a Rust connector. See
-[[file:09-code-as-policy.org][Code as Policy]] and the [[file:05-authorization-execution-protocol.org][callback and state contracts]].
+The Go routing/Bundle algorithms still have development/reference callers.
+Deployment bootstrap and dynamic request materialization no longer invoke them.
+Their later physical removal follows consumer migration; there is no second
+production selector or Workflow runtime in Go.
 
-* What the inspected Go code actually does
+* Composition and authority are different boundaries
 
-| Source | Observed responsibility | Relevance to an AI-native gateway |
-|--------+-------------------------+----------------------------------|
-| [[ag:controller/cmd/agentgateway/main.go][Controller command]] | Starts setup and its managed services | Deployment and operational lifecycle entrypoint |
-| [[ag:controller/pkg/setup/setup.go][Setup]] | Creates controller-runtime manager and leader election configuration | Coordinate Kubernetes controllers without inventing a second watch stack |
-| [[ag:controller/pkg/syncer/syncer.go][Syncer]] | Watches/joins Kubernetes resource collections and produces gateway resources | Keep routing/backends aligned with dynamic cloud infrastructure |
-| [[ag:controller/pkg/agentgateway/translator/agw.go][Gateway API translation]] | Translates route matches and reports unsupported values | Map Kubernetes-facing APIs into proxy configuration |
-| [[ag:controller/pkg/syncer/backend/mcp.go][MCP selector targets]] | Selects Services/namespaces and translates MCP backend targets | Discover tool backends through the same service inventory |
-| [[ag:controller/pkg/setup/controlplane.go][xDS server]] | Hosts gRPC discovery service, TLS/authentication hooks and shutdown | Distribute changing configuration to proxy instances |
-| [[ag:controller/pkg/setup/authn.go][Kubernetes JWT authentication]] | TokenReview with an agentgateway audience and service-account/namespace identity | Authenticate a control-plane peer using cloud-native identity |
-| [[ag:controller/pkg/syncer/krtxds/pushqueue.go][Push queue]] | Coalesces pending changes and tracks pushes in progress | Avoid redundant update fanout under churn |
-| [[ag:controller/pkg/syncer/status_syncer.go][Status synchronization]] | Writes conditions for gateways, routes, backends, models and inference pools | Expose reconciliation feedback to operators |
-| [[ag:crates/agentgateway/src/proxy/httpproxy.rs][Rust HTTP proxy]] | Processes protocol/backend request paths | Demonstrates that Go integration and proxy forwarding are distinct owners here |
+Startup catalogs can declare an already composed original or a bounded source
+composition, never both. The existing Scheme owner composes the latter, Rust
+validates it, and only then seals the exact original. Later CompileSource calls
+still compare the candidate against independently retained original data with
+SourceExpectation equality. No request can replace an installed producer.
 
-These files establish responsibilities, not their correctness under every
-deployment. Dependency presence, controller readiness, and successful xDS delivery
-do not establish exact application authorization or final effect admission.
+File-source and dynamic catalog inputs use source-only ComposeSource. The RPC
+returns inert data; it cannot publish, install a catalog, enroll a source,
+resolve a hard-fact barrier or produce a consumed permit. Source authority is
+checked before and after derivation. Catalog-backed requests require the exact
+observed version and recheck it afterward. Full source assessment remains in
+CompileSource; pure composition does not delay listener readiness with module
+source evaluation. Rust keeps fresh deciding checks at actual use.
 
-* Why Go is a useful fit
+The Rust file adapter copies independent SPEC review data without regenerating it.
+A new candidate or source response cannot self-approve the publication it
+suggests. See [[file:09-code-as-policy.org][Code as Policy]], [[file:05-authorization-execution-protocol.org][authorization-to-execution coordination]] and
+[[file:13-go-adapter-broker-boundary.org][adapter-to-broker custody]].
 
-Kubernetes resources change continuously: Pods move, Services select endpoints,
-Secrets rotate, route references cross namespaces, and backends become ready or
-unavailable. Go's controller-runtime/client-go ecosystem provides reusable
-patterns for this reconciliation, cache/watch, identity, and status work. The
-inspected syncer also uses Istio KRT collections; it is not simply a handwritten
-HTTP server. Compatibility and dependency cost still need evaluation.
+* Request and cloud-adapter separation
 
-For an AI-native gateway, the same lifecycle applies to tool servers, model
-backends, inference pools, workload identities, and their discovery metadata.
-This makes Go useful even when all payload forwarding remains in Rust. An
-MCP target appearing in a Service selector is discovery evidence; it is not
-permission to invoke that tool.
+Target request path:
+client -> Rust ingress/admission -> prepared projection or necessary bounded
+Scheme derivation -> Rust ledger/Cedar/claim/reservation -> broker -> response
+release. Complete released receipts drive the existing Governor progression;
+a pending queue entry or a historical receipt is not permission to send.
 
-Go also has a substantial networking/SDK ecosystem. Qualified Go ingress,
-gRPC services, provider connectors, and identity adapters remain placement
-candidates. Measure their actual streaming, cancellation, allocation, GC, and
-integration behavior. Do not demote Go to a controller by language rule, or
-assume that cloud-native friendliness proves it should own every hot path.
+Target configuration/fact path:
+file or authenticated cloud observation -> Rust source adapter -> existing
+persisted intent -> Scheme/POO/ASCENT impact/reconciliation -> existing Rust
+prepare/publish/activate transactions -> observed status. Scheme derivation
+cannot release a barrier; the deciding transaction checks exact source revision
+and intent prefix. There is no Kubernetes API access in response forwarding.
 
-* Concrete Weaver reference placement
+Cloud observations retain cluster/resource identity, UID, opaque resourceVersion
+and generation separately from ledger revisions. Duplicate/reordered watch
+notifications, relist, deletion/recreation and reconnect cannot revive revoked
+facts. Coalesce recomputation demand, never accepted intent or unknown holds.
+Kubernetes leader election, Programmed status and xDS ACK are observations;
+they do not fence old workers, resolve uncertain effects or free shared quota.
 
-1. Go owns the cloud integration services: observe Kubernetes/infrastructure,
-   reconcile operational state, propose scoped endpoint/route updates, deliver
-   admitted publications, and report their observed activation/rejection.
-2. Scheme owns POO semantic composition, domain Governance, capability selection,
-   source-bound assessment and lifecycle transitions. Go submits authenticated
-   observations and intent; it does not recreate these meanings in CRD handlers.
-3. The reference Rust runtime owns physical durable coordination, strict Cedar
-   authority integration, credentialed final dispatch, and their failure handling,
-   following [[file:05-authorization-execution-protocol.org][Authorization-to-execution coordination]].
-4. A selected Go or Rust protocol adapter produces the frozen request. A Go
-   adapter that actually emits credentialed traffic becomes a qualified final
-   broker with the same obligations, not an exemption from the Rust reference path.
+Use separate bounded adapter queues, concurrency and credentials even when an
+adapter and runtime share Rust/Tokio. A slow controller, collector or control-plane
+outage cannot consume the frame writer's execution budget. See the existing
+[[file:14-stream-message-authorization.org][stream-message contract]] for immutable messages, credits and complete release.
 
-This gives Go a concrete first responsibility while keeping network placement
-evidence-driven. Standalone Weaver can omit Kubernetes reconciliation and use
-the same publication/authority contracts. A Kubernetes installation does not
-need to import a second agent orchestration framework merely to use Go.
+* Long-term cloud-native reuse
 
-* Go interfaces: operational control without ambient send authority
+Language choice follows the required integration and its existing evidence:
 
-Go's initial placement is a first-class control and integration plane, not a
-requirement to implement an agent reasoning loop. An AI gateway must keep tool
-servers, model endpoints, identities and routes operable as cloud resources
-change. Reusing Go's ecosystem for that work avoids rebuilding the surrounding
-cloud platform inside the policy kernel.
+| Existing evidence | Allocation decision |
+|-------------------+---------------------|
+| kube-rs client/controller/CRD interfaces and Praxis Grid's Rust dependency set | Rust is a viable default for Kubernetes; implementing it does not require a Go controller |
+| Agentgateway's Go controller dependencies include Kubernetes, Gateway API, Istio, Helm and xDS | Go can aggregate substantial integration machinery when those exact capabilities are required |
+| Helm pkg/action provides release lifecycle APIs | An embedded Helm lifecycle can justify a separate Go deployment adapter; ordinary chart installation need not be embedded |
+| containerd exposes a rich Go client and remote service APIs | Choose protocol access or a Go SDK by required lifecycle behavior; do not turn the gateway into a container orchestrator by default |
+| Praxis embeds request metrics, structured logging and optional OTLP tracing in its proxy. Agentgateway embeds metrics and configurable OTLP export in its Rust data plane. | Weaver's Rust runtime owns instrumentation and protocol export. A separately deployed Collector can receive, process and forward telemetry. |
 
-| Go boundary | Input and output | Consumer and authority limit |
-|-------------+------------------+------------------------------|
-| Infrastructure observer | Scoped watch events become endpoint/route proposals with tenant, provenance and freshness | Scheme/source owner assesses semantic eligibility; runtime activates only admitted scope |
-| Identity integration | Authenticated workload/issuer/audience facts with their expiry and acquisition context | Authority binds the exact actor/delegation; authentication does not imply permission |
-| Publication transport | Owner-admitted closure and dependency set delivered to named runtime instances | Runtime validates activation and rollback constraints; Go reports actual observed status |
-| Protocol adapter | HTTP/gRPC/MCP/provider input becomes one immutable operation and bounded payload reference | Authority/coordinator receives the exact action, recipient, payload and obligations |
-| Lifecycle operator | Scoped drain/replacement intent and observed health | Physical owner retires or fences capabilities; controller cannot declare an old emitter stopped |
+These decisions use upstream source/interfaces and maintenance evidence. Weaver
+need not implement both ecosystems or rerun generic ecosystem benchmarks to
+justify them. Local tests check our integration's authority, behavior, failure
+handling and actual runtime gates. No speculative Go adapter or generic plugin
+host is added solely to retain a language.
 
-These are logical service contracts, not new RPC implementations or a selected
-serialization library. Preserve the existing POO owner interfaces and extend
-only their identified missing contracts. Endpoint proposals, identity facts,
-policy publications and frozen operations must not share an untyped
-configuration channel that lets a controller accidentally issue authority.
-An operational constraint may narrow an admitted route; widening it requires
-fresh owner admission.
+References:
+- https://github.com/kube-rs/kube
+- https://github.com/praxis-proxy/grid/blob/main/Cargo.toml
+- https://github.com/agentgateway/agentgateway/blob/main/go.mod
+- https://agentgateway.dev/docs/kubernetes/latest/documentation/about/architecture/
+- https://github.com/helm/helm/blob/main/pkg/action/action.go
+- https://github.com/containerd/containerd/blob/main/client/client.go
+- https://opentelemetry.io/docs/collector/
+- https://opentelemetry.io/docs/languages/rust/
 
-** An agent tool call through the reference placement
+* Delivery and retirement order
 
-Go discovers candidate tool backends and integrates the caller's workload
-identity. Scheme selects the applicable Governance closure and supplies its
-source/lifecycle contract. A Go or Rust adapter freezes the specific tool
-operation. The Rust authority evaluates the required Cedar checks, and the
-coordinator consumes the grant, commits history/budget obligations and claims
-one attempt. Only the constrained broker can redeem that claim for the bound
-credentialed upstream operation. Returning a tool result crosses a separate
-response-release boundary.
+1. R1: consolidate deployed source selection/composition in Scheme and Rust;
+   retain OpenSysML and finite existing reference controls.
+2. R2: replace the Go request/frame relay with direct authenticated Rust ingress,
+   preserving OAuth first-hop binding, trailers, cancellation and complete release.
+3. R3: finish startup/source lifecycle consolidation through existing owners and
+   ledger transactions; preserve restart, withdrawal and A-to-B-to-A behavior.
+4. R4: add the first required cloud integration, Rust by default, with an isolated
+   Go adapter only where upstream SDK evidence selects it.
+5. R5: remove obsolete production Go packaging and reference algorithms after all
+   consumers migrate; decide development tooling and independent issuers separately.
 
-An SDK convenience call cannot occur between discovery and that broker as an
-unrecorded shortcut. A Go connector either hands off the complete frozen
-operation without unrestricted application credentials, or is explicitly
-selected as the final broker and assumes the same isolation, claim and transport
-contract. Its provider SDK must expose control over retries, redirects, token
-scope, connection identity and streaming behavior. If those controls cannot
-preserve the contract, that connector is unavailable for the protected profile.
+Finite R1 evidence and remaining gates live in the delivery plan. Compile,
+listener readiness, first source assessment, hot execution and drain are separate
+measurements. The same release and original acceptance thresholds apply; a
+language-placement change alone does not satisfy the outstanding 1 ms target.
 
-** Watch loss, update churn and control-plane outage
+The first R4 integration uses the Weaver-owned
+[[file:../../prod/kubernetes/provideravailability.crd.yaml][ProviderAvailability resource]]
+in =weaver.hardenedlinux.org/v1alpha1=. Its namespace, name and UID identify
+the bound resource. =spec.available= is the requested hard fact. The =status=
+subresource records the observed generation and resolved ledger coordinates.
+Build =weaver-server= with the =kubernetes= feature and run
+=weaver-server reconcile-kubernetes --config weaver.toml= as a separate process.
+The example [[file:../../prod/kubernetes/provideravailability.rbac.yaml][namespaced RBAC]]
+binds its service account to one named resource. The gateway uses its existing
+hard-fact feed and source TLS credentials. The adapter uses the Kubernetes
+service account for the watch and =status= subresource.
 
-Watches and reconciliation are asynchronous. Queue coalescing may reduce work,
-but cannot erase an ordered revocation or label stale observations as current.
-An endpoint replacement cannot mutate an already authorized operation. It must
-satisfy that operation's admitted destination constraints or start a newly
-admitted operation; frozen intent does not mean blindly using a stale endpoint.
+#+begin_src toml
+[source]
+address = "weaver-source.weaver-system.svc:7443"
+server_name = "weaver-source.weaver-system.svc"
+ca = "source-ca.pem"
+certificate = "source-client.pem"
+key = "source-client-key.pem"
+token_env = "WEAVER_SOURCE_TOKEN"
 
-If Go's control services are unavailable, the data path may use only a still
-valid admitted closure and source/identity leases whose contract explicitly
-permits that independence. Required freshness that cannot be established blocks
-admission or the applicable checkpoint. There is no unconditional cached-allow
-or last-known-good permission mode. A restarted controller reobserves state;
-it cannot restore a spent claim or turn an unknown send into an absent effect.
+[kubernetes]
+namespace = "weaver-system"
+name = "provider-availability"
+uid = "<uid assigned by Kubernetes>"
+domain = "availability"
+#+end_src
 
-Keep watches, joins and status fanout outside the per-operation serialization
-section. Reuse bounded connection pools and immutable admitted artifacts where
-their currentness contracts allow it. Request-time identity/source checks that
-are mandatory remain explicit costs, even when their integration is Go-owned.
+The adapter reads the resource after watch events and relists. It uses the
+Kubernetes resource version for watch recovery and as a status write precondition.
+The ledger assigns its own source epoch, revision, snapshot and intent prefix.
+The adapter stages the latest observed change before resolving older pending
+intents. Deletion or a replacement UID requests withdrawal. A Kubernetes
+connection error leaves the last committed ledger decision in effect and retries
+the observation. The focused integration test uses a loopback Kubernetes API
+fixture and real source, ASCENT, ledger and broker paths. From the prepared
+Gerbil package environment, use the existing integration test entry:
 
-* Deep adapter-to-broker contract
+#+begin_src sh
+export WEAVER_GOVERNANCE_APPLICATION=hardenedlinux/weaver/scheme/gateway/provider-program
+export WEAVER_GOVERNANCE_APPLICATION_SOURCE="$PWD/scheme/gateway/provider-program.ss"
+timeout 480s cargo build --release --locked --offline -j4 -p weaver-server \
+  --bin weaver-server --features arrow,scheme-program,kubernetes
+release="$PWD/target/release/weaver-server"
+WEAVER_TEST_PREBUILT_PROVIDER_IMAGE="$release" \
+WEAVER_TEST_PROVIDER_IMAGE_SHA256="$(shasum -a 256 "$release" | cut -d ' ' -f1)" \
+  go -C go test -mod=readonly -parallel=4 -cpu=4 -count=1 -timeout=55s \
+  -tags=integration,schemeintegration,kubernetesintegration ./dev \
+  -run '^TestProviderKubernetesAvailability$'
+#+end_src
 
-The focused [[file:13-go-adapter-broker-boundary.org][Go adapter to Rust broker review]] defines exact SDK construction/handoff,
-application-start multiplicity below client APIs, immutable message/range staging,
-route/connection identity, credential release and conservative unknown outcomes.
-Its [[file:diagrams/14-adapter-broker-boundary.svg][core boundary view]] makes the constrained submission path explicit. Go
-control-plane integration does not grant the adapter an upstream network path;
-SDK plugins and background work cannot inherit such authority. Retried internal
-RPCs resolve the same bound command; they do not retry the external effect.
-
-* Streaming producer limits
-
-The selected [[file:14-stream-message-authorization.org][message-stream profile]] keeps Go's assembly/staging bounded and inert.
-Rust verifies complete immutable messages, holds parent-backed credits before
-queue eligibility and owns the stream writer. Multiple Go producers cannot
-convert their local queue or a Session pending list into budget or dispatch
-rights. The one authorized message slot per stream preserves P15's finite
-synchronous lifecycle reuse; independent streams can still run concurrently.
-
-* Cloud-native state versus execution authority
-
-| Cloud observation or mechanism | Permitted conclusion | Forbidden conclusion |
-|--------------------------------+----------------------+----------------------|
-| TokenReview succeeds | Peer has the validated workload identity/audience | It may issue grants, change another tenant, or invoke arbitrary internal RPCs |
-| Controller wins leader election | It may perform its delegated reconciliation role | Old dispatch workers are fenced or an effect may be replayed |
-| Route Accepted / Programmed | Controller/proxy reports the named resource state | A particular operation passed Governance and authorization |
-| Service endpoint becomes ready | Endpoint is a candidate within an admitted backend scope | Endpoint inherits secrets/capabilities from any matching label |
-| xDS ACK or push completes | Delivery/acceptance observation for a resource version | All dependent closures or all replicas are active and current |
-| Metrics show low token spend | An observed usage sample exists | Global budget has free capacity or unknown requests were uncharged |
-| Pod rescheduled | A new worker may request its own scoped identity | Old claims, grants, history, or uncertain effects are reset |
-
-Kubernetes leader election is not a fencing protocol for arbitrary network
-effects. Runtime claim/fence and the no-redispatch rule survive controller or Pod
-replacement. Readiness must reflect actual qualified runtime dependencies;
-it cannot override an expired issuer lease or incomplete recovery state.
-
-The concrete source/ledger/fencing contract is in
-[[file:07-source-admission-ledger-fencing.org][Source admission, durable ledger, and fencing contracts]]. Go requests a
-supervised replacement under its delegated role; it does not choose the ledger
-fence, recreate owner-issued source handles, or clear a spent dispatch claim.
-It reports quiescing/unknown when physical retirement is unproven, rather than
-turning controller convergence into a stopped-old-worker assertion.
-
-RBAC and workload identities should be role-specific. Separate discovery reads,
-status writes, publication proposals, publication signing, runtime admission,
-and credential access. A controller that watches Secrets or mutates Deployments
-has a material trust role; minimize that scope and include it in the compromise
-model. Preserve namespace/tenant provenance across translations, label selectors,
-ReferenceGrant handling, service discovery, and workload identity validation.
-
-* Performance and validation implications
-
-Keep resource watching, large joins, translation, and status publication outside
-the request's admission/dispatch critical section. Coalesce safe update work,
-but never merge away a revocation or report old state as current. Bound queues,
-staging memory, fanout, stale watch intervals, and resynchronization after loss.
-
-Evaluate Go's value along two independent dimensions:
-
-- Integration quality: correctness under watch restart, version skew, secret
-  rotation, endpoint churn, permissions, status generation, and tenant isolation.
-- Network-path quality, when selected: full protocol conformance, equal strict
-  authorization/coordination semantics, streaming behavior, resource use, and
-  failure containment compared with the Rust candidate.
-
-Source inspection does not yet choose an upstream library embedding API, a
-specific Kubernetes version, an Agent SDK, or a Go proxy implementation. Record
-the actual benefit and maintenance owner before adding those dependencies.
-
-* Embedded architecture views
-
-** 14-adapter-broker-boundary.svg
-
-[[file:diagrams/14-adapter-broker-boundary.svg]]
+See [[https://kubernetes.io/docs/reference/using-api/api-concepts/][Kubernetes API concepts]].

@@ -18,19 +18,32 @@ import (
 	"time"
 )
 
+func retainSPECProofReceipt(t *testing.T, root, scratch string, receipt Receipt) {
+	t.Helper()
+	if t.Failed() {
+		receipt.Status = "FAIL"
+	}
+	for i := range receipt.Stages {
+		if err := summarizeOutput(scratch, &receipt.Stages[i]); err != nil {
+			t.Fatal(err)
+		}
+	}
+	evidence, err := newSpecEvidenceDirectory(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := writeReceipt(evidence, receipt); err != nil {
+		t.Fatal(err)
+	}
+	t.Logf("SPEC proof receipt %s", filepath.Join(evidence, "receipt.json"))
+}
+
 func TestSPECProofClosureComposition(t *testing.T) {
 	root, err := FindRoot(".")
 	if err != nil {
 		t.Fatal(err)
 	}
-	base := filepath.Join(root, ".cache", "spec-qualification")
-	if err = os.MkdirAll(base, 0700); err != nil {
-		t.Fatal(err)
-	}
-	directory, err := os.MkdirTemp(base, "proof-closure-")
-	if err != nil {
-		t.Fatal(err)
-	}
+	directory := t.TempDir()
 	ctx, cancel := context.WithTimeout(t.Context(), 2*time.Minute)
 	defer cancel()
 	stage := Stage{Name: "spec-semantic-composition-audit", Binary: "elan", Args: []string{"run", proofToolchain, "lake", "-d", "dev/proofs/cedar", "env", "lean", "--json", "dev/proofs/cedar/QualifiedReview.lean"}}
@@ -39,9 +52,9 @@ func TestSPECProofClosureComposition(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err = writeReceipt(directory, Receipt{Root: root, Status: result.Status, Mode: "spec-semantic-composition-audit", Inputs: inputs, Stages: []Result{result}}); err != nil {
-		t.Fatal(err)
-	}
+	t.Cleanup(func() {
+		retainSPECProofReceipt(t, root, directory, Receipt{Root: root, Status: result.Status, Mode: "spec-semantic-composition-audit", Inputs: inputs, Stages: []Result{result}})
+	})
 	if result.Status != "PASS" || result.ExitCode == nil || *result.ExitCode != 0 || result.Lean == nil {
 		t.Fatalf("real SPEC composition must pass the unchanged strict axiom gate: %+v", result)
 	}
@@ -62,7 +75,7 @@ func TestSPECProofClosureComposition(t *testing.T) {
 	if structural != 2 || semantic != 1 {
 		t.Fatal("missing actual structural/semantic proof", structural, semantic)
 	}
-	t.Logf("PASS real SPEC composition; structural=%d semantic=%d audit=%s", structural, semantic, directory)
+	t.Logf("PASS real SPEC composition; structural=%d semantic=%d", structural, semantic)
 }
 
 func TestSPECProofClosureRejectsFalseArithmetic(t *testing.T) {
@@ -70,14 +83,7 @@ func TestSPECProofClosureRejectsFalseArithmetic(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	base := filepath.Join(root, ".cache", "spec-qualification")
-	if err = os.MkdirAll(base, 0700); err != nil {
-		t.Fatal(err)
-	}
-	directory, err := os.MkdirTemp(base, "false-arithmetic-")
-	if err != nil {
-		t.Fatal(err)
-	}
+	directory := t.TempDir()
 	source := "import SpecProofClosure\nopen Lean Elab Command Meta Term\nrun_cmd do\n  logInfo \"CHECKING_FALSE_ARITHMETIC\"\n  liftTermElabM do\n    let type ← elabType (← `(decide ((1 : Nat) = 2) = true))\n    let _ ← Weaver.SpecProofClosure.proveClosedArithmetic type\n    pure ()\n"
 	path := filepath.Join(directory, "FalseArithmetic.lean")
 	if err = os.WriteFile(path, []byte(source), 0600); err != nil {
@@ -100,26 +106,25 @@ func TestSPECProofClosureResearchModels(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	base := filepath.Join(root, ".cache", "spec-qualification")
-	if err = os.MkdirAll(base, 0700); err != nil {
-		t.Fatal(err)
-	}
-	directory, err := os.MkdirTemp(base, "model-closure-")
-	if err != nil {
-		t.Fatal(err)
-	}
+	directory := t.TempDir()
 	ctx, cancel := context.WithTimeout(t.Context(), 2*time.Minute)
 	defer cancel()
 	before, err := SourceInputs(root)
 	if err != nil {
 		t.Fatal(err)
 	}
+	var stages []Result
+	t.Cleanup(func() {
+		retainSPECProofReceipt(t, root, directory, Receipt{Root: root, Status: "PASS", Mode: "model-closure-positive-audit", Inputs: before, Stages: stages})
+	})
 	build := runStage(ctx, root, directory, os.Environ(), Stage{Name: "model-closure-source-build", Binary: "elan", Args: []string{"run", proofToolchain, "lake", "-d", "dev/proofs/cedar", "build", "ModelClosure"}})
+	stages = append(stages, build)
 	if build.Status != "PASS" {
 		t.Fatalf("model source closure build failed: %+v", build)
 	}
 	stage := Stage{Name: "model-closure-positive-audit", Binary: "elan", Args: []string{"run", proofToolchain, "lake", "-d", "dev/proofs/cedar", "env", "lean", "--json", "dev/proofs/cedar/ModelClosure.lean"}}
 	result := runStage(ctx, root, directory, os.Environ(), stage)
+	stages = append(stages, result)
 	if result.Status != "PASS" || result.ExitCode == nil || *result.ExitCode != 0 || result.Lean == nil {
 		t.Fatalf("complete model closure must pass the strict positive audit: %+v", result)
 	}
@@ -202,8 +207,5 @@ func TestSPECProofClosureResearchModels(t *testing.T) {
 	if !maps.Equal(before, inputs) {
 		t.Fatal("model sources changed during acceptance")
 	}
-	if err = writeReceipt(directory, Receipt{Root: root, Status: result.Status, Mode: "model-closure-positive-audit", Inputs: inputs, Stages: []Result{build, result}}); err != nil {
-		t.Fatal(err)
-	}
-	t.Logf("PASS modules=%d theorems=%d evidence=%s", len(expected), reportedProofs, directory)
+	t.Logf("PASS modules=%d theorems=%d", len(expected), reportedProofs)
 }

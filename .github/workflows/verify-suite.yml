@@ -24,12 +24,18 @@ jobs:
   verify:
     name: ${{ inputs.label }}
     runs-on: ${{ inputs.runner }}
-    timeout-minutes: 45
+    # Full dependency preparation has no phase cutoff. Reserve room for the
+    # unchanged 37-minute Scheme suite and receipt upload after preparation.
+    timeout-minutes: ${{ inputs.suite == 'check-scheme' && 120 || 65 }}
     env:
       GOTOOLCHAIN: local
       WEAVER_VERIFY_SUITE: ${{ inputs.suite }}
+      # Gerbil std/make defaults to serial compilation without this setting.
+      GERBIL_BUILD_CORES: '4'
     steps:
       - name: Check out committed source
+        id: checkout
+        timeout-minutes: 2
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           persist-credentials: false
@@ -38,38 +44,130 @@ jobs:
             /*
             !/dev/proofs/evidence/
             !/dev/specs/evidence/
+      - name: Verify tested revision
+        id: source
+        timeout-minutes: 1
+        run: |
+          checkout_sha=$(git rev-parse HEAD)
+          test "$checkout_sha" = "$GITHUB_SHA"
+          printf 'revision=%s\n' "$checkout_sha" >> "$GITHUB_OUTPUT"
       - name: Prepare deterministic toolchain
+        id: toolchain
+        timeout-minutes: 10
         uses: ./.github/actions/prepare-toolchain
       - name: Fetch locked Rust and Go dependencies
-        run: go -C go run ./cmd/weaver-dev -clean-source bootstrap-build
+        id: bootstrap_build
+        timeout-minutes: 4
+        run: go -C go run ./cmd/weaver-dev -clean-source -timeout 3m bootstrap-build
       - name: Prepare Cedar and Lean proof dependencies
+        id: bootstrap_proofs
         if: inputs.suite == 'check-policy'
-        run: go -C go run ./cmd/weaver-dev -clean-source bootstrap-proofs
+        timeout-minutes: 8
+        run: go -C go run ./cmd/weaver-dev -clean-source -timeout 7m bootstrap-proofs
       - name: Prepare published Scheme SDK
-        if: inputs.suite == 'check-scheme'
-        uses: tao3k/gerbil-scheme-rust/.github/actions/setup-gerbil@838af1ab4e6c0c8177fed176efba448c694012b5
+        id: scheme_sdk
+        if: contains(fromJSON('["check-rust", "check-go", "check-policy", "check-scheme", "bench"]'), inputs.suite)
+        timeout-minutes: 5
+        uses: tao3k/gerbil-scheme-rust/.github/actions/setup-gerbil@bfe803f597a15a3654b70a64c3a039980c31da8a
         with:
           release-root: ${{ runner.temp }}/gerbil-sdk
+      - name: Prepare macOS Scheme build watchdog
+        id: scheme_watchdog
+        if: inputs.suite == 'check-scheme' && runner.os == 'macOS'
+        timeout-minutes: 4
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: '1'
+        run: |
+          brew install coreutils
+          echo "$(brew --prefix coreutils)/libexec/gnubin" >> "$GITHUB_PATH"
+      - name: Identify the SDK compiler for package caching
+        id: scheme_compiler
+        if: inputs.suite == 'check-scheme'
+        run: |
+          identity=$(shasum -a 256 "$GERBIL_PREFIX/gerbil-toolchain-release.json" | cut -d ' ' -f 1)
+          printf 'identity=%s\n' "$identity" >> "$GITHUB_OUTPUT"
+      - name: Restore declared Scheme dependency products
+        id: scheme_cache
+        if: inputs.suite == 'check-scheme'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: ${{ runner.temp }}/weaver-gerbil
+          key: weaver-scheme-v2-${{ runner.os }}-${{ runner.arch }}-${{ steps.scheme_compiler.outputs.identity }}-${{ hashFiles('gerbil.pkg') }}
+          restore-keys: weaver-scheme-v1-${{ runner.os }}-${{ runner.arch }}-
       - name: Install declared Scheme dependencies
+        id: scheme_dependencies
         if: inputs.suite == 'check-scheme'
         env:
           GERBIL_PATH: ${{ runner.temp }}/weaver-gerbil
-        run: gerbil deps --install
+        run: go -C go run ./cmd/weaver-dev -clean-source bootstrap-scheme
+      - name: Retain prepared Scheme dependencies
+        if: inputs.suite == 'check-scheme' && steps.scheme_cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: ${{ runner.temp }}/weaver-gerbil
+          key: weaver-scheme-v2-${{ runner.os }}-${{ runner.arch }}-${{ steps.scheme_compiler.outputs.identity }}-${{ hashFiles('gerbil.pkg') }}
       - name: Verify declared suite
+        id: verify_suite
         if: inputs.suite != 'check-scheme'
-        run: go -C go run ./cmd/weaver-dev -clean-source "$WEAVER_VERIFY_SUITE"
+        timeout-minutes: 30
+        run: go -C go run ./cmd/weaver-dev -clean-source -timeout 28m "$WEAVER_VERIFY_SUITE"
       - name: Verify Scheme modules, Cedar FFI and streaming recovery
+        id: verify_scheme
         if: inputs.suite == 'check-scheme'
+        # The source-closure watchdog is separate. Give the suite room for
+        # its prelude and all three independently bounded native stages.
+        timeout-minutes: 37
         env:
           GERBIL_GXI: ${{ env.GERBIL_PREFIX }}/bin/gxi
           GERBIL_PATH: ${{ runner.temp }}/weaver-gerbil
-        run: go -C go run ./cmd/weaver-dev -clean-source check-scheme
-      - name: Publish latest structured result
+        run: go -C go run ./cmd/weaver-dev -clean-source -timeout 35m check-scheme
+      - name: Write verification job receipt
         if: always()
+        timeout-minutes: 1
+        env:
+          JOB_RECEIPT: >-
+            {
+              "schema": "weaver.ci-job.v1",
+              "suite": ${{ toJSON(inputs.suite) }},
+              "runId": ${{ toJSON(github.run_id) }},
+              "runAttempt": ${{ toJSON(github.run_attempt) }},
+              "headRevision": ${{ toJSON(github.event.pull_request.head.sha || github.sha) }},
+              "expectedCheckoutRevision": ${{ toJSON(github.sha) }},
+              "checkoutRevision": ${{ toJSON(steps.source.outputs.revision || null) }},
+              "os": ${{ toJSON(runner.os) }},
+              "arch": ${{ toJSON(runner.arch) }},
+              "status": ${{ toJSON(job.status) }},
+              "schemeDependencyBudgetMinutes": null,
+              "schemeDependencyBuildCores": ${{ inputs.suite == 'check-scheme' && 4 || 'null' }},
+              "phases": {
+                "checkout": ${{ toJSON(steps.checkout.outcome || 'skipped') }},
+                "source": ${{ toJSON(steps.source.outcome || 'skipped') }},
+                "toolchain": ${{ toJSON(steps.toolchain.outcome || 'skipped') }},
+                "bootstrapBuild": ${{ toJSON(steps.bootstrap_build.outcome || 'skipped') }},
+                "bootstrapProofs": ${{ toJSON(steps.bootstrap_proofs.outcome || 'skipped') }},
+                "schemeSdk": ${{ toJSON(steps.scheme_sdk.outcome || 'skipped') }},
+                "schemeWatchdog": ${{ toJSON(steps.scheme_watchdog.outcome || 'skipped') }},
+                "schemeDependencies": ${{ toJSON(steps.scheme_dependencies.outcome || 'skipped') }},
+                "verifySuite": ${{ toJSON(steps.verify_suite.outcome || 'skipped') }},
+                "verifyScheme": ${{ toJSON(steps.verify_scheme.outcome || 'skipped') }}
+              }
+            }
+        run: |
+          mkdir -p .cache/verification
+          printf '%s\n' "$JOB_RECEIPT" > .cache/verification/ci-job.json
+      - name: Publish structured verification receipts
+        if: always()
+        timeout-minutes: 2
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: ${{ inputs.suite }}-${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}
-          path: .cache/verification/latest-*
+          name: ${{ inputs.suite }}-${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}-attempt-${{ github.run_attempt }}
+          path: |
+            .cache/verification/ci-job.json
+            .cache/verification/latest-bootstrap-build.json
+            .cache/verification/latest-bootstrap-proofs.json
+            .cache/verification/latest-bootstrap-scheme.json
+            .cache/verification/latest-${{ inputs.suite }}.json
+            .cache/verification/spec/*/receipt.json
           include-hidden-files: true
-          if-no-files-found: warn
+          if-no-files-found: error
           retention-days: 7

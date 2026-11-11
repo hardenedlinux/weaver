@@ -200,6 +200,12 @@ func measureDomainEncodingWave(b *testing.B, f *fixture, plans []v1.ProviderPlan
 		latencies = append(latencies, r.domainStreamSample)
 	}
 	wall := time.Since(began)
+	verifyDomainProgramWave(b, ctx, f, plans, ranges, shared)
+	return latencies, wall
+}
+
+func verifyDomainProgramWave(b testing.TB, ctx context.Context, f *fixture, plans []v1.ProviderPlan, ranges int, shared bool) {
+	b.Helper()
 	// Inspect uses its own bounded observation lane. Verify all receipts
 	// sequentially after the timed stream calls have reached EOF.
 	for _, plan := range plans {
@@ -217,32 +223,54 @@ func measureDomainEncodingWave(b *testing.B, f *fixture, plans []v1.ProviderPlan
 			count = uint64(len(plans))
 		}
 		view, err := f.admin.RPC.InspectExecutionDomains(f.admin.Context(ctx), &pb.OperationKey{Family: plan.Family})
-		if err != nil || view.GetHeld() != count*plan.Ceiling || view.GetHistoryCount() != count {
+		if err != nil || view.GetHeld() != count*plan.Ceiling || view.GetHistoryCount() != count || view.GetStamp().GetOrigin() != plan.Family {
 			b.Fatalf("benchmark hold/history mismatch: %v %v", view, err)
 		}
 	}
-	return latencies, wall
 }
 
 type domainStreamTransport struct {
 	frames, messageBytes int
 	recv, decode         time.Duration
 	received             map[uint64]int64
+	firstTick            int64
+	frameGaps            []time.Duration
 }
 
 func readDomainProgramStream(ctx context.Context, f *fixture, plan v1.ProviderPlan, encoding pb.Encoding, rows uint32) (int, domainStreamTransport, error) {
+	return readDomainProgramStreamWithClient(ctx, f.client, plan, encoding, rows)
+}
+
+func readDomainProgramStreamWithClient(ctx context.Context, client *gatewayclient.Client, plan v1.ProviderPlan, encoding pb.Encoding, rows uint32) (int, domainStreamTransport, error) {
+	return readDomainProgramStreamObserved(ctx, client, plan, encoding, rows, nil)
+}
+
+func readDomainProgramStreamObserved(ctx context.Context, client *gatewayclient.Client, plan v1.ProviderPlan, encoding pb.Encoding, rows uint32, onFirst func()) (int, domainStreamTransport, error) {
+	return readDomainProgramStreamTimed(ctx, client, plan, encoding, rows, onFirst, nil)
+}
+
+func readDomainProgramStreamTimed(ctx context.Context, client *gatewayclient.Client, plan v1.ProviderPlan, encoding pb.Encoding, rows uint32, onFirst func(), observeFirst func() int64) (int, domainStreamTransport, error) {
 	timing := domainStreamTransport{received: make(map[uint64]int64)}
-	stream, err := f.client.RPC.ExecuteProvider(f.client.Context(ctx), &pb.ProviderRequest{
+	stream, err := client.RPC.ExecuteProvider(client.Context(ctx), &pb.ProviderRequest{
 		Plan: gatewayclient.Plan(plan), Encoding: encoding, BatchRows: rows,
 	})
 	if err != nil {
 		return 0, timing, err
 	}
 	next, done := 0, false
+	var previous time.Time
 	for {
 		started := time.Now()
 		frame, err := stream.Recv()
 		received := time.Now()
+		if err == nil && observeFirst != nil {
+			if previous.IsZero() {
+				timing.firstTick = observeFirst()
+			} else {
+				timing.frameGaps = append(timing.frameGaps, received.Sub(previous))
+			}
+			previous = received
+		}
 		timing.recv += received.Sub(started)
 		if err == io.EOF && done {
 			return next, timing, nil
@@ -263,6 +291,9 @@ func readDomainProgramStream(ctx context.Context, f *fixture, plan v1.ProviderPl
 			return next, timing, fmt.Errorf("invalid benchmark frame at %d", next)
 		}
 		timing.received[events[0].GetSequence()] = received.UnixNano()
+		if next == 0 && onFirst != nil {
+			onFirst()
+		}
 		for _, event := range events {
 			if done || event.GetSequence() != uint64(next) {
 				return next, timing, fmt.Errorf("invalid benchmark event at %d", next)

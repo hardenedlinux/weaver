@@ -11,6 +11,9 @@ The root =Project.sysml= and every =dev/sysml/*.sysml= document are parsed as on
 model through the Go OpenSysML SDK's =ParseFiles= API with strict conformance.
 Root components reference actual domain part definitions. SysML allocations bind
 those components to the modeled Scheme, Go and Rust code owners.
+Semantic derivation, source publication, original admission and final-effect
+guarding each have a private action definition within their owning part.
+Strict conformance rejects references to those definitions from other parts.
 
 =runtime-trace.json= binds each domain requirement to named implementation,
 native-test, Quint or Lean witnesses. The gate queries the linked SDK model for

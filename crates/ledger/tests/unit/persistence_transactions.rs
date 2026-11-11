@@ -4,6 +4,87 @@
 
 use crate::persistence::{self, Session};
 
+#[cfg(any(target_os = "linux", target_os = "macos"))]
+#[test]
+#[ignore = "bounded performance probe using the real native transaction scope"]
+fn provider_begin_temp_pager_probe() {
+    use crate::persistence::timing::thread_cpu_time;
+    use std::time::Instant;
+    let directory = tempfile::tempdir().expect("store");
+    let path = directory.path().join("temp-pager.db");
+    let mut owner =
+        Session::open_with_journal(&path, persistence::Journal::Mvcc).expect("native owner");
+    roots(&mut owner);
+    let variants = ["default", "prewarm-file", "memory-diagnostic"];
+    for round in 0..24 {
+        for offset in 0..variants.len() {
+            let variant = variants[(round + offset) % variants.len()];
+            let mut session = Session::open(&path).expect("new connection");
+            let setup_wall = Instant::now();
+            let setup_cpu = thread_cpu_time().expect("thread CPU");
+            match variant {
+                "default" => {}
+                "prewarm-file" => {
+                    let objects: i64 = persistence::one(
+                        &session,
+                        "SELECT count(*) FROM temp.sqlite_schema",
+                        (),
+                        |row| row.get(0),
+                    )
+                    .expect("prepare connection-local TEMP pager");
+                    assert_eq!(objects, 0);
+                }
+                "memory-diagnostic" => {
+                    persistence::exec(&session, "PRAGMA temp_store=MEMORY", ())
+                        .expect("diagnostic TEMP mode");
+                }
+                _ => unreachable!(),
+            }
+            let setup_cpu = thread_cpu_time().expect("thread CPU") - setup_cpu;
+            let setup_wall = setup_wall.elapsed();
+            session.trace_provider_scopes("a", None);
+            for pass in 0..2 {
+                let before = session.timings();
+                let transaction =
+                    persistence::begin_family(&mut session, "a").expect("native BEGIN");
+                drop(transaction);
+                session.require_quiescent().expect("native rollback");
+                let timing = session.timings().since(before);
+                assert_eq!(timing.transaction_begin_cpu.attempts, 1);
+                assert_eq!(timing.transaction_begin_prepare.attempts, 1);
+                println!(
+                    "weaver-temp-pager {{\"round\":{round},\"arm\":\"{variant}\",\"pass\":{pass},\"setupWallNS\":{},\"setupCpuNS\":{},\"beginWallNS\":{},\"beginCpuNS\":{},\"prepareCpuNS\":{}}}",
+                    setup_wall.as_nanos(),
+                    setup_cpu.as_nanos(),
+                    timing.transaction_begin.nanos,
+                    timing.transaction_begin_cpu.nanos,
+                    timing.transaction_begin_prepare_cpu.nanos
+                );
+            }
+            let journal: String =
+                persistence::one(&session, "PRAGMA journal_mode", (), |row| row.get(0))
+                    .expect("journal");
+            let synchronous: i64 =
+                persistence::one(&session, "PRAGMA synchronous", (), |row| row.get(0))
+                    .expect("sync");
+            let foreign_keys: i64 =
+                persistence::one(&session, "PRAGMA foreign_keys", (), |row| row.get(0))
+                    .expect("foreign keys");
+            assert_eq!(
+                (journal.as_str(), synchronous, foreign_keys),
+                ("mvcc", 2, 1)
+            );
+            session.close().expect("clean connection");
+        }
+    }
+    let holds: i64 = persistence::one(&owner, "SELECT sum(held) FROM budget_domains", (), |row| {
+        row.get(0)
+    })
+    .expect("unchanged reservations");
+    assert_eq!(holds, 0);
+    owner.close().expect("natural owner drain");
+}
+
 struct CommitFault {
     after: bool,
 }
@@ -19,6 +100,36 @@ impl persistence::commit_observer::Observer for CommitFault {
             _ => Decision::Continue,
         }
     }
+}
+
+#[test]
+fn applied_commit_with_lost_ack_cannot_park_as_provider() {
+    let directory = tempfile::tempdir().expect("store");
+    let path = directory.path().join("provider-reuse-lost-ack.db");
+    let mut ledger = crate::Ledger::open(&path).expect("ledger");
+    persistence::exec(
+        &ledger.connection,
+        "CREATE TABLE probe(id INTEGER PRIMARY KEY)",
+        (),
+    )
+    .expect("probe schema");
+    ledger.connection.commit_observer = Some(std::sync::Arc::new(CommitFault { after: true }));
+    let tx = persistence::begin(&mut ledger.connection).expect("writer");
+    persistence::exec(&tx, "INSERT INTO probe VALUES(1)", ()).expect("stage marker");
+    assert!(tx.commit_provider().is_err());
+    assert!(
+        ledger
+            .connection
+            .is_autocommit()
+            .expect("native transaction ended")
+    );
+    assert!(ledger.park_provider_connection().is_err());
+    let recovered = crate::Ledger::open(&path).expect("fresh physical connection");
+    let marker: i64 = persistence::one(&recovered.connection, "SELECT id FROM probe", (), |row| {
+        row.get(0)
+    })
+    .expect("applied marker recovered");
+    assert_eq!(marker, 1);
 }
 proptest::proptest! {
     #![proptest_config(proptest::test_runner::Config::with_cases(16))]

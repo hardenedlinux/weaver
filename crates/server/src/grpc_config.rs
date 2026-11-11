@@ -8,10 +8,10 @@ use std::{collections::BTreeMap, io::Read};
 use tonic::transport::{Certificate, Identity, ServerTlsConfig};
 use weaver_broker::ProviderTransport;
 use weaver_contracts::{Error, Result};
-fn required(name: &str) -> Result<String> {
+pub(crate) fn required(name: &str) -> Result<String> {
     std::env::var(name).map_err(|_| Error::Invalid("required gRPC configuration missing"))
 }
-fn read_path(path: impl AsRef<std::path::Path>) -> Result<Vec<u8>> {
+pub(crate) fn read_path(path: impl AsRef<std::path::Path>) -> Result<Vec<u8>> {
     let mut bytes = Vec::new();
     std::fs::File::open(path)
         .map_err(|_| Error::Invalid("RPC configuration file"))?
@@ -89,7 +89,7 @@ fn load_transport() -> Result<ProviderTransport> {
 }
 
 #[cfg(test)]
-#[tokio::test(flavor = "multi_thread")]
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 #[ignore = "started as a child by the Go WIF fixture"]
 async fn serve_wif_gateway() {
     crate::entrypoint::run_on_runtime()
@@ -159,15 +159,26 @@ async fn run_owned(runtime: crate::ServiceRuntime) -> Result<()> {
         std::time::SystemTime::now()
     );
     let shutdown = crate::shutdown::signal()?;
-    let (settings, addresses, catalog) = crate::runtime::RuntimeOwner::initialize(|| {
+    let (settings, addresses, catalog, feed) = crate::runtime::RuntimeOwner::initialize(|| {
         let (settings, addresses) = load()?;
+        let feed = match std::env::var("WEAVER_HARD_FACT_FEED") {
+            Ok(value) => Some(weaver_contracts::decode::<weaver_contracts::FactFeed>(
+                value.as_bytes(),
+            )?),
+            Err(std::env::VarError::NotPresent) => None,
+            Err(_) => return Err(Error::Invalid("hard fact feed deployment encoding")),
+        };
         Ok((
             settings,
             addresses,
             crate::governance_deployment::load_catalog()?,
+            feed,
         ))
     })
     .await?;
+    if let Some(feed) = feed {
+        runtime.install_fact_feed(feed)?;
+    }
     let worker = crate::governance_deployment::start(&runtime, catalog).await?;
     eprintln!(
         "weaver startup stage=configured elapsed={:?}",

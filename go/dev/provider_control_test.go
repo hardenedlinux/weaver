@@ -65,13 +65,15 @@ when { context.family == "control" && ["infer", "next"].contains(context.node) &
 }
 
 type controlProcess struct {
-	fixture            *fixture
-	ingress            *testPKI
-	env                []string
-	address, directory string
-	child              *exec.Cmd
-	exited             chan error
-	client             *gatewayclient.Client
+	fixture               *fixture
+	ingress               *testPKI
+	env                   []string
+	address, directory    string
+	child                 *exec.Cmd
+	exited                chan error
+	client                *gatewayclient.Client
+	heapInput, heapOutput *os.File
+	image                 string
 }
 
 func newControlProcess(t testing.TB, f *fixture, path string) *controlProcess {
@@ -96,12 +98,46 @@ func newControlProcess(t testing.TB, f *fixture, path string) *controlProcess {
 	leaf, token := sha256.Sum256(f.pki.client.Certificate[0]), sha256.Sum256([]byte(ownerToken))
 	settings := map[string]string{"CONFIG": path, "SERVER_CERT": filepath.Join(d, "server"), "SERVER_KEY": filepath.Join(d, "server-key"), "CLIENT_CA": filepath.Join(d, "ca"), "PEER_SHA256": hex.EncodeToString(leaf[:]), "TOKEN_SHA256": hex.EncodeToString(token[:]), "LISTEN": address,
 		"AUTHORITY_CA": filepath.Join(d, "ca"), "AUTHORITY_OPERATION_CERT": filepath.Join(d, "operation"), "AUTHORITY_OPERATION_KEY": filepath.Join(d, "operation-key"), "AUTHORITY_SOURCE_CERT": filepath.Join(d, "source"), "AUTHORITY_SOURCE_KEY": filepath.Join(d, "source-key"), "AUTHORITY_OPERATION_TOKEN": ownerToken, "AUTHORITY_SOURCE_TOKEN": adminToken, "AUTHORITY_OPERATION_ADDRESS": f.address, "AUTHORITY_SOURCE_ADDRESS": f.sourceAddress, "AUTHORITY_SERVER_NAME": "localhost"}
-	c := &controlProcess{fixture: f, address: address, directory: d}
+	c := &controlProcess{fixture: f, address: address, directory: d, image: controlBinary}
 	for name, value := range settings {
 		c.env = append(c.env, "WEAVER_CONTROL_"+name+"="+value)
 	}
+	// Measure the service drain and process exit without the race runtime's
+	// default one-second sleep after main returns. Keep all race checks active.
+	c.env = append(c.env, "GORACE="+strings.TrimSpace(os.Getenv("GORACE")+" atexit_sleep_ms=0"))
 	t.Cleanup(func() { c.stop(t) })
 	return c
+}
+
+// Source preparation needs no operation credential or Go ingress socket.
+func (c *controlProcess) prepare(t testing.TB) {
+	c.prepareUsing(t, c.image)
+}
+
+func (c *controlProcess) prepareUsing(t testing.TB, image string, args ...string) {
+	t.Helper()
+	ctx, cancel := context.WithTimeout(t.Context(), 15*time.Second)
+	defer cancel()
+	command := c.prepareCommand(ctx, image, args...)
+	if output, err := command.CombinedOutput(); err != nil {
+		t.Fatalf("source-only preparation: %v: %s", err, output)
+	}
+}
+
+func (c *controlProcess) prepareCommand(ctx context.Context, image string, args ...string) *exec.Cmd {
+	command := exec.CommandContext(ctx, image, args...)
+	for _, value := range os.Environ() {
+		if !strings.HasPrefix(value, "WEAVER_CONTROL_") {
+			command.Env = append(command.Env, value)
+		}
+	}
+	for _, value := range c.env {
+		name, _, _ := strings.Cut(value, "=")
+		if strings.HasPrefix(name, "WEAVER_CONTROL_AUTHORITY_SOURCE_") || name == "WEAVER_CONTROL_AUTHORITY_CA" || name == "WEAVER_CONTROL_AUTHORITY_SERVER_NAME" || name == "WEAVER_CONTROL_CONFIG" || name == "WEAVER_CONTROL_PRODUCER" {
+			command.Env = append(command.Env, value)
+		}
+	}
+	return command
 }
 func (c *controlProcess) start(t testing.TB) {
 	t.Helper()
@@ -114,9 +150,27 @@ func (c *controlProcess) start(t testing.TB) {
 		log.Close()
 		t.Fatal(err)
 	}
-	child := exec.Command(controlBinary)
+	child := exec.Command(c.image, "serve")
 	child.Env = append(os.Environ(), c.env...)
 	child.Stdout, child.Stderr = log, log
+	if os.Getenv("WEAVER_TEST_CONTROL_HEAP") == "1" {
+		if os.Getenv("WEAVER_TEST_CONTROL_PROFILE_ROOT") != "" {
+			child.Env = append(child.Env, "WEAVER_TEST_CONTROL_PROFILE_DIR="+c.directory)
+		}
+		input, err := child.StdinPipe()
+		if err != nil {
+			log.Close()
+			t.Fatal(err)
+		}
+		child.Stdout = nil
+		output, err := child.StdoutPipe()
+		if err != nil {
+			input.Close()
+			log.Close()
+			t.Fatal(err)
+		}
+		c.heapInput, c.heapOutput = input.(*os.File), output.(*os.File)
+	}
 	if err := child.Start(); err != nil {
 		log.Close()
 		t.Fatal(err)
@@ -124,9 +178,14 @@ func (c *controlProcess) start(t testing.TB) {
 	c.child = child
 	c.exited = make(chan error, 1)
 	exited := c.exited
-	go func() { err := child.Wait(); log.Close(); exited <- err }()
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
+	go func() {
+		err := child.Wait()
+		log.Close()
+		exited <- err
+		cancel()
+	}()
 	caller := c.fixture.pki.client
 	if c.ingress != nil {
 		caller = c.ingress.client
@@ -436,7 +495,12 @@ func (p *publicationReplyLoss) RegisterTask(ctx context.Context, in *pb.Register
 }
 func (p *publicationReplyLoss) CompileSource(ctx context.Context, in *pb.ProducerRequest) (*pb.CompiledSource, error) {
 	source := p.sourceClient()
-	return source.RPC.CompileSource(source.Context(ctx), in)
+	started := time.Now()
+	reply, err := source.RPC.CompileSource(source.Context(ctx), in)
+	if p.observeCompile != nil {
+		p.observeCompile(time.Since(started), err)
+	}
+	return reply, err
 }
 func (p *publicationReplyLoss) RegisterPublishedTask(ctx context.Context, in *pb.RegisterPublishedTaskRequest) (*pb.Empty, error) {
 	source := p.sourceClient()
@@ -479,6 +543,10 @@ func TestProviderControlStagingReplyLossCannotActivateOrLosePending(t *testing.T
 }
 
 func exerciseControlSourceReplyLoss(t *testing.T, source func(*testing.T, *fixture, config.Bundle) string, loseStage bool, policies controlPolicySources) {
+	exerciseSourceReplyLoss(t, source, loseStage, policies, "")
+}
+
+func exerciseSourceReplyLoss(t *testing.T, source func(*testing.T, *fixture, config.Bundle) string, loseStage bool, policies controlPolicySources, preparationImage string) {
 	t.Helper()
 	f := newFixture(t, completeSSE, false)
 	bundle := controlBundle(t, f)
@@ -501,13 +569,37 @@ func exerciseControlSourceReplyLoss(t *testing.T, source func(*testing.T, *fixtu
 	}
 	server := grpc.NewServer(grpc.Creds(credentials.NewTLS(&tls.Config{Certificates: []tls.Certificate{certificate}, ClientCAs: f.pki.root, ClientAuth: tls.RequireAndVerifyClientCert, MinVersion: tls.VersionTLS13})))
 	proxy := &publicationReplyLoss{source: f.admin, loseStage: loseStage}
+	if preparationImage != "" {
+		proxy.observeCompile = func(elapsed time.Duration, err error) {
+			t.Logf("source compile RPC elapsed=%s status=%v", elapsed, err)
+			if err != nil {
+				data, _ := os.ReadFile(filepath.Join(f.directory, "server.log"))
+				for _, line := range strings.Split(string(data), "\n") {
+					if strings.HasPrefix(line, "weaver scheme phase=") {
+						t.Log(line)
+					}
+				}
+			}
+		}
+	}
 	pb.RegisterGatewayServer(server, proxy)
 	exited := make(chan error, 1)
 	go func() { exited <- server.Serve(listener) }()
 	t.Cleanup(func() { server.Stop(); <-exited })
 	c.env = append(c.env, "WEAVER_CONTROL_AUTHORITY_SOURCE_ADDRESS="+listener.Addr().String())
-	child := exec.Command(controlBinary)
+	child := exec.Command(controlBinary, "serve")
 	child.Env = append(os.Environ(), c.env...)
+	if preparationImage != "" {
+		child = c.prepareCommand(t.Context(), preparationImage, "prepare")
+	}
+	recoverSource := func() {
+		if preparationImage == "" {
+			c.start(t)
+			return
+		}
+		c.prepareUsing(t, preparationImage, "prepare")
+		c.client = f.client
+	}
 	log, err := os.Create(filepath.Join(c.directory, "lost-publication.log"))
 	if err != nil {
 		t.Fatal(err)
@@ -564,7 +656,7 @@ func exerciseControlSourceReplyLoss(t *testing.T, source func(*testing.T, *fixtu
 	f.stop(t)
 	f.start(t)
 	proxy.replaceSource(f.admin)
-	c.start(t)
+	recoverSource()
 	ctx, cancel = context.WithTimeout(context.Background(), 12*time.Second)
 	defer cancel()
 	if _, err = c.client.Execute(ctx, bundle.Plans[0], pb.Encoding_PROTOBUF, 1, func(*pb.Event) error { return nil }); err != nil {
@@ -585,7 +677,7 @@ func exerciseControlSourceReplyLoss(t *testing.T, source func(*testing.T, *fixtu
 	f.stop(t)
 	f.start(t)
 	proxy.replaceSource(f.admin)
-	c.start(t)
+	recoverSource()
 	cancel()
 	ctx, cancel = context.WithTimeout(context.Background(), 12*time.Second)
 	defer cancel()
@@ -609,7 +701,7 @@ func exerciseControlSourceReplyLoss(t *testing.T, source func(*testing.T, *fixtu
 	f.stop(t)
 	f.start(t)
 	proxy.replaceSource(f.admin)
-	c.start(t)
+	recoverSource()
 	cancel()
 	ctx, cancel = context.WithTimeout(context.Background(), 12*time.Second)
 	defer cancel()

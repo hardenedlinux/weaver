@@ -467,21 +467,23 @@ The retired Go linked-source checker is not evidence for this delegated path.
 #+begin_src text
 go -C go run ./cmd/weaver-dev check
 go -C go run ./cmd/weaver-dev check-scheme
-go -C go build ./cmd/weaver-control
+cargo build --release --locked -p weaver-server --features arrow,scheme-program
+target/release/weaver-server prepare --config /path/to/weaver.toml
 #+end_src
 
 Use the SDK's =GERBIL_GXI= override only when compiler discovery needs an explicit
 selection. Weaver calls native package/staging APIs and exports typed FFI data.
-The actual =weaver-control= executable selects exactly one of
-=WEAVER_CONTROL_PRODUCER= (approved Rust producer name) and
-=WEAVER_CONTROL_CONFIG= (JSON/YAML data file), and uses =WEAVER_CONTROL_LISTEN=.
-It never starts a Scheme compiler or accepts a Scheme file as runtime code.
-An absent producer/catalog or failed compile cannot fall back to a data file.
-The Rust deployment must explicitly install the approved program/catalog;
-the test qualification graph is not a production program. There is no operation
-CLI or stdin protocol.
+Rust preparation reads the separate source connection settings from =[source]=
+in =weaver.toml=. Choose exactly one =producer= or =file=. The producer path
+requires the approved program and catalog to be installed. The file path
+accepts JSON/YAML data, is relative to =weaver.toml=, and uses the existing
+source-only composition RPC. YAML accepts one UTF-8 document with the existing
+core data types. Duplicate keys, custom tags, anchors and aliases are rejected.
+Operation clients connect to the Rust listener.
+The Go reference executable under =go/dev/controlref= is used by the acceptance
+suite to compare the previous file and relay paths.
 
-| Environment group | Required settings |
+| Environment group for the Go reference | Required settings |
 |-------------------+-------------------|
 | Frontend TLS | =WEAVER_CONTROL_SERVER_CERT=, =WEAVER_CONTROL_SERVER_KEY=, =WEAVER_CONTROL_CLIENT_CA= |
 | Frontend caller | =WEAVER_CONTROL_PEER_SHA256=, =WEAVER_CONTROL_TOKEN_SHA256= |

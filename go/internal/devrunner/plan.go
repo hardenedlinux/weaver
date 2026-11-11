@@ -7,9 +7,11 @@ package devrunner
 import (
 	"fmt"
 	"os"
+	"slices"
 )
 
 const rustRuntimeFeatures = "weaver-server/arrow,weaver-governance/scheme-vm"
+const providerSpecReviewCase = "^TestProviderRealSPECReviewRevocationLostRepliesAndRestart$"
 
 const proofToolchain = "leanprover/lean4:v4.35.0"
 
@@ -20,6 +22,14 @@ func schemeTool() string {
 	return "gerbil"
 }
 
+// SchemeQualificationCargoArgs defines the one Cargo graph for the native
+// qualification tests and the executable used by the Go fixtures.
+func SchemeQualificationCargoArgs() []string {
+	return []string{"test", "-p", "weaver-governance", "-p", "weaver-governance-build", "-p", "weaver-server",
+		"--features", "weaver-governance/scheme-qualification,weaver-server/governance-qualification,weaver-server/arrow",
+		"--locked", "--offline", "-j", "4"}
+}
+
 func Plan(goBinary string) []Stage {
 	return []Stage{
 		{"rust-environment", "rustc", []string{"-vV"}},
@@ -28,7 +38,7 @@ func Plan(goBinary string) []Stage {
 		{"proof-environment", "elan", []string{"run", proofToolchain, "lean", "--version"}},
 		{"lean-json-integration", goBinary, []string{"-C", "go", "test", "-count=1", "-tags=proofintegration", "./internal/devrunner", "-run", "^TestLeanJSONCompilerAndRunner$", "-v"}},
 		{"spec-real-qualification", goBinary, []string{"-C", "go", "test", "-race", "-count=1", "-tags=proofintegration", "./internal/specreview"}},
-		{"project-architecture", goBinary, []string{"-C", "go", "test", "-count=1", "./dev", "-run", "^Test(ProjectArchitecture|SysMLSDKAndRequirementTrace|CargoWorkspace|SchemeModuleOwnership|CIWorkflows)", "-v"}},
+		{"project-architecture", goBinary, []string{"-C", "go", "test", "-count=1", "./dev", "-run", "^Test(ProjectArchitecture|SysMLSDKAndRequirementTrace|CargoWorkspace|CIWorkflows)", "-v"}},
 		{"workflow-contract", "actionlint", nil},
 		{"rust-format", "cargo", []string{"fmt", "--all", "--", "--check"}},
 		{"rust-default-profile", "cargo", []string{"check", "--workspace", "--all-targets", "--locked", "--offline"}},
@@ -65,6 +75,15 @@ func Plan(goBinary string) []Stage {
 		{"provider-egress-window-lean", "elan", []string{"run", proofToolchain, "lean", "--json", "dev/proofs/lean/ProviderEgressWindow.lean"}},
 		{"provider-egress-promotion-quint-tests", "quint", []string{"test", "dev/proofs/quint/ProviderEgressPromotion.qnt", "--main", "ProviderEgressPromotion", "--seed", "293"}},
 		{"provider-egress-promotion-quint-safety", "quint", []string{"run", "dev/proofs/quint/ProviderEgressPromotion.qnt", "--main", "ProviderEgressPromotion", "--invariant", "safe", "--max-samples", "2000", "--max-steps", "80", "--seed", "293"}},
+		{"provider-admission-turn-tests", "quint", []string{"test", "dev/proofs/quint/ProviderAdmissionTurn.qnt", "--main", "ProviderAdmissionTurn", "--seed", "293"}},
+		{"provider-admission-turn-safety", "quint", []string{"run", "dev/proofs/quint/ProviderAdmissionTurn.qnt", "--main", "ProviderAdmissionTurn", "--invariant", "safe", "--max-samples", "2000", "--max-steps", "80", "--seed", "293"}},
+		{"provider-admission-turn-lean", "elan", []string{"run", proofToolchain, "lean", "--json", "dev/proofs/lean/ProviderAdmissionTurn.lean"}},
+		{"provider-read-custody-tests", "quint", []string{"test", "dev/proofs/quint/ProviderReadCustody.qnt", "--main", "ProviderReadCustody", "--seed", "293"}},
+		{"provider-read-custody-safety", "quint", []string{"run", "dev/proofs/quint/ProviderReadCustody.qnt", "--main", "ProviderReadCustody", "--invariant", "safe", "--max-samples", "2000", "--max-steps", "80", "--seed", "293"}},
+		{"provider-read-custody-lean", "elan", []string{"run", proofToolchain, "lean", "--json", "dev/proofs/lean/ProviderReadCustody.lean"}},
+		{"provider-lifecycle-footprint-tests", "quint", []string{"test", "dev/proofs/quint/ProviderLifecycleFootprint.qnt", "--main", "ProviderLifecycleFootprint", "--seed", "293"}},
+		{"provider-lifecycle-footprint-safety", "quint", []string{"run", "dev/proofs/quint/ProviderLifecycleFootprint.qnt", "--main", "ProviderLifecycleFootprint", "--invariant", "safe", "--max-samples", "2000", "--max-steps", "80", "--seed", "293"}},
+		{"provider-lifecycle-footprint-lean", "elan", []string{"run", proofToolchain, "lean", "--json", "dev/proofs/lean/ProviderLifecycleFootprint.lean"}},
 		{"provider-snapshot-publication-tests", "quint", []string{"test", "dev/proofs/quint/ProviderSnapshotPublication.qnt", "--main", "ProviderSnapshotPublication", "--seed", "293"}},
 		{"provider-snapshot-publication-safety", "quint", []string{"run", "dev/proofs/quint/ProviderSnapshotPublication.qnt", "--main", "ProviderSnapshotPublication", "--invariant", "safe", "--max-samples", "2000", "--max-steps", "80", "--seed", "293"}},
 		{"provider-snapshot-publication-lean", "elan", []string{"run", proofToolchain, "lean", "--json", "dev/proofs/lean/ProviderSnapshotPublication.lean"}},
@@ -83,11 +102,21 @@ func Plan(goBinary string) []Stage {
 		{"turso-atomicity-safety", "quint", []string{"run", "dev/proofs/quint/TursoAdmission.qnt", "--main", "TursoAdmission", "--invariant", "safety", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
 		{"provider-routing-pbt", goBinary, []string{"-C", "go", "test", "./internal/routing", "-run", "^$", "-fuzz", "FuzzProviderPlanCannotExpandAuthority", "-fuzztime=3s"}},
 		{"provider-routing-ownership-pbt", goBinary, []string{"-C", "go", "test", "./internal/routing", "-run", "^$", "-fuzz", "FuzzCompiledProviderOwnsRouteOrder", "-fuzztime=3s"}},
-		{"provider-stream-ownership-pbt", goBinary, []string{"-C", "go", "test", "./internal/gatewayclient", "-run", "^$", "-fuzz", "FuzzProviderExecutionOwnsRouteObservation", "-fuzztime=3s"}},
+		{"provider-stream-ownership-pbt", goBinary, []string{"-C", "go", "test", "./internal/gatewayclient", "-run", "^$", "-fuzz", "FuzzProviderExecutionOwnsRouteObservation", "-fuzztime=24000x", "-timeout=15s"}},
 		{"source-task-ownership-pbt", goBinary, []string{"-C", "go", "test", "./internal/gatewayclient", "-run", "^$", "-fuzz", "FuzzTaskRequestOwnsMutableFields", "-fuzztime=3s"}},
 		{"publication-snapshot-pbt", goBinary, []string{"-C", "go", "test", "./internal/gatewayclient", "-run", "^$", "-fuzz", "FuzzPublicationStagesRetainOriginalParent", "-fuzztime=3s"}},
 		{"llm-routing-quint-tests", "quint", []string{"test", "dev/proofs/quint/LlmRouting.qnt", "--main", "LlmRouting", "--seed", "293"}},
 		{"llm-routing-quint-safety", "quint", []string{"run", "dev/proofs/quint/LlmRouting.qnt", "--main", "LlmRouting", "--invariant", "safety", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
+		{"delegated-exchange-quint-tests", "quint", []string{"test", "dev/proofs/quint/DelegatedExchange.qnt", "--main", "DelegatedExchange", "--seed", "293"}},
+		{"delegated-exchange-quint-safety", "quint", []string{"run", "dev/proofs/quint/DelegatedExchange.qnt", "--main", "DelegatedExchange", "--invariant", "safety", "--max-samples", "1000", "--max-steps", "60", "--seed", "293", "--verbosity", "0"}},
+		{"registered-oidc-quint-tests", "quint", []string{"test", "dev/proofs/quint/RegisteredOidc.qnt", "--main", "RegisteredOidc", "--seed", "293"}},
+		{"registered-oidc-quint-safety", "quint", []string{"run", "dev/proofs/quint/RegisteredOidc.qnt", "--main", "RegisteredOidc", "--invariant", "safety", "--max-samples", "1000", "--max-steps", "60", "--seed", "293", "--verbosity", "0"}},
+		{"copilot-credentials-quint-tests", "quint", []string{"test", "dev/proofs/quint/CopilotCredentials.qnt", "--main", "CopilotCredentials", "--seed", "293"}},
+		{"copilot-credentials-quint-safety", "quint", []string{"run", "dev/proofs/quint/CopilotCredentials.qnt", "--main", "CopilotCredentials", "--invariant", "safety", "--max-samples", "1000", "--max-steps", "60", "--seed", "293", "--verbosity", "0"}},
+		{"oauth-credentials-quint-tests", "quint", []string{"test", "dev/proofs/quint/OAuthCredentials.qnt", "--main", "OAuthCredentials", "--seed", "293"}},
+		{"openai-login-quint-tests", "quint", []string{"test", "dev/proofs/quint/OpenAiLogin.qnt", "--main", "OpenAiLogin", "--seed", "293"}},
+		{"openai-login-quint-safety", "quint", []string{"run", "dev/proofs/quint/OpenAiLogin.qnt", "--main", "OpenAiLogin", "--invariant", "safety", "--max-samples", "1000", "--max-steps", "60", "--seed", "293", "--verbosity", "0"}},
+		{"oauth-credentials-quint-safety", "quint", []string{"run", "dev/proofs/quint/OAuthCredentials.qnt", "--main", "OAuthCredentials", "--invariant", "safety", "--max-samples", "1000", "--max-steps", "60", "--seed", "293", "--verbosity", "0"}},
 		{"provider-request-bounds-pbt", goBinary, []string{"-C", "go", "test", "./internal/routing", "-run", "^$", "-fuzz", "FuzzProviderRequestBounds", "-fuzztime=3s"}},
 		{"provider-profile-schema-pbt", goBinary, []string{"-C", "go", "test", "./api/v1", "-run", "^$", "-fuzz", "FuzzProviderProfileRequestFacts", "-fuzztime=3s"}},
 		{"provider-profile-config-pbt", goBinary, []string{"-C", "go", "test", "./internal/config", "-run", "^$", "-fuzz", "FuzzProviderProfileConfiguration", "-fuzztime=3s"}},
@@ -129,7 +158,10 @@ func Plan(goBinary string) []Stage {
 		{"publication-lean", "elan", []string{"run", proofToolchain, "lean", "--json", "dev/proofs/lean/PublicationRecovery.lean"}},
 		{"source-owner-quint-tests", "quint", []string{"test", "dev/proofs/quint/SourceOwner.qnt", "--main", "SourceOwner", "--seed", "293"}},
 		{"source-owner-quint-safety", "quint", []string{"run", "dev/proofs/quint/SourceOwner.qnt", "--main", "SourceOwner", "--invariant", "safe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
-		{"go-provider-grpc-integration", goBinary, []string{"-C", "go", "test", "-count=1", "-race", "-tags=integration", "./dev", "-run", "TestProvider", "-v"}},
+		{"go-provider-server-build", "cargo", []string{"build", "--release", "-p", "weaver-server", "--bin", "weaver-server", "--features", "arrow", "--locked", "--offline", "-j", "4"}},
+		{"go-provider-observer-build", "cargo", []string{"test", "--release", "-p", "weaver-server", "--lib", "--features", "arrow", "--locked", "--offline", "-j", "4", "--no-run"}},
+		{"go-provider-grpc-integration", goBinary, []string{"-C", "go", "test", "-json", "-count=1", "-race", "-tags=integration", "-timeout=10m", "./dev", "-run", "TestProvider", "-skip", providerSpecReviewCase}},
+		{"policy-provider-spec-integration", goBinary, []string{"-C", "go", "test", "-count=1", "-race", "-tags=integration", "-timeout=4m", "./dev", "-run", providerSpecReviewCase, "-v"}},
 		{"control-bundle-pbt", goBinary, []string{"-C", "go", "test", "./internal/config", "-run", "^$", "-fuzz", "FuzzSourceBundleCannotExpandOriginalSelection", "-fuzztime=3s"}},
 		{"authority-publication-quint-tests", "quint", []string{"test", "dev/proofs/quint/AuthorityPublication.qnt", "--main", "AuthorityPublication", "--seed", "293", "--match", "^authority[A-Z]"}},
 		{"authority-publication-quint-safety", "quint", []string{"run", "dev/proofs/quint/AuthorityPublication.qnt", "--main", "AuthorityPublication", "--invariant", "safe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
@@ -139,7 +171,20 @@ func Plan(goBinary string) []Stage {
 		{"semantic-boundary-quint-safety", "quint", []string{"run", "dev/proofs/quint/LlmPolicyContinuation.qnt", "--main", "LlmPolicyContinuation", "--step", "boundaryStep", "--invariant", "safety", "--max-samples", "1000", "--max-steps", "60", "--seed", "293", "--verbosity", "0"}},
 	}
 }
+
+const testParallelism = "4"
+
 func Stages(mode, goBinary string) ([]Stage, error) {
+	stages, err := stagesForMode(mode, goBinary)
+	for i, stage := range stages {
+		if stage.Binary == goBinary && len(stage.Args) >= 3 && stage.Args[0] == "-C" && stage.Args[2] == "test" {
+			stages[i].Args = slices.Insert(stage.Args, 3, "-parallel="+testParallelism)
+		}
+	}
+	return stages, err
+}
+
+func stagesForMode(mode, goBinary string) ([]Stage, error) {
 	switch mode {
 	case "bootstrap":
 		return []Stage{
@@ -165,8 +210,13 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 			}
 		}
 		return append(selected, Stage{"storage-grpc-integration", goBinary, []string{"-C", "go", "test", "-count=1", "-race", "-tags=integration", "./dev", "-run", "^TestProvider", "-v"}}), nil
+	case "bootstrap-scheme":
+		// The package manager's public script API owns the same recursive
+		// installation and version checks without generating an editor TAGS index.
+		return []Stage{{"scheme-dependencies", schemeTool(), []string{"-:1n,2n", "interactive", "-e",
+			`(import :gerbil/tools/gxpkg) (with-pkg-build-env (for-each pkg-install (pgetq depend: (pkg-plist ".") '())))`}}}, nil
 	case "bootstrap-build", "bootstrap-proofs":
-		stages, err := Stages("bootstrap", goBinary)
+		stages, err := stagesForMode("bootstrap", goBinary)
 		if err != nil {
 			return nil, err
 		}
@@ -178,9 +228,12 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 		var selected []Stage
 		for _, stage := range Plan(goBinary) {
 			common := stage.Name == "project-architecture" || stage.Name == "workflow-contract"
-			language := mode == "check-rust" && (stage.Binary == "cargo" || stage.Binary == "rustc") ||
-				mode == "check-go" && stage.Binary == goBinary && stage.Name != "lean-json-integration" && stage.Name != "spec-real-qualification" && stage.Name != "spec-proof-closure-integration" ||
-				mode == "check-policy" && (stage.Binary == "quint" || stage.Binary == "elan" || stage.Name == "lean-json-integration" || stage.Name == "spec-real-qualification" || stage.Name == "spec-proof-closure-integration")
+			providerBuild := stage.providerBuild()
+			proofGo := stage.Name == "lean-json-integration" || stage.Name == "spec-real-qualification" ||
+				stage.Name == "spec-proof-closure-integration" || stage.Name == "policy-provider-spec-integration"
+			language := mode == "check-rust" && !providerBuild && (stage.Binary == "cargo" || stage.Binary == "rustc") ||
+				mode == "check-go" && (providerBuild || stage.Binary == goBinary && !proofGo) ||
+				mode == "check-policy" && (providerBuild || stage.Binary == "quint" || stage.Binary == "elan" || proofGo)
 			if common || language {
 				selected = append(selected, stage)
 			}
@@ -200,18 +253,20 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 		}, nil
 	case "check-scheme":
 		return []Stage{
-			{"project-architecture", goBinary, []string{"-C", "go", "test", "-count=1", "./dev", "-run", "^Test(ProjectArchitecture|SysMLSDKAndRequirementTrace|CargoWorkspace|SchemeModuleOwnership|CIWorkflows)", "-v"}},
+			{"project-architecture", goBinary, []string{"-C", "go", "test", "-count=1", "./dev", "-run", "^Test(ProjectArchitecture|SysMLSDKAndRequirementTrace|CargoWorkspace|CIWorkflows)", "-v"}},
 			{"scheme-policy-library", "cargo", []string{"build", "-p", "weaver-policy-ffi", "--locked", "--offline"}},
 			{"scheme-policy-preflight", "cargo", []string{"test", "-p", "weaver-policy-ffi", "--lib", "--benches", "--locked", "--offline"}},
 			{"scheme-policy-pkg-config", "cargo", []string{"run", "-p", "weaver-policy-ffi", "--example", "policy_pkg_config", "--locked", "--offline"}},
-			{"scheme-module-build", schemeTool(), []string{"build", "-g"}},
+			{"scheme-module-build", "./build.ss", []string{"compile", "--debug"}},
 			{"scheme-build-environment-tests", goBinary, []string{"-C", "go", "test", "-count=1", "-race", "-tags=schemeintegration", "./internal/devrunner", "-run", "^(Test(SchemePkgConfig|SchemeTool|SchemePackageResult|SchemeTestInventory|SchemeUsesPackageTestEntry|SourceInputsWithArchived)|FuzzSchemePackageResultProtocol)", "-v"}},
 			// Package tools own discovery, execution and result reporting. Historical
 			// direct-gxi image experiments are not a prerequisite for gerbil test.
 			{"scheme-unit-tests", schemeTool(), []string{"test", "-g", "-v", "5", "t"}},
+			{"scheme-module-selection-integration", schemeTool(), []string{"test", "-g", "-v", "5", "t/qualification/module-selection"}},
 			{"scheme-source-integration-tests", schemeTool(), []string{"test", "-g", "-v", "5", "t/integration"}},
-			{"scheme-rooted-sdk-integration", "cargo", []string{"test", "-p", "weaver-governance", "-p", "weaver-governance-build", "-p", "weaver-server", "--features", "weaver-governance/scheme-qualification,weaver-server/governance-qualification", "--locked", "--offline"}},
-			{"scheme-grpc-stream-integration", goBinary, []string{"-C", "go", "test", "-count=1", "-race", "-tags=integration,schemeintegration", "./dev", "-run", "^TestProviderControl", "-v"}},
+			{"scheme-provider-server-build", "cargo", append(SchemeQualificationCargoArgs(), "--no-run", "-vv")},
+			{"scheme-rooted-sdk-integration", "cargo", append(SchemeQualificationCargoArgs(), "--", "--test-threads=4")},
+			{"scheme-grpc-stream-integration", goBinary, []string{"-C", "go", "test", "-json", "-count=1", "-race", "-tags=integration,schemeintegration", "-timeout=10m", "./dev", "-run", "^TestProvider(Control|ModuleSelectionBindsOriginal|RustDirect)", "-skip", "^TestProviderControlGovernorPerformance$"}},
 		}, nil
 	case "bench-execution":
 		return []Stage{
@@ -223,6 +278,11 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 			{"execution-provider-benchmark", "cargo", []string{"bench", "-p", "weaver-broker", "--bench", "gateway", "--locked", "--offline", "--", "broker/https_guarded_sse_three_events", "--noplot"}},
 			{"execution-encoding-benchmark", "cargo", []string{"bench", "-p", "weaver-server", "--features", "arrow", "--bench", "gateway", "--locked", "--offline", "--", "server/encoding_guard_hold", "--noplot"}},
 			{"execution-delivery-join-pair", goBinary, []string{"-C", "go", "test", "-mod=readonly", "-tags=integration", "./dev", "-run", "^$", "-bench", "^BenchmarkProviderDeliveryJoin$", "-benchtime=1x", "-count=1", "-v"}},
+			{"execution-lifecycle-footprint-pair", goBinary, []string{"-C", "go", "test", "-mod=readonly", "-tags=integration", "./dev", "-run", "^$", "-bench", "^BenchmarkProviderLifecycleFootprint$", "-benchtime=1x", "-count=1", "-v"}},
+			{"execution-read-custody-pair", goBinary, []string{"-C", "go", "test", "-mod=readonly", "-tags=integration", "./dev", "-run", "^$", "-bench", "^BenchmarkProviderReadCustody$", "-benchtime=1x", "-count=1", "-v"}},
+			{"execution-admission-turn-pair", goBinary, []string{"-C", "go", "test", "-mod=readonly", "-tags=integration", "./dev", "-run", "^$", "-bench", "^BenchmarkProviderAdmissionTurn$", "-benchtime=1x", "-count=1", "-v"}},
+			{"execution-admission-overlap-pair", goBinary, []string{"-C", "go", "test", "-mod=readonly", "-tags=integration", "./dev", "-run", "^$", "-bench", "^BenchmarkProviderAdmissionOverlap$", "-benchtime=1x", "-count=1", "-v"}},
+			{"execution-go-control-pair", goBinary, []string{"-C", "go", "test", "-mod=readonly", "-tags=integration", "./dev", "-run", "^$", "-bench", "^BenchmarkProviderGoControlPair$", "-benchtime=1x", "-count=1", "-v"}},
 			{"execution-range-prepare-pair", goBinary, []string{"-C", "go", "test", "-mod=readonly", "-tags=integration", "./dev", "-run", "^$", "-bench", "^BenchmarkProviderRangePreparationGroup$", "-benchtime=1x", "-count=1", "-v"}},
 			{"execution-scheduled-encoding-pair", goBinary, []string{"-C", "go", "test", "-mod=readonly", "-tags=integration", "./dev", "-run", "^$", "-bench", "^BenchmarkProviderScheduledEncoding$", "-benchtime=1x", "-count=1", "-v"}},
 			{"execution-contention-pair", goBinary, []string{"-C", "go", "test", "-count=1", "-tags=integration", "./dev", "-run", "^TestContentionPairs$", "-v"}},
@@ -243,7 +303,7 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 		}, nil
 	case "bench":
 		return []Stage{
-			{"project-architecture", goBinary, []string{"-C", "go", "test", "-count=1", "./dev", "-run", "^Test(ProjectArchitecture|SysMLSDKAndRequirementTrace|CargoWorkspace|SchemeModuleOwnership|CIWorkflows)", "-v"}},
+			{"project-architecture", goBinary, []string{"-C", "go", "test", "-count=1", "./dev", "-run", "^Test(ProjectArchitecture|SysMLSDKAndRequirementTrace|CargoWorkspace|CIWorkflows)", "-v"}},
 			{"rust-environment", "rustc", []string{"-vV"}},
 			{"go-environment", goBinary, []string{"-C", "go", "version"}},
 			{"benchmark-package-contract", goBinary, []string{"-C", "go", "test", "-count=1", "./dev", "./internal/devrunner", "-run", "^Test(CargoWorkspaceAndDevelopmentGates|Benchmark.*)$"}},

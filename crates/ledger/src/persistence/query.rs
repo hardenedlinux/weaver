@@ -103,6 +103,57 @@ pub(crate) fn read_all_current<T>(
     block_on(async { decode_all(currentness_rows(connection, sql, params).await?, decode).await })
 }
 
+pub(crate) fn read_all_manifest<T>(
+    tx: &super::WriteScope<'_>,
+    sql: &'static str,
+    family: &str,
+    prepared: bool,
+    projected: bool,
+    decode: impl FnMut(&Row) -> Result<T>,
+) -> Result<Vec<T>> {
+    let read = async {
+        let rows = if prepared {
+            tx.prepare_cached(sql).await?.query([family]).await?
+        } else {
+            currentness_rows(tx, sql, [family]).await?
+        };
+        decode_all(rows, decode).await
+    };
+    #[cfg(feature = "commit-observer")]
+    {
+        tx.observe_manifest_driver(projected, read)
+    }
+    #[cfg(not(feature = "commit-observer"))]
+    {
+        let _ = projected;
+        block_on(read)
+    }
+}
+
+/// Execute a fixed query returning at most one row. Reach Done before dropping
+/// its cursor so the engine can finish the read instead of aborting it.
+pub(crate) fn maybe_prepared<T>(
+    connection: &Connection,
+    sql: &'static str,
+    params: impl IntoParams,
+    decode: impl FnOnce(&Row) -> Result<T>,
+) -> Result<Option<T>> {
+    block_on(async {
+        let mut statement = connection.prepare_cached(sql).await?;
+        let mut rows = statement.query(params).await?;
+        let Some(row) = rows.next().await? else {
+            return Ok(None);
+        };
+        let value = decode(&row)?;
+        if rows.next().await?.is_some() {
+            return Err(Error::Misuse(
+                "prepared singleton query returned multiple rows".into(),
+            ));
+        }
+        Ok(Some(value))
+    })
+}
+
 async fn decode_all<T>(
     mut rows: super::driver::Rows,
     mut decode: impl FnMut(&Row) -> Result<T>,

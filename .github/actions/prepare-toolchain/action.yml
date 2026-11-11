@@ -10,7 +10,7 @@ runs:
     - name: Select standard Go
       uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
       with:
-        go-version: '1.26.1'
+        go-version: '1.27.3'
         cache: false
     - name: Select Node for Quint
       if: env.WEAVER_VERIFY_SUITE == 'check-policy'
@@ -20,3 +20,18 @@ runs:
     - name: Install Ubuntu or Darwin packages
       shell: sh
       run: go -C go run ./cmd/weaver-dev prepare-ci-tools
+    - name: Prepare the pinned Lean release
+      if: env.WEAVER_VERIFY_SUITE == 'check-policy' && runner.os == 'Linux'
+      shell: bash
+      run: bash "${{ github.action_path }}/install-lean.sh"
+    - name: Bind the Cedar solver
+      if: env.WEAVER_VERIFY_SUITE == 'check-policy'
+      shell: sh
+      run: |
+        solver=$(command -v cvc5)
+        case "$solver" in
+          /*) test -x "$solver" ;;
+          *) exit 1 ;;
+        esac
+        "$solver" --version
+        printf 'CVC5=%s\n' "$solver" >> "$GITHUB_ENV"

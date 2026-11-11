@@ -10,41 +10,61 @@
 (begin-syntax
   (register-module-build-source! (path-directory (this-source-file)) 'hardenedlinux/weaver))
 (import (only-in :clan/poo/object .get)
-        (only-in :std/make pkg-config-cflags pkg-config-libs)
+        (only-in :std/source this-source-file)
+        (only-in :std/build-script defbuild-script)
         (only-in :gerbil/expander import-module expander-context-id)
         (only-in :gerbil/compiler compile-module)
-        (only-in :yuanxu/module-system/building/script defbuild-script)
+        (only-in :yuanxu/module-system/building/interface call-with-init-build-spec)
+        (only-in :yuanxu/module-system/building/products build-output-directory current-build-source-directory)
+        (only-in :yuanxu/module-system/source/observations current-module-source-observer)
         (only-in "./init.ss" hardenedlinux/weaver.init.exports))
 
-(def policy-package (getenv "WEAVER_POLICY_PKG_CONFIG_PACKAGE" "weaver-policy-ffi"))
-(def (package-spec (extra '()))
-  ((.get hardenedlinux/weaver.init.exports std-make-spec)
-   (append (list `(gxc: "scheme/policy/cedar-ffi"
-                "-cc-options" ,(pkg-config-cflags policy-package)
-                "-ld-options" ,(pkg-config-libs policy-package))
-         ;; Cross-language fixtures are libraries too: the standard package build
-         ;; owns their expansion instead of repeating it during each bootstrap.
-         '(gxc: "t/fixtures/governed-control")
-         '(gxc: "t/fixtures/control-inputs")) extra)))
+(export main)
 
-;; The native SDK invokes this same package entry with typed arguments.
-;; Compilation stays in the package declaration; no Rust-generated Scheme code.
+(def (compile-package args)
+  (def output (build-output-directory))
+  (def entry (this-source-file))
+  (def (dispatch spec native-args (prefix #f))
+    (def (this-source-file)
+      (let (directory (current-build-source-directory))
+        (if directory (path-expand (path-strip-directory entry) directory) entry)))
+    (defbuild-script spec libdir: output prefix: prefix)
+    (apply main native-args))
+  (call-with-init-build-spec
+    (lambda () ((.get hardenedlinux/weaver.init.exports std-make-spec) '()))
+    dispatch args output entry))
+
+;; Cargo needs the inputs already read by the package owner to invalidate its
+;; build script. Files created under OUT_DIR are products of the same build.
+(def (compile-package-for-cargo args)
+  (def outputs (path-expand "" (getenv "OUT_DIR")))
+  (def inputs (make-hash-table))
+  (def (observe key _)
+    (match key
+      (['file-read _ path]
+       (unless (string-prefix? outputs path)
+         (hash-put! inputs path #t)))
+      (else (void))))
+  (begin0
+    (parameterize ((current-module-source-observer observe))
+      (compile-package args))
+    (hash-for-each
+      (lambda (path _)
+        (when (file-exists? path)
+          (displayln "cargo:rerun-if-changed=" path)))
+      inputs)))
+
 (def (main . args)
   (match args
-    (["program" source expected-module]
-     (let ()
-       (defbuild-script
-         (package-spec (list '(gxc: "scheme/gateway/compiled")))
-         force: #t)
-       (main "compile"))
-     ;; The explicit operator application may live in a different source package.
-     ;; It is compiled as that source, never relabeled as a Weaver retained module.
+    (["compile-approved-program" source expected-module]
+     ;; An operator can approve a source in a different package.
      (compile-module source [output-dir: (path-expand "lib" (gerbil-path))
                              invoke-gsc: #f optimize: #t static: #t])
      (unless (equal? (symbol->string (expander-context-id (import-module source)))
                      expected-module)
        (error "approved application root mismatch")))
-    (else
-     (let ()
-       (defbuild-script (package-spec))
-       (apply main args)))))
+    (["compile"]
+     (if (getenv "CARGO_FEATURE_SCHEME_PROGRAM" #f)
+       (compile-package-for-cargo args)
+       (compile-package args)))
+    (else (compile-package args))))

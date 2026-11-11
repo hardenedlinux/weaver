@@ -16,7 +16,11 @@ extern crate self as weaver_ledger;
 mod delta_registration;
 mod domains;
 mod execution_exposure;
+mod hard_fact;
+pub use hard_fact::{FactFeedState, FactPreparation};
 mod exposure_manifest;
+#[cfg(feature = "commit-observer")]
+pub use exposure_manifest::use_prepared_manifest_programs;
 mod metering;
 mod metering_credentials;
 mod provider;
@@ -28,6 +32,9 @@ pub use provider_delivery::{
     ProviderDelivery,
 };
 mod provider_catalog;
+mod provider_routing;
+pub use provider_catalog::ProviderCatalogProjection;
+pub use provider_routing::ProviderOperationCut;
 mod provider_oauth;
 mod provider_oauth_witness;
 mod provider_profiles;
@@ -35,6 +42,12 @@ mod provider_publication;
 #[cfg(feature = "commit-observer")]
 pub use provider_publication::use_locked_publication_review;
 mod provider_quota;
+mod provider_workflow;
+mod provider_workflow_choice;
+mod provider_workflow_nested;
+pub use provider_workflow::{ProviderProgression, WorkflowObservation};
+pub use provider_workflow_choice::WorkflowChoiceObservation;
+pub use provider_workflow_nested::NestedObservation;
 mod publication;
 mod publication_barrier;
 mod publication_review;
@@ -56,7 +69,8 @@ pub use provider::{
 };
 #[cfg(feature = "commit-observer")]
 pub use provider::{
-    use_cached_release_programs, use_conservative_range_invalidation, use_separate_release_reads,
+    use_cached_release_programs, use_conservative_range_invalidation, use_early_admission_barrier,
+    use_exclusive_provider_reads, use_full_lifecycle_invalidation, use_separate_release_reads,
 };
 mod store;
 mod stream_catalog;
@@ -65,6 +79,8 @@ mod stream_progress;
 mod stream_ranges;
 mod stream_state;
 mod task_publication;
+#[cfg(feature = "commit-observer")]
+pub use store::ParkedProviderConnection;
 pub use store::{Dispatch, Ledger};
 pub(crate) use store::{db, integer};
 pub use stream_custody::{StreamClaim, StreamOwner};
@@ -74,7 +90,7 @@ pub use stream_ranges::RangePermit;
 asp_rust::asp_rust_cargo_test_gate!(mode = deny, config = asp_rust::default_asp_rust_config());
 
 #[cfg(feature = "commit-observer")]
-pub use task_origins::use_locked_original_evidence;
+pub use task_origins::{use_locked_original_evidence, use_prepared_original_program};
 
 #[cfg(feature = "commit-observer")]
 pub use domains::use_fresh_provider_domain_plan;

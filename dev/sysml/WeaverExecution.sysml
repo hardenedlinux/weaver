@@ -105,6 +105,12 @@ package WeaverExecution {
            under the deciding scope, alongside live OAuth, Cedar and fencing. */
     }
     requirement def ProviderCurrentnessPerformance {
+        doc /* The ordinary Rust provider integration group exercises an
+           optimized Server and its optimized observation fixture. Reuse the
+           Cargo artifact identity check. Four Tokio workers, original property
+           cases and the group's ten-minute bound qualify the runtime path.
+           Ordinary Cargo preparation shares the enclosing suite deadline.
+           Scheme qualification retains its native debug application graph. */
         doc /* Time domain view, publication and reviewed head, profile, and
            original claim reconciliation separately in the deciding scope. Split
            publication into pending, review match and original task birth.
@@ -119,14 +125,25 @@ package WeaverExecution {
            that transaction. Program reuse preserves the full domain join.
            The domain view and reservation reconciliation are scope-local.
            History equality, capacity, revocation, Policy and fence remain live. */
-        doc /* Shared roots serialize. Independent roots may overlap under MVCC.
-           Qualify both with the same binary, ingress, original workload, provider,
-           and held-budget verification. Hold and wait intervals can overlap.
-           The sum of protected service demands is a lower bound on a wave
-       sharing one root. Cross-root time is bounded by the longest dependency
-       chain and can also be constrained by native writer and IO capacity.
-       Report wall time and sampled work separately. A diagnostic speed result
-           carries no authority and does not establish a production SLO. */
+        doc /* Target design. Prepare immutable provider execution inputs once
+           for the exact admitted publication and profile, using the existing
+           Scheme owner and Rust publication projection. Bind a prepared input
+           to the catalog version, source revision and fence, reviewed Policy
+           digest, profile digest, and original plan commitment. Carry owned
+           Rust data across the worker handoff. Validate the queued commitment
+           and join the current authority in the deciding transaction before
+           reuse. Reconstruct from durable source on a miss. Keep claims,
+           budget, history, revocation, cancellation and each Cedar decision
+           within the corresponding live custody. */
+        doc /* Overlapping semantic writers serialize; certified provider work
+           may share semantic reads while writing distinct original origins.
+           Measure actual granted modes and reader/writer waits separately.
+           Only mutually conflicting protected demands form a serial service
+           lower bound. Compatible reads are bounded by dependency chains,
+           native writer/IO capacity and host scheduling, not their simple sum.
+           Both profiles use the same binary, original workload, ingress,
+           provider and held-budget verification. Hold intervals may overlap.
+           A diagnostic result carries no authority or production SLO claim. */
     }
 
     part def SharedDomainScheduler {
@@ -302,6 +319,132 @@ package WeaverExecution {
            reopen only on the exact fenced image and outcome. */
     }
 
+    requirement def ProviderAdmissionTurn {
+        doc /* Native prepared-program reuse may retain only compatible SQL
+           programs. A singleton preflight must finish its cursor; each use
+           binds fresh parameters and reads current rows. The deciding scope
+           still compares every exact reviewed projection, task birth, fence
+           and pending barrier. A reused program or previous successful read
+           conveys no authority after replacement or projection loss. */
+        doc /* Original-task, birth-publication and provider-receipt reads must
+           finish their singleton cursors before releasing the native read.
+           Constraining singleton join order may reduce preflight planning work
+           without changing any predicate. Engine schema/root generation changes
+           may still require recompilation, especially across MVCC snapshots;
+           do not bypass compatibility to claim zero compilation. A frozen Rust
+           release A/B uses identical Go forwarding and workload in both arms,
+           separate from the existing Go-versus-direct-Rust comparison. */
+        doc /* Domain-key discovery also completes its native singleton cursor.
+           Reusing its SQL program cannot retain discovered roots across waits:
+           capture scheduler generation before the hint query and keep the
+           existing deciding-scope root and generation rechecks. Completing this
+           read avoids invalidating compatible prepared programs as a side effect
+           of abandoning an otherwise successful autocommit read. */
+        doc /* Retained-member and projected-member queries reuse only compatible
+           fixed SQL programs, prepared before provider admission where possible.
+           Each deciding use binds the current family, consumes the complete row
+           set, rejects duplicate members and verifies exact member bijection,
+           original ceilings and held-budget conservation. A preparation success
+           or a previous matching set is never a substitute for those fresh reads. */
+        doc /* A pending execution request has no accepted authority outcome,
+           native claim, reservation or semantic publication. It waits in the
+           existing bounded runtime lane and conflicting-writer FIFO without
+           closing old frame authority. Once its exclusive writer turn and
+           domain discovery generation are current, close the entire semantic
+           footprint before BEGIN or any native mutation. A queued request is
+           not a source-accepted Policy/OAuth/witness intent. Those intents,
+           settlement, migration and all unclassified writers close immediately.
+           WAL retains the existing eager global closure. */
+        doc /* Known commit invalidates the affected image and activates the
+           exact new outcome; unknown commit seals and retains original holds.
+           Cancellation before native admission creates no claim or refund.
+           A crash after known queued admission can resume only the original
+           non-invoked operation; consumed/partially-written sends cannot replay.
+           Receiver owner, cut, one-use cursor, expiry and pending barriers
+           remain live at final Tonic delivery. */
+        doc /* Separate scheduler wait, native hold and authority-closed lifetime.
+           Selected closure excludes unaccepted queue residence, not native
+           service, hard-source barriers or transport latency. TCP connect, TLS
+           handshake and request write/seal remain inside the invocation guard;
+           response-header wait follows seal. Stage timing is diagnostic and
+           can never certify non-execution or authorize budget release. */
+        doc /* Go retains source-channel custody through known bootstrap activation.
+           Static published routing then closes the bootstrap-only source channel
+           before serving ingress. Runtime catalogue selection retains it. Unknown
+           activation never becomes readiness. Connection release changes no
+           authority view, claim, hold, publication or pending-intent outcome. */
+        doc /* Runtime catalogue requests read current source authority independently.
+           Concurrent requests for the same exact version and record bytes share
+           one immutable projection. Registration and deciding admission still
+           validate the current source and catalogue. The Rust source owner can
+           return the current ledger bytes directly after matching the version
+           and bytes of its previously verified canonical response. */
+    }
+
+    part def ProviderAdmissionOverlapExperiment {
+        attribute responseFrames : Integer = 64;
+        attribute maximumGroupFrames : Integer = 4;
+        attribute minimumGroups : Integer = 16;
+        attribute oldFramesBeforeOffering : Integer = 1;
+        attribute laterRequests : Integer = 3;
+        attribute streamsPerArm : Integer = 128;
+        assert constraint { minimumGroups * maximumGroupFrames == responseFrames }
+        doc /* Additional scenario, not a replacement for the frozen thirteen-frame
+           wave. Offer three real requests after receiving the first old frame.
+           Opportunistic collect_buffered may stop at an input boundary; sixteen
+           is a lower bound, not an exact group count. Observe every prepare and
+           queue group and require matching counts within [minimumGroups,
+           responseFrames]. Do not erase actual renewals, shorten the stream or
+           change per-frame final authorization to satisfy a performance target. */
+    }
+
+    part def ProviderReadCustodyExperiment {
+        part grouped : ProviderSnapshotExperiment;
+        attribute sharedReadScopes : Integer = 12;
+        attribute sharedWriterScopes : Integer = 1;
+        assert constraint { sharedReadScopes + sharedWriterScopes == grouped.snapshotBaseScopes }
+        assert constraint { sharedReadScopes == grouped.lifecycle.fixedDecidingScopes - 1 + grouped.preparationGroups + grouped.snapshotQueueGroups }
+        doc /* In the unchanged thirteen-range burst, four lifecycle scopes and
+           eight range scopes use compatible read custody; only new admission
+           writes the shared semantic projection. Actual renewal scopes are
+           additional and must be reported. A mode is observed at scheduler
+           grant, never inferred from the phase label or chosen benchmark arm.
+           The thirteen frame owner/cursor checks remain independent of SQL
+           lease compatibility. Fewer conflicts do not prove a tail bound. */
+    }
+
+    requirement def ProviderReadCustody {
+        doc /* Certified provider progress and lifecycle operations read the
+           complete six-domain semantic footprint and write their own original
+           origin. Different origins may hold those shared read leases together.
+           Same-origin work, broad admission/settlement and global Policy/OAuth/
+           migration remain conflicting writers. Earlier conflicting writers
+           prevent younger readers from bypassing them. No shared-budget cache
+           substitutes for live SQL, original claim or current Cedar checks. */
+        doc /* A lease is not send authority. Known native group commit and the
+           current cut, unique owner, grant time and affine cursor still join at
+           final Tonic use. Unknown native results preserve holds and seal; native
+           write conflicts cannot trigger another provider invocation. WAL keeps
+           its global profile. Actual Turso concurrency must be positively tested. */
+    }
+
+    requirement def ProviderLifecycleFootprint {
+        doc /* Read custody and invalidation are different footprints. Admission
+           appends original claims and changes held/history/quota projections,
+           so it still closes all sharing origins. Settlement, migration,
+           Policy, OAuth/witness and unclassified writes remain broad. */
+        doc /* Exact consumed state/target, dispatch markers and terminal state
+           or usage observations change only the original origin's live view.
+           Cross-origin exposure reads digest/reserved/plan ceiling, original
+           claims and holds, never a peer's run state, target or raw usage.
+           Close and advance that origin lane only, retaining the full native
+           read/scheduler set. Same-origin frames still retire. Unknown outcomes
+           seal the whole owner; no lifecycle transition releases unknown hold.
+           Whole-store readers use a separate aggregate revision advanced by
+           every semantic commit; domain readers retain shared plus origin
+           revisions. WAL retains its conservative global profile. */
+    }
+
     requirement def ProviderSnapshotPublication {
         doc /* Existing ready ranges form a bounded immutable manifest. A native
            transaction rechecks Cedar for every actual row, original claim,
@@ -435,7 +578,7 @@ package WeaverExecution {
     }
     part def EgressMutationBarrier {
         attribute displayName : String = "Rust / close";
-        attribute responsibility : String = "Policy + OAuth + domains\nKeep every pending ID";
+        attribute responsibility : String = "Queued request / no cut\nAccepted edit / close first";
         attribute glyph : String = "policy";
         attribute visualRole : String = "governance";
         port closed : EgressWindowPort;
@@ -475,7 +618,7 @@ package WeaverExecution {
 
     part def DeliveryValidation {
         attribute displayName : String = "Rust / qualify group";
-        attribute responsibility : String = "Pending clear; each row\nCedar + claim + domains";
+        attribute responsibility : String = "Read shared; write origin\nCedar + claim + domains";
         attribute glyph : String = "authorization";
         attribute visualRole : String = "governance";
         port closed : ~EgressWindowPort;
@@ -584,6 +727,49 @@ package WeaverExecution {
     requirement def NoImplicitRetry {
         doc /* One logical node has one consumed send opportunity; redirects and SDK retries are disabled. */
     }
+    requirement def SessionWorkflowFrontier {
+        doc /* Match the compiled Session Workflow topology and the deployed
+           availability dependencies. Scheme Governor uses ASCENT over a
+           coherent observation of complete releases and current hard facts.
+           Independent ready branches can dispatch concurrently. A join needs
+           every active predecessor's complete response release. A conditional
+           fork uses the selector's complete structured result and current facts.
+           Commit one branch decision with the selected arm claim and reserve.
+           Its persisted arm defines the active frontier across nested selectors.
+           An unresolved active arm
+           holds its dependent join. Descendants of an unselected arm are
+           inactive, including any selector they contain. Parallel parents
+           inside the active arm each need a complete release. Admission rechecks
+           every release and the observed fact version. The Session wakes on
+           durable release completion, activation and fact resolution. Only the
+           root needs an operation request. Repeated wakes share one durable
+           winner, claim and reservation. Restart reconstructs the frontier from
+           existing receipts. A queued claim may resume and an unknown outcome
+           stops progression. Pending and resolved withdrawals block affected
+           successors until a new available revision is admitted. */
+        doc /* Rust prepares immutable node and predecessor bindings with the
+           compiled original. Session uses them after exact publication
+           activation and resolves candidates in the compiled path order.
+           The existing Scheme Governor owner can retain its ASCENT program.
+           A wake reads a coherent durable cut. Ledger observation batches
+           availability and receipts for the original family in one transaction,
+           reuses its deployed topology and origin to verify each completed
+           node's committed transition and branch decision, and verifies its
+           release and metering evidence. The observation
+           reconciles the shared budget and history once in that transaction.
+           WAL observation opens a deferred snapshot under the same authority
+           closure. Claim and reservation use the deciding transaction.
+           Target design. Send changing relations to the retained owner with
+           the publication identity and cut. An incremental
+           update must name its base cut and carry retractions. An identity or
+           base mismatch requires a coherent full observation. Rebuild from the
+           durable frontier after owner loss. */
+        doc /* The Governor returns candidate node identities for the same cut.
+           Rust resolves them against the prepared plans. Admission atomically
+           validates the current cut and complete releases, records any branch
+           decision and acquires the claim and reservation. Reuse of a prepared
+           plan or a retained derivation cannot supply authority for an effect. */
+    }
     requirement def DevelopmentPolicy {
         doc /* ASP Rust is a deny-mode Cargo test dependency and is absent from the runtime graph. */
     }
@@ -619,35 +805,27 @@ package WeaverExecution {
     port def WirePort {
         out item request : CanonicalWireRequest;
     }
-    action def DeriveSemanticCandidate {
-        in item original : PolicyEvidenceDesign::SemanticCommitment;
-        out item candidate : PolicyEvidenceDesign::SourceCommand;
-        doc /* Derivation preserves independently admitted original meaning.
-           This action grants no publication, consumption or transport right. */
-    }
-    action def OrchestrateSourcePublication {
-        in item candidate : PolicyEvidenceDesign::SourceCommand;
-        out item command : PolicyEvidenceDesign::SourceCommand;
-        doc /* Preserve original commitment while submitting authenticated
-           current-source commands; reconcile uncertain outcomes by identity. */
-    }
-    action def CommitOriginalAdmission {
-        in item command : PolicyEvidenceDesign::SourceCommand;
-        out item observation : PolicyEvidenceDesign::PublishedObservation;
-        doc /* Existing deciding transaction, current authority and immutable
-           original binding. Commit produces an observation, never external IO. */
-    }
-    action def GuardFinalEffect {
-        in item permit : ConsumedPermit;
-        out item request : CanonicalWireRequest;
-        doc /* Rejoin actual current authority and retained consumption under
-           final custody. An inert candidate cannot invoke this action. */
-    }
     part def SchemeSemanticPublisher {
         attribute overviewName : String = "Task contract";
         attribute overviewSummary : String = "Original scope";
         attribute overviewGlyph : String = "task-contract";
+        private action def DeriveSemanticCandidate {
+            in item original : PolicyEvidenceDesign::SemanticCommitment;
+            out item candidate : PolicyEvidenceDesign::SourceCommand;
+            doc /* Derivation preserves independently admitted original meaning.
+               This action grants no publication, consumption or transport right. */
+        }
         action deriveCandidate : DeriveSemanticCandidate;
+        action composeSource : ArchitectureEvolution::ComposeSourceBeforeSeal;
+        action prepareObject : ControllerObjectLifecycle::PrepareObject;
+        action replaceObject : ControllerObjectLifecycle::PrepareObjectReplacement;
+        action reuseObject : ControllerObjectLifecycle::ReuseObjectProjection;
+        action invalidateObject : ControllerObjectLifecycle::InvalidateObjectProjection;
+        action assessObjectReadiness : ArchitectureEvolution::AssessObjectReadiness;
+        action reconcileObjects : ArchitectureEvolution::ReconcileObjectSet;
+        action prepareSessionWorkflow : ArchitectureEvolution::PrepareSessionWorkflow;
+        action advanceRoutine : ArchitectureEvolution::AdvanceGovernedRoutine;
+        action explainObjectDecision : ArchitectureEvolution::ExplainObjectDecision;
         doc /* Normative semantic allocation: reuse Agentic AI Lab Governor to
            select admitted original scope and Governance to assess obligations,
            evidence and source assets. Scheme defines routine meaning, original
@@ -699,58 +877,77 @@ package WeaverExecution {
         port derivedFacts : ~PolicyEvidenceDesign::DerivedFactsPort;
         port effectObservations : ~PolicyEvidenceDesign::EffectObservationPort;
     }
-    part def GoControlAdapter {
-        attribute overviewName : String = "Route proposal";
-        attribute overviewSummary : String = "Suggest a provider";
+    part def SourceControlAdapter {
+        attribute overviewName : String = "Source transport";
+        attribute overviewSummary : String = "Carry prepared source data";
         attribute overviewGlyph : String = "route-choice";
+        private action def OrchestrateSourcePublication {
+            in item candidate : PolicyEvidenceDesign::SourceCommand;
+            out item command : PolicyEvidenceDesign::SourceCommand;
+            doc /* Preserve original commitment while submitting authenticated
+               current-source commands; reconcile uncertain outcomes by identity. */
+        }
         action publishCandidate : OrchestrateSourcePublication;
-        doc /* Preserve the semantic original through configuration normalization,
+        doc /* The Scheme catalog path copies an already composed projection;
+           using the Rust source client. File-source and dynamic
+           catalog requests now delegate composition through the same source-only
+           RPC. Remaining Go Bundle algorithms serve development/reference callers.
+           Preserve the semantic original through configuration normalization,
            protocol aliasing and authenticated publication. JSON/YAML populates
            the same admitted contracts; it cannot define another authorization
            language. Routing, retries and fallback select candidates within that
-           original. Go neither invents original task keys from session labels
+           original. The adapter never invents original task keys from session labels
            nor treats compile/publication acknowledgments as final-use permits. */
-        attribute displayName : String = "Go / Control + routing";
+        attribute displayName : String = "Rust / Configuration transport";
         attribute leanDeclaration : String = "CedarPooSpec.Gateway.Context";
         attribute leanFields : String = "scope,policyRevision,ownerEpoch,historyRevision,factFloor";
-        attribute securityName : String = "Go / Source publication";
+        attribute securityName : String = "Rust / Source publication";
         attribute securityGlyph : String = "publication";
         attribute securityResponsibility : String = "Carry the original context\nPublish over authenticated gRPC\nUnknown replies stay unresolved";
-        attribute responsibility : String = "Cloud + protocol integration\nOne owned source image\nAuthenticated publication + routing";
+        attribute responsibility : String = "Source preparation + optional adapters\nOne owned source image\nNo default response forwarding";
         attribute glyph : String = "routing";
         attribute visualRole : String = "selection";
-        doc /* BootstrapProducer receives the server's typed CompileSource
+        doc /* Rust prepare receives the server's typed CompileSource
            artifact over authenticated gRPC and reobserves source authority.
-           Its bounded typed projection freezes and validates one owned image, then
+           Its bounded typed projection copies one already composed owned image, then
            shares the private publication implementation with file configuration.
            It neither JSON-roundtrips nor repeats normalization across these
            internal functions. No borrowed protobuf container escapes. Source
            staging, task registration and publication still use existing CAS;
-           response admission is not permission for a later send. RunFromEnv
+           response admission is not permission for a later send. The source client
            selects exactly one approved producer or JSON/YAML data file; Scheme
            files cannot launch a compiler, and producer failure cannot fall back
            to a file. The Rust deployment still must install its approved graph. */
-        doc /* Refine routine node and routing preferences; emit typed data with
-           no send capability. Carry configuration/capture commitments and
+        doc /* Rust prepare reuses source bootstrap without an
+           operation credential, frontend listener or response forwarding, then
+           exits. Fixed and catalog-selected clients use the existing Rust
+           operation listener. Source-owned typed declarations persist in the
+           existing ledger; the narrow operation resolver cannot publish source
+           authority. Catalog derivation rejoins current source, publication and
+           catalog in the registration transaction. Fixed plans and selected
+           originals retain their exact activation coordinates. The Go relay
+           lives under the development boundary for reference controls. */
+        doc /* Carry routine node and routing preference data without selecting
+           candidates or interpreting Workflow; emit typed data with no send capability. Carry configuration/capture commitments and
            authenticated original source identity over gRPC. Reconcile ambiguity;
            never evaluate Scheme, manage GC roots or forward foreign pointers. */
-        doc /* Go's target value is cloud/protocol integration, not a language
-           monopoly on Kubernetes or networking. Own discovery/watch/reconcile,
-           bounded ingress connections and protocol adapters, routing candidates,
-           source-outcome recovery and cloud lifecycle integration. Reuse the Go
-           ecosystem instead of implementing a duplicate Rust control adapter.
-           Ingress TLS/cloud-management credentials are distinct from provider
-           execution secrets. A provider SDK that performs its own final request
-           cannot bypass Rust; only inert encoding/metadata facilities may be
-           reused here without another governed transport refinement. */
+        doc /* Rust/Scheme is the target production core. Kubernetes observation
+           and protocol adapters default to Rust; Scheme/POO/gerbil-ascent owns
+           composition and inference. Retain an optional Go adapter only when
+           a required maintained Go SDK contributes concrete lifecycle behavior.
+           Choose this from upstream interfaces and implementation evidence,
+           not a mandatory local ecosystem comparison experiment. Go-native
+           external services can be reused through supported protocols. Do not
+           implement duplicate Rust/Go adapters for the same integration.
+           Ingress/cloud credentials remain separate from execution secrets. */
         doc /* Informer caches, health probes and SDK observations are candidates,
            not authoritative Policy/history facts. Re-list/reconnect preserves
            original identities and unresolved intent; all final deciding joins
-           remain Rust-owned. Current Go code implements config/routing/RPC
-           recovery, not Kubernetes controllers or complete protocol discovery.
-           Target ecosystem integrations must earn their cost through measurable
-           adapter reuse and operator behavior; a pure forwarding layer provides
-           insufficient justification. No Go-versus-Rust speed claim follows. */
+           remain Rust-owned. Current Go handles file syntax, typed transport,
+           immutable projection caching and RPC recovery, not Kubernetes
+           controllers or semantic routing. Development/reference functions
+           remain outside the deployed planning call path. This allocation
+           does not claim a Go-versus-Rust speedup or submillisecond acceptance. */
         doc /* Existing provider responses support default Protobuf events and
            optional Arrow IPC batches over the same gRPC stream. This is not a
            Flight service or end-to-end zero-copy path. Schema, row/range binding,
@@ -879,12 +1076,27 @@ package WeaverExecution {
         attribute overviewName : String = "Claim + budget";
         attribute overviewSummary : String = "Record before sending";
         attribute overviewGlyph : String = "budget-ledger";
+        private action def CommitOriginalAdmission {
+            in item command : PolicyEvidenceDesign::SourceCommand;
+            out item observation : PolicyEvidenceDesign::PublishedObservation;
+            doc /* Existing deciding transaction, current authority and immutable
+               original binding. Commit produces an observation, never external IO. */
+        }
         action commitOriginal : CommitOriginalAdmission;
         doc /* Implement the semantic original binding in the existing source
            deciding transaction, with exact-outcome recovery and current fencing.
            Rust validates provenance and equality; it cannot infer whether two
            entirely relabeled tasks are the same original from body equality.
            Retain claim, domain lineage and unknown holds across source handoff.
+           The default Gateway deployment uses one authoritative Turso store.
+           Claim and accounting views share this store. Provider SSE payloads
+           use bounded runtime buffers. Persist release intervals and digests,
+           and persist the typed terminal result needed for a Workflow choice.
+           Provider completion reduces the stored plan to its original ceiling
+           in the terminal transaction. The run digest and independent claim
+           still bind exposure. Queued and unresolved runs retain their plan.
+           Arrow frames are an output format. Keep analytical projections in
+           memory or approved exports, outside the deciding authority boundary.
            Model allocation does not close the authentic-key issuance gap. */
         attribute leanDeclaration : String = "CedarPooSpec.Gateway.ZeroTrust.Proposal";
         attribute leanFields : String = "before,receipt,contextBound,authorityId,after,consumption";
@@ -932,6 +1144,12 @@ package WeaverExecution {
         attribute overviewName : String = "Final-use gate";
         attribute overviewSummary : String = "Recheck actual use";
         attribute overviewGlyph : String = "permission-check";
+        private action def GuardFinalEffect {
+            in item permit : ConsumedPermit;
+            out item request : CanonicalWireRequest;
+            doc /* Rejoin actual current authority and retained consumption under
+               final custody. An inert candidate cannot invoke this action. */
+        }
         action guardEffect : GuardFinalEffect;
         attribute leanDeclaration : String = "CedarPooSpec.Gateway.ZeroTrust.FinalUse";
         attribute leanFields : String = "sameView,authenticated,current,profileAuthority,committed,unknownRetained,notRevoked,mediated";
@@ -1070,6 +1288,7 @@ package WeaverExecution {
            and local-counter reset. No external exporter is currently enabled. */
     }
     part def DerivedEvidenceAdapter {
+        action maintainObjectRelations : ControllerObjectLifecycle::MaintainObjectRelations;
         attribute overviewName : String = "Evidence";
         attribute overviewSummary : String = "Bound observations";
         attribute displayName : String = "Derived evidence";
@@ -1092,7 +1311,7 @@ package WeaverExecution {
     action def Consume;
     action def GuardAndSend;
     action def RecoverOutcome {
-        doc /* Go observes the Rust-owned durable result under the frozen
+        doc /* The source client observes the durable result under the frozen
            publication identity and digest before submitting an absent decision.
            A known result is read-only recovery. Unknown or rejected results do
            not activate ingress. A historical receipt never replaces current
@@ -1105,7 +1324,7 @@ package WeaverExecution {
     }
     part gateway : Gateway {
         part semanticPublisher : SchemeSemanticPublisher;
-        part controlAdapter : GoControlAdapter;
+        part controlAdapter : SourceControlAdapter;
         part policy : RustPolicy;
         part ledger : RustLedger;
         part broker : RustFinalBroker;
@@ -1128,4 +1347,259 @@ package WeaverExecution {
         connection boundedWrite connect executor.provider to provider.request;
     }
     part targetDeployment : ExecutionAuthorityDeployment;
+    requirement def HarnessModelConnection {
+        doc /* An embedded Coding Harness calls its configured provider directly
+           through the weaver-llm Rust package. OpenAI Chat Completions,
+           OpenAI Responses and Anthropic Messages carry text, function calls
+           and tool results. Responses replays provider output, including
+           encrypted reasoning items, from caller-owned history with store off.
+           The Harness owns tool execution, local permissions and conversation. */
+        doc /* The client reuses a pooled HTTP connection and polls upstream
+           on the caller's Tokio runtime. Its standard Stream is polled by
+           the caller and creates no additional task or queue. SSE delivery applies
+           backpressure. A deadline and cumulative response byte budget bound
+           the exchange. Dropping the stream releases the exchange. */
+        doc /* Text and tool argument deltas precede provider finish and
+           terminal events. A truncated or failed exchange cannot complete
+           the turn. The Harness waits for terminal success before executing
+           tools. Credentials bind to the configured TLS or loopback endpoint;
+           redirects and implicit retries are disabled. */
+        doc /* weaver-llm is the independent client package. Server authorization
+           with Cedar, shared budgets, ledger, Scheme and Kubernetes belong to
+           the Server composition and its feature graph. */
+    }
+    requirement def HarnessTransportQualification {
+        doc /* Provider compatibility uses HTTP with JSON requests and SSE
+           responses. The embedded Harness consumes an in-process pull stream.
+           Governed Server calls use the ProviderRpc contract. Qualify the
+           two paths against their own delivery and cancellation boundaries. */
+        doc /* Use bounded loopback fixtures. For HTTP/1.1, observe the peer's
+           blocked write while the consumer is paused, then verify ordered
+           resume and terminal completion. For HTTP/2, pause one response on
+           a shared connection and verify both the stalled stream's progress
+           after resume and the sibling stream's progress during the pause.
+           Qualify cancellation and byte limits separately from flow control.
+           Four callers share a prepared profile and fresh OAuth credential.
+           The fixture checks connection reuse and measures headers, first
+           event and terminal latency after connection warmup. */
+    }
+    requirement def HarnessConnectionConfiguration {
+        doc /* The downstream weaver.toml selects a connection profile
+           and references credential material supplied by the deployment or
+           Harness. It binds the protocol, destination and model before any
+           request. Source publication settings retain their separate owner. */
+        doc /* Direct provider credentials and governed operation credentials
+           have different issuers and audiences. The direct client uses the
+           provider credential at the bound provider URL. Governed calls must
+           authenticate with the operation ingress identity and rejoin the
+           current authorization before release. */
+        doc /* Qualify missing credentials, invalid endpoints, peer identity
+           and role substitution, log redaction, rotation and revocation.
+           Snake Oil fixtures use local issuers and synthetic credentials. */
+        doc /* A trusted profile selects one secret reference per credential.
+           Validate its destination before resolving the reference and deny
+           credential forwarding to a redirected or substituted destination.
+           Configuration parsing and credential resolution run outside stream
+           polling. Activate rotation for new calls by replacing the prepared
+           profile. Governed in-flight release uses current authorization. */
+        doc /* weaver-llm Configuration loads an explicitly trusted profile file
+           through bounded Tokio file IO. prepare resolves only the selected
+           environment or private regular-file credential. PreparedProfile
+           retains an immutable endpoint, model, secret and shared HTTP pool.
+           Its complete and stream_turn methods use the existing client codecs.
+           Tool process builders remove all credential_environment names.
+           Secret mounts require a separate tool filesystem boundary. */
+        doc /* The client TOML contract accepts direct profiles for OpenAI Chat
+           Completions, OpenAI Responses and Anthropic Messages. Governed gRPC
+           and interactive login use their deployment identity paths;
+           unsupported kinds fail before network IO. Four-worker configuration
+           integration tests qualify errors, redirect isolation, immutable
+           prepared inputs, explicit rotation and tool environments. */
+        doc /* Authentication attachment is independent of acquisition.
+           Provider-default attachment preserves OpenAI Bearer, Anthropic API
+           keys and recognized Anthropic OAuth Bearer tokens. Explicit Bearer
+           attachment supports opaque access tokens at a configured endpoint.
+           The sender emits exactly one credential header. Supplier browser
+           login, refresh, gateway OIDC and RFC 8693 exchange require their own
+           lifecycle qualification against the corresponding reference feature. */
+    }
+    requirement def OAuthCredentialLifecycle {
+        doc /* Trusted configuration binds authorization, device and token
+           endpoints, client identity, resource, scopes, model destination and
+           the private credential store. OAuth acquisition uses the existing
+           bounded HTTP transport with redirects and automatic retries disabled.
+           Authorization codes bind a fresh state and S256 PKCE verifier.
+           OIDC supplier adapters additionally validate issuer, signature,
+           audience, nonce and account identity before activation. */
+        doc /* A prepared credential owner serializes token refresh. It durably
+           records uncertainty before consuming a refresh token or one-time code.
+           Cancellation, transport failure or restart cannot replay that grant.
+           Successful rotation atomically replaces access token, refresh token,
+           granted scopes and expiry. A store has one process owner. Logout
+           advances the generation and prevents late login results from becoming
+           active. Expired, revoked, wrongly scoped or wrongly bound tokens deny
+           new requests. Existing streams retain their transport cancellation
+           boundary and Server output retains its current release guard. */
+        doc /* Quint OAuthCredentials models generation, pending grants,
+           cancellation, restart, expiry and stale completion. Rust properties
+           exercise binding and credential state, and four-worker Snake Oil
+           fixtures exercise the actual protocol and concurrent callers.
+           Restoring the private record preserves issuance, expiry and refresh
+           boundaries; nonpositive persisted windows cannot activate. */
+    }
+    requirement def OpenAiIdentityBinding {
+        doc /* OpenAI browser authorization uses dynamic registration with a
+           stable persisted host UUID and a fresh state, nonce and S256 PKCE.
+           The callback's issued client ID is persisted before code exchange.
+           Subsequent sign-in and refresh use that issued ID. Reauthorization
+           cannot replace a selected registration's client ID or verified subject.
+           ID tokens are verified against the configured issuer's discovery and
+           JWKS, with fixed RS256, audience, expiry, issued-at, nonce and authorized
+           party checks. Granted inference scopes are checked independently. */
+        doc /* One original login deadline includes the grant POST, discovery,
+           JWKS verification and durable activation. Individual HTTP deadlines
+           do not extend that login budget. Local logout durably clears tokens
+           before remote revocation; an unconfirmed remote result is reported
+           explicitly and cannot restore credentials. A late revocation reply
+           cannot clear a later login. */
+        doc /* Each protected account record retains its registration and host
+           association through logout and restart. Identity hints are sent only
+           to the bound authorization endpoint. Model calls use the existing
+           Responses codec and an endpoint within the configured resource.
+           JWT verification and metadata IO occur in credential preparation and
+           rotation, outside stream polling. Quint OpenAiLogin and Rust properties
+           qualify substitution boundaries, with a local RSA/JWKS issuer testing
+           the actual registered-client and model call path. */
+    }
+    item def OAuthLoginCut {
+        attribute generation : Integer;
+        attribute issuedClientId : String;
+        attribute selectedSubject : String;
+        attribute hostIdentity : String;
+        attribute callbackNonce : String;
+        attribute startedAtMillis : Integer;
+        attribute deadlineMillis : Integer;
+        assert constraint { generation >= 0 }
+        assert constraint { deadlineMillis > startedAtMillis }
+        doc /* This is credential-owner state. Nonce and identity hints never
+           become model inputs or tool environment. A callback retains this cut
+           through validation; it cannot select a replacement account. */
+    }
+    requirement def CopilotCredentialSeparation {
+        doc /* GitHub device authorization is a consuming grant. Its successful
+           parent credential is persisted in the existing private record before
+           a non-consuming Copilot API-token GET. Parent credentials have their
+           own issuance and optional server expiry; absent expiry is not replaced
+           with an invented lifetime. Expiring parents use their own rotating
+           refresh credential and expiry when supplied. Parent refresh reuses
+           the durable uncertain-grant barrier and single-flight owner; a lost
+           reply or cancellation cannot replay the consumed refresh. An expired
+           parent without a current refresh credential requires login. */
+        doc /* The owner serializes API lease exchange and honors both absolute
+           expiry and refresh_in. A transient or cancelled GET leaves the durable
+           parent for a later explicit call, never a repeated device grant.
+           Parent 401/403 clears both stages. Model 401 clears only the matching
+           API lease and never automatically replays the model call. Local logout
+           clears both stages and fences late attempts. */
+        doc /* Only the API lease reaches the model endpoint. A returned API base
+           must equal the configured base, which bounds the prepared endpoint.
+           User-agent and integration headers identify the Weaver client.
+           HTTP-200 device errors are normalized for the shared RFC 8628 engine;
+           mixed success/error is terminal. Redirects stay disabled. Network and
+           store work happen before turn streaming, outside body polling. */
+    }
+    requirement def RegisteredOidcIdentity {
+        doc /* A configured public client discovers authorization, token and
+           JWKS endpoints from one exact issuer. Registration is fixed before
+           browser login; dynamic supplier registration cannot substitute for it.
+           The existing owner binds state, nonce, PKCE, original deadline,
+           resource and exact granted scopes. ID tokens require RS256, issuer,
+           audience, authorized party, time and selected-subject validation. */
+        doc /* The verified account, private record and current refresh token
+           survive restart. Logout removes usable credentials and identity hints,
+           retaining the selected account binding. Remote revocation is explicit.
+           Acquisition is not a Gateway operation permit. The independent mTLS,
+           operation credential, published delegation and final ledger release
+           checks remain required for governed use. */
+    }
+    requirement def DelegatedTokenExchange {
+        doc /* An explicitly configured operation resource exchanges only a
+           verified parent access token through RFC 8693. The trusted profile
+           binds STS URL, client authentication, optional actor, audience,
+           resource and exact scopes. Actor and client secrets use the existing
+           environment/private-file mechanism and never enter tool environments.
+           Preparation binds their digests, not their plaintext, to the record. */
+        doc /* Reuse the identity owner, private record and refresh gate. Persist
+           exchange uncertainty before POST; cancellation, ambiguous response or
+           restart cannot repeat that exchange with the same parent. Known
+           successful expiry may renew normally. Only a Bearer access-token
+           result activates. Expiry cannot exceed the subject or actor lifetime.
+           A changed parent, logout or unknown grant clears its child cache. */
+        doc /* Exchanged bytes are an additional operation credential. They do
+           not authenticate the operation mTLS peer, replace its bearer, publish
+           an approved grant or bypass Cedar/ledger checks at final release.
+           Retain the existing signed provider-grant and source-publication
+           contracts; no JWT bearer WIF response is relabelled RFC 8693.
+           Native operation tests reject a correct certificate paired with a
+           wrong operation bearer before provider egress. */
+    }
+    part def GovernedOperationClient {
+        doc /* The prepared TOML profile supplies one immutable TLS trust root,
+           server name, operation certificate/key and sensitive operation bearer.
+           Their digest binds the shared delegated credential record. Tokio owns
+           the HTTP and gRPC pools; caller runtimes own their lifetimes. */
+        doc /* Acquire the additional credential before the provider RPC starts.
+           The existing operation bearer interceptor and mTLS connection remain
+           independent. Expose operation execution only; signed grant publication
+           stays on the authenticated source lane. No credential exchange or
+           configuration parsing occurs while polling the returned response. */
+        requirement delegatedIdentity : DelegatedTokenExchange;
+        requirement oidcIdentity : RegisteredOidcIdentity;
+    }
+    item def CopilotCredentialCut {
+        attribute generation : Integer;
+        attribute configuredApiBase : String;
+        attribute parentIssuedAt : Integer;
+        attribute parentHasExpiry : Boolean;
+        attribute parentExpiresAt : Integer;
+        attribute leaseIssuedAt : Integer;
+        attribute leaseExpiresAt : Integer;
+        attribute leaseRefreshAt : Integer;
+        attribute sendAt : Integer;
+        assert constraint { generation >= 0 }
+        assert constraint { sendAt >= parentIssuedAt and sendAt >= leaseIssuedAt }
+        assert constraint { not parentHasExpiry or sendAt < parentExpiresAt }
+        assert constraint { sendAt < leaseExpiresAt and sendAt < leaseRefreshAt }
+        doc /* This is an abstract send witness. Secrets remain in the existing
+           Rust private credential record, not in SysML, source facts or tools. */
+    }
+    item def OAuthActivationReceipt {
+        item cut : OAuthLoginCut;
+        attribute activatedAtMillis : Integer;
+        attribute issuerVerified : Boolean;
+        attribute signatureVerified : Boolean;
+        attribute audienceVerified : Boolean;
+        attribute nonceVerified : Boolean;
+        attribute subjectVerified : Boolean;
+        attribute scopesVerified : Boolean;
+        assert constraint { activatedAtMillis >= cut.startedAtMillis }
+        assert constraint { activatedAtMillis < cut.deadlineMillis }
+        assert constraint { issuerVerified and signatureVerified and audienceVerified }
+        assert constraint { nonceVerified and subjectVerified and scopesVerified }
+        doc /* A logical activation witness, not another persistent receipt
+           format. Rust commits the existing private credential record; Quint
+           retains historical witnesses to check deadline and identity binding. */
+    }
+    part def EmbeddedModelClient {
+        doc /* Shared HTTP pool and provider codecs run in the Harness process.
+           Per-turn response and tool assembly belong to the stream handle. */
+        requirement modelConnection : HarnessModelConnection;
+        requirement transportQualification : HarnessTransportQualification;
+        requirement connectionConfiguration : HarnessConnectionConfiguration;
+        requirement oauthLifecycle : OAuthCredentialLifecycle;
+        requirement openAiIdentity : OpenAiIdentityBinding;
+        requirement copilotCredentials : CopilotCredentialSeparation;
+        requirement registeredOidc : RegisteredOidcIdentity;
+        requirement delegatedExchange : DelegatedTokenExchange;
+    }
 }

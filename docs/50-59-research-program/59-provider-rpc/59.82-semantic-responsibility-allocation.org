@@ -13,7 +13,7 @@ actions, rather than introducing another issuer, coordinator or source ledger:
 | Existing owner | Allocated action | Contract and boundary |
 |----------------+------------------+-----------------------|
 | SchemeSemanticPublisher | DeriveSemanticCandidate | Independently admitted SemanticCommitment to inert SourceCommand |
-| GoControlAdapter | OrchestrateSourcePublication | Preserve the original while submitting an authenticated SourceCommand |
+| SourceControlAdapter | OrchestrateSourcePublication | Preserve the original while submitting an authenticated SourceCommand |
 | RustLedger | CommitOriginalAdmission | SourceCommand to PublishedObservation under current authority and durable CAS |
 | RustFinalBroker | GuardFinalEffect | ConsumedPermit to actual wire request under current final custody |
 

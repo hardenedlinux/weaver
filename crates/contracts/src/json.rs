@@ -70,7 +70,12 @@ impl<'de> Deserialize<'de> for Unique {
 }
 /// Decode bounded JSON after rejecting duplicate keys at every depth.
 pub fn decode<T: de::DeserializeOwned>(bytes: &[u8]) -> Result<T> {
-    if bytes.len() > MAX_BODY_BYTES * 2 {
+    decode_bounded(bytes, MAX_BODY_BYTES * 2)
+}
+
+/// Use the caller's explicit input bound with the same strict JSON decoder.
+pub fn decode_bounded<T: de::DeserializeOwned>(bytes: &[u8], limit: usize) -> Result<T> {
+    if bytes.len() > limit {
         return Err(Error::Invalid("JSON input size"));
     }
     let Unique(value) = serde_json::from_slice(bytes)?;

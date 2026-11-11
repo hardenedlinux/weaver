@@ -18,18 +18,28 @@ import (
 // BootstrapProducer joins native registered compilation to the existing exact
 // source reconciliation/publication and routing path. Compilation never sends.
 func BootstrapProducer(ctx context.Context, source, owner *gatewayclient.Client, producer string) (*Gateway, error) {
-	if source == nil || owner == nil {
+	if owner == nil {
+		return nil, errors.New("operation authority role required")
+	}
+	return bootstrapProducer(ctx, source, owner, producer, nil)
+}
+
+func bootstrapProducer(ctx context.Context, source, owner *gatewayclient.Client, producer string, trace bootstrapTrace) (*Gateway, error) {
+	if source == nil {
 		return nil, errors.New("source and operation authority roles required")
 	}
+	trace.phase("source-compile-start")
 	reply, err := source.CompileSource(ctx, producer)
 	if err != nil {
 		return nil, err
 	}
+	trace.phase("source-compile-complete")
 	bundle, err := compiledBundle(reply.Artifact)
 	if err != nil {
 		return nil, err
 	}
-	return bootstrapFrozen(ctx, source, owner, bundle)
+	trace.phase("source-bundle-decoded")
+	return bootstrapFrozen(ctx, source, owner, bundle, trace)
 }
 
 // Decode concrete protobuf fields directly. No interop JSON/YAML roundtrip and
@@ -46,6 +56,18 @@ func compiledBundle(input *pb.SourceArtifact) (config.Bundle, error) {
 	}
 	bundle := config.Bundle{Governance: config.Governance{Schema: g.Schema, Family: g.Family, OpenNodes: g.OpenNodes},
 		Publication: v1.Publication{OperationID: p.OperationId, ExpectedRevision: cloneRevision(p.ExpectedRevision), Fence: p.Fence, Policy: p.Policy, Schema: p.Schema}}
+	for _, edge := range g.WorkflowEdges {
+		if edge == nil || unknownFields(edge) {
+			return zero, errors.New("compiled workflow edge")
+		}
+		bundle.Governance.WorkflowEdges = append(bundle.Governance.WorkflowEdges, [2]string{edge.Dependent, edge.Dependency})
+	}
+	for _, choice := range g.WorkflowSelectors {
+		if choice == nil || unknownFields(choice) {
+			return zero, errors.New("compiled workflow selector")
+		}
+		bundle.Governance.WorkflowSelectors = append(bundle.Governance.WorkflowSelectors, [3]string{choice.Selector, choice.Left, choice.Right})
+	}
 	for _, t := range input.Tasks {
 		if t == nil || unknownFields(t) {
 			return zero, errors.New("compiled task missing")
@@ -76,7 +98,7 @@ func compiledBundle(input *pb.SourceArtifact) (config.Bundle, error) {
 		}
 		bundle.Plans = append(bundle.Plans, plan)
 	}
-	return config.FreezeBundle(bundle)
+	return config.CloneArtifact(bundle)
 }
 func unknownFields(message proto.Message) bool { return len(message.ProtoReflect().GetUnknown()) != 0 }
 func cloneRevision(value *uint64) *uint64 {

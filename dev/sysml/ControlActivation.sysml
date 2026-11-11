@@ -27,6 +27,9 @@ package ControlActivation {
            Stable caller memory and native copy fidelity remain host premises.
            Scheme assessment, source-authority reobservation, stage/register/
            final publication CAS and Rust current-use checks remain separate.
+           The Rust preparation owner retains the original-bound typed source
+           for Session observation. An RPC replay projects that same source
+           onto the wire after the caller and source authority checks.
            No cached approval replaces claim, budget, history or fence.
            Runtime evidence separates source activation and actual streaming;
            builds and fixture startup are excluded, and replay is never a fresh
@@ -37,7 +40,7 @@ package ControlActivation {
            Governance scope exposes only typed assess; it cannot override
            Governor selection with an open callback. A selected step still needs
            an accepted assessment, publication and current final-use authority. */
-        doc /* Each Scheme scope uses an evidence-bearing YuanxuContract whose value-contract delegates shape and normalization to concrete Record and Function descriptors. Wire records are sealed, counters and credits are exact bounded integers, and Go and Rust independently validate the same artifact. Contract validity is required before registration and grants no execution authority. */
+        doc /* Each Scheme scope uses a native POO Type/Record with concrete Function descriptors. Core normalization and selected Feature obligations apply to the same final receiver. Module scope Types do not add .classify, .obligations or .admit evidence hooks; Yuanxu owns value-admission evidence and currentness, while domain evidence Contracts remain separate. Wire records are sealed, counters and credits are exact bounded integers, and Go and Rust independently validate the same artifact. Contract validity is required before registration and grants no execution authority. */
     }
     requirement def SourceStartupObservation {
         doc /* Package declarations and installed dependency state belong to
@@ -49,12 +52,21 @@ package ControlActivation {
            archive/source correspondence and package lifecycle operations.
            Weaver's Go runner records actual command outcomes and root source
            currentness; it is not a second package manager. */
+        doc /* Cargo-owned native library outputs retain the selected SDK's
+           existing package source directory as an explicit input. Bind that
+           native pkg root before creating the tooling owner; do not resolve
+           versions, install dependencies, copy packages or alter source trees.
+           An occupied nonempty output directory must refuse replacement. */
         doc /* A package result or release label grants no Policy, publication
            or send authority. Changed-source and preparation-cut laws retain
            their explicit host premises; an upstream SDK API alone does not prove
            arbitrary external source fidelity or exclude filesystem ABA.
            The retired Go linked-source checker is not native evidence for the
            current path. Actual FFI/gRPC qualification remains independent. */
+        doc /* A Scheme release qualification names the application module
+           and source. A prebuilt executable is admitted by the frozen
+           release SHA-256. The fixture launches only its verified private
+           copy, leaving site approval and replay custody to their owners. */
         doc /* Local Go startup phases distinguish configuration readiness,
            authority connections/reconciliation and issuing Serve; only the
            actual authenticated channel proves readiness. Go deployment never
@@ -68,11 +80,17 @@ package ControlActivation {
            release. Preserve failed deadlines and distinguish unavailable process
            inventory from an absent process. No source/credential payload or path
            belongs in producer-created phase attributes. */
+        doc /* Release qualification observes linked VM readiness, source-module
+           view loading, semantic preparation, artifact delivery and authority
+           reconciliation as separate stages. The source RPC's 10-second
+           limit is distinct from the 15-second control readiness observation.
+           A failed trial still records Scheme cancellation, Rust owner cleanup
+           and the natural process exit outcome. */
     }
     requirement def GovernorSourceHandoff {
         doc /* Allocate original semantics and derivation constraints to
            WeaverExecution::SchemeSemanticPublisher, authenticated publication
-           orchestration to GoControlAdapter, Cedar evaluation to RustPolicy,
+           orchestration to SourceControlAdapter, Cedar evaluation to RustPolicy,
            durable assignment/consumption to RustLedger and external bytes to
            RustFinalBroker/HttpsExecutor. SourceCommand remains the shared lane.
            Independent original identity is a premise still requiring runtime
@@ -100,7 +118,12 @@ package ControlActivation {
            owner using an explicit host resource permit and source queue budget.
            The Send factory builds its non-Send compiler on the owner thread.
            Shared shutdown fences source delivery before returning, and shared
-           drain waits for natural VM cleanup. Abandoned or late initialization
+           drain waits for natural VM cleanup. Compiler teardown preserves
+           process-wide host SIGPIPE disposition while Tokio/TLS writes drain.
+           The SDK owns scoped SIGPIPE cleanup; host SIGPIPE updates retain
+           their original semantics.
+           Owner-local masking alone does not establish that process invariant.
+           Abandoned or late initialization
            cannot report activation after close. Embedding gRPC configuration
            failure still drains attached owners. Neither startup readiness nor
            resource cleanup is source admission, no-execution or budget evidence. */

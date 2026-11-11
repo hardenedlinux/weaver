@@ -39,7 +39,7 @@ socket revocation. Bytes already accepted by Tonic cannot be recalled.
 * Complete writer mediation
 
 =Global= means =persistence::begin=; =family= means =begin_family= or
-=begin_provider_use=. Both construct the same mandatory =WriteScope= close
+=begin_provider_lifecycle=. They construct the same mandatory =WriteScope= close
 protocol. The production persistence module is private. External embedding
 holds the opaque =LedgerCustody= instead of a raw =Session=. Fault injection
 and storage-corruption APIs require the test-host =commit-observer= feature;
@@ -59,11 +59,11 @@ its dev-only activation does not qualify arbitrary raw SQL for production.
 |
 | Domain roots, epochs, shared membership and migration | =register_family_alias=; =migrate_execution_domains=; =domains::{binding,migration}= | Global; root identity and held/history reconciliation occur inside the transaction. | Global migration closes all old/new lanes and advances the global revision; old domain permits fail full requalification. |
 |
-| Claim admission, nonce consumption, request dispatch and retained exposure | =enqueue=, =consume=, =dispatch=; =enqueue_provider=, =consume_provider=, =dispatch_provider= and =burn_dispatch=; =execution_exposure::retain= | Family; one canonical claim plus original reservation manifest; dispatch burn precedes actual request. | Admission, burn and exposure updates close the family conflict roots before scheduler acquisition; no recovery path creates another call. |
+| Claim admission, nonce consumption, request dispatch and retained exposure | =enqueue=, =consume=, =dispatch=; =enqueue_provider=, =consume_provider=, =dispatch_provider= and =burn_dispatch=; =execution_exposure::retain= | Family; one canonical claim plus original reservation manifest; dispatch burn precedes actual request. | Admission and exposure updates close the full conflict roots; sealed provider lifecycle writes close their own origin in MVCC while retaining full read/scheduler custody; no recovery path creates another call. |
 |
 | Shared budget and three-dimensional quota | =domains::evidence::{charge,history}= and =provider_quota::{reserve,release}=, invoked by the preceding admission and settlement owners | Family; atomic held updates and exact reservation rows share the deciding transaction. | Use distinct origin, budget, history, API-key, user and tenant namespaces. Shared quota identities serialize even for disjoint execution roots. |
 |
-| History, stream cursor, range and terminal state | Generic =register_stream=, =enqueue_message=, =claim_stream=, =connect_stream=, =resume_message=, =consume_range=, =write_range=; provider grouped preparation, =release_provider= and =complete_provider_with_usage= | Global stream registration/custody; family range/terminal scopes; durable releases are the current profile. | Generic streams and provider terminal updates remain semantic. The two certified provider progress paths retain the same outcome owner while preserving the semantic cut. A receiver certificate never substitutes for durable consumption. |
+| History, stream cursor, range and terminal state | Generic =register_stream=, =enqueue_message=, =claim_stream=, =connect_stream=, =resume_message=, =consume_range=, =write_range=; provider grouped preparation, =release_provider= and =complete_provider_with_usage= | Global stream registration/custody; family range/terminal scopes; durable releases are the current profile. | Generic streams remain broadly semantic; provider terminal updates are origin-semantic in MVCC, with no budget release. The two certified provider progress paths retain the same outcome owner while preserving the semantic cut. A receiver certificate never substitutes for durable consumption. |
 |
 | Catalog, purchase rates, historical user formula and metering identity | =publish_provider_catalog=, =install_metering=, =rotate_meter_credential=; =metering::bind= | Global publication/configuration; family quote binding. | Global configuration/publication invalidates every receiver certificate. Immutable metering identity projects only after acknowledged commit. |
 |
@@ -467,3 +467,7 @@ per known native group commit, with independent acknowledgments and the same
 final owner gate. Read-only renewal also shares that qualification. See
 [[file:10.10-snapshot-publication.org][the source-led design, models and separate paired acceptance]] for the new
 comparison; the earlier numbers are not results for this implementation.
+
+The next [[file:10.11-lifecycle-footprints.org][lifecycle footprint design]] narrows only audited provider run changes
+to their original origin. It retains broad shared admission/settlement and all
+native read locks; the historical measurements above remain unchanged.

@@ -513,6 +513,10 @@ proptest! {
     #![proptest_config(Config::with_cases(64))]
     #[test]
     fn exact_message_manifest_guards_recovery_and_existing_write_handles(fault in 0u8..4, restart in proptest::bool::ANY) {
+        #[cfg(feature = "commit-observer")]
+        weaver_ledger::use_prepared_manifest_programs(
+            std::env::var("WEAVER_TEST_PREPARED_MANIFEST_PROGRAMS").as_deref() == Ok("1"),
+        );
         let temp=tempfile::tempdir().expect("directory");let path=temp.path().join("manifest.db");
         let (mut ledger,contract)=stream_properties::fixture(&path);
         ledger.enqueue_message(&stream_properties::message(&contract,0,0,1)).expect("first hold");

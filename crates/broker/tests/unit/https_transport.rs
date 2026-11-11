@@ -153,3 +153,33 @@ fn destination_aliases_credentials_and_http_are_rejected() {
         assert!(HttpsTransport::validate_endpoint(endpoint).is_err());
     }
 }
+
+#[test]
+fn provider_endpoint_guard_preserves_anthropic_source_path_constraints() {
+    use weaver_contracts::ProviderProtocol;
+    assert!(
+        HttpsTransport::validate_provider_endpoint(
+            "https://provider.invalid/v1/messages",
+            ProviderProtocol::Anthropic
+        )
+        .is_ok()
+    );
+    for endpoint in [
+        "http://provider.invalid/v1/messages",
+        "https://provider.invalid/other",
+        "https://provider.invalid/v1/messages?",
+        "https://provider.invalid/v1/messages#fragment",
+    ] {
+        assert!(
+            HttpsTransport::validate_provider_endpoint(endpoint, ProviderProtocol::Anthropic)
+                .is_err()
+        );
+    }
+    assert!(
+        HttpsTransport::validate_provider_endpoint(
+            "https://provider.invalid/v1/chat/completions",
+            ProviderProtocol::OpenAi
+        )
+        .is_ok()
+    );
+}

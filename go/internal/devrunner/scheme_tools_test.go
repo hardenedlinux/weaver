@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"slices"
 	"strings"
 	"testing"
 )
@@ -89,10 +90,18 @@ func TestSchemeQualificationStaysWithPreparedSchemeOwner(t *testing.T) {
 		t.Fatal(err)
 	}
 	found := false
+	imagePrepared := false
 	for _, stage := range stages {
 		if stage.Name == "scheme-rooted-sdk-integration" {
 			args := strings.Join(stage.Args, " ")
-			found = strings.Contains(args, "weaver-governance/scheme-qualification") && strings.Contains(args, "weaver-server/governance-qualification") && strings.Contains(args, "-p weaver-server")
+			found = imagePrepared && slices.Equal(stage.Args, append(SchemeQualificationCargoArgs(), "--", "--test-threads=4")) &&
+				strings.Contains(args, "weaver-governance/scheme-qualification") && strings.Contains(args, "weaver-server/governance-qualification")
+		}
+		if stage.Name == "scheme-provider-server-build" {
+			imagePrepared = stage.providerBuild() && slices.Equal(stage.Args, append(SchemeQualificationCargoArgs(), "--no-run", "-vv"))
+		}
+		if stage.Name == "scheme-grpc-stream-integration" && !imagePrepared {
+			t.Fatal("Scheme Go integration has no preceding qualification image build")
 		}
 	}
 	if !found {
@@ -128,8 +137,14 @@ func TestSchemeVerificationUsesOnlyPublicPackageEntries(t *testing.T) {
 		if stage.Binary == schemeTool() {
 			entries[stage.Name] = args
 		}
+		if stage.Name == "scheme-module-build" {
+			if stage.Binary != "./build.ss" || args != "compile --debug" {
+				t.Fatalf("Scheme build must use the selected native entry: %v", stage)
+			}
+			entries[stage.Name] = args
+		}
 	}
-	if len(entries) != 3 || entries["scheme-source-integration-tests"] != "test -g -v 5 t/integration" || entries["scheme-module-build"] != "build -g" || entries["scheme-unit-tests"] != "test -g -v 5 t" {
+	if len(entries) != 4 || entries["scheme-module-selection-integration"] != "test -g -v 5 t/qualification/module-selection" || entries["scheme-source-integration-tests"] != "test -g -v 5 t/integration" || entries["scheme-unit-tests"] != "test -g -v 5 t" {
 		t.Fatalf("unexpected Scheme package lifecycle: %v", entries)
 	}
 }

@@ -30,20 +30,21 @@ macro_rules! no_review {
  AND NOT EXISTS(SELECT 1 FROM authority_delta_reviews)"#
     };
 }
-macro_rules! valid_review { () => { r#" FROM authority_review_heads h
- JOIN authority a ON a.singleton=1 AND a.revision=h.revision AND a.fence=h.fence
- JOIN authority_schema s ON s.singleton=1
- JOIN authority_publications p ON p.operation_id=h.operation_id AND p.digest=h.digest
- JOIN authority_reviews r ON r.operation_id=h.operation_id AND r.digest=h.digest AND r.record=h.review_record
- JOIN authority_delta_reviews d ON d.operation_id=h.operation_id AND d.reviewer_epoch=h.reviewer_epoch AND d.source_epoch=h.source_epoch AND d.record=h.delta_record
- JOIN review_authority v ON v.singleton=1 AND v.epoch=h.reviewer_epoch AND v.record=h.issuer_record
- JOIN review_keys k ON k.epoch=v.epoch AND k.record=v.record
+macro_rules! valid_review {
+    () => { valid_review!("JOIN") };
+    ($join:literal) => { concat!(r#" FROM authority_review_heads h
+ "#, $join, r#" authority a ON a.singleton=1 AND a.revision=h.revision AND a.fence=h.fence
+ "#, $join, r#" authority_schema s ON s.singleton=1
+ "#, $join, r#" authority_publications p ON p.operation_id=h.operation_id AND p.digest=h.digest
+ "#, $join, r#" authority_reviews r ON r.operation_id=h.operation_id AND r.digest=h.digest AND r.record=h.review_record
+ "#, $join, r#" authority_delta_reviews d ON d.operation_id=h.operation_id AND d.reviewer_epoch=h.reviewer_epoch AND d.source_epoch=h.source_epoch AND d.record=h.delta_record
+ "#, $join, r#" review_authority v ON v.singleton=1 AND v.epoch=h.reviewer_epoch AND v.record=h.issuer_record
+ "#, $join, r#" review_keys k ON k.epoch=v.epoch AND k.record=v.record
  WHERE EXISTS(SELECT 1 FROM review_deployment) AND h.singleton=1 AND k.epoch=(SELECT MAX(epoch) FROM review_keys)
  AND json_extract(p.request,'$.policy')=a.policy AND json_extract(p.request,'$.schema')=s.schema
  AND (json_extract(d.record,'$.disposition')!='no_execution_gain' OR json_type(v.record,'$.qualified_catalog')='text')
  AND json_extract(p.receipt,'$.outcome')='committed'
- AND json_extract(p.receipt,'$.revision')=h.revision AND json_extract(p.receipt,'$.fence')=h.fence
-"# }; }
+ AND json_extract(p.receipt,'$.revision')=h.revision AND json_extract(p.receipt,'$.fence')=h.fence"#) }; }
 const REQUIRE_REVIEW: &str = concat!(
     "SELECT CASE WHEN ",
     no_review!(),
@@ -54,7 +55,7 @@ const REQUIRE_REVIEW: &str = concat!(
 const LEGACY: &str = concat!("SELECT ", no_review!());
 const PREPARE: &str = concat!(
     "SELECT h.operation_id,h.digest,h.revision,h.fence,h.reviewer_epoch,h.source_epoch,h.issuer_record,h.review_record,h.delta_record,p.request,p.receipt,s.schema,a.policy,r.artifact_digest,d.digest",
-    valid_review!()
+    valid_review!("CROSS JOIN")
 );
 
 /// No historical receipt, raw native publication or missing key projection is a
@@ -114,7 +115,9 @@ pub(crate) fn prepare(c: &Connection) -> Result<Prepared> {
     if legacy(c)? {
         return Ok(Prepared(None));
     }
-    let image = crate::persistence::maybe(c, PREPARE, (), |r| {
+    // Reuse only the native SQL program. Every invocation opens a fresh cursor;
+    // current() still compares all exact projections in the deciding scope.
+    let image = crate::persistence::maybe_prepared(c, PREPARE, (), |r| {
         Ok(ReviewImage {
             operation: r.get(0)?,
             digest: r.get(1)?,
@@ -141,7 +144,9 @@ pub(crate) fn prepare(c: &Connection) -> Result<Prepared> {
 }
 
 fn legacy(c: &Connection) -> Result<bool> {
-    crate::persistence::one(c, LEGACY, (), |r| r.get(0)).map_err(db)
+    crate::persistence::maybe_prepared(c, LEGACY, (), |r| r.get(0))
+        .and_then(|row| row.ok_or(crate::persistence::driver::Error::QueryReturnedNoRows))
+        .map_err(db)
 }
 
 fn stale() -> Error {

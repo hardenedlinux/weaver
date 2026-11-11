@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 //! Incremental, bounded data-only SSE decoder for single-choice text completions.
-use std::io::{BufRead, BufReader, Read};
+use tokio::io::{AsyncBufReadExt, AsyncRead, BufReader};
 use weaver_contracts::{Error, ProviderEvent, ProviderEventKind, Result};
-pub(super) struct Decoder<R: Read> {
+pub(super) struct Decoder<R: AsyncRead + Unpin> {
     input: BufReader<R>,
     model: String,
     id: Option<String>,
@@ -19,7 +19,7 @@ pub(super) struct Decoder<R: Read> {
 #[cfg(test)]
 #[path = "../../tests/unit/provider_sse.rs"]
 mod tests;
-impl<R: Read> Decoder<R> {
+impl<R: AsyncRead + Unpin> Decoder<R> {
     pub(super) fn new(input: R, model: &str) -> Self {
         Self {
             input: BufReader::new(input),
@@ -32,22 +32,23 @@ impl<R: Read> Decoder<R> {
             terminal_tokens: None,
         }
     }
-    pub(super) fn next(&mut self) -> Result<ProviderEvent> {
-        self.next_event(false)?
+    pub(super) async fn next(&mut self) -> Result<ProviderEvent> {
+        self.next_event(false)
+            .await?
             .ok_or(Error::Conflict("SSE ended without DONE"))
     }
 
-    pub(super) fn next_buffered(&mut self) -> Result<Option<ProviderEvent>> {
-        self.next_event(true)
+    pub(super) async fn next_buffered(&mut self) -> Result<Option<ProviderEvent>> {
+        self.next_event(true).await
     }
 
-    fn next_event(&mut self, buffered: bool) -> Result<Option<ProviderEvent>> {
+    async fn next_event(&mut self, buffered: bool) -> Result<Option<ProviderEvent>> {
         let mut data = Vec::new();
         if buffered && !super::sse_buffer::buffered_sse_record(self.input.buffer()) {
             return Ok(None);
         }
         loop {
-            let line = self.line()?;
+            let line = self.line().await?;
             if line.is_empty() {
                 if data.is_empty() {
                     if buffered && !super::sse_buffer::buffered_sse_record(self.input.buffer()) {
@@ -88,12 +89,13 @@ impl<R: Read> Decoder<R> {
             }
         }
     }
-    fn line(&mut self) -> Result<Vec<u8>> {
+    async fn line(&mut self) -> Result<Vec<u8>> {
         let mut line = Vec::new();
         loop {
             let buffer = self
                 .input
                 .fill_buf()
+                .await
                 .map_err(|_| Error::Conflict("provider stream interrupted"))?;
             if buffer.is_empty() {
                 return Err(Error::Conflict("SSE ended without DONE"));

@@ -79,8 +79,12 @@ impl Session {
         self.timings
     }
     #[cfg(feature = "commit-observer")]
-    pub(crate) fn trace_provider_scopes(&mut self, family: &str) {
-        self.scope_trace = Some(super::scope_trace::Trace::new(family));
+    pub(crate) fn trace_provider_scopes(&mut self, family: &str, node: Option<&str>) {
+        let trace = super::scope_trace::Trace::new(family);
+        self.scope_trace = Some(match node {
+            Some(node) => trace.with_request(node),
+            None => trace,
+        });
     }
     #[cfg(feature = "commit-observer")]
     pub(crate) fn finish_provider_scope_trace(&mut self) {
@@ -88,9 +92,17 @@ impl Session {
             trace.flush(true);
         }
     }
+    #[cfg(feature = "commit-observer")]
+    pub(crate) fn reset_provider_request(&mut self) {
+        self.range_cancelled = None;
+        self.timings = super::TransactionTimings::default();
+        self.scope_trace = None;
+        self.commit_observer = None;
+    }
     pub(crate) fn prepare_provider_domain(&mut self) {
         super::timing::measure(&mut self.timings.provider_domain_prepare, || {
             crate::domains::warm_provider_domain_plan(&self.connection);
+            crate::exposure_manifest::warm_programs(&self.connection);
         });
     }
     pub(crate) fn prepare_provider_original(

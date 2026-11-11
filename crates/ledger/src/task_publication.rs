@@ -10,7 +10,7 @@ pub(crate) fn binding(
     connection: &crate::persistence::driver::Connection,
     family: &str,
 ) -> Result<Option<PublicationKey>> {
-    crate::persistence::maybe_current(
+    crate::persistence::maybe_prepared(
         connection,
         "SELECT operation_id,digest FROM task_publications WHERE family=?1",
         crate::persistence::params![(family).to_owned()],

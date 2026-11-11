@@ -9,7 +9,7 @@
         (only-in :clan/poo/number UIntN)
         (only-in :hardenedlinux/weaver/scheme/policy/types CedarPolicySource CedarSchemaSource))
 (export GatewayArtifact GatewaySourceInput TaskContract ProviderPlanContract PublicationContract
-        ProviderProfileContract ProviderRouteContract Identifier Counter Credits)
+        ProviderProfileContract ProviderRouteContract Identifier Counter Credits Digest ProviderComposition)
 
 ;;; Preserve exact JSON integer tokens above 2^53; the default Integer JSON
 ;;; encoder intentionally uses strings there, which this wire schema forbids.
@@ -80,8 +80,27 @@
        identity: 'weaver/gateway/source-input sealed: #t))
 (def GovernorHandoff
   (.cc (Record schema: (list String) family: (list Identifier)
-               open_nodes: (list (List Identifier))) identity: 'weaver/governor-handoff sealed: #t))
+               open_nodes: (list (List Identifier))
+               workflow_edges: (list (List (List Identifier)) optional: #t)
+               workflow_selectors: (list (List (List Identifier)) optional: #t)) identity: 'weaver/governor-handoff sealed: #t))
 (def GatewayArtifact
   (.cc (Record governance: (list GovernorHandoff) tasks: (list (List TaskContract))
                plans: (list (List ProviderPlanContract)) publication: (list PublicationContract))
        identity: 'weaver/gateway-artifact sealed: #t))
+
+;;; Bounded host facts for source composition, not an authorization receipt.
+(def ProviderCandidateFacts
+  (.cc (Record module: (list Identifier) capabilities: (list (List String))
+        latency_ms: (list Counter) procurement_rates: (list (List Counter))
+        token_bounds: (list (List Counter)) plan: (list ProviderPlanContract)
+        digest: (list Digest) body_digest: (list Digest))
+       identity: 'weaver/provider-candidate-facts sealed: #t))
+(def ProviderSelectionFacts
+  (.cc (Record node: (list Identifier) allowed_modules: (list (List Identifier))
+        required: (list (List String)) max_latency_ms: (list Counter)
+        max_procurement_cost: (list Counter) user_token_rates: (list (List Counter))
+        candidates: (list (List ProviderCandidateFacts)))
+       identity: 'weaver/provider-selection-facts sealed: #t))
+(def ProviderComposition
+  (.cc (Record source: (list GatewayArtifact) routing: (list (List ProviderSelectionFacts)))
+       identity: 'weaver/provider-composition sealed: #t))
