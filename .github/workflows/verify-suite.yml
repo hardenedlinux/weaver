@@ -30,7 +30,6 @@ jobs:
     timeout-minutes: ${{ inputs.suite == 'check-scheme' && 120 || 65 }}
     env:
       GOTOOLCHAIN: local
-      SCHEME_SEED_NAME: orgize-program-9a9f63d8286fd0ffe68d64fc2de385dab6e57b23-${{ runner.os == 'Linux' && 'ubuntu-latest' || 'macos-26' }}
       WEAVER_VERIFY_SUITE: ${{ inputs.suite }}
       # Gerbil std/make defaults to serial compilation without this setting.
       GERBIL_BUILD_CORES: '4'
@@ -94,6 +93,7 @@ jobs:
         if: inputs.suite == 'check-scheme' && steps.scheme_cache.outputs.cache-hit != 'true'
         env:
           GH_TOKEN: ${{ github.token }}
+          SCHEME_SEED_NAME: orgize-program-9a9f63d8286fd0ffe68d64fc2de385dab6e57b23-${{ runner.os == 'Linux' && 'ubuntu-latest' || 'macos-26' }}
         run: |
           run=$(gh api repos/tao3k/orgize/actions/artifacts --jq "first(.artifacts[] | select(.expired == false and .name == \"$SCHEME_SEED_NAME\")).workflow_run.id // error(\"Exact-source dependency preparation is unavailable; refusing a cold reinstall\")")
           printf 'run=%s\n' "$run" >> "$GITHUB_OUTPUT"
@@ -105,7 +105,7 @@ jobs:
           run-id: ${{ steps.scheme_seed.outputs.run }}
           github-token: ${{ github.token }}
           # This exact source revision is declared by the pinned Lab package.
-          name: ${{ env.SCHEME_SEED_NAME }}
+          name: orgize-program-9a9f63d8286fd0ffe68d64fc2de385dab6e57b23-${{ runner.os == 'Linux' && 'ubuntu-latest' || 'macos-26' }}
           path: ${{ runner.temp }}/scheme-dependency-seed
       - name: Restore native package prefix
         if: inputs.suite == 'check-scheme' && steps.scheme_cache.outputs.cache-hit != 'true'
