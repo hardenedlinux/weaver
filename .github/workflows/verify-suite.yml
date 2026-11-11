@@ -19,6 +19,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 jobs:
   verify:
@@ -29,6 +30,7 @@ jobs:
     timeout-minutes: ${{ inputs.suite == 'check-scheme' && 120 || 65 }}
     env:
       GOTOOLCHAIN: local
+      SCHEME_SEED_NAME: orgize-program-9a9f63d8286fd0ffe68d64fc2de385dab6e57b23-${{ runner.os == 'Linux' && 'ubuntu-latest' || 'macos-26' }}
       WEAVER_VERIFY_SUITE: ${{ inputs.suite }}
       # Gerbil std/make defaults to serial compilation without this setting.
       GERBIL_BUILD_CORES: '4'
@@ -80,12 +82,48 @@ jobs:
         run: |
           brew install coreutils
           echo "$(brew --prefix coreutils)/libexec/gnubin" >> "$GITHUB_PATH"
+      - name: Restore declared Scheme dependency products
+        id: scheme_cache
+        if: inputs.suite == 'check-scheme'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: ${{ runner.temp }}/weaver-gerbil
+          key: weaver-scheme-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('gerbil.pkg', '.github/workflows/verify-suite.yml') }}
+      - name: Locate existing exact-source dependency preparation
+        id: scheme_seed
+        if: inputs.suite == 'check-scheme' && steps.scheme_cache.outputs.cache-hit != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          run=$(gh api repos/tao3k/orgize/actions/artifacts --jq "first(.artifacts[] | select(.expired == false and .name == \"$SCHEME_SEED_NAME\")).workflow_run.id // error(\"Exact-source dependency preparation is unavailable; refusing a cold reinstall\")")
+          printf 'run=%s\n' "$run" >> "$GITHUB_OUTPUT"
+      - name: Reuse existing dependency preparation
+        if: inputs.suite == 'check-scheme' && steps.scheme_cache.outputs.cache-hit != 'true'
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          repository: tao3k/orgize
+          run-id: ${{ steps.scheme_seed.outputs.run }}
+          github-token: ${{ github.token }}
+          # This exact source revision is declared by the pinned Lab package.
+          name: ${{ env.SCHEME_SEED_NAME }}
+          path: ${{ runner.temp }}/scheme-dependency-seed
+      - name: Restore native package prefix
+        if: inputs.suite == 'check-scheme' && steps.scheme_cache.outputs.cache-hit != 'true'
+        run: |
+          tar -xzf "$RUNNER_TEMP/scheme-dependency-seed/orgize-program.tar.gz" -C "$RUNNER_TEMP" .gerbil-ci
+          mv "$RUNNER_TEMP/.gerbil-ci" "$RUNNER_TEMP/weaver-gerbil"
       - name: Install declared Scheme dependencies
         id: scheme_dependencies
         if: inputs.suite == 'check-scheme'
         env:
           GERBIL_PATH: ${{ runner.temp }}/weaver-gerbil
         run: go -C go run ./cmd/weaver-dev -clean-source bootstrap-scheme
+      - name: Retain prepared Scheme dependencies
+        if: inputs.suite == 'check-scheme' && steps.scheme_cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: ${{ runner.temp }}/weaver-gerbil
+          key: weaver-scheme-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('gerbil.pkg', '.github/workflows/verify-suite.yml') }}
       - name: Verify declared suite
         id: verify_suite
         if: inputs.suite != 'check-scheme'
