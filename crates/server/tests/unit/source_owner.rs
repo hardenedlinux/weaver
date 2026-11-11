@@ -2,8 +2,9 @@
 //
 // SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
-use super::{SourceOwner, answer};
+use super::SourceOwner;
 use crate::runtime::RuntimeOwner;
+use crate::source_owner::worker::answer;
 use crate::test_fixtures as fixtures;
 use std::{sync::Arc, time::Duration};
 use tokio::sync::{Semaphore, oneshot};

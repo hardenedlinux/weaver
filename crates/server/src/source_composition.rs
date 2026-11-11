@@ -134,31 +134,7 @@ pub(crate) async fn compose_typed(
     }
     if let Some(catalog) = catalog {
         for row in &mut routing {
-            let mut tariff = None;
-            let mut candidates = Vec::new();
-            for mut candidate in row.candidates.drain(..) {
-                let Ok(digest) = candidate.plan.digest() else {
-                    continue;
-                };
-                let Some(entry) = catalog.entries.get(&digest) else {
-                    continue;
-                };
-                let current = (entry.user_rates, entry.quote.tenant.clone());
-                if tariff.as_ref().is_some_and(|prior| prior != &current) {
-                    return Err(Status::failed_precondition(
-                        "mixed catalog tariffs for original operation",
-                    ));
-                }
-                tariff = Some(current);
-                row.user_token_rates = entry.user_rates;
-                candidate.module.clone_from(&entry.module);
-                candidate.capabilities.clone_from(&entry.capabilities);
-                candidate.latency_ms = entry.latency_millis;
-                candidate.procurement_rates = entry.quote.procurement_rates;
-                candidate.token_bounds = entry.quote.token_bounds;
-                candidates.push(candidate);
-            }
-            row.candidates = candidates;
+            apply_catalog_tariff(row, catalog)?;
         }
     }
     let source = runtime
@@ -170,6 +146,37 @@ pub(crate) async fn compose_typed(
     validate_transport(&source)?;
     Ok(source)
 }
+fn apply_catalog_tariff(
+    row: &mut RoutingSelection,
+    catalog: &weaver_contracts::ProviderCatalog,
+) -> Result<(), Status> {
+    let mut tariff = None;
+    let user_token_rates = &mut row.user_token_rates;
+    row.candidates = row
+        .candidates
+        .drain(..)
+        .filter_map(|mut candidate| {
+            let digest = candidate.plan.digest().ok()?;
+            let entry = catalog.entries.get(&digest)?;
+            let current = (entry.user_rates, entry.quote.tenant.as_str());
+            if tariff.as_ref().is_some_and(|prior| prior != &current) {
+                return Some(Err(Status::failed_precondition(
+                    "mixed catalog tariffs for original operation",
+                )));
+            }
+            tariff = Some(current);
+            *user_token_rates = entry.user_rates;
+            candidate.module.clone_from(&entry.module);
+            candidate.capabilities.clone_from(&entry.capabilities);
+            candidate.latency_ms = entry.latency_millis;
+            candidate.procurement_rates = entry.quote.procurement_rates;
+            candidate.token_bounds = entry.quote.token_bounds;
+            Some(Ok(candidate))
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    Ok(())
+}
+
 fn rates(values: Vec<u64>) -> Result<[u64; 4], Status> {
     values
         .try_into()

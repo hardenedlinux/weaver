@@ -54,24 +54,7 @@ pub(crate) fn load(path: &Path) -> Result<FileSource> {
         extension.eq_ignore_ascii_case("yaml") || extension.eq_ignore_ascii_case("yml")
     });
     let mut document: Value = read_document(path, yaml, MAX_FILE_BYTES)?;
-    // The old Go wire emits null for unmaterialized commitment maps and empty
-    // capability sets. Preserve those meanings before decoding the Rust DTOs.
-    if let Some(tasks) = document.get_mut("tasks").and_then(Value::as_array_mut) {
-        for task in tasks {
-            normalize_null(task, "body_digests", Value::Object(Default::default()));
-            normalize_null(task, "stream_contracts", Value::Object(Default::default()));
-        }
-    }
-    if let Some(routing) = document.get_mut("routing").and_then(Value::as_array_mut) {
-        for row in routing {
-            normalize_null(row, "required", Value::Array(Vec::new()));
-            if let Some(candidates) = row.get_mut("candidates").and_then(Value::as_array_mut) {
-                for candidate in candidates {
-                    normalize_null(candidate, "capabilities", Value::Array(Vec::new()));
-                }
-            }
-        }
-    }
+    normalize_bundle_collections(&mut document);
     let bundle: Bundle =
         serde_json::from_value(document).map_err(|_| Error::Invalid("source bundle fields"))?;
     let FilePublication {
@@ -196,6 +179,28 @@ fn require_source_yaml_shape(text: &str) -> Result<()> {
         return Err(Error::Invalid("one source YAML document required"));
     }
     Ok(())
+}
+
+// The Go wire emits null for empty commitments and capability sets.
+fn normalize_bundle_collections(document: &mut Value) {
+    if let Some(tasks) = document.get_mut("tasks").and_then(Value::as_array_mut) {
+        for task in tasks {
+            normalize_null(task, "body_digests", Value::Object(Default::default()));
+            normalize_null(task, "stream_contracts", Value::Object(Default::default()));
+        }
+    }
+    if let Some(routing) = document.get_mut("routing").and_then(Value::as_array_mut) {
+        routing.iter_mut().for_each(normalize_routing_collections);
+    }
+}
+
+fn normalize_routing_collections(row: &mut Value) {
+    normalize_null(row, "required", Value::Array(Vec::new()));
+    if let Some(candidates) = row.get_mut("candidates").and_then(Value::as_array_mut) {
+        for candidate in candidates {
+            normalize_null(candidate, "capabilities", Value::Array(Vec::new()));
+        }
+    }
 }
 
 fn normalize_null(value: &mut Value, field: &str, empty: Value) {

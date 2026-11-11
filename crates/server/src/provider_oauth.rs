@@ -127,30 +127,5 @@ pub(crate) fn observe<T>(
 }
 
 #[cfg(test)]
-mod direct_ingress_tests {
-    use super::*;
-    #[test]
-    fn direct_ingress_rejects_forged_relay_evidence_before_credential_use() {
-        let mut request = Request::new(());
-        request.metadata_mut().insert(
-            "weaver-provider-oauth-ingress-cert",
-            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-                .parse()
-                .expect("metadata"),
-        );
-        assert_eq!(
-            observe(true, false, &request)
-                .err()
-                .expect("relay evidence refused")
-                .code(),
-            tonic::Code::Unauthenticated
-        );
-        assert_eq!(
-            observe(false, false, &request)
-                .err()
-                .expect("disabled profile refused")
-                .code(),
-            tonic::Code::FailedPrecondition
-        );
-    }
-}
+#[path = "../tests/unit/provider_oauth_ingress.rs"]
+mod direct_ingress_tests;
