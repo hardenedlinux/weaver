@@ -41,12 +41,12 @@ var observedBuild struct {
 func observedServer(t testing.TB) string {
 	t.Helper()
 	observedBuild.Do(func() {
-		cmd := exec.Command("cargo", "test", "-p", "weaver-server", "--lib", "--features", "arrow", "--locked", "--offline", "--no-run", "--message-format=json")
+		cmd := exec.Command("cargo", "test", "--release", "-p", "weaver-server", "--lib", "--features", "arrow", "--locked", "--offline", "--no-run", "--message-format=json")
 		cmd.Dir = root(t)
 		var stderr bytes.Buffer
 		cmd.Stderr = &stderr
 		var err error
-		built, err := buildCargoExecutable(cmd, cargoTarget{Name: "weaver_server", Kind: "lib", Test: true})
+		built, err := buildCargoExecutable(cmd, cargoTarget{Name: "weaver_server", Kind: "lib", Test: true, Optimized: true})
 		if err == nil {
 			observedBuild.binary = filepath.Join(filepath.Dir(serverBinary), "weaver-observed")
 			var digest string

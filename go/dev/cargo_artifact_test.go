@@ -149,7 +149,7 @@ const providerSchemeReleaseFeatures = "arrow,scheme-program"
 func providerCargoBuildArgs(features, benchmark string, lookup func(string) (string, bool)) ([]string, bool, error) {
 	application, applicationSet := lookup("WEAVER_GOVERNANCE_APPLICATION")
 	source, sourceSet := lookup("WEAVER_GOVERNANCE_APPLICATION_SOURCE")
-	optimized := benchmark != ""
+	optimized := benchmark != "" || features != providerSchemeQualificationFeatures
 	if applicationSet || sourceSet {
 		if !applicationSet || !sourceSet || application == "" || source == "" {
 			return nil, false, errors.New("release Scheme integration requires both application inputs")
@@ -172,10 +172,10 @@ func providerCargoBuildArgs(features, benchmark string, lookup func(string) (str
 	return args, optimized, nil
 }
 
-func TestProviderBenchmarkUsesOptimizedRustImage(t *testing.T) {
+func TestProviderRuntimeUsesOptimizedRustImage(t *testing.T) {
 	for _, benchmark := range []string{"", "^BenchmarkGatewayStreamingPair$", "."} {
 		args, optimized, err := providerCargoBuildArgs("arrow", benchmark, func(string) (string, bool) { return "", false })
-		if err != nil || optimized != (benchmark != "") || slices.Contains(args, "--release") != optimized {
+		if err != nil || !optimized || slices.Contains(args, "--release") != optimized {
 			t.Fatal("incorrect runtime measurement profile", args)
 		}
 		for _, required := range []string{"--locked", "--offline", "--message-format=json-render-diagnostics"} {

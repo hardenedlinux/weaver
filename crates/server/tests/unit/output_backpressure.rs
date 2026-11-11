@@ -95,9 +95,9 @@ pub(crate) fn expired() {
     }
 }
 
-#[test]
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 #[ignore = "Go integration starts this test-only server with private observation custody"]
-fn serve_observed_gateway() {
+async fn serve_observed_gateway() {
     let path = std::env::var("WEAVER_TEST_FLOW_EVENTS").expect("test observation socket");
     let socket = UnixDatagram::unbound().expect("observer socket");
     socket.connect(path).expect("observer peer");
@@ -115,7 +115,9 @@ fn serve_observed_gateway() {
             })
             .is_ok()
     );
-    crate::entrypoint::run().expect("observed server natural shutdown");
+    crate::entrypoint::run_on_runtime()
+        .await
+        .expect("observed server natural shutdown");
 }
 
 fn full_output() -> (Output, QueueReceiver, QueueSender) {
