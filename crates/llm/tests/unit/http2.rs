@@ -37,37 +37,48 @@ async fn http2_paused_stream_allows_sibling_progress_and_cancels_independently()
         stop_rx,
     ));
 
-    timeout(WATCHDOG, async {
+    let mut phase = "open slow response";
+    let result = timeout(WATCHDOG, async {
         let mut slow = open_turn(&client, address, "/slow").await?;
         assert_eq!(
             slow.next_event().await?,
             Some(TurnEvent::Text("first".into()))
         );
+        phase = "observe stalled producer";
         stalled_rx.await?;
+        phase = "complete sibling response";
         check_fast_turn(&client, address).await?;
         assert_eq!(
             finished_rx.try_recv(),
             Err(oneshot::error::TryRecvError::Empty)
         );
+        phase = "drain slow response";
         drain_slow_turn(&mut slow).await?;
         finished_rx.await?;
 
+        phase = "open cancellable response";
         let mut cancelled = open_turn(&client, address, "/cancel").await?;
         assert_eq!(
             cancelled.next_event().await?,
             Some(TurnEvent::Text("first".into()))
         );
         drop(cancelled);
+        phase = "observe cancellation reset";
         assert_eq!(reset_rx.await?, Reason::CANCEL);
+        phase = "reuse connection after reset";
         check_fast_turn(&client, address).await?;
 
+        phase = "stop fixture connection";
         stop_tx
             .send(())
             .map_err(|()| io::Error::other("missing HTTP/2 connection"))?;
         server.await??;
         Ok::<_, Box<dyn std::error::Error + Send + Sync>>(())
     })
-    .await?
+    .await;
+    result
+        .unwrap_or_else(|error| Err(Box::new(error)))
+        .map_err(|error| io::Error::other(format!("HTTP/2 {phase}: {error}")).into())
 }
 
 fn tls_fixture() -> Result<(Client, TlsAcceptor)> {
@@ -161,6 +172,8 @@ async fn serve_connection(
     mut stop: oneshot::Receiver<()>,
 ) -> Result {
     let (socket, _) = listener.accept().await?;
+    // Keep small flow-control writes from waiting on delayed TCP acknowledgements.
+    socket.set_nodelay(true)?;
     let tls = acceptor.accept(socket).await?;
     assert_eq!(tls.get_ref().1.alpn_protocol(), Some(b"h2".as_slice()));
     let mut conn = h2::server::handshake(tls).await?;
