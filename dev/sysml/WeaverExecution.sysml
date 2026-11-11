@@ -1372,7 +1372,10 @@ package WeaverExecution {
            resume and terminal completion. For HTTP/2, pause one response on
            a shared connection and verify both the stalled stream's progress
            after resume and the sibling stream's progress during the pause.
-           Qualify cancellation and byte limits separately from flow control. */
+           Qualify cancellation and byte limits separately from flow control.
+           Four callers share a prepared profile and fresh OAuth credential.
+           The fixture checks connection reuse and measures headers, first
+           event and terminal latency after connection warmup. */
     }
     requirement def HarnessConnectionConfiguration {
         doc /* The downstream weaver.toml selects a connection profile

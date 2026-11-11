@@ -7,6 +7,7 @@ use base64::Engine;
 use serde_json::{Value, json};
 use std::{
     collections::BTreeMap,
+    io,
     path::PathBuf,
     sync::{
         Arc,
@@ -49,6 +50,7 @@ struct Fixture {
     config: PathBuf,
     token: PathBuf,
     issuer: String,
+    model_endpoint: String,
     observed: Arc<Observed>,
     server: JoinHandle<()>,
 }
@@ -61,11 +63,16 @@ impl Drop for Fixture {
 
 impl Fixture {
     async fn new() -> TestResult<Self> {
+        Self::with_model_endpoint(None).await
+    }
+
+    async fn with_model_endpoint(endpoint: Option<String>) -> TestResult<Self> {
         let directory = tempfile::tempdir()?;
         let config = directory.path().join("weaver.toml");
         let token = directory.path().join("auth/tokens.json");
         let listener = TcpListener::bind("127.0.0.1:0").await?;
         let issuer = format!("http://{}", listener.local_addr()?);
+        let model_endpoint = endpoint.unwrap_or_else(|| format!("{issuer}/model"));
         let observed = Arc::new(Observed::default());
         let task_observed = observed.clone();
         let task_issuer = issuer.clone();
@@ -90,7 +97,7 @@ impl Fixture {
 [profiles.local]
 kind = "direct"
 protocol = "openai-chat-completions"
-endpoint = "{issuer}/model"
+endpoint = "{model_endpoint}"
 model = "configured"
 timeout_ms = 1000
 max_response_bytes = 4096
@@ -100,7 +107,7 @@ token_url = "{issuer}/token"
 authorization_url = "{issuer}/authorize"
 device_authorization_url = "{issuer}/device"
 redirect_uri = "http://127.0.0.1:1455/callback"
-resource = "{issuer}/model"
+resource = "{model_endpoint}"
 scopes = ["read"]
 token_file = "auth/tokens.json"
 login_timeout_ms = 2000
@@ -113,6 +120,7 @@ login_timeout_ms = 2000
             config,
             token,
             issuer,
+            model_endpoint,
             observed,
             server,
         })
@@ -132,7 +140,7 @@ login_timeout_ms = 2000
         let parameters: BTreeMap<_, _> = url.query_pairs().into_owned().collect();
         assert_eq!(parameters["code_challenge_method"], "S256");
         assert_eq!(parameters["client_id"], "snake-oil-harness");
-        assert_eq!(parameters["resource"], format!("{}/model", self.issuer));
+        assert_eq!(parameters["resource"], self.model_endpoint);
         *self.observed.pkce.lock().await = Some(parameters["code_challenge"].clone());
         let callback = format!(
             "http://127.0.0.1:1455/callback?code=one-time-code&state={}",
@@ -634,4 +642,128 @@ async fn persisted_tokens_cannot_move_to_another_destination_or_scope() -> TestR
         Ok::<_, Box<dyn std::error::Error>>(())
     })
     .await?
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+async fn warmed_turns_reuse_the_pool_under_concurrency() -> TestResult {
+    use super::read_request;
+    use std::time::Instant;
+    use weaver_llm::TurnEvent;
+
+    const WORKERS: usize = 4;
+    const SAMPLES: usize = 32;
+    const BODY: &str = concat!(
+        "data: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"OK\"},\"finish_reason\":\"stop\"}]}\n\n",
+        "data: [DONE]\n\n",
+    );
+
+    timeout(WATCHDOG, async {
+        let listener = TcpListener::bind("127.0.0.1:0").await?;
+        let fixture = Fixture::with_model_endpoint(Some(format!("http://{}/model", listener.local_addr()?))).await?;
+        let profile = Arc::new(fixture.prepare().await?);
+        fixture.login(&profile).await?;
+        let server = tokio::spawn(async move {
+            let mut connections = JoinSet::new();
+            let warmup = std::sync::Arc::new(tokio::sync::Barrier::new(WORKERS));
+            for _ in 0..WORKERS {
+                let (socket, _) = listener.accept().await?;
+                socket.set_nodelay(true)?;
+                let warmup = warmup.clone();
+                connections.spawn(async move {
+                    let mut socket = BufReader::new(socket);
+                    let reply = format!("HTTP/1.1 200 OK\r\nContent-Type: text/event-stream\r\nContent-Length: {}\r\n\r\n{BODY}", BODY.len());
+                    let mut served = 0;
+                    while !socket.fill_buf().await?.is_empty() {
+                        let (headers, request) = read_request(&mut socket).await?;
+                        assert!(headers.contains("authorization: bearer snake-oil-access\r\n"));
+                        assert_eq!(request["model"], "configured");
+                        assert_eq!(request["stream"], true);
+                        if served == 0 {
+                            warmup.wait().await;
+                        }
+                        socket.get_mut().write_all(reply.as_bytes()).await?;
+                        served += 1;
+                    }
+                    Ok::<_, io::Error>(served)
+                });
+            }
+            let mut served = 0;
+            while let Some(result) = connections.join_next().await {
+                served += result??;
+            }
+            Ok::<_, Box<dyn std::error::Error + Send + Sync>>(served)
+        });
+
+        let mut callers = JoinSet::new();
+        for _ in 0..WORKERS {
+            let profile = profile.clone();
+            callers.spawn(async move {
+                let messages = messages();
+                let options = Options::default();
+                let mut timings = Vec::with_capacity(SAMPLES);
+                for index in 0..=SAMPLES {
+                    let start = Instant::now();
+                    let mut turn = profile.stream_turn(&messages, &options).await?;
+                    let headers = start.elapsed();
+                    assert_eq!(turn.next_event().await?, Some(TurnEvent::Text("OK".into())));
+                    let first = start.elapsed();
+                    assert!(matches!(
+                        turn.next_event().await?,
+                        Some(TurnEvent::Finished { .. })
+                    ));
+                    assert!(turn.next_event().await?.is_none());
+                    if index > 0 {
+                        timings.push((headers, first, start.elapsed()));
+                    }
+                }
+                Ok::<_, Error>(timings)
+            });
+        }
+        let mut timings = Vec::with_capacity(WORKERS * SAMPLES);
+        while let Some(result) = callers.join_next().await {
+            timings.extend(result??);
+        }
+        assert_eq!(fixture.observed.grants.load(Ordering::SeqCst), 1);
+        assert_eq!(fixture.observed.refreshes.load(Ordering::SeqCst), 0);
+        assert_eq!(fixture.observed.requests.lock().await.len(), 1);
+        profile.oauth().ok_or("missing credential owner")?.shutdown().await;
+        drop(profile);
+        let served = tokio::time::timeout(Duration::from_secs(2), server)
+            .await??
+            .map_err(io::Error::other)?;
+        assert_eq!(served, WORKERS * (SAMPLES + 1));
+        assert_eq!(timings.len(), WORKERS * SAMPLES);
+        for (label, mut values) in [
+            (
+                "response headers",
+                timings.iter().map(|sample| sample.0).collect::<Vec<_>>(),
+            ),
+            (
+                "first event",
+                timings.iter().map(|sample| sample.1).collect::<Vec<_>>(),
+            ),
+            (
+                "complete turn",
+                timings.iter().map(|sample| sample.2).collect::<Vec<_>>(),
+            ),
+            (
+                "first event to terminal",
+                timings
+                    .iter()
+                    .map(|sample| sample.2 - sample.1)
+                    .collect::<Vec<_>>(),
+            ),
+        ] {
+            values.sort_unstable();
+            let rank = |percent: usize| values[(values.len() * percent).div_ceil(100) - 1];
+            println!("{}", json!({
+                "phase": label,
+                "callers": WORKERS,
+                "samples": values.len(),
+                "p50_us": rank(50).as_secs_f64() * 1_000_000.0,
+                "p99_us": rank(99).as_secs_f64() * 1_000_000.0,
+            }));
+        }
+        Ok(())
+    }).await?
 }

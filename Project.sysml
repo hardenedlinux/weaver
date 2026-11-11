@@ -746,6 +746,7 @@ package WeaverProject {
             part 'weaver-governance' : RuntimeDependency;
             part 'weaver-ledger' : RuntimeDependency;
             part 'weaver-broker' : RuntimeDependency;
+            part 'weaver-llm' : RuntimeDependency;
             part 'weaver-telemetry' : RuntimeDependency;
         }
         part 'crates/telemetry' : RustPackage;

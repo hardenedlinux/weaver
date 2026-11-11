@@ -100,12 +100,18 @@ cargo test -p weaver-llm --locked --offline --lib http2_paused_stream_allows_sib
 cargo test -p weaver-llm --locked --offline --test client warmed_turns_reuse_the_pool_under_concurrency -- --nocapture
 #+end_src
 
-The pool test fixes four Tokio workers, four concurrent callers and 128
-measured turns after one warmup per caller. It checks connection reuse and
-reports p50 and p99 for response headers, the first event, the complete turn,
-and the interval from the first event to terminal. Use =--release= to
-measure the optimized build. The measurements include the local HTTP exchange
-and fixture work.
+The pool test loads =weaver.toml=, prepares one profile and activates a
+credential through the local OAuth issuer. Four callers share the profile on
+four Tokio workers. Each opens a connection before measuring 32 turns, for
+128 warm samples in total. The test checks that all turns use the four
+connections and that the issuer receives one grant request and zero refreshes.
+The JSON measurements report p50 and p99 for response headers, first event,
+complete turn and the interval from first event to terminal. Use =--release=
+for optimized measurements. Samples include the loopback HTTP exchange and
+fixture work. Profile preparation, login and the first turn precede sampling.
+
+The prepared-profile tests also cover cancellation of an incomplete SSE
+response and exclusion of credential variables from a tool subprocess.
 
 * Transport qualification
 

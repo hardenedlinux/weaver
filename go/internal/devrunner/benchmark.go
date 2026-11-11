@@ -29,6 +29,7 @@ var providerReleaseBenchmarkCases = []string{
 }
 
 var rustBenchmarkCases = slices.Concat([]string{
+	"llm/request/openai-text",
 	"telemetry/local/record",
 	"telemetry/local/snapshot",
 	"ledger/task_origin_registration/fresh",
@@ -117,7 +118,7 @@ var rustBenchmarkCases = slices.Concat([]string{
 
 // Each Criterion ID starts with the declared Cargo package owner.
 func benchmarkPackage(name string) (string, error) {
-	for _, member := range []string{"contracts", "governance", "governance-build", "policy", "policy-ffi", "ledger", "broker", "server", "telemetry"} {
+	for _, member := range []string{"contracts", "governance", "governance-build", "policy", "policy-ffi", "ledger", "broker", "llm", "server", "telemetry"} {
 		if strings.HasPrefix(name, member+"/") {
 			return "weaver-" + member, nil
 		}

@@ -2,9 +2,14 @@
 //
 // SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
-use super::{TestResult, messages, upstream};
+use super::{TestResult, messages, read_request, upstream};
 use std::{path::Path, time::Duration};
-use tokio::{net::TcpListener, process::Command, time::timeout};
+use tokio::{
+    io::{AsyncReadExt, AsyncWriteExt, BufReader},
+    net::TcpListener,
+    process::Command,
+    time::timeout,
+};
 use weaver_llm::{Configuration, Error, Options};
 
 const WATCHDOG: Duration = Duration::from_secs(5);
@@ -378,6 +383,51 @@ async fn environment_resolution_and_tool_isolation() -> TestResult {
                 .contains("authorization: bearer snake-oil-env\r\n")
         );
         Ok::<_, Box<dyn std::error::Error>>(())
+    })
+    .await?
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+async fn dropping_a_turn_closes_an_incomplete_exchange() -> TestResult {
+    use tokio_stream::StreamExt;
+    timeout(WATCHDOG, async {
+        let listener = TcpListener::bind("127.0.0.1:0").await?;
+        let directory = tempfile::tempdir()?;
+        let path = directory.path().join("weaver.toml");
+        secret(&directory.path().join("token"), "snake-oil-cancel").await?;
+        tokio::fs::write(
+            &path,
+            profile(
+                &format!("http://{}/model", listener.local_addr()?),
+                r#"file = "token""#,
+            ),
+        )
+        .await?;
+        let prepared = Configuration::load(&path).await?.prepare("local").await?;
+        let server = tokio::spawn(async move {
+            let (socket, _) = listener.accept().await?;
+            let mut socket = BufReader::new(socket);
+            let (headers, request) = read_request(&mut socket).await?;
+            assert!(headers.contains("authorization: bearer snake-oil-cancel\r\n"));
+            assert_eq!(request["model"], "configured");
+            socket.get_mut().write_all(concat!(
+            "HTTP/1.1 200 OK\r\nContent-Type: text/event-stream\r\nContent-Length: 4096\r\n\r\n",
+            "data: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"First\"}}]}\n\n",
+        ).as_bytes()).await?;
+            socket.read(&mut [0]).await
+        });
+        let turn = prepared
+            .stream_turn(&messages(), &Options::default())
+            .await?;
+        let mut turn = Box::pin(turn.into_stream());
+        assert_eq!(
+            turn.next().await.transpose()?,
+            Some(weaver_llm::TurnEvent::Text("First".into()))
+        );
+        drop(turn);
+        let read = tokio::time::timeout(Duration::from_secs(2), server).await??;
+        assert_eq!(read?, 0);
+        Ok(())
     })
     .await?
 }
