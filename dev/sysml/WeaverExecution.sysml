@@ -108,7 +108,8 @@ package WeaverExecution {
         doc /* The ordinary Rust provider integration group exercises an
            optimized Server and its optimized observation fixture. Reuse the
            Cargo artifact identity check. Four Tokio workers, original property
-           cases and the suite's ten-minute bound qualify the runtime path.
+           cases and the group's ten-minute bound qualify the runtime path.
+           Ordinary Cargo preparation shares the enclosing suite deadline.
            Scheme qualification retains its native debug application graph. */
         doc /* Time domain view, publication and reviewed head, profile, and
            original claim reconciliation separately in the deciding scope. Split

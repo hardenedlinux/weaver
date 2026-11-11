@@ -287,10 +287,9 @@ const (
 func runStageObserved(ctx context.Context, root, directory string, environment []string, stage Stage, streamSchemeOutput bool, onStart func(int), live io.Writer) Result {
 	tests := ""
 	testTimeout := schemePackageTestTimeout
+	// Cargo preparation shares the caller's suite deadline. Runtime test
+	// commands retain their own acceptance timeout after preparation.
 	deadline := time.Duration(0)
-	if stage.providerBuild() {
-		deadline = 5 * time.Minute
-	}
 	switch stage.Name {
 	case "scheme-module-build":
 		deadline = schemeModuleBuildTimeout
