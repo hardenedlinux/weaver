@@ -911,9 +911,20 @@ async fn buffered_tool_turns_match_streamed_tool_results_across_protocols() -> T
 #[path = "generation_controls.rs"]
 mod generation_controls;
 
+#[path = "backpressure.rs"]
+mod backpressure;
+#[path = "configuration.rs"]
+mod configuration;
+mod copilot;
 #[path = "embeddings.rs"]
 mod embeddings;
 #[path = "image_inputs.rs"]
 mod image_inputs;
+#[path = "oauth_issuer.rs"]
+mod oauth_issuer;
+#[path = "oauth_lifecycle.rs"]
+mod oauth_lifecycle;
+#[path = "openai_login.rs"]
+mod openai_login;
 #[path = "provider_failures.rs"]
 mod provider_failures;

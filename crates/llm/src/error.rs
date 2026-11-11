@@ -10,6 +10,12 @@ pub enum Error {
     /// The supplied endpoint or credential is invalid.
     #[error("invalid model client configuration")]
     Configuration,
+    /// The credential requires a new login or a grant could not be activated.
+    #[error("model authentication requires authorization")]
+    Authentication,
+    /// Local credentials were removed but supplier revocation was not confirmed.
+    #[error("local credentials cleared, remote revocation unconfirmed")]
+    RevocationUnconfirmed,
     /// The request cannot be represented by this provider.
     #[error("unsupported provider request: {0}")]
     Request(&'static str),

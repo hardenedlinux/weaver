@@ -44,6 +44,10 @@ to compose the turn with other asynchronous operations. Display =TurnEvent::Text
 message and append each tool result with its =tool_call_id= before starting
 the next turn. A dropped stream cancels the exchange. A truncated stream or
 invalid terminal frame returns an error and yields no executable calls.
+The typed stream polls the HTTP body on demand. A paused consumer can still
+have bytes in the HTTP and TCP receive buffers. The exchange byte limit applies
+across the whole body. Buffered SSE control frames consume Tokio cooperative
+budget so they yield to other ready tasks.
 =Options::stream_usage= requests terminal usage from OpenAI-compatible endpoints
 that implement it. Anthropic usage comes from Messages stream events.
 SSE framing uses the same =tokio_sse_codec= as Agent Gateway. The client
@@ -91,6 +95,8 @@ cargo test -p weaver-llm --locked --test client live_openai_responses_replays_re
 
 #+begin_src sh
 cargo test -p weaver-llm --locked --offline
+cargo test -p weaver-llm --locked --offline --test client backpressure::
+cargo test -p weaver-llm --locked --offline --lib http2_paused_stream_allows_sibling_progress_and_cancels_independently
 cargo test -p weaver-llm --locked --offline --test client warmed_turns_reuse_the_pool_under_concurrency -- --nocapture
 #+end_src
 
@@ -100,3 +106,556 @@ reports p50 and p99 for response headers, the first event, the complete turn,
 and the interval from the first event to terminal. Use =--release= to
 measure the optimized build. The measurements include the local HTTP exchange
 and fixture work.
+
+* Transport qualification
+
+| Gate | Normal entry point | Evidence required |
+|------+--------------------+-------------------|
+| HTTP/1.1 SSE | Weaver client backpressure tests | Blocked peer write, ordered resume, partial-read cancellation and cumulative byte rejection |
+| HTTP/2 SSE | Weaver client library target, =http2_paused_stream_allows_sibling_progress_and_cancels_independently= | TLS ALPN, one shared connection, a stalled response, sibling progress, ordered resume and a stream reset |
+| Governed gRPC | Existing Weaver provider slow-consumer scenarios and Rust output backpressure tests | Bounded delivery admission, positive resume, cancellation and reconnect, rejection of revoked or replayed output |
+
+Run correctness checks before measuring latency. For any performance
+comparison, fix the revision, four Tokio workers, concurrency, payload and
+frame counts, response budget, warmup and deadline. Record first event and
+terminal latency separately. Keep failed runs in the comparison. A transport
+result applies to the boundary and workload it exercised.
+
+The HTTP/1.1 and HTTP/2 fixtures use four Tokio workers, 768 numbered text
+frames of 16 KiB plus their sequence numbers, a 16 MiB response limit and
+a five-second watchdog. The HTTP/2 fixture uses a local TLS root, a 16 KiB
+stream window and a 128 KiB connection window. Its sibling and cancellation
+calls verify multiplexing and stream isolation. The burst is a correctness
+workload for flow control.
+
+The observed gRPC Server fixture uses the Cargo release profile, four Tokio
+workers, a three-second startup budget and a 12-second deadline per scenario.
+Its provider sends 48 events of 48 KiB each. The
+downstream stream and connection windows are both 64 KiB. Protobuf carries
+one row per frame and Arrow IPC uses two. Prepare the Cargo test image
+before invoking the Go group in a cold checkout. This separates release
+compilation from the Go suite watchdog and the runtime deadlines. Run
+both commands from the repository root with the same Cargo toolchain
+and environment.
+
+#+begin_src sh
+cargo test --release -p weaver-server --lib --features arrow --locked --offline --no-run
+go -C go test -tags integration ./dev -run '^TestProviderSlowConsumer' -count=1
+#+end_src
+
+* Downstream configuration and credentials
+
+The downstream =weaver.toml= describes an explicit connection
+profile. A direct profile selects the provider protocol, exact endpoint,
+model, deadline, byte limit and a credential reference. Keep the profile
+under a dedicated local directory such as =.cache/weaver-dev/= for Snake Oil
+tests. =Configuration::load= reads the explicitly selected trusted file with
+Tokio. =prepare= validates one profile and resolves its credential once.
+=PreparedProfile= binds the endpoint, model, response budget and pooled
+client for =complete= and =stream_turn=.
+
+| Connection | Credential provisioning | Runtime authority |
+|------------+-------------------------+-------------------|
+| Direct provider | The operator provisions a provider API key and supplies it through the configured secret reference | The provider authenticates the call. The Harness controls local tool execution. |
+| Governed Weaver Server | Deployment supplies the operation-role mTLS identity, server trust roots and operation bearer credential | The RPC ingress checks the peer and bearer binding. Cedar and the ledger control authorized release. |
+| Optional delegated provider authorization | A trusted issuer publishes a scoped grant and delivers its credential to the caller | The operation credential and delegated credential are checked independently. |
+
+** First downstream profile
+
+The Harness selects the profile and config path at startup. This example
+uses the existing OpenAI Chat Completions codec.
+
+#+begin_src toml
+[profiles.openai]
+kind = "direct"
+protocol = "openai-chat-completions"
+endpoint = "https://api.openai.com/v1/chat/completions"
+model = "your-provider-model"
+timeout_ms = 30000
+max_response_bytes = 16777216
+
+[profiles.openai.credential]
+env = "OPENAI_API_KEY"
+#+end_src
+
+Supported protocol names are =openai-chat-completions=, =openai-responses=
+and =anthropic-messages=. Both the profile and configuration path come from
+trusted Harness startup settings. Supply the chosen model explicitly.
+The optional profile field =authentication = "bearer"= selects an explicit
+Authorization Bearer header. Its default, =provider_default=, uses Bearer for
+OpenAI and =x-api-key= for Anthropic API keys. Anthropic =sk-ant-oat= access
+tokens use Bearer under the default as well. Exactly one credential header is
+sent. The same selection is available through =Endpoint::with_authentication=.
+
+#+begin_src rust
+use weaver_llm::{Configuration, Options};
+
+// trusted_config_path, selected_profile and messages come from the Harness.
+let config = Configuration::load(trusted_config_path).await?;
+let connection = config.prepare(selected_profile).await?;
+let mut turn = connection.stream_turn(&messages, &Options::default()).await?;
+while let Some(event) = turn.next_event().await? {
+    // Deliver the typed event through the Harness's existing event channel.
+}
+#+end_src
+
+For a mounted secret, replace =env= with =file = "/run/secrets/provider-key"=.
+Relative file paths resolve against the TOML file's directory. Unix secret
+files must be regular files with no group or other permission bits, such as
+mode =0600= or =0400=. Provision platform ACLs on other operating systems.
+Use atomic file replacement for rotation. A configuration file is limited
+to 256 KiB and a credential to 16 KiB. Only trailing CR/LF in a file credential
+is removed. Empty values, surrounding whitespace, invalid HTTP header bytes,
+duplicate or unknown fields and ambiguous secret sources are rejected.
+
+The provider issues the API key. The operator injects it through a named
+environment reference in local development or a protected mounted file in a
+managed deployment. Only the selected profile's reference is resolved.
+Loading configuration does not discover files from the working directory.
+The Harness must restrict the chosen path and its parent directory to trusted
+inputs. Once prepared, editing TOML or the secret file cannot change a live
+connection's destination, model or credential. HTTPS and the existing
+loopback HTTP endpoint rules apply. The HTTP client disables redirects and
+marks provider authentication headers sensitive. Errors and prepared-profile
+Debug output omit credential values, endpoints and source paths.
+
+The governed connection needs its own gRPC endpoint, server trust root,
+operation certificate and private-key references, and operation bearer
+reference. The deployment provisions those together. The existing Server
+checks the operation peer certificate and the bearer digest at ingress.
+The separate delegated provider credential is issued and revoked through
+the existing grant path where enabled. Source or admin credentials do not
+belong in an operation profile. Supplier login connectors define authorization
+and token endpoints, client identity, audience, scopes and token lifecycle.
+A desktop authorization-code flow uses the system browser and PKCE.
+This TOML loader accepts =kind = "direct"= and rejects other kinds. Governed
+gRPC continues to use the existing Server deployment and operation identity
+mechanisms. Static direct profiles consume access tokens supplied by environment
+or file. OAuth resource profiles use the shared authorization and refresh owner
+below. Supplier-specific registration and identity verification are tracked as
+additional connector work.
+
+For static credentials, activate rotation by rebuilding the selected
+profile from trusted inputs and swapping it for new calls. Server revocation
+uses the current authorization checks for in-flight release. The direct
+client depends on the provider's revocation behavior and can cancel a local
+stream. Credential resolution and configuration parsing stay outside the
+stream polling path. Exclude every configured credential environment variable
+from tool subprocesses with the existing Tokio process builder.
+
+#+begin_src rust
+for name in config.credential_environment() {
+    tool_command.env_remove(name);
+}
+#+end_src
+
+The Harness must also restrict tool filesystem access to keep mounted secret
+files outside the tool sandbox. Environment filtering applies to the named
+references in this file. Other inherited secrets need the Harness's own
+environment policy.
+
+The =configuration::= integration group uses synthetic credentials, four
+Tokio workers and a five-second watchdog per case. It verifies preparation
+and explicit rotation, missing and malformed inputs, source size and Unix
+permission checks, redacted diagnostics, a 307 redirect with zero accepted
+connections at its destination, and tool environment filtering in a real
+child process. The stream case removes both configuration and secret files
+before calling the provider, then drops the prepared connection and drains
+the turn to terminal success. Governed revocation and replay gates remain
+the provider slow-consumer scenarios above. The downstream Harness verifies
+that its selected profile reaches the Weaver client.
+
+#+begin_src sh
+cargo test --release -p weaver-llm --locked --offline --test client configuration::
+#+end_src
+
+** Authentication reference coverage
+
+Supplier token issuance belongs to the supplier's authorization service.
+Weaver's implementation scope follows the reference feature being exercised.
+The comparison distinguishes acquisition, refresh and attachment to an API call.
+
+| Capability | Reference evidence | Weaver client status |
+|------------+--------------------+----------------------|
+| OpenAI and Anthropic API keys | Agentgateway provider guides configure provider keys from environment references | Implemented and qualified through prepared profiles |
+| Anthropic OAuth access token and explicit Bearer placement | Agentgateway preserves =sk-ant-oat= Bearer tokens and explicit Authorization placement | Implemented with exclusive authentication headers and Snake Oil coverage |
+| Public-client OAuth resource authorization | oauth2-rs provides S256 PKCE, state, refresh and RFC 8628 device polling | Implemented through the shared credential owner and qualified with a local issuer |
+| OpenAI browser login with token refresh | OpenAI's open-source sign-in contract defines dynamic registration and verified per-account identity | Implemented with a local signed-token/JWKS issuer, refresh, restart and revocation controls |
+| Anthropic browser login | The reviewed provider guide establishes key/token consumption rather than a complete login connector | Token attachment is qualified; supplier browser acquisition remains unimplemented |
+| Gateway OIDC browser login | Agentgateway's =http/oidc= module implements configured provider login | Registered public-client login and operation gRPC consumption implemented; no browser cookie UI is claimed |
+| Delegated token exchange | Agentgateway backend OAuth and Praxis Policy's =delegator/oauth= implement OAuth token exchange | RFC 8693 acquisition feeds the independent delegated channel; signed publication and final ledger checks remain mandatory |
+| Copilot device login | LiteLLM-rs acquires a GitHub parent then exchanges it for a Copilot API lease; Microsoft's implementation defines refresh timing metadata | Implemented with two-stage Snake Oil, shared refresh, restart, expiry and destination controls |
+
+The local reference review used Agentgateway =134897e1=, Praxis Policy
+=828cb41c= and LiteLLM-rs =6fdd55b8=. The current Agentgateway header-normalization
+implementation was also checked online. Sources are the
+[[https://agentgateway.dev/docs/standalone/latest/integrations/llm/providers/openai/][OpenAI provider guide]],
+[[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/crates/agentgateway/src/llm/mod.rs][Agentgateway authentication attachment]],
+[[https://github.com/praxis-proxy/policy/blob/828cb41c2f31723445c4e31051b44f59afa2f53f/crates/builtins/src/plugins/delegator_oauth/mod.rs][Praxis delegated exchange]]
+and the local =.data/litellm-rs/src/core/providers/github_copilot/authenticator.rs=
+reference.
+
+** OAuth credential owner
+
+An OAuth profile uses =[profiles.local.credential.oauth]= instead of an
+=env= or =file= reference. These settings describe a trusted resource
+authorization server. The Harness supplies the browser UI and receives its
+registered callback.
+
+#+begin_src toml
+[profiles.local]
+kind = "direct"
+protocol = "openai-chat-completions"
+endpoint = "https://model.example/v1/chat/completions"
+model = "chosen-model"
+timeout_ms = 30000
+max_response_bytes = 16777216
+
+[profiles.local.credential.oauth]
+client_id = "registered-harness-client"
+token_url = "https://identity.example/oauth/token"
+authorization_url = "https://identity.example/oauth/authorize"
+device_authorization_url = "https://identity.example/oauth/device"
+redirect_uri = "http://127.0.0.1:1455/callback"
+resource = "https://model.example"
+scopes = ["model.invoke"]
+token_file = "auth/tokens.json"
+login_timeout_ms = 300000
+#+end_src
+
+=Configuration::prepare= opens one exclusive credential owner for this file.
+An existing record must match the exact OAuth settings and model destination.
+Its parent directory is created with mode =0700= on Unix. Existing public
+directories are rejected. Atomic records use mode =0600=.
+
+Use =connection.oauth()= to obtain the owner. For browser authorization, call
+=start_authorization=, open =authorization_url= in the system browser, and
+pass the full callback URL to the consumed attempt's =finish= method. It checks
+the exact callback URI, unique query parameters, state and current generation
+before exchanging the code with its retained S256 verifier. For device login,
+call =start_device_authorization=, display =verification_uri= and =user_code=,
+then call =finish=. Device polling observes the provider interval and the
+original challenge expiry within =login_timeout_ms=.
+
+Model calls reuse a cached access-token handle. Fresh calls perform no file
+or token-endpoint IO. Expiring tokens refresh through one shared Tokio mutex
+before the HTTP exchange starts. Before a code or refresh-token POST, the owner
+durably clears active credentials and records uncertainty. Cancellation,
+ambiguous transport failure and an invalid grant require a new login. A restart
+cannot reuse the consumed grant. The owner checks Bearer type, expiry and the
+configured scope set before replacing tokens together in one durable record.
+Store writes retain their kernel lease and serialize through completion even
+when a waiting caller is cancelled. =logout= clears the record and advances
+the generation, which rejects older pending login attempts.
+An observed model HTTP 401 invalidates the credential used by that request
+without replaying the model call. A late 401 cannot invalidate a replacement
+credential. Call =shutdown= during Harness teardown to close admission and
+await writes tracked by Tokio's =TaskTracker= before dropping the owner.
+
+Dropping a turn continues to cancel its HTTP stream through the existing client.
+Local logout controls new calls. Provider-side revocation and governed Server
+release authorization retain their own enforcement boundaries.
+
+The generic resource-authorization configuration rejects =openid= scopes.
+The named OpenAI adapter below verifies identity before activating credentials.
+
+** OpenAI registered sign-in
+
+Use =[profiles.openai.credential.openai]= for OpenAI's dynamic registration
+contract. The profile requires =openai-responses= and a model endpoint within
+the configured resource. Issuer and resource have official defaults; changing
+them is a trusted deployment decision, used by the local issuer fixtures.
+
+#+begin_src toml
+[profiles.openai]
+kind = "direct"
+protocol = "openai-responses"
+endpoint = "https://api.openai.com/v1/responses"
+model = "your-provider-model"
+timeout_ms = 30000
+max_response_bytes = 16777216
+
+[profiles.openai.credential.openai]
+agent_name = "your-harness"
+token_file = "auth/openai-account.json"
+host_id_file = "auth/openai-host.json"
+redirect_uri = "http://127.0.0.1:1455/callback"
+login_timeout_ms = 300000
+#+end_src
+
+Use the same =start_authorization= and =finish= interface. The initial request
+uses =dynamic_agent_client=. The callback must provide a concrete issued
+=client_id=, which is retained before code exchange. Returning authorization
+and refresh use that issued ID. A persisted UUIDv4 host identity is shared
+across account records; each account has its own protected token file and
+verified subject. Email is display metadata and cannot substitute for subject.
+=account_identity= exposes the verified account metadata to the Harness.
+
+The adapter verifies issuer discovery, JWKS, an RS256 signature, key identity,
+audience, authorized party, expiry, issued-at and browser nonce. Inference
+permission scopes are checked separately. Returning sign-in binds the existing
+subject and client ID. One login deadline includes grant exchange, metadata
+retrieval, verification and activation. Fresh model calls reuse the cached
+credential without fetching metadata or reading token files. JSON and SSE
+Responses share this path. Treat authorization URLs and callbacks as secrets:
+returning URLs can carry an identity hint and must not be logged.
+
+=logout= durably clears local tokens before requesting remote revocation. It
+retains the account registration but removes identity-token hints. Transient
+revocation failures get at most three attempts; =RevocationUnconfirmed= means
+local sign-out completed but supplier revocation was not confirmed. No late
+revocation response modifies a newer login. These are locally qualified
+protocol behaviors; they do not claim a real supplier account was exercised.
+
+Refresh scheduling follows the documented near-expiry flow and =expires_in=.
+The supplier's [[https://developers.openai.com/siwc/token-sharing-open-source/token-reference][token reference]] lists =earliest_refresh_at= without defining
+its type, units or scheduling semantics. Weaver does not interpret that field
+as Copilot's =refresh_in= or claim to enforce an undocumented minimum-refresh
+time. This is an external contract limitation, separate from the qualified
+serialization, rotating-token persistence and uncertain-grant barrier.
+
+** Copilot device sign-in and API leases
+
+The named Copilot adapter reuses =connection.oauth()= and
+=start_device_authorization=. The Harness displays the returned user code and
+verification URI, then awaits =finish=. It does not acquire credentials from a
+tool subprocess or print login instructions itself. The operator supplies the
+GitHub OAuth client ID of an application enabled for device authorization and
+authorized for the intended Copilot integration. Weaver does not register an
+application or infer entitlement from a local test. See the
+[[https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps][GitHub device authorization documentation]].
+
+#+begin_src toml
+[profiles.copilot]
+kind = "direct"
+protocol = "openai-chat-completions"
+endpoint = "https://api.githubcopilot.com/chat/completions"
+model = "your-copilot-model"
+timeout_ms = 30000
+max_response_bytes = 16777216
+
+[profiles.copilot.credential.copilot]
+client_id = "your-device-enabled-client-id"
+api_base = "https://api.githubcopilot.com"
+token_file = "auth/copilot-account.json"
+login_timeout_ms = 300000
+#+end_src
+
+The default device and OAuth token URLs are on =github.com=; the API-token
+exchange is =https://api.github.com/copilot_internal/v2/token=. Trusted
+deployments may explicitly configure =device_authorization_url=, =token_url=
+and =api_token_url=, including the loopback issuer used by local tests. These
+settings and the model endpoint are part of the persistent credential binding.
+=api_base= is explicit: the returned =endpoints.api=, when supplied, must match
+it. A different subscription or enterprise base requires a matching trusted
+configuration. The prepared endpoint never follows an unapproved returned base.
+The adapter identifies itself as Weaver in its editor and user-agent headers.
+
+The owner persists the GitHub parent before requesting a Copilot API lease.
+It sends the parent only to the configured API-token exchange and sends only
+the resulting Bearer lease to the model. A parent with no server expiry retains
+that absence; a finite parent uses its own refresh token and expiry when
+provided. Parent refresh shares the existing uncertain-grant barrier and mutex.
+A lost or cancelled refresh requires new login rather than replay. Missing
+replacement refresh metadata preserves the previous known refresh deadline.
+
+API leases obey both =expires_at= and =refresh_in=. The latter is the server's
+renewal interval, as specified by
+[[https://github.com/microsoft/vscode-copilot-chat/blob/main/src/platform/authentication/common/copilotToken.ts][Microsoft's token envelope]].
+One caller exchanges a lease while others await the owner. Fresh calls do no
+credential network or file IO. A failed or cancelled non-consuming GET retains
+the parent for a later explicit request; it does not repeat device authorization.
+An exchange 401/403 clears both stages. A model 401 clears only its matching
+lease, returns the model error and never automatically replays that request.
+Local logout clears both credentials and fences pending attempts. It does not
+claim remote GitHub consent revocation.
+
+** Registered OIDC acquisition
+
+For a public-client OIDC resource service, use the named =credential.oidc=
+adapter. It discovers authorization, token and JWKS endpoints from the exact
+configured issuer. This reuses the existing owner, nonce/state/PKCE, private
+record, refresh gate and RS256 verifier. No OpenAI dynamic registration or host
+UUID is involved. The public client and callback must already be registered at
+the issuer; confidential-client authentication is separate exchange work.
+
+#+begin_src toml
+[profiles.identity_resource]
+kind = "direct"
+protocol = "openai-responses"
+endpoint = "https://model.example/v1/responses"
+model = "your-model"
+timeout_ms = 30000
+max_response_bytes = 16777216
+
+[profiles.identity_resource.credential.oidc]
+issuer = "https://identity.example"
+client_id = "registered-public-client"
+redirect_uri = "http://127.0.0.1:1455/callback"
+resource = "https://model.example/v1"
+scopes = ["openid", "profile", "model.invoke"]
+token_file = "auth/identity-account.json"
+login_timeout_ms = 300000
+revoke_on_logout = false
+#+end_src
+
+Call =connection.oauth().start_authorization()= and finish the retained attempt
+with the complete callback URL. The ID token must bind the registered client,
+issuer, nonce and selected subject. The access token needs a server-supplied
+expiry and exact configured scope set. Unsupported algorithms, unsafe or
+incomplete discovery and substituted records deny acquisition. Fresh resource
+calls use the cached token with no metadata reads. Configuring a different
+client, resource, discovered endpoint or protocol cannot rebind a saved record.
+
+Local logout removes usable credentials and identity hints while retaining the
+selected account. =revoke_on_logout = true= also requests public-client token
+revocation through the discovered endpoint; an unconfirmed remote result still
+leaves local credentials cleared. See the
+[[https://openid.net/specs/openid-connect-core-1_0.html][OIDC authorization-code and ID-token validation contract]].
+
+This qualifies SDK acquisition against a local signed-token issuer. The
+governed profile below connects it to Weaver's operation ingress. The existing
+WIF implementation remains a JWT bearer grant; it is not RFC 8693 exchange.
+
+** Governed operation authentication
+
+Use =kind = "delegated"= to bind OIDC acquisition, one STS, one operation
+resource and the existing operation TLS/bearer identity. The model client
+package prepares configuration without depending on Server or gRPC.
+=weaver_server::OperationClient::from_config= consumes that prepared material
+on the caller's Tokio runtime. Use its =identity()= for browser login, then
+=execute= for an existing =ProviderRequest=. The typed client exposes execution
+only; source publication stays on its independent authenticated lane.
+
+#+begin_src toml
+[profiles.gateway]
+kind = "delegated"
+endpoint = "https://gateway.example:18080/"
+timeout_ms = 30000
+
+[profiles.gateway.identity]
+issuer = "https://identity.example"
+client_id = "registered-public-client"
+redirect_uri = "http://127.0.0.1:1455/callback"
+resource = "https://identity.example/delegation"
+scopes = ["openid", "profile", "delegation"]
+token_file = "auth/gateway-account.json"
+login_timeout_ms = 300000
+
+[profiles.gateway.exchange]
+token_url = "https://sts.example/token"
+client_id = "registered-exchange-client"
+audience = "weaver"
+scopes = ["provider:execute"]
+
+[profiles.gateway.exchange.client_secret]
+file = "/run/secrets/sts-client-secret"
+
+[profiles.gateway.operation]
+server_name = "gateway.example"
+ca = "tls/server-ca.pem"
+certificate = "tls/operation.pem"
+key = "tls/operation.key"
+
+[profiles.gateway.operation.credential]
+file = "/run/secrets/weaver-operation-token"
+#+end_src
+
+Without =client_secret=, the exchange sends the configured public client ID.
+With it, client authentication uses form-encoded HTTP Basic credentials.
+An optional =exchange.actor= supplies =token_type=, a trusted =expires_at=
+bound and a =token= environment/private-file reference. Supported actor type
+URIs are =access_token=, =jwt= and =id_token= under the RFC token-type namespace.
+The STS validates the actor; the SDK forwards it only to the bound STS and caps
+the child to the configured actor lifetime. Every configured secret environment
+reference is included in =credential_environment()= for tool exclusion.
+
+The request uses the acquired access token as its subject, requests a Bearer
+access token for one audience, resource and exact scope set, and verifies the
+issued-token kind, usage type, scope and explicit lifetime. Missing response
+scope retains the requested set as allowed by the protocol. Unsupported issued
+token kinds, reflected credentials, refresh-token output and ambiguous results
+deny activation. See [[https://www.rfc-editor.org/rfc/rfc8693.html][RFC 8693]].
+
+The identity record also persists the child and a pre-POST uncertainty marker.
+Four callers share one exchange. Cancellation or an unknown result cannot
+repeat that POST after restart with the same parent. New parent authorization
+clears the barrier. Known child expiry permits ordinary renewal. Child lifetime
+is capped by the subject and configured actor bounds. The prepared operation
+certificate/key, root, server name and bearer digest also bind the record.
+Fresh acquisition reads no files or metadata. Exchange completes before the
+RPC and never runs while polling its response.
+
+The operation interceptor sends its existing Bearer identity. The exchanged
+credential goes in =weaver-provider-oauth= and must differ from that bearer.
+The server verifies the mTLS operation peer and still requires an independently
+signed, source-published grant for the exact token digest, peer, audience and
+scope. Its opaque delegated-token contract accepts 32–256 graphic ASCII bytes;
+the configured STS must issue compatible tokens. No STS response publishes a
+grant. A source revocation during an upstream wait blocks subsequent response
+release through the existing ledger checks.
+
+The local integration exercises the actual issuer, STS, TLS operation listener,
+source publication and provider transport. It proves successful invocation
+after signed approval and denies unapproved credentials, wrong peers, a correct peer with a wrong operation bearer, and release
+after grant revocation. Its independent review signer is a controlled fixture,
+not a claim of a SPEC semantic proof. Production still needs registered OAuth
+clients, an approved STS, correctly bounded actor credentials and a trusted
+grant publisher. Local acceptance does not require live provider credentials.
+
+** Authentication qualification plan
+
+| Step | Deliverable | Acceptance |
+|------+-------------+------------|
+| A1 | Shared public-client authorization, device flow, private store, refresh and logout | OAuth lifecycle Snake Oil group, Rust properties and Quint model |
+| A2 | OpenAI dynamic registration, issued-client persistence, ID-token and nonce verification, required inference scopes | Local registration/JWKS issuer, wrong account/issuer/audience/nonce controls and restart |
+| A3 | Copilot device credential followed by Copilot API-token exchange | Two-stage issuer fixture, endpoint binding, expiry and one shared refresh |
+| A4 | Registered OIDC, RFC 8693 and operation gRPC integration implemented | Separate identities, bound exchange, independent signed approval, real invocation and revocation during upstream wait |
+| A5 | Integrated regression and reference coverage reconciliation | Existing CI suites with fixed seeds and bounded local workloads |
+
+A1 through A5 are implemented and locally qualified through the entries below.
+This is scoped local acceptance; remote CI and production registrations remain
+separate. OpenAI's current open-source sign-in contract uses dynamic registration,
+per-account issued client IDs and ID-token verification. Its registered
+application flow is specified in the
+[[https://developers.openai.com/siwc/token-sharing-open-source/sign-in][official OpenAI registration and sign-in documentation]].
+The common protocol implementation reuses
+[[https://docs.rs/oauth2/5.0.0/oauth2/][oauth2-rs 5.0]] with the existing reqwest transport.
+
+#+begin_src sh
+cargo test --release -p weaver-llm --locked --offline
+cargo test --release -p weaver-server --lib --test delegated_operation --locked --offline
+quint test dev/proofs/quint/OAuthCredentials.qnt --main OAuthCredentials --seed 293
+quint run dev/proofs/quint/OAuthCredentials.qnt --main OAuthCredentials --invariant safety --max-samples 1000 --max-steps 60 --seed 293 --verbosity 0
+quint test dev/proofs/quint/OpenAiLogin.qnt --main OpenAiLogin --seed 293
+quint run dev/proofs/quint/OpenAiLogin.qnt --main OpenAiLogin --invariant safety --max-samples 1000 --max-steps 60 --seed 293 --verbosity 0
+quint test dev/proofs/quint/CopilotCredentials.qnt --main CopilotCredentials --seed 293
+quint run dev/proofs/quint/CopilotCredentials.qnt --main CopilotCredentials --invariant safety --max-samples 1000 --max-steps 60 --seed 293 --verbosity 0
+quint test dev/proofs/quint/RegisteredOidc.qnt --main RegisteredOidc --seed 293
+quint run dev/proofs/quint/RegisteredOidc.qnt --main RegisteredOidc --invariant safety --max-samples 1000 --max-steps 60 --seed 293 --verbosity 0
+quint test dev/proofs/quint/DelegatedExchange.qnt --main DelegatedExchange --seed 293
+quint run dev/proofs/quint/DelegatedExchange.qnt --main DelegatedExchange --invariant safety --max-samples 1000 --max-steps 60 --seed 293 --verbosity 0
+#+end_src
+
+The SysML requirements =OAuthCredentialLifecycle=, =OpenAiIdentityBinding=
+and =CopilotCredentialSeparation=, plus =RegisteredOidcIdentity= and =DelegatedTokenExchange=,
+trace to the Rust owner, native fixtures, properties and Quint scenarios in
+=dev/sysml/runtime-trace.json=. =OAuthLoginCut= and =OAuthActivationReceipt=
+describe the generation, account and original deadline binding; they do not add
+another persistence format. Quint keeps historical activation witnesses so a
+later clock tick cannot conceal a late activation or account replacement.
+
+| Layer | Fixed workload | Coverage |
+|-------+----------------+----------|
+| Rust properties | Fixed seed 293; 17 groups, 64 cases each | Persisted time-window restoration, token and refresh time bounds, child lifetime caps, exact scopes and issued kind, header injection, client, subject, nonce, audience and API base substitution |
+| Four-worker issuer fixtures | Five-second watchdog per test; one-second HTTP deadline; two-second login budget | Actual grant forms and PKCE, signed identity, JSON/SSE, shared refresh, restart, cancellation and local/remote logout |
+| OAuthCredentials Quint | Fixed seed 293; 1000 samples of at most 60 steps | Uncertain grants, consumed-code replay, refresh serialization, expiry and stale rejection |
+| OpenAiLogin Quint | Fixed seed 293; 1000 samples of at most 60 steps | Registration, identity, account retention, original deadline and late revocation; explicit unsafe negative controls |
+| CopilotCredentials Quint | Fixed seed 293; 1000 samples of at most 60 steps | Separate parent and API authority, consuming refresh versus reusable GET, restart, expiry and credential-leak negative controls |
+| RegisteredOidc Quint | Fixed seed 293; 1000 samples of at most 60 steps | Fixed registration, resource, selected account, deadline and consumed-code recovery; reuses the shared pure identity predicate |
+| DelegatedExchange Quint | Fixed seed 293; 1000 samples of at most 60 steps | Unknown exchange, cached child, distinct peer/operation identity, independent publication and current final release |
+
+These finite models and sampled traces check the declared abstraction; they
+are not an exhaustive proof of the Rust implementation or external IO atomicity.
+All five models run through the existing CI plan. Rust properties run in the normal
+client Cargo tests, with no separate test runner or cold dependency install.

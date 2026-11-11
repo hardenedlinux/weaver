@@ -24,6 +24,12 @@ pub(crate) type Client = pb::gateway_client::GatewayClient<InterceptedService<Ch
 #[derive(Clone)]
 pub(crate) struct Bearer(MetadataValue<Ascii>);
 
+impl Bearer {
+    pub(crate) fn new(token: MetadataValue<Ascii>) -> Self {
+        Self(token)
+    }
+}
+
 impl Interceptor for Bearer {
     fn call(&mut self, mut request: Request<()>) -> std::result::Result<Request<()>, Status> {
         request

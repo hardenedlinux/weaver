@@ -4,17 +4,23 @@
 
 //! Direct, asynchronous model calls with caller-selected endpoints.
 mod client;
+mod config;
 mod embeddings;
 mod error;
+mod files;
 mod images;
+pub mod oauth;
+mod operation;
 mod protocol;
 mod responses;
 mod stream;
 
-pub use client::{Client, Endpoint, EventStream};
+pub use client::{Authentication, Client, Endpoint, EventStream};
+pub use config::{Configuration, PreparedProfile};
 pub use embeddings::{EmbeddingInput, EmbeddingRequest, EmbeddingUsage, Embeddings};
 pub use error::Error;
 pub use images::{ImageInput, ImageMediaType};
+pub use operation::PreparedOperation;
 pub use protocol::{
     Completion, CompletionChoice, Message, Options, Protocol, Request, ResponseFormat, Role, Tool,
     ToolCall, ToolChoice, Usage,

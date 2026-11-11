@@ -98,6 +98,8 @@ impl TurnStream {
             return Ok(None);
         };
         loop {
+            // Buffered control frames can be ready without polling Tokio I/O.
+            tokio::task::consume_budget().await;
             match self.framing.next()? {
                 Some(Frame::Event(event)) => {
                     if let Some(event) = self.decoder.accept(&event.data)? {

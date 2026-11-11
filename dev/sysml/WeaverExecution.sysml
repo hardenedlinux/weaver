@@ -1341,4 +1341,256 @@ package WeaverExecution {
         connection boundedWrite connect executor.provider to provider.request;
     }
     part targetDeployment : ExecutionAuthorityDeployment;
+    requirement def HarnessModelConnection {
+        doc /* An embedded Coding Harness calls its configured provider directly
+           through the weaver-llm Rust package. OpenAI Chat Completions,
+           OpenAI Responses and Anthropic Messages carry text, function calls
+           and tool results. Responses replays provider output, including
+           encrypted reasoning items, from caller-owned history with store off.
+           The Harness owns tool execution, local permissions and conversation. */
+        doc /* The client reuses a pooled HTTP connection and polls upstream
+           on the caller's Tokio runtime. Its standard Stream is polled by
+           the caller and creates no additional task or queue. SSE delivery applies
+           backpressure. A deadline and cumulative response byte budget bound
+           the exchange. Dropping the stream releases the exchange. */
+        doc /* Text and tool argument deltas precede provider finish and
+           terminal events. A truncated or failed exchange cannot complete
+           the turn. The Harness waits for terminal success before executing
+           tools. Credentials bind to the configured TLS or loopback endpoint;
+           redirects and implicit retries are disabled. */
+        doc /* weaver-llm is the independent client package. Server authorization
+           with Cedar, shared budgets, ledger, Scheme and Kubernetes belong to
+           the Server composition and its feature graph. */
+    }
+    requirement def HarnessTransportQualification {
+        doc /* Provider compatibility uses HTTP with JSON requests and SSE
+           responses. The embedded Harness consumes an in-process pull stream.
+           Governed Server calls use the ProviderRpc contract. Qualify the
+           two paths against their own delivery and cancellation boundaries. */
+        doc /* Use bounded loopback fixtures. For HTTP/1.1, observe the peer's
+           blocked write while the consumer is paused, then verify ordered
+           resume and terminal completion. For HTTP/2, pause one response on
+           a shared connection and verify both the stalled stream's progress
+           after resume and the sibling stream's progress during the pause.
+           Qualify cancellation and byte limits separately from flow control. */
+    }
+    requirement def HarnessConnectionConfiguration {
+        doc /* The downstream weaver.toml selects a connection profile
+           and references credential material supplied by the deployment or
+           Harness. It binds the protocol, destination and model before any
+           request. Source publication settings retain their separate owner. */
+        doc /* Direct provider credentials and governed operation credentials
+           have different issuers and audiences. The direct client uses the
+           provider credential at the bound provider URL. Governed calls must
+           authenticate with the operation ingress identity and rejoin the
+           current authorization before release. */
+        doc /* Qualify missing credentials, invalid endpoints, peer identity
+           and role substitution, log redaction, rotation and revocation.
+           Snake Oil fixtures use local issuers and synthetic credentials. */
+        doc /* A trusted profile selects one secret reference per credential.
+           Validate its destination before resolving the reference and deny
+           credential forwarding to a redirected or substituted destination.
+           Configuration parsing and credential resolution run outside stream
+           polling. Activate rotation for new calls by replacing the prepared
+           profile. Governed in-flight release uses current authorization. */
+        doc /* weaver-llm Configuration loads an explicitly trusted profile file
+           through bounded Tokio file IO. prepare resolves only the selected
+           environment or private regular-file credential. PreparedProfile
+           retains an immutable endpoint, model, secret and shared HTTP pool.
+           Its complete and stream_turn methods use the existing client codecs.
+           Tool process builders remove all credential_environment names.
+           Secret mounts require a separate tool filesystem boundary. */
+        doc /* The client TOML contract accepts direct profiles for OpenAI Chat
+           Completions, OpenAI Responses and Anthropic Messages. Governed gRPC
+           and interactive login use their deployment identity paths;
+           unsupported kinds fail before network IO. Four-worker configuration
+           integration tests qualify errors, redirect isolation, immutable
+           prepared inputs, explicit rotation and tool environments. */
+        doc /* Authentication attachment is independent of acquisition.
+           Provider-default attachment preserves OpenAI Bearer, Anthropic API
+           keys and recognized Anthropic OAuth Bearer tokens. Explicit Bearer
+           attachment supports opaque access tokens at a configured endpoint.
+           The sender emits exactly one credential header. Supplier browser
+           login, refresh, gateway OIDC and RFC 8693 exchange require their own
+           lifecycle qualification against the corresponding reference feature. */
+    }
+    requirement def OAuthCredentialLifecycle {
+        doc /* Trusted configuration binds authorization, device and token
+           endpoints, client identity, resource, scopes, model destination and
+           the private credential store. OAuth acquisition uses the existing
+           bounded HTTP transport with redirects and automatic retries disabled.
+           Authorization codes bind a fresh state and S256 PKCE verifier.
+           OIDC supplier adapters additionally validate issuer, signature,
+           audience, nonce and account identity before activation. */
+        doc /* A prepared credential owner serializes token refresh. It durably
+           records uncertainty before consuming a refresh token or one-time code.
+           Cancellation, transport failure or restart cannot replay that grant.
+           Successful rotation atomically replaces access token, refresh token,
+           granted scopes and expiry. A store has one process owner. Logout
+           advances the generation and prevents late login results from becoming
+           active. Expired, revoked, wrongly scoped or wrongly bound tokens deny
+           new requests. Existing streams retain their transport cancellation
+           boundary and Server output retains its current release guard. */
+        doc /* Quint OAuthCredentials models generation, pending grants,
+           cancellation, restart, expiry and stale completion. Rust properties
+           exercise binding and credential state, and four-worker Snake Oil
+           fixtures exercise the actual protocol and concurrent callers.
+           Restoring the private record preserves issuance, expiry and refresh
+           boundaries; nonpositive persisted windows cannot activate. */
+    }
+    requirement def OpenAiIdentityBinding {
+        doc /* OpenAI browser authorization uses dynamic registration with a
+           stable persisted host UUID and a fresh state, nonce and S256 PKCE.
+           The callback's issued client ID is persisted before code exchange.
+           Subsequent sign-in and refresh use that issued ID. Reauthorization
+           cannot replace a selected registration's client ID or verified subject.
+           ID tokens are verified against the configured issuer's discovery and
+           JWKS, with fixed RS256, audience, expiry, issued-at, nonce and authorized
+           party checks. Granted inference scopes are checked independently. */
+        doc /* One original login deadline includes the grant POST, discovery,
+           JWKS verification and durable activation. Individual HTTP deadlines
+           do not extend that login budget. Local logout durably clears tokens
+           before remote revocation; an unconfirmed remote result is reported
+           explicitly and cannot restore credentials. A late revocation reply
+           cannot clear a later login. */
+        doc /* Each protected account record retains its registration and host
+           association through logout and restart. Identity hints are sent only
+           to the bound authorization endpoint. Model calls use the existing
+           Responses codec and an endpoint within the configured resource.
+           JWT verification and metadata IO occur in credential preparation and
+           rotation, outside stream polling. Quint OpenAiLogin and Rust properties
+           qualify substitution boundaries, with a local RSA/JWKS issuer testing
+           the actual registered-client and model call path. */
+    }
+    item def OAuthLoginCut {
+        attribute generation : Integer;
+        attribute issuedClientId : String;
+        attribute selectedSubject : String;
+        attribute hostIdentity : String;
+        attribute callbackNonce : String;
+        attribute startedAtMillis : Integer;
+        attribute deadlineMillis : Integer;
+        assert constraint { generation >= 0 }
+        assert constraint { deadlineMillis > startedAtMillis }
+        doc /* This is credential-owner state. Nonce and identity hints never
+           become model inputs or tool environment. A callback retains this cut
+           through validation; it cannot select a replacement account. */
+    }
+    requirement def CopilotCredentialSeparation {
+        doc /* GitHub device authorization is a consuming grant. Its successful
+           parent credential is persisted in the existing private record before
+           a non-consuming Copilot API-token GET. Parent credentials have their
+           own issuance and optional server expiry; absent expiry is not replaced
+           with an invented lifetime. Expiring parents use their own rotating
+           refresh credential and expiry when supplied. Parent refresh reuses
+           the durable uncertain-grant barrier and single-flight owner; a lost
+           reply or cancellation cannot replay the consumed refresh. An expired
+           parent without a current refresh credential requires login. */
+        doc /* The owner serializes API lease exchange and honors both absolute
+           expiry and refresh_in. A transient or cancelled GET leaves the durable
+           parent for a later explicit call, never a repeated device grant.
+           Parent 401/403 clears both stages. Model 401 clears only the matching
+           API lease and never automatically replays the model call. Local logout
+           clears both stages and fences late attempts. */
+        doc /* Only the API lease reaches the model endpoint. A returned API base
+           must equal the configured base, which bounds the prepared endpoint.
+           User-agent and integration headers identify the Weaver client.
+           HTTP-200 device errors are normalized for the shared RFC 8628 engine;
+           mixed success/error is terminal. Redirects stay disabled. Network and
+           store work happen before turn streaming, outside body polling. */
+    }
+    requirement def RegisteredOidcIdentity {
+        doc /* A configured public client discovers authorization, token and
+           JWKS endpoints from one exact issuer. Registration is fixed before
+           browser login; dynamic supplier registration cannot substitute for it.
+           The existing owner binds state, nonce, PKCE, original deadline,
+           resource and exact granted scopes. ID tokens require RS256, issuer,
+           audience, authorized party, time and selected-subject validation. */
+        doc /* The verified account, private record and current refresh token
+           survive restart. Logout removes usable credentials and identity hints,
+           retaining the selected account binding. Remote revocation is explicit.
+           Acquisition is not a Gateway operation permit. The independent mTLS,
+           operation credential, published delegation and final ledger release
+           checks remain required for governed use. */
+    }
+    requirement def DelegatedTokenExchange {
+        doc /* An explicitly configured operation resource exchanges only a
+           verified parent access token through RFC 8693. The trusted profile
+           binds STS URL, client authentication, optional actor, audience,
+           resource and exact scopes. Actor and client secrets use the existing
+           environment/private-file mechanism and never enter tool environments.
+           Preparation binds their digests, not their plaintext, to the record. */
+        doc /* Reuse the identity owner, private record and refresh gate. Persist
+           exchange uncertainty before POST; cancellation, ambiguous response or
+           restart cannot repeat that exchange with the same parent. Known
+           successful expiry may renew normally. Only a Bearer access-token
+           result activates. Expiry cannot exceed the subject or actor lifetime.
+           A changed parent, logout or unknown grant clears its child cache. */
+        doc /* Exchanged bytes are an additional operation credential. They do
+           not authenticate the operation mTLS peer, replace its bearer, publish
+           an approved grant or bypass Cedar/ledger checks at final release.
+           Retain the existing signed provider-grant and source-publication
+           contracts; no JWT bearer WIF response is relabelled RFC 8693.
+           Native operation tests reject a correct certificate paired with a
+           wrong operation bearer before provider egress. */
+    }
+    part def GovernedOperationClient {
+        doc /* The prepared TOML profile supplies one immutable TLS trust root,
+           server name, operation certificate/key and sensitive operation bearer.
+           Their digest binds the shared delegated credential record. Tokio owns
+           the HTTP and gRPC pools; caller runtimes own their lifetimes. */
+        doc /* Acquire the additional credential before the provider RPC starts.
+           The existing operation bearer interceptor and mTLS connection remain
+           independent. Expose operation execution only; signed grant publication
+           stays on the authenticated source lane. No credential exchange or
+           configuration parsing occurs while polling the returned response. */
+        requirement delegatedIdentity : DelegatedTokenExchange;
+        requirement oidcIdentity : RegisteredOidcIdentity;
+    }
+    item def CopilotCredentialCut {
+        attribute generation : Integer;
+        attribute configuredApiBase : String;
+        attribute parentIssuedAt : Integer;
+        attribute parentHasExpiry : Boolean;
+        attribute parentExpiresAt : Integer;
+        attribute leaseIssuedAt : Integer;
+        attribute leaseExpiresAt : Integer;
+        attribute leaseRefreshAt : Integer;
+        attribute sendAt : Integer;
+        assert constraint { generation >= 0 }
+        assert constraint { sendAt >= parentIssuedAt and sendAt >= leaseIssuedAt }
+        assert constraint { not parentHasExpiry or sendAt < parentExpiresAt }
+        assert constraint { sendAt < leaseExpiresAt and sendAt < leaseRefreshAt }
+        doc /* This is an abstract send witness. Secrets remain in the existing
+           Rust private credential record, not in SysML, source facts or tools. */
+    }
+    item def OAuthActivationReceipt {
+        item cut : OAuthLoginCut;
+        attribute activatedAtMillis : Integer;
+        attribute issuerVerified : Boolean;
+        attribute signatureVerified : Boolean;
+        attribute audienceVerified : Boolean;
+        attribute nonceVerified : Boolean;
+        attribute subjectVerified : Boolean;
+        attribute scopesVerified : Boolean;
+        assert constraint { activatedAtMillis >= cut.startedAtMillis }
+        assert constraint { activatedAtMillis < cut.deadlineMillis }
+        assert constraint { issuerVerified and signatureVerified and audienceVerified }
+        assert constraint { nonceVerified and subjectVerified and scopesVerified }
+        doc /* A logical activation witness, not another persistent receipt
+           format. Rust commits the existing private credential record; Quint
+           retains historical witnesses to check deadline and identity binding. */
+    }
+    part def EmbeddedModelClient {
+        doc /* Shared HTTP pool and provider codecs run in the Harness process.
+           Per-turn response and tool assembly belong to the stream handle. */
+        requirement modelConnection : HarnessModelConnection;
+        requirement transportQualification : HarnessTransportQualification;
+        requirement connectionConfiguration : HarnessConnectionConfiguration;
+        requirement oauthLifecycle : OAuthCredentialLifecycle;
+        requirement openAiIdentity : OpenAiIdentityBinding;
+        requirement copilotCredentials : CopilotCredentialSeparation;
+        requirement registeredOidc : RegisteredOidcIdentity;
+        requirement delegatedExchange : DelegatedTokenExchange;
+    }
 }

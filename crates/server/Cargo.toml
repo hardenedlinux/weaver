@@ -13,6 +13,7 @@ weaver-governance.workspace = true
 weaver-ledger.workspace = true
 weaver-broker.workspace = true
 weaver-telemetry.workspace = true
+weaver-llm = { path = "../llm" }
 tokio.workspace = true
 tokio-util.workspace = true
 sha2.workspace = true
@@ -44,6 +45,13 @@ governance-qualification = ["scheme-program", "weaver-governance/scheme-qualific
 [build-dependencies]
 tonic-prost-build.workspace = true
 [dev-dependencies]
+base64 = "0.22"
+jsonwebtoken = { version = "11.1.0", default-features = false, features = ["aws_lc_rs"] }
+rsa = "0.9.10"
+rand = "0.8"
+tokio-rustls.workspace = true
+url = "2"
+oauth2 = { version = "5.0.0", default-features = false }
 weaver-broker = { workspace = true, features = ["test-loopback"] }
 ring.workspace = true
 weaver-ledger = { workspace = true, features = ["commit-observer"] }
@@ -57,6 +65,10 @@ gerbil-scheme-sys.workspace = true
 [[bench]]
 name = "gateway"
 harness = false
+[[test]]
+name = "delegated_operation"
+path = "tests/integration/delegated_operation.rs"
+
 [[test]]
 name = "governance_owner"
 path = "tests/integration/governance_owner.rs"

@@ -661,6 +661,7 @@ package WeaverProject {
         part 'docs/50-59-research-program/59-provider-rpc/59.64-governance-capture-ownership.svg' : File;
 
         part 'crates/contracts' : RustPackage;
+        part 'crates/llm' : RustPackage;
         part 'crates/governance' : RustPackage {
             doc /* ApprovedProducer/ProducerCatalog seal a bounded local set of
                names, immutable original artifacts and source identity/epoch

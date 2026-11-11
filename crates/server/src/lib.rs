@@ -22,6 +22,7 @@ mod grpc_output;
 mod grpc_provider;
 #[cfg(feature = "kubernetes")]
 mod kubernetes;
+mod operation_client;
 pub mod pb;
 #[cfg(all(test, unix))]
 #[path = "../tests/unit/provider_commit.rs"]
@@ -49,6 +50,7 @@ pub use governance_owner::GovernanceWorker;
 pub use grpc::serve_grpc;
 pub use grpc::serve_grpc_with_runtime;
 pub use grpc_config::run_from_env;
+pub use operation_client::OperationClient;
 pub use rpc_security::{GrpcConfig, GrpcListeners, RpcSecurity};
 pub use runtime::RuntimeOwner as ServiceRuntime;
 pub use source_identity::certificate_identity as source_certificate_identity;

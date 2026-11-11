@@ -12,11 +12,24 @@ use reqwest::{
 };
 use std::time::Duration;
 
+/// How a configured credential is attached to the provider request.
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq, serde::Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum Authentication {
+    /// OpenAI uses Bearer. Anthropic uses x-api-key, except for sk-ant-oat tokens.
+    #[default]
+    ProviderDefault,
+    /// Send an OAuth access token or another explicitly configured Bearer token.
+    Bearer,
+}
+
 /// Exact upstream URL and its wire protocol.
 #[derive(Clone)]
 pub struct Endpoint {
-    url: Url,
+    pub(crate) url: Url,
     protocol: Protocol,
+    authentication: Authentication,
+    pub(crate) headers: reqwest::header::HeaderMap,
 }
 
 impl Endpoint {
@@ -41,14 +54,25 @@ impl Endpoint {
         {
             return Err(Error::Configuration);
         }
-        Ok(Self { url, protocol })
+        Ok(Self {
+            url,
+            protocol,
+            authentication: Authentication::default(),
+            headers: reqwest::header::HeaderMap::new(),
+        })
+    }
+
+    /// Bind an explicit authentication scheme without changing the wire protocol.
+    pub fn with_authentication(mut self, authentication: Authentication) -> Self {
+        self.authentication = authentication;
+        self
     }
 }
 
 /// A reusable client with one connection pool and a fixed exchange budget.
 #[derive(Clone, Debug)]
 pub struct Client {
-    http: reqwest::Client,
+    pub(crate) http: reqwest::Client,
     response_limit: usize,
 }
 
@@ -61,11 +85,7 @@ impl Client {
         if timeout.is_zero() || response_limit == 0 {
             return Err(Error::Configuration);
         }
-        let http = reqwest::Client::builder()
-            .timeout(timeout)
-            .redirect(reqwest::redirect::Policy::none())
-            .retry(reqwest::retry::never())
-            .no_proxy()
+        let http = client_builder(timeout)
             .build()
             .map_err(|_| Error::Configuration)?;
         Ok(Self {
@@ -186,6 +206,7 @@ impl Client {
         let mut builder = self
             .http
             .post(endpoint.url.clone())
+            .headers(endpoint.headers.clone())
             .header(CONTENT_TYPE, "application/json")
             .header(
                 "accept",
@@ -196,17 +217,19 @@ impl Client {
                 },
             )
             .body(body);
-        let (name, value) = match endpoint.protocol {
-            Protocol::OpenAi | Protocol::OpenAiResponses => {
-                (AUTHORIZATION, format!("Bearer {credential}"))
-            }
-            Protocol::Anthropic => {
-                builder = builder.header("anthropic-version", "2023-06-01");
+        if endpoint.protocol == Protocol::Anthropic {
+            builder = builder.header("anthropic-version", "2023-06-01");
+        }
+        let (name, value) = match (endpoint.protocol, endpoint.authentication) {
+            (Protocol::Anthropic, Authentication::ProviderDefault)
+                if !credential.starts_with("sk-ant-oat") =>
+            {
                 (
                     reqwest::header::HeaderName::from_static("x-api-key"),
                     credential.to_owned(),
                 )
             }
+            _ => (AUTHORIZATION, format!("Bearer {credential}")),
         };
         let mut header = HeaderValue::from_str(&value).map_err(|_| Error::Configuration)?;
         header.set_sensitive(true);
@@ -310,3 +333,15 @@ async fn provider_failure(response: Response, response_limit: usize) -> Error {
     }
     Error::Status(status)
 }
+
+fn client_builder(timeout: Duration) -> reqwest::ClientBuilder {
+    reqwest::Client::builder()
+        .timeout(timeout)
+        .redirect(reqwest::redirect::Policy::none())
+        .retry(reqwest::retry::never())
+        .no_proxy()
+}
+
+#[cfg(test)]
+#[path = "../tests/unit/http2.rs"]
+mod http2;

@@ -154,6 +154,10 @@ checked through the in-process OpenSysML SDK.
 The root =Cargo.toml= manages Rust crates; =go/go.mod= owns the single Go module.
 =gerbil.pkg=, =build.ss= and =init.ss= define the Scheme package.
 
+Coding Harnesses can embed [[file:crates/llm/README.org][weaver-llm]].
+Its =weaver.toml= profiles bind the provider, model and credentials before
+starting a pooled HTTP/SSE request.
+
 * Development
 
 Use the toolchains and prerequisites described in the
