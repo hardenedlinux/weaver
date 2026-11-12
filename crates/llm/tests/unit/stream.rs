@@ -75,3 +75,33 @@ fn responses_terminal_must_match_streamed_text() {
         Ok(Some(TurnEvent::Finished { .. }))
     ));
 }
+
+#[test]
+fn oversized_sse_event_reports_the_provider_byte_limit() {
+    let wire = b"data: 012345678901234567890123456789\n\n";
+    for split in 0..=wire.len() {
+        let mut frame = SseFraming::new(16);
+        frame.push(&wire[..split]);
+        match frame.next() {
+            Err(error) => assert!(
+                matches!(error, crate::Error::Limit),
+                "split {split}: {error:?}"
+            ),
+            Ok(None) => {
+                frame.push(&wire[split..]);
+                assert!(
+                    matches!(frame.next(), Err(crate::Error::Limit)),
+                    "split {split}"
+                );
+            }
+            Ok(Some(_)) => panic!("oversized SSE event admitted at split {split}"),
+        }
+    }
+    let mut valid = SseFraming::new(128);
+    valid.push(wire);
+    assert!(matches!(valid.next(), Ok(Some(Frame::Event(_)))));
+
+    let mut malformed = SseFraming::new(128);
+    malformed.push(b"event: \xff\ndata: x\n\n");
+    assert!(matches!(malformed.next(), Err(crate::Error::Response)));
+}

@@ -8,7 +8,7 @@ use bytes::{Bytes, BytesMut};
 use serde_json::Value;
 use sha2::{Digest, Sha256};
 use std::collections::{BTreeMap, HashSet};
-use tokio_sse_codec::{Frame, SseDecoder};
+use tokio_sse_codec::{Frame, SseDecodeError, SseDecoder};
 use tokio_util::codec::Decoder as _;
 
 use crate::{Error, EventStream, Protocol, ToolCall, Usage};
@@ -180,7 +180,10 @@ impl SseFraming {
     fn next(&mut self) -> Result<Option<Frame<Bytes>>, Error> {
         self.codec
             .decode(&mut self.pending)
-            .map_err(|_| Error::Response)
+            .map_err(|error| match error {
+                SseDecodeError::ExceededSizeLimit(_) => Error::Limit,
+                _ => Error::Response,
+            })
     }
 }
 
