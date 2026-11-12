@@ -62,6 +62,49 @@ impl Endpoint {
         })
     }
 
+    /// Fingerprint the configured destination and credential for continuation binding.
+    ///
+    /// The fingerprint is sensitive: it permits guessing low-entropy credentials.
+    /// It is not proof of server identity or account identity. Credential rotation
+    /// changes it, and callers must not silently rebind existing continuations.
+    pub fn continuation_binding(&self, credential: &str) -> [u8; 32] {
+        use sha2::{Digest, Sha256};
+        let mut hasher = Sha256::new();
+        fn part(hasher: &mut Sha256, value: &[u8]) {
+            hasher.update((value.len() as u64).to_be_bytes());
+            hasher.update(value);
+        }
+        part(&mut hasher, b"weaver.continuation.destination.v1");
+        part(&mut hasher, self.url.as_str().as_bytes());
+        part(
+            &mut hasher,
+            match self.protocol {
+                Protocol::OpenAi => b"openai-chat",
+                Protocol::OpenAiResponses => b"openai-responses",
+                Protocol::Anthropic => b"anthropic-messages",
+            },
+        );
+        part(
+            &mut hasher,
+            match self.authentication {
+                Authentication::ProviderDefault => b"provider-default",
+                Authentication::Bearer => b"bearer",
+            },
+        );
+        part(&mut hasher, credential.as_bytes());
+        let mut headers: Vec<_> = self
+            .headers
+            .iter()
+            .map(|(name, value)| (name.as_str(), value.as_bytes()))
+            .collect();
+        headers.sort_by(|left, right| left.0.cmp(right.0));
+        for (name, value) in headers {
+            part(&mut hasher, name.as_bytes());
+            part(&mut hasher, value);
+        }
+        hasher.finalize().into()
+    }
+
     /// Bind an explicit authentication scheme without changing the wire protocol.
     pub fn with_authentication(mut self, authentication: Authentication) -> Self {
         self.authentication = authentication;

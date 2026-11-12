@@ -1,0 +1,28 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+# Anthropic-compatible route. Missing fields use ANTHROPIC_MODEL,
+# ANTHROPIC_BASE_URL and ANTHROPIC_API_KEY at profile preparation.
+[profiles.anthropic]
+kind = "direct"
+protocol = "anthropic-messages"
+timeout_ms = 120000
+max_response_bytes = 8388608
+
+# Explicit settings take precedence over environment variables.
+# model = "deepseek-v4-pro[1m]"
+# endpoint = "https://your-provider.example/v1/messages"
+# [profiles.anthropic.credential]
+# env = "ANTHROPIC_API_KEY"
+
+# Optional OpenAI profile:
+# [profiles.openai]
+# kind = "direct"
+# protocol = "openai-responses"
+# endpoint = "https://api.openai.com/v1/responses"
+# model = "gpt-4.1-mini"
+# timeout_ms = 120000
+# max_response_bytes = 8388608
+# [profiles.openai.credential]
+# env = "OPENAI_API_KEY"

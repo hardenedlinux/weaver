@@ -19,6 +19,26 @@ use crate::{
 #[serde(transparent)]
 pub struct ResponsesOutput(Vec<Value>);
 
+impl ResponsesOutput {
+    /// Check the provider's completed text against the exact streamed text.
+    pub(crate) fn matches_streamed_text(&self, expected: &[u8]) -> Result<bool, Error> {
+        use sha2::{Digest, Sha256};
+        let mut digest = Sha256::new();
+        for item in &self.0 {
+            if item["type"] != "message" {
+                continue;
+            }
+            for part in item["content"].as_array().ok_or(Error::Response)? {
+                if part["type"] != "output_text" {
+                    return Err(Error::Response);
+                }
+                digest.update(part["text"].as_str().ok_or(Error::Response)?.as_bytes());
+            }
+        }
+        Ok(digest.finalize().as_slice() == expected)
+    }
+}
+
 impl fmt::Debug for ResponsesOutput {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         formatter
@@ -26,6 +46,58 @@ impl fmt::Debug for ResponsesOutput {
             .field("item_count", &self.0.len())
             .finish()
     }
+}
+
+/// Ensure caller-visible assistant state still matches the provider output
+/// that will be replayed. This prevents stale or tampered text/calls from
+/// being silently replaced by a different opaque continuation.
+pub(crate) fn validate_continuation(message: &Message) -> Result<(), Error> {
+    let Some(output) = &message.responses_output else {
+        return Ok(());
+    };
+    if message.role != Role::Assistant || !message.images.is_empty() || message.name.is_some() {
+        return Err(Error::Request("invalid Responses continuation message"));
+    }
+    let mut text = String::new();
+    let mut calls = Vec::new();
+    let mut ids = HashSet::new();
+    for item in &output.0 {
+        match item["type"].as_str() {
+            Some("message") => append_text(item, &mut text)
+                .map_err(|_| Error::Request("invalid Responses continuation"))?,
+            Some("reasoning") => {}
+            Some("function_call") => {
+                let id = string(&item["call_id"])
+                    .map_err(|_| Error::Request("invalid Responses continuation"))?;
+                if !ids.insert(id)
+                    || item["status"]
+                        .as_str()
+                        .is_some_and(|status| status != "completed")
+                {
+                    return Err(Error::Request("invalid Responses continuation"));
+                }
+                let name = string(&item["name"])
+                    .map_err(|_| Error::Request("invalid Responses continuation"))?;
+                let arguments = item["arguments"]
+                    .as_str()
+                    .and_then(|json| serde_json::from_str::<Value>(json).ok())
+                    .filter(Value::is_object)
+                    .ok_or(Error::Request("invalid Responses continuation"))?;
+                calls.push(ToolCall {
+                    id: id.into(),
+                    name: name.into(),
+                    arguments,
+                });
+            }
+            _ => return Err(Error::Request("invalid Responses continuation")),
+        }
+    }
+    if text != message.content || calls != message.tool_calls {
+        return Err(Error::Request(
+            "Responses continuation does not match assistant message",
+        ));
+    }
+    Ok(())
 }
 
 pub(crate) fn encode(
@@ -187,6 +259,7 @@ pub(crate) fn event(mut event: Value) -> Result<Option<TurnEvent>, Error> {
                 usage: final_response.usage,
                 tool_calls: final_response.calls,
                 responses_output: Some(ResponsesOutput(final_response.output)),
+                anthropic_output: None,
             }))
         }
         "response.failed" => {
@@ -287,6 +360,7 @@ pub(crate) fn complete(bytes: &[u8]) -> Result<Completion, Error> {
                 tool_call_id: None,
                 tool_calls: response.calls,
                 responses_output: Some(ResponsesOutput(response.output)),
+                anthropic_output: None,
             },
             finish_reason: Some(reason.into()),
         }],

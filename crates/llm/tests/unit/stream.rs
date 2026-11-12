@@ -26,3 +26,82 @@ fn sse_events_are_invariant_under_chunk_boundaries() -> Result<(), crate::Error>
     }
     Ok(())
 }
+
+#[test]
+fn responses_terminal_must_match_streamed_text() {
+    use super::{Decoder, TurnEvent};
+    use crate::Protocol;
+    use sha2::Digest;
+    use std::collections::BTreeMap;
+
+    fn decoder() -> Decoder {
+        Decoder {
+            protocol: Protocol::OpenAiResponses,
+            tools: BTreeMap::new(),
+            finish: None,
+            identity: None,
+            usage: None,
+            anthropic_started: false,
+            anthropic_block: None,
+            anthropic_output: BTreeMap::new(),
+            responses_text: sha2::Sha256::new(),
+        }
+    }
+    fn terminal(output: serde_json::Value) -> Vec<u8> {
+        serde_json::to_vec(&serde_json::json!({
+            "type": "response.completed",
+            "response": {"id": "response", "model": "gpt-fixture", "status": "completed", "output": output}
+        })).unwrap()
+    }
+    for output in [
+        serde_json::json!([]),
+        serde_json::json!([{"type": "message", "content": [{"type": "output_text", "text": "different"}]}]),
+    ] {
+        let mut turn = decoder();
+        assert!(matches!(
+            turn.accept(br#"{"type":"response.output_text.delta","delta":"shown"}"#),
+            Ok(Some(TurnEvent::Text(_)))
+        ));
+        assert!(turn.accept(&terminal(output)).is_err());
+    }
+    let mut turn = decoder();
+    turn.accept(br#"{"type":"response.output_text.delta","delta":"sho"}"#)
+        .unwrap();
+    turn.accept(br#"{"type":"response.output_text.delta","delta":"wn"}"#)
+        .unwrap();
+    let output = serde_json::json!([{"type": "message", "content": [{"type": "output_text", "text": "shown"}]}]);
+    assert!(matches!(
+        turn.accept(&terminal(output)),
+        Ok(Some(TurnEvent::Finished { .. }))
+    ));
+}
+
+#[test]
+fn oversized_sse_event_reports_the_provider_byte_limit() {
+    let wire = b"data: 012345678901234567890123456789\n\n";
+    for split in 0..=wire.len() {
+        let mut frame = SseFraming::new(16);
+        frame.push(&wire[..split]);
+        match frame.next() {
+            Err(error) => assert!(
+                matches!(error, crate::Error::Limit),
+                "split {split}: {error:?}"
+            ),
+            Ok(None) => {
+                frame.push(&wire[split..]);
+                assert!(
+                    matches!(frame.next(), Err(crate::Error::Limit)),
+                    "split {split}"
+                );
+            }
+            Ok(Some(_)) => panic!("oversized SSE event admitted at split {split}"),
+        }
+    }
+    let mut valid = SseFraming::new(128);
+    valid.push(wire);
+    assert!(matches!(valid.next(), Ok(Some(Frame::Event(_)))));
+
+    let mut malformed = SseFraming::new(128);
+    malformed.push(b"event: \xff\ndata: x\n\n");
+    assert!(matches!(malformed.next(), Err(crate::Error::Response)));
+}

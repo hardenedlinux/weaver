@@ -120,6 +120,7 @@ async fn open_turn(
         tool_call_id: None,
         tool_calls: Vec::new(),
         responses_output: None,
+        anthropic_output: None,
     }];
     Ok(client
         .stream_turn(
