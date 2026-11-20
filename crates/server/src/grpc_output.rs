@@ -104,7 +104,7 @@ pub(crate) fn take_admission_ledger() -> Option<[weaver_ledger::TransactionTimin
 /// Only Output constructs the packet. Other server owners cannot inspect or
 /// modify its bytes before the deciding receiver consumes the proof.
 pub(crate) struct InertFrame {
-    frame: Option<pb::ProviderFrame>,
+    frame: Option<crate::delivery_payload::Payload>,
     proof: weaver_ledger::DeliveryFrame,
 }
 impl InertFrame {
@@ -112,7 +112,7 @@ impl InertFrame {
         &mut self,
         cursor: &mut weaver_ledger::DeliveryCursor,
         cx: &std::task::Context<'_>,
-    ) -> std::task::Poll<Result<pb::ProviderFrame>> {
+    ) -> std::task::Poll<Result<crate::delivery_payload::Payload>> {
         cursor.poll(&self.proof, cx, &mut self.frame)
     }
     #[cfg(all(test, unix))]
@@ -129,6 +129,7 @@ pub(crate) const DELIVERY_QUEUE_CAPACITY: usize = 2;
 type Sender = mpsc::Sender<std::result::Result<InertFrame, tonic::Status>>;
 
 pub(crate) struct Output {
+    pub projection: Option<weaver_broker::ProviderSseEncoder>,
     pub telemetry: std::sync::Arc<weaver_telemetry::Metrics>,
     pub sender: Sender,
     pub pending: Option<weaver_ledger::DeliveryProducer>,
@@ -138,7 +139,7 @@ pub(crate) struct Output {
     pub runtime: tokio::runtime::Handle,
 }
 pub(crate) struct PreparedFrame {
-    frame: pb::ProviderFrame,
+    frame: crate::delivery_payload::Payload,
     first: u64,
     rows: usize,
 }
@@ -248,16 +249,31 @@ impl ProviderOutput for Output {
     ) -> Result<PreparedFrame> {
         #[cfg(test)]
         let started = std::time::Instant::now();
-        let frame = encode_frame(Frame {
-            target: &route.target,
-            model,
-            events,
-            encoding: match format {
-                "arrow" => pb::Encoding::ArrowIpc,
-                "protobuf" => pb::Encoding::Protobuf,
-                _ => return Err(Error::Invalid("response encoding")),
-            },
-        })?;
+        if events.is_empty() || events.len() > 32 {
+            return Err(Error::Invalid("response frame bounds"));
+        }
+        let frame = if format == "sse" {
+            crate::delivery_payload::Payload::Sse(
+                self.projection
+                    .as_mut()
+                    .ok_or(Error::Invalid("SSE projection missing"))?
+                    .prepare(route, model, events)?,
+            )
+        } else {
+            if self.projection.is_some() {
+                return Err(Error::Invalid("response projection rebound"));
+            }
+            crate::delivery_payload::Payload::Rpc(encode_frame(Frame {
+                target: &route.target,
+                model,
+                events,
+                encoding: match format {
+                    "arrow" => pb::Encoding::ArrowIpc,
+                    "protobuf" => pb::Encoding::Protobuf,
+                    _ => return Err(Error::Invalid("response encoding")),
+                },
+            })?)
+        };
         #[cfg(test)]
         ENCODING_NANOS.with(|total| total.set(total.get() + started.elapsed().as_nanos()));
         Ok(PreparedFrame {
@@ -341,6 +357,10 @@ impl ProviderOutput for Output {
 #[cfg(all(test, unix))]
 #[path = "../tests/unit/output_backpressure.rs"]
 pub(crate) mod backpressure_tests;
+
+#[cfg(all(test, unix))]
+#[path = "../tests/unit/http_delivery.rs"]
+mod http_delivery_tests;
 
 pub(crate) async fn observe_reservation<F: std::future::Future>(future: F) -> F::Output {
     #[cfg(all(test, unix))]

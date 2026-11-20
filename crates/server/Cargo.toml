@@ -28,6 +28,9 @@ serde_json.workspace = true
 serde-saphyr = "0.0.29"
 toml = { version = "1.1.8", default-features = false, features = ["parse", "serde"] }
 tokio-stream.workspace = true
+bytes.workspace = true
+http-body-util.workspace = true
+hyper.workspace = true
 rustls.workspace = true
 ring.workspace = true
 zeroize = "1.9"
@@ -48,6 +51,7 @@ governance-qualification = ["scheme-program", "weaver-governance/scheme-qualific
 [build-dependencies]
 tonic-prost-build.workspace = true
 [dev-dependencies]
+reqwest.workspace = true
 base64 = "0.22"
 jsonwebtoken = { version = "11.1.0", default-features = false, features = ["aws_lc_rs"] }
 rsa = "0.9.10"

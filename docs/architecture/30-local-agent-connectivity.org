@@ -1049,10 +1049,98 @@ module rather than load it twice. Four Go plan/source controls also passed.
 None of these controls is a substitute for runtime behavior or a production
 release/remote CI result.
 
-The remaining production join is the thin compatibility listener and its
+The next section implements the thin compatibility listener and its
 authenticated Session/model-catalog admission on this same runtime. Its body
-receiver must reuse the existing delivery cursor/cancellation/receipt custody;
-the prepared bytes must not be re-encoded after the deciding guard. Linked
+receiver reuses the existing delivery cursor/cancellation/receipt custody;
+the prepared bytes are not re-encoded after the deciding guard. Linked
 Scheme qualification, the three Go-driven process/receiver fixtures, public
 Magpie interoperability, full HTTP restart/backpressure and complete Magpie
 write-set restoration remain open work in the unchanged GOAL.
+
+* HTTP operation capability on the existing runtime
+
+The optional compatibility listener now mounts a thin =v1= service using the
+existing Tonic/Tokio transport. =GET /v1/models= observes the deployment-selected
+Session through the existing source lane. The three POST paths select the
+corresponding source protocol and submit unchanged bounded JSON through Session
+admission. Rust independently verifies the admitted profile again before
+starting the existing broker worker. This does not grant the HTTP adapter
+source authority or introduce another routing or persistence owner.
+
+An optional section in =weaver.toml= enables the local capability:
+
+#+begin_src toml
+[gateway.http]
+listen = "127.0.0.1:18082"
+session = "session-a"
+token_env = "WEAVER_HTTP_TOKEN"
+#+end_src
+
+=WEAVER_CONFIG= can select another configuration file. The token is read from
+the named environment variable, hashed, and kept separate from RPC operation,
+source and provider credentials. It must have 16--256 ASCII non-whitespace
+characters. Bearer authentication and Anthropic's =x-api-key= are alternative
+forms; duplicate or combined forms fail. Loopback binding is required. A
+delegated-OAuth deployment is rejected until its workload-peer binding has an
+explicit HTTP design. The existing mTLS RPC profile is not downgraded.
+
+Source policy must explicitly allow the =sse= output format and the selected
+rich protocol. The legacy text policy remains unchanged and cannot implicitly
+authorize this output. The HTTP capability does not rewrite Cedar permissions.
+
+The response keeps the same bounded queue and =DeliveryCursor=. =Output.prepare=
+uses one =ProviderSseEncoder= per response before its deciding release guard;
+=SseStream= transfers those prepared bytes only after the existing receiver
+guard. An execution failure terminates the body with an error, without a forged
+success marker. The HTTP listener joins the same shutdown and owner drain as
+both RPC listeners. Request bodies have the source bound and a five-second
+read deadline; the existing one-second delivery credit deadline is unchanged.
+
+The native HTTP fixture qualifies two exact-wire turns over a real TLS provider,
+four concurrent wrong-credential controls, ambiguous headers, protocol/source
+endpoint rejection, changed retry bytes, fact withdrawal and ABA catalog
+versions. Its advisory selector is explicitly a test double, not linked Scheme
+evidence. The credential property uses 64 cases and seed 293. Fragmented UTF-8
+body checks use every split point at and above the byte limit. =HttpOperation=
+has eight named checks and a finite campaign of 256 traces, 30 steps and four
+simulator threads under seed 293. Its cached-catalog and credential-union
+strategies both produce actual invariant violations; the strong campaign does
+not establish universal safety or runtime scheduling progress.
+
+Real linked Scheme, all three protocols through the HTTP listener, HTTP restart
+and slow-reader integration, stock Magpie and complete Magpie write-set restore
+remain acceptance work. They are not inferred from the Chat HTTP fixture or
+from existing broker/SDK protocol coverage.
+
+The final native library entry passed 142 active tests with three existing
+Go-driven process fixtures ignored, using four test workers and the unchanged
+120-second command watchdog. This acceptance run is not a request latency
+measurement.
+The new direct SSE receiver test uses actual committed delivery receipts:
+current authority transfers bytes, a policy replacement after enqueue rejects
+them before body transfer, and cancellation produces no success marker. Every
+case retains the original hold. The fixture drives the original producer's
+receipt-refresh handshake and waits for consumption before closing a successful
+receiver. An earlier fixture that withheld that handshake hit its fixed
+three-second bound; its failed result was not counted as acceptance.
+
+Clippy passes for all targets of the five touched server/SDK/contracts/ledger/
+governance crates under the same local HTTP/Arrow feature profile, without lint
+suppression. The earlier library-only Clippy result had missed test-only
+=unwrap= calls. The remote structured Rust receipt confirms that same failure
+in the preceding publication. Their replacements preserve the assertions and
+add fixture context. An expanded local Clippy invocation first reached its
+90-second watchdog without a result; the raw diagnostic invocation exposed
+the test errors rather than counting that timeout as success.
+
+The strict architecture, Workflow and source-currentness entry and four Go
+plan/inventory controls passed. An earlier model reference used a nonexistent
+=ChallengeStatus::pending= enumerator; strict OpenSysML analysis rejected it.
+The declared status now uses the existing =refutedHypothesis= value for the
+actual competing-design counterexamples. No new status or verifier was added.
+
+Remote Scheme qualification remains separate: both platform jobs for the
+preceding publication fail while checking out the transitive =gerbil-parser=
+revision =e5fdd53b33c376dabb927f79b047e4d5cae9f7ac=, with =unable to read tree=.
+They do not reach Scheme compilation. The local native evidence uses the
+existing installed dependencies and does not close that package-provenance gap.

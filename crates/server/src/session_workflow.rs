@@ -178,6 +178,7 @@ impl Gateway {
                     step.admission,
                     None,
                     StreamSettings {
+                        projection: None,
                         arrow: false,
                         batch_rows: 1,
                         catalog: step.catalog,

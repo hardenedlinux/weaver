@@ -46,9 +46,11 @@ impl ResponseStream {
         }
     }
 }
-impl Stream for ResponseStream {
-    type Item = Result<pb::ProviderFrame, Status>;
-    fn poll_next(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
+impl ResponseStream {
+    pub(crate) fn poll_payload(
+        self: Pin<&mut Self>,
+        cx: &mut Context<'_>,
+    ) -> Poll<Option<Result<crate::delivery_payload::Payload, Status>>> {
         let this = self.get_mut();
         if this.ended || this.shutdown.as_mut().poll(cx).is_ready() || this.cancelled.is_cancelled()
         {
@@ -103,6 +105,24 @@ impl Stream for ResponseStream {
                 )))))
             }
         }
+    }
+}
+impl Stream for ResponseStream {
+    type Item = Result<pb::ProviderFrame, Status>;
+    fn poll_next(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
+        let this = self.get_mut();
+        Pin::new(&mut *this).poll_payload(cx).map(|next| {
+            next.map(|result| {
+                result.and_then(|payload| match payload {
+                    crate::delivery_payload::Payload::Rpc(frame) => Ok(frame),
+                    crate::delivery_payload::Payload::Sse(_) => {
+                        this.cancelled.cancel();
+                        this.ended = true;
+                        Err(Status::internal("response transport mismatch"))
+                    }
+                })
+            })
+        })
     }
 }
 impl Drop for ResponseStream {

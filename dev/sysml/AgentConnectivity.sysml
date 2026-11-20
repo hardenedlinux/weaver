@@ -342,12 +342,12 @@ package AgentConnectivity {
         port result : GatewayResultPort;
         port backendCatalog : ~CatalogPort;
         port catalog : CatalogPort;
-        doc /* Planned thin compatibility ingress for stock Magpie. Reuse public
+        doc /* Thin compatibility ingress for stock Magpie. Reuse public
            contracts and existing execution owners; Go internal packages are not
            cross-project extension APIs. Admit bounded turns through source/ledger
            owners, never invent source authority in this adapter. Reuse transport-
            independent SDK codecs while keeping guarded broker send ownership.
-           Rich tool/Responses contracts require versioned extension; legacy text
+           Rich tool/Responses contracts use the versioned extension; legacy text
            profiles stay closed. No per-SSE VM call or post-commit mutation.
            Reuse the SDK TurnEncoder for bounded standard-protocol projection.
            Its bytes belong in native output preparation before the deciding
@@ -357,7 +357,20 @@ package AgentConnectivity {
            guard (at most four ranges / 32 rows), rather than encode remaining
            frames after commit. A rejected or cancelled response must discard
            that state without replay. Whole terminal handoff must
-           finish before existing Workflow/Session advancement. */
+           finish before existing Workflow/Session advancement.
+           Optional gateway.http in weaver.toml selects one source Session and
+           a distinct token environment reference. Bind loopback only; never
+           reuse RPC operation/source or provider credentials. Bearer and
+           x-api-key are alternative closed forms, not cumulative authority.
+           Reject delegated OAuth deployments until their peer binding has an
+           explicit HTTP design. No implicit downgrade from the mTLS RPC realm.
+           GET /v1/models reads current source facts on the existing lane.
+           POST paths must match the profile both before and after admission;
+           preserve the exact bounded JSON bytes and optional idempotency key.
+           SseStream polls the same DeliveryCursor as the RPC receiver before
+           handing prepared bytes to HTTP. Errors abort without a fabricated
+           success terminator. Native HTTP tests use a labeled advisory double;
+           real linked Scheme and stock Magpie remain separate obligations. */
     }
     part def WeaverSemanticControl {
         port proposed : ~PlanPort;
@@ -413,7 +426,7 @@ package AgentConnectivity {
            Parsing/commitment/encoding precede the deciding transaction; guards
            read compact parent provenance. Existing broker/ledger claims reserve
            exposure. source_owner/session.rs connects the two existing lanes;
-           actual linked Scheme qualification and public HTTP remain pending. */
+           actual linked Scheme and full public HTTP qualification remain pending. */
     }
     part def WeaverBackend {
         port request : ~GatewayCallPort;
@@ -565,6 +578,19 @@ package AgentConnectivity {
         doc /* Future executable scenario contract, not an existing test result. */
     }
     part acceptance {
+        part httpOperationChallenge : WeaverProject::DesignProcess::DesignChallenge {
+            attribute :>> hypothesis = "A model catalog read and any locally accepted bearer are sufficient to start a standard HTTP stream";
+            attribute :>> assumptions = "Loopback capability selects one source Session/principal; source lane and ledger decide current authority; HTTP is not a source or RPC identity";
+            attribute :>> disturbance = "Ambiguous credential headers, other-realm tokens, protocol replacement between catalog and admission, withdrawal, duplicate keys and streamed body overflow";
+            attribute :>> independentOracle = "Accepted transport path equals the admitted source protocol, one dedicated credential authenticates before source observation, exact body reaches upstream, and native DeliveryCursor precedes every body transfer";
+            attribute :>> progressObligation = "Under output demand and current authority the bounded stream completes once; cancellation and shutdown drain the same runtime owners; no synthetic terminal on failed delivery";
+            attribute :>> explorationBound = "64 fixed-seed credential property cases, all byte split points for bounded JSON, four native workers; original 120-second library watchdog, no cold dependency installation";
+            attribute :>> modelCampaign = "HttpOperation.cachedCatalogStep and credentialUnionStep versus step under safe; source/ledger and PreparedSnapshot models retain their existing scope";
+            attribute :>> runtimeProperty = "http_uses_current_source_catalog_exact_turns_and_one_native_delivery_owner; http_request::credential_realms_do_not_union";
+            attribute :>> runtimeBudget = "120 seconds total for native library entry; five-second HTTP body/read bounds and existing one-second delivery credit deadline";
+            attribute :>> consequence = "Use a distinct HTTP capability, current Session admission and pre-guard projection on the existing output owner; catalog data never grants source or send authority";
+            attribute :>> status = WeaverProject::DesignProcess::ChallengeStatus::refutedHypothesis;
+        }
         part preparedSnapshotChallenge : WeaverProject::DesignProcess::DesignChallenge {
             attribute :>> hypothesis = "Preparing only the first frame before the deciding guard suffices for a stateful streaming projection";
             attribute :>> assumptions = "Existing ledger decides current authority; output preparation performs no I/O; bounded snapshots have at most four ranges and 32 rows";

@@ -68,6 +68,8 @@ func Plan(goBinary string) []Stage {
 		{"stream-coordinates-tests", "quint", []string{"test", "dev/proofs/quint/StreamCoordinates.qnt", "--main", "StreamCoordinates", "--seed", "293"}},
 		{"stream-projection-tests", "quint", []string{"test", "dev/proofs/quint/StreamProjection.qnt", "--main", "StreamProjection", "--seed", "293"}},
 		{"prepared-snapshot-tests", "quint", []string{"test", "dev/proofs/quint/PreparedSnapshot.qnt", "--main", "PreparedSnapshot", "--seed", "293"}},
+		{"http-operation-tests", "quint", []string{"test", "dev/proofs/quint/HttpOperation.qnt", "--main", "HttpOperation", "--seed", "293"}},
+		{"http-operation-safety", "quint", []string{"run", "dev/proofs/quint/HttpOperation.qnt", "--main", "HttpOperation", "--invariant", "safe", "--n-threads", "4", "--max-samples", "256", "--max-steps", "30", "--seed", "293"}},
 		{"prepared-snapshot-safety", "quint", []string{"run", "dev/proofs/quint/PreparedSnapshot.qnt", "--main", "PreparedSnapshot", "--invariant", "safe", "--n-threads", "4", "--max-samples", "256", "--max-steps", "30", "--seed", "293"}},
 		{"stream-projection-safety", "quint", []string{"run", "dev/proofs/quint/StreamProjection.qnt", "--main", "StreamProjection", "--invariant", "safe", "--n-threads", "4", "--max-samples", "256", "--max-steps", "30", "--seed", "293"}},
 		{"stream-coordinates-safety", "quint", []string{"run", "dev/proofs/quint/StreamCoordinates.qnt", "--main", "StreamCoordinates", "--invariant", "safe", "--n-threads", "4", "--max-samples", "256", "--max-steps", "30", "--seed", "293"}},

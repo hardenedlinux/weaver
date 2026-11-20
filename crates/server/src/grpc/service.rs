@@ -74,11 +74,34 @@ pub async fn serve_grpc_with_runtime(
     runtime: RuntimeOwner,
     shutdown: impl std::future::Future<Output = ()> + Send + 'static,
 ) -> weaver_contracts::Result<()> {
+    serve_with_http(
+        crate::ServiceListeners {
+            rpc: listeners,
+            http: None,
+        },
+        settings,
+        runtime,
+        shutdown,
+    )
+    .await
+}
+/// Attach an optional loopback HTTP operation capability to the same native
+/// owners and drain. Source publication remains on the distinct mTLS listener.
+pub async fn serve_with_http(
+    listeners: crate::ServiceListeners,
+    settings: GrpcConfig,
+    runtime: RuntimeOwner,
+    shutdown: impl std::future::Future<Output = ()> + Send + 'static,
+) -> weaver_contracts::Result<()> {
+    let crate::ServiceListeners {
+        rpc: listeners,
+        http,
+    } = listeners;
     let _lifetime = runtime.shutdown_guard();
     let result = match validate_listeners(&listeners, &settings) {
         Ok(()) => {
             let _ = rustls::crypto::ring::default_provider().install_default();
-            serve_owned(listeners, settings, runtime.clone(), shutdown).await
+            serve_owned(listeners, settings, runtime.clone(), http, shutdown).await
         }
         Err(error) => Err(error),
     };
@@ -90,8 +113,17 @@ async fn serve_owned(
     listeners: GrpcListeners,
     settings: GrpcConfig,
     runtime: RuntimeOwner,
+    http: Option<(TcpListener, crate::HttpProfile)>,
     shutdown: impl Future<Output = ()> + Send + 'static,
 ) -> weaver_contracts::Result<()> {
+    if http.as_ref().is_some_and(|(_, profile)| {
+        settings.provider_oauth.is_some()
+            || profile.token_sha256 == settings.security.admin_sha256
+            || profile.token_sha256 == settings.owner.token_sha256
+            || profile.token_sha256 == [0; 32]
+    }) {
+        return Err(Error::Invalid("HTTP and RPC authority separation"));
+    }
     if runtime.session_wakeup().is_some() && settings.provider_oauth.is_some() {
         return Err(Error::Invalid(
             "automatic Session requires deployment provider credentials",
@@ -129,24 +161,37 @@ async fn serve_owned(
         source_worker.client.operation_resolver(),
     );
     let session = operation.clone();
+    let http_gateway = operation.clone();
+    let http = async move {
+        match http {
+            Some((listener, profile)) => {
+                crate::http_compat::serve(listener, http_gateway, profile).await
+            }
+            None => {
+                http_gateway.runtime.cancellation().await;
+                Ok(())
+            }
+        }
+    };
     let operation = serve_listener(
         listeners.operation,
         operation,
         settings.security.tls.clone(),
     );
     let source = serve_listener(listeners.source, source, settings.security.tls);
-    tokio::pin!(operation, source, shutdown);
+    tokio::pin!(operation, source, http, shutdown);
     let listeners = async {
         tokio::select! {
-            result = &mut operation => { runtime.request_shutdown(); result.and(source.await) },
-            result = &mut source => { runtime.request_shutdown(); result.and(operation.await) },
+            result = &mut operation => { runtime.request_shutdown(); let (source, http) = tokio::join!(source, http); result.and(source).and(http) },
+            result = &mut source => { runtime.request_shutdown(); let (operation, http) = tokio::join!(operation, http); result.and(operation).and(http) },
+            result = &mut http => { runtime.request_shutdown(); let (operation, source) = tokio::join!(operation, source); result.and(operation).and(source) },
             _ = &mut shutdown => {
                 crate::shutdown::trace("signal-observed");
                 runtime.request_shutdown();
                 crate::shutdown::trace("admission-closed");
-                let (operation, source) = tokio::join!(operation, source);
+                let (operation, source, http) = tokio::join!(operation, source, http);
                 crate::shutdown::trace("listeners-drained");
-                operation.and(source)
+                operation.and(source).and(http)
             },
         }
     };
@@ -316,3 +361,7 @@ impl Gateway {
 #[cfg(test)]
 #[path = "../../tests/unit/grpc_ingress.rs"]
 mod ingress_tests;
+
+#[cfg(test)]
+#[path = "../../tests/unit/http_compat.rs"]
+mod http_tests;
