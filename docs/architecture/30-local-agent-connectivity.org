@@ -1462,3 +1462,31 @@ its ordinary toolchain/locked dependencies and published SDK first, without
 installing the full Scheme package graph for this advisory-double consumer gate.
 The independent consumer job does not alter the existing Linux/macOS Scheme
 matrix. Local success does not establish the hosted job's eventual outcome.
+
+* Linked Scheme dependency migration
+
+The SDK dependency and setup action now use PR 18 revision
+=7c4dd3d8e3b6321113d1a752599ee7f40045c48a=. Its existing
+=gerbil-scheme-aot-build= crate remains the public archive owner, although its
+source moved under =build-support=. Weaver retains that API and explicitly
+bounds the complete compiler manifest to 1024 modules, matching the SDK's
+standard archive contract. Required and forbidden module checks still apply;
+the bound neither selects modules nor approves a different application.
+
+The follow-on Scheme source migration targets Lab PR 34 revision
+=5702335bf8a9f0c86e01c587e8ce97363774795d= and its own declared transitive
+dependencies. The new package namespaces are =tao3k/agentic-ai-lab= and
+=tao3k/yuanxu=. Schema identifiers and protocol strings retain their existing
+values. The root package still declares only Lab; its package manager owns
+Orgize, Parser, POO and gerbil-ascent resolution. Updating source checkouts is
+distinct from compiling them, and neither establishes linked runtime
+qualification. The existing native Session, withdrawal, recovery and exit
+gates remain required before claiming real Scheme integration.
+
+The SDK archive adapter passes its four library tests, and the unchanged
+120-second, four-worker server/broker/LLM command passes 152 tests with four
+existing exclusions. This is not linked Scheme evidence. The first targeted
+POO build in the migrated source graph stopped at its 120-second watchdog after
+arm64 =_memset= link errors from the configured C compiler. Do not promote that
+partial preparation, retry a whole cold install, or relax runtime gates to
+hide it; correct the native toolchain binding before resuming preparation.
