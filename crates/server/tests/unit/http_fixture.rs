@@ -155,6 +155,7 @@ pub struct ProviderPeer {
     pub requests: tokio::sync::mpsc::Receiver<String>,
     task: Option<tokio::task::JoinHandle<std::io::Result<()>>>,
     stop: tokio_util::sync::CancellationToken,
+    write_failed: Arc<tokio::sync::Notify>,
 }
 impl ProviderPeer {
     pub async fn finish(mut self) -> Result<std::io::Result<()>, tokio::task::JoinError> {
@@ -191,8 +192,11 @@ pub async fn provider(replies: Vec<String>) -> ProviderPeer {
     let (sender, receiver) = tokio::sync::mpsc::channel(4);
     let stop = tokio_util::sync::CancellationToken::new();
     let stopping = stop.clone();
+    let write_failed = Arc::new(tokio::sync::Notify::new());
+    let failed = write_failed.clone();
     let task = tokio::spawn(async move {
         let mut replies = replies.into_iter();
+        let mut transmission = Ok(());
         loop {
             let (socket, _) = tokio::select! {
                 biased;
@@ -249,19 +253,29 @@ pub async fn provider(replies: Vec<String>) -> ProviderPeer {
                 )
                 .await
                 .expect("observation");
-            stream.write_all(b"HTTP/1.1 200 OK\r\nContent-Type: text/event-stream\r\nTransfer-Encoding: chunked\r\nConnection: close\r\n\r\n").await?;
-            let width = if reply.len() <= 65_536 { 7 } else { 16_384 };
-            for chunk in reply.as_bytes().chunks(width) {
-                stream
-                    .write_all(format!("{:x}\r\n", chunk.len()).as_bytes())
-                    .await?;
-                stream.write_all(chunk).await?;
-                stream.write_all(b"\r\n").await?;
+            let sent: std::io::Result<()> = async {
+                stream.write_all(b"HTTP/1.1 200 OK\r\nContent-Type: text/event-stream\r\nTransfer-Encoding: chunked\r\nConnection: close\r\n\r\n").await?;
+                let width = if reply.len() <= 65_536 { 7 } else { 16_384 };
+                for chunk in reply.as_bytes().chunks(width) {
+                    stream
+                        .write_all(format!("{:x}\r\n", chunk.len()).as_bytes())
+                        .await?;
+                    stream.write_all(chunk).await?;
+                    stream.write_all(b"\r\n").await?;
+                }
+                stream.write_all(b"0\r\n\r\n").await?;
+                stream.shutdown().await
+            }.await;
+            // Keep observing the listening socket after a cancelled response.
+            // Otherwise a second send could disappear behind this I/O error.
+            if transmission.is_ok() {
+                transmission = sent;
             }
-            stream.write_all(b"0\r\n\r\n").await?;
-            stream.shutdown().await?;
+            if transmission.is_err() {
+                failed.notify_one();
+            }
         }
-        Ok(())
+        transmission
     });
     ProviderPeer {
         endpoint,
@@ -269,6 +283,7 @@ pub async fn provider(replies: Vec<String>) -> ProviderPeer {
         requests: receiver,
         task: Some(task),
         stop,
+        write_failed,
     }
 }
 
@@ -340,4 +355,54 @@ async fn upstream_oracle_detects_a_connection_even_when_stop_is_ready() {
         "wrong failure: {message}"
     );
     drop(socket);
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+async fn upstream_oracle_keeps_observing_after_a_response_disconnect() {
+    tokio::time::timeout(std::time::Duration::from_secs(3), async {
+        let peer = provider(vec!["x".repeat(8 * 1024 * 1024)]).await;
+        let client = reqwest::Client::builder()
+            .no_proxy()
+            .add_root_certificate(
+                reqwest::Certificate::from_pem(peer.root.as_bytes()).expect("root"),
+            )
+            .build()
+            .expect("client");
+        let response = client
+            .post(&peer.endpoint)
+            .bearer_auth("provider-secret")
+            .body("{}")
+            .send()
+            .await
+            .expect("actual TLS request");
+        assert_eq!(response.status(), 200);
+        drop(response);
+        drop(client);
+        peer.write_failed.notified().await;
+        let port = reqwest::Url::parse(&peer.endpoint)
+            .expect("URL")
+            .port()
+            .expect("port");
+        let socket = tokio::net::TcpStream::connect(("127.0.0.1", port))
+            .await
+            .expect("oracle must still be listening after the response error");
+        let error = peer
+            .finish()
+            .await
+            .expect_err("extra send cannot hide behind a write error");
+        assert!(error.is_panic());
+        let panic = error.into_panic();
+        let text = panic
+            .downcast_ref::<String>()
+            .map(String::as_str)
+            .or_else(|| panic.downcast_ref::<&str>().copied())
+            .expect("panic text");
+        assert!(
+            text.contains("unexpected extra upstream connection"),
+            "wrong failure: {text}"
+        );
+        drop(socket);
+    })
+    .await
+    .expect("bounded disconnect oracle");
 }

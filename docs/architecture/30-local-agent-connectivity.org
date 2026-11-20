@@ -1246,3 +1246,32 @@ observations and 120-second library watchdog remain unchanged.
 The source advisory is explicitly a test double. These results do not establish
 linked Scheme execution, process-crash recovery, stock Magpie integration or
 request latency percentiles.
+
+* Upstream observation after cancellation
+
+The TLS fixture must outlive a response write failure. Previously, cancellation
+could make it return immediately: later forbidden sends would reach a closed
+port instead of the extra-connection assertion. The fixture now retains the
+first transmission error while continuing to accept and reject extra requests.
+Its final result still exposes that error; normal replies must complete fully.
+
+The independent negative control sends a real TLS request, drops its response,
+waits for the server write to fail, then opens a forbidden TCP connection. It
+requires the extra-connection panic rather than accepting any error. Restoring
+only early return after the write error made this test fail with connection
+refused, demonstrating that the observer lifetime is part of the oracle.
+The control uses a temporary local peer, four Tokio workers, a three-second
+observation bound and the original library-command watchdog.
+
+The restored candidate passed all 146 active SDK/broker/server library tests
+(three existing process fixtures ignored), server library/test Clippy and the
+architecture/Workflow/source-currentness gates. No timeout or budget changed.
+
+A separate bounded attempt to execute the existing Scheme source suite reused
+the installed dependencies and performed no installation. It did not qualify
+the selector: expansion of the local Yuanxu =module-prelude.ssi= failed with
+=Bad syntax; no matching export= against =:clan/poo/object=. The test launcher
+returned zero despite reporting =ERROR MODULE=, so its exit status is explicitly
+not counted as a pass. Repairing that package artifact boundary and exercising
+the linked runtime remain open; the advisory-double HTTP tests cannot replace
+them.
