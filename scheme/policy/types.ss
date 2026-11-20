@@ -4,7 +4,7 @@
 
 ;;; This Contract describes an inert Rust preflight, not an authorization grant.
 (import (only-in :clan/poo/object .cc)
-        (only-in :clan/poo/mop Function Bool)
+        (only-in :clan/poo/type Function Bool)
         (only-in :clan/poo/type Record String)
         (only-in "./source-bytes.ss" bounded-cedar-source?))
 (import (only-in :clan/poo/type List)

@@ -9,7 +9,7 @@
                  agentic-ai-lab-session-lineage agentic-ai-lab-session-placement)
         (only-in :tao3k/yuanxu/modules/funflow/control-plane/flow flow-compose external-flow flow-steps flow-then flow-branch flow-output-contract Fun String PairValue)
         (only-in :clan/poo/object .o .get .ref .slot? object<-alist)
-        (only-in :clan/poo/mop validate)
+        (only-in :clan/poo/type validate)
         (only-in :gerbil-ascent/program/scheme-language relational-program)
         (only-in :gerbil-ascent/program/session gerbil-ascent-open-session gerbil-ascent-session-run
                  gerbil-ascent-session-replace-sources!)
@@ -51,22 +51,22 @@
                (<= (.get facts body_bytes) (.get scope max_body_bytes))))
         (def rows (if eligible? '((0)) '()))
         (unless (equal? rows previous)
-          (def result
-            (if session
-              (gerbil-ascent-session-replace-sources! session (list (cons 'request rows)))
-              (let* ((routes (map list (iota (min 8 (.get scope route_count)))))
-                     (program (relational-program
-                       (relation route (id) routes)
-                       (relation request (ticket) rows)
-                       (relation eligible (id) '())
-                       (rule (eligible ?id) (route ?id) (request ?ticket))
-                       (limits 24 8 32))))
-                (set! session (gerbil-ascent-open-session program))
-                (gerbil-ascent-session-run session))))
-          (unless (eq? (.ref result 'finished) #t)
-            (error "Session route derivation incomplete"))
-          (set! selected (list-sort < (map car ((.ref result 'rows-of) 'eligible))))
-          (set! previous rows))
+          (let (result
+                (if session
+                  (gerbil-ascent-session-replace-sources! session (list (cons 'request rows)))
+                  (let* ((routes (map list (iota (min 8 (.get scope route_count)))))
+                         (program (relational-program
+                           (relation route (id) routes)
+                           (relation request (ticket) rows)
+                           (relation eligible (id) '())
+                           (rule (eligible ?id) (route ?id) (request ?ticket))
+                           (limits 24 8 32))))
+                    (set! session (gerbil-ascent-open-session program))
+                    (gerbil-ascent-session-run session))))
+            (unless (eq? (.ref result 'finished) #t)
+              (error "Session route derivation incomplete"))
+            (set! selected (list-sort < (map car ((.ref result 'rows-of) 'eligible))))
+            (set! previous rows)))
         (.o scope_commitment: binding route_indices: selected)))))
 
 (def (workflow-session dag? choice?)

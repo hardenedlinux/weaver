@@ -5,7 +5,8 @@
 ;;; Canonical data capture is independent of caller-owned mutable strings/lists.
 ;;; It grants neither producer authenticity nor authority over external facts.
 (import (only-in :clan/poo/object .o .ref .all-slots)
-        (only-in :clan/poo/mop json<- validate)
+        (only-in :clan/poo/type validate)
+        (only-in :clan/poo/mop json<-)
         (only-in :std/encoding/json json->string JSONWriteOptions)
         (only-in :tao3k/agentic-ai-lab/modules/governance/types agentic-ai-lab-governance-profile?
                  agentic-ai-lab-governance-source?)

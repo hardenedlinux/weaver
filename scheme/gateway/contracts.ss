@@ -4,7 +4,7 @@
 
 ;;; Exact POO records for the shared wire contract. Go and Rust revalidate it.
 (import (only-in :clan/poo/object .cc)
-        (only-in :clan/poo/mop MonomorphicObject)
+        (only-in :clan/poo/type MonomorphicObject)
         (only-in :clan/poo/type Record List String)
         (only-in :clan/poo/number UIntN)
         (only-in :hardenedlinux/weaver/scheme/policy/types CedarPolicySource CedarSchemaSource))

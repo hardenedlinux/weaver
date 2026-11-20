@@ -1473,8 +1473,8 @@ bounds the complete compiler manifest to 1024 modules, matching the SDK's
 standard archive contract. Required and forbidden module checks still apply;
 the bound neither selects modules nor approves a different application.
 
-The follow-on Scheme source migration targets Lab PR 34 revision
-=5702335bf8a9f0c86e01c587e8ce97363774795d= and its own declared transitive
+The Scheme source migration targets Lab PR 34 revision
+=32af9e083db414288826a6fc60ea9aee362a53b5= and its own declared transitive
 dependencies. The new package namespaces are =tao3k/agentic-ai-lab= and
 =tao3k/yuanxu=. Schema identifiers and protocol strings retain their existing
 values. The root package still declares only Lab; its package manager owns
@@ -1502,10 +1502,13 @@ the package manager cleans that package's products before rebuilding it with
 four workers and the separate eight-minute compile budget. Other dependency
 products and source checkouts remain available.
 
-The new Yuanxu no longer exports =call-with-init-build-spec=. Weaver uses the
-init export's admitted =std-make-spec= directly in =std/build-script= and lets
-the projection own source registration and compiler contexts. It does not
-reconstruct those responsibilities in the builder. Cargo still observes source
+The new Yuanxu no longer exports =call-with-init-build-spec=. Read-only
+specification uses the admitted =std-make-spec= in =std/build-script=. Native
+compile/clean use the init owner's =.compile-selection= and =.clean-selection=
+with standard =make=/=make-clean= callbacks. The owner supplies the cross-package
+source view, compiler input checks and output locks; a spec alone cannot serve
+foreign relative targets from Weaver's directory. No source view or load-path
+ordering is reconstructed in the builder. Cargo still observes source
 paths already read by that owner and does not introduce a second file inventory.
 
 After correcting host tool selection, the targeted POO, Yuanxu, Parser and ASCENT builds
@@ -1521,5 +1524,52 @@ The existing =scheme-qualification= Cargo graph now includes
 reuse and 64 fixed-seed fact/route cases with independently checked Rust scope
 commitments. Foreign principal/model and invalid scalar bounds must refuse
 without poisoning the next valid selection. This test uses the fixed linked
-Session export, has no advisory double and starts one VM. It remains a pending
-gate until the native image can build and this executable actually passes.
+Session export, has no advisory double and starts one VM. The first execution passes after adapting the property closure to Proptest's
+=Fn= requirement with an affine =RefCell= borrow; it still uses one VM, not
+one VM per generated input.
+
+The published Lab change exports =ModulesSource= from its existing modules
+window. Weaver selects it through =from:= and retains the Lab/Weaver mounts;
+retired =package:=/=rename:= windows are removed. Primitive type/validation
+imports use POO's =type= facade; serialization remains on its public MOP.
+The Prelude provides =.def=, and the standard =Build.defbuild-script.spec=
+projection replaces kind/roots and explicit duplicate Build registrations.
+Native imports compose the existing Governance/Policy objects instead of the
+retired requires/link injection protocol. Their typed operations and Rust's
+final authority checks remain in force. Contract tests explicitly refuse the
+retired publication fields.
+
+Weaver's original =./build.ss compile --debug= now exits naturally. The real
+=gerbil test -g -v 5 t/gateway-source-test.ss= executes and passes all 24 cases,
+including retained ASCENT facts, withdrawal/replacement, route fanout and
+foreign scope binding. This required correcting an illegal local definition
+in =unless= and two self-referential POO test input slots. A filtered call
+that selected zero suites is not evidence. These Scheme tests are separate
+from the Rust-linked =session_selector= executable.
+
+The latest Ubuntu preparation failure is now localized to Orgize importing
+=:gerbil-scheme-rust/scheme/runtime= without an SDK dependency in its package
+declaration. That differs from the local installed-interface failure. Fix
+that dependency at its package owner; do not add a Weaver installer or infer
+SDK pins in Go.
+
+The complete original =check-scheme= run is retained as FAIL. Its module
+build and source integration pass; the package suite reaches its original
+60-second timeout in the generated source-replacement property. A/B admission
+initially fails because its inventory assumes every standard Make target is a
+list, while native specs also contain strings. The inventory now admits only
+those two standard forms and retains the exact 40-target and isolation checks.
+All 474 generated C units and their objects complete in the first Rust image
+preparation, followed by a Rust property-closure compile error. After correcting
+that error, the same Cargo feature graph reuses the prepared objects and runs
+the actual linked selector test successfully (one test, 64 fixed-seed cases,
+0.31-second test execution). This is not whole-suite or latency qualification.
+
+After the Make-row reader fix, the A/B gate still refuses: both the default
+std-make-spec and an explicit selection of the same four modules declare
+31 targets, rather than the frozen 40. The absent nine are the Cedar object
+library and the Loop-engine/Session helper libraries from the original
+foreign-target inventory. Do not change the expectation to 31 or count the
+474-unit AOT closure as proving isolated B ownership. Audit their native Build
+projection versus prerequisite ownership before accepting cold A/B, hot B,
+clean isolation or B's own runtime products.

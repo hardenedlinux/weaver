@@ -5,7 +5,8 @@
 (import :std/test
         (only-in :std/error Error?)
         (only-in :clan/poo/object .o .get object-slots-set!)
-        (only-in :clan/poo/mop validate sexp<- TypeError?)
+        (only-in :clan/poo/type validate TypeError?)
+        (only-in :clan/poo/mop sexp<-)
         (only-in :std/list/list delete-duplicates/hash)
         (only-in "./fixtures/control-inputs.ss" control-inputs)
         (only-in ../scheme/gateway/contracts GatewayArtifact)

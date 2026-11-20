@@ -12,7 +12,7 @@
 (def (main)
   (unless (and (procedure? agentic-ai-lab-governance-profile?)
                (ormap (lambda (row)
-                        (equal? (car row) "agentic-ai-lab/modules/governance/interface~0"))
+                        (equal? (car row) "tao3k/agentic-ai-lab/modules/governance/interface~0"))
                       (list-modules))
                (.slot? hardenedlinux/weaver.init.exports 'Lab)
                (.slot? hardenedlinux/weaver.init.exports 'Weaver))
@@ -22,7 +22,7 @@
       (lambda () (.get hardenedlinux/weaver.init.exports Lab governance)) accounting?: #f))
   (unless (and (= (hash-ref first '(calls candidate-read) 0) 4)
                (= (hash-ref first '(calls scope-factory) 0) 1)
-               (= (hash-ref first '(calls (scope-factory agentic-ai-lab/modules/governance/interface)) 0) 1)
+               (= (hash-ref first '(calls (scope-factory tao3k/agentic-ai-lab/modules/governance/interface)) 0) 1)
                (= (hash-ref first '(calls (scope-factory hardenedlinux/weaver/scheme/governance/interface)) 0) 0))
     (error "first Lab scope demand constructed an unrelated or conflated owner"))
   (defvalues (again repeat)
@@ -59,9 +59,9 @@
                        (and (equal? (car row) id) (string-prefix? prefix (cdr row))))
                      (list-modules))
         (error "business runtime did not load its own selected product" id)))
-    '("agentic-ai-lab/modules/governance/interface~0"
-      "agentic-ai-lab/modules/governance/types~0"
-      "agentic-ai-lab/modules/authorization/providers/cedar/objects~0"
-      "agentic-ai-lab/modules/loop-engine/control/governor-core~0"
+    '("tao3k/agentic-ai-lab/modules/governance/interface~0"
+      "tao3k/agentic-ai-lab/modules/governance/types~0"
+      "tao3k/agentic-ai-lab/modules/authorization/providers/cedar/objects~0"
+      "tao3k/agentic-ai-lab/modules/loop-engine/control/governor-core~0"
       "hardenedlinux/weaver/scheme/policy/cedar-ffi~0"))
   (displayln "WEAVER-MODULE-USE-OK roots=Lab/Weaver same-leaf=distinct repeat=same governance=ready cedar=valid gateway=present products=own"))

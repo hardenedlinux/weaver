@@ -6,6 +6,7 @@ use proptest::{
     prop_assert, prop_assert_eq,
     test_runner::{Config, RngSeed, TestRunner},
 };
+use std::cell::RefCell;
 use weaver_contracts::{DomainBinding, ProviderSessionScope, PublicationKey};
 use weaver_governance::{
     Derivation, DerivationOutput, SchemeCompiler, SessionTurnFacts, SessionTurnInput,
@@ -82,6 +83,9 @@ fn linked_selector_preserves_warm_scope_rebind_and_fact_boundaries() {
             (0..value.scope.template.targets.len()).collect::<Vec<_>>()
         );
     }
+    // Proptest accepts Fn; interior borrowing keeps the same affine owner
+    // without constructing a VM per generated input or moving it to a worker.
+    let compiler = RefCell::new(compiler);
     let mut runner = TestRunner::new(Config {
         cases: 64,
         rng_seed: RngSeed::Fixed(293),
@@ -92,6 +96,7 @@ fn linked_selector_preserves_warm_scope_rebind_and_fact_boundaries() {
         .run(
             &(1usize..=8, 1u64..=32, 1u64..=4, 1u64..=1024),
             |(routes, tokens, messages, bytes)| {
+                let mut compiler = compiler.borrow_mut();
                 let mut value = input(routes);
                 value.facts.output_token_limit = tokens;
                 value.facts.message_count = messages;

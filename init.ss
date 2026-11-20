@@ -5,9 +5,9 @@
 ;;; Yuanxu owns discovery, selection, admission and generation currentness.
 (import :tao3k/yuanxu/module-system/selection/init-syntax)
 (yuanxu!
-  :load-modules "modules" package: "github.com/tao3k/agentic-ai-lab" mode: explicit rename: Lab
+  :load-modules (from: :tao3k/agentic-ai-lab/init ModulesSource) mode: explicit mount: Lab
   (governance)
-  :load-modules "./scheme" mode: explicit rename: Weaver
+  :load-modules "./scheme" mode: explicit mount: Weaver
   (governance)
   (policy)
   (gateway))

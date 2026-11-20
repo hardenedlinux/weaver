@@ -6,7 +6,8 @@
 (import :std/test
         (only-in :std/error Error? Error-message)
         (only-in :clan/poo/object .o .get .ref .slot? object-slots-set!)
-        (only-in :clan/poo/mop TypeError? validate sexp<-)
+        (only-in :clan/poo/type TypeError? validate)
+        (only-in :clan/poo/mop sexp<-)
         (only-in ../scheme/gateway/contracts GatewayArtifact)
         (only-in :tao3k/agentic-ai-lab/modules/governance/interface AgenticAILabGovernanceProfile. agentic-ai-lab-governance-source)
         (only-in :tao3k/agentic-ai-lab/modules/loop-engine/control/governor make-loop-governor)
@@ -60,29 +61,29 @@
   (test-suite "Stable source assessment projection"
     (test-case "retained Session selector replaces facts without recompiling a source"
       (def select (make-session-turn-selector))
-      (def scope (.o principal: "alice" models: '("model-a") max_output_tokens: 32
+      (def selector-scope (.o principal: "alice" models: '("model-a") max_output_tokens: 32
                     max_messages: 4 max_body_bytes: 1024 route_count: 3))
-      (def facts (.o principal: "alice" model: "model-a" output_token_limit: 32
+      (def turn-facts (.o principal: "alice" model: "model-a" output_token_limit: 32
                     message_count: 1 body_bytes: 100))
       (def key (make-string 64 #\a))
-      (check-equal? (.get (select (.o scope_commitment: key scope: scope facts: facts)) route_indices) '(0 1 2))
-      (check-equal? (.get (select (.o scope_commitment: key facts: facts)) route_indices) '(0 1 2))
-      (check-equal? (.get (select (.o scope_commitment: key facts: (.o (:: @ facts) model: "unapproved"))) route_indices) '())
-      (check-equal? (.get (select (.o scope_commitment: key facts: facts)) route_indices) '(0 1 2))
-      (check-equal? (.get (select (.o scope_commitment: key facts: (.o (:: @ facts) body_bytes: 1025))) route_indices) '())
-      (check-equal? (.get (select (.o scope_commitment: key facts: facts)) route_indices) '(0 1 2)))
+      (check-equal? (.get (select (.o scope_commitment: key scope: selector-scope facts: turn-facts)) route_indices) '(0 1 2))
+      (check-equal? (.get (select (.o scope_commitment: key facts: turn-facts)) route_indices) '(0 1 2))
+      (check-equal? (.get (select (.o scope_commitment: key facts: (.o (:: @ turn-facts) model: "unapproved"))) route_indices) '())
+      (check-equal? (.get (select (.o scope_commitment: key facts: turn-facts)) route_indices) '(0 1 2))
+      (check-equal? (.get (select (.o scope_commitment: key facts: (.o (:: @ turn-facts) body_bytes: 1025))) route_indices) '())
+      (check-equal? (.get (select (.o scope_commitment: key facts: turn-facts)) route_indices) '(0 1 2)))
     (test-case "Session selector refuses foreign bindings and bounds route fanout"
       (def select (make-session-turn-selector))
-      (def facts (.o principal: "alice" model: "model-a" output_token_limit: 32
+      (def turn-facts (.o principal: "alice" model: "model-a" output_token_limit: 32
                     message_count: 1 body_bytes: 100))
-      (def scope (.o principal: "alice" models: '("model-a") max_output_tokens: 32
+      (def selector-scope (.o principal: "alice" models: '("model-a") max_output_tokens: 32
                     max_messages: 4 max_body_bytes: 1024 route_count: 64))
       (def key (make-string 64 #\a))
       (def other (make-string 64 #\b))
-      (check-equal? (.get (select (.o scope_commitment: key scope: scope facts: facts)) route_indices) '(0 1 2 3 4 5 6 7))
-      (check-exception (select (.o scope_commitment: other facts: facts)) Error?)
-      (check-exception (select (.o scope_commitment: key facts: facts)) Error?)
-      (check-equal? (.get (select (.o scope_commitment: other scope: (.o (:: @ scope) route_count: 1) facts: facts)) route_indices) '(0)))
+      (check-equal? (.get (select (.o scope_commitment: key scope: selector-scope facts: turn-facts)) route_indices) '(0 1 2 3 4 5 6 7))
+      (check-exception (select (.o scope_commitment: other facts: turn-facts)) Error?)
+      (check-exception (select (.o scope_commitment: key facts: turn-facts)) Error?)
+      (check-equal? (.get (select (.o scope_commitment: other scope: (.o (:: @ selector-scope) route_count: 1) facts: turn-facts)) route_indices) '(0)))
     (test-case "ASCENT routing filters modules and ranks exact cost then latency then digest"
       (def source-plan plan)
       (def (candidate module-name latency price digest-value)

@@ -5,7 +5,8 @@
 ;;; Fixed, finite application rules over detached integer projections. ASCENT
 ;;; owns evaluation/replacement; this adapter owns the existing Gateway image.
 (import (only-in :clan/poo/object .o .get .ref seal-object!)
-        (only-in :clan/poo/mop validate json<-)
+        (only-in :clan/poo/type validate)
+        (only-in :clan/poo/mop json<-)
         (only-in :std/encoding/json json->string JSONWriteOptions)
         (only-in :std/crypto/digest sha256)
         (only-in :std/encoding/hex hex-encode)

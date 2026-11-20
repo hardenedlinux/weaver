@@ -5,7 +5,7 @@
 ;;; Reuse Agentic AI Lab's actual Profile and assessment protocols.
 (import (only-in :tao3k/agentic-ai-lab/modules/governance/funs agentic-ai-lab-governance-evaluate)
         (only-in :tao3k/agentic-ai-lab/modules/governance/types agentic-ai-lab-governance-assessment?)
-        (only-in :clan/poo/mop element?)
+        (only-in :clan/poo/type element?)
         (only-in :clan/poo/object .ref)
         "./types.ss" "./capture.ss")
 (export assess-governance!)

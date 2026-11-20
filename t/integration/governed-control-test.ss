@@ -11,7 +11,7 @@
         (only-in :tao3k/yuanxu/module-system/source/admission call-with-module-source-read-cache)
         (only-in :std/misc/ports read-all-as-string)
         (only-in :clan/poo/object .o .get)
-        (only-in :clan/poo/mop TypeError?)
+        (only-in :clan/poo/type TypeError?)
         (only-in "../fixtures/control-inputs.ss" control-inputs)
         (only-in "../fixtures/governed-control.ss" capture-control-fixture prepare-control-fixture))
 (export governed-control-test)

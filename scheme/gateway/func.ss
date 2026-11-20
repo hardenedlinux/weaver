@@ -4,7 +4,8 @@
 
 ;;; Compose admitted module capabilities into the existing typed wire artifact.
 (import (only-in :clan/poo/object .get .ref .o .slot?)
-        (only-in :clan/poo/mop validate json<-)
+        (only-in :clan/poo/type validate)
+        (only-in :clan/poo/mop json<-)
         (only-in :std/encoding/json json->string JSONWriteOptions)
         (only-in :tao3k/yuanxu/module-system/interface yuanxu-load-modules)
         (only-in :tao3k/yuanxu/module-system/source/admission module-source-measure-operation)

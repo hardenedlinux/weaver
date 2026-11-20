@@ -49,10 +49,15 @@
                             (weaver-build-main "spec"))))) accounting?: #f))
       (check-equal? (hash-ref counts '(calls scope-factory) 0) 0)
       (check-equal? (hash-ref counts '(calls candidate-read) 0) 4)
-      (def targets (list-sort string<? (map cadr (call-with-input-string spec read))))
+      (def (target-name target)
+        (match target
+          ((? string?) target)
+          ([gxc: name . _] name)
+          (else (error "unexpected native Make target" target))))
+      (def targets (list-sort string<? (map target-name (call-with-input-string spec read))))
       (check-equal? (length targets) 40)
       (for-each (lambda (target) (check-equal? (and (member target targets) #t) #t))
-        '("agentic-ai-lab/modules/governance/interface"
+        '("tao3k/agentic-ai-lab/modules/governance/interface"
           "hardenedlinux/weaver/scheme/governance/interface"
           "hardenedlinux/weaver/scheme/policy/interface"
           "hardenedlinux/weaver/scheme/gateway/interface"
@@ -61,8 +66,8 @@
       ;; its consumer imports. A missing dependency and an unrelated Lab
       ;; module are both failures, even if Make agrees with the spec.
       (check-equal?
-        (filter (cut string-prefix? "agentic-ai-lab/" <>) targets)
-        (map (cut string-append "agentic-ai-lab/modules/" <>)
+        (filter (cut string-prefix? "tao3k/agentic-ai-lab/" <>) targets)
+        (map (cut string-append "tao3k/agentic-ai-lab/modules/" <>)
           '("authorization/providers/cedar/objects"
             "governance/config"
             "governance/funs"
@@ -86,7 +91,7 @@
         (append (list (path-expand "init.ss" root) (path-expand "init.ss" provider))
           (map (lambda (target)
                  (let* ((local? (string-prefix? "hardenedlinux/weaver/" target))
-                        (prefix (if local? "hardenedlinux/weaver/" "agentic-ai-lab/")))
+                        (prefix (if local? "hardenedlinux/weaver/" "tao3k/agentic-ai-lab/")))
                    (path-expand (string-append (substring target (string-length prefix) (string-length target)) ".ss")
                                 (if local? root provider)))) targets)))
       (def source-before (map module-source-read sources))

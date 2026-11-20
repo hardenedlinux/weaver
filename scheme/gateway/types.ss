@@ -4,7 +4,7 @@
 
 ;;; Gateway semantic operations; Rust retains final validation and authority.
 (import (only-in :clan/poo/object .cc)
-        (only-in :clan/poo/mop Function Bool)
+        (only-in :clan/poo/type Function Bool)
         (only-in :clan/poo/type Record List Pair Or Symbol String Enum)
         (only-in :hardenedlinux/weaver/scheme/governance/types GovernanceScopeContract
                  GovernanceContext AgenticAILabGovernanceProfile)

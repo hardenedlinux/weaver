@@ -5,7 +5,8 @@
 ;;; Scheme owns source contract assertions; Go only schedules this standard suite.
 (import :std/test
         (only-in :clan/poo/object .o .get .cc)
-        (only-in :clan/poo/mop validate json<- TypeError? element?)
+        (only-in :clan/poo/type validate TypeError? element?)
+        (only-in :clan/poo/mop json<-)
         (only-in :tao3k/yuanxu/module-system/source/publication ModulePublicationContract)
         (only-in ../scheme/gateway/types GatewayScopeContract)
         (only-in ../scheme/policy/types PolicyScopeContract)
@@ -19,10 +20,17 @@
     (test-case "module scopes use native POO Types and refuse evidence protocol hooks"
       (def (publication scope-type)
         (.o identity: 'gateway-contract-fixture features: (.o)
-            core: (.o requires: (.o) scope-contract: scope-type link: void)))
+            core: (.o scope-contract: scope-type exports: (.o))))
       (for-each
         (lambda (scope-type)
           (check-equal? (element? ModulePublicationContract (publication scope-type)) #t)
+          (def valid (publication scope-type))
+          (for-each
+            (lambda (retired)
+              (check-equal?
+                (element? ModulePublicationContract
+                  (.cc valid core: (.cc (.get valid core) retired void))) #f))
+            '(requires link))
           (for-each
             (lambda (hook)
               (check-equal?
