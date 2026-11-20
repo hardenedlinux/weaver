@@ -45,8 +45,8 @@ func TestProjectArchitectureLicensing(t *testing.T) {
 		t.Fatal("first-party SPDX fallback must preserve local notices")
 	}
 	paths := strings.Split(strings.TrimSpace(string(tool(t, "git", "ls-files", "--cached", "--others", "--exclude-standard"))), "\n")
-	copyright := regexp.MustCompile(`(?m)^(?:// |# |;;; |-- )?SPDX-FileCopyrightText: .+`)
-	identifier := regexp.MustCompile(`(?m)^(?:// |# |;;; |-- )?SPDX-License-Identifier: .+`)
+	copyright := regexp.MustCompile(`(?m)^(?:// |# |;;; |-- |: )?SPDX-FileCopyrightText: .+`)
+	identifier := regexp.MustCompile(`(?m)^(?:// |# |;;; |-- |: )?SPDX-License-Identifier: .+`)
 	for _, path := range paths {
 		// Preserve captured evidence, canonical license texts and third-party marks.
 		if strings.HasPrefix(path, "dev/proofs/evidence/") || strings.HasPrefix(path, "dev/specs/evidence/") || strings.HasPrefix(path, "LICENSES/") {

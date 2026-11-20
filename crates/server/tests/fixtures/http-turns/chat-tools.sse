@@ -1,0 +1,13 @@
+: SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+: SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+data: {"id":"r1","model":"model-a","choices":[{"index":0,"delta":{"tool_calls":[{"index":0,"id":"call-1","type":"function","function":{"name":"read","arguments":"{\"path\":"}}]},"finish_reason":null}]}
+
+data: {"id":"r1","model":"model-a","choices":[{"index":0,"delta":{"tool_calls":[{"index":0,"function":{"arguments":"\"file\"}"}}]},"finish_reason":null}]}
+
+data: {"id":"r1","model":"model-a","choices":[{"index":0,"delta":{},"finish_reason":"tool_calls"}]}
+
+data: {"id":"r1","model":"model-a","choices":[],"usage":{"prompt_tokens":2,"completion_tokens":3}}
+
+data: [DONE]
+

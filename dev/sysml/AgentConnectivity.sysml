@@ -570,12 +570,12 @@ package AgentConnectivity {
     }
 
     part def PlannedAcceptance {
-        attribute status : DeliveryStatus = DeliveryStatus::planned;
+        attribute status : DeliveryStatus default = DeliveryStatus::planned;
         attribute scenario : String;
         attribute oracle : String;
         attribute formalModel : String default = "";
         attribute runtimeProperty : String default = "";
-        doc /* Future executable scenario contract, not an existing test result. */
+        doc /* Executable scenario contract; qualified status covers only its stated oracle and runtime scope, not the whole integration. */
     }
     part acceptance {
         part httpOperationChallenge : WeaverProject::DesignProcess::DesignChallenge {
@@ -683,6 +683,14 @@ package AgentConnectivity {
         part publicIntegration : PlannedAcceptance {
             attribute :>> scenario = "Stock Magpie standard provider calls the compatibility ingress";
             attribute :>> oracle = "Public supported API only; one fixed Weaver provider; no internal-package imports or vendor fallback";
+        }
+        part httpToolContinuation : PlannedAcceptance {
+            attribute :>> status = DeliveryStatus::qualified;
+            attribute :>> scenario = "Three HTTP protocols, two executed turns per protocol, a complete owner restart between turns, fragmented upstream chunks, a retained tool result, completed retry, exhausted third turn and fact withdrawal";
+            attribute :>> oracle = "Independent raw provider fixtures identify call id/name/arguments and opaque reasoning/signature blocks; follow-up retains these exact values; the same ledger contains three declarations, two executions and one shared budget/history; a live peer detects every extra connection, including queued connections when shutdown is ready; a completed retry never rederives or sends";
+            attribute :>> formalModel = "ProviderTurnRelease and StreamProjection retain complete-terminal and prefix custody; HttpOperation retains current source/path and credential binding";
+            attribute :>> runtimeProperty = "http_turns::three_http_protocols_retain_tools_across_owner_restart";
+            doc /* Fixed three cases, four Tokio workers and the existing 120-second library watchdog. Static SSE source fixtures use Cargo include_str and the existing source-currentness inventory; create/edit/delete must invalidate the receipt. Actor selection uses a labeled advisory double; owner restart does not qualify an OS-process crash or real linked Scheme. Slow-reader and stock Magpie checks remain independent. */
         }
         part conversationalAdmission : PlannedAcceptance {
             attribute :>> scenario = "Two changing turns, replayed turn, exhausted shared budget and withdrawn session facts";

@@ -56,9 +56,12 @@ func TestVerificationPlanProofInputsAreBound(t *testing.T) {
 
 func TestProofAndArchitectureChangesInvalidateCurrentness(t *testing.T) {
 	root, before := verificationInputsFixture(t)
-	for _, path := range []string{"dev/proofs/quint/InventoryProbe.qnt", "dev/proofs/lean/InventoryProbe.lean", "dev/specs/lean/InventoryProbe.lean", "dev/specs/quint/InventoryProbe.qnt", "docs/inventory-probe.org", "docs/inventory-probe.d2"} {
+	for _, path := range []string{"dev/proofs/quint/InventoryProbe.qnt", "dev/proofs/lean/InventoryProbe.lean", "dev/specs/lean/InventoryProbe.lean", "dev/specs/quint/InventoryProbe.qnt", "docs/inventory-probe.org", "docs/inventory-probe.d2", "crates/server/tests/fixtures/http-turns/reply.sse"} {
 		t.Run(path, func(t *testing.T) {
 			full := filepath.Join(root, path)
+			if err := os.MkdirAll(filepath.Dir(full), 0700); err != nil {
+				t.Fatal(err)
+			}
 			if err := os.WriteFile(full, []byte("source revision one\n"), 0600); err != nil {
 				t.Fatal(err)
 			}

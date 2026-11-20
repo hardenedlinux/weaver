@@ -1107,10 +1107,9 @@ simulator threads under seed 293. Its cached-catalog and credential-union
 strategies both produce actual invariant violations; the strong campaign does
 not establish universal safety or runtime scheduling progress.
 
-Real linked Scheme, all three protocols through the HTTP listener, HTTP restart
-and slow-reader integration, stock Magpie and complete Magpie write-set restore
-remain acceptance work. They are not inferred from the Chat HTTP fixture or
-from existing broker/SDK protocol coverage.
+The tool-continuation and owner-restart cases below extend this initial HTTP
+fixture. Real linked Scheme, slow-reader and process-crash integration, stock
+Magpie and complete Magpie write-set restore remain separate acceptance work.
 
 The final native library entry passed 142 active tests with three existing
 Go-driven process fixtures ignored, using four test workers and the unchanged
@@ -1144,3 +1143,76 @@ preceding publication fail while checking out the transitive =gerbil-parser=
 revision =e5fdd53b33c376dabb927f79b047e4d5cae9f7ac=, with =unable to read tree=.
 They do not reach Scheme compilation. The local native evidence uses the
 existing installed dependencies and does not close that package-provenance gap.
+
+* HTTP tool continuation and durable owner recovery
+
+[[file:../../crates/server/tests/unit/http_turns.rs][The HTTP tool scenario]] now
+executes Chat Completions, Responses and Messages against independent raw
+[[file:../../crates/server/tests/fixtures/http-turns/][SSE source fixtures]]. Each
+case makes a tool-call turn, destroys the HTTP, source SQL and advisory owners,
+then creates fresh owners over the same ledger before sending the tool result.
+The test does not register a second scope or reuse an in-memory catalog.
+
+The expected tool ID, name and parsed arguments are external fixture values.
+Responses retains the encrypted reasoning item. Messages retains the complete
+signature assembled from two deltas, a redacted block and the tool-use block in
+their original order. The next request uses the actual retained continuation,
+and the TLS peer checks its exact body bytes. Upstream HTTP chunks are seven
+bytes; the downstream codec is independently partitioned into three-byte input.
+
+After recovery, an exact completed retry performs no new advisory derivation.
+A third declaration under the same Session exhausts the shared budget before
+provider I/O. Fact withdrawal rejects another request. Read-only SQL observations
+then require three declarations, two provider runs, one budget/history root,
+and two complete reported token-category records. The advisory actor is a
+labeled test double and its compiler callback must never run. These cases
+qualify owner recovery, not an OS-process crash or linked Scheme execution.
+
+The external TLS peer remains listening after its two expected responses until
+all retry, exhaustion and withdrawal checks finish. It fails on any extra TCP
+connection, including one queued when shutdown is already ready. A separate
+negative control establishes a real extra connection and requires that exact
+observer failure. A stopped listener or an empty request channel alone is not
+evidence of no attempted send. A completed retry currently fails the stream;
+this is not a transcript replay API, and no tool result is manufactured.
+
+One candidate constructed every wire event with Rust JSON macros and exhausted
+the original 120-second command watchdog before tests started. Moving the same
+protocol data into static, licensed source fixtures kept the original cases and
+budget. The focused seven HTTP controls then passed, followed by the original
+three-library entry with 144 active tests and three existing ignored process
+fixtures. Test compilation and request-runtime performance remain distinct.
+
+The static input change also exposed an actual verification gap: the source
+inventory ignored SSE fixtures. The existing create/edit/delete currentness
+test failed before the inventory recognized =.sse=, then passed after that
+generic source-format addition. The existing leading-notice check now recognizes
+SSE's colon comment syntax. No fixture manifest, generated evidence directory,
+alternate runner or new CI script was introduced. Strict architecture, Workflow,
+source-currentness and server library/test Clippy checks passed.
+
+The SSE event terminator is a required empty line, so the format-specific Git
+attribute permits that final blank line while retaining other whitespace checks.
+That attribute is also included in the existing root-source fingerprint.
+
+HTTP slow-reader/stream-reset behavior, real linked Scheme, stock Magpie and
+complete Magpie config restoration remain open in the full GOAL. The existing
+broker/SDK backpressure tests do not by themselves qualify the new listener.
+
+* Reuse the prepared Cargo feature graph for the meter fixture
+
+The remote Go receipt on =af610a90= reports a timeout in provider integration,
+not a failed protocol assertion. Its tail shows dependency compilation inside
+=TestProviderTerminalUsageIndependentIssuer=. Server and observer preparation
+had already passed, but the meter helper selected =--no-default-features=
+instead of their default/Arrow graph, triggering another release dependency
+build inside the remaining runtime budget.
+
+The existing server preparation and integration fixture now request the package
+binaries together with =--bins=. The meter fallback uses the same release,
+default features and Arrow selection. Cargo still owns dependency resolution
+and reports each executable; the existing artifact reader selects the requested
+target and rejects ambiguity. Its control includes the other prepared binary
+in the same stream. No new CI stage, Bash wrapper or wider budget was added.
+The focused Cargo argument/artifact checks pass; remote closure and the real
+meter integration remain separate acceptance results.
