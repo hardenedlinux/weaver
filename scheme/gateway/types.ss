@@ -8,7 +8,7 @@
         (only-in :clan/poo/type Record List Pair Or Symbol String Enum)
         (only-in :hardenedlinux/weaver/scheme/governance/types GovernanceScopeContract
                  GovernanceContext AgenticAILabGovernanceProfile)
-        (only-in :agentic-ai-lab/modules/loop-engine/control/governor +loop-governor-type-contract+)
+        (only-in :tao3k/agentic-ai-lab/modules/loop-engine/control/governor +loop-governor-type-contract+)
         (only-in :hardenedlinux/weaver/scheme/policy/types PolicyScopeContract)
         (only-in "./derivation-types.ss" GatewayPreparation GatewayDerivation GatewayDerivationResult)
         "./contracts.ss")

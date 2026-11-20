@@ -1490,3 +1490,36 @@ POO build in the migrated source graph stopped at its 120-second watchdog after
 arm64 =_memset= link errors from the configured C compiler. Do not promote that
 partial preparation, retry a whole cold install, or relax runtime gates to
 hide it; correct the native toolchain binding before resuming preparation.
+
+The single-module diagnosis isolates a mixed host toolchain: Homebrew GCC 16
+resolves the Nix assembler/linker through PATH. The same generated module links
+under the original GCC at its formal =-O2= setting when PATH selects the system
+assembler/linker; system Clang also succeeds. Adding =-lSystem= under the mixed
+environment does not fix the error. Gambit and package sources are unchanged.
+Partial compiler output is not a reusable successful build: interrupted POO
+preparation left interfaces without their macro-stage compiled artifacts, so
+the package manager cleans that package's products before rebuilding it with
+four workers and the separate eight-minute compile budget. Other dependency
+products and source checkouts remain available.
+
+The new Yuanxu no longer exports =call-with-init-build-spec=. Weaver uses the
+init export's admitted =std-make-spec= directly in =std/build-script= and lets
+the projection own source registration and compiler contexts. It does not
+reconstruct those responsibilities in the builder. Cargo still observes source
+paths already read by that owner and does not introduce a second file inventory.
+
+After correcting host tool selection, the targeted POO, Yuanxu, Parser and ASCENT builds
+exit naturally. Actual VM probes load a POO value and the new Yuanxu init syntax
+within their twelve-second watchdogs. Orgize proceeds through its library/fold
+compilation but its own final installed-interface check fails with
+=Unexpected import ()= while importing =orgize/bindings/c/event-tape.ssi=.
+Replaying only =bindings/c/stage-parser.ss= reproduces that failure. This does
+not qualify the full dependency preparation or Weaver's linked image.
+
+The existing =scheme-qualification= Cargo graph now includes
+=session_selector=: one production =SchemeCompiler=, A-B-A scope rebind, warm
+reuse and 64 fixed-seed fact/route cases with independently checked Rust scope
+commitments. Foreign principal/model and invalid scalar bounds must refuse
+without poisoning the next valid selection. This test uses the fixed linked
+Session export, has no advisory double and starts one VM. It remains a pending
+gate until the native image can build and this executable actually passes.

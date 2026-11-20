@@ -8,7 +8,7 @@
         (only-in :clan/poo/type Record String)
         (only-in "./source-bytes.ss" bounded-cedar-source?))
 (import (only-in :clan/poo/type List)
-        (only-in :agentic-ai-lab/modules/governance/types AgenticAILabGovernanceProfile))
+        (only-in :tao3k/agentic-ai-lab/modules/governance/types AgenticAILabGovernanceProfile))
 (export PolicyScopeContract CedarPolicySource CedarSchemaSource PolicyDocument PolicyProjection)
 (def CedarPolicySource (.cc String sexp: 'CedarPolicySource '.element? bounded-cedar-source?))
 (def CedarSchemaSource (.cc String sexp: 'CedarSchemaSource '.element? bounded-cedar-source?))

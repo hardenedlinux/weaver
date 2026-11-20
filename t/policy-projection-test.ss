@@ -6,8 +6,8 @@
 (import :std/test
         (only-in :std/error Error?)
         (only-in :clan/poo/object .o .get)
-        (only-in :agentic-ai-lab/modules/governance/interface AgenticAILabGovernanceProfile.)
-        (only-in :agentic-ai-lab/modules/authorization/providers/cedar/objects agentic-ai-lab-cedar-policy)
+        (only-in :tao3k/agentic-ai-lab/modules/governance/interface AgenticAILabGovernanceProfile.)
+        (only-in :tao3k/agentic-ai-lab/modules/authorization/providers/cedar/objects agentic-ai-lab-cedar-policy)
         (prefix-in :clan/poo/testing/property/generator generator.)
         (prefix-in :clan/poo/testing/property property.)
         (only-in :clan/poo/testing/property/test check-property)

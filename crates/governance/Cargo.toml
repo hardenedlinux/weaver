@@ -40,6 +40,11 @@ name = "scheme_vm"
 path = "tests/integration/scheme_vm.rs"
 required-features = ["scheme-qualification"]
 
+[[test]]
+name = "session_selector"
+path = "tests/integration/session_selector.rs"
+required-features = ["scheme-qualification"]
+
 [[bench]]
 name = "gateway"
 harness = false

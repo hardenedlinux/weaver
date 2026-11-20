@@ -5,11 +5,11 @@
 ;;; Build-selected initializer for Weaver's declared provider workflows.
 (import (only-in :std/source this-source-file)
         (only-in :clan/poo/object .o .ref)
-        (only-in :agentic-ai-lab/modules/loop-engine/control/governor make-loop-governor)
-        (only-in :agentic-ai-lab/modules/governance/interface AgenticAILabGovernanceProfile.
+        (only-in :tao3k/agentic-ai-lab/modules/loop-engine/control/governor make-loop-governor)
+        (only-in :tao3k/agentic-ai-lab/modules/governance/interface AgenticAILabGovernanceProfile.
                  agentic-ai-lab-governance-source)
-        (only-in :agentic-ai-lab/modules/authorization/providers/cedar/objects agentic-ai-lab-cedar-policy)
-        (only-in :yuanxu/module-system/source/admission call-with-module-source-operation-measurement)
+        (only-in :tao3k/agentic-ai-lab/modules/authorization/providers/cedar/objects agentic-ai-lab-cedar-policy)
+        (only-in :tao3k/yuanxu/module-system/source/admission call-with-module-source-operation-measurement)
         :hardenedlinux/weaver/scheme/policy/cedar-ffi
         (only-in "./compiled.ss" install-gateway-producer!)
         (only-in "./func.ss" capture-governed-gateway gateway-source-phase-observer)

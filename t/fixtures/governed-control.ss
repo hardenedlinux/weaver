@@ -3,9 +3,9 @@
 ;;; SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 ;;; Native source fixture for cross-language integration; no Go governance DSL.
-(import :agentic-ai-lab/modules/loop-engine/control/governor
-        :agentic-ai-lab/modules/governance/interface
-        (only-in :agentic-ai-lab/modules/authorization/providers/cedar/objects agentic-ai-lab-cedar-policy)
+(import :tao3k/agentic-ai-lab/modules/loop-engine/control/governor
+        :tao3k/agentic-ai-lab/modules/governance/interface
+        (only-in :tao3k/agentic-ai-lab/modules/authorization/providers/cedar/objects agentic-ai-lab-cedar-policy)
         :hardenedlinux/weaver/scheme/gateway/provider-source
         (only-in :clan/poo/object .o .ref)
         :hardenedlinux/weaver/scheme/gateway/func)

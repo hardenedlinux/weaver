@@ -6,7 +6,7 @@
 (import :std/test
         (only-in :clan/poo/object .o .get .cc)
         (only-in :clan/poo/mop validate json<- TypeError? element?)
-        (only-in :yuanxu/module-system/source/publication ModulePublicationContract)
+        (only-in :tao3k/yuanxu/module-system/source/publication ModulePublicationContract)
         (only-in ../scheme/gateway/types GatewayScopeContract)
         (only-in ../scheme/policy/types PolicyScopeContract)
         (only-in :std/encoding/json json->string)

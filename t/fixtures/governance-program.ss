@@ -5,7 +5,7 @@
 ;;; Explicit qualification application; no ABI implementation or implicit default.
 (import (only-in :std/source this-source-file)
         (only-in :clan/poo/object .ref)
-        (only-in :yuanxu/module-system/source/admission call-with-module-source-operation-measurement)
+        (only-in :tao3k/yuanxu/module-system/source/admission call-with-module-source-operation-measurement)
         (only-in ../../scheme/gateway/compiled install-gateway-producer!)
         ./governed-control)
 (export main)

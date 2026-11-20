@@ -7,9 +7,9 @@
 (import (only-in :clan/poo/object .o .ref .all-slots)
         (only-in :clan/poo/mop json<- validate)
         (only-in :std/encoding/json json->string JSONWriteOptions)
-        (only-in :agentic-ai-lab/modules/governance/types agentic-ai-lab-governance-profile?
+        (only-in :tao3k/agentic-ai-lab/modules/governance/types agentic-ai-lab-governance-profile?
                  agentic-ai-lab-governance-source?)
-        (only-in :agentic-ai-lab/modules/authorization/providers/cedar/objects agentic-ai-lab-cedar-policy?)
+        (only-in :tao3k/agentic-ai-lab/modules/authorization/providers/cedar/objects agentic-ai-lab-cedar-policy?)
         "./types.ss")
 (export governance-profile-snapshot governance-context-snapshot)
 

@@ -3,10 +3,10 @@
 (import (only-in "../../../init.ss" hardenedlinux/weaver.init.exports)
         (only-in :clan/poo/object .get .o .cc .slot?)
         (only-in :std/source this-source-file)
-        (only-in :yuanxu/module-system/source/admission call-with-module-source-operation-measurement)
+        (only-in :tao3k/yuanxu/module-system/source/admission call-with-module-source-operation-measurement)
         (only-in :std/misc/ports read-all-as-string)
         (only-in :gerbil/runtime/loader list-modules)
-        (only-in :agentic-ai-lab/modules/governance/interface
+        (only-in :tao3k/agentic-ai-lab/modules/governance/interface
                  agentic-ai-lab-governance-profile?))
 (export main)
 (def (main)

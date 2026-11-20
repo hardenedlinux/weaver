@@ -375,11 +375,16 @@ package AgentConnectivity {
     part def WeaverSemanticControl {
         port proposed : ~PlanPort;
         port published : PlanPort;
+        attribute archiveModuleLimit : Integer = 1024;
         part sourceOwner : WeaverExecution::SchemeSemanticPublisher;
         part turnSelector : RetainedSessionSelector;
         doc /* Reuse Scheme/POO/gerbil-ascent, source lane, durable intent and
            ledger publication. Infer on bounded fact changes and publish the
-           source/version-bound projection. Preserve A-B-A generation checks. */
+           source/version-bound projection. Preserve A-B-A generation checks.
+           Preparation rejects a compiler manifest beyond archiveModuleLimit
+           and retains required/forbidden module validation through the SDK
+           archive contract. This is a build bound, not a per-turn query or
+           an authority to expand the approved application. */
     }
     part def RetainedSessionSelector {
         port facts : ~CompactTurnFactsPort;
@@ -395,7 +400,12 @@ package AgentConnectivity {
            declared target order with at most eight routes. Rust validates
            returned indices, projects canonical commitments, then rejoins the
            ledger cut. Rust lane/transaction controls use an explicit advisory
-           test owner; actual linked Scheme qualification remains pending. */
+           test owner; actual linked Scheme qualification remains pending.
+           Package preparation uses the init export's admitted std-make-spec
+           through std/build-script. The package manager owns Lab's transitive
+           graph; SDK Build Packages owns its runtime prerequisites. Import
+           migration and successful compilation alone do not qualify this
+           selector or relax the per-turn no-compilation obligation. */
     }
     part def BoundedTurnCodec {
         attribute ownsTransport : Boolean = false;
@@ -661,6 +671,13 @@ package AgentConnectivity {
             attribute :>> oracle = "Fresh reads on the existing owner reject unavailable/foreign scopes; equal model names after ABA have a different observation version; discovery alone cannot authorize use";
             attribute :>> formalModel = "dev/proofs/quint/SessionDiscovery.qnt";
             attribute :>> runtimeProperty = "crates/ledger/tests/unit/provider_session.rs::discovery_matches_current_facts_without_execution_effects";
+        }
+        part linkedSessionSelection : PlannedAcceptance {
+            attribute :>> scenario = "One production SchemeCompiler, repeated warm scope, A-B-A route-count rebind and 64 fixed-seed valid/foreign-principal fact cases";
+            attribute :>> oracle = "The fixed C ABI returns only the current scope's declared route indices; Rust independently validates the commitment and route bounds; a refused input cannot poison the next warm selection";
+            attribute :>> formalModel = "SessionTurnAdmission retained decisions are an admission model, not proof that the linked selector executes";
+            attribute :>> runtimeProperty = "crates/governance/tests/integration/session_selector.rs::linked_selector_preserves_warm_scope_rebind_and_fact_boundaries";
+            doc /* Runs through the existing scheme-qualification Cargo graph and one affine VM. Pending until that native image builds and executes; no advisory-double or source-only pass qualifies it. */
         }
         part responseCoordinateBinding : PlannedAcceptance {
             attribute :>> scenario = "64 fragmentations and 64 generated per-part reassignments; foreign item/response ids, duplicate indices and terminal substitutions";

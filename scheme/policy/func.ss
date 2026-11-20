@@ -6,7 +6,7 @@
 (import (only-in :clan/poo/io module-action)
         (only-in :clan/poo/object .ref .all-slots .o)
         (only-in :clan/poo/mop validate)
-        (only-in :agentic-ai-lab/modules/authorization/providers/cedar/objects agentic-ai-lab-cedar-policy?)
+        (only-in :tao3k/agentic-ai-lab/modules/authorization/providers/cedar/objects agentic-ai-lab-cedar-policy?)
         "./types.ss"
         (only-in "./assets.ss" policy-document))
 (export validate-source-policy! validate-policy-projection! project-policy)

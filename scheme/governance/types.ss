@@ -6,8 +6,8 @@
 (import (only-in :clan/poo/object .cc)
         (only-in :clan/poo/mop Function Bool Type. define-type)
         (only-in :clan/poo/type Record List String Symbol Or Enum)
-        (only-in :agentic-ai-lab/modules/governance/types AgenticAILabGovernanceProfile)
-        (only-in :agentic-ai-lab/modules/session/objects-core agentic-ai-lab-session?))
+        (only-in :tao3k/agentic-ai-lab/modules/governance/types AgenticAILabGovernanceProfile)
+        (only-in :tao3k/agentic-ai-lab/modules/session/objects-core agentic-ai-lab-session?))
 (export GovernanceScopeContract GovernanceContext GovernanceAssessmentContext
         AgenticAILabGovernanceProfile GovernanceProfileSnapshot)
 (define-type (GovernanceSession @ Type.) .element?: agentic-ai-lab-session?)

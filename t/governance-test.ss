@@ -5,10 +5,10 @@
 ;;; Native Governor selection belongs to Scheme's standard test suite.
 (import :std/test
         (only-in :std/error Error? Error-message)
-        :agentic-ai-lab/modules/loop-engine/control/governor
-        :agentic-ai-lab/modules/loop-engine/control/strategy
-        :agentic-ai-lab/modules/loop-engine/control/descriptor
-        :agentic-ai-lab/modules/governance/interface
+        :tao3k/agentic-ai-lab/modules/loop-engine/control/governor
+        :tao3k/agentic-ai-lab/modules/loop-engine/control/strategy
+        :tao3k/agentic-ai-lab/modules/loop-engine/control/descriptor
+        :tao3k/agentic-ai-lab/modules/governance/interface
         (only-in :clan/poo/object .o .get)
         (prefix-in :clan/poo/testing/property/generator generator.)
         (prefix-in :clan/poo/testing/property property.)

@@ -3,18 +3,18 @@
 ;;; SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 ;;; Weaver's declared provider workflows and Governor strategy.
-(import :agentic-ai-lab/modules/loop-engine/control/strategy
-        :agentic-ai-lab/modules/loop-engine/control/descriptor
-        (only-in :agentic-ai-lab/modules/session/objects-core agentic-ai-lab-session-value
+(import :tao3k/agentic-ai-lab/modules/loop-engine/control/strategy
+        :tao3k/agentic-ai-lab/modules/loop-engine/control/descriptor
+        (only-in :tao3k/agentic-ai-lab/modules/session/objects-core agentic-ai-lab-session-value
                  agentic-ai-lab-session-lineage agentic-ai-lab-session-placement)
-        (only-in :yuanxu/modules/funflow/control-plane/flow flow-compose external-flow flow-steps flow-then flow-branch flow-output-contract Fun String PairValue)
+        (only-in :tao3k/yuanxu/modules/funflow/control-plane/flow flow-compose external-flow flow-steps flow-then flow-branch flow-output-contract Fun String PairValue)
         (only-in :clan/poo/object .o .get .ref .slot? object<-alist)
         (only-in :clan/poo/mop validate)
         (only-in :gerbil-ascent/program/scheme-language relational-program)
         (only-in :gerbil-ascent/program/session gerbil-ascent-open-session gerbil-ascent-session-run
                  gerbil-ascent-session-replace-sources!)
         (only-in "./snapshot.ss" copy-source-data)
-        (only-in :agentic-ai-lab/modules/loop-engine/control/governor make-loop-governor)
+        (only-in :tao3k/agentic-ai-lab/modules/loop-engine/control/governor make-loop-governor)
         (only-in "./func.ss" compose-governor-selection)
         "./contracts.ss")
 (export workflow-session nested-workflow-session provider-source-strategy provider-source-budget compose-provider-configuration provider-source-controls make-session-turn-selector)
