@@ -32,14 +32,15 @@ fn event() -> ProviderEvent {
 fn protobuf_preserves_rich_payload_separately_from_text() {
     let original = event();
     let pb::provider_frame::Payload::Event(encoded) =
-        protobuf(std::slice::from_ref(&original)).unwrap()
+        protobuf(std::slice::from_ref(&original)).expect("provider turn encoding fixture")
     else {
         panic!("protobuf event required");
     };
     assert_eq!(encoded.sequence, 7);
     assert_eq!(encoded.kind, "turn.v1");
     assert!(encoded.text.is_empty());
-    let decoded = ProviderTurnEvent::decode(&encoded.turn_json).unwrap();
+    let decoded =
+        ProviderTurnEvent::decode(&encoded.turn_json).expect("provider turn encoding fixture");
     assert_eq!(ProviderEventKind::Turn(Box::new(decoded)), original.kind);
 }
 
@@ -59,20 +60,26 @@ fn rich_payload_cannot_silently_become_text() {
 #[test]
 fn arrow_rich_schema_preserves_the_same_terminal_payload() {
     let original = event();
-    let pb::provider_frame::Payload::Arrow(batch) = arrow(std::slice::from_ref(&original)).unwrap()
+    let pb::provider_frame::Payload::Arrow(batch) =
+        arrow(std::slice::from_ref(&original)).expect("provider turn encoding fixture")
     else {
         panic!("Arrow required")
     };
     let mut reader =
-        arrow_ipc::reader::StreamReader::try_new(std::io::Cursor::new(batch.ipc), None).unwrap();
-    let record = reader.next().unwrap().unwrap();
+        arrow_ipc::reader::StreamReader::try_new(std::io::Cursor::new(batch.ipc), None)
+            .expect("provider turn encoding fixture");
+    let record = reader
+        .next()
+        .expect("provider turn encoding fixture")
+        .expect("provider turn encoding fixture");
     assert_eq!(record.num_columns(), 5);
     let payloads = record
         .column(4)
         .as_any()
         .downcast_ref::<arrow_array::BinaryArray>()
-        .unwrap();
-    let decoded = ProviderTurnEvent::decode(payloads.value(0)).unwrap();
+        .expect("provider turn encoding fixture");
+    let decoded =
+        ProviderTurnEvent::decode(payloads.value(0)).expect("provider turn encoding fixture");
     assert_eq!(ProviderEventKind::Turn(Box::new(decoded)), original.kind);
     assert!(reader.next().is_none());
 }
@@ -129,35 +136,40 @@ fn positioned_controls_and_text_round_trip_without_becoming_terminal() {
         assert!(!turn.is_terminal());
         original.kind = ProviderEventKind::Turn(Box::new(turn));
         let pb::provider_frame::Payload::Event(encoded) =
-            protobuf(std::slice::from_ref(&original)).unwrap()
+            protobuf(std::slice::from_ref(&original)).expect("provider turn encoding fixture")
         else {
             panic!("event")
         };
         assert_eq!(
             ProviderEventKind::Turn(Box::new(
-                ProviderTurnEvent::decode(&encoded.turn_json).unwrap()
+                ProviderTurnEvent::decode(&encoded.turn_json)
+                    .expect("provider turn encoding fixture")
             )),
             original.kind
         );
         #[cfg(feature = "arrow")]
         {
             let pb::provider_frame::Payload::Arrow(batch) =
-                arrow(std::slice::from_ref(&original)).unwrap()
+                arrow(std::slice::from_ref(&original)).expect("provider turn encoding fixture")
             else {
                 panic!("arrow")
             };
             let mut reader =
                 arrow_ipc::reader::StreamReader::try_new(std::io::Cursor::new(batch.ipc), None)
-                    .unwrap();
-            let record = reader.next().unwrap().unwrap();
+                    .expect("provider turn encoding fixture");
+            let record = reader
+                .next()
+                .expect("provider turn encoding fixture")
+                .expect("provider turn encoding fixture");
             let payloads = record
                 .column(4)
                 .as_any()
                 .downcast_ref::<arrow_array::BinaryArray>()
-                .unwrap();
+                .expect("provider turn encoding fixture");
             assert_eq!(
                 ProviderEventKind::Turn(Box::new(
-                    ProviderTurnEvent::decode(payloads.value(0)).unwrap()
+                    ProviderTurnEvent::decode(payloads.value(0))
+                        .expect("provider turn encoding fixture")
                 )),
                 original.kind
             );

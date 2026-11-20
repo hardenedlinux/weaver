@@ -16,7 +16,7 @@ proptest::proptest! {
             value[if chat {"prompt_tokens"} else {"input_tokens"}] = input.into();
             value[if chat {"completion_tokens"} else {"output_tokens"}] = output.into();
             value[if chat {"prompt_tokens_details"} else {"input_tokens_details"}] = serde_json::json!({"cached_tokens":read, "cache_write_tokens":write});
-            let actual = TokenCategories::openai(&value, chat).unwrap();
+            let actual = TokenCategories::openai(&value, chat).expect("token category fixture");
             proptest::prop_assert_eq!(actual, TokenCategories { ordinary_input:ordinary, cache_read_input:read, cache_write_input:write, output });
         }
     }
@@ -24,11 +24,17 @@ proptest::proptest! {
 
 #[test]
 fn cumulative_anthropic_updates_replace_and_nulls_preserve_categories() {
-    let first = TokenCategories::anthropic_start(&serde_json::json!({"input_tokens":10,"cache_read_input_tokens":20,"cache_creation_input_tokens":30,"output_tokens":0})).unwrap();
+    let first = TokenCategories::anthropic_start(&serde_json::json!({"input_tokens":10,"cache_read_input_tokens":20,"cache_creation_input_tokens":30,"output_tokens":0})).expect("token category fixture");
     let delta =
         serde_json::json!({"input_tokens":12,"cache_read_input_tokens":null,"output_tokens":3});
-    let once = first.anthropic_delta(&delta).unwrap();
-    assert_eq!(once.anthropic_delta(&delta).unwrap(), once);
+    let once = first
+        .anthropic_delta(&delta)
+        .expect("token category fixture");
+    assert_eq!(
+        once.anthropic_delta(&delta)
+            .expect("token category fixture"),
+        once
+    );
     assert_eq!(
         once,
         TokenCategories {
@@ -59,14 +65,24 @@ fn usage_is_hidden_until_a_validated_terminal_and_missing_usage_stays_unknown() 
     let mut codec = TurnDecoder::new(Protocol::OpenAi, 4096);
     codec
         .push_bytes(format!("data: {event}\n\n").as_bytes())
-        .unwrap();
-    assert!(codec.next_event().unwrap().is_none());
+        .expect("token category fixture");
+    assert!(
+        codec
+            .next_event()
+            .expect("token category fixture")
+            .is_none()
+    );
     assert!(codec.terminal_usage().is_none());
     assert!(codec.finish().is_err());
     assert!(codec.terminal_usage().is_none());
 
     let mut codec = TurnDecoder::new(Protocol::OpenAi, 4096);
-    codec.push_bytes(b"data: {\"choices\":[{\"index\":0,\"delta\":{},\"finish_reason\":\"stop\"}]}\n\ndata: [DONE]\n\n").unwrap();
-    assert!(codec.next_event().unwrap().is_some());
+    codec.push_bytes(b"data: {\"choices\":[{\"index\":0,\"delta\":{},\"finish_reason\":\"stop\"}]}\n\ndata: [DONE]\n\n").expect("token category fixture");
+    assert!(
+        codec
+            .next_event()
+            .expect("token category fixture")
+            .is_some()
+    );
     assert!(codec.terminal_usage().is_none());
 }

@@ -21,8 +21,13 @@ fn decode(
         TurnDecoder::new(protocol, 4 * 1024 * 1024).with_expected_model("fixture".into());
     let mut events = Vec::new();
     'feed: for chunk in bytes.chunks(width) {
-        decoder.push_bytes(chunk).unwrap();
-        while let Some(event) = decoder.next_observation().unwrap() {
+        decoder
+            .push_bytes(chunk)
+            .expect("stream projection fixture");
+        while let Some(event) = decoder
+            .next_observation()
+            .expect("stream projection fixture")
+        {
             let terminal = matches!(event.event, Some(TurnEvent::Finished { .. }));
             events.push(event);
             if terminal {
@@ -30,7 +35,7 @@ fn decode(
             }
         }
     }
-    decoder.finish().unwrap();
+    decoder.finish().expect("stream projection fixture");
     (events, decoder.terminal_usage())
 }
 fn messages(first: &str, last: &str, tool_first: bool) -> Vec<Value> {
@@ -95,23 +100,24 @@ fn responses(first: &str, last: &str, tool_first: bool) -> Vec<Value> {
 }
 fn events(bytes: &[u8]) -> Vec<Value> {
     std::str::from_utf8(bytes)
-        .unwrap()
+        .expect("stream projection fixture")
         .lines()
         .filter_map(|line| line.strip_prefix("data: "))
         .filter(|s| *s != "[DONE]")
-        .map(|s| serde_json::from_str(s).unwrap())
+        .map(|s| serde_json::from_str(s).expect("stream projection fixture"))
         .collect()
 }
 fn project(protocol: Protocol, frames: &[Value], width: usize) -> (Vec<u8>, Vec<u8>) {
     let (source, categories) = decode(protocol, &wire(frames), width);
-    let mut encoder = TurnEncoder::new(protocol, 4 * 1024 * 1024, 123).unwrap();
+    let mut encoder =
+        TurnEncoder::new(protocol, 4 * 1024 * 1024, 123).expect("stream projection fixture");
     let mut output = Vec::new();
     let mut prefix = Vec::new();
     for event in &source {
         let terminal = matches!(event.event, Some(TurnEvent::Finished { .. }));
         let encoded = encoder
             .push(event, if terminal { categories } else { None })
-            .unwrap();
+            .expect("stream projection fixture");
         if !terminal {
             prefix.extend_from_slice(&encoded);
         }
@@ -119,11 +125,18 @@ fn project(protocol: Protocol, frames: &[Value], width: usize) -> (Vec<u8>, Vec<
     }
     let (round_trip, reported) = decode(protocol, &output, width);
     assert_eq!(
-        round_trip.last().unwrap().event,
-        source.last().unwrap().event
+        round_trip.last().expect("stream projection fixture").event,
+        source.last().expect("stream projection fixture").event
     );
     assert_eq!(reported, categories);
-    assert!(encoder.push(source.last().unwrap(), categories).is_err());
+    assert!(
+        encoder
+            .push(
+                source.last().expect("stream projection fixture"),
+                categories
+            )
+            .is_err()
+    );
     (output, prefix)
 }
 proptest::proptest! {
@@ -134,7 +147,7 @@ proptest::proptest! {
     ) {
         for (protocol,frames) in [(Protocol::Anthropic,messages(&first,&last,tool_first)),(Protocol::OpenAiResponses,responses(&first,&last,tool_first))] {
             let (output,prefix)=project(protocol,&frames,width);
-            let early=String::from_utf8(prefix).unwrap();
+            let early=String::from_utf8(prefix).expect("stream projection fixture");
             proptest::prop_assert!(!early.contains("private") && !early.contains("\"name\""));
             let data=events(&output);
             let text:String=data.iter().filter_map(|v| {
@@ -142,7 +155,7 @@ proptest::proptest! {
                 else if v["delta"]["type"]=="text_delta" {v["delta"]["text"].as_str()} else {None}
             }).collect();
             proptest::prop_assert_eq!(text,format!("{first}{last}"));
-            let starts:Vec<_>=data.iter().filter(|v|v["type"]=="content_block_start" || v["type"]=="response.output_item.added").map(|v|v["index"].as_u64().or_else(||v["output_index"].as_u64()).unwrap()).collect();
+            let starts:Vec<_>=data.iter().filter(|v|v["type"]=="content_block_start" || v["type"]=="response.output_item.added").map(|v|v["index"].as_u64().or_else(||v["output_index"].as_u64()).expect("stream projection fixture")).collect();
             proptest::prop_assert!(starts.iter().enumerate().all(|(i,n)|i as u64==*n));
             if protocol==Protocol::OpenAiResponses {proptest::prop_assert!(data.iter().enumerate().all(|(i,v)|v["sequence_number"]==i));}
             if tool_first {proptest::prop_assert!(!early.contains("text_delta") && !early.contains("output_text.delta"));}
@@ -158,15 +171,36 @@ fn abort_budget_and_identity_changes_close_projection_without_tool_completion() 
         &wire(&messages("first", "tail", false)),
         3,
     );
-    let mut encoder = TurnEncoder::new(Protocol::Anthropic, 4 * 1024 * 1024, 123).unwrap();
-    encoder.push(&source[0], None).unwrap();
+    let mut encoder = TurnEncoder::new(Protocol::Anthropic, 4 * 1024 * 1024, 123)
+        .expect("stream projection fixture");
+    encoder
+        .push(&source[0], None)
+        .expect("stream projection fixture");
     encoder.abort();
-    assert!(encoder.push(source.last().unwrap(), categories).is_err());
-    let mut bounded = TurnEncoder::new(Protocol::Anthropic, 16, 123).unwrap();
+    assert!(
+        encoder
+            .push(
+                source.last().expect("stream projection fixture"),
+                categories
+            )
+            .is_err()
+    );
+    let mut bounded =
+        TurnEncoder::new(Protocol::Anthropic, 16, 123).expect("stream projection fixture");
     assert!(matches!(bounded.push(&source[0], None), Err(Error::Limit)));
-    assert!(bounded.push(source.last().unwrap(), categories).is_err());
-    let mut encoder = TurnEncoder::new(Protocol::Anthropic, 4 * 1024 * 1024, 123).unwrap();
-    encoder.push(&source[0], None).unwrap();
+    assert!(
+        bounded
+            .push(
+                source.last().expect("stream projection fixture"),
+                categories
+            )
+            .is_err()
+    );
+    let mut encoder = TurnEncoder::new(Protocol::Anthropic, 4 * 1024 * 1024, 123)
+        .expect("stream projection fixture");
+    encoder
+        .push(&source[0], None)
+        .expect("stream projection fixture");
     let changed = TurnObservation {
         event: None,
         metadata: Some(TurnMetadata {
@@ -180,7 +214,14 @@ fn abort_budget_and_identity_changes_close_projection_without_tool_completion() 
         }),
     };
     assert!(encoder.push(&changed, None).is_err());
-    assert!(encoder.push(source.last().unwrap(), categories).is_err());
+    assert!(
+        encoder
+            .push(
+                source.last().expect("stream projection fixture"),
+                categories
+            )
+            .is_err()
+    );
 }
 
 #[test]
@@ -193,21 +234,30 @@ fn chat_tools_wait_for_terminal_while_text_streams_and_usage_stays_reported() {
     ]);
     bytes.extend_from_slice(b"data: [DONE]\n\n");
     let (source, categories) = decode(Protocol::OpenAi, &bytes, 3);
-    let mut encoder = TurnEncoder::new(Protocol::OpenAi, 16384, 123).unwrap();
+    let mut encoder =
+        TurnEncoder::new(Protocol::OpenAi, 16384, 123).expect("stream projection fixture");
     let mut out = Vec::new();
     for event in &source {
         let terminal = matches!(event.event, Some(TurnEvent::Finished { .. }));
         let bytes = encoder
             .push(event, if terminal { categories } else { None })
-            .unwrap();
+            .expect("stream projection fixture");
         if !terminal {
-            assert!(!std::str::from_utf8(&bytes).unwrap().contains("private"));
+            assert!(
+                !std::str::from_utf8(&bytes)
+                    .expect("stream projection fixture")
+                    .contains("private")
+            );
         }
         out.extend_from_slice(&bytes);
     }
     assert_eq!(
-        decode(Protocol::OpenAi, &out, 2).0.last().unwrap().event,
-        source.last().unwrap().event
+        decode(Protocol::OpenAi, &out, 2)
+            .0
+            .last()
+            .expect("stream projection fixture")
+            .event,
+        source.last().expect("stream projection fixture").event
     );
 }
 
@@ -217,14 +267,14 @@ fn interleaved_earlier_response_text_remains_live_after_tool_barrier() {
     let at = frames
         .iter()
         .position(|v| v["type"] == "response.output_text.delta")
-        .unwrap();
+        .expect("stream projection fixture");
     frames[at]["delta"] = json!("pre");
     let tool = frames
         .iter()
         .position(|v| {
             v["type"] == "response.output_item.added" && v["item"]["type"] == "function_call"
         })
-        .unwrap();
+        .expect("stream projection fixture");
     frames.insert(tool+1,json!({"type":"response.output_text.delta","output_index":1,"item_id":"m1","content_index":0,"delta":"fix"}));
     let (output, early) = project(Protocol::OpenAiResponses, &frames, 3);
     let early = events(&early);
@@ -258,10 +308,18 @@ fn signed_and_redacted_thinking_preserve_exact_continuation_and_standard_headers
     let first = events(&early)
         .into_iter()
         .find(|v| v["type"] == "content_block_start")
-        .unwrap();
+        .expect("stream projection fixture");
     assert_eq!(first["content_block"]["signature"], "");
-    assert!(!std::str::from_utf8(&early).unwrap().contains("opaque"));
-    assert!(std::str::from_utf8(&output).unwrap().contains("opaque"));
+    assert!(
+        !std::str::from_utf8(&early)
+            .expect("stream projection fixture")
+            .contains("opaque")
+    );
+    assert!(
+        std::str::from_utf8(&output)
+            .expect("stream projection fixture")
+            .contains("opaque")
+    );
 }
 
 #[test]
@@ -271,13 +329,18 @@ fn withheld_first_tool_produces_no_later_header_before_terminal() {
         &wire(&responses("first", "last", true)),
         3,
     );
-    let mut encoder = TurnEncoder::new(Protocol::OpenAiResponses, 65536, 123).unwrap();
+    let mut encoder =
+        TurnEncoder::new(Protocol::OpenAiResponses, 65536, 123).expect("stream projection fixture");
     let mut prefix = Vec::new();
     for observation in &source {
         if matches!(observation.event, Some(TurnEvent::Finished { .. })) {
             break;
         }
-        prefix.extend_from_slice(&encoder.push(observation, None).unwrap());
+        prefix.extend_from_slice(
+            &encoder
+                .push(observation, None)
+                .expect("stream projection fixture"),
+        );
     }
     let later_headers: Vec<_> = events(&prefix)
         .into_iter()
@@ -300,7 +363,7 @@ fn unicode_and_sse_looking_text_cannot_change_frame_structure() {
         let (encoded, _) = project(protocol, &frames, 1);
         assert!(
             !std::str::from_utf8(&encoded)
-                .unwrap()
+                .expect("stream projection fixture")
                 .lines()
                 .any(|line| line == "data: forged")
         );
@@ -314,19 +377,42 @@ fn aggregate_budget_exhaustion_after_prefix_returns_no_partial_terminal_and_cann
         &wire(&messages("prefix", &"x".repeat(4096), false)),
         3,
     );
-    let mut encoder = TurnEncoder::new(Protocol::Anthropic, 2048, 123).unwrap();
+    let mut encoder =
+        TurnEncoder::new(Protocol::Anthropic, 2048, 123).expect("stream projection fixture");
     let mut early = Vec::new();
     for observation in &source {
         if matches!(observation.event, Some(TurnEvent::Finished { .. })) {
             break;
         }
-        early.extend_from_slice(&encoder.push(observation, None).unwrap());
+        early.extend_from_slice(
+            &encoder
+                .push(observation, None)
+                .expect("stream projection fixture"),
+        );
     }
-    assert!(std::str::from_utf8(&early).unwrap().contains("prefix"));
-    assert!(!std::str::from_utf8(&early).unwrap().contains("tool_use"));
+    assert!(
+        std::str::from_utf8(&early)
+            .expect("stream projection fixture")
+            .contains("prefix")
+    );
+    assert!(
+        !std::str::from_utf8(&early)
+            .expect("stream projection fixture")
+            .contains("tool_use")
+    );
     assert!(matches!(
-        encoder.push(source.last().unwrap(), categories),
+        encoder.push(
+            source.last().expect("stream projection fixture"),
+            categories
+        ),
         Err(Error::Limit)
     ));
-    assert!(encoder.push(source.last().unwrap(), categories).is_err());
+    assert!(
+        encoder
+            .push(
+                source.last().expect("stream projection fixture"),
+                categories
+            )
+            .is_err()
+    );
 }

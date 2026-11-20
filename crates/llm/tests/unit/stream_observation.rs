@@ -56,17 +56,17 @@ proptest::proptest! {
     #[test]
     fn response_coordinates_survive_fragmentation(width in 1usize..96) {
         let frames=response_frames();
-        proptest::prop_assert_eq!(decode(Protocol::OpenAiResponses,&frames,width).unwrap(),decode(Protocol::OpenAiResponses,&frames,usize::MAX).unwrap());
+        proptest::prop_assert_eq!(decode(Protocol::OpenAiResponses,&frames,width).expect("stream observation fixture"),decode(Protocol::OpenAiResponses,&frames,usize::MAX).expect("stream observation fixture"));
     }
     #[test]
     fn message_array_order_survives_fragmentation(
         width in 1usize..96, bad_index in 2u64..64, reversed in proptest::bool::ANY
     ) {
         let mut frames=anthropic_frames();
-        proptest::prop_assert_eq!(decode(Protocol::Anthropic,&frames,width).unwrap(),decode(Protocol::Anthropic,&frames,usize::MAX).unwrap());
+        proptest::prop_assert_eq!(decode(Protocol::Anthropic,&frames,width).expect("stream observation fixture"),decode(Protocol::Anthropic,&frames,usize::MAX).expect("stream observation fixture"));
         for frame in &mut frames {
             if let Some(index)=frame.get_mut("index") {
-                let original=index.as_u64().unwrap();
+                let original=index.as_u64().expect("stream observation fixture");
                 *index=json!(if reversed {1-original} else if original==1 {bad_index} else {original});
             }
         }
@@ -74,7 +74,7 @@ proptest::proptest! {
         proptest::prop_assert!(decode(Protocol::Anthropic,&frames,width).is_err());
         let bytes=wire(&frames);
         let mut decoder=TurnDecoder::new(Protocol::Anthropic,bytes.len()+32);
-        decoder.push_bytes(&bytes).unwrap();
+        decoder.push_bytes(&bytes).expect("stream observation fixture");
         let error=loop {
             match decoder.next_event() {
                 Err(_) => break true,
@@ -102,16 +102,32 @@ proptest::proptest! {
 
 #[test]
 fn positions_and_terminal_tools_are_distinct_observations() {
-    let observations = decode(Protocol::OpenAiResponses, &response_frames(), 7).unwrap();
-    let first = observations.first().unwrap().metadata.as_ref().unwrap();
+    let observations = decode(Protocol::OpenAiResponses, &response_frames(), 7)
+        .expect("stream observation fixture");
+    let first = observations
+        .first()
+        .expect("stream observation fixture")
+        .metadata
+        .as_ref()
+        .expect("stream observation fixture");
     assert!(matches!(first.control, Some(TurnControl::Started)));
-    assert_eq!(first.identity.as_ref().unwrap().id, "r1");
+    assert_eq!(
+        first
+            .identity
+            .as_ref()
+            .expect("stream observation fixture")
+            .id,
+        "r1"
+    );
     let text = observations
         .iter()
         .find(|o| matches!(o.event, Some(TurnEvent::Text(_))))
-        .unwrap();
+        .expect("stream observation fixture");
     assert_eq!(
-        text.metadata.as_ref().unwrap().position,
+        text.metadata
+            .as_ref()
+            .expect("stream observation fixture")
+            .position,
         Some(TurnPosition::Responses {
             item_id: "msg1".into(),
             output_index: 0,
@@ -125,7 +141,7 @@ fn positions_and_terminal_tools_are_distinct_observations() {
             .all(|o| !format!("{o:?}").contains("private-fragment"))
     );
     assert!(
-        matches!(&observations.last().unwrap().event,Some(TurnEvent::Finished{tool_calls,..}) if tool_calls.len()==1 && tool_calls[0].id=="call1")
+        matches!(&observations.last().expect("stream observation fixture").event,Some(TurnEvent::Finished{tool_calls,..}) if tool_calls.len()==1 && tool_calls[0].id=="call1")
     );
 }
 
@@ -138,9 +154,11 @@ fn same_aggregate_text_cannot_be_reassigned_to_another_content_part() {
     // The original logical API still validates its aggregate transcript; strict
     // coordinates are selected by the adapter's explicit observation API.
     let mut decoder = TurnDecoder::new(Protocol::OpenAiResponses, 16_384);
-    decoder.push_bytes(&wire(&frames)).unwrap();
+    decoder
+        .push_bytes(&wire(&frames))
+        .expect("stream observation fixture");
     let mut finished = false;
-    while let Some(event) = decoder.next_event().unwrap() {
+    while let Some(event) = decoder.next_event().expect("stream observation fixture") {
         finished |= matches!(event, TurnEvent::Finished { .. });
     }
     assert!(finished);
@@ -160,7 +178,9 @@ fn foreign_identity_item_part_and_terminal_substitutions_close_the_decoder() {
         }
         let mut decoder = TurnDecoder::new(Protocol::OpenAiResponses, 16_384)
             .with_expected_model("fixture".into());
-        decoder.push_bytes(&wire(&frames)).unwrap();
+        decoder
+            .push_bytes(&wire(&frames))
+            .expect("stream observation fixture");
         loop {
             match decoder.next_observation() {
                 Err(_) => break,
@@ -192,7 +212,7 @@ fn anthropic_unique_indices_do_not_allow_reordered_blocks() {
     let mut frames = anthropic_frames();
     for frame in &mut frames {
         if let Some(index) = frame.get_mut("index") {
-            *index = json!(1 - index.as_u64().unwrap());
+            *index = json!(1 - index.as_u64().expect("stream observation fixture"));
         }
     }
     assert!(decode(Protocol::Anthropic, &frames, 3).is_err());
@@ -201,18 +221,25 @@ fn anthropic_unique_indices_do_not_allow_reordered_blocks() {
 #[test]
 fn anthropic_positions_and_complete_signature_preserve_block_order() {
     let frames = anthropic_frames();
-    let observations = decode(Protocol::Anthropic, &frames, 3).unwrap();
+    let observations = decode(Protocol::Anthropic, &frames, 3).expect("stream observation fixture");
     assert!(observations.iter().any(|o|matches!(&o.metadata,Some(m) if m.control==Some(TurnControl::AnthropicStop {index:0,kind:TurnBlockKind::Thinking,signature:Some("signed".into())}))));
     let answer = observations
         .iter()
         .find(|o| matches!(&o.event,Some(TurnEvent::Text(t)) if t=="answer"))
-        .unwrap();
+        .expect("stream observation fixture");
     assert_eq!(
-        answer.metadata.as_ref().unwrap().position,
+        answer
+            .metadata
+            .as_ref()
+            .expect("stream observation fixture")
+            .position,
         Some(TurnPosition::Anthropic { index: 1 })
     );
     assert!(matches!(
-        observations.last().unwrap().event,
+        observations
+            .last()
+            .expect("stream observation fixture")
+            .event,
         Some(TurnEvent::Finished {
             anthropic_output: Some(_),
             ..

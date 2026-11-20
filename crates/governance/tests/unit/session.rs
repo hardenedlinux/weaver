@@ -22,7 +22,10 @@ pub(crate) fn input() -> SessionTurnInput {
             },
             publication: PublicationKey {
                 operation_id: source.publication.operation_id.clone(),
-                digest: source.publication.digest().unwrap(),
+                digest: source
+                    .publication
+                    .digest()
+                    .expect("Scheme Session input fixture"),
             },
             template,
             max_turns: 4,
@@ -39,7 +42,7 @@ pub(crate) fn input() -> SessionTurnInput {
 #[test]
 fn compact_facts_and_advisory_selection_cannot_change_source_bounds() {
     let input = input();
-    input.validate().unwrap();
+    input.validate().expect("Scheme Session input fixture");
     for index in 0..5 {
         let mut changed = input.clone();
         match index {
@@ -52,10 +55,12 @@ fn compact_facts_and_advisory_selection_cannot_change_source_bounds() {
         assert!(changed.validate().is_err());
     }
     let selected = SessionTurnSelection {
-        scope_commitment: input.scope.digest().unwrap(),
+        scope_commitment: input.scope.digest().expect("Scheme Session input fixture"),
         route_indices: vec![0],
     };
-    selected.validate_for(&input).unwrap();
+    selected
+        .validate_for(&input)
+        .expect("Scheme Session input fixture");
     for routes in [vec![], vec![1], vec![0, 0], vec![0; 9]] {
         let mut changed = selected.clone();
         changed.route_indices = routes;
@@ -69,17 +74,18 @@ proptest! {
     #![proptest_config(Config::with_cases(64))]
     #[test]
     fn all_fact_bounds_are_checked_without_prompt_transfer(tokens in 0u64..8193,messages in 0u64..130,bytes in 0u64..2097153) {
-        let mut input=input();let profile=input.scope.template.provider_profile.as_ref().unwrap();
+        let mut input=input();let profile=input.scope.template.provider_profile.as_ref().expect("Scheme Session input fixture");
         let expected=(1..=profile.max_output_tokens).contains(&tokens) && (1..=profile.max_messages).contains(&messages) && (1..=profile.max_body_bytes).contains(&bytes);
         input.facts.output_token_limit=tokens;input.facts.message_count=messages;input.facts.body_bytes=bytes;
         prop_assert_eq!(input.validate().is_ok(),expected);
-        let wire=serde_json::to_value(&input).unwrap();prop_assert_eq!(wire.get("body"),None);
+        let wire=serde_json::to_value(&input).expect("Scheme Session input fixture");prop_assert_eq!(wire.get("body"),None);
     }
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn four_turns_use_the_existing_bounded_owner_without_calling_compile() {
-    let (client, inbox) = crate::source_lane(std::num::NonZeroUsize::new(4).unwrap());
+    let (client, inbox) =
+        crate::source_lane(std::num::NonZeroUsize::new(4).expect("Scheme Session input fixture"));
     let owner = tokio::task::spawn_blocking(move || {
         inbox.run_with_cancellable_governor(
             (),
@@ -87,7 +93,10 @@ async fn four_turns_use_the_existing_bounded_owner_without_calling_compile() {
             |_, work| match work {
                 crate::Derivation::SessionTurn(input) => {
                     Ok(crate::DerivationOutput::SessionTurn(SessionTurnSelection {
-                        scope_commitment: input.scope.digest().unwrap(),
+                        scope_commitment: input
+                            .scope
+                            .digest()
+                            .expect("Scheme Session input fixture"),
                         route_indices: vec![0],
                     }))
                 }
@@ -104,13 +113,13 @@ async fn four_turns_use_the_existing_bounded_owner_without_calling_compile() {
     for job in jobs {
         tokio::time::timeout(std::time::Duration::from_secs(3), job)
             .await
-            .unwrap()
-            .unwrap()
-            .unwrap();
+            .expect("Scheme Session input fixture")
+            .expect("Scheme Session input fixture")
+            .expect("Scheme Session input fixture");
     }
     client.close();
     tokio::time::timeout(std::time::Duration::from_secs(3), owner)
         .await
-        .unwrap()
-        .unwrap();
+        .expect("Scheme Session input fixture")
+        .expect("Scheme Session input fixture");
 }

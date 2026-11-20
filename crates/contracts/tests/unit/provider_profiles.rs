@@ -43,7 +43,7 @@ fn rich_profiles_are_distinct_from_closed_text_and_keep_resource_bounds() {
     for (protocol, body) in cases {
         let mut rich = profile();
         rich.protocol = protocol.into();
-        let wire = serde_json::to_string(&body).unwrap();
+        let wire = serde_json::to_string(&body).expect("provider profile wire fixture");
         assert!(rich.request_facts(&wire).is_ok(), "{protocol}");
         assert!(profile().request_facts(&wire).is_err());
         let mut over = body.clone();

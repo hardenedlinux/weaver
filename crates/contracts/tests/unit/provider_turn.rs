@@ -43,9 +43,12 @@ fn terminal() -> ProviderTurnEvent {
 fn rich_terminal_round_trip_binds_continuation_and_tools() {
     let event = terminal();
     assert!(event.is_terminal());
-    let bytes = event.encode().unwrap();
-    assert_eq!(ProviderTurnEvent::decode(&bytes).unwrap(), event);
-    let original = crate::body_digest(std::str::from_utf8(&bytes).unwrap());
+    let bytes = event.encode().expect("turn contract fixture");
+    assert_eq!(
+        ProviderTurnEvent::decode(&bytes).expect("turn contract fixture"),
+        event
+    );
+    let original = crate::body_digest(std::str::from_utf8(&bytes).expect("turn contract fixture"));
     let mut changed = event;
     if let ProviderTurnPayload::Finished {
         responses_output, ..
@@ -55,7 +58,10 @@ fn rich_terminal_round_trip_binds_continuation_and_tools() {
     }
     assert_ne!(
         original,
-        crate::body_digest(std::str::from_utf8(&changed.encode().unwrap()).unwrap())
+        crate::body_digest(
+            std::str::from_utf8(&changed.encode().expect("turn contract fixture"))
+                .expect("turn contract fixture")
+        )
     );
 }
 
@@ -117,21 +123,32 @@ fn category_changes_affect_the_released_frame_commitment_and_mismatches_are_reje
         tokens: 0,
     };
     if let ProviderTurnPayload::Finished { usage, .. } = &mut changed.payload {
-        let categories = usage.as_mut().unwrap().categories.as_mut().unwrap();
+        let categories = usage
+            .as_mut()
+            .expect("turn contract fixture")
+            .categories
+            .as_mut()
+            .expect("turn contract fixture");
         categories.ordinary_input -= 1;
         categories.cache_read_input += 1;
     }
-    changed.encode().unwrap();
+    changed.encode().expect("turn contract fixture");
     let other = crate::ProviderEvent {
         kind: crate::ProviderEventKind::Turn(Box::new(changed.clone())),
         ..original.clone()
     };
     assert_ne!(
-        crate::body_digest(&serde_json::to_string(&[original]).unwrap()),
-        crate::body_digest(&serde_json::to_string(&[other]).unwrap())
+        crate::body_digest(&serde_json::to_string(&[original]).expect("turn contract fixture")),
+        crate::body_digest(&serde_json::to_string(&[other]).expect("turn contract fixture"))
     );
     if let ProviderTurnPayload::Finished { usage, .. } = &mut changed.payload {
-        usage.as_mut().unwrap().categories.as_mut().unwrap().output += 1;
+        usage
+            .as_mut()
+            .expect("turn contract fixture")
+            .categories
+            .as_mut()
+            .expect("turn contract fixture")
+            .output += 1;
     }
     assert!(changed.encode().is_err());
 }
@@ -162,9 +179,12 @@ fn controls_require_bounded_closed_metadata_and_hide_opaque_signatures_in_debug(
     event.metadata = None;
     assert!(event.encode().is_err());
     assert!(positioned(64).encode().is_err());
-    let mut value = serde_json::to_value(positioned(0)).unwrap();
+    let mut value = serde_json::to_value(positioned(0)).expect("turn contract fixture");
     value["metadata"]["tool_arguments"] = serde_json::json!({"private":"partial"});
-    assert!(ProviderTurnEvent::decode(&serde_json::to_vec(&value).unwrap()).is_err());
+    assert!(
+        ProviderTurnEvent::decode(&serde_json::to_vec(&value).expect("turn contract fixture"))
+            .is_err()
+    );
     event.metadata = Some(super::ProviderTurnMetadata {
         identity: None,
         usage: None,
@@ -176,7 +196,8 @@ fn controls_require_bounded_closed_metadata_and_hide_opaque_signatures_in_debug(
         }),
     });
     assert_eq!(
-        ProviderTurnEvent::decode(&event.encode().unwrap()).unwrap(),
+        ProviderTurnEvent::decode(&event.encode().expect("turn contract fixture"))
+            .expect("turn contract fixture"),
         event
     );
     assert!(!format!("{event:?}").contains("opaque-signature"));
@@ -188,8 +209,8 @@ proptest::proptest! {
     fn coordinate_changes_bind_the_release_even_when_text_is_identical(index in 0u64..63) {
         let original=positioned(index);
         let changed=positioned(index+1);
-        proptest::prop_assert_eq!(ProviderTurnEvent::decode(&original.encode().unwrap()).unwrap(),original.clone());
-        proptest::prop_assert_ne!(crate::body_digest(&serde_json::to_string(&original).unwrap()),crate::body_digest(&serde_json::to_string(&changed).unwrap()));
+        proptest::prop_assert_eq!(ProviderTurnEvent::decode(&original.encode().expect("turn contract fixture")).expect("turn contract fixture"),original.clone());
+        proptest::prop_assert_ne!(crate::body_digest(&serde_json::to_string(&original).expect("turn contract fixture")),crate::body_digest(&serde_json::to_string(&changed).expect("turn contract fixture")));
         proptest::prop_assert_eq!(&original.payload,&changed.payload);
         proptest::prop_assert!(!original.is_terminal());
     }
@@ -203,7 +224,7 @@ proptest::proptest! {
         if let ProviderTurnPayload::Finished { responses_output, .. } = &mut event.payload {
             *responses_output = Some(vec![serde_json::json!({"type":"reasoning", "encrypted_content":content})]);
         }
-        let encoded = event.encode().unwrap();
-        proptest::prop_assert_eq!(ProviderTurnEvent::decode(&encoded).unwrap(), event);
+        let encoded = event.encode().expect("turn contract fixture");
+        proptest::prop_assert_eq!(ProviderTurnEvent::decode(&encoded).expect("turn contract fixture"), event);
     }
 }

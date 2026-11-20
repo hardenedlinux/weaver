@@ -21,7 +21,7 @@ fn scope() -> ProviderSessionScope {
         "domains":{"origin":"session-a","budget":"shared-budget","history":"shared-history","budget_limit":8},
         "publication":{"operation_id":"source-publication","digest":body_digest("publication")},
         "max_turns":4
-    }).to_string().as_bytes()).unwrap()
+    }).to_string().as_bytes()).expect("Session contract fixture")
 }
 
 fn submission(key: &str, prompt: &str) -> ProviderTurnSubmission {
@@ -36,12 +36,19 @@ fn derived(
     submission: &ProviderTurnSubmission,
 ) -> ProviderTurnDerivation {
     let mut task = scope.template.clone();
-    task.family = scope.turn_family(submission).unwrap();
+    task.family = scope
+        .turn_family(submission)
+        .expect("Session contract fixture");
     let plan = ProviderPlan {
         family: task.family.clone(),
         node: "infer".into(),
         profile: "p".into(),
-        profile_commitment: task.provider_profile.as_ref().unwrap().digest().unwrap(),
+        profile_commitment: task
+            .provider_profile
+            .as_ref()
+            .expect("Session contract fixture")
+            .digest()
+            .expect("Session contract fixture"),
         model: "model-a".into(),
         body: submission.body.clone(),
         routes: vec![ProviderRoute {
@@ -54,8 +61,10 @@ fn derived(
     };
     task.body_digests
         .insert("infer".into(), body_digest(&submission.body));
-    task.stream_contracts
-        .insert("infer".into(), plan.digest().unwrap());
+    task.stream_contracts.insert(
+        "infer".into(),
+        plan.digest().expect("Session contract fixture"),
+    );
     let mut domains = scope.domains.clone();
     domains.origin.clone_from(&task.family);
     ProviderTurnDerivation {
@@ -72,10 +81,17 @@ fn turns_change_bytes_and_origins_but_preserve_source_limits_and_shared_domains(
     let second = submission("second", "file result");
     let a = derived(&scope, &first);
     let b = derived(&scope, &second);
-    scope.admits("alice", &first, &a).unwrap();
-    scope.admits("alice", &second, &b).unwrap();
+    scope
+        .admits("alice", &first, &a)
+        .expect("Session contract fixture");
+    scope
+        .admits("alice", &second, &b)
+        .expect("Session contract fixture");
     assert_ne!(a.task.family, b.task.family);
-    assert_ne!(a.plan.digest().unwrap(), b.plan.digest().unwrap());
+    assert_ne!(
+        a.plan.digest().expect("Session contract fixture"),
+        b.plan.digest().expect("Session contract fixture")
+    );
     assert_eq!(
         (&a.domains.budget, &a.domains.history),
         (&b.domains.budget, &b.domains.history)
@@ -106,15 +122,22 @@ fn concrete_derivation_cannot_change_route_budget_profile_or_bound_body() {
                     .insert("primary".into(), plan.routes[0].endpoint.clone());
             }
             5 => plan.ceiling -= 1,
-            6 => task.provider_profile.as_mut().unwrap().max_messages += 1,
+            6 => {
+                task.provider_profile
+                    .as_mut()
+                    .expect("Session contract fixture")
+                    .max_messages += 1
+            }
             _ => plan.body.push(' '),
         }
         // Refresh every downstream commitment: the source scope must still be
         // decisive even when a malicious derivation is internally consistent.
         task.body_digests
             .insert("infer".into(), body_digest(&plan.body));
-        task.stream_contracts
-            .insert("infer".into(), plan.digest().unwrap());
+        task.stream_contracts.insert(
+            "infer".into(),
+            plan.digest().expect("Session contract fixture"),
+        );
         assert!(
             scope
                 .admits(
@@ -173,12 +196,12 @@ proptest! {
         let a = submission("retry", &prompt);
         let mut b = a.clone();
         b.body.push(' ');
-        prop_assert_eq!(scope.turn_family(&a).unwrap(), scope.turn_family(&b).unwrap());
-        prop_assert!(scope.submission_digest("alice", &a).unwrap() != scope.submission_digest("alice", &b).unwrap());
+        prop_assert_eq!(scope.turn_family(&a).expect("Session contract fixture"), scope.turn_family(&b).expect("Session contract fixture"));
+        prop_assert!(scope.submission_digest("alice", &a).expect("Session contract fixture") != scope.submission_digest("alice", &b).expect("Session contract fixture"));
         let mut changed = scope.clone();
         changed.max_turns = limit;
         changed.domains.history = format!("history-{extra}");
-        prop_assert!(scope.digest().unwrap() != changed.digest().unwrap());
-        prop_assert!(scope.turn_family(&a).unwrap() != changed.turn_family(&a).unwrap());
+        prop_assert!(scope.digest().expect("Session contract fixture") != changed.digest().expect("Session contract fixture"));
+        prop_assert!(scope.turn_family(&a).expect("Session contract fixture") != changed.turn_family(&a).expect("Session contract fixture"));
     }
 }

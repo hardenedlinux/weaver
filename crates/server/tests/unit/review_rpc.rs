@@ -84,7 +84,9 @@ async fn source_rpc_reads_owned_parent_and_registers_only_authenticated_evidence
     )
     .await;
     assert_eq!(
-        denied_scope.unwrap_err().code(),
+        denied_scope
+            .expect_err("cross-ingress operation must reject")
+            .code(),
         tonic::Code::PermissionDenied
     );
     let denied_turn: Result<pb::ProviderPlan, _> = rpc::unary(
@@ -95,7 +97,9 @@ async fn source_rpc_reads_owned_parent_and_registers_only_authenticated_evidence
     )
     .await;
     assert_eq!(
-        denied_turn.unwrap_err().code(),
+        denied_turn
+            .expect_err("cross-ingress operation must reject")
+            .code(),
         tonic::Code::PermissionDenied
     );
     let denied_discovery: Result<pb::ProviderSessionCatalog, _> = rpc::unary(
@@ -108,7 +112,9 @@ async fn source_rpc_reads_owned_parent_and_registers_only_authenticated_evidence
     )
     .await;
     assert_eq!(
-        denied_discovery.unwrap_err().code(),
+        denied_discovery
+            .expect_err("cross-ingress operation must reject")
+            .code(),
         tonic::Code::PermissionDenied
     );
     let request = pb::PublishRequest {

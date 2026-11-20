@@ -29,8 +29,8 @@ proptest::proptest! {
         let mut events = Vec::new();
         for size in chunk_sizes.iter().cycle() {
             let end = (offset + size).min(wire.len());
-            codec.push_bytes(&wire[offset..end]).unwrap();
-            while let Some(event) = codec.next_event().unwrap() {
+            codec.push_bytes(&wire[offset..end]).expect("stream framing fixture");
+            while let Some(event) = codec.next_event().expect("stream framing fixture") {
                 events.push(event);
             }
             offset = end;
@@ -38,7 +38,7 @@ proptest::proptest! {
             // the LF of its final CRLF when those bytes arrive separately.
             if offset == wire.len() || matches!(events.last(), Some(TurnEvent::Finished { .. })) { break; }
         }
-        codec.finish().unwrap();
+        codec.finish().expect("stream framing fixture");
         proptest::prop_assert_eq!(events.len(), 1);
         let TurnEvent::Finished { tool_calls, .. } = &events[0] else {
             return Err(proptest::test_runner::TestCaseError::fail("missing terminal tools"));
@@ -47,7 +47,7 @@ proptest::proptest! {
         proptest::prop_assert_eq!(&tool_calls[0].id, "call-1");
         proptest::prop_assert_eq!(&tool_calls[0].name, "read");
         proptest::prop_assert_eq!(&tool_calls[0].arguments, &serde_json::json!({"path":"file"}));
-        proptest::prop_assert!(codec.next_event().unwrap().is_none());
+        proptest::prop_assert!(codec.next_event().expect("stream framing fixture").is_none());
         proptest::prop_assert!(codec.push_bytes(b"more").is_err());
     }
 }
@@ -57,8 +57,10 @@ fn independent_decoder_rejects_every_truncated_tool_turn() {
     let wire = tool_turn_wire();
     for end in 0..wire.len() - 1 {
         let mut codec = super::TurnDecoder::new(crate::Protocol::OpenAi, wire.len());
-        codec.push_bytes(&wire[..end]).unwrap();
-        while let Some(event) = codec.next_event().unwrap() {
+        codec
+            .push_bytes(&wire[..end])
+            .expect("stream framing fixture");
+        while let Some(event) = codec.next_event().expect("stream framing fixture") {
             assert!(
                 !matches!(event, super::TurnEvent::Finished { .. }),
                 "prefix {end}"
@@ -72,15 +74,29 @@ fn independent_decoder_rejects_every_truncated_tool_turn() {
 #[test]
 fn independent_decoder_counts_control_bytes_and_closes_on_failure() {
     let mut codec = super::TurnDecoder::new(crate::Protocol::OpenAi, 8);
-    codec.push_bytes(b": ping\n\n").unwrap();
-    assert!(codec.next_event().unwrap().is_none());
+    codec
+        .push_bytes(b": ping\n\n")
+        .expect("stream framing fixture");
+    assert!(
+        codec
+            .next_event()
+            .expect("stream framing fixture")
+            .is_none()
+    );
     assert!(matches!(codec.push_bytes(b"x"), Err(crate::Error::Limit)));
     assert!(codec.finish().is_err());
-    assert!(codec.next_event().unwrap().is_none());
+    assert!(
+        codec
+            .next_event()
+            .expect("stream framing fixture")
+            .is_none()
+    );
     assert!(codec.push_bytes(b"").is_err());
 
     let mut codec = super::TurnDecoder::new(crate::Protocol::OpenAi, 128);
-    codec.push_bytes(b"data: invalid-json\n\n").unwrap();
+    codec
+        .push_bytes(b"data: invalid-json\n\n")
+        .expect("stream framing fixture");
     assert!(codec.next_event().is_err());
     assert!(codec.finish().is_err());
     assert!(codec.push_bytes(b"data: [DONE]\n\n").is_err());
@@ -94,11 +110,16 @@ fn source_selected_model_and_response_identity_cannot_change_mid_turn() {
     ] {
         let mut codec = super::TurnDecoder::new(crate::Protocol::OpenAi, 4096)
             .with_expected_model("fixture".into());
-        codec.push_bytes(b"data: {\"id\":\"t\",\"model\":\"fixture\",\"choices\":[{\"index\":0,\"delta\":{\"role\":\"assistant\"}}]}\n\n").unwrap();
-        assert!(codec.next_event().unwrap().is_none());
+        codec.push_bytes(b"data: {\"id\":\"t\",\"model\":\"fixture\",\"choices\":[{\"index\":0,\"delta\":{\"role\":\"assistant\"}}]}\n\n").expect("stream framing fixture");
+        assert!(
+            codec
+                .next_event()
+                .expect("stream framing fixture")
+                .is_none()
+        );
         codec
             .push_bytes(format!("data: {changed}\n\n").as_bytes())
-            .unwrap();
+            .expect("stream framing fixture");
         assert!(codec.next_event().is_err());
         assert!(codec.finish().is_err());
     }
@@ -152,7 +173,7 @@ fn responses_terminal_must_match_streamed_text() {
         serde_json::to_vec(&serde_json::json!({
             "type": "response.completed",
             "response": {"id": "response", "model": "gpt-fixture", "status": "completed", "output": output}
-        })).unwrap()
+        })).expect("stream framing fixture")
     }
     for output in [
         serde_json::json!([]),
@@ -174,12 +195,12 @@ fn responses_terminal_must_match_streamed_text() {
         br#"{"type":"response.output_text.delta","delta":"sho"}"#,
         false,
     )
-    .unwrap();
+    .expect("stream framing fixture");
     turn.accept(
         br#"{"type":"response.output_text.delta","delta":"wn"}"#,
         false,
     )
-    .unwrap();
+    .expect("stream framing fixture");
     let output = serde_json::json!([{"type": "message", "content": [{"type": "output_text", "text": "shown"}]}]);
     assert!(matches!(
         turn.accept(&terminal(output), false).map(|o| o.event),

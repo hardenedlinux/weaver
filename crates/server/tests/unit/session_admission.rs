@@ -9,7 +9,11 @@ use weaver_contracts::{
 };
 
 fn slot() -> Arc<tokio::sync::OwnedSemaphorePermit> {
-    Arc::new(Arc::new(Semaphore::new(1)).try_acquire_owned().unwrap())
+    Arc::new(
+        Arc::new(Semaphore::new(1))
+            .try_acquire_owned()
+            .expect("Session admission fixture"),
+    )
 }
 fn caller() -> SourceIdentity {
     SourceIdentity {
@@ -24,7 +28,10 @@ fn request(key: &str, count: usize) -> weaver_ledger::ProviderSessionRequest {
             "messages":(0..count).map(|_|serde_json::json!({"role":"user","content":key})).collect::<Vec<_>>()}).to_string()}}
 }
 async fn change(owner: &SourceOwner, available: bool) {
-    let state = owner.inspect_fact(caller()).await.unwrap();
+    let state = owner
+        .inspect_fact(caller())
+        .await
+        .expect("Session admission fixture");
     let barrier = owner
         .stage_fact(
             caller(),
@@ -39,21 +46,23 @@ async fn change(owner: &SourceOwner, available: bool) {
             },
         )
         .await
-        .unwrap();
-    let weaver_ledger::FactPreparation::Pending(work) =
-        owner.prepare_fact(caller(), barrier).await.unwrap()
+        .expect("Session admission fixture");
+    let weaver_ledger::FactPreparation::Pending(work) = owner
+        .prepare_fact(caller(), barrier)
+        .await
+        .expect("Session admission fixture")
     else {
         panic!("pending");
     };
     owner
         .resolve_fact(caller(), work, vec!["infer".into()])
         .await
-        .unwrap();
+        .expect("Session admission fixture");
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn source_lane_rejoins_after_advisory_work_and_does_not_hold_sql_across_the_owner() {
-    let temp = tempfile::tempdir().unwrap();
+    let temp = tempfile::tempdir().expect("Session admission fixture");
     let path = temp.path().join("session.db");
     let runtime = RuntimeOwner::new();
     runtime
@@ -72,10 +81,10 @@ async fn source_lane_rejoins_after_advisory_work_and_does_not_hold_sql_across_th
             workflow_choice: false,
             workflow_selectors: vec![],
         })
-        .unwrap();
+        .expect("Session admission fixture");
     let worker = SourceOwner::start(runtime.clone(), slot(), path.clone())
         .await
-        .unwrap();
+        .expect("Session admission fixture");
     let source = worker.client.clone();
     let publication = weaver_contracts::Publication {
         operation_id: "session-pub".into(),
@@ -86,19 +95,25 @@ async fn source_lane_rejoins_after_advisory_work_and_does_not_hold_sql_across_th
             .replace("openai.chat-text-sse.v1", "openai.chat-turn-sse.v1"),
         schema: include_str!("../../../../prod/policies/provider/schema.json").into(),
     };
-    source.publish(caller(), publication.clone()).await.unwrap();
+    source
+        .publish(caller(), publication.clone())
+        .await
+        .expect("Session admission fixture");
     let scope:ProviderSessionScope=weaver_contracts::decode(serde_json::json!({"template":{"family":"session-a","principal":"alice","profile":"p",
         "provider_profile":{"id":"p","protocol":"openai.chat-turn-sse.v1","max_output_tokens":32,"max_messages":8,"max_body_bytes":4096},
         "nodes":["infer"],"targets":["primary"],"endpoints":{"primary":"https://provider.invalid/v1/chat/completions"},"body_digests":{},"stream_contracts":{},"node_cost_bounds":{"infer":4},"models":["model-a"],"budget":8},
         "domains":{"origin":"session-a","budget":"shared","history":"history","budget_limit":8},"max_turns":4,
-        "publication":{"operation_id":publication.operation_id,"digest":publication.digest().unwrap()}}).to_string().as_bytes()).unwrap();
-    source.register_session(caller(), scope).await.unwrap();
+        "publication":{"operation_id":publication.operation_id,"digest":publication.digest().expect("Session admission fixture")}}).to_string().as_bytes()).expect("Session admission fixture");
+    source
+        .register_session(caller(), scope)
+        .await
+        .expect("Session admission fixture");
     change(&source, true).await;
     let catalog = source
         .operation_resolver()
         .session_catalog("session-a".into(), "alice".into())
         .await
-        .unwrap();
+        .expect("Session admission fixture");
     assert_eq!(catalog.models, vec!["model-a"]);
     assert!(
         source
@@ -107,8 +122,11 @@ async fn source_lane_rejoins_after_advisory_work_and_does_not_hold_sql_across_th
             .await
             .is_err()
     );
-    let (client, inbox) = weaver_governance::source_lane(NonZeroUsize::new(4).unwrap());
-    runtime.attach_governance(client).unwrap();
+    let (client, inbox) =
+        weaver_governance::source_lane(NonZeroUsize::new(4).expect("Session admission fixture"));
+    runtime
+        .attach_governance(client)
+        .expect("Session admission fixture");
     let (entered, waiting) = std::sync::mpsc::channel();
     let (release, resume) = std::sync::mpsc::channel();
     let derivations = Arc::new(std::sync::atomic::AtomicUsize::new(0));
@@ -125,12 +143,17 @@ async fn source_lane_rejoins_after_advisory_work_and_does_not_hold_sql_across_th
                     };
                     observed_derivations.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
                     if input.facts.message_count == 2 {
-                        entered.send(()).unwrap();
-                        resume.recv_timeout(Duration::from_secs(5)).unwrap();
+                        entered.send(()).expect("Session admission fixture");
+                        resume
+                            .recv_timeout(Duration::from_secs(5))
+                            .expect("Session admission fixture");
                     }
                     Ok(weaver_governance::DerivationOutput::SessionTurn(
                         weaver_governance::SessionTurnSelection {
-                            scope_commitment: input.scope.digest().unwrap(),
+                            scope_commitment: input
+                                .scope
+                                .digest()
+                                .expect("Session admission fixture"),
                             route_indices: vec![0],
                         },
                     ))
@@ -138,21 +161,21 @@ async fn source_lane_rejoins_after_advisory_work_and_does_not_hold_sql_across_th
             );
             Ok(())
         })
-        .unwrap();
+        .expect("Session admission fixture");
     let resolver = source.operation_resolver();
     let first = resolver
         .admit_turn(&runtime, request("first", 1))
         .await
-        .unwrap();
+        .expect("Session admission fixture");
     let second = resolver
         .admit_turn(&runtime, request("second", 1))
         .await
-        .unwrap();
+        .expect("Session admission fixture");
     assert_eq!(
         resolver
             .admit_turn(&runtime, request("first", 1))
             .await
-            .unwrap(),
+            .expect("Session admission fixture"),
         first
     );
     assert_eq!(derivations.load(std::sync::atomic::Ordering::SeqCst), 2);
@@ -165,20 +188,31 @@ async fn source_lane_rejoins_after_advisory_work_and_does_not_hold_sql_across_th
         "changed retry bytes must fail before advisory work"
     );
     assert_eq!(derivations.load(std::sync::atomic::Ordering::SeqCst), 2);
-    let mut ledger = weaver_ledger::Ledger::open(&path).unwrap();
-    ledger.enqueue_provider(&first.plan).unwrap();
-    ledger.enqueue_provider(&second.plan).unwrap();
+    let mut ledger = weaver_ledger::Ledger::open(&path).expect("Session admission fixture");
+    ledger
+        .enqueue_provider(&first.plan)
+        .expect("Session admission fixture");
+    ledger
+        .enqueue_provider(&second.plan)
+        .expect("Session admission fixture");
     assert_eq!(
-        ledger.execution_domains(&first.task.family).unwrap().held,
+        ledger
+            .execution_domains(&first.task.family)
+            .expect("Session admission fixture")
+            .held,
         8
     );
     let task = {
         let runtime = runtime.clone();
         tokio::spawn(async move { resolver.admit_turn(&runtime, request("third", 2)).await })
     };
-    tokio::task::spawn_blocking(move || waiting.recv_timeout(Duration::from_secs(5)).unwrap())
-        .await
-        .unwrap();
+    tokio::task::spawn_blocking(move || {
+        waiting
+            .recv_timeout(Duration::from_secs(5))
+            .expect("Session admission fixture")
+    })
+    .await
+    .expect("Session admission fixture");
     assert_eq!(
         tokio::time::timeout(
             Duration::from_secs(3),
@@ -188,11 +222,11 @@ async fn source_lane_rejoins_after_advisory_work_and_does_not_hold_sql_across_th
         )
         .await
         .expect("exact replay must not queue behind advisory work")
-        .unwrap(),
+        .expect("Session admission fixture"),
         first
     );
     let withdrawn = tokio::time::timeout(Duration::from_secs(3), change(&source, false)).await;
-    release.send(()).unwrap();
+    release.send(()).expect("Session admission fixture");
     assert!(
         withdrawn.is_ok(),
         "advisory work must not retain SQL lane or writer"
@@ -205,7 +239,7 @@ async fn source_lane_rejoins_after_advisory_work_and_does_not_hold_sql_across_th
             .is_err()
     );
     assert!(
-        task.await.unwrap().is_err(),
+        task.await.expect("Session admission fixture").is_err(),
         "changed facts invalidate the captured deciding cut"
     );
     assert!(
@@ -218,10 +252,16 @@ async fn source_lane_rejoins_after_advisory_work_and_does_not_hold_sql_across_th
     );
     assert_eq!(derivations.load(std::sync::atomic::Ordering::SeqCst), 3);
     assert_eq!(
-        ledger.execution_domains(&first.task.family).unwrap().held,
+        ledger
+            .execution_domains(&first.task.family)
+            .expect("Session admission fixture")
+            .held,
         8
     );
     runtime.drain().await;
-    worker.finish().await.unwrap();
-    semantic.await.unwrap().unwrap();
+    worker.finish().await.expect("Session admission fixture");
+    semantic
+        .await
+        .expect("Session admission fixture")
+        .expect("Session admission fixture");
 }
