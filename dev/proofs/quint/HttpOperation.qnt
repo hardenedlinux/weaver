@@ -4,12 +4,16 @@
 // HTTP capability binding only. Native SQL, TLS, byte custody and scheduling
 // remain runtime obligations covered by their own models and actual transports.
 module HttpOperation {
-  type Caller = {realm:int,bearer:int,api:int}
+  // consistent abstracts byte-identical bounded caller-supplied values; realm
+  // names that one credential. It never unions two independently valid roles.
+  type Caller = {realm:int,bearer:int,api:int,consistent:bool}
   type Cut = {generation:int,available:bool,protocol:int}
   type Receipt = {caller:Caller,path:int,actual:Cut,observed:Cut}
   type State = {live:Cut,cached:Cut,history:List[Receipt]}
   var s:State
-  pure def authenticated(c:Caller):bool = c.realm==0 and c.bearer+c.api==1
+  pure def authenticated(c:Caller):bool = c.realm==0 and (
+    (c.bearer==1 and c.api==0) or (c.bearer==0 and c.api==1) or
+    (c.bearer==1 and c.api==1 and c.consistent))
   val safe = s.history.indices().forall(i => {
     val receipt=s.history.nth(i)
     authenticated(receipt.caller) and receipt.actual.available and receipt.path==receipt.actual.protocol
@@ -25,9 +29,10 @@ module HttpOperation {
     nondet realm=0.to(3).oneOf()
     nondet bearer=0.to(2).oneOf()
     nondet api=0.to(2).oneOf()
+    nondet consistent=Set(true,false).oneOf()
     nondet path=0.to(2).oneOf()
     nondet available=Set(true,false).oneOf()
-    val caller={realm:realm,bearer:bearer,api:api}
+    val caller={realm:realm,bearer:bearer,api:api,consistent:consistent}
     any {observe,replace(available,path),
       if(strategy==1) cachedCatalogAdmit(caller,path)
       else if(strategy==2) credentialUnionAdmit(caller,path)
@@ -36,12 +41,16 @@ module HttpOperation {
   action step = explore(0)
   action cachedCatalogStep = explore(1)
   action credentialUnionStep = explore(2)
-  run dedicatedBearerTest = init.then(admit({realm:0,bearer:1,api:0},0)).expect(safe)
-  run dedicatedApiKeyTest = init.then(admit({realm:0,bearer:0,api:1},0)).expect(safe)
-  run sourceTokenCannotExecuteTest = init.then(admit({realm:2,bearer:1,api:0},0).fail())
-  run ambiguousHeadersCannotExecuteTest = init.then(admit({realm:0,bearer:1,api:1},0).fail())
-  run protocolReplacementRejectsOldPathTest = init.then(replace(true,1)).then(admit({realm:0,bearer:1,api:0},0).fail())
-  run cachedCatalogMissesWithdrawalTest = init.then(replace(false,0)).then(cachedCatalogAdmit({realm:0,bearer:1,api:0},0)).expect(not(safe))
-  run cachedCatalogMissesProtocolReplacementTest = init.then(replace(true,1)).then(cachedCatalogAdmit({realm:0,bearer:1,api:0},0)).expect(not(safe))
-  run credentialUnionAcceptsSourceRealmTest = init.then(credentialUnionAdmit({realm:2,bearer:1,api:0},0)).expect(not(safe))
+  run dedicatedBearerTest = init.then(admit({realm:0,bearer:1,api:0,consistent:true},0)).expect(safe)
+  run dedicatedApiKeyTest = init.then(admit({realm:0,bearer:0,api:1,consistent:true},0)).expect(safe)
+  run sourceTokenCannotExecuteTest = init.then(admit({realm:2,bearer:1,api:0,consistent:true},0).fail())
+  run ambiguousHeadersCannotExecuteTest = init.then(admit({realm:0,bearer:1,api:1,consistent:false},0).fail())
+  run protocolReplacementRejectsOldPathTest = init.then(replace(true,1)).then(admit({realm:0,bearer:1,api:0,consistent:true},0).fail())
+  run cachedCatalogMissesWithdrawalTest = init.then(replace(false,0)).then(cachedCatalogAdmit({realm:0,bearer:1,api:0,consistent:true},0)).expect(not(safe))
+  run cachedCatalogMissesProtocolReplacementTest = init.then(replace(true,1)).then(cachedCatalogAdmit({realm:0,bearer:1,api:0,consistent:true},0)).expect(not(safe))
+  run credentialUnionAcceptsSourceRealmTest = init.then(credentialUnionAdmit({realm:2,bearer:1,api:0,consistent:true},0)).expect(not(safe))
+  run matchingEncodingsNameOneIdentityTest = init.then(admit({realm:0,bearer:1,api:1,consistent:true},0)).expect(safe and s.history.length()==1)
+  run matchingSourceEncodingStillDeniedTest = init.then(admit({realm:2,bearer:1,api:1,consistent:true},0).fail())
+  run repeatedHeaderFieldsStillDeniedTest = init.then(admit({realm:0,bearer:2,api:1,consistent:true},0).fail())
+  run acceptingEitherCredentialMissesConflictTest = init.then(credentialUnionAdmit({realm:0,bearer:1,api:1,consistent:false},0)).expect(not(safe))
 }

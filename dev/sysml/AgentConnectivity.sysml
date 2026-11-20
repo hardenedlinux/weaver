@@ -801,6 +801,27 @@ package AgentConnectivity {
             attribute :>> scenario = "Four-worker Snake Oil Chat, Responses and Messages; text, tools, cancellation and slow consumer";
             attribute :>> oracle = "Preserve terminal/tool identities; bounded buffering; cancelled work drains; reuse upstream protocol controls";
         }
+        part magpieStandardProvider : PlannedAcceptance {
+            attribute :>> status = DeliveryStatus::qualified;
+            attribute :>> scenario = "Prepared Magpie nogui CLI creates one ordinary custom Provider using its provider add command and the live Weaver model catalog, then serves Chat, Responses or Messages over its own real listener for two tool/result turns";
+            attribute :>> oracle = "No Magpie adapter or production source change; its original config owner persists the Provider, operation credentials remain distinct, tools and opaque continuation survive, and Weaver's ledger binds the exact forwarded bytes to two runs and one shared budget/history";
+            attribute :>> formalModel = "HttpOperation admits one dedicated credential encoded once or identically in both headers; it rejects conflicting credentials, repeated fields, other realms and stale source observations; consistency is an abstraction refined by raw-header properties";
+            attribute :>> runtimeProperty = "http_magpie::magpie_standard_provider_preserves_three_protocol_tool_turns";
+            doc /* Fixed three cases, four Tokio/test workers and 120-second native command watchdog. Magpie CLI preparation is independent; the explicit external-consumer test requires a prepared executable and cannot count a missing executable as a pass. Each process uses an empty environment, temporary HOME, original gateway.json listener identity and denied non-loopback HTTP egress. Linked Scheme and full agent-config restoration are independent. */
+        }
+        part authenticationEncodingChallenge : WeaverProject::DesignProcess::DesignChallenge {
+            attribute :>> hypothesis = "Requiring exactly one physical authentication header preserves both dedicated-credential safety and compatibility with ordinary standard Providers";
+            attribute :>> assumptions = "Magpie's unchanged model-list client sends its key in both headers for all APIs; its automatic single-header learning only covers Anthropic; matching values represent one credential, not two principals";
+            attribute :>> disturbance = "Actual CLI catalog discovery and Messages calls, independent mixed credential realms, repeated fields and source replacement between observations";
+            attribute :>> independentOracle = "The original physical-count rule caused real 401 failures despite passing its original model; every present field must identify the same dedicated secret, all duplicated/conflicting/foreign fields fail, and real tool turns preserve exact wire commitments";
+            attribute :>> progressObligation = "A current source scope and matching standard credential encodings can discover models and complete two tool/result turns; observations and authentication retries do not bypass final source checks";
+            attribute :>> explorationBound = "Twelve named HttpOperation checks; 256 traces, 30 steps, seed 293 and four simulator threads per strong or competing campaign; 64 raw-header property cases with independent bearer/API realms plus explicit matching, conflict and duplicate controls";
+            attribute :>> modelCampaign = "HttpOperation strong step versus cachedCatalogStep and credentialUnionStep; acceptingEitherCredentialMissesConflictTest exposes accepting either supplied credential";
+            attribute :>> runtimeProperty = "magpie_standard_provider_preserves_three_protocol_tool_turns; credential_realms_do_not_union; conflicting_credentials_are_refused_in_both_orders_without_exposing_values; only_the_fixed_header_conflict_is_public_on_the_wire";
+            attribute :>> runtimeBudget = "Prepared external CLI independent of runtime gate; three fixed protocol cases, four Tokio/test workers and original 120-second Cargo watchdog";
+            attribute :>> consequence = "Normalize matching bounded encodings to one credential, compare it once against the dedicated expected hash, reject conflicting or duplicated fields, and keep arbitrary internal errors private";
+            attribute :>> status = WeaverProject::DesignProcess::ChallengeStatus::refutedHypothesis;
+        }
         part identityAndFallback : PlannedAcceptance {
             attribute :>> scenario = "Two CLI hints sharing a host credential; revoked source; unknown send and attempted direct fallback";
             attribute :>> oracle = "No invented user identity; source/final-use guards remain decisive; unknown budget retained; fixed Weaver profile cannot bypass";

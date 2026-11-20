@@ -37,6 +37,8 @@ struct Harness {
 mod crash;
 #[path = "http_flow.rs"]
 mod flow;
+#[path = "http_magpie.rs"]
+mod magpie;
 impl Harness {
     async fn start(database: &Path, root: &str, scope: Option<(&str, &str)>) -> Self {
         let runtime = RuntimeOwner::new();
@@ -131,6 +133,9 @@ struct Completed {
     thinking: String,
 }
 async fn completed(response: reqwest::Response, case: Case) -> Completed {
+    completed_models(response, case, &["model-a"]).await
+}
+async fn completed_models(response: reqwest::Response, case: Case, models: &[&str]) -> Completed {
     assert_eq!(response.status(), 200, "{case:?}");
     let bytes = response.bytes().await.expect("whole guarded body");
     let mut decoder = weaver_llm::TurnDecoder::new(case.decoder(), 65_536);
@@ -154,7 +159,12 @@ async fn completed(response: reqwest::Response, case: Case) -> Completed {
                     ..
                 } => {
                     assert!(observed.is_none(), "whole terminal exactly once");
-                    assert_eq!(identity.expect("provider identity").model, "model-a");
+                    let identity = identity.expect("provider identity");
+                    assert!(
+                        models.contains(&identity.model.as_str()),
+                        "unexpected model {}",
+                        identity.model
+                    );
                     let usage = usage.expect("known usage");
                     assert_eq!((usage.input_tokens, usage.output_tokens), (2, 3));
                     let opaque = match case {

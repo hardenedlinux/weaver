@@ -1080,7 +1080,10 @@ token_env = "WEAVER_HTTP_TOKEN"
 the named environment variable, hashed, and kept separate from RPC operation,
 source and provider credentials. It must have 16--256 ASCII non-whitespace
 characters. Bearer authentication and Anthropic's =x-api-key= are alternative
-forms; duplicate or combined forms fail. Loopback binding is required. A
+encodings of one dedicated credential. One of each may be supplied together
+only when their bounded values match exactly; conflicting values and repeated
+fields fail. There is no choice between credentials or union of identities.
+Loopback binding is required. A
 delegated-OAuth deployment is rejected until its workload-peer binding has an
 explicit HTTP design. The existing mTLS RPC profile is not downgraded.
 
@@ -1102,7 +1105,7 @@ endpoint rejection, changed retry bytes, fact withdrawal and ABA catalog
 versions. Its advisory selector is explicitly a test double, not linked Scheme
 evidence. The credential property uses 64 cases and seed 293. Fragmented UTF-8
 body checks use every split point at and above the byte limit. =HttpOperation=
-has eight named checks and a finite campaign of 256 traces, 30 steps and four
+has twelve named checks and a finite campaign of 256 traces, 30 steps and four
 simulator threads under seed 293. Its cached-catalog and credential-union
 strategies both produce actual invariant violations; the strong campaign does
 not establish universal safety or runtime scheduling progress.
@@ -1358,3 +1361,70 @@ This qualifies the externally received, unanswered request cut. It does not
 enumerate every partial kernel write, conditional response-release transaction
 or lost acknowledgement interleaving. Linked Scheme, stock Magpie interoperability
 and full Magpie configuration restoration remain independent open work.
+
+* Standard Magpie Provider interoperability
+
+The external-consumer acceptance invokes Magpie's real =provider add= and
+=serve= commands. Its ordinary custom Provider reads Weaver's live model list,
+then its real listener carries two tool/result turns for each of Chat, Responses
+and Messages. It uses a temporary HOME and empty inherited environment/PATH;
+non-loopback HTTP goes to a local rejecting proxy. The listener address and pid
+come from Magpie's existing =gateway.json=, not a guessed free port or a second
+configuration writer. No Magpie Provider, gateway or CLI source was modified.
+
+This check exposed a missing design assumption. The original Weaver rule
+rejected any combination of Authorization and x-api-key. Magpie's model-list
+client normally sends the same key in both headers for every API; its native
+single-header learning is confined to Anthropic. The first actual consumer run
+failed Messages, and the stronger live-discovery assertion then exposed the
+same issue for Chat despite explicitly configured model names. A generic 401
+and the original header-count property did not establish interoperability.
+
+The admitted identity is now one dedicated operation credential, with either
+one standard encoding or two byte-identical bounded encodings. Every present
+field must agree; matching inputs are hashed once and compared in constant time
+against the expected digest. Different values, repeated fields, malformed values
+and other credential realms remain rejected. This does not select whichever
+credential happens to work. The fixed conflict message can be public, while
+arbitrary credential, policy and SQL errors remain hidden.
+
+=HttpOperation= models this identity normalization, and the raw-header property
+varies bearer and API-key realms independently instead of assigning both one
+assumed realm. Twelve named checks pass. In fixed campaigns of 256 traces,
+30 steps, seed 293 and four simulator threads, strong admission passes; cached
+catalog admission and credential union each produce an invariant violation.
+The explicit conflict controls exercise both orders of every foreign key, and
+the matching-header control also rejects repeated physical fields.
+
+An isolated native negative control removed only the cross-header equality
+guard. The conflict test then failed because the valid bearer wrongly hid a
+foreign API key. Restoring the guard removes that unauthorized fallback. Both
+the encoding comparison and the expected-hash comparison use the existing
+=subtle= constant-time primitives; credential values are bounded and borrowed.
+
+The real consumer preserves the static fixtures' tool ids, names, arguments,
+encrypted reasoning and signed/redacted thinking through its native paths.
+Weaver's ledger retains two runs, two terminal usage records and one shared
+budget/history root. Each exact body observed by the independent TLS peer must
+match the corresponding admitted task's body digest. Model display aliases are
+checked separately from the upstream model identity.
+
+The external gate is explicit and separate from default library CI:
+
+#+begin_src sh
+WEAVER_MAGPIE_BIN="$PWD/.cache/magpie-interoperability/bin/magpie" cargo test -p weaver-server --lib --no-default-features --features llm-provider,arrow --locked --offline -j4 magpie_standard_provider_preserves_three_protocol_tool_turns -- --ignored --test-threads=4
+#+end_src
+
+It requires an independently prepared nogui executable; absence fails when the
+gate is invoked. Prepare it once with Magpie's declared Go toolchain and normal
+module manager, not inside a runtime test. This local run used checkout
+=afde872d8c0d1f259eeb0a429c4b09ba5cd28426=; its prior Agent ownership changes do
+not change the Provider/gateway paths. Existing documentation/test edits were
+preserved. Initial full CLI preparation reached its 120-second limit after
+populating the build cache; read-only stale analysis then showed no uncached
+dependency packages, and a separate offline cached build completed within
+30 seconds. This preparation result is not a runtime-latency claim.
+
+Automated external-consumer CI preparation, real linked Scheme, full Magpie
+agent-config recovery and unified installation remain open. This test qualifies
+the standard Provider join, not the complete managed CLI configuration lifecycle.

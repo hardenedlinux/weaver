@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 //! Bounded Tonic HTTP service; the source listener never mounts this service.
-use super::HttpProfile;
+use super::{HttpProfile, config::AUTH_HEADERS_CONFLICT};
 use crate::grpc::Gateway;
 use bytes::Bytes;
 use http_body_util::Full;
@@ -68,11 +68,20 @@ fn rejected(status: tonic::Status) -> http::Response<Body> {
         Code::DeadlineExceeded => http::StatusCode::REQUEST_TIMEOUT,
         _ => http::StatusCode::BAD_REQUEST,
     };
+    let message =
+        if status.code() == Code::Unauthenticated && status.message() == AUTH_HEADERS_CONFLICT {
+            AUTH_HEADERS_CONFLICT
+        } else {
+            "Request rejected by Weaver"
+        };
     json(
         code,
-        serde_json::json!({"type":"error","error":{"type":"weaver_request_rejected","message":"Request rejected by Weaver"}}),
+        serde_json::json!({"type":"error","error":{"type":"weaver_request_rejected","message":message}}),
     )
 }
+#[cfg(test)]
+#[path = "../../tests/unit/http_rejection.rs"]
+mod rejection_tests;
 pub(crate) async fn serve(
     listener: tokio::net::TcpListener,
     gateway: Gateway,

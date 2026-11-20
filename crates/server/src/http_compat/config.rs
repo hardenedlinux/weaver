@@ -9,6 +9,9 @@ use std::net::SocketAddr;
 use tokio::io::AsyncReadExt;
 use weaver_contracts::{Error, Result};
 
+pub(super) const AUTH_HEADERS_CONFLICT: &str =
+    "Authorization and x-api-key must identify the same credential";
+
 /// One deployment-selected Session and a distinct local operation credential.
 /// This profile cannot register sources or select another caller principal.
 #[derive(Clone)]

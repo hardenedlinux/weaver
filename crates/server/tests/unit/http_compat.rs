@@ -106,7 +106,18 @@ async fn http_uses_current_source_catalog_exact_turns_and_one_native_delivery_ow
             .header("x-api-key", "http-client-secret")
             .send()
             .await
-            .expect("ambiguous")
+            .expect("matching credential encodings")
+            .status(),
+        200
+    );
+    assert_eq!(
+        client
+            .get(format!("{base}/v1/models"))
+            .bearer_auth("http-client-secret")
+            .header("x-api-key", "source-token")
+            .send()
+            .await
+            .expect("conflicting credentials")
             .status(),
         401
     );

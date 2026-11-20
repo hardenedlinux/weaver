@@ -3,7 +3,10 @@
 // SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 //! Authenticate first, then observe and admit through the existing source lane.
-use super::service::{Compatibility, json};
+use super::{
+    config::AUTH_HEADERS_CONFLICT,
+    service::{Compatibility, json},
+};
 use http_body_util::{BodyExt, StreamBody};
 use sha2::{Digest, Sha256};
 use subtle::ConstantTimeEq;
@@ -155,15 +158,31 @@ impl Compatibility {
 fn authenticate(headers: &http::HeaderMap, expected: &[u8; 32]) -> Result<(), Status> {
     let bearer = headers.get_all(http::header::AUTHORIZATION).iter().count();
     let api = headers.get_all("x-api-key").iter().count();
-    let token = match (bearer, api) {
-        (1, 0) => headers
+    let bearer_token = || {
+        headers
             .get(http::header::AUTHORIZATION)
             .and_then(|v| v.to_str().ok())
-            .and_then(|v| v.strip_prefix("Bearer ")),
-        (0, 1) => headers.get("x-api-key").and_then(|v| v.to_str().ok()),
+            .and_then(|v| v.strip_prefix("Bearer "))
+            .filter(|v| !v.is_empty() && v.len() <= 256)
+    };
+    let api_token = || {
+        headers
+            .get("x-api-key")
+            .and_then(|v| v.to_str().ok())
+            .filter(|v| !v.is_empty() && v.len() <= 256)
+    };
+    let token = match (bearer, api) {
+        (1, 0) => bearer_token(),
+        (0, 1) => api_token(),
+        // Two standard encodings may name one credential, never two identities.
+        // Compare bounded encodings in constant time, then hash one value for
+        // the configured-secret comparison. No OR/fallback is allowed.
+        (1, 1) => match (bearer_token(), api_token()) {
+            (Some(a), Some(b)) if bool::from(a.as_bytes().ct_eq(b.as_bytes())) => Some(a),
+            _ => return Err(Status::unauthenticated(AUTH_HEADERS_CONFLICT)),
+        },
         _ => None,
     }
-    .filter(|v| !v.is_empty() && v.len() <= 256)
     .ok_or(Status::unauthenticated("credential required"))?;
     let actual: [u8; 32] = Sha256::digest(token.as_bytes()).into();
     if !bool::from(actual.ct_eq(expected)) {
