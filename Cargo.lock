@@ -6326,6 +6326,7 @@ dependencies = [
  "tokio-rustls",
  "weaver-contracts",
  "weaver-ledger",
+ "weaver-llm",
 ]
 
 [[package]]
@@ -6465,7 +6466,6 @@ dependencies = [
  "criterion",
  "futures-util",
  "gerbil-scheme",
- "gerbil-scheme-sys",
  "hex",
  "jsonwebtoken",
  "k8s-openapi",
@@ -6500,6 +6500,7 @@ dependencies = [
  "weaver-llm",
  "weaver-policy-ffi",
  "weaver-telemetry",
+ "zeroize",
 ]
 
 [[package]]

@@ -17,6 +17,14 @@ use crate::{Error, EventStream, Protocol, ToolCall, Usage};
 #[derive(Eq, PartialEq)]
 pub struct ThinkingDelta(String);
 
+/// Rehydrate a caller-held fragment at an inert transport boundary. This does
+/// not authenticate its origin or grant permission to display or publish it.
+impl From<String> for ThinkingDelta {
+    fn from(text: String) -> Self {
+        Self(text)
+    }
+}
+
 impl ThinkingDelta {
     /// Returns the provider-returned fragment for explicit presentation.
     pub fn as_str(&self) -> &str {
@@ -57,7 +65,7 @@ pub enum TurnEvent {
 }
 
 /// Provider-reported identity of an assistant turn.
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct TurnIdentity {
     /// Provider response identifier.
     pub id: String,
@@ -68,16 +76,29 @@ pub struct TurnIdentity {
 /// Pull-based SSE exchange on the caller's Tokio runtime.
 pub struct TurnStream {
     body: Option<EventStream>,
-    framing: SseFraming,
-    decoder: Decoder,
+    codec: TurnDecoder,
 }
 
-impl TurnStream {
-    pub(crate) fn new(body: EventStream, protocol: Protocol, response_limit: usize) -> Self {
+/// Bounded, transport-independent SSE decoder for one provider turn.
+///
+/// Feed bytes from an already-authorized transport, then drain `next_event`.
+/// This type neither sends requests nor grants permission to execute tools.
+pub struct TurnDecoder {
+    framing: SseFraming,
+    decoder: Option<Decoder>,
+    remaining: usize,
+    completed: bool,
+    terminal_usage: Option<crate::TokenCategories>,
+    coordinates: bool,
+    observation_state: crate::stream_observation::ObservationState,
+}
+
+impl TurnDecoder {
+    /// Creates a decoder with a total wire-byte budget, including control frames.
+    pub fn new(protocol: Protocol, response_limit: usize) -> Self {
         Self {
-            body: Some(body),
             framing: SseFraming::new(response_limit),
-            decoder: Decoder {
+            decoder: Some(Decoder {
                 protocol,
                 tools: BTreeMap::new(),
                 finish: None,
@@ -87,7 +108,161 @@ impl TurnStream {
                 anthropic_block: None,
                 anthropic_output: BTreeMap::new(),
                 responses_text: Sha256::new(),
-            },
+                expected_model: None,
+                categories: None,
+            }),
+            remaining: response_limit,
+            completed: false,
+            terminal_usage: None,
+            coordinates: false,
+            observation_state: Default::default(),
+        }
+    }
+
+    /// Returns disjoint token categories only after a complete, validated turn.
+    /// Missing provider usage stays unknown; counts grant no settlement authority.
+    pub fn terminal_usage(&self) -> Option<crate::TokenCategories> {
+        self.terminal_usage
+    }
+
+    /// Requires any reported model identity to match the source-selected model.
+    /// The guarded caller also requires a terminal identity before releasing tools.
+    pub fn with_expected_model(mut self, model: String) -> Self {
+        if let Some(decoder) = &mut self.decoder {
+            decoder.expected_model = Some(model);
+        }
+        self
+    }
+
+    /// Supplies wire bytes. Errors close the decoder and discard partial tools.
+    ///
+    /// # Errors
+    /// Returns `Limit` on budget exhaustion or `Response` after closure.
+    pub fn push_bytes(&mut self, bytes: &[u8]) -> Result<(), Error> {
+        if self.decoder.is_none() {
+            return Err(Error::Response);
+        }
+        if bytes.len() > self.remaining {
+            self.close();
+            return Err(Error::Limit);
+        }
+        self.remaining -= bytes.len();
+        self.framing.push(bytes);
+        Ok(())
+    }
+
+    /// Decodes one available event without polling or owning a transport.
+    ///
+    /// `None` means more bytes are needed, or the turn has closed. Tools appear
+    /// only in a validated `Finished` event; that event closes the decoder.
+    ///
+    /// # Errors
+    /// Returns a provider, framing or protocol error and discards partial state.
+    pub fn next_event(&mut self) -> Result<Option<TurnEvent>, Error> {
+        loop {
+            match self.next_frame()? {
+                Some(crate::TurnObservation {
+                    event: Some(event), ..
+                }) => return Ok(Some(event)),
+                Some(_) => {}
+                None => return Ok(None),
+            }
+        }
+    }
+
+    /// Drain one validated observation, including standard protocol coordinates.
+    /// Tool fragments remain internal; coordinates convey no execution authority.
+    /// Select this mode before decoding the first frame and use it for the turn.
+    ///
+    /// # Errors
+    /// Rejects malformed coordinates and the same framing/protocol errors as next_event.
+    pub fn next_observation(&mut self) -> Result<Option<crate::TurnObservation>, Error> {
+        self.coordinates = true;
+        loop {
+            match self.next_frame()? {
+                Some(observation)
+                    if observation.event.is_some() || observation.metadata.is_some() =>
+                {
+                    return Ok(Some(observation));
+                }
+                Some(_) => {}
+                None => return Ok(None),
+            }
+        }
+    }
+
+    fn next_frame(&mut self) -> Result<Option<crate::TurnObservation>, Error> {
+        let result = self.decode_frame();
+        if matches!(
+            result,
+            Ok(Some(crate::TurnObservation {
+                event: Some(TurnEvent::Finished { .. }),
+                ..
+            }))
+        ) {
+            self.terminal_usage = self.decoder.as_ref().and_then(|decoder| decoder.categories);
+            self.completed = true;
+            self.close();
+        } else if result.is_err() {
+            self.terminal_usage = None;
+            self.close();
+        }
+        result
+    }
+
+    fn decode_frame(&mut self) -> Result<Option<crate::TurnObservation>, Error> {
+        let Some(decoder) = &mut self.decoder else {
+            return Ok(None);
+        };
+        match self.framing.next()? {
+            Some(Frame::Event(event)) => {
+                let observation = decoder.accept(&event.data, self.coordinates)?;
+                if self.coordinates {
+                    self.observation_state
+                        .observe(decoder.protocol, &observation)?;
+                }
+                Ok(Some(observation))
+            }
+            Some(Frame::Comment(_) | Frame::Retry(_)) => Ok(Some(crate::TurnObservation {
+                event: None,
+                metadata: None,
+            })),
+            None => Ok(None),
+        }
+    }
+
+    /// Checks EOF after all supplied bytes have been drained.
+    ///
+    /// # Errors
+    /// Incomplete or failed turns return `Response` and discard partial state.
+    pub fn finish(&mut self) -> Result<(), Error> {
+        if self.completed {
+            Ok(())
+        } else {
+            self.close();
+            Err(Error::Response)
+        }
+    }
+
+    fn close(&mut self) {
+        self.decoder = None;
+        self.observation_state = Default::default();
+        self.framing = SseFraming::new(8);
+        self.remaining = 0;
+    }
+}
+
+impl TurnStream {
+    /// Returns normalized provider usage after a validated terminal event.
+    /// These reported counts do not authenticate pricing or settlement.
+    pub fn terminal_usage(&self) -> Option<crate::TokenCategories> {
+        self.codec.terminal_usage()
+    }
+
+    pub(crate) fn new(body: EventStream, protocol: Protocol, response_limit: usize) -> Self {
+        Self {
+            body: Some(body),
+            codec: TurnDecoder::new(protocol, response_limit),
         }
     }
 
@@ -113,8 +288,7 @@ impl TurnStream {
         let result = self.read_event().await;
         if result.is_err() || matches!(result, Ok(Some(TurnEvent::Finished { .. }))) {
             self.body = None;
-            self.framing = SseFraming::new(8);
-            self.decoder.tools.clear();
+            self.codec.close();
         }
         result
     }
@@ -126,18 +300,15 @@ impl TurnStream {
         loop {
             // Buffered control frames can be ready without polling Tokio I/O.
             tokio::task::consume_budget().await;
-            match self.framing.next()? {
-                Some(Frame::Event(event)) => {
-                    if let Some(event) = self.decoder.accept(&event.data)? {
-                        return Ok(Some(event));
-                    }
-                }
-                Some(Frame::Comment(_) | Frame::Retry(_)) => {}
-                None => {
-                    let chunk = body.next_chunk().await?.ok_or(Error::Response)?;
-                    self.framing.push(&chunk);
-                }
+            match self.codec.next_frame()? {
+                Some(crate::TurnObservation {
+                    event: Some(event), ..
+                }) => return Ok(Some(event)),
+                Some(_) => continue,
+                None => {}
             }
+            let chunk = body.next_chunk().await?.ok_or(Error::Response)?;
+            self.codec.push_bytes(&chunk)?;
         }
     }
 }
@@ -152,7 +323,7 @@ impl SseFraming {
     fn new(response_limit: usize) -> Self {
         Self {
             pending: BytesMut::new(),
-            // EventStream enforces the exact response budget.
+            // TurnDecoder and EventStream enforce total wire-byte budgets.
             codec: SseDecoder::with_max_size(response_limit.max(8)),
             after_cr: false,
         }
@@ -211,17 +382,109 @@ struct Decoder {
     anthropic_block: Option<(u64, Block)>,
     anthropic_output: BTreeMap<u64, Value>,
     responses_text: Sha256,
+    expected_model: Option<String>,
+    categories: Option<crate::TokenCategories>,
 }
 
 impl Decoder {
-    fn accept(&mut self, data: &[u8]) -> Result<Option<TurnEvent>, Error> {
+    fn accept(&mut self, data: &[u8], coordinates: bool) -> Result<crate::TurnObservation, Error> {
         if self.protocol == Protocol::OpenAi && data == b"[DONE]" {
-            return self.terminal().map(Some);
+            return Ok(crate::TurnObservation {
+                event: Some(self.terminal()?),
+                metadata: None,
+            });
         }
         let event: Value = serde_json::from_slice(data).map_err(|_| Error::Response)?;
+        let mut metadata = if coordinates {
+            crate::stream_observation::project(self.protocol, &event)?
+        } else {
+            None
+        };
+        let had_identity = self.identity.is_some();
+        let stopped = (coordinates
+            && self.protocol == Protocol::Anthropic
+            && event["type"] == "content_block_stop")
+            .then(|| event["index"].as_u64())
+            .flatten();
+        if self.protocol == Protocol::OpenAiResponses {
+            let response = &event["response"];
+            if response["id"].is_string() && response["model"].is_string() {
+                let observed = TurnIdentity {
+                    id: crate::stream_observation::text(&response["id"])?,
+                    model: crate::stream_observation::text(&response["model"])?,
+                };
+                if self.identity.as_ref().is_some_and(|old| *old != observed) {
+                    return Err(Error::Response);
+                }
+                self.identity = Some(observed);
+            }
+        }
+        let decoded = self.accept_value(event)?;
+        if coordinates
+            && self.protocol == Protocol::OpenAi
+            && !had_identity
+            && self.identity.is_some()
+        {
+            metadata
+                .get_or_insert(crate::TurnMetadata {
+                    identity: None,
+                    usage: None,
+                    position: None,
+                    control: None,
+                })
+                .control = Some(crate::TurnControl::Started);
+        }
+        if let Some(index) = stopped {
+            let block = self.anthropic_output.get(&index).ok_or(Error::Response)?;
+            let kind = crate::stream_observation::block_kind(&block["type"])?;
+            let signature = block
+                .get("signature")
+                .and_then(Value::as_str)
+                .map(str::to_owned);
+            metadata.as_mut().ok_or(Error::Response)?.control =
+                Some(crate::TurnControl::AnthropicStop {
+                    index,
+                    kind,
+                    signature,
+                });
+        }
+        if let Some(metadata) = &mut metadata {
+            metadata.identity = self.identity.clone();
+            if matches!(metadata.control, Some(crate::TurnControl::Started)) {
+                metadata.usage = self.usage.clone();
+            }
+        }
+        Ok(crate::TurnObservation {
+            event: decoded,
+            metadata,
+        })
+    }
+
+    fn accept_value(&mut self, event: Value) -> Result<Option<TurnEvent>, Error> {
+        let metadata = match self.protocol {
+            Protocol::OpenAi => &event,
+            Protocol::Anthropic => &event["message"],
+            Protocol::OpenAiResponses => &event["response"],
+        };
+        if let Some(expected) = &self.expected_model {
+            if metadata
+                .get("model")
+                .is_some_and(|model| model.as_str() != Some(expected))
+            {
+                return Err(Error::Response);
+            }
+            if let Some(previous) = &self.identity
+                && metadata
+                    .get("id")
+                    .is_some_and(|id| id.as_str() != Some(&previous.id))
+            {
+                return Err(Error::Response);
+            }
+        }
         if let Some(error) = event.get("error").filter(|value| !value.is_null()) {
             return Err(Error::provider_event(error).unwrap_or(Error::Response));
         }
+        self.observe_usage(&event)?;
         match self.protocol {
             Protocol::OpenAi => self.openai(&event),
             Protocol::Anthropic => self.anthropic(&event),
@@ -243,6 +506,37 @@ impl Decoder {
                 Ok(decoded)
             }
         }
+    }
+
+    fn observe_usage(&mut self, event: &Value) -> Result<(), Error> {
+        use crate::TokenCategories;
+        match self.protocol {
+            Protocol::OpenAi => {
+                if let Some(usage) = event.get("usage").filter(|usage| !usage.is_null()) {
+                    self.categories = Some(TokenCategories::openai(usage, true)?);
+                }
+            }
+            Protocol::OpenAiResponses if event["type"] == "response.completed" => {
+                if let Some(usage) = event["response"]
+                    .get("usage")
+                    .filter(|usage| !usage.is_null())
+                {
+                    self.categories = Some(TokenCategories::openai(usage, false)?);
+                }
+            }
+            Protocol::Anthropic if event["type"] == "message_start" => {
+                self.categories = Some(TokenCategories::anthropic_start(
+                    &event["message"]["usage"],
+                )?);
+            }
+            Protocol::Anthropic if event["type"] == "message_delta" => {
+                if let Some(previous) = self.categories {
+                    self.categories = Some(previous.anthropic_delta(&event["usage"])?);
+                }
+            }
+            _ => {}
+        }
+        Ok(())
     }
 
     fn terminal(&mut self) -> Result<TurnEvent, Error> {
@@ -393,6 +687,9 @@ impl Decoder {
                 if let Some(reason) = event["delta"]["stop_reason"].as_str() {
                     self.finish = Some(reason.to_owned());
                 }
+                if let Some(tokens) = event["usage"]["input_tokens"].as_u64() {
+                    self.usage.as_mut().ok_or(Error::Response)?.input_tokens = tokens;
+                }
                 if let Some(tokens) = event["usage"]["output_tokens"].as_u64() {
                     self.usage.as_mut().ok_or(Error::Response)?.output_tokens = tokens;
                 }
@@ -404,6 +701,11 @@ impl Decoder {
 
     fn anthropic_start(&mut self, event: &Value) -> Result<Option<TurnEvent>, Error> {
         let index = index(event)?;
+        // Content indices are final array positions. Uniqueness alone would
+        // allow a later BTreeMap projection to reorder the streamed content.
+        if index != self.anthropic_output.len() as u64 {
+            return Err(Error::Response);
+        }
         let block = &event["content_block"];
         let (kind, text) = match required_string(&block["type"])? {
             "tool_use" => {

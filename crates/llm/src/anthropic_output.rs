@@ -14,6 +14,16 @@ use std::fmt;
 #[serde(transparent)]
 pub struct AnthropicOutput(pub(crate) Vec<Value>);
 
+/// Consuming iteration moves named opaque continuation blocks without serializing.
+/// Receivers retain authorization and publication responsibility.
+impl IntoIterator for AnthropicOutput {
+    type Item = Value;
+    type IntoIter = std::vec::IntoIter<Value>;
+    fn into_iter(self) -> Self::IntoIter {
+        self.0.into_iter()
+    }
+}
+
 impl fmt::Debug for AnthropicOutput {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("AnthropicOutput")
@@ -23,6 +33,9 @@ impl fmt::Debug for AnthropicOutput {
 }
 
 impl AnthropicOutput {
+    pub(crate) fn items(&self) -> &[Value] {
+        &self.0
+    }
     pub(crate) fn parse(blocks: Vec<Value>) -> Result<(Self, String, Vec<ToolCall>), Error> {
         let (text, calls) = Self::extract(&blocks)?;
         Ok((Self(blocks), text, calls))
@@ -72,19 +85,13 @@ impl AnthropicOutput {
         if output_text != text || !calls.is_empty() {
             return false;
         }
-        let mut remaining = thinking;
-        for block in &self.0 {
-            if block["type"].as_str() == Some("thinking") {
-                let Some(part) = block["thinking"].as_str() else {
-                    return false;
-                };
-                let Some(rest) = remaining.strip_prefix(part) else {
-                    return false;
-                };
-                remaining = rest;
-            }
-        }
-        remaining.is_empty()
+        self.0
+            .iter()
+            .filter(|block| block["type"].as_str() == Some("thinking"))
+            .try_fold(thinking, |remaining, block| {
+                remaining.strip_prefix(block["thinking"].as_str()?)
+            })
+            .is_some_and(str::is_empty)
     }
 
     pub(crate) fn matches(&self, message: &Message) -> bool {

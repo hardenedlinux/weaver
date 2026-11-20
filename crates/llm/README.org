@@ -44,10 +44,39 @@ to compose the turn with other asynchronous operations. Display =TurnEvent::Text
 message and append each tool result with its =tool_call_id= before starting
 the next turn. A dropped stream cancels the exchange. A truncated stream or
 invalid terminal frame returns an error and yields no executable calls.
+
+=TurnDecoder::next_observation= and =TurnEncoder= provide transport-free strict
+SSE decoding and encoding for these three protocols. Select observations before
+the first frame. Construct the encoder with the source protocol, a total encoded
+byte budget (at most four MiB) and the gateway response creation timestamp.
+Pass validated observations to =push= and supply known terminal categories from
+the existing usage owner. The encoder returns bytes; the host owns their release
+and I/O. It requires the reported initial Messages usage and complete thinking
+signatures, preserves unknown terminal usage, and closes on error or =abort=.
+
+An unknown tool header pauses later content. The encoder streams the known
+prefix and uses the already retained canonical terminal output for the withheld
+tail, preserving indices without duplicating the prefix or accumulating a
+second text buffer. Responses can continue streaming earlier items across that
+barrier. The gateway must prepare these bytes before its final release guard;
+the compatibility HTTP listener and its lifecycle qualification remain separate.
+
 The typed stream polls the HTTP body on demand. A paused consumer can still
 have bytes in the HTTP and TCP receive buffers. The exchange byte limit applies
 across the whole body. Buffered SSE control frames consume Tokio cooperative
 budget so they yield to other ready tasks.
+
+=TurnDecoder= exposes the same incremental SSE/turn codec without a transport.
+Supply authorized bytes with =push_bytes=, drain =next_event= after each chunk,
+and call =finish= at EOF. Its cumulative wire-byte limit includes control frames.
+Protocol errors or premature EOF discard partial tools; only a validated
+=Finished= event releases calls. The decoder opens no connection and grants no
+send authority. A governed caller retains its existing admission and broker.
+
+=resolve_direct_target= returns =ResolvedTarget { endpoint, model }=. Consumers
+updating to this branch must replace positional tuple destructuring with these
+named fields. Existing pinned consumers keep their pinned API until upgraded;
+this change does not update a downstream revision automatically.
 =Options::stream_usage= requests terminal usage from OpenAI-compatible endpoints
 that implement it. Anthropic usage comes from Messages stream events.
 SSE framing uses the same =tokio_sse_codec= as Agent Gateway. The client

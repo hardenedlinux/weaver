@@ -246,7 +246,7 @@ impl Configuration {
         else {
             return Err(Error::Configuration);
         };
-        let (endpoint, model) = resolve_direct_target(
+        let ResolvedTarget { endpoint, model } = resolve_direct_target(
             (*protocol).into(),
             endpoint.as_deref(),
             model.as_deref(),
@@ -386,6 +386,14 @@ impl Configuration {
     }
 }
 
+/// Explicit endpoint/model resolution, before credential or network preparation.
+pub struct ResolvedTarget {
+    /// Completion endpoint URL, with any environment-derived path normalized.
+    pub endpoint: String,
+    /// Explicit or environment-selected provider model.
+    pub model: String,
+}
+
 /// Resolve an explicit model and endpoint, filling absent Anthropic values from
 /// the supplied environment. Explicit configuration always takes precedence.
 ///
@@ -396,7 +404,7 @@ pub fn resolve_direct_target(
     endpoint: Option<&str>,
     model: Option<&str>,
     read_env: impl Fn(&str) -> Option<String>,
-) -> Result<(String, String), Error> {
+) -> Result<ResolvedTarget, Error> {
     let model = match model {
         Some(value) => value.to_owned(),
         None if protocol == Protocol::Anthropic => {
@@ -428,7 +436,7 @@ pub fn resolve_direct_target(
         }
         None => return Err(Error::Configuration),
     };
-    Ok((endpoint, model))
+    Ok(ResolvedTarget { endpoint, model })
 }
 
 /// An immutable connection with a pooled client and a private credential.

@@ -20,6 +20,9 @@ use crate::{
 pub struct ResponsesOutput(Vec<Value>);
 
 impl ResponsesOutput {
+    pub(crate) fn items(&self) -> &[Value] {
+        &self.0
+    }
     /// Check the provider's completed text against the exact streamed text.
     pub(crate) fn matches_streamed_text(&self, expected: &[u8]) -> Result<bool, Error> {
         use sha2::{Digest, Sha256};
@@ -36,6 +39,16 @@ impl ResponsesOutput {
             }
         }
         Ok(digest.finalize().as_slice() == expected)
+    }
+}
+
+/// Consuming iteration moves named opaque continuation blocks without JSON round-trips.
+/// Retained observations carry no send, publication or tool execution authority.
+impl IntoIterator for ResponsesOutput {
+    type Item = Value;
+    type IntoIter = std::vec::IntoIter<Value>;
+    fn into_iter(self) -> Self::IntoIter {
+        self.0.into_iter()
     }
 }
 
