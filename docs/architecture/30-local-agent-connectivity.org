@@ -1275,3 +1275,50 @@ returned zero despite reporting =ERROR MODULE=, so its exit status is explicitly
 not counted as a pass. Repairing that package artifact boundary and exercising
 the linked runtime remain open; the advisory-double HTTP tests cannot replace
 them.
+
+* Process recovery after a complete HTTP tool turn
+
+The Unix process acceptance now runs the existing HTTP/native fixture inside
+real child processes for Chat, Responses and Messages. The first process reads
+a complete tool terminal, verifies tool identity/arguments and opaque metadata,
+and retains its continuation in the temporary harness directory. It then waits
+without draining owners. The parent observes the cut, sends SIGKILL and checks
+the actual signal exit status. A second process opens the same ledger without
+registering another Session and submits the tool-result turn.
+
+The parent independently checks the retained continuation against static fixture
+identities, the exact actual upstream request, two persisted runs and two known
+usage records. Both processes share one budget/history root. Completed retries,
+the next over-budget turn and fact withdrawal cannot cause another provider
+connection; the TLS observer remains live until all those checks finish.
+The continuation file belongs to the test's simulated harness, not a new Weaver
+configuration store or journal. No Scheme identity is supplied by it.
+
+The complete SDK/broker/server library command passed 148 tests, with three
+existing ignored process fixtures, in 17.62 seconds of test execution. This
+count includes the inactive child entry when no recovery environment is given;
+the parent test itself executes all three protocol cases. Every Tokio runtime
+and the test harness use four workers. Each child observation/exit has an
+eight-second bound, within the unchanged 120-second command watchdog.
+=SessionTurnAdmission= now has 21 named checks, including shared-budget reuse
+across restart and withdrawal before the next preparation. Its fixed safety
+campaign passes 256 traces of at most 30 steps at seed 293 with four threads.
+
+A behavioral negative control changed only the checkpoint's encrypted reasoning
+from the fixture's expected value to another value. Both child processes still
+ran, but the parent's independent assertion failed on the corrupted continuation.
+Thus copying the checkpoint into the second request is not its own correctness
+oracle. The original candidate was restored after this isolated control.
+
+This closes the completed-terminal process cut only. A crash during an
+uncommitted provider send, real linked Scheme, stock Magpie interoperability and
+complete Magpie write-set restoration remain separate obligations.
+
+For the local Scheme boundary, one four-worker, 120-second package-owner rebuild
+refreshed the stale Yuanxu prelude interface but timed out before completing the
+whole package. Its process group was confirmed empty afterward. The bounded
+source-suite follow-up no longer reported the old POO export error; it instead
+reported that Weaver's provider-source library module was unavailable. The
+installed ASCENT checkout also lacks the revision declared by the locked Lab
+dependency. These partial cache repairs do not establish a source-bound Scheme
+pass. No dependency installation, upstream source edit or wider budget was used.

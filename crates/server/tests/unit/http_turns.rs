@@ -32,6 +32,9 @@ struct Harness {
     _lifetime: crate::runtime::ShutdownGuard,
 }
 
+#[cfg(unix)]
+#[path = "http_crash.rs"]
+mod crash;
 #[path = "http_flow.rs"]
 mod flow;
 impl Harness {

@@ -700,6 +700,14 @@ package AgentConnectivity {
             attribute :>> runtimeProperty = "http_flow::http2_window_reset_and_withdrawal_preserve_delivery_custody";
             doc /* Frozen four cases, two MiB of deterministic text, 1024-byte stream window, four Tokio workers and the original 120-second library watchdog. Native one-second delivery deadlines are unchanged. Statistical counters wake observation only; SQL and actual wire outcomes decide the assertions. A labeled advisory double does not qualify linked Scheme. */
         }
+        part httpProcessRecovery : PlannedAcceptance {
+            attribute :>> status = DeliveryStatus::qualified;
+            attribute :>> scenario = "Chat, Responses and Messages child owners consume one complete tool turn; the parent observes the durable result and kills the owning OS process; a new process resumes the tool-result turn from the same ledger without registering a new Session";
+            attribute :>> oracle = "A real SIGKILL occurs before owner drain; retained tool identities and opaque continuation survive; the resumed turn shares one budget/history root; completed retries, exhaustion and source withdrawal cannot cause a third provider connection; SQL retains exactly two runs and two terminal usage records";
+            attribute :>> formalModel = "SessionTurnAdmission.restart discards only prepared derivation while retaining decisions, registrations, sends and holds; this model does not establish OS persistence";
+            attribute :>> runtimeProperty = "http_crash::three_protocols_resume_after_committed_tool_process_kill";
+            doc /* Fixed three protocol cases on Unix, four Tokio/test workers and the original 120-second library watchdog. Each child has an eight-second observation/exit bound. This cut follows full terminal delivery; it does not qualify a kill during an uncommitted send, linked Scheme or stock Magpie. */
+        }
         part httpReadAheadChallenge : WeaverProject::DesignProcess::DesignChallenge {
             attribute :>> hypothesis = "A bounded native receipt queue alone bounds an HTTP adapter even if it eagerly accepts frames into another queue";
             attribute :>> assumptions = "Reuse the native receipt/source-cut model; abstract network slot denotes one bounded frame, not one TCP packet or an exact library byte limit; scheduling and byte bounds need runtime evidence";
