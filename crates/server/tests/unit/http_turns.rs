@@ -31,6 +31,9 @@ struct Harness {
     derivations: Arc<AtomicUsize>,
     _lifetime: crate::runtime::ShutdownGuard,
 }
+
+#[path = "http_flow.rs"]
+mod flow;
 impl Harness {
     async fn start(database: &Path, root: &str, scope: Option<(&str, &str)>) -> Self {
         let runtime = RuntimeOwner::new();
@@ -311,7 +314,8 @@ async fn three_http_protocols_retain_tools_across_owner_restart() {
         provider
             .finish()
             .await
-            .expect("no extra upstream connection");
+            .expect("no extra upstream connection")
+            .expect("whole provider replies transmitted");
         let store = weaver_ledger::persistence::Session::open(&database)
             .expect("reopen persisted native state");
         let turns: i64 = weaver_ledger::persistence::one(

@@ -221,7 +221,8 @@ async fn http_uses_current_source_catalog_exact_turns_and_one_native_delivery_ow
     provider
         .finish()
         .await
-        .expect("no extra upstream connection");
+        .expect("no extra upstream connection")
+        .expect("whole provider replies transmitted");
 }
 
 #[path = "http_turns.rs"]

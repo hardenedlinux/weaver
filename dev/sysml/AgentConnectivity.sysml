@@ -692,6 +692,27 @@ package AgentConnectivity {
             attribute :>> runtimeProperty = "http_turns::three_http_protocols_retain_tools_across_owner_restart";
             doc /* Fixed three cases, four Tokio workers and the existing 120-second library watchdog. Static SSE source fixtures use Cargo include_str and the existing source-currentness inventory; create/edit/delete must invalidate the receipt. Actor selection uses a labeled advisory double; owner restart does not qualify an OS-process crash or real linked Scheme. Slow-reader and stock Magpie checks remain independent. */
         }
+        part httpFlowControl : PlannedAcceptance {
+            attribute :>> status = DeliveryStatus::qualified;
+            attribute :>> scenario = "Four HTTP/2 cases on the real listener: fully consumed large response, unread 1024-byte stream window, explicit stream reset and hard-fact withdrawal; a sibling model query uses the same connection";
+            attribute :>> oracle = "The healthy control preserves every text byte and one terminal; a paused stream cannot complete in native persistence before transport demand; sibling progress and source withdrawal do not borrow the paused stream's credit; rejected/cancelled streams retain the original hold and no terminal usage; no synthetic successful terminal appears";
+            attribute :>> formalModel = "HttpDeliveryCredit composes ProviderDeliveryPipeline without duplicating native receipt guards; compare nativeQueueOnlyStep with step, and the coupled query progress barrier; the HTTP/2 window is an independent runtime disturbance";
+            attribute :>> runtimeProperty = "http_flow::http2_window_reset_and_withdrawal_preserve_delivery_custody";
+            doc /* Frozen four cases, two MiB of deterministic text, 1024-byte stream window, four Tokio workers and the original 120-second library watchdog. Native one-second delivery deadlines are unchanged. Statistical counters wake observation only; SQL and actual wire outcomes decide the assertions. A labeled advisory double does not qualify linked Scheme. */
+        }
+        part httpReadAheadChallenge : WeaverProject::DesignProcess::DesignChallenge {
+            attribute :>> hypothesis = "A bounded native receipt queue alone bounds an HTTP adapter even if it eagerly accepts frames into another queue";
+            attribute :>> assumptions = "Reuse the native receipt/source-cut model; abstract network slot denotes one bounded frame, not one TCP packet or an exact library byte limit; scheduling and byte bounds need runtime evidence";
+            attribute :>> disturbance = "Zero transport credit, eager body polling, stream reset, source withdrawal and a sibling request on the same connection";
+            attribute :>> independentOracle = "Native receipt safety can remain true while the extra transport backlog grows; count that backlog separately, check prefix/order and retained holds, and observe native persistence plus actual HTTP/2 outcomes";
+            attribute :>> progressObligation = "A sibling query does not borrow paused-stream credit; stable demand and current authority allow transfer; already handed-off bytes remain historical after withdrawal";
+            attribute :>> explorationBound = "Five native rows, one abstract transport slot, 256 traces, 30 steps, seed 293 and four simulator threads; eight adapter checks reuse ten native checks";
+            attribute :>> modelCampaign = "HttpDeliveryCredit.nativeQueueOnlyStep versus step under safe; nativeQueueAloneMissesReadAheadTest demonstrates the old native-only oracle omission";
+            attribute :>> runtimeProperty = "http2_window_reset_and_withdrawal_preserve_delivery_custody: healthy two-MiB control plus unread window, RST and withdrawal; counters are not authority evidence";
+            attribute :>> runtimeBudget = "Fixed four cases, four Tokio workers and original 120-second library command watchdog; existing one-second delivery deadline, three-second bounded observations";
+            attribute :>> consequence = "Keep HTTP demand coupled to the existing deciding receiver and keep native queue, transport storage and actual persistence evidence distinct; do not add an eager second sender";
+            attribute :>> status = WeaverProject::DesignProcess::ChallengeStatus::refutedHypothesis;
+        }
         part conversationalAdmission : PlannedAcceptance {
             attribute :>> scenario = "Two changing turns, replayed turn, exhausted shared budget and withdrawn session facts";
             attribute :>> oracle = "Exact wire binding per turn; no fresh budget per request; duplicate cannot duplicate execution; withdrawal refuses admission";

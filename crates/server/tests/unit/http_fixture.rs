@@ -153,11 +153,11 @@ pub struct ProviderPeer {
     pub endpoint: String,
     pub root: String,
     pub requests: tokio::sync::mpsc::Receiver<String>,
-    task: Option<tokio::task::JoinHandle<()>>,
+    task: Option<tokio::task::JoinHandle<std::io::Result<()>>>,
     stop: tokio_util::sync::CancellationToken,
 }
 impl ProviderPeer {
-    pub async fn finish(mut self) -> Result<(), tokio::task::JoinError> {
+    pub async fn finish(mut self) -> Result<std::io::Result<()>, tokio::task::JoinError> {
         self.stop.cancel();
         self.task.take().expect("provider task").await
     }
@@ -249,21 +249,19 @@ pub async fn provider(replies: Vec<String>) -> ProviderPeer {
                 )
                 .await
                 .expect("observation");
-            stream.write_all(b"HTTP/1.1 200 OK\r\nContent-Type: text/event-stream\r\nTransfer-Encoding: chunked\r\nConnection: close\r\n\r\n").await.expect("provider headers");
-            for chunk in reply.as_bytes().chunks(7) {
+            stream.write_all(b"HTTP/1.1 200 OK\r\nContent-Type: text/event-stream\r\nTransfer-Encoding: chunked\r\nConnection: close\r\n\r\n").await?;
+            let width = if reply.len() <= 65_536 { 7 } else { 16_384 };
+            for chunk in reply.as_bytes().chunks(width) {
                 stream
                     .write_all(format!("{:x}\r\n", chunk.len()).as_bytes())
-                    .await
-                    .expect("chunk size");
-                stream.write_all(chunk).await.expect("provider chunk");
-                stream.write_all(b"\r\n").await.expect("chunk boundary");
+                    .await?;
+                stream.write_all(chunk).await?;
+                stream.write_all(b"\r\n").await?;
             }
-            stream
-                .write_all(b"0\r\n\r\n")
-                .await
-                .expect("complete chunked body");
-            stream.shutdown().await.expect("provider close");
+            stream.write_all(b"0\r\n\r\n").await?;
+            stream.shutdown().await?;
         }
+        Ok(())
     });
     ProviderPeer {
         endpoint,

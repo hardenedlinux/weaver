@@ -51,6 +51,7 @@ governance-qualification = ["scheme-program", "weaver-governance/scheme-qualific
 [build-dependencies]
 tonic-prost-build.workspace = true
 [dev-dependencies]
+h2 = "0.4"
 reqwest.workspace = true
 base64 = "0.22"
 jsonwebtoken = { version = "11.1.0", default-features = false, features = ["aws_lc_rs"] }
