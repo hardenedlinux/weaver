@@ -2,13 +2,16 @@
 //
 // SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
-//! OS-process recovery at the completed HTTP tool-turn cut, not a Scheme test.
+//! OS-process recovery at completed and unanswered HTTP turns, not a Scheme test.
 use super::{Harness, completed, fixture, protocol::Case};
 use std::{os::unix::process::ExitStatusExt, path::Path, time::Duration};
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt};
 
 const CHILD: &str = "grpc::service::http_tests::turns::crash::http_recovery_child";
 const READY: &str = "WEAVER_HTTP_TOOL_COMMITTED";
+const UNANSWERED: &str = "WEAVER_HTTP_REQUEST_WAITING";
+#[path = "http_unanswered.rs"]
+mod unanswered;
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn http_recovery_child() {
@@ -30,8 +33,8 @@ async fn http_recovery_child() {
         .await
         .expect("root");
     let endpoint = std::env::var("WEAVER_HTTP_RECOVERY_ENDPOINT").expect("endpoint");
-    let initial = phase == "prime";
-    assert!(initial || phase == "resume");
+    let initial = phase == "prime" || phase == "send";
+    assert!(initial || phase == "resume" || phase == "recover-unknown");
     let owner = Harness::start(
         &directory.join("ledger.db"),
         &root,
@@ -39,7 +42,65 @@ async fn http_recovery_child() {
     )
     .await;
     let first_body = case.first_request();
-    if initial {
+    if phase == "send" {
+        let response = owner
+            .submit(case, "tool-turn", &first_body)
+            .await
+            .expect("HTTP headers");
+        assert_eq!(response.status(), 200);
+        let body = response.bytes();
+        tokio::pin!(body);
+        std::future::poll_fn(|cx| {
+            use std::{future::Future, task::Poll};
+            assert!(
+                body.as_mut().poll(cx).is_pending(),
+                "unanswered turn cannot already be complete"
+            );
+            Poll::Ready(())
+        })
+        .await;
+        let mut stdout = tokio::io::stdout();
+        stdout
+            .write_all(format!("\n{UNANSWERED}\n").as_bytes())
+            .await
+            .expect("pending cut");
+        stdout.flush().await.expect("parent observation");
+        // The parent independently sees the exact provider request while its
+        // TLS peer withholds every response byte, then kills this owner.
+        std::future::pending::<()>().await;
+    } else if phase == "recover-unknown" {
+        for _ in 0..2 {
+            if let Ok(retry) = owner.submit(case, "tool-turn", &first_body).await {
+                assert!(
+                    retry.bytes().await.is_err(),
+                    "unknown original cannot be replayed"
+                );
+            }
+        }
+        assert_eq!(
+            owner.derivations.load(std::sync::atomic::Ordering::SeqCst),
+            0,
+            "recovery reuses the existing exact decision without a new advisory call"
+        );
+        let changed = format!("{first_body} ");
+        assert_eq!(
+            owner
+                .submit(case, "tool-turn", &changed)
+                .await
+                .expect("changed retry")
+                .status(),
+            409
+        );
+        fixture::change(&owner.source, false).await;
+        assert_eq!(
+            owner
+                .submit(case, "after-withdrawal", &first_body)
+                .await
+                .expect("withdrawal")
+                .status(),
+            409
+        );
+    } else if initial {
         let first = completed(
             owner
                 .submit(case, "tool-turn", &first_body)
@@ -141,6 +202,37 @@ fn child(directory: &Path, endpoint: &str, case: &str, phase: &str) -> tokio::pr
     command
 }
 
+async fn at_cut(child: &mut tokio::process::Child, marker: &str) {
+    let mut stdout = tokio::io::BufReader::new(child.stdout.take().expect("child stdout")).lines();
+    tokio::time::timeout(Duration::from_secs(8), async {
+        loop {
+            if stdout
+                .next_line()
+                .await
+                .expect("child observation")
+                .expect("child must reach cut")
+                == marker
+            {
+                break;
+            }
+        }
+    })
+    .await
+    .expect("bounded crash cut");
+}
+async fn kill(child: &mut tokio::process::Child) {
+    child.start_kill().expect("real process kill");
+    let status = tokio::time::timeout(Duration::from_secs(8), child.wait())
+        .await
+        .expect("kill exit bound")
+        .expect("killed status");
+    assert_eq!(
+        status.signal(),
+        Some(9),
+        "must terminate by SIGKILL, not graceful drain"
+    );
+}
+
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn three_protocols_resume_after_committed_tool_process_kill() {
     let _ = rustls::crypto::ring::default_provider().install_default();
@@ -159,37 +251,12 @@ async fn three_protocols_resume_after_committed_tool_process_kill() {
             .stdout(std::process::Stdio::piped())
             .spawn()
             .expect("first OS owner");
-        let mut stdout =
-            tokio::io::BufReader::new(prime.stdout.take().expect("child stdout")).lines();
-        tokio::time::timeout(Duration::from_secs(8), async {
-            loop {
-                if stdout
-                    .next_line()
-                    .await
-                    .expect("child observation")
-                    .expect("child must reach cut")
-                    == READY
-                {
-                    break;
-                }
-            }
-        })
-        .await
-        .expect("bounded completed-tool cut");
+        at_cut(&mut prime, READY).await;
         assert_eq!(
             peer.requests.recv().await.expect("first actual send"),
             case.first_request()
         );
-        prime.start_kill().expect("real process kill");
-        let status = tokio::time::timeout(Duration::from_secs(8), prime.wait())
-            .await
-            .expect("kill exit bound")
-            .expect("killed status");
-        assert_eq!(
-            status.signal(),
-            Some(9),
-            "must terminate by SIGKILL, not graceful drain"
-        );
+        kill(&mut prime).await;
         let output = tokio::time::timeout(
             Duration::from_secs(8),
             child(directory.path(), &endpoint, name, "resume").output(),

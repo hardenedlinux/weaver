@@ -169,6 +169,12 @@ impl Drop for ProviderPeer {
     }
 }
 pub async fn provider(replies: Vec<String>) -> ProviderPeer {
+    provider_with_response_gate(replies, None).await
+}
+pub async fn provider_with_response_gate(
+    replies: Vec<String>,
+    mut response_gate: Option<Arc<tokio::sync::Notify>>,
+) -> ProviderPeer {
     let _ = rustls::crypto::ring::default_provider().install_default();
     use tokio::io::{AsyncReadExt, AsyncWriteExt};
     let certificate =
@@ -253,6 +259,12 @@ pub async fn provider(replies: Vec<String>) -> ProviderPeer {
                 )
                 .await
                 .expect("observation");
+            if let Some(gate) = response_gate.take() {
+                tokio::select! {
+                    () = gate.notified() => {},
+                    () = stopping.cancelled() => break,
+                }
+            }
             let sent: std::io::Result<()> = async {
                 stream.write_all(b"HTTP/1.1 200 OK\r\nContent-Type: text/event-stream\r\nTransfer-Encoding: chunked\r\nConnection: close\r\n\r\n").await?;
                 let width = if reply.len() <= 65_536 { 7 } else { 16_384 };

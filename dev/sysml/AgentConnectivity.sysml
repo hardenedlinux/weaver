@@ -708,6 +708,14 @@ package AgentConnectivity {
             attribute :>> runtimeProperty = "http_crash::three_protocols_resume_after_committed_tool_process_kill";
             doc /* Fixed three protocol cases on Unix, four Tokio/test workers and the original 120-second library watchdog. Each child has an eight-second observation/exit bound. This cut follows full terminal delivery; it does not qualify a kill during an uncommitted send, linked Scheme or stock Magpie. */
         }
+        part httpUnansweredProcessRecovery : PlannedAcceptance {
+            attribute :>> status = DeliveryStatus::qualified;
+            attribute :>> scenario = "For Chat, Responses and Messages, the independent TLS peer receives the full exact request and withholds every response byte; the parent kills the waiting HTTP/native child, then another process opens the same ledger";
+            attribute :>> oracle = "Actual SIGKILL; original reservation and unknown dispatch survive; no response release or terminal usage exists; two exact retries cannot resend or rederive, changed bytes conflict, and withdrawal rejects a fresh key; the live peer observes only one connection";
+            attribute :>> formalModel = "Reuse ProviderRpc.partialWriteCannotFallbackTest and restartCannotReissueBurnTest together with SessionTurnAdmission retained decisions; remote request receipt does not prove callback transaction completion";
+            attribute :>> runtimeProperty = "http_unanswered::three_protocols_keep_unanswered_dispatch_after_process_kill";
+            doc /* Fixed three Unix protocol cases, four Tokio/test workers, original 120-second library watchdog and eight-second child observations. The peer gate is a test disturbance before all response bytes; no production fault hook, provider retry policy, timeout or Scheme claim changes. This cut is not a proof of every kernel-write or SQL-commit interleaving. */
+        }
         part httpReadAheadChallenge : WeaverProject::DesignProcess::DesignChallenge {
             attribute :>> hypothesis = "A bounded native receipt queue alone bounds an HTTP adapter even if it eagerly accepts frames into another queue";
             attribute :>> assumptions = "Reuse the native receipt/source-cut model; abstract network slot denotes one bounded frame, not one TCP packet or an exact library byte limit; scheduling and byte bounds need runtime evidence";
