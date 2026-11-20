@@ -39,6 +39,13 @@ establish submillisecond execution or remote CI qualification.
 
 * One architecture, three different kinds of responsibility
 
+The planned local Agent connection surface is modeled in
+[[file:../../dev/sysml/AgentConnectivity.sysml][AgentConnectivity.sysml]] and explained in
+[[file:30-local-agent-connectivity.org][local Agent connectivity]]. It reuses Magpie's UI, local host and config
+owners first, with a fixed Weaver backend; unified distribution is a later gate.
+The concrete Go/RPC join, optional HTTP binding and lifecycle acceptance remain design-only. The embedded
+Harness client retains its independent runtime and dependency boundary.
+
 Cedar, Quint and Lean are not three additional gateway services competing with
 Scheme, Go and Rust. Cedar defines and evaluates permission; Quint describes
 state transitions and explores their interleavings; Lean expresses semantics

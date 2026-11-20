@@ -194,21 +194,14 @@ not described as a current rerun. Thirty-one earlier Lean source hashes, success
 logs and compiled artifacts are also checked before reuse. Native qualification
 and remote CI are not claimed.
 
-* Reproduction
-#+begin_src sh
-python3 dev/proofs/prepare_bootstrap_invitation_bundle.py
-python3 dev/proofs/prepare_bootstrap_invitation_bundle_controls.py
-python3 dev/proofs/check_llm_bootstrap_invitation.py
-python3 dev/proofs/evidence/llm-bootstrap-invitation/check-source-receipts.py
-python3 dev/proofs/evidence/llm-bootstrap-invitation/check-working-sources.py
-python3 dev/proofs/evidence/llm-bootstrap-invitation/check-bundle.py
-#+end_src
+* Historical reproduction boundary
+The historical reproduction driver and its dependent artifact-checking
+pipeline are retired. This experiment has no maintained equivalent entry;
+its original receipt remains historical evidence. The current registered
+Go verification plan is described in [[file:../../50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][verification ownership]].
 
-The certified parent core and bundle parse/source-map receipts are inputs to
-these commands. Recompute their parser receipts after any source edit; never
-reuse an IR for changed bytes. The historical recursive preparation routes are
-retained for diagnosis, not required as current acceptance routes. Run a new
-verification in an isolated evidence copy so sealed results are preserved.
-The preparation scripts use bounded child commands. Preserve diagnostics from a
-failed route before changing scheduling or source; do not overwrite a timeout
-with a later successful run. Historical category manifests remain immutable.
+The certified parent core and bundle parse/source-map receipts were inputs to
+that retired pipeline. Changed source cannot reuse its prior IR or parser
+receipts. Future qualification must use the maintained owner with its actual
+source and coverage declared, preserve failed observations and retain the
+original bounded-child semantics. Historical category manifests remain immutable.

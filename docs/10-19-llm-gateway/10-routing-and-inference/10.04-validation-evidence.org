@@ -48,10 +48,11 @@ receipt; research sources and tool versions do not change dependency pins.
 * Reproduction and final formal checks
 
 #+begin_src sh :eval never
-python3 dev/proofs/check_llm_routing.py
-python3 dev/proofs/evidence/llm-routing/check-counterexample-observations.py
-python3 dev/proofs/evidence/llm-routing/check-four-artifacts.py
+go -C go run ./cmd/weaver-dev -timeout 28m check-policy
 #+end_src
+
+This runs the maintained registered plan. It does not replay the retired
+per-artifact checks or regenerate the historical observations below.
 
 [[file:../../../dev/proofs/evidence/llm-routing/commands.json][Fifteen final command routes]] retain exact arguments, timings, watchdogs,
 exit codes and raw logs. Seven Lean modules build in a fresh isolated directory:
@@ -93,7 +94,7 @@ becoming an implicit authority source or forcing a new fence on every sample.
 
 * Counterexamples and explicit assumptions
 
-Six final [[file:../../../dev/proofs/evidence/llm-routing/itf][ITF traces]] are independently decoded by the stored Python checker.
+Six final [[file:../../../dev/proofs/evidence/llm-routing/itf][ITF traces]] are independently decoded in the archived receipt.
 [[file:../../../dev/proofs/evidence/llm-routing/counterexample-observations.json][Decoded observations]] check actual final fields:
 
 | Unsafe schedule | Observed failure |

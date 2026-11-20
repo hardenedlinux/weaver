@@ -69,15 +69,19 @@ The [[file:../../../dev/proofs/evidence/native-image-closure/artifact-check.json
 
 The [[file:../../../dev/proofs/evidence/native-image-closure/inputs-before.json][complete before inventory]] and [[file:../../../dev/proofs/evidence/native-image-closure/inputs-after.json][after verification]] cover the actual selected and excluded Scheme bodies/interfaces, owned artifacts and tool ABI. OS and foreign system dylibs remain trusted prerequisites. The build is serialized with one trusted writer; it is not an anti-tampering or distributed durability proof.
 
-* Reproduction
-Use the fresh-generation recipe (retired Python driver) rather than executing a sealed directory in place:
+* Historical reproduction boundary
 
-#+begin_src sh
-python3 dev/proofs/evidence/native-image-closure/reproduce.py --generation independent-check
-python3 dev/proofs/evidence/native-image-closure/reproduce.py --generation independent-run --run
-#+end_src
+The historical reproduction driver and its dependent artifact-checking
+pipeline are retired. This experiment has no maintained equivalent entry;
+its original receipt remains historical evidence. The current registered
+Go verification plan is described in [[file:../59-provider-rpc/59.21-verification-ownership.org][verification ownership]].
 
-The first invocation materializes an isolated recipe; the second executes a separate generation. Original high-level/lowered source artifacts and the recorded installed toolchain are prerequisites. All timed native processes keep the fifteen-second verdict and are retained until natural exit. Collector exit zero means collection finished; it is not native acceptance. Read the complete candidate-series, fresh ordinary-launcher and supplementary warm verdicts. The replay command returns failure if any required native candidate or launcher observation fails; all its native children still finish naturally.
+The historical recipe materialized and executed separate generations using its
+original high-level/lowered artifacts and recorded toolchain. Its native
+processes retained the fifteen-second verdict and natural-exit requirement.
+Collector exit zero established collection only. The recorded candidate-series,
+ordinary-launcher and supplementary warm verdicts retain their original failures;
+driver retirement neither reruns nor upgrades those observations.
 
 * Remaining boundary
 The installed runtime is unchanged. F_CHECK_LV and synchronous image notifications still execute. The kernel/service endpoint behind their variable latency remains unidentified; this packaging profile reduces the number of mappings rather than disabling those checks. General plugin ordering, OS-wide cold-start availability, arbitrary configuration workloads and actual Gateway transport/store implementation require separate qualification. No Gateway code or dependency pin is changed. The [[file:../../../dev/proofs/evidence/native-image-closure/SHA256SUMS][checkpoint byte seal]] binds the four connected artifacts and native evidence.

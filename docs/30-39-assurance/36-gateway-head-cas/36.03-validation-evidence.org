@@ -39,9 +39,11 @@ provider qualification. No dependency compatibility migration is performed.
 * Reproduction and final commands
 
 #+begin_src sh :eval never
-python3 dev/proofs/check_gateway_head_cas.py
-python3 dev/proofs/evidence/gateway-head-cas/check-four-artifacts.py
+go -C go run ./cmd/weaver-dev -timeout 28m check-policy
 #+end_src
+
+This runs the maintained registered plan. It does not replay the retired
+per-artifact checks or regenerate the historical observations below.
 
 [[file:../../../dev/proofs/evidence/gateway-head-cas/versions.log][Recorded tools]]: Lean 4.34.1, Std only; Quint 0.33.0, TypeScript backend;
 D2 version recorded separately. Four Lean modules were built in a fresh isolated

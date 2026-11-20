@@ -44,8 +44,11 @@ no extraction of upstream proofs or native ABI qualification was performed.
 * Reproduction and final checks
 
 #+begin_src sh :eval never
-python3 dev/proofs/check_floor_intent_decision.py
+go -C go run ./cmd/weaver-dev -timeout 28m check-policy
 #+end_src
+
+This runs the maintained registered plan. It does not replay the retired
+per-artifact checks or regenerate the historical observations below.
 
 [[file:../../../dev/proofs/evidence/floor-intent-decision/versions.log][Tools]]: Lean 4.34.1, Std only; Quint 0.33.0, TypeScript backend; D2 renderer
 recorded separately. Seventeen Lean modules were compiled in a fresh isolated

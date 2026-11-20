@@ -22,7 +22,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"runtime"
 	"slices"
 	"strings"
 	"testing"
@@ -50,12 +49,27 @@ func TestAnthropicTerminalUsageIndependentIssuer(t *testing.T) {
 func checkTerminalUsageIndependentIssuer(t *testing.T, anthropic bool) {
 	t.Helper()
 	t.Setenv("WEAVER_STORAGE_JOURNAL", "mvcc")
-	binary := filepath.Join(t.TempDir(), "weaver-meter")
-	build := exec.Command(filepath.Join(runtime.GOROOT(), "bin/go"), "-C", "go", "build", "-o", binary, "./cmd/weaver-meter")
-	build.Dir = root(t)
-	if output, err := build.CombinedOutput(); err != nil {
-		t.Fatalf("meter build: %v: %s", err, output)
+	executable := os.Getenv("WEAVER_TEST_PREBUILT_METER")
+	if executable == "" {
+		build := exec.CommandContext(t.Context(), "cargo", "build", "--release", "--locked", "--offline",
+			"-j4", "-p", "weaver-server", "--bin", "weaver-meter", "--no-default-features", "--message-format=json-render-diagnostics")
+		build.Dir = root(t)
+		build.Stderr = os.Stderr
+		var err error
+		executable, err = buildCargoExecutable(build, cargoTarget{Name: "weaver-meter", Kind: "bin", Optimized: true})
+		if err != nil {
+			t.Fatalf("meter build: %v", err)
+		}
 	}
+	if !filepath.IsAbs(executable) {
+		t.Fatal("meter executable must have an absolute path")
+	}
+	binary := filepath.Join(t.TempDir(), "weaver-meter")
+	digest, err := publishProviderImage(executable, binary)
+	if err != nil {
+		t.Fatalf("meter executable: %v", err)
+	}
+	t.Logf("test-owned meter executable sha256=%s", digest)
 	for _, complete := range []bool{true, false} {
 		t.Run(fmt.Sprint(complete), func(t *testing.T) {
 			pub, key, err := ed25519.GenerateKey(rand.Reader)

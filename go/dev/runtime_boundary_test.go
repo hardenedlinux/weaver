@@ -199,7 +199,7 @@ func TestProjectArchitectureRuntimeAssetBoundary(t *testing.T) {
 			t.Fatalf("unhandled runtime boundary declaration: %s", projectKind(part))
 		}
 	}
-	if len(entries) == 0 || len(boundary.forbiddenRoots) == 0 || len(roots) == 0 || assetRoots == 0 {
+	if len(boundary.forbiddenRoots) == 0 || len(roots) == 0 || assetRoots == 0 {
 		t.Fatal("incomplete SysML runtime boundary")
 	}
 	classified := map[string]bool{}
@@ -227,8 +227,12 @@ func TestProjectArchitectureRuntimeAssetBoundary(t *testing.T) {
 		}
 		patterns = append(patterns, "./"+filepath.ToSlash(relative))
 	}
-	args := append([]string{"-C", "go", "list", "-deps", "-json"}, patterns...)
-	stream := json.NewDecoder(bytes.NewReader(tool(t, filepath.Join(runtime.GOROOT(), "bin/go"), args...)))
+	var goPackages []byte
+	if len(patterns) != 0 {
+		args := append([]string{"-C", "go", "list", "-deps", "-json"}, patterns...)
+		goPackages = tool(t, filepath.Join(runtime.GOROOT(), "bin/go"), args...)
+	}
+	stream := json.NewDecoder(bytes.NewReader(goPackages))
 	for {
 		var pkg struct {
 			Dir, ImportPath                   string

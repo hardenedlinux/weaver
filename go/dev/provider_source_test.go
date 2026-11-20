@@ -29,8 +29,10 @@ func TestProviderSourceIngressBindsCertificateCredentialAndMethod(t *testing.T) 
 	}{
 		{"forwarded-source-token", f.sourceAddress, adminToken, f.pki.client},
 		{"operation-token-with-source-key", f.sourceAddress, ownerToken, f.pki.source},
+		{"operation-identity-on-source-ingress", f.sourceAddress, ownerToken, f.pki.client},
 		{"source-key-on-operation-ingress", f.address, ownerToken, f.pki.source},
 		{"source-token-on-operation-ingress", f.address, adminToken, f.pki.client},
+		{"source-identity-on-operation-ingress", f.address, adminToken, f.pki.source},
 	}
 	for _, test := range cases {
 		t.Run(test.name, func(t *testing.T) {
@@ -41,8 +43,16 @@ func TestProviderSourceIngressBindsCertificateCredentialAndMethod(t *testing.T) 
 				t.Fatal(err)
 			}
 			defer client.Connection.Close()
-			revision := uint64(0)
-			_, err = client.RPC.PublishAuthority(client.Context(ctx), &pb.PublishRequest{OperationId: "forged", ExpectedRevision: &revision, Fence: 2, Policy: "forbid(principal,action,resource);", Schema: f.schema})
+			if test.address == f.sourceAddress {
+				revision := uint64(0)
+				_, err = client.RPC.PublishAuthority(client.Context(ctx), &pb.PublishRequest{OperationId: "forged", ExpectedRevision: &revision, Fence: 2, Policy: "forbid(principal,action,resource);", Schema: f.schema})
+			} else {
+				stream, startErr := client.RPC.ExecuteProvider(client.Context(ctx), &pb.ProviderRequest{Plan: gatewayclient.Plan(f.plan), Encoding: pb.Encoding_PROTOBUF, BatchRows: 1})
+				err = startErr
+				if err == nil {
+					_, err = stream.Recv()
+				}
+			}
 			if status.Code(err) != codes.Unauthenticated {
 				t.Fatalf("cross-ingress identity accepted: %v", err)
 			}

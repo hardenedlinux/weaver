@@ -143,7 +143,7 @@ checked through the in-process OpenSysML SDK.
 | Path | Contents |
 |------+----------|
 | =crates/= | Rust workspace libraries, server and per-crate benchmarks |
-| =go/= | OpenSysML tools, gRPC clients, reference controls and independent metering issuer |
+| =go/= | OpenSysML tools, gRPC clients and reference controls |
 | =proto/= | Shared versioned Protobuf service definitions |
 | =scheme/= | Governance, Policy and Gateway modules |
 | =t/= | Scheme-owned tests and fixtures |
@@ -154,9 +154,46 @@ checked through the in-process OpenSysML SDK.
 The root =Cargo.toml= manages Rust crates; =go/go.mod= owns the single Go module.
 =gerbil.pkg=, =build.ss= and =init.ss= define the Scheme package.
 
-Coding Harnesses can embed [[file:crates/llm/README.org][weaver-llm]].
-Its =weaver.toml= profiles bind the provider, model and credentials before
-starting a pooled HTTP/SSE request.
+Coding Harnesses can use the standalone [[file:crates/llm/README.org][weaver-llm client]].
+Its trusted =weaver.toml= profiles bind a provider endpoint, protocol, model
+and credential reference before opening a pooled HTTP/SSE exchange.
+
+* Scheme module selection
+
+[[file:init.ss][init.ss]] selects the Lab Governance owner and Weaver's Governance, Policy
+and Gateway owners. The Lab window names its existing native package checkout;
+it does not depend on the location of a sibling repository:
+
+#+begin_src scheme
+(yuanxu!
+  :load-modules "modules" package: "github.com/tao3k/agentic-ai-lab"
+  mode: explicit rename: Lab
+  (governance)
+  :load-modules "./scheme" mode: explicit rename: Weaver
+  (governance)
+  (policy)
+  (gateway))
+
+(.get hardenedlinux/weaver.init.exports Lab governance)
+(.get hardenedlinux/weaver.init.exports Weaver governance)
+(.get hardenedlinux/weaver.init.exports Weaver gateway)
+#+end_src
+
+The two Governance leaves have distinct complete Gerbil module identities.
+Each native POO slot retains its own scope; local Gateway requirements select
+Weaver's own Governance and Policy. Native imports add the used Lab Cedar and
+loop-engine/control libraries to the same compiler closure. Interface tags
+classify owners; native Gerbil owns packages, compilation and artifact lookup.
+Scope declarations directly use native POO Record Types and Function signatures.
+
+[[file:t/module-selection-test.ss][The actual package gate]] compares the complete specification with independent
+A/B cold compiler events and products, checks zero hot compilations, and verifies
+that cleaning A preserves B and unrelated files. An independent B process uses
+native =.get= for both Governance scopes, runs Weaver assessment and actual Cedar
+FFI validation, and checks B's loaded native products. The unchanged focused
+gate has a 120-second total deadline and 120/60-second action/idle bounds.
+The current receipt qualifies source-linked Lab/Core; release pin and native
+dependency-install acceptance remain separate publication gates.
 
 * Development
 
@@ -185,6 +222,7 @@ implementation boundaries, including real multi-process gRPC and HTTPS streams.
 
 * Documentation
 
+- [[file:docs/architecture/29-gateway-comparison.org][Architecture review and comparison matrix: Weaver, Praxis and Agent Gateway]]
 - [[file:docs/50-59-research-program/59-provider-rpc/59.00-index.org][Implementation guide and current scope]]
 - [[file:docs/50-59-research-program/59-provider-rpc/59.23-governance-policy-projection.org][Governance Policy projection and authoritative publication]]
 - [[file:docs/50-59-research-program/59-provider-rpc/59.20-project-structure.org][Project structure and module ownership]]

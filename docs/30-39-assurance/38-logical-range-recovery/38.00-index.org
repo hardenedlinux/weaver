@@ -33,10 +33,11 @@ receipt transitions under the added logical recovery controls. The design table
 links these declarations to the Org rules and core D2 nodes.
 
 #+begin_src sh :eval never
-python3 dev/proofs/check_logical_range_recovery.py
-python3 dev/proofs/evidence/logical-range-recovery/check-four-artifacts.py
-python3 dev/proofs/evidence/logical-range-recovery/check-counterexample-observations.py
+go -C go run ./cmd/weaver-dev -timeout 28m check-policy
 #+end_src
+
+This runs the maintained registered plan. It does not replay the retired
+per-artifact checks or regenerate the historical observations below.
 
 No Gateway implementation or dependency pin is changed. Earlier sealed categories
 remain historical evidence; the design delta is maintained here.

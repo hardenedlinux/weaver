@@ -7,13 +7,38 @@
 
 * Maintained execution
 
+Maintained DEV orchestration and evidence processing are Go-owned. Project's
+=SourcePolicy= rejects Python source, stubs and notebooks through the existing
+OpenSysML architecture gate; no second language-inventory checker is needed.
+Native Rust, Scheme, Lean and Quint tools keep their own semantics and verdicts.
+Go schedules their standard entries and records structured results rather than
+reimplementing package management, model checking or property engines.
+
+The unreferenced Governor ABBA log summarizer previously stored under the
+2026-11-06 evidence directory is retired. It is not translated into another
+standalone analyzer: it has no maintained caller, while current benchmark and
+verification collection belongs to the existing Go runner. That collector is
+not claimed to reproduce the retired ABBA script's statistics. Historical
+protocols, result receipts and byte manifests are retained unchanged; deleting
+an obsolete executable does not turn their observations into a current pass.
+Future A/A or A/B work must preregister and extend the maintained owner before
+collecting a new workload, rather than reviving a script inside an evidence folder.
+
+Current documentation uses the maintained Go plan. Its registered-stage
+coverage is explicit; it does not automatically regenerate historical bundles,
+redecode archived counterexamples or reproduce retired image experiments.
+Recorded filenames or interpreter commands inside immutable historical data
+and third-party source references are lineage, not maintained execution entries.
+
 The Go module owns the executable verification plan through
 =go -C go run ./cmd/weaver-dev=. =check= runs the declared Rust/Go native, PBT,
-Cedar, Quint and Lean gates. =check-scheme= adds isolated native dependency
-builds, standard Scheme suites and real cross-language publication/execution
-tests. =bench= measures each crate's package-owned target and Go gRPC cases.
+Cedar, Quint and Lean gates. =check-scheme= qualifies selected native Scheme
+builds, standard package suites and real cross-language publication/execution
+tests. Dependency preparation remains the separate =bootstrap-scheme= operation
+delegated to Gerbil's package owner. =bench= measures each crate's package-owned
+target and Go gRPC cases.
 All three modes admit the root Project model and linked development SysML
-contracts through the Go OpenOpenSysML Go API.
+contracts through the OpenSysML Go API.
 
 Scheme assertions belong to =t/*-test.ss= and run through the standard Gerbil toolchain
 =gxtest= API. Their returned verdict and natural child exit are checked.

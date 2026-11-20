@@ -36,10 +36,11 @@ do not establish native queue or provider behavior.
 * Reproduction and final formal evidence
 
 #+begin_src sh :eval never
-python3 dev/proofs/check_broker_consumption_queue.py
-python3 dev/proofs/evidence/broker-consumption-queue/check-counterexample-observations.py
-python3 dev/proofs/evidence/broker-consumption-queue/check-four-artifacts.py
+go -C go run ./cmd/weaver-dev -timeout 28m check-policy
 #+end_src
+
+This runs the maintained registered plan. It does not replay the retired
+per-artifact checks or regenerate the historical observations below.
 
 [[file:../../../dev/proofs/evidence/broker-consumption-queue/commands.json][Final command records]] retain arguments, timings, watchdogs and exit codes.
 The final runner compiles five Lean modules into a fresh isolated directory:
@@ -72,7 +73,7 @@ reservation and shared-capacity bounds survive downstream unknown outcomes.
 The downstream model stutters on that semantic ledger: it does not implement
 new concurrent billing updates or prove native I/O.
 
-The six final [[file:../../../dev/proofs/evidence/broker-consumption-queue/itf][ITF traces]] are independently decoded by the stored Python checker.
+The six final [[file:../../../dev/proofs/evidence/broker-consumption-queue/itf][ITF traces]] are independently decoded in the archived receipt.
 [[file:../../../dev/proofs/evidence/broker-consumption-queue/counterexample-observations.json][Decoded observations]] confirm the actual failing fields, not just test names:
 
 | Unsafe schedule | Observed violation | Safe contract |

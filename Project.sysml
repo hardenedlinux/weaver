@@ -9,6 +9,22 @@ package WeaverProject {
        This structural contract does not grant runtime execution authority. */
 
     part def Directory;
+    requirement def ArchitectureFalsification {
+        doc /* Architecture verification challenges hypotheses, not checker
+           presence or implementation-shaped assertions. State independent
+           safety, observable effects and conditional progress requirements;
+           separate environmental assumptions from those requirements. Quint
+           explores competing owner/read/write/recovery designs under concurrent
+           inputs, restart, withdrawal and partial failure. Runtime properties
+           generate adversarial inputs and schedules against actual Scheme,
+           Rust and Go boundaries with an independent reference or metamorphic
+           oracle. Neither layer copies the implementation into a second one.
+           Counterexamples require design revision or an explicit scope/assumption
+           correction, then a reproducible runtime regression where applicable.
+           A bounded no-violation result is not universal proof; an expected
+           counterexample for an implemented design remains an open defect/gap,
+           not qualification. Mutation controls challenge the tests themselves. */
+    }
     requirement def ArchitectureViewGrammar {
         doc /* Development-only D2 extension profiles live under dev/d2/themes. The shared render Library owns the engine, themes and export; Weaver supplies source-owned declarations and source checks. System,
            routing, flow, sequence, state, data and assurance views select
@@ -84,7 +100,14 @@ package WeaverProject {
     }
 
     package SourcePolicy {
+        doc /* Maintained development orchestration and evidence processing reuse
+           the Go owner and native framework entries. Retired scripts are not
+           retained as executable evidence tools. Historical byte manifests and
+           third-party source excerpts remain data, not interpreter dependencies. */
         part '.py' : ProhibitedExtension;
+        part '.pyi' : ProhibitedExtension;
+        part '.pyw' : ProhibitedExtension;
+        part '.ipynb' : ProhibitedExtension;
     }
 
     requirement def ProductionAssetBoundary {
@@ -104,7 +127,6 @@ package WeaverProject {
         part 'go/internal/devrunner' : ForbiddenRuntimeRoot;
         part prod : RuntimeAssetRoot;
         part 'go/dev/controlref' : DevelopmentGoEntry;
-        part 'go/cmd/weaver-meter' : RuntimeGoEntry;
         part 'go/cmd/weaver-dev' : DevelopmentGoEntry;
         part 'scheme' : RuntimeSourceRoot;
         part 'proto' : RuntimeSourceRoot;
@@ -352,6 +374,7 @@ package WeaverProject {
         private import ScalarValues::*;
         doc /* Sole responsibility registry. Documents and diagrams reference
            these owners; they do not create parallel verification designs. */
+        requirement challengeContract : ArchitectureFalsification;
         part def Specification :> VerificationResponsibility {
             attribute displayName : String = "Specify effects";
             attribute responsibility : String = "SysML + Org\nAllocate final-send ownership\nName the required contracts";
@@ -366,6 +389,10 @@ package WeaverProject {
             attribute glyph : String = "decision";
             attribute visualRole : String = "selection";
             doc /* Quint owns concurrent/fault schedules and unsafe counterexamples.
+               Independent requirements are evaluated over observable histories;
+               compare candidate designs instead of copying implementation guards
+               or relying on a manually set unsafe flag. Retain the failed
+               hypothesis and replay the discovered schedule against runtime.
                Extend existing publication/execution models rather than duplicate
                their ledgers. It does not reimplement Cedar evaluation or prove
                arbitrary Scheme/Rust programs. Credential semantics enter as
@@ -393,6 +420,10 @@ package WeaverProject {
                Inherited POO property testing, Proptest and Go testing.F own generation, shrinking, corpora and
                replay. Property contracts, independent oracles and typed command
                models precede Runtime changes; command runners only launch suites.
+               Generated histories, partitioning, fault cuts and substitutions
+               challenge the design's assumptions. Reference behavior and
+               metamorphic/conservation relations are independent of the code
+               under test; current outputs do not define their own oracle.
                They do not turn finite cases into universal theorems. */
         }
         part specification : Specification;
@@ -407,6 +438,34 @@ package WeaverProject {
            A changed design invalidates downstream review decisions. Discussion
            confirms the advantage and scope; production work starts only after
            the complete reviewed design is explicitly confirmed. */
+        enum def ChallengeStatus {
+            enum unexplored;
+            enum refutedHypothesis;
+            enum boundedSupport;
+            enum openGap;
+        }
+        part def DesignChallenge {
+            requirement discipline : ArchitectureFalsification;
+            attribute hypothesis : String;
+            attribute assumptions : String;
+            attribute disturbance : String;
+            attribute independentOracle : String;
+            attribute progressObligation : String;
+            attribute explorationBound : String;
+            attribute modelCampaign : String;
+            attribute runtimeProperty : String;
+            attribute runtimeBudget : String;
+            attribute consequence : String;
+            attribute status : ChallengeStatus default = ChallengeStatus::unexplored;
+            doc /* Traceability to executable challenges, not a duplicate
+               algorithm or a claim that file paths establish coverage. A
+               supported replacement hypothesis does not close a counterexample
+               in current code until actual reproduction and correction pass.
+               Safety simulation does not establish progress: name fairness,
+               stable-environment and resource assumptions separately, and keep
+               unexecuted progress obligations open. Fixed exploration and
+               runtime budgets prevent an endless acceptance workload. */
+        }
         enum def DesignStage {
             enum advantageDiscussion;
             enum sysmlArchitecture;
@@ -482,6 +541,14 @@ package WeaverProject {
         part ledger : WeaverExecution::RustLedger;
         part broker : WeaverExecution::RustFinalBroker;
         part executor : WeaverExecution::HttpsExecutor;
+        part performance : WeaverExecution::RuntimePerformanceAllocation;
+        part agentConnectivity : AgentConnectivity::LocalAgentConnectivity;
+        part terminalUsageIssuer : WeaverExecution::TerminalUsageIssuer;
+        doc /* The embedded model client serves caller-selected endpoints.
+           Its dependency closure excludes the server, ledger, policy and
+           Kubernetes adapter. Gateway dispatch retains the authenticated
+           admission, write seal and output custody. Shared wire contracts
+           qualify both callers before unifying the Gateway's codecs. */
         part telemetry : WeaverExecution::TelemetryService;
     }
 
@@ -720,6 +787,10 @@ package WeaverProject {
         part 'crates/broker' : RustPackage {
             part 'weaver-contracts' : RuntimeDependency;
             part 'weaver-ledger' : RuntimeDependency;
+            part 'weaver-llm' : RuntimeDependency;
+            doc /* Reuse only the transport-independent bounded turn codec.
+               The broker retains source admission, consumed send custody and
+               final guarded release; it does not call the SDK network client. */
         }
         part 'crates/server' : RustPackage {
             doc /* An initialized GovernanceWorker may publish its producer
@@ -758,7 +829,6 @@ package WeaverProject {
         part 'go/api/gateway/v1' : GoPackage;
         part 'go/dev/controlref' : GoPackage;
         part 'go/cmd/weaver-dev' : GoPackage;
-        part 'go/cmd/weaver-meter' : GoPackage;
         part 'go/dev' : GoPackage;
         part 'go/internal/config' : GoPackage;
         part 'go/internal/controlplane' : GoPackage;
@@ -814,6 +884,7 @@ package WeaverProject {
         part 'dev/sysml/WeaverExecution.sysml' : File;
         part 'dev/sysml/ZeroTrustRefinement.sysml' : File;
         part 'dev/sysml/GatewayArchitecture.sysml' : File;
+        part 'dev/sysml/AgentConnectivity.sysml' : File;
         part 'dev/sysml/StoragePersistence.sysml' : File;
         part 'dev/sysml/StreamingExecution.sysml' : File;
         part 'dev/sysml/ProviderRpc.sysml' : File;

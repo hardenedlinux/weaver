@@ -20,7 +20,7 @@ and a fixed root allowance. Its finite fixtures do not establish unbounded model
 checking. The immutable profile and =Owner= predicates model trusted contract
 inputs, not a native Cedar evaluator or durable SDK implementation.
 
-Run check_llm_attempt_ledger.py (retired Python driver). Machine-readable results are in
+The former per-artifact checker is retired. Historical machine-readable results are in
 [[file:../../../dev/proofs/evidence/llm-attempt-ledger/commands.json][commands.json]]. Lean is compiled in a fresh isolated output directory; no
 dependency pins or Gateway code are modified. Historical manifests are checked
 without modifying their sealed artifacts.

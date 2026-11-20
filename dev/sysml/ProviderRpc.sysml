@@ -124,6 +124,18 @@ package ProviderRpc {
            verifier for arbitrary FlatBuffer graphs. Encoded-byte bounds alone
            are insufficient; batching never increases semantic or monetary budget. */
     }
+    requirement def GovernedStreamQualification {
+        doc /* Use the observed Rust operation ingress and a bounded Snake Oil
+           provider. A paused Protobuf or Arrow consumer must cause a capacity
+           wait. If authority remains current, restoring capacity must allow
+           completion. If authority is withdrawn during the wait, the next
+           pending range must be denied before queue admission. */
+        doc /* A disconnected caller cannot reopen the spent original on
+           reconnect. Restart and policy restoration do not reopen revoked
+           output. A crash between enqueue and release commit retains the
+           pending range without replay. The provider slow-consumer integration
+           group qualifies these cases with four Tokio workers. */
+    }
     requirement def ProviderUnknownRetention {
         doc /* Invocation callbacks return Result. Failure exits before recording
            callback success or entering the final commit window. The private
@@ -167,6 +179,10 @@ package ProviderRpc {
     }
     requirement def SourceIngressBinding {
         doc /* Source publication has a distinct gRPC listener, independent bounded connection capacity, a distinct pinned leaf and credential, and only source methods. Saturated operation connections cannot consume source connection slots. Both listeners close and drain under one runtime owner. */
+        doc /* Authenticate the certificate and bearer on methods assigned to
+           their ingress. Refuse methods assigned to the other ingress before
+           admission. After a source handoff, a new source mutation must
+           match both the listener pins and the durable successor identity. */
     }
     requirement def DurablePublicationDecision {
         doc /* Stable publication identity binds exact Policy, schema, original parent and requested fence. One deciding transaction commits authority/schema and a retained committed or rejected outcome. Exact retry observes history; changed identity binding is rejected. NotFound is not abort, and publication never sends or releases held budget. */
@@ -318,6 +334,7 @@ package ProviderRpc {
            the distinct LP in WeaverExecution. Observe cancellation immediately
            before enqueue, then retain uncertainty if receiver loss/commit failure
            races that insertion. Transport buffers may drain accepted data. */
+        requirement qualification : GovernedStreamQualification;
         port frames : ~FramePort;
         port stream : FramePort;
     }

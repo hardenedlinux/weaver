@@ -77,16 +77,19 @@ The [[file:../../../dev/proofs/evidence/dynamic-gxi-paired/clean-proof-receipt.j
 
 All fifty older manifests remain unchanged. Native deadline failures, a premature partial-build preparation with zero executed matrix samples, the rejected Quint builtin name and list-quantifier errors, the unchanged-parent twenty-second formal watchdog failure during concurrent own checks, and the unsupported ELK locked-position render are retained. The serialized fresh Lean rerun keeps the same bound; its pass is not a source repair for that failed parent. The corrected preparation requires all 98 object receipts and a completed build before linking. The final core D2 uses the established TALA layout.
 
-* Reproduction
-Create fresh evidence and native directories rather than running a sealed generation in place:
+* Historical reproduction boundary
 
-#+begin_src sh
-python3 dev/proofs/evidence/dynamic-gxi-paired/reproduce.py --generation independent-check
-# Optional: execute the generated serial native recipe.
-python3 dev/proofs/evidence/dynamic-gxi-paired/reproduce.py --generation independent-run --run
-#+end_src
+The historical reproduction driver and its dependent artifact-checking
+pipeline are retired. This experiment has no maintained equivalent entry;
+its original receipt remains historical evidence. The current registered
+Go verification plan is described in [[file:../59-provider-rpc/59.21-verification-ownership.org][verification ownership]].
 
-The dry run only materializes a fresh recipe. Collector exit zero means evidence collection completed; it does not mean every native gate passed. Typed per-sample verdicts and the failed-series result control admission. The run rebuilds native objects, prepares both identity families, audits instruction bytes, executes the fixed matrix and ordinary-launcher controls, and verifies inputs. It depends on the recorded installed toolchain and prior sealed high-level/generated source artifacts. All native timeouts remain failures while the controller waits for natural exit. Use a new generation name for every attempt.
+The recorded dry run materialized a fresh recipe. Collector exit zero meant
+collection completed, not native acceptance. Typed per-sample verdicts and the
+failed-series result remain controlling. The historical run rebuilt native
+objects, prepared both identity families, audited instruction bytes and exercised
+the fixed matrix and launcher controls using its recorded toolchain and source
+artifacts. Timeout failures remain failures; retirement does not revise them.
 
 * Remaining acceptance boundary
 This checkpoint identifies controllable image/import work and measures substantial host-sensitive variation. A general cold-start fifteen-second guarantee remains open unless the complete corresponding native profile independently passes. No global runtime installation, notification suppression, cleanup weakening, dependency pin change or Gateway implementation is performed. See the [[file:../../../dev/proofs/evidence/dynamic-gxi-paired/SHA256SUMS][complete checkpoint byte seal]].

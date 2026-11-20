@@ -32,8 +32,11 @@ queue/key-boundary refinement with the initialized original execution product.
 Run from the workspace root:
 
 #+begin_src sh :eval never
-python3 dev/proofs/check_key_boundary.py
+go -C go run ./cmd/weaver-dev -timeout 28m check-policy
 #+end_src
+
+This runs the maintained registered plan. It does not replay the retired
+per-artifact checks or regenerate the historical observations below.
 
 * Predecessors
 

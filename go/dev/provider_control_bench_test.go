@@ -145,7 +145,8 @@ func benchmarkProviderGoControlPair(b *testing.B, handler http.HandlerFunc) {
 	if rustHeapPair && !evidencePair {
 		labels = [2]string{"without-heap-counters", "with-heap-counters"}
 	}
-	controlImages := [2]string{controlBinary, controlBinary}
+	reference := goControlImage(b)
+	controlImages := [2]string{reference, reference}
 	providerImages := [2]string{image, image}
 	if providerPair {
 		providerImages[0] = filepath.Join(b.TempDir(), "weaver-server-baseline")
@@ -408,7 +409,7 @@ func TestProviderGoControlMeasuredChain(t *testing.T) {
 	image := wifImage(t, true)
 	for _, shared := range []bool{false, true} {
 		t.Run(fmt.Sprintf("shared=%t", shared), func(t *testing.T) {
-			arm := newControlBenchArm(t, image, controlBinary, 2, shared, true, false, burstProviderSSE(13))
+			arm := newControlBenchArm(t, image, goControlImage(t), 2, shared, true, false, burstProviderSSE(13))
 			for wave := range 2 {
 				for owner := range 4 {
 					ctx, cancel := context.WithTimeout(t.Context(), 12*time.Second)

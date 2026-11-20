@@ -1,0 +1,342 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+#+title: Gateway architecture review and comparison — Weaver, Praxis and Agent Gateway
+#+language: en
+#+date: 2026-11-09
+#+options: toc:2
+
+* Scope
+
+Praxis is a Rust filter framework with a separately released AI gateway.
+Agent Gateway provides a unified proxy for inference, MCP and A2A, with a
+Kubernetes control plane. Weaver concentrates on the authorization and
+accounting of an original task from source publication through provider send,
+stream delivery and recovery. Compare the boundary each product enforces and
+the integrations it ships.
+
+| Source | Inspected revision | Role in this comparison |
+|--------+--------------------+-------------------------|
+| Weaver | =144923a832c823da3008889199135211e53587bc= | Committed implementation baseline. Earlier qualification is attributed to its own revision below. |
+| Praxis Core | =c3d2ae3628cf3167780e58c5e8b38580d0241399= | =.data/praxis=; proxy, listeners, filter chains, operations. [[https://github.com/praxis-proxy/praxis/blob/c3d2ae3628cf3167780e58c5e8b38580d0241399/README.md][README]] |
+| Praxis AI | =f96d0114a995765793b1fb33f86f94ecc298eb08= | =.data/praxis-ai=; AI filters, translation, protocol and storage surfaces. [[https://github.com/praxis-proxy/ai/blob/f96d0114a995765793b1fb33f86f94ecc298eb08/README.md][README]] |
+| Praxis Policy | =828cb41c2f31723445c4e31051b44f59afa2f53f= | =.data/praxis-policy=; separately inspected policy source. [[https://github.com/praxis-proxy/policy/blob/828cb41c2f31723445c4e31051b44f59afa2f53f/README.md][README]] |
+| Agent Gateway | =134897e1975fa26fa5c5b8ba45d720d05d3f7fb8= | =.data/agentgateway=; Rust runtime and Go controller source. [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/README.md][README]] |
+
+Core locks =praxis-policy 0.6.0=. The inspected AI release locks
+=praxis-proxy 0.7.5= and =praxis-policy 0.4.1=. The Core, AI and Policy columns
+describe their named source surfaces. Feature composition and default behavior
+depend on the release lock, build features and configured chain. [[https://github.com/praxis-proxy/praxis/blob/c3d2ae3628cf3167780e58c5e8b38580d0241399/Cargo.lock][Core lock]]
+· [[https://github.com/praxis-proxy/ai/blob/f96d0114a995765793b1fb33f86f94ecc298eb08/Cargo.lock][AI lock]]
+
+The matrices are a source review. “Not established” means the cited paths do
+not demonstrate an equivalent guarantee. Feature flags, protocol examples,
+tests, formal contracts, deployment evidence and measured performance have
+different scopes.
+
+* Architecture, configuration and deployment
+
+| Dimension | Weaver | Praxis Core / AI / Policy | Agent Gateway |
+|-----------+--------+---------------------------+---------------|
+| Unit of control | Original task, admitted plan, source and authority cut, reservation, concrete effect and delivery cursor. [[file:../../crates/ledger/src/provider_admission.rs][Admission]] | Listener, named filter chain, request/response hooks, upstream and filtered subrequest. [[https://github.com/praxis-proxy/praxis/blob/c3d2ae3628cf3167780e58c5e8b38580d0241399/docs/operating/configuration.md][Configuration]] | Bind, listener, route, backend, attached policy and request/backend attempt. [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/architecture/configuration.md][Configuration]] |
+| Runtime split | Scheme/POO composes semantics and proposes actions; Go adapts protocols and publishes; Rust mediates state and effects. Scheme runs inside the Rust owner through the Gambit C ABI. [[file:../../Project.sysml][SysML]] | Rust proxy core, AI-specific crate set and a phased policy engine with built-ins and plugin registration. [[https://github.com/praxis-proxy/praxis/blob/c3d2ae3628cf3167780e58c5e8b38580d0241399/docs/architecture/crate-layout.md][Crates]] · [[https://github.com/praxis-proxy/policy/blob/828cb41c2f31723445c4e31051b44f59afa2f53f/README.md][Policy]] | Rust data plane; Go Kubernetes controller translates Gateway API into purpose-built xDS resources; local configuration and xDS converge on a common IR. [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/controller/pkg/agentgateway/translator/agw.go][Translator]] · [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/architecture/configuration.md][IR]] |
+| Operator configuration | JSON/YAML input and source-bound compiled Scheme artifacts; approved sources, schema and catalog publish through authenticated control operations. [[file:../../scheme/gateway/compiled.ss][Compiled entry]] · [[file:../../go/internal/gatewayclient/publication.go][Publication client]] | YAML listener/filter pipelines with named reusable chains, validation and effective-config dump; AI adds configured classifiers and translators. [[https://github.com/praxis-proxy/praxis/blob/c3d2ae3628cf3167780e58c5e8b38580d0241399/docs/operating/configuration.md][Validate and dump]] · [[https://github.com/praxis-proxy/ai/blob/f96d0114a995765793b1fb33f86f94ecc298eb08/docs/architecture/routing-facts.md][Routing facts]] | Static process settings; watched local YAML/JSON for routes, backends and policy; remote xDS as another producer of the same IR. [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/architecture/configuration.md][Configuration]] |
+| Programmable semantics | Scheme and POO/Yuanxu typed composition, inherited Agentic AI Lab Governance and Governor; ASCENT derives source effects and eligible workflow steps. [[file:../../init.ss][Module selection]] · [[file:../../scheme/gateway/func.ss][Derivation]] | APL ordered effects and configured PDPs; Rust filter and plugin factories extend behavior. [[https://github.com/praxis-proxy/policy/blob/828cb41c2f31723445c4e31051b44f59afa2f53f/docs/content/apl/effects.md][Effects]] · [[https://github.com/praxis-proxy/policy/blob/828cb41c2f31723445c4e31051b44f59afa2f53f/README.md][Factories]] | CEL expressions over phase-specific contexts for matches, authorization and policy; typed Rust stages own execution. [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/architecture/cel.md][CEL]] · [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/crates/agentgateway/src/store/policy.rs][Policy phases]] |
+| Live change and retirement | Authenticated source change, durable intent/barrier, exact source/version checks, publish and fence old permission. Old admitted bytes have a defined drain boundary. [[file:../../crates/ledger/src/publication_barrier.rs][Barrier]] · [[file:../../dev/sysml/ControlActivation.sysml][Activation]] | Configuration reload rebuilds/applies proxy chains. Resilience coverage exercises reload under traffic. [[https://github.com/praxis-proxy/praxis/blob/c3d2ae3628cf3167780e58c5e8b38580d0241399/docs/operating/configuration.md][Reload]] · [[https://github.com/praxis-proxy/praxis/blob/c3d2ae3628cf3167780e58c5e8b38580d0241399/tests/resilience/tests/suite/reload_under_load.rs][Resilience test]] | File watch or xDS sync updates runtime configuration. Resource-level attachment keeps configuration changes narrow. [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/architecture/configuration.md][Resource mapping]] · [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/controller/pkg/syncer/krtxds/xds.go][Sync]] |
+| Kubernetes delivery | Current qualification covers real native Go/Rust services and source fixtures; full Kubernetes reconciliation is delivery work. [[file:../../README.org][Current scope]] | AI and Core provide standalone configuration and runnable proxy examples. No comparable first-party reconciliation scope established here. [[https://github.com/praxis-proxy/praxis/blob/c3d2ae3628cf3167780e58c5e8b38580d0241399/README.md][Core]] · [[https://github.com/praxis-proxy/ai/blob/f96d0114a995765793b1fb33f86f94ecc298eb08/README.md][AI]] | Gateway API controller, Agent Gateway CRDs and Helm charts for controller and standalone deployments. [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/controller/install/helm/agentgateway/Chart.yaml][Controller chart]] · [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/controller/install/helm/agentgateway-standalone/Chart.yaml][Standalone chart]] |
+
+* Architectural decisions and their consequences
+
+** Configuration, publication and authority
+
+#+begin_example
+Weaver
+  authenticated source -> durable intent + barrier -> Scheme/POO derivation
+       -> version-checked publication -> Rust authority + reservation
+       -> bound provider send -> qualified range -> final receiver cursor
+       -> attributed release -> Scheme derives the next eligible step
+
+Praxis Core / AI
+  YAML -> validate + build filter pipeline -> publish candidate chain
+  HTTP -> classify / normalize -> configured request and policy filters
+       -> router / filtered upstream attempt -> response and body filters
+       -> client response; configured metering reconciles usage
+
+Agent Gateway
+  local YAML/JSON ---------> shared runtime IR <- xDS <- Gateway API controller
+  HTTP / MCP / A2A -> listener and route -> attached policies -> backend
+       -> per-attempt and response processing -> client / telemetry
+#+end_example
+
+In Weaver, a valid compiled object is a proposal until publication verifies
+the exact source cut and intent. Go carries observations and proposals between
+systems. The Rust owner retains the durable decision and controls the actual
+effect. An A→B→A change can produce the same apparent configuration while
+belonging to a different authority epoch. Explicit identity and the barrier
+give the receiver a basis to reject work captured under the earlier A. The cost
+is a stateful publication protocol and a temporary loss of availability for
+affected work while the outcome is unresolved. This trade matters when a source
+change withdraws permission with operational consequences.
+[[file:../../dev/sysml/ControlActivation.sysml][Source activation model]]
+· [[file:../../crates/ledger/src/publication_barrier.rs][Durable intent]]
+
+Praxis AI validates and builds candidate chains before it swaps the applicable
+live pipelines. Candidate rejection preserves service with the prior
+configuration. That is a useful failure boundary for traffic operators who
+need predictable configuration rollout. Some topology and protocol changes
+still require restart. A chain swap answers which configuration handles
+traffic. Cancellation of an already granted external action requires an
+additional contract that specifies which generation owns that action.
+[[https://github.com/praxis-proxy/ai/blob/f96d0114a995765793b1fb33f86f94ecc298eb08/server/src/reload.rs][Reload implementation]]
+
+Agent Gateway reduces control-plane fanout by mapping user-facing resources
+closely to xDS and by making child resources reference parents. A route change
+can publish a route resource instead of rebuilding the whole parent list.
+Policies retain their attachment and merge at runtime. This favors Kubernetes
+integration and incremental distribution. The proxy pays for attachment and
+merge semantics, and operators need the effective policy to diagnose conflicts.
+The useful pattern for Weaver is small, independently addressable publication
+units with explicit dependencies. Activation of an affected unit must still
+respect Weaver's original authority and shared-domain fences.
+[[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/architecture/configuration.md][Resource cardinality and policy merging]]
+
+** Policy, extension and trust boundaries
+
+Weaver gives Scheme ordinary programming and relational derivation over typed
+POO objects. This lets one semantic layer express both source impact and
+workflow eligibility. Cedar then evaluates current, schema-bound facts at the
+effect boundary. Rust checks and consumes the ledger state that the decision
+depends on. Keeping these roles separate limits what an extension can authorize
+by returning a value. It adds integration work across the typed C ABI, Cedar
+inputs and durable transitions, and it requires a clear ownership rule for
+changes that span those interfaces.
+[[file:../../scheme/gateway/func.ss][Scheme derivation]]
+· [[file:../../crates/policy/src/authorize.rs][Cedar decision]]
+· [[file:../../crates/ledger/src/provider_admission.rs][Native admission]]
+
+Praxis APL can put transformation, credential delegation, approvals and PDP
+calls in one ordered chain. That makes policy changes practical when the
+operator wants to insert a filter at a known phase. The resulting authority
+depends on phase ordering, trusted inputs and plugin behavior. The central
+review question is which policy sees the final bytes and identity after all
+mutations. Reusing an APL phase model or plugin contract can clarify Weaver's
+adapter extension points. Importing a second policy language for the same
+governance decisions would also introduce two sets of precedence and failure
+rules to qualify.
+[[https://github.com/praxis-proxy/policy/blob/828cb41c2f31723445c4e31051b44f59afa2f53f/docs/content/apl/effects.md][APL effects and ordering]]
+
+Agent Gateway makes CEL predicates available where proxy state is observed,
+with distinct policy contracts for requests, responses and backend calls.
+That is a compact interface for selecting routes, enforcing identity and
+controlling retries. Expression availability and policy composition depend
+on the phase. An operator must know which context is populated and how
+policies combine. Weaver can use the same idea of phase-scoped inputs in its
+interfaces while keeping cross-request state and authority in the ledger.
+[[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/architecture/cel.md][CEL inputs]]
+· [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/crates/agentgateway/src/store/policy.rs][Runtime contracts]]
+
+** Budget consistency, concurrency and availability
+
+| Architecture | Where the decision takes effect | Benefit and cost | Counterexample to qualify |
+|--------------+---------------------------------+------------------+---------------------------|
+| Weaver | Admission writes the plan and original claim, retains exposure and records workflow progression in one scoped transaction. The actual send has its own authority check. | Same-root requests have one deciding order. Independent domains can make progress separately. The transaction, contention and storage availability enter the admission cost. Uncertain effects can leave capacity held. | Two aliases of the same original root compete for the last reservation. Kill the owner after dispatch and before a reply. Verify total sends, retained exposure and exact recovery. |
+| Praxis AI token limiter | Admission reserves estimated tokens through the configured backend, then settlement reconciles actual usage. A shared Redis/Valkey backend puts replicas on the same budget state. | It adds shared pre-admission control without an application workflow ledger. Estimates can diverge from actual usage. Failover, clock skew, window approximation and namespace changes affect the admitted total. | A primary acknowledges a reservation before async replication. Promote a replica that lacks the write. Measure whether the next admission exceeds the intended budget and classify the missing write separately from a lost reply. |
+| Agent Gateway budget policy | The request checks accrued usage. Completed responses update local amount and pending delta. Flush atomically increments the persistent total. | This keeps database writes out of the request check and supports aggregated spend reporting. Concurrent arrivals can all observe usage below the limit before any finishes. Flush durability does not order these requests at admission. | Start a burst with one unit of budget remaining. Let all requests cross the check before the first completes. Count actual upstream calls, final accrued usage and database persistence separately. |
+
+The Agent Gateway conclusion above is specific to the inspected API-key
+budget path. Other rate-limit policies require their own test and backend
+configuration. The Praxis documentation explicitly separates Sentinel recovery
+from replication durability and says a dispatched operation with a lost reply
+is not replayed. Weaver's native recovery tests establish the behavior of the
+tested storage/transport cohort. Site failover under the same fault schedule is
+an outstanding qualification.
+[[file:../../crates/ledger/src/provider_admission.rs][Weaver transaction]]
+· [[https://github.com/praxis-proxy/ai/blob/f96d0114a995765793b1fb33f86f94ecc298eb08/docs/filters/token_rate_limit.md][Praxis reservation and Sentinel]]
+· [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/crates/agentgateway/src/http/budget/mod.rs][Agent Gateway check and settlement]]
+· [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/crates/agentgateway/src/http/budget/database.rs][Persistent deltas]]
+
+** Retry, stream release and the point of no return
+
+Praxis has the flexibility to transform an input and retry another origin.
+Agent Gateway adds request and response retry predicates and a body replay
+buffer with a byte cap. These are useful for availability when an upstream
+operation is safe to repeat. Once a provider may have accepted a chargeable
+invocation, an HTTP retry policy alone cannot recover the original effect.
+Weaver binds the plan digest and actual destination, disables transport retry
+and redirects in its guarded client, and distinguishes re-observing an
+existing receipt from admitting another effect. This can sacrifice transparent
+failover when an outcome is ambiguous. It makes the decision to spend again
+explicit. The key test is the provider's invocation count, including attempts
+whose replies never arrived.
+[[https://github.com/praxis-proxy/praxis/blob/c3d2ae3628cf3167780e58c5e8b38580d0241399/examples/configs/traffic-management/retry-policy.yaml][Praxis retry]]
+· [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/crates/agentgateway/src/http/retry/body.rs][Bounded replay]]
+· [[file:../../crates/broker/src/provider/runtime.rs][Weaver final client]]
+
+Content evaluation and release authority have different boundaries. Agent
+Gateway's streaming guardrail accumulates a bounded SSE window and decides
+whether to flush it. This can catch unsafe content mid-stream at the cost of
+buffer memory, evaluation calls and time to first byte. The inspected Praxis
+NeMo response phase evaluates completed response bodies and rejects streaming
+requests when that phase is enabled. Its general SSE filter machinery remains
+available for other chains. Weaver stages inert ranges and joins each actual
+delivery with current authority and a one-use cursor. This prevents a queued
+range from escaping after revocation. It incurs bookkeeping, backpressure and
+validation cost, and it cannot retract a byte already admitted to transport.
+An external content decision can become an input to the same release boundary.
+It needs a digest and position binding before it can be reused for a range.
+[[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/crates/agentgateway/src/llm/policy/streaming_guardrails.rs][Windowed SSE guardrail]]
+· [[https://github.com/praxis-proxy/ai/blob/f96d0114a995765793b1fb33f86f94ecc298eb08/docs/filters/ai_guardrails.md][NeMo phase]]
+· [[file:../../crates/server/src/grpc_delivery.rs][Weaver receiver]]
+
+** Workflow, state and reuse
+
+Praxis AI has useful interoperability for Responses/Conversations, stored
+history and replay. A configured agentic chain can bring tool results back to
+inference. Agent Gateway provides an interoperable proxy for MCP tools and A2A
+tasks, with session and transport responsibilities at the gateway. Weaver
+assigns the workflow frontier itself to the governed runtime. A complete
+release supplies a result, Scheme derives eligible work, and Rust commits
+the corresponding claim, reservation and branch progress together. This can
+keep a conditional join correct under competing triggers and restarts. It also
+requires a stable result shape, attributable receipts and an explicit
+workflow scope. Compare a join after one selected branch and one inactive
+branch, rather than treating all three products' session IDs as equivalent.
+[[https://github.com/praxis-proxy/ai/blob/f96d0114a995765793b1fb33f86f94ecc298eb08/docs/architecture/response-store.md][Praxis response state]]
+· [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/crates/agentgateway/src/mcp/session.rs][Agent Gateway sessions]]
+· [[file:../../crates/ledger/src/provider_workflow_choice.rs][Weaver branch and join]]
+
+Weaver's retained ASCENT experiment reuses at most one completed session
+for the same graph and replaces every dynamic input at the next cut. A failed
+evaluation drops the retained session. This separates reuse of rule
+preparation from reuse of a stale answer. The compiled entry selects it
+through an explicit test switch. Any adoption claim needs the formal A/A and
+retained A/B on one release, plus restart and withdrawal controls. Measure
+owner queueing, cut replacement, derivation and the final reservation
+separately so a gain in one component does not hide a shift in another.
+[[file:../../scheme/gateway/func.ss][Session ownership]]
+· [[file:../../scheme/gateway/compiled.ss][Mode selection]]
+
+** Integration and operational choices
+
+| Requirement | Design to borrow or retain | Cost or qualification boundary |
+|-------------+----------------------------+--------------------------------|
+| Easy drop-in client migration | Borrow Praxis's protocol-first configuration, effective-config dump and runnable OpenAI/Anthropic translation examples. Define what Weaver's normalized request can preserve, then bind the resulting destination, codec and payload before final use. | Each translator can lose tool, usage, error or stream semantics. Conformance needs real client traces and a negative case for unsupported translation. |
+| Kubernetes rollout and discovery | Borrow Agent Gateway's small resources, attachment model, Gateway API mappings and Helm-based delivery. Feed accepted resource changes into Weaver's existing source and publication owners. | Reconciliation and runtime authorization are separate. Require evidence that an observed Kubernetes object version cannot reactivate an older grant. |
+| Latency and memory on ordinary traffic | Praxis and Agent Gateway place standard routing and request policy in their proxy runtime. Weaver can reuse immutable prepared artifacts, bound native buffers and group already buffered releases without changing the per-frame cursor check. | Compare time to first byte, inter-frame tail, peak buffer and CPU at the same offered load. Report transaction and guardrail overhead only for configurations that implement the corresponding behavior. |
+| Audit and failure operations | Borrow stable metrics and scoped administrative status from both proxies. Use Weaver receipts for decision and effect evidence, with bounded telemetry for operators. | Telemetry may aggregate, lag or reset. An audit for ambiguous spend needs operation identity, a current source cut and attributable provider evidence. |
+| Reusable policy and validation | Keep SysML allocation, native Build Packages, Scheme/POO composition and the Cedar/Lean boundary. Borrow explicit phase contracts and source-linked config examples. | Extra authority layers raise the verification and deployment burden. New adapters should inherit existing source, admission and release tests before receiving the same guarantees. |
+
+The strongest near-term Weaver investment is a narrow governed path with
+evidence from source publication to external bytes, plus reusable adapters for
+the proxy ecosystem. Praxis and Agent Gateway show the cost of building
+client compatibility and Kubernetes integration well. Weaver should expose
+its stronger application guarantees on the paths that actually implement
+them and list each adapter's coverage alongside them.
+
+* Protocols, routing and developer experience
+
+| Dimension | Weaver | Praxis Core / AI / Policy | Agent Gateway |
+|-----------+--------+---------------------------+---------------|
+| LLM compatibility | Bounded native provider paths with explicit codec and destination binding. Current source has OpenAI and Anthropic stream handling; evaluate new providers individually. [[file:../../crates/broker/src/provider/runtime.rs][Transport]] · [[file:../../crates/broker/src/provider/anthropic_sse.rs][Anthropic SSE]] | OpenAI Chat and Responses, Anthropic Messages and managed-provider adapters, including translation across client and backend formats. Codex and Claude Code examples are documented. [[https://github.com/praxis-proxy/ai/blob/f96d0114a995765793b1fb33f86f94ecc298eb08/README.md][Adapters and clients]] | OpenAI-compatible inference surface across multiple provider families, including OpenAI, Anthropic, Gemini and Bedrock. [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/README.md][LLM gateway]] |
+| Routing and failover | Model/catalog admission and eligible binding proposals can consider capabilities and constraints. Final dispatch uses the admitted endpoint and codec. The guarded HTTP client disables automatic retries and redirects. [[file:../../go/internal/routing/selection.go][Selection]] · [[file:../../crates/broker/src/provider/runtime.rs][Final dispatch]] | Content/protocol classification, named chains and iterative routers support configurable origin failover. [[https://github.com/praxis-proxy/ai/blob/f96d0114a995765793b1fb33f86f94ecc298eb08/docs/architecture/routing-facts.md][Classification]] · [[https://github.com/praxis-proxy/praxis/blob/c3d2ae3628cf3167780e58c5e8b38580d0241399/examples/configs/traffic-management/iterative-request-router-origin-failover.yaml][Origin failover]] | Backend routing, load balancing and provider failover are proxy features; per-request and per-response predicates can gate retry. [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/README.md][Routing]] · [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/crates/agentgateway/src/http/retry/mod.rs][Retry]] |
+| MCP | Typed tool and governance boundaries in the architecture; complete ingress, federation, transport and OAuth interoperability remain delivery work. [[file:../../README.org][Scope]] | MCP classifier, static catalogs and stateless broker examples. Responses flows can resolve and dispatch MCP tools through configured chains. [[https://github.com/praxis-proxy/ai/blob/f96d0114a995765793b1fb33f86f94ecc298eb08/examples/configs/mcp-stateless-broker.yaml][Broker]] · [[https://github.com/praxis-proxy/ai/blob/f96d0114a995765793b1fb33f86f94ecc298eb08/examples/configs/openai/responses/mcp-dispatch.yaml][Dispatch]] | MCP federation and routing, stdio, SSE and Streamable HTTP upstreams, OpenAPI adapter and OAuth/auth support. [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/crates/agentgateway/src/mcp/README.md][MCP implementation]] |
+| A2A and ACP | A2A and client ACP are planned ingress contracts. Workflow progression is covered in the native Weaver path. [[file:../../README.org][Protocol scope]] · [[file:../../crates/server/src/session_workflow.rs][Workflow]] | AI provides A2A classifier, agent-card and task-routing examples. ACP parity is not established. [[https://github.com/praxis-proxy/ai/blob/f96d0114a995765793b1fb33f86f94ecc298eb08/examples/configs/a2a-agent-card-routing.yaml][Agent card]] · [[https://github.com/praxis-proxy/ai/blob/f96d0114a995765793b1fb33f86f94ecc298eb08/examples/configs/a2a-task-routing.yaml][Task routing]] | A2A proxy implementation and tests; the README describes agent discovery and task collaboration. ACP parity is not established. [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/crates/agentgateway/src/a2a/mod.rs][A2A]] |
+| Session and history | Original task and workflow frontier persist across process restart. Native scenarios cover conditional, parallel and nested branches and join behavior. [[file:../../crates/ledger/src/provider_workflow_nested.rs][Nested workflow]] · [[file:../../go/dev/provider_workflow_nested_test.go][Native tests]] | Responses/Conversations can persist and rehydrate client-visible history and replay SSE; agentic loop examples compose tools and inference. These are separate capabilities from original-task authority. [[https://github.com/praxis-proxy/ai/blob/f96d0114a995765793b1fb33f86f94ecc298eb08/docs/architecture/response-store.md][Response store]] · [[https://github.com/praxis-proxy/ai/blob/f96d0114a995765793b1fb33f86f94ecc298eb08/examples/configs/openai/responses/full-flow-agentic.yaml][Agentic flow]] | MCP session handling and A2A task protocol are supported. An equivalent durable conditional workflow frontier tied to release receipts is not established in these paths. [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/crates/agentgateway/src/mcp/session.rs][MCP sessions]] · [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/crates/agentgateway/src/a2a/mod.rs][A2A]] |
+| Data encodings | Authenticated internal gRPC, Protobuf default, optional Arrow IPC and a typed Scheme C ABI. [[file:../../README.org][Runtime interfaces]] | HTTP/JSON and streaming filters with protocol-specific translators and SSE handling. [[https://github.com/praxis-proxy/ai/blob/f96d0114a995765793b1fb33f86f94ecc298eb08/README.md][Wire protocols]] | HTTP agent/LLM protocols, MCP transports and protobuf-based xDS control resources. [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/README.md][Transports]] · [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/architecture/configuration.md][xDS]] |
+
+* Policy, budget and failure semantics
+
+| Dimension | Weaver | Praxis Core / AI / Policy | Agent Gateway |
+|-----------+--------+---------------------------+---------------|
+| Authorization decision | Cedar requires an Allow and no evaluation errors. Scheme projects policy/source assets; Rust supplies actual request, entities, current context and effect. [[file:../../crates/policy/src/authorize.rs][Decision]] | APL orders predicates, transforms, PDP calls and other effects. Cedar is available as a feature alongside CEL and OPA. [[https://github.com/praxis-proxy/policy/blob/828cb41c2f31723445c4e31051b44f59afa2f53f/docs/content/apl/effects.md][Effects]] · [[https://github.com/praxis-proxy/policy/blob/828cb41c2f31723445c4e31051b44f59afa2f53f/README.md][PDP features]] | CEL with request, response and backend contexts; authorization has rule composition and defaults. [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/architecture/cel.md][Context]] · [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/crates/agentgateway/src/http/authorization.rs][Authorization]] |
+| Identity and credentials | Internal mTLS, authenticated source role, durable original registration and role/epoch checks. The final broker owns provider credentials and concrete use. [[file:../../crates/ledger/src/source_authority.rs][Source authority]] · [[file:../../crates/broker/src/provider/runtime.rs][Credentials]] | Identity-claim mapping, delegation, taint and optional approval/elicitation in the PPE source; behavior depends on enabled plugins and configuration. [[https://github.com/praxis-proxy/policy/blob/828cb41c2f31723445c4e31051b44f59afa2f53f/docs/content/identity-delegation.md][Delegation]] · [[https://github.com/praxis-proxy/policy/blob/828cb41c2f31723445c4e31051b44f59afa2f53f/docs/content/apl/tainting.md][Taint]] | JWT, API-key and OAuth policies; MCP authorization and tool RBAC. [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/README.md][Identity support]] · [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/crates/agentgateway/src/mcp/rbac.rs][Tool RBAC]] |
+| Admission accounting | Durable reservation, original claim, shared domain and policy/fence are joined in the deciding Turso transaction. Aliases preserve the original shared root. [[file:../50-59-research-program/59-provider-rpc/59.80-shared-domain-authority.org][Shared domains]] | Experimental token limiter estimates and reserves at admission, then reconciles actual usage. Memory is the default; Redis/Valkey can share budgets across replicas. [[https://github.com/praxis-proxy/ai/blob/f96d0114a995765793b1fb33f86f94ecc298eb08/docs/filters/token_rate_limit.md][Token limiter]] | Budget state tracks amount and pending deltas in memory; configured SQLite/PostgreSQL storage loads persisted amounts and atomically adds successful flush deltas. This establishes persisted usage; a cross-replica original-operation reservation transaction is unverified. [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/crates/agentgateway/src/http/budget/mod.rs][Budget state]] · [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/crates/agentgateway/src/http/budget/database.rs][Database]] |
+| Storage failover and uncertainty | Recovery is bound to the same operation. Unknown effects retain the original hold; a matching observation may recover the outcome. Production multi-site replay remains open. [[file:../50-59-research-program/59-provider-rpc/59.77-mrr-turso-storage.org][Storage contract]] · [[file:../../go/dev/provider_control_test.go][Recovery tests]] | The token limiter documents Redis/Valkey Sentinel discovery, generation fencing, and closed or explicitly configured open handling for unavailable and unconfirmed backend outcomes. Application-level original-task recovery is separate. [[https://github.com/praxis-proxy/ai/blob/f96d0114a995765793b1fb33f86f94ecc298eb08/docs/filters/token_rate_limit.md][Backend and failure modes]] | Budget flush preserves failed pending deltas in its runtime state and reconciles successful increments. Recovery of an unknown upstream send under the same original reservation is not established by that database path. [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/crates/agentgateway/src/http/budget/database.rs][Flush]] |
+| Bound request and retries | The effect is bound to the approved request, destination, scope and current source. Retrying a control operation can recover its committed receipt. A new provider effect needs its own admissible decision. [[file:../../crates/ledger/src/provider_admission.rs][Admission]] · [[file:../../crates/broker/src/provider/runtime.rs][One-send transport]] | Ordered filters may transform bodies and headers; retry/failover depends on filter placement and configured attempt policy. Treat change after a grant as a testable contract for the selected chain. [[https://github.com/praxis-proxy/policy/blob/828cb41c2f31723445c4e31051b44f59afa2f53f/docs/content/apl/effects.md][Effects]] · [[https://github.com/praxis-proxy/praxis/blob/c3d2ae3628cf3167780e58c5e8b38580d0241399/tests/integration/tests/suite/retry.rs][Retry tests]] | Retry policy supports request and response CEL gates and a replayable body. Request, response and per-backend hooks have separate lifetimes. [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/crates/agentgateway/src/http/retry/body.rs][Body replay]] · [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/crates/agentgateway/src/store/policy.rs][Hooks]] |
+| SSE output inspection | Provider events become bounded inert ranges. The receiver checks current authority, exact release and one-use cursor before delivery. This row concerns permission to release; generic external content-classifier parity is unverified. [[file:../../crates/ledger/src/provider_release_group.rs][Release group]] · [[file:../../crates/server/src/grpc_delivery.rs][Delivery]] | The AI guardrail supports request, response and tool-result phases. Its NeMo response configuration documents rejection of streaming requests pending incremental SSE evaluation. The Core SSE pipeline and prior targeted experiments have separate scope. [[https://github.com/praxis-proxy/ai/blob/f96d0114a995765793b1fb33f86f94ecc298eb08/docs/filters/ai_guardrails.md][NeMo boundary]] · [[https://github.com/praxis-proxy/praxis/blob/c3d2ae3628cf3167780e58c5e8b38580d0241399/crates/filter/src/sse/record.rs][SSE records]] | Streaming guardrails hold SSE frames, evaluate bounded windows and flush on pass. Failure policy is configurable. A durable authority/cursor join at final delivery is unverified in this path. [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/crates/agentgateway/src/llm/policy/streaming_guardrails.rs][Window evaluation]] |
+| Revocation during a stream | An authority change closes affected lanes; queued ranges are inert until final admission. Already admitted bytes can drain. Source/version and cursor remain explicit after restart. [[file:../10-19-llm-gateway/10-routing-and-inference/10.10-snapshot-publication.org][Final delivery]] | Reload, identity/delegation and response evaluation provide policy controls. The selected paths do not establish an original-operation fence for queued bytes. [[https://github.com/praxis-proxy/praxis/blob/c3d2ae3628cf3167780e58c5e8b38580d0241399/docs/operating/configuration.md][Reload]] · [[https://github.com/praxis-proxy/policy/blob/828cb41c2f31723445c4e31051b44f59afa2f53f/docs/content/identity-delegation.md][Delegation]] | Config sync and stage-specific policies control traffic. The inspected streaming guardrail establishes content evaluation, with durable revocation ordering against queued releases unverified. [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/architecture/configuration.md][Sync]] · [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/crates/agentgateway/src/llm/policy/streaming_guardrails.rs][Guardrail]] |
+| Workflow progression | Complete attributable release feeds Scheme/ASCENT derivation. The ledger commits branch choices, frontier and claims before eligible work can dispatch. [[file:../../scheme/gateway/func.ss][Derivation]] · [[file:../../crates/ledger/src/provider_workflow_choice.rs][Choice ledger]] | APL phases and the AI agentic loop can sequence effects, tools and subsequent inference. A Weaver-equivalent durable branch/join authority contract is not established in the reviewed examples. [[https://github.com/praxis-proxy/policy/blob/828cb41c2f31723445c4e31051b44f59afa2f53f/docs/content/apl/effects.md][Phases]] · [[https://github.com/praxis-proxy/ai/blob/f96d0114a995765793b1fb33f86f94ecc298eb08/examples/configs/openai/responses/full-flow-agentic.yaml][Loop]] | Tool federation and A2A task forwarding support agent interaction. Application workflow derivation and original-task branch/join authority remain outside the reviewed proxy contract. [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/crates/agentgateway/src/mcp/README.md][MCP]] · [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/crates/agentgateway/src/a2a/mod.rs][A2A]] |
+
+* Operations, validation and fit
+
+| Dimension | Weaver | Praxis Core / AI / Policy | Agent Gateway |
+|-----------+--------+---------------------------+---------------|
+| Observability | Authenticated operational snapshots and bounded local counters; external OTLP is open delivery work. Counters carry no prompts or credentials and have no settlement authority. [[file:../50-59-research-program/59-provider-rpc/59.24-telemetry-service.org][Telemetry]] | Access logging, Prometheus, trace context and AI token-use/accounting metrics. Token limiter documents bounded labels and optional OpenTelemetry spans. [[https://github.com/praxis-proxy/praxis/blob/c3d2ae3628cf3167780e58c5e8b38580d0241399/docs/operating/observability.md][Operations]] · [[https://github.com/praxis-proxy/ai/blob/f96d0114a995765793b1fb33f86f94ecc298eb08/docs/filters/token_rate_limit.md][Accounting metrics]] | OpenTelemetry metrics/logs/tracing and source for SQLite/PostgreSQL request-log stores. [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/README.md][Operations]] · [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/crates/agentgateway/src/telemetry/log_store.rs][Log storage]] |
+| Validation | SysML ownership and traceability, Lean/Cedar SPEC contracts, Quint schedules and native Rust/Go/Scheme checks. Pure proof obligations and physical transport/storage enforcement are tracked separately. [[file:../../Project.sysml][Model]] · [[file:../50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][Validation ownership]] | Configuration validation, schema/integration/resilience suites and Core conformance workflow. Prior isolated SSE/quota/mutation experiments retain their revisions and configuration. [[https://github.com/praxis-proxy/praxis/blob/c3d2ae3628cf3167780e58c5e8b38580d0241399/.github/workflows/conformance.yaml][Conformance]] · [[file:../10-19-llm-gateway/10-routing-and-inference/10.13-praxis-envoy-and-ascent.org][Earlier experiments]] | Rust policy/protocol tests and controller tests, with a PR workflow. The comparison does not translate those checks into Weaver's application authority proof obligations. [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/.github/workflows/pull_request.yml][PR workflow]] · [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/controller/pkg/syncer/krtxds/xds_test.go][xDS tests]] |
+| Performance evidence | Weaver CI at =6dbcd4fd= passed Ubuntu selection, native cold build, owner cleanup and gRPC recovery. The same run recorded a macOS cold-build timeout. These are build and native acceptance observations. [[https://github.com/hardenedlinux/weaver/actions/runs/42537939340][CI]] | Filter throughput, streaming and rate-limit measurements require the chosen feature set, proxy version and backing service. No matched cross-product result in this review. | Gateway throughput and policy overhead depend on the deployed path, configuration and provider. No matched cross-product result in this review. |
+| Operational fit | Choose the governed path when original claims, shared exposure, revocation ordering and attributable recovery are part of the application contract. Current gaps include adapter breadth, deployment reconciliation and site qualification. | Choose the filter framework for configurable translation, existing client compatibility and programmable traffic chains. Evaluate feature maturity and backend failure policy for the selected release. | Choose the proxy when out-of-box MCP/A2A/LLM integration and Kubernetes Gateway API deployment are central. Evaluate application-specific effect and accounting guarantees separately. |
+
+* Benchmark boundaries and Runtime priorities
+
+| Evidence | Work measured | Use in the comparison |
+|----------+---------------+-----------------------|
+| Praxis Core | Criterion isolates routing, filters, headers and rate-limit state. It separately times empty-bucket, contended and open-circuit rejection. The scenario suite drives minimal proxies against a Fortio echo backend. | Compare the ordinary proxy floor, saturation and isolated denial cost at their respective boundaries. No matching local Weaver result exists for the proxy scenario. [[https://github.com/praxis-proxy/praxis/blob/c3d2ae3628cf3167780e58c5e8b38580d0241399/docs/benchmarks.md][Benchmark source]] |
+| Praxis Policy | The local rate-limit hook benchmark measures allow and deny separately. The Cedar, CEL and OPA cost fixtures assert Allow. | A local limiter denial has a measured path. The policy engine cost result covers the selected allow fixtures. [[https://github.com/praxis-proxy/policy/blob/828cb41c2f31723445c4e31051b44f59afa2f53f/crates/builtins/benches/ratelimit_hot_path.rs][Rate-limit benchmark]] · [[https://github.com/praxis-proxy/policy/blob/828cb41c2f31723445c4e31051b44f59afa2f53f/crates/ppe-benches/benches/pdp_cost.rs][Policy cost benchmark]] |
+| Agentgateway | The local Divan suite separates CEL compilation and evaluation. Published traffic tests include a 30,000 QPS HTTP run, and the inference study measures EPP scheduling against real vLLM backends. | Compare request policy, proxying and inference scheduling at their respective boundaries. Neither published workload matches Weaver's durable SSE scenario. [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/crates/agentgateway/src/cel/benches.rs][CEL source]] · [[https://github.com/howardjohn/gateway-api-bench/blob/main/README-v2.md#traffic-performance][Traffic benchmark]] · [[https://agentgateway.dev/blog/2026-08-20-benchmarking-agentgateway-epp-proxy-overhead/][Inference study]] |
+| Weaver | Local four-way Snake Oil over HTTPS, with immediate or paced SSE, independent or shared domains, Go forwarding or direct Rust, and durable admission and release. | The paired arms quantify the additional Go path. Paced SSE and four callers constrain offered load, so completion rate alone gives no saturation capacity. [[file:../50-59-research-program/59-provider-rpc/59.87-spec-upgrade-and-delivery-plan.org][Runtime evidence]] |
+
+Run a bounded common workload before calculating a product-to-product
+ratio. Use the same mock provider, body, event timing, TLS profile,
+connection mode, CPU budget and offered load. Report three boundaries
+separately: ordinary forwarding, streaming with the same response
+contract, and durable governed streaming. Include any client adapter
+in its own span. Record unsupported obligations as coverage gaps.
+Report successful completions at the offered rate alongside first
+frame, frame gaps, CPU, allocations and peak buffered bytes.
+Track denial latency and outcomes separately from success throughput.
+Agentgateway's local 403, 429 and streaming guardrail cases verify
+behavior. The checked-out CEL performance suite does not separately
+time those denial paths. [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/crates/agentgateway/src/llm/policy/tests.rs][Guardrail tests]] · [[https://github.com/agentgateway/agentgateway/blob/134897e1975fa26fa5c5b8ba45d720d05d3f7fb8/crates/agentgateway/src/mcp/mcp_tests.rs][MCP rejection tests]]
+
+Prioritize the native path indicated by the matched Weaver measurements.
+Compare independent domains and shared domains under the same load.
+Keep Scheme/POO preparation and static route publication off the
+request path where a compatible prepared object can be reused. Read
+mutable claim, quota, revocation and fence evidence in the deciding
+transaction. Use the existing owner and bounded delivery credit for
+streaming. Compare transport setup separately and preserve the modeled
+write/seal guard when evaluating any connection reuse.
+
+* Default Gateway storage
+
+The default Gateway deployment has one authoritative Turso store.
+Persist accepted source and policy revisions, claims, exposure,
+delivery intervals and settlement in that store. A provider run
+retains its bound request plan, including the body, while queued or
+unresolved. Completion reduces the plan to its original ceiling in
+the transaction that records terminal state. The run digest and
+independently recorded claim still participate in exposure checks.
+Historical full plans remain readable by the same ceiling projection.
+Resumable message streams retain their contract payload. Provider SSE
+response ranges remain in bounded runtime buffers while durable
+release records hold sequence, length, digest and state. Workflow
+selectors persist the decoded route and result commitments.
+Operational counters and diagnostic exports stay separate from
+the deciding transaction. [[file:../../dev/sysml/WeaverExecution.sysml][Storage ownership model]]
+
+Measure logical record bytes and physical database and journal bytes
+separately. Terminal compaction reduces the live record and leaves
+physical reclamation to the storage engine. Derive any future
+analytical view from approved exports.
+
+* Comparisons that can be reproduced
+
+Use a shared provider/tool stub and the same request/response bytes, timeout,
+identity scope and concurrent arrival schedule. Freeze the product revisions,
+feature sets, configuration, backend topology and negative controls. Record
+whether each configuration supports the scenario before comparing its result.
+
+| Scenario | Observable pass or failure |
+|----------+----------------------------|
+| SSE revocation and content refusal | Pause after the upstream produces a frame but before client delivery. Revoke authority or reject content in separate arms. Count bytes before and after each boundary and preserve the terminal status. |
+| Shared quota and failover | Drive two replicas with the same tenant root. Lose a reserve or settlement reply during backend failover. Record upstream invocations, debits, held exposure, ambiguous outcomes and eventual reconciliation. |
+| Mutation after binding and retry | Change body, headers, destination or codec after admission. Inject a retryable upstream response or lost reply. Compare the bytes and credentials actually sent, attempts observed at the provider and the original accounting receipt. |
+| Restore an equal-looking configuration | Publish A, then B, then A while a prior request is queued. Verify whether stale permission is rejected across a version change and process restart. |
+| Compatibility and operations | Exercise OpenAI/Anthropic streaming, MCP discovery and tool calls, A2A tasks, configuration reload and the relevant deployment path. Record feature coverage before latency, CPU, memory and error rates. |
+
+No cross-product performance ranking or production qualification follows from
+this source review. Weaver production approval and approved site replay remain
+separate evidence records. The [[file:01-reference-comparison.org][historical reference register]]
+and [[file:../50-59-research-program/59-provider-rpc/59.00-index.org][current implementation guide]]
+retain their own evidence and scope.

@@ -38,8 +38,11 @@ native durable publication. This source review does not qualify any HSM/driver.
 Run from the workspace root:
 
 #+begin_src sh :eval never
-python3 dev/proofs/check_device_isolation.py
+go -C go run ./cmd/weaver-dev -timeout 28m check-policy
 #+end_src
+
+This runs the maintained registered plan. It does not replay the retired
+per-artifact checks or regenerate the historical observations below.
 
 [[file:../../../dev/proofs/evidence/device-isolation/versions.log][Recorded tools]]: Lean =4.34.1=, arm64 Darwin, Std only; Quint =0.33.0=,
 TypeScript backend. All sixteen Lean modules were rebuilt in the fresh isolated

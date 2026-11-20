@@ -36,10 +36,11 @@ provider execution or an encoding implementation.
 * Reproduction and final checks
 
 #+begin_src sh :eval never
-python3 dev/proofs/check_logical_range_recovery.py
-python3 dev/proofs/evidence/logical-range-recovery/check-counterexample-observations.py
-python3 dev/proofs/evidence/logical-range-recovery/check-four-artifacts.py
+go -C go run ./cmd/weaver-dev -timeout 28m check-policy
 #+end_src
+
+This runs the maintained registered plan. It does not replay the retired
+per-artifact checks or regenerate the historical observations below.
 
 [[file:../../../dev/proofs/evidence/logical-range-recovery/commands.json][Sixteen final command routes]] retain raw logs, arguments, timings, watchdogs
 and exit codes. The runner compiles six modules in a fresh isolated directory:
@@ -99,7 +100,7 @@ are fixture abstractions; no Cedar evaluation or SDK encoder is executed.
 
 * Counterexamples and retained investigation
 
-Six final [[file:../../../dev/proofs/evidence/logical-range-recovery/itf][ITF traces]] are independently decoded by the stored Python checker.
+Six final [[file:../../../dev/proofs/evidence/logical-range-recovery/itf][ITF traces]] are independently decoded in the archived receipt.
 [[file:../../../dev/proofs/evidence/logical-range-recovery/counterexample-observations.json][Decoded final states]] verify these concrete violations:
 
 | Unsafe schedule | Observed failure |

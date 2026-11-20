@@ -18,9 +18,11 @@ Use an area directory, a category directory and a numbered artifact:
 =docs/AA-BB-area/CC-category/CC.DD-subject.org=. D2 source and its SVG preview
 share one artifact ID. Keep formal source under =dev/proofs/lean/= and
 =dev/proofs/quint/=; the latter is the requested directory name and contains Quint
-=.qnt= models. Check receipts are English Org documents; raw logs belong under
-=dev/proofs/evidence/=. Tool versions and acceptance details belong in receipts,
-not core diagrams.
+=.qnt= models. Human-readable check receipts are English Org documents; the
+Go-owned runner writes current structured results under =.cache/verification/=.
+Historical raw evidence under =dev/proofs/evidence/= retains its original identity;
+it is not a location for new executable drivers or manually generated run logs.
+Tool versions and acceptance details belong in receipts, not core diagrams.
 
 | Area | Category | Artifacts |
 |------+----------+-----------|
@@ -35,8 +37,11 @@ release and late delivery over the initialized earlier execution product.
 excluded raw-key/checkpoint failures. Run the reproducible checking entry point:
 
 #+begin_src sh :eval never
-python3 dev/proofs/check_protected_signer.py
+go -C go run ./cmd/weaver-dev -timeout 28m check-policy
 #+end_src
+
+This runs the maintained registered plan. It does not replay the retired
+per-artifact checks or regenerate the historical observations below.
 
 * Source and evidence lineage
 
