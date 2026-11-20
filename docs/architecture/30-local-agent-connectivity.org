@@ -1425,6 +1425,40 @@ populating the build cache; read-only stale analysis then showed no uncached
 dependency packages, and a separate offline cached build completed within
 30 seconds. This preparation result is not a runtime-latency claim.
 
-Automated external-consumer CI preparation, real linked Scheme, full Magpie
-agent-config recovery and unified installation remain open. This test qualifies
+Real linked Scheme, full Magpie agent-config recovery and unified installation
+remain open. This test qualifies
 the standard Provider join, not the complete managed CLI configuration lifecycle.
+
+* Consumer CI preparation and execution
+
+=Verification::consumers= allocates a separate =check-consumers= job through the
+same reusable workflow and verification owner. The standard checkout action
+fetches public Magpie commit =f65fe92ef93557e9a2098d2606a4d9c0175a4213=, verified
+available upstream. It includes the relative replacement modules required by
+Magpie's own =go.mod=; a standalone =go install module@revision= is not a
+substitute for that source tree. Its original nogui build is the only consumer
+builder. No installer, alternate network adapter or pin-scanning Go layer is
+introduced. The checkout action's =commit= output binds the CI job receipt.
+
+=prepare-consumers= uses two existing runner stages: CLI build and Cargo
+=--no-run=, each bounded to eight minutes. Its eighteen-minute runner deadline
+precedes the nineteen-minute GitHub cutoff. Those are separately preregistered
+cold preparation budgets, not a reinterpretation of the earlier timed-out
+local preparation. Runtime =check-consumers= selects the identical Cargo graph,
+explicitly includes the opt-in test and retains its two-minute stage deadline,
+inside a three-minute runner and four-minute GitHub cutoff. Four compiler/test
+workers remain fixed. Existing JSON preparation and suite receipts retain the
+distinct outcomes, elapsed times and source identity after failure or success.
+
+The local path reuses the existing executable without another preparation:
+
+#+begin_src sh
+WEAVER_MAGPIE_BIN="$PWD/.cache/magpie-interoperability/bin/magpie" go -C go run ./cmd/weaver-dev -timeout 3m check-consumers
+#+end_src
+
+The standard CLI and runtime build stages remain available through
+=go -C go run ./cmd/weaver-dev -timeout 18m prepare-consumers=. CI bootstraps
+its ordinary toolchain/locked dependencies and published SDK first, without
+installing the full Scheme package graph for this advisory-double consumer gate.
+The independent consumer job does not alter the existing Linux/macOS Scheme
+matrix. Local success does not establish the hosted job's eventual outcome.

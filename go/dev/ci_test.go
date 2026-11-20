@@ -122,6 +122,7 @@ func TestCIWorkflowsMatchProjectSuites(t *testing.T) {
 	deadlined := map[string]bool{
 		"bootstrap_build": true, "bootstrap_proofs": true,
 		"verify_suite": true, "verify_scheme": true,
+		"prepare_consumers": true, "verify_consumer": true,
 	}
 	for _, step := range reusable.Jobs["verify"].Steps {
 		if deadlined[step.ID] {

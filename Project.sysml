@@ -255,6 +255,17 @@ package WeaverProject {
            not completion evidence. Go testing.F exercises protocol corruption;
            transcript checks do not prove SDK execution or final-send safety. */
         part rust : VerificationSuite { part 'check-rust' : VerificationMode; }
+        part consumers : VerificationSuite {
+            part 'check-consumers' : VerificationMode;
+            doc /* Checkout one immutable public Magpie revision using the
+               standard checkout action. Existing prepare-consumers stages
+               build its nogui CLI and the exact Cargo test graph separately,
+               each within eight minutes, then check-consumers explicitly runs
+               the opt-in real Provider test with four workers and 120 seconds.
+               Preparation receipts remain separate from runtime qualification;
+               no scheme dependency reinstall or cold compile belongs to the
+               protocol gate. */
+        }
         part go : VerificationSuite {
             part 'check-go' : VerificationMode;
             doc /* Prepare the ordinary provider and commit-observer images with
@@ -337,6 +348,11 @@ package WeaverProject {
             part '.cache/verification/latest-bootstrap-scheme.json' : CIReceipt {
                 doc /* Native Gerbil dependency preparation records its exit
                    and elapsed time separately from cold program verification. */
+            }
+            part '.cache/verification/latest-prepare-consumers.json' : CIReceipt {
+                doc /* The existing verification owner records separate CLI and
+                   Cargo preparation outcomes, durations, exits and source
+                   inputs before the unchanged protocol runtime gate. */
             }
             part '.cache/verification/latest-<suite>.json' : CIReceipt {
                 doc /* weaver-dev owns suite receipts. Preserve committed input

@@ -15,6 +15,10 @@ const providerSpecReviewCase = "^TestProviderRealSPECReviewRevocationLostReplies
 
 const proofToolchain = "leanprover/lean4:v4.35.0"
 
+func consumerCargoArgs() []string {
+	return []string{"test", "-p", "weaver-server", "--lib", "--no-default-features", "--features", "llm-provider,arrow", "--locked", "--offline", "-j", "4"}
+}
+
 func schemeTool() string {
 	if tool := os.Getenv("WEAVER_SCHEME_TOOL"); tool != "" {
 		return tool
@@ -209,6 +213,13 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 
 func stagesForMode(mode, goBinary string) ([]Stage, error) {
 	switch mode {
+	case "prepare-consumers":
+		return []Stage{
+			{"consumer-cli-build", goBinary, []string{"-C", ".data/magpie", "build", "-tags", "nogui", "-p", "4", "-o", "../../.cache/magpie-interoperability/bin/magpie", "."}},
+			{"consumer-runtime-build", "cargo", append(consumerCargoArgs(), "--no-run")},
+		}, nil
+	case "check-consumers":
+		return []Stage{{"consumer-protocol-integration", "cargo", append(consumerCargoArgs(), "magpie_standard_provider_preserves_three_protocol_tool_turns", "--", "--ignored", "--test-threads=4")}}, nil
 	case "bootstrap":
 		return []Stage{
 			{"rust-dependencies", "cargo", []string{"fetch", "--locked"}},

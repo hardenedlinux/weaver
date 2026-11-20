@@ -208,7 +208,12 @@ go -C go run ./cmd/weaver-dev bench
 #+end_src
 
 Individual suites are =check-rust=, =check-go=, =check-policy=,
-=check-architecture=, =check-storage= and =check-scheme=. Scheme qualification requires an explicit
+=check-architecture=, =check-storage=, =check-consumers= and =check-scheme=. The
+consumer suite runs Magpie's original Provider against Weaver. Its independent
+=prepare-consumers= command builds the external CLI and matching Cargo graph;
+the protocol gate reuses those products with four workers and a 120-second
+stage budget. See the [[file:docs/architecture/30-local-agent-connectivity.org][local Agent connectivity design]] for source, preparation
+and receipt boundaries. Scheme qualification requires an explicit
 Gerbil compiler and a prepared =GERBIL_PATH= package environment. Install the
 single root dependency explicitly with =gerbil deps --install= when needed;
 verification never installs, updates or deletes that environment. See the
