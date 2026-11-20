@@ -68,6 +68,8 @@ func Plan(goBinary string) []Stage {
 		{"agent-config-intent-tests", "quint", []string{"test", "dev/proofs/quint/AgentConfigIntent.qnt", "--main", "AgentConfigIntent", "--seed", "293"}},
 		{"agent-config-intent-safety", "quint", []string{"run", "dev/proofs/quint/AgentConfigIntent.qnt", "--main", "AgentConfigIntent", "--invariant", "safe", "--max-samples", "256", "--max-steps", "30", "--seed", "293"}},
 		{"session-discovery-tests", "quint", []string{"test", "dev/proofs/quint/SessionDiscovery.qnt", "--main", "SessionDiscovery", "--seed", "293"}},
+		{"build-prerequisite-tests", "quint", []string{"test", "dev/proofs/quint/BuildPrerequisites.qnt", "--main", "BuildPrerequisites", "--seed", "293"}},
+		{"build-prerequisite-safety", "quint", []string{"run", "dev/proofs/quint/BuildPrerequisites.qnt", "--main", "BuildPrerequisites", "--invariant", "safe", "--n-threads", "4", "--max-samples", "256", "--max-steps", "30", "--seed", "293"}},
 		{"session-discovery-safety", "quint", []string{"run", "dev/proofs/quint/SessionDiscovery.qnt", "--main", "SessionDiscovery", "--invariant", "safe", "--n-threads", "4", "--max-samples", "256", "--max-steps", "30", "--seed", "293"}},
 		{"stream-coordinates-tests", "quint", []string{"test", "dev/proofs/quint/StreamCoordinates.qnt", "--main", "StreamCoordinates", "--seed", "293"}},
 		{"stream-projection-tests", "quint", []string{"test", "dev/proofs/quint/StreamProjection.qnt", "--main", "StreamProjection", "--seed", "293"}},

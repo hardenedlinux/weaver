@@ -631,6 +631,19 @@ package AgentConnectivity {
             attribute :>> consequence = "Stream known prefix; pause at unknown headers; project the canonical terminal tail from the first withheld position with no second tail buffer";
             attribute :>> status = WeaverProject::DesignProcess::ChallengeStatus::refutedHypothesis;
         }
+        part prerequisiteCustodyChallenge : WeaverProject::DesignProcess::DesignChallenge {
+            attribute :>> hypothesis = "An installed foreign library or equal source content is sufficient to reuse a prepared build cut; all closure artifacts belong to consumer cleanup";
+            attribute :>> assumptions = "One shared prerequisite and one private output; compiler authenticity and source/artifact identities are assumed owner guarantees requiring runtime evidence; the model does not authenticate files";
+            attribute :>> disturbance = "Source changes and ABA, artifact replacement/tamper, eviction, repeated preparation and consumer cleanup";
+            attribute :>> independentOracle = "Use must bind the actual source epoch and artifact epoch; cleanup cannot delete shared prerequisites. The frozen 40-library closure and B's actual loaded products remain runtime obligations even when Make emits only 31 targets";
+            attribute :>> progressObligation = "An authentic same-content artifact can be reused after fresh admission across ABA without recompilation; changed content requires a matching build";
+            attribute :>> explorationBound = "11 named checks; 256 traces, 30 steps, seed 293 and four threads for strong and competing campaigns; no universal or filesystem atomicity proof";
+            attribute :>> modelCampaign = "BuildPrerequisites.step versus presenceStep and contentStep; named cleanup and ABA counterexamples";
+            attribute :>> runtimeProperty = "t/qualification/module-selection/module-selection-test.ss and use.ss; current 31/40 inventory failure is retained, not reclassified as a pass";
+            attribute :>> runtimeBudget = "Original 120-second A/B gate, 60-second package gate and four compiler workers; no cold-install retry or changed threshold";
+            attribute :>> consequence = "Preserve native Build/prerequisite ownership; obtain exact source/artifact bindings and B path evidence before changing inventory assertions or accepting reuse";
+            attribute :>> status = WeaverProject::DesignProcess::ChallengeStatus::openGap;
+        }
         part catalogVersionChallenge : WeaverProject::DesignProcess::DesignChallenge {
             attribute :>> hypothesis = "Scope/model identity alone is sufficient for a reusable catalog observation version";
             attribute :>> assumptions = "Scope is immutable; hard facts and their ordered prefix can change while the model list stays identical; catalog data is not permission";

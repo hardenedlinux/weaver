@@ -1573,3 +1573,20 @@ foreign-target inventory. Do not change the expectation to 31 or count the
 474-unit AOT closure as proving isolated B ownership. Audit their native Build
 projection versus prerequisite ownership before accepting cold A/B, hot B,
 clean isolation or B's own runtime products.
+
+The prerequisite custody challenge is registered in SysML and the existing
+Quint development entrypoint. Its eleven named checks cover source changes,
+artifact replacement, ABA, fresh admission and cleanup ownership. With seed
+293, four simulator threads, 256 traces and 30 steps, the strong model has no
+observed violation; both presence-only and content-only alternatives produce
+counterexamples. An authentic same-content artifact may survive ABA, but an
+old prepared cut cannot: the current source and artifact identities must be
+admitted again. Authenticity remains an assumed owner guarantee. This bounded
+model evidence does not qualify the current Build implementation or resolve
+the retained 31/40 runtime failure.
+
+Orgize's existing PR now declares its imported Scheme SDK dependency in
+commit =7d241de7c313efe501c58ac257bce103f7213f23=. That PR also carries newer
+Parser/Yuanxu pins from its owner. Weaver retains its current coherent Lab /
+ASCENT dependency cohort until those pins can be integrated together; the
+upstream declaration fix is available, not yet consumed or CI-qualified here.
