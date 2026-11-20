@@ -52,7 +52,7 @@ func checkTerminalUsageIndependentIssuer(t *testing.T, anthropic bool) {
 	executable := os.Getenv("WEAVER_TEST_PREBUILT_METER")
 	if executable == "" {
 		build := exec.CommandContext(t.Context(), "cargo", "build", "--release", "--locked", "--offline",
-			"-j4", "-p", "weaver-server", "--bin", "weaver-meter", "--no-default-features", "--message-format=json-render-diagnostics")
+			"-j4", "-p", "weaver-server", "--bin", "weaver-meter", "--features", "arrow", "--message-format=json-render-diagnostics")
 		build.Dir = root(t)
 		build.Stderr = os.Stderr
 		var err error
