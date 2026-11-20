@@ -274,3 +274,47 @@ fn numbers<'r>(input: &Input<'r>, values: &[u64]) -> Result<Object<'r>> {
             .collect::<Result<Vec<_>>>()?,
     )
 }
+
+#[cfg(feature = "scheme-program")]
+pub(crate) fn root_session_turn<'r>(
+    vm: &'r GerbilRuntime,
+    turn: &crate::SessionTurnInput,
+    include_scope: bool,
+) -> Result<Object<'r>> {
+    let input = Input::new(vm);
+    let f = &turn.facts;
+    let facts = input.record(vec![
+        ("principal", input.text(&f.principal)?),
+        ("model", input.text(&f.model)?),
+        ("output_token_limit", input.number(f.output_token_limit)?),
+        ("message_count", input.number(f.message_count)?),
+        ("body_bytes", input.number(f.body_bytes)?),
+    ])?;
+    let key = turn
+        .scope
+        .digest()
+        .map_err(|_| crate::SourceError::Contract)?;
+    let mut fields = vec![("scope_commitment", input.text(&key)?), ("facts", facts)];
+    if include_scope {
+        let template = &turn.scope.template;
+        let profile = template
+            .provider_profile
+            .as_ref()
+            .ok_or(crate::SourceError::Contract)?;
+        fields.push((
+            "scope",
+            input.record(vec![
+                ("principal", input.text(&template.principal)?),
+                ("models", input.strings(&template.models)?),
+                (
+                    "max_output_tokens",
+                    input.number(profile.max_output_tokens)?,
+                ),
+                ("max_messages", input.number(profile.max_messages)?),
+                ("max_body_bytes", input.number(profile.max_body_bytes)?),
+                ("route_count", input.number(template.targets.len() as u64)?),
+            ])?,
+        ));
+    }
+    input.record(fields)
+}

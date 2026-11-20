@@ -180,7 +180,7 @@ impl ProviderTransport {
         crate::HttpsTransport::validate_provider_endpoint(&route.endpoint, protocol)?;
         let runtime = self.inner.runtime.clone();
         let token = if let Some(federation) = self.inner.federation.get(&route.target) {
-            if !matches!(protocol, ProviderProtocol::Anthropic) || route.endpoint != wif::MESSAGES {
+            if !protocol.is_anthropic() || route.endpoint != wif::MESSAGES {
                 return Err(Error::Denied);
             }
             let client = self.inner.exchange_client.as_ref().ok_or(Error::Denied)?;
@@ -274,8 +274,11 @@ pub trait ProviderOutput {
     fn release_ranges_separately(&self) -> bool {
         false
     }
-    /// Pure bounded encoding. It cannot insert a frame or grant send authority.
+    /// Bounded encoding on this response's projection state, before its deciding
+    /// guard. It cannot perform I/O or grant send authority. Failed responses
+    /// discard that state; preparation never confers permission to replay.
     fn prepare(
+        &mut self,
         route: &ProviderRoute,
         model: &str,
         events: &[ProviderEvent],
@@ -377,7 +380,7 @@ pub fn execute_provider_progression<O: ProviderOutput>(
         batch_rows,
     } = request;
     if !(1..=32).contains(&batch_rows)
-        || !matches!(format, "protobuf" | "arrow")
+        || !matches!(format, "protobuf" | "arrow" | "sse")
         || output.stopped()
     {
         return Err(Error::Invalid("provider response profile or cancellation"));
@@ -386,6 +389,9 @@ pub fn execute_provider_progression<O: ProviderOutput>(
         crate::HttpsTransport::validate_endpoint(&route.endpoint)?;
     }
     let permit = admit_and_consume(ledger, plan, transport, output, admission)?;
+    if format == "sse" && !permit.protocol().is_rich() {
+        return Err(Error::Invalid("SSE requires a rich source profile"));
+    }
     let result_capture = permit.expects_workflow_result().then(String::new);
     let response = open_guarded(ledger, &permit, transport, output)?;
     let (tokens, response) = super::range_output::relay(
@@ -444,6 +450,8 @@ fn admit_and_consume<O: ProviderOutput>(
 pub(super) enum StreamDecoder<R: tokio::io::AsyncRead + Unpin> {
     OpenAi(openai_sse::Decoder<R>),
     Anthropic(anthropic_sse::Decoder<R>),
+    // One allocation per rich stream keeps every Tokio decoder state compact.
+    Turn(Box<super::turn_sse::Decoder<R>>),
 }
 
 impl<R: tokio::io::AsyncRead + Unpin> StreamDecoder<R> {
@@ -454,6 +462,15 @@ impl<R: tokio::io::AsyncRead + Unpin> StreamDecoder<R> {
             ProviderProtocol::Anthropic => {
                 Self::Anthropic(anthropic_sse::Decoder::new(input, model))
             }
+            protocol => Self::Turn(Box::new(super::turn_sse::Decoder::new(
+                input,
+                model,
+                match protocol {
+                    ProviderProtocol::OpenAiTurn => weaver_llm::Protocol::OpenAi,
+                    ProviderProtocol::OpenAiResponses => weaver_llm::Protocol::OpenAiResponses,
+                    _ => weaver_llm::Protocol::Anthropic,
+                },
+            ))),
         }
     }
 
@@ -461,6 +478,7 @@ impl<R: tokio::io::AsyncRead + Unpin> StreamDecoder<R> {
         match self {
             Self::OpenAi(reader) => reader.next().await,
             Self::Anthropic(reader) => reader.next().await,
+            Self::Turn(reader) => reader.next().await,
         }
     }
 
@@ -468,6 +486,7 @@ impl<R: tokio::io::AsyncRead + Unpin> StreamDecoder<R> {
         match self {
             Self::OpenAi(reader) => reader.next_buffered().await,
             Self::Anthropic(reader) => reader.next_buffered().await,
+            Self::Turn(reader) => reader.next_buffered(),
         }
     }
 
@@ -475,6 +494,7 @@ impl<R: tokio::io::AsyncRead + Unpin> StreamDecoder<R> {
         match self {
             Self::OpenAi(reader) => reader.terminal_tokens,
             Self::Anthropic(reader) => Some(reader.tokens()),
+            Self::Turn(reader) => reader.terminal_tokens(),
         }
     }
 }
@@ -519,4 +539,4 @@ fn open_guarded<O: ProviderOutput>(
 
 #[cfg(test)]
 #[path = "../../tests/unit/provider_dispatch.rs"]
-mod dispatch_tests;
+pub(super) mod dispatch_tests;

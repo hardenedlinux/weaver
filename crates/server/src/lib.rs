@@ -22,6 +22,7 @@ mod grpc_output;
 mod grpc_provider;
 #[cfg(feature = "kubernetes")]
 mod kubernetes;
+mod meter_issuer;
 mod operation_client;
 pub mod pb;
 #[cfg(all(test, unix))]

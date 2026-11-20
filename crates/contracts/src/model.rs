@@ -135,6 +135,23 @@ pub struct Task {
 impl Task {
     /// Reject malformed contracts before admission.
     pub fn validate(&self) -> Result<()> {
+        self.validate_scope()?;
+        self.validate_body_digests()
+    }
+
+    /// Unbound source templates cannot pass normal task registration validation.
+    pub(crate) fn validate_provider_template(&self) -> Result<()> {
+        self.validate_scope()?;
+        if self.provider_profile.is_none()
+            || !self.body_digests.is_empty()
+            || !self.stream_contracts.is_empty()
+        {
+            return Err(Error::Invalid("unbound provider template"));
+        }
+        Ok(())
+    }
+
+    fn validate_scope(&self) -> Result<()> {
         for s in [&self.family, &self.principal, &self.profile] {
             identifier(s)?;
         }
@@ -155,18 +172,6 @@ impl Task {
         {
             return Err(Error::Invalid("target endpoint bindings"));
         }
-        if self.body_digests.len() != self.nodes.len()
-            || self.nodes.iter().any(|n| {
-                self.body_digests.get(n).is_none_or(|d| {
-                    d.len() != 64
-                        || !d
-                            .bytes()
-                            .all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase())
-                })
-            })
-        {
-            return Err(Error::Invalid("original node body commitment"));
-        }
         if self.node_cost_bounds.len() != self.nodes.len()
             || self.nodes.iter().any(|n| {
                 self.node_cost_bounds
@@ -184,6 +189,21 @@ impl Task {
                     .all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase())
         }) {
             return Err(Error::Invalid("original stream commitment"));
+        }
+        Ok(())
+    }
+    fn validate_body_digests(&self) -> Result<()> {
+        if self.body_digests.len() != self.nodes.len()
+            || self.nodes.iter().any(|n| {
+                self.body_digests.get(n).is_none_or(|d| {
+                    d.len() != 64
+                        || !d
+                            .bytes()
+                            .all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase())
+                })
+            })
+        {
+            return Err(Error::Invalid("original node body commitment"));
         }
         Ok(())
     }

@@ -44,6 +44,16 @@
     (test-case "counters reject fractions and Booleans"
       (check-exception (validate Counter 0.5) TypeError?)
       (check-exception (validate Counter #f) TypeError?))
+    (test-case "source profiles select explicit closed or rich wire protocols"
+      (def (profile wire-protocol)
+        (.o id: "profile" protocol: wire-protocol max_output_tokens: 32
+            max_messages: 64 max_body_bytes: 1048576))
+      (for-each
+        (lambda (protocol)
+          (check-equal? (.get (validate ProviderProfileContract (profile protocol)) protocol) protocol))
+        '("openai.chat-text-sse.v1" "anthropic.messages-text-sse.v1"
+          "openai.chat-turn-sse.v1" "openai.responses-turn-sse.v1" "anthropic.messages-turn-sse.v1"))
+      (check-exception (validate ProviderProfileContract (profile "unregistered")) TypeError?))
     (test-case "governance requests use the declared publication symbol"
       (check-equal? (.get (validate GovernanceContext (.o request: 'publish)) request) 'publish)
       (check-exception (validate GovernanceContext (.o request: "publish")) TypeError?)

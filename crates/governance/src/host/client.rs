@@ -112,6 +112,24 @@ impl SourceClient {
             _ => Err(crate::SourceError::Contract.into()),
         }
     }
+    /// Reuse the bounded affine owner; no source compilation or request body crosses it.
+    pub async fn session_turn(
+        &self,
+        input: crate::SessionTurnInput,
+    ) -> Result<crate::SessionTurnSelection, SourceJobError> {
+        input.validate()?;
+        let expected = input.clone();
+        match self
+            .evaluate(crate::Derivation::SessionTurn(Box::new(input)))
+            .await?
+        {
+            crate::DerivationOutput::SessionTurn(selected) => {
+                selected.validate_for(&expected)?;
+                Ok(selected)
+            }
+            _ => Err(crate::SourceError::Contract.into()),
+        }
+    }
     async fn evaluate(
         &self,
         input: crate::Derivation,
@@ -125,7 +143,9 @@ impl SourceClient {
                 _ = self.shared.shutdown.cancelled() => return Err(SourceJobError::Closed),
                 slot = capacity.acquire_owned() => slot.map_err(|_| SourceJobError::Closed)?,
             },
-            crate::Derivation::FactImpact { .. } | crate::Derivation::Composition(_) => capacity
+            crate::Derivation::FactImpact { .. }
+            | crate::Derivation::Composition(_)
+            | crate::Derivation::SessionTurn(_) => capacity
                 .try_acquire_owned()
                 .map_err(|_| SourceJobError::Busy)?,
         };

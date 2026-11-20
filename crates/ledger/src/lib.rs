@@ -33,8 +33,10 @@ pub use provider_delivery::{
 };
 mod provider_catalog;
 mod provider_routing;
+mod provider_session;
 pub use provider_catalog::ProviderCatalogProjection;
 pub use provider_routing::ProviderOperationCut;
+pub use provider_session::{ProviderSessionCatalog, ProviderSessionCut, ProviderSessionRequest};
 mod provider_oauth;
 mod provider_oauth_witness;
 mod provider_profiles;

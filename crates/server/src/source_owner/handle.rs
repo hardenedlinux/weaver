@@ -43,6 +43,27 @@ struct RoutingProjection {
     selected: weaver_governance::OwnedSource,
 }
 impl OperationResolver {
+    pub(crate) async fn session_catalog(
+        &self,
+        session: String,
+        principal: String,
+    ) -> std::result::Result<weaver_ledger::ProviderSessionCatalog, Status> {
+        self.0
+            .internal(|reply, slot| Envelope::SessionCatalog {
+                session,
+                principal,
+                reply,
+                slot,
+            })
+            .await
+    }
+    pub(crate) async fn admit_turn(
+        &self,
+        runtime: &RuntimeOwner,
+        request: weaver_ledger::ProviderSessionRequest,
+    ) -> std::result::Result<weaver_contracts::ProviderTurnDerivation, Status> {
+        self.0.admit_turn(runtime, request).await
+    }
     pub(crate) async fn resolve(
         &self,
         runtime: &RuntimeOwner,
@@ -105,6 +126,18 @@ impl SourceWorker {
     }
 }
 impl SourceOwner {
+    pub(crate) async fn register_session(
+        &self,
+        caller: SourceIdentity,
+        scope: weaver_contracts::ProviderSessionScope,
+    ) -> std::result::Result<(), Status> {
+        self.submit_with_wait(caller, true, |reply, slot| Command::RegisterSession {
+            scope: Box::new(scope),
+            reply,
+            slot,
+        })
+        .await
+    }
     pub(crate) async fn inspect_fact(
         &self,
         caller: SourceIdentity,
@@ -310,6 +343,7 @@ impl SourceOwner {
         slot: Arc<OwnedSemaphorePermit>,
         database: PathBuf,
     ) -> Result<SourceWorker> {
+        let fact_feed = runtime.fact_feed().cloned();
         Self::start_inner(
             runtime,
             slot,
@@ -318,7 +352,7 @@ impl SourceOwner {
                 review: None,
                 metering: None,
                 oauth: None,
-                fact_feed: None,
+                fact_feed,
                 session_wakeup: None,
             },
         )
@@ -477,7 +511,7 @@ impl SourceOwner {
         })
         .await
     }
-    async fn internal<T>(
+    pub(super) async fn internal<T>(
         &self,
         make: impl FnOnce(oneshot::Sender<Result<T>>, OwnedSemaphorePermit) -> Envelope,
     ) -> std::result::Result<T, Status> {

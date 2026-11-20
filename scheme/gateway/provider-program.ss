@@ -6,7 +6,8 @@
 (import (only-in :std/source this-source-file)
         (only-in :clan/poo/object .o .ref)
         (only-in :agentic-ai-lab/modules/loop-engine/control/governor make-loop-governor)
-        (only-in :agentic-ai-lab/modules/governance/interface AgenticAILabGovernanceProfile.)
+        (only-in :agentic-ai-lab/modules/governance/interface AgenticAILabGovernanceProfile.
+                 agentic-ai-lab-governance-source)
         (only-in :agentic-ai-lab/modules/authorization/providers/cedar/objects agentic-ai-lab-cedar-policy)
         (only-in :yuanxu/module-system/source/admission call-with-module-source-operation-measurement)
         :hardenedlinux/weaver/scheme/policy/cedar-ffi
@@ -17,6 +18,7 @@
 (def (main . _) (void))
 
 (def init-file (path-expand "../../init.ss" (path-directory (this-source-file))))
+(def policy-root (getenv "WEAVER_GOVERNANCE_POLICY_ROOT" #f))
 
 ;;; Use the existing Reader's private scalar accounting. A diagnostic cannot
 ;;; supply a callback during admission, retain contexts or change the result.
@@ -48,10 +50,14 @@
   (def profile
     (.o (:: @ AgenticAILabGovernanceProfile.)
         identity: "weaver/source" revision: "1" owner: "source-owner"
-        policies: (.o runtime: policy)))
+        policies: (.o runtime: policy)
+        source-assets: (if policy-root
+                         (list (agentic-ai-lab-governance-source "weaver/runtime" "policy.cedar" 'cedar))
+                         '())))
   (def controls (provider-source-controls schema))
   (def governor (car controls))
-  (def context (cadr controls))
+  (def context
+    (if policy-root (.o (:: @ (cadr controls)) source_root: policy-root) (cadr controls)))
   (def phase-observer (gateway-source-phase-observer))
   (when phase-observer (phase-observer "compile-begin"))
   (begin0

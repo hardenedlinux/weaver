@@ -76,6 +76,41 @@ async fn source_rpc_reads_owned_parent_and_registers_only_authenticated_evidence
     }));
     let source = rpc::connect(src_addr, &pki.source, &pki.ca).await;
     let operation = rpc::connect(op_addr, &pki.operation, &pki.ca).await;
+    let denied_scope: Result<pb::Empty, _> = rpc::unary(
+        operation.clone(),
+        "operation-token",
+        "/weaver.gateway.v1.Gateway/RegisterProviderSession",
+        pb::ProviderSessionScope::default(),
+    )
+    .await;
+    assert_eq!(
+        denied_scope.unwrap_err().code(),
+        tonic::Code::PermissionDenied
+    );
+    let denied_turn: Result<pb::ProviderPlan, _> = rpc::unary(
+        source.clone(),
+        "source-token",
+        "/weaver.gateway.v1.Gateway/AdmitProviderTurn",
+        pb::SessionTurnSubmission::default(),
+    )
+    .await;
+    assert_eq!(
+        denied_turn.unwrap_err().code(),
+        tonic::Code::PermissionDenied
+    );
+    let denied_discovery: Result<pb::ProviderSessionCatalog, _> = rpc::unary(
+        source.clone(),
+        "source-token",
+        "/weaver.gateway.v1.Gateway/InspectProviderSession",
+        pb::ProviderSessionQuery {
+            session: "unknown".into(),
+        },
+    )
+    .await;
+    assert_eq!(
+        denied_discovery.unwrap_err().code(),
+        tonic::Code::PermissionDenied
+    );
     let request = pb::PublishRequest {
         operation_id: "original".into(),
         expected_revision: None,

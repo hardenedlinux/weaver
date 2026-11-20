@@ -240,6 +240,7 @@ impl ProviderOutput for Output {
             })
     }
     fn prepare(
+        &mut self,
         route: &ProviderRoute,
         model: &str,
         events: &[ProviderEvent],

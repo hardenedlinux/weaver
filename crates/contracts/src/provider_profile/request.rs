@@ -14,6 +14,9 @@ impl ProviderProfile {
             return Err(Error::Invalid("profile body limit"));
         }
         let body: serde_json::Value = crate::decode(source.as_bytes())?;
+        if self.adapter()?.is_rich() {
+            return super::turn_request::facts(self, &body);
+        }
         let object = body
             .as_object()
             .ok_or(Error::Invalid("provider request object"))?;

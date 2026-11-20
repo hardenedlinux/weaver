@@ -21,6 +21,29 @@ pub async fn prepare(config: Option<std::path::PathBuf>) -> weaver_contracts::Re
     .map_err(|_| weaver_contracts::Error::Conflict("source preparation deadline"))?
 }
 
+/// Settle one terminal usage observation from the independent issuer process.
+#[tokio::main(flavor = "current_thread")]
+pub async fn meter(family: String, node: String) -> weaver_contracts::Result<()> {
+    use tokio::io::AsyncWriteExt;
+    let timeout = std::time::Duration::from_secs(12);
+    let receipt = tokio::time::timeout(timeout, crate::meter_issuer::settle(family, node, timeout))
+        .await
+        .map_err(|_| weaver_contracts::Error::Conflict("metering result unknown at deadline"))??;
+    // Publish the local report after the timed RPC. A partial stdout record
+    // cannot cause another settlement; a restart uses the original application.
+    let mut record = serde_json::to_vec(&receipt)?;
+    record.push(b'\n');
+    let mut output = tokio::io::stdout();
+    output
+        .write_all(&record)
+        .await
+        .map_err(|_| weaver_contracts::Error::Invalid("metering receipt output"))?;
+    output
+        .flush()
+        .await
+        .map_err(|_| weaver_contracts::Error::Invalid("metering receipt output"))
+}
+
 /// Emit an inert reviewed catalog proposal using the existing wire record.
 pub fn import_provider(
     source: &std::path::Path,

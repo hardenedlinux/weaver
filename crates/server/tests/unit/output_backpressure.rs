@@ -266,7 +266,7 @@ proptest::proptest! {
         let first=release.first_sequence();
         let events=(0..rows).map(|offset|weaver_contracts::ProviderEvent {sequence:first+offset as u64,kind:weaver_contracts::ProviderEventKind::Delta,text:format!("row-{offset}"),tokens:0}).collect::<Vec<_>>();
         let before=ledger.transaction_timings();
-        let frame=Output::prepare(permit.route(),&permit.plan().model,&events,"arrow").expect("pure encoding");
+        let frame=output.prepare(permit.route(),&permit.plan().model,&events,"arrow").expect("pure encoding");
         proptest::prop_assert!(receiver.try_recv().is_err(),"preparation inserted a frame");
         proptest::prop_assert_eq!(ledger.transaction_timings().transaction_hold.attempts,before.transaction_hold.attempts);
         match fault {

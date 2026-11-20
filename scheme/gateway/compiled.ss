@@ -8,7 +8,7 @@
         (only-in :clan/poo/object .get .o)
         :gerbil-scheme-rust/scheme/runtime
         (only-in "./func.ss" governor-ready-steps make-retained-governor gateway-source-cancelled?)
-        (only-in "./provider-source.ss" compose-provider-configuration)
+        (only-in "./provider-source.ss" compose-provider-configuration make-session-turn-selector)
         (only-in "./program.ss" make-gateway-program hard-fact-affected)
         (only-in "./snapshot.ss" scheme-value->source-data source-data->scheme-value))
 (export install-gateway-producer!)
@@ -53,6 +53,11 @@
   (with-catch (lambda (_) #f)
     (lambda () (source-data->scheme-value
       (compose-provider-configuration (scheme-value->source-data value))))))
+(def select-session-turn (make-session-turn-selector))
+(def (session-turn-request value)
+  (with-catch (lambda (_) #f)
+    (lambda () (source-data->scheme-value
+      (select-session-turn (scheme-value->source-data value))))))
 (def (fact-impact-request value)
   (with-catch (lambda (_) #f)
     (lambda ()
@@ -72,6 +77,9 @@
  (c-define (compose-root root) (int64) int64 "weaver_compose_source_v1" "extern"
    (gerbil-scheme-rust/scheme/runtime#gerbil-rs-rooted-call root
      hardenedlinux/weaver/scheme/gateway/compiled#compose-request))
+ (c-define (session-turn-root root) (int64) int64 "weaver_session_turn_v1" "extern"
+   (gerbil-scheme-rust/scheme/runtime#gerbil-rs-rooted-call root
+     hardenedlinux/weaver/scheme/gateway/compiled#session-turn-request))
  (c-define (capture-root root) (int64) int64 "weaver_capture_source_v1" "extern"
    (gerbil-scheme-rust/scheme/runtime#gerbil-rs-rooted-call root
      hardenedlinux/weaver/scheme/gateway/compiled#capture-request))

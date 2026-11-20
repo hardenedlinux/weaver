@@ -22,6 +22,50 @@ fn profile() -> ProviderProfile {
     ))
     .expect("profile")
 }
+
+#[test]
+fn rich_profiles_are_distinct_from_closed_text_and_keep_resource_bounds() {
+    use weaver_contracts::{ANTHROPIC_TURN_SSE, CHAT_TURN_SSE, RESPONSES_TURN_SSE};
+    let cases = [
+        (
+            CHAT_TURN_SSE,
+            serde_json::json!({"model":"model-a","stream":true,"messages":[{"role":"user","content":"hello"}],"max_tokens":32,"tools":[{"type":"function","function":{"name":"read","parameters":{"type":"object"}}}]}),
+        ),
+        (
+            RESPONSES_TURN_SSE,
+            serde_json::json!({"model":"model-a","stream":true,"store":false,"input":[{"role":"user","content":"hello"}],"max_output_tokens":32,"tools":[{"type":"function","name":"read","parameters":{"type":"object"}}]}),
+        ),
+        (
+            ANTHROPIC_TURN_SSE,
+            serde_json::json!({"model":"model-a","stream":true,"messages":[{"role":"user","content":[{"type":"text","text":"hello"}]}],"max_tokens":32,"tools":[{"name":"read","input_schema":{"type":"object"}}]}),
+        ),
+    ];
+    for (protocol, body) in cases {
+        let mut rich = profile();
+        rich.protocol = protocol.into();
+        let wire = serde_json::to_string(&body).unwrap();
+        assert!(rich.request_facts(&wire).is_ok(), "{protocol}");
+        assert!(profile().request_facts(&wire).is_err());
+        let mut over = body.clone();
+        over[if protocol == RESPONSES_TURN_SSE {
+            "max_output_tokens"
+        } else {
+            "max_tokens"
+        }] = serde_json::json!(4097);
+        assert!(rich.request_facts(&over.to_string()).is_err());
+        let mut ambiguous = body.clone();
+        ambiguous["max_completion_tokens"] = serde_json::json!(32);
+        assert!(rich.request_facts(&ambiguous.to_string()).is_err());
+        if protocol == RESPONSES_TURN_SSE {
+            let mut stored = body.clone();
+            stored["store"] = serde_json::json!(true);
+            assert!(rich.request_facts(&stored.to_string()).is_err());
+        }
+        let mut builtin = body;
+        builtin["tools"][0]["type"] = serde_json::json!("web_search");
+        assert!(rich.request_facts(&builtin.to_string()).is_err());
+    }
+}
 fn body() -> serde_json::Value {
     serde_json::json!({"model":"model-a","stream":true,"messages":[{"role":"user","content":"hello"}],"max_completion_tokens":32})
 }
