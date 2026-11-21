@@ -281,7 +281,6 @@ const (
 	schemeModuleBuildTimeout     = 2 * time.Minute
 	schemePackageTestTimeout     = time.Minute
 	schemeModuleSelectionTimeout = 2 * time.Minute
-	schemeProviderBuildTimeout   = 8 * time.Minute
 )
 
 func runStageObserved(ctx context.Context, root, directory string, environment []string, stage Stage, streamSchemeOutput bool, onStart func(int), live io.Writer) Result {
@@ -297,8 +296,6 @@ func runStageObserved(ctx context.Context, root, directory string, environment [
 		deadline = 2 * time.Minute
 	case "scheme-module-build":
 		deadline = schemeModuleBuildTimeout
-	case "scheme-provider-server-build":
-		deadline = schemeProviderBuildTimeout
 	case "scheme-rooted-sdk-integration":
 		deadline = 5 * time.Minute
 	case "scheme-unit-tests":

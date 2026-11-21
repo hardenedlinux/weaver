@@ -116,7 +116,12 @@ package WeaverExecution {
            Cold A/B, hot B and clean reuse one standard Build owner with
            distinct output directories. No nested interpreter/build process
            or thread wrapper prepares those outputs. A separate B runtime
-           probes the actual selected products, not the builder's loaded state. */
+           probes the actual selected products, not the builder's loaded state.
+           The complete Scheme image build shares the enclosing suite deadline
+           while its duration is calibrated; do not impose the uncalibrated
+           480-second cutoff on Cargo, SDK preparation and native compilation.
+           Record total duration and archive phases before setting a new build
+           budget. Runtime acceptance deadlines remain independent and fixed. */
         doc /* Time domain view, publication and reviewed head, profile, and
            original claim reconciliation separately in the deciding scope. Split
            publication into pending, review match and original task birth.
