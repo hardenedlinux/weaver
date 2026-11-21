@@ -249,10 +249,22 @@ func stagesForMode(mode, goBinary string) ([]Stage, error) {
 		}
 		return append(selected, Stage{"storage-grpc-integration", goBinary, []string{"-C", "go", "test", "-count=1", "-race", "-tags=integration", "./dev", "-run", "^TestProvider", "-v"}}), nil
 	case "bootstrap-scheme":
-		// The package manager's public script API owns the same recursive
-		// installation and version checks without generating an editor TAGS index.
+		// Update cached checkouts with the package manager before installation.
+		// Native APIs own manifests, fetching, tag checks and incremental builds.
 		return []Stage{{"scheme-dependencies", schemeTool(), []string{"-:1n,2n", "interactive", "-e",
-			`(import :gerbil/tools/gxpkg) (with-pkg-build-env (for-each pkg-install (pgetq depend: (pkg-plist ".") '())))`}}}, nil
+			`(import :gerbil/tools/gxpkg)
+(with-pkg-build-env
+  (def installed (pkg-list))
+  (def updated (make-hash-table))
+  (def (update-installed dependency)
+    (def package (car (string-split dependency #\@)))
+    (when (and (member package installed) (not (hash-get updated dependency)))
+      (pkg-update dependency)
+      (hash-put! updated dependency #t)
+      (for-each update-installed (pgetq depend: (pkg-plist package) '()))))
+  (def dependencies (pgetq depend: (pkg-plist ".") '()))
+  (for-each update-installed dependencies)
+  (for-each pkg-install dependencies))`}}}, nil
 	case "bootstrap-build", "bootstrap-proofs":
 		stages, err := stagesForMode("bootstrap", goBinary)
 		if err != nil {

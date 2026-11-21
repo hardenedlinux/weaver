@@ -284,8 +284,22 @@ package WeaverProject {
                archive. Bound the Rust tests and Go suite separately. The
                whole-suite watchdog leaves time for these stages and the
                preceding package checks to retain independent results.
-               gerbil deps --install owns dependency resolution, source revisions
-               and native dependency builds from gerbil.pkg declarations.
+               Gerbil's public package APIs own source revisions and dependency
+               builds from gerbil.pkg declarations. Cache restoration supplies
+               candidate products, not version admission. Update installed
+               declared dependencies with pkg-update before pkg-install; read
+               each package's updated declaration before its transitive edges.
+               The native installer retains conflict checks and Make decides
+               incremental reuse. Do not advance the cache format version to
+               conceal an incompatible source tag or delete the package store.
+               TestSchemeToolCachedDependencyUpdate challenges install-only
+               reuse with a changed transitive Git dependency, verifies the
+               actual loaded result and preserves an unchanged package artifact.
+               Its hot replay must emit no compilation events, and contradictory
+               direct/transitive pins must retain the native conflict refusal.
+               This small
+               local-Git scenario has the existing sixty-second fence and four
+               compiler workers; it never installs the real dependency graph.
                Each dependency owns its own Build targets and package tests.
                CI only selects the watchdog and invokes the package manager.
                Native stdout/stderr line buffering exposes package boundaries
