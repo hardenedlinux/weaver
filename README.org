@@ -212,8 +212,14 @@ go -C go run ./cmd/weaver-dev bench
 
 Individual suites are =check-rust=, =check-go=, =check-policy=,
 =check-architecture=, =check-storage=, =check-consumers= and =check-scheme=. The
-consumer suite runs Magpie's original Provider against Weaver. Its independent
-=prepare-consumers= command builds the external CLI and matching Cargo graph;
+consumer suite runs Magpie's original Provider against Weaver.
+Rust integration is optional: build =weaver-server= with =--features magpie=.
+The feature exposes =weaver_server::magpie::ConnectionControl= for Weaver-owned
+configuration CAS and recovery, and binds HTTP listener lifetime to the committed
+configuration. It does not embed or patch Magpie; the feature is off by default
+and is not part of =weaver-llm=.
+
+The independent =prepare-consumers= command builds the external CLI and matching Cargo graph;
 the protocol gate reuses those products with four workers and a 120-second
 stage budget. See the [[file:docs/architecture/30-local-agent-connectivity.org][local Agent connectivity design]] for source, preparation
 and receipt boundaries. Scheme qualification requires an explicit

@@ -3,12 +3,12 @@
 
 package AgentConnectivity {
     private import ScalarValues::*;
-    doc /* Planned local Agent integration, not an implemented Magpie adapter or
-       a qualified HTTP gateway. Phase one retains Magpie's UI, local host and
-       Agent configuration owners and connects a fixed Weaver backend. Unified
-       distribution is a later delivery decision. A Go interface is an adapter
-       boundary; it does not supply a UI, a running host or CLI configuration.
-       Requirements and acceptance cases below are design obligations only. */
+    doc /* Local Agent integration with stock Magpie's existing UI, local host
+       and configuration owners. The optional Rust magpie feature connects the
+       fixed Weaver HTTP backend and owns only Weaver connection state. Qualified
+       slices and their finite acceptance are identified separately; this model
+       does not establish unified distribution or a complete end-user host.
+       A Go implementation alone is not an importable configuration SDK. */
 
     enum def DeliveryStatus { enum planned; enum qualified; }
     enum def ConfigOutcome { enum applied; enum restored; enum conflict; enum unknown; }
@@ -25,20 +25,24 @@ package AgentConnectivity {
            Readiness is connectivity evidence, never execution authority.
            Stock Magpie connects through its standard HTTP-provider interface.
            Existing Go/RPC is an internal execution contract, not an available
-           Magpie plugin. An in-host RPC join requires a maintained Magpie-side
-           adapter. HTTP ingress and internal RPC are different layers; neither
-           concrete join is implemented by this model. */
+           Magpie plugin. HTTP ingress is the implemented public join; internal
+           RPC is a different layer. No Magpie-side source adapter is maintained. */
     }
     requirement def ReversibleAgentConfiguration {
-        doc /* Reuse Magpie edit, applied/stash and drift ownership, rather than
-           creating a second Weaver config writer or restore database. Qualify
-           durable ownership intent before write and recover interrupted edits
-           through that same owner; these crash guarantees are not presumed
-           implemented upstream. Compare file identity and expected field values
-           before atomic replacement. Preserve unrelated values and formatting.
-           Restore only owned fields still equal to the values we wrote. Drift
-           requires explicit reconciliation; an unknown write requires inspection
-           of the same intent, never blind replay or whole-file restoration. */
+        doc /* Stock Magpie remains an unmodified external component. The Rust
+           server's optional magpie feature, off by default, exposes a bounded
+           ConnectionControl on its existing tracked Tokio runtime. It owns only
+           Weaver connection IDs, Session references and credential fingerprints.
+           ConnectionChange is durably staged before CAS; head and immutable
+           decision commit in one existing ledger transaction. Retired heads keep
+           their generation, so A-B-A and old receipts cannot reset currentness.
+           HTTP activation leases the current committed snapshot through the same
+           ledger owner. A live listener fences publication until it drains.
+           Process loss drops only local leases; restart reads persistent state.
+           No new database, remote configuration writer, Go internal import,
+           upstream patch or per-request configuration query is introduced.
+           This batch provides explicit publication plus restart activation, not
+           live replacement of an active listener or proof of remote completion. */
     }
     requirement def SingleAgentRoutingAuthority {
         doc /* A Weaver-backed Magpie profile selects one fixed Weaver backend.
@@ -101,14 +105,12 @@ package AgentConnectivity {
     }
     item def ConfigOwnership {
         attribute intentId : String;
-        attribute agentId : String;
-        attribute fileIdentity : String;
-        attribute beforeDigest : String;
-        attribute writtenDigest : String;
-        attribute ownedFields : String [1..*];
+        attribute connectionId : String;
+        attribute expectedRevision : Integer [0..1];
+        attribute profileCommitment : String;
         attribute selectionGeneration : Integer;
-        doc /* References to the existing config owner's protected records. No
-           secret values or second journal are introduced by this projection. */
+        doc /* Weaver-owned operation identity and expected connection clock.
+           Credential values and Magpie/CLI file ownership are not represented. */
     }
     item def ConfigReceipt {
         item ownership : ConfigOwnership;
@@ -116,19 +118,19 @@ package AgentConnectivity {
     }
     item def PendingConfigEdit {
         attribute version : Integer = 1;
-        attribute intentId : String;
-        attribute field : String;
-        attribute requestedValueDigest : String;
-        attribute observedFieldsDigest : String;
-        attribute ownershipDigest : String;
-        attribute configPath : String;
-        doc /* Retained inside Magpie's existing applied.json before invoking
-           its setter. No requested secret value, restoration image or permit.
-           The same intent and prior ownership are checked at final save.
-           Process interruption, failed setter or final persistence failure
-           leaves this intent unresolved; Keep and ordinary replay cannot erase
-           it. A complete file identity/write-set plan is still required for
-           automatic CAS restoration; matching field values are insufficient. */
+        attribute operationId : String;
+        attribute connectionId : String;
+        attribute expectedRevision : Integer [0..1];
+        attribute sessionReference : String;
+        attribute credentialFingerprint : String;
+        attribute retired : Boolean;
+        doc /* ConnectionChange is immutable in the existing connection_updates
+           ledger relation. A missing receipt is unresolved preparation, never a
+           successful external effect. publish_connection atomically CASes
+           connection_heads and persists Committed/Rejected; abort_connection
+           persists Aborted without erasing decided history. Only a current head
+           may create a ConnectionLease. No plaintext credential or upstream
+           configuration bytes are stored, inferred or restored here. */
     }
     item def TurnSubmission {
         attribute agentHint : String;
@@ -320,12 +322,11 @@ package AgentConnectivity {
         port intent : ~ConfigIntentPort;
         port receipt : ConfigReceiptPort;
         port configured : SelectionPort;
-        doc /* Reuse each Agent's existing config format and Magpie's ownership
-           records. Readiness, CAS, drift and restoration are qualified before
-           users are offered Connect. Disconnect/restore does not require the
-           gateway or upstream network to be available. After whole-host loss,
-           reopen its local control owner before inspection/restoration. No vendor
-           login file is rewritten here. */
+        doc /* Use stock Magpie's supported configuration interface; its own
+           owner retains CLI formats, drift and restoration. Weaver validates
+           and persists only its own backend profile and connection generation.
+           No Weaver code writes Magpie stash/applied records or vendor logins.
+           An unavailable or unacknowledged external action remains unknown. */
     }
     part def CodingCli {
         port configured : ~SelectionPort;
@@ -613,20 +614,20 @@ package AgentConnectivity {
     action def PrepareAgentConnection {
         in item selected : ModelSelection;
         out item ownership : ConfigOwnership;
-        doc /* Verify readiness and persist ownership intent through the existing
-           adapter before any CLI write. Failure leaves the original untouched. */
+        doc /* Verify readiness and prepare the expected Weaver profile
+           generation through the existing persistence owner; no CLI file write. */
     }
     action def ApplyOwnedConfiguration {
         in item ownership : ConfigOwnership;
         out item receipt : ConfigReceipt;
-        doc /* Compare expected file/fields and atomically apply only the owned
-           edit. A lost acknowledgment enters inspection of this same intent. */
+        doc /* Compare the expected Weaver generation before its local
+           publication. Remote Magpie application requires its own observation. */
     }
     action def RestoreOwnedConfiguration {
         in item ownership : ConfigOwnership;
         out item receipt : ConfigReceipt;
-        doc /* Restore matching owned fields; preserve unrelated changes.
-           Conflicting owned fields require reconciliation, not blind rollback. */
+        doc /* Reconcile Weaver-owned profile state at its expected generation.
+           Preserve newer generations and never restore third-party CLI files. */
     }
 
     part def PlannedAcceptance {
@@ -730,17 +731,17 @@ package AgentConnectivity {
             attribute :>> status = WeaverProject::DesignProcess::ChallengeStatus::refutedHypothesis;
         }
         part configRecoveryChallenge : WeaverProject::DesignProcess::DesignChallenge {
-            attribute :>> hypothesis = "A durable intent plus unchanged visible getters is enough to clear or restore an interrupted config edit";
-            attribute :>> assumptions = "Setters may change primary config and auxiliary stash/catalog files; each atomic rename is separate; external edits and restart are allowed";
-            attribute :>> disturbance = "Crash after an auxiliary write but before the visible field changes; external edit including equal-byte replacement; crash during restoration";
-            attribute :>> independentOracle = "No unowned surviving effect, no overwrite of external file identity, and recovery reaches an explicit restored/conflict outcome when its declared environment is stable";
-            attribute :>> progressObligation = "Recovery must reach restored or explicit conflict with stable files and fair scheduling. recoverable only checks required information; no liveness proof or implemented restore is claimed";
-            attribute :>> explorationBound = "Two files; original/owned/external/restored identities; 256 traces, 30 steps, seed 293, four threads; compare/replace remains an unqualified runtime assumption";
-            attribute :>> modelCampaign = "ConfigRecoveryDesign.fieldOnlyStep and blindRestoreStep versus step; AgentConfigIntent retains only the unknown-completion checkpoint";
-            attribute :>> runtimeProperty = "Magpie original owner: equal getters with an auxiliary side effect must retain the same pending intent";
-            attribute :>> runtimeBudget = "64 generated edits, four Go workers, 90-second test timeout inside a 120-second outer watchdog; no GUI or network";
-            attribute :>> consequence = "Current digest-only checkpoint lacks a complete prepared write set and file identities; successful unknown-state retention is not recovery qualification";
-            attribute :>> status = WeaverProject::DesignProcess::ChallengeStatus::openGap;
+            attribute :>> hypothesis = "An old successful receipt or a matching profile value can safely reactivate a connection after restart";
+            attribute :>> assumptions = "Weaver's existing ledger is the sole configuration store; all publications and listener leases share its execution owner; stock Magpie is external and unchanged";
+            attribute :>> disturbance = "Four concurrent CAS writers; commit rejection; lost acknowledgment; process cuts before and after preparation/publication commit; retirement and A-B-A; live listener custody";
+            attribute :>> independentOracle = "One CAS winner; atomic head and decision; immutable request identity; historical receipts never overwrite current head; leased generation cannot change; retired generations remain monotone";
+            attribute :>> progressObligation = "An exact prepared operation can publish or abort after restart; a committed operation returns its original result; live-listener conflicts remain pending until drain";
+            attribute :>> explorationBound = "ConnectionConfiguration: four operation IDs and leases, 256 traces, 30 steps, seed 293; counterexamples cover rebase, split commit and receipt-as-current activation";
+            attribute :>> modelCampaign = "dev/proofs/quint/ConnectionConfiguration.qnt versus replayAsHead, splitHead and rebase; ConfigRecoveryDesign retains generic getter/foreign-identity challenges without claiming upstream behavior";
+            attribute :>> runtimeProperty = "connection_config::tests: four contenders, four actual process cuts, rollback and lost acknowledgment, 64 generated histories and listener leases; magpie::tests: bounded control API and namespace isolation";
+            attribute :>> runtimeBudget = "Four Tokio workers/test threads; 64 fixed-seed property cases; four child processes each with a 30-second aggregate test fence; 120-second focused outer watchdog; cached Rust build separately bounded at 480 seconds";
+            attribute :>> consequence = "Optional Rust magpie integration reuses the native persistence/ledger/runtime; HTTP activates only the current matching committed configuration; no upstream edits, automatic CAS rebase or per-request storage lookup";
+            attribute :>> status = WeaverProject::DesignProcess::ChallengeStatus::refutedHypothesis;
         }
         part scopedModelDiscovery : PlannedAcceptance {
             attribute :>> scenario = "Principal isolation; pending and withdrawn facts; source/publication rotation; restart and A-B-A; no task or reservation effects";

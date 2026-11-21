@@ -25,6 +25,8 @@ pub(crate) struct Owner {
     pub authority: super::authority::Authority,
     pub(super) quota_projection: Mutex<Option<Arc<weaver_contracts::MeteringDeployment>>>,
     pub ledger_initialized: AtomicBool,
+    // Immutable connection snapshots stay active until their listener drains.
+    pub(crate) connection_leases: Mutex<BTreeMap<String, usize>>,
     // Drop the engine before releasing process custody. Never unlink this file.
     _custody: ProcessCustody,
 }
@@ -119,6 +121,7 @@ pub(super) fn open(path: &Path, requested: Option<Journal>) -> driver::Result<Ar
         authority: super::authority::Authority::default(),
         quota_projection: Mutex::default(),
         ledger_initialized: AtomicBool::new(false),
+        connection_leases: Mutex::default(),
         _custody: ProcessCustody(custody),
     });
     owners.insert(path, Arc::downgrade(&owner));

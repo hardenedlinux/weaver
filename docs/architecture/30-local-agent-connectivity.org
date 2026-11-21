@@ -663,99 +663,83 @@ pass, as do 256 traces of 30 steps at seed 293. These checks establish bounded
 semantic controls, not a warm latency measurement or completion of HTTP/Magpie
 integration. The built-in GOAL stays active with those remaining gates.
 
-* Magpie ownership persistence slice
+* Unmodified Magpie integration and configuration ownership
 
-The separate =.data/magpie= repository uses the upstream source declared by
-the consumer workflow. This confirms that the previously
-audited ordering still applies: =Apply= invokes the setter before recording
-ownership, and the original =appliedSave= drops directory/write failures.
+Magpie is an upstream-maintained external client. Weaver consumes the original
+version through its supported HTTP Provider and CLI interfaces. Weaver does not
+fork Magpie, patch its configuration owner, import its internal Go packages or
+write and restore its CLI configuration files.
 
-The Magpie ownership-save change affects only =internal/agent/applied.go=, its
-new =applied_write_test.go= and the owning =agent-wiring.md= reference.
-=appliedSave= now reuses the existing =steady.WriteFile= atomic primitive,
-returns its errors and updates the memo only after success. =Apply= returns
-ownership-save failures for both its own field and sibling fields changed by
-the setter. Void/background helpers still log failures; they are not newly
-qualified error-returning lifecycle APIs.
+The previous local ownership/intent experiments are withdrawn as a delivery
+approach. Their results do not qualify stock Magpie and are not requirements
+for a maintained downstream fork. The existing consumer CI checks out the
+unmodified upstream revision.
 
-The new controls use actual isolated Codex TOML and Claude JSON setters with
-a blocked =applied.json= destination. They require a returned failure, preserve
-the successful config edit and unrelated user values, and do not call it
-rolled back. Restoring the upstream =applied.go= made the Codex control fail:
-=Apply= incorrectly returned nil. Restoring the candidate and running eight
-focused cases passed, including prior bad-record preservation, drift and
-Claude default behavior (7.128-second package execution). The existing =steady=,
-=lastgood= and =edit= suites passed in 5.883, 9.363 and 12.499 seconds. Vet for
-these four packages, formatting and whitespace checks passed. Four build/test
-workers and 120-second outer watchdogs bounded the commands.
+Weaver remains responsible for its own backend profile, credential references,
+connection generation and runtime publication. Its persistence/CAS/recovery work
+must reuse the existing Weaver owners. A local commit or unchanged getter does
+not prove that an external component applied a change; a lost acknowledgment
+retains unknown remote completion. Recovery cannot restore a third party's
+configuration from Weaver's record.
 
-Preparation used Magpie's declared Go 1.26.8 via Go's normal toolchain cache.
-The first link selected Nix clang and failed to find =libresolv=; selecting the
-installed system clang/SDK resolved it. The old Go launcher also refused an
-offline toolchain revalidation with the checksum database disabled; subsequent
-commands used the already installed, verified toolchain directly. No Go version
-declaration or compiler source changed. Later verification used cached modules.
+The Rust server's optional =magpie= feature owns this integration. It is off by
+default, implies =llm-provider= and adds no Magpie source dependency to Rust.
+The lightweight =weaver-llm= package remains independent. A Go implementation
+does not imply a public configuration library: the locked Magpie version keeps
+Agent/Provider/config owners under =internal=; its public =plugins= packages
+register built-in plugins rather than offering a downstream configuration SDK.
 
-This commit is local to Magpie; it has not been pushed or merged upstream.
-Whole-repository, GUI and Linux/Windows suites remain unrun. Most importantly,
-the CLI and ownership files are still separate writes. Durable intent, exact
-file/generation comparison and interrupted-write recovery remain required;
-this slice neither installs a second journal nor closes the configuration
-lifecycle goal. Weaver's architecture/workflow/currentness check passed with
-the separate ownership-failure acceptance obligation in AgentConnectivity.
+=weaver_server::magpie::ConnectionControl= uses the caller's existing tracked
+Tokio runtime and bounded publication admission. Its =prepare=, =publish=,
+=abort=, =receipt= and =current= operations use the same native ledger owner and
+database. =connection_updates= retains the exact immutable request and decision;
+=connection_heads= retains the current revision, including retired tombstones.
+No token plaintext, upstream config bytes or second database is introduced.
 
-* Pending config intent checkpoint
+Preparation persists an intent before publication. One native transaction CASes
+the expected revision and stores the head and receipt together. Reusing an
+operation ID with changed bytes is refused; exact retry returns the original
+committed/rejected/aborted receipt. Aborting does not erase a decided result.
+Retirement keeps the clock, and A-B-A cannot restore an earlier generation.
+After a lost acknowledgment, inspect or finish the same operation instead of
+creating a new one or rebasing its expected revision.
 
-The Magpie intent checkpoint advances the same ownership file rather than
-creating a second journal. =Apply= persists a version-1 intent before invoking
-its existing setter. It stores an operation id, field/config path and digests
-of the requested value, observed fields and prior ownership. It does not retain
-the plaintext requested value or a restoration image. After a successful setter,
-all changed ownership fields and intent removal are saved together, after checking
-the same persisted intent and prior ownership.
+With this feature enabled, HTTP startup leases the current matching committed
+profile through that same ledger transaction owner. Only a genuinely absent
+connection gets an initial publication. A retired or different profile is not
+silently overwritten from =weaver.toml=. A live listener holds immutable runtime
+custody; a new matching CAS stays pending while any listener holds that custody.
+Drain it first, then publish through a live control owner and restart with the
+matching trusted configuration. Process death drops only local custody; the
+prepared request, current head and outcome survive. The request hot path keeps
+its prepared profile and performs no configuration-store query. This is
+explicit publication and restart activation, not replacement of an active
+listener, remote Magpie completion, provider authorization or source admission.
 
-Intent preparation failure now prevents the CLI edit; this supersedes the prior
-commit's post-edit failure behavior for that cut. Setter or final ownership-save
-failure keeps the intent unresolved. =PendingEdit= returns a detached inspection
-of that same record after restart. Ordinary =Apply=, =ConnectHow=, =Reapply=,
-=Disconnect=, rewire's =setAgain= and catalog sync refuse or skip it; Keep and
-the record/forget helpers cannot erase it. The common ownership reader now
-returns errors for unread, malformed, null, trailing-data, unknown-field and
-unsupported-intent generations, instead of treating them as empty. Existing
-read consumers and their tests handle this shared error contract.
+=ConnectionConfiguration= challenges split head/receipt writes, rebased retries
+and activation from historical receipts. Its safe schedule includes four
+contenders, leases, retirement and process loss. =ConfigRecoveryDesign= retains
+generic getter-only/foreign-file counterexamples without claiming any upstream
+capability. Runtime properties cover the actual Weaver ledger and Rust feature;
+stock Magpie remains an independently built, unmodified protocol consumer.
 
-The final finite native set passed in 35.544 seconds. It includes 64 generated
-request substitutions at seed 293, four competing calls running one setter,
-actual isolated Codex/Claude intent preparation failures, setter/final-save
-failures, changed ownership refusal and adjacent drift/disconnect/group controls.
-Two child processes exit at real points before and after Codex's original setter;
-restart reads the same intent and refuses replay/connect/reapply/disconnect.
-Skipping only the intent save made both crash-cut cases fail because no intent
-survived (17.004 seconds). Restoring the candidate made both pass (13.678 seconds).
-This was a behavioral negative control, not a compilation failure.
+The finite local acceptance uses four test/Tokio workers: eight ledger cases
+cover four real process cuts, concurrent CAS, unknown commit, injected atomic
+decision failure, ABA, corruption and source-role refusal. The existing service
+functional suite covers HTTP/2 backpressure, cancellation, withdrawal, two-turn
+protocol continuity and process recovery. The control and actual-listener cases
+also pass with the typed operation ID API. Both native ASP gates pass, and the
+original stock-Magpie Provider case passes all three protocols separately.
+The model has ten directed tests and a four-thread, 256-trace, 30-step campaign
+at seed 293. Feature-off compilation and strict lint are separate gates.
 
-The affected-set race command reached its unchanged 120-second outer watchdog
-and exited 124. It is not qualified, and the available output does not identify
-how much time belonged to preparation versus execution. Follow-up process
-inventory found no matching Go compiler, linker or agent-test process. The gate
-was not widened or replaced with a narrower passing race workload. Final Go vet,
-formatting and whitespace checks passed. Whole-repository, GUI and Linux/Windows
-qualification and remote delivery remain open; the commit is local only.
+The first HTTP regression overlapped external CLI compilation and failed its
+unchanged observation fence; a diagnostic replay alone did not establish its
+cause. Final acceptance separates preparation from the original four-worker
+runtime entry and retains that failure. No timeout, transport lease, queue bound
+or observation minimum was relaxed. Three service helper tests remain reserved
+for their existing Go integration hosts; their absence is not new qualification.
 
-=AgentConfigIntent.qnt= passed 11 named scenarios and a fixed 256-trace,
-30-step safety run at seed 293. It models retained unknown completion, not a
-complete filesystem transaction. It is registered in the existing verification
-plan. Weaver's four focused plan/source-currentness controls passed in 17.249
-seconds; architecture/workflow/source-currentness also passed. The new SysML
-pending-edit item explicitly distinguishes this checkpoint from the existing
-whole-file identity/compare-and-restore obligations.
-
-This checkpoint cannot automatically clear or restore an interrupted operation.
-Even unchanged getters are insufficient: setters can also change stash/catalog
-files. Complete declared write sets, file identities, coordinated writers,
-positive CAS reconciliation and caller-visible recovery remain required before
-the managed lifecycle can be reported complete. Linked Scheme and the actual
-HTTP/Magpie protocol join remain independent open workstreams of the active GOAL.
 
 * Design challenges and counterexample feedback
 
@@ -773,7 +757,7 @@ The three =AgentConnectivity::acceptance= design challenges bind these owners:
 |---------------------------+-----------------------------------------+------------------------------|
 | Scope/model identity suffices for a catalog version; a cached catalog permits use | =SessionDiscovery=: receipt histories distinguish relevant cuts; separate effect histories require current independent admission | Existing ledger ABA/withdrawal/restart and generated histories check actual versions and zero discovery side effects; discovery remains no send permit |
 | Equal aggregate text and unique block indices preserve streamed content | =StreamCoordinates= reassigns parts without changing concatenated text; =MessageBlockOrder= permits unique but reordered arrival | Native reordered-block regression failed before correction; shared decoder now requires contiguous final-array positions; generated fragmentation/order checks cover both public decoding paths |
-| Unchanged getters justify clearing/restoring an interrupted edit | =ConfigRecoveryDesign= explores auxiliary-write crash cuts and equal-byte external replacement; its oracle observes surviving effects and overwritten identities | Magpie generates 64 auxiliary-file effects with unchanged getters and verifies the persisted intent survives retries; complete write-set preparation and identity-checked restoration remain an open gap |
+| An old success receipt or matching value can reactivate current configuration | =ConnectionConfiguration= challenges split commit, rebase and receipt-as-head; =ConfigRecoveryDesign= retains generic foreign-identity counterexamples | Weaver ledger CAS, immutable outcomes, retained retirement clocks and runtime leases are the deciding owners; stock Magpie remains unchanged |
 
 The Messages positional requirement is grounded in the standard content-array
 projection, not the current map implementation: see the

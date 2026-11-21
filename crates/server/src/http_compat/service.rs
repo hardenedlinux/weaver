@@ -96,6 +96,8 @@ pub(crate) async fn serve(
         return Err(Error::Invalid("HTTP loopback required"));
     }
     profile.validate(&gateway)?;
+    #[cfg(feature = "magpie")]
+    let _connection = crate::magpie::bind(&profile, &gateway).await?;
     let runtime = gateway.runtime.clone();
     tonic::transport::Server::builder()
         .accept_http1(true)

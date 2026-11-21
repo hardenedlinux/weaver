@@ -88,7 +88,12 @@ async fn observed(owner: &Harness, signal: Signal, minimum: u64) {
         }
     })
     .await
-    .expect("bounded native observation");
+    .unwrap_or_else(|_| {
+        panic!(
+            "bounded native observation: signal={signal:?} minimum={minimum} snapshot={:?}",
+            owner.runtime.telemetry().snapshot()
+        )
+    });
 }
 fn text_and_terminals(wire: &[u8]) -> (usize, usize) {
     let mut decoder = weaver_llm::TurnDecoder::new(weaver_llm::Protocol::OpenAi, 4 * 1024 * 1024);

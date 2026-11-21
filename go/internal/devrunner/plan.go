@@ -10,13 +10,13 @@ import (
 	"slices"
 )
 
-const rustRuntimeFeatures = "weaver-server/arrow,weaver-governance/scheme-vm"
+const rustRuntimeFeatures = "weaver-server/arrow,weaver-server/magpie,weaver-governance/scheme-vm"
 const providerSpecReviewCase = "^TestProviderRealSPECReviewRevocationLostRepliesAndRestart$"
 
 const proofToolchain = "leanprover/lean4:v4.35.0"
 
 func consumerCargoArgs() []string {
-	return []string{"test", "-p", "weaver-server", "--lib", "--no-default-features", "--features", "llm-provider,arrow", "--locked", "--offline", "-j", "4"}
+	return []string{"test", "-p", "weaver-server", "--lib", "--no-default-features", "--features", "magpie,arrow", "--locked", "--offline", "-j", "4"}
 }
 
 func schemeTool() string {
@@ -87,6 +87,8 @@ func Plan(goBinary string) []Stage {
 		{"message-block-order-tests", "quint", []string{"test", "dev/proofs/quint/MessageBlockOrder.qnt", "--main", "MessageBlockOrder", "--seed", "293"}},
 		{"message-block-order-safety", "quint", []string{"run", "dev/proofs/quint/MessageBlockOrder.qnt", "--main", "MessageBlockOrder", "--invariant", "safe", "--n-threads", "4", "--max-samples", "256", "--max-steps", "30", "--seed", "293"}},
 		{"config-recovery-design-tests", "quint", []string{"test", "dev/proofs/quint/ConfigRecoveryDesign.qnt", "--main", "ConfigRecoveryDesign", "--seed", "293"}},
+		{"connection-configuration-tests", "quint", []string{"test", "dev/proofs/quint/ConnectionConfiguration.qnt", "--main", "ConnectionConfiguration", "--seed", "293"}},
+		{"connection-configuration-safety", "quint", []string{"run", "dev/proofs/quint/ConnectionConfiguration.qnt", "--main", "ConnectionConfiguration", "--invariant", "safe", "--n-threads", "4", "--max-samples", "256", "--max-steps", "30", "--seed", "293"}},
 		{"config-recovery-design-safety", "quint", []string{"run", "dev/proofs/quint/ConfigRecoveryDesign.qnt", "--main", "ConfigRecoveryDesign", "--invariant", "safe", "--n-threads", "4", "--max-samples", "256", "--max-steps", "30", "--seed", "293"}},
 		{"quint-stream-safety", "quint", []string{"run", "dev/proofs/quint/StreamingExecution.qnt", "--main", "StreamingExecution", "--invariant", "safe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
 		{"quint-lifecycle-tests", "quint", []string{"test", "dev/proofs/quint/RuntimeLifecycle.qnt", "--main", "RuntimeLifecycle", "--seed", "293"}},

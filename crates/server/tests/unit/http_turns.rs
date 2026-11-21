@@ -126,6 +126,82 @@ impl Harness {
             .expect("advisory natural drain");
     }
 }
+
+#[cfg(feature = "magpie")]
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+async fn magpie_listener_holds_committed_generation_until_actual_drain() {
+    tokio::time::timeout(Duration::from_secs(15), async {
+        let dir = tempfile::tempdir().expect("store");
+        let database = dir.path().join("connection.db");
+        let peer = fixture::provider(vec![]).await;
+        let owner = Harness::start(
+            &database,
+            &peer.root,
+            Some((&peer.endpoint, weaver_contracts::CHAT_TURN_SSE)),
+        )
+        .await;
+        let response = owner
+            .client
+            .get(format!("{}/v1/models", owner.base))
+            .bearer_auth("http-client-secret")
+            .send()
+            .await
+            .expect("listener ready");
+        assert_eq!(response.status(), 200);
+        drop(response);
+        let control =
+            crate::magpie::ConnectionControl::new(database.clone(), "alice", owner.runtime.clone())
+                .expect("control");
+        let head = control
+            .current()
+            .await
+            .expect("current")
+            .expect("published");
+        assert_eq!(head.revision, 0);
+        let retiring = control
+            .prepare(
+                "retire-http".try_into().expect("operation id"),
+                Some(head.revision),
+                None,
+            )
+            .await
+            .expect("intent");
+        assert!(control.publish(retiring.clone()).await.is_err());
+        assert!(
+            control
+                .receipt(retiring.clone())
+                .await
+                .expect("pending")
+                .is_none()
+        );
+        owner.finish().await;
+        let runtime = RuntimeOwner::new();
+        let resumed = crate::magpie::ConnectionControl::new(database, "alice", runtime.clone())
+            .expect("resumed control");
+        assert_eq!(
+            resumed
+                .publish(retiring)
+                .await
+                .expect("publish after drain")
+                .revision,
+            Some(1)
+        );
+        assert!(
+            resumed
+                .current()
+                .await
+                .expect("retired")
+                .expect("head")
+                .profile
+                .is_none()
+        );
+        runtime.request_shutdown();
+        runtime.drain().await;
+        let _ = peer.finish().await;
+    })
+    .await
+    .expect("bounded drain and recovery");
+}
 struct Completed {
     calls: Vec<ToolCall>,
     opaque: Option<Value>,

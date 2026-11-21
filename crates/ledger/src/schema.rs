@@ -45,6 +45,11 @@ CREATE TABLE IF NOT EXISTS review_authority (
  singleton INTEGER PRIMARY KEY CHECK(singleton=1), epoch INTEGER NOT NULL CHECK(epoch>=0), record TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS authority_pending (
  operation_id TEXT PRIMARY KEY, digest TEXT NOT NULL, proposal TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS connection_updates (
+ operation_id TEXT PRIMARY KEY, digest TEXT NOT NULL, request TEXT NOT NULL, receipt TEXT);
+CREATE TABLE IF NOT EXISTS connection_heads (
+ id TEXT PRIMARY KEY, revision INTEGER NOT NULL CHECK(revision>=0),
+ operation_id TEXT NOT NULL REFERENCES connection_updates(operation_id), digest TEXT NOT NULL, record TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS hard_fact_feed (
  singleton INTEGER PRIMARY KEY CHECK(singleton=1), family TEXT NOT NULL, record TEXT NOT NULL,
  floor INTEGER NOT NULL, revision INTEGER NOT NULL, snapshot TEXT NOT NULL,

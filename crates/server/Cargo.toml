@@ -44,6 +44,7 @@ kube = { version = "4.2", features = ["runtime"], optional = true }
 [features]
 default = ["llm-provider", "kubernetes"]
 llm-provider = ["weaver-broker/llm-provider"]
+magpie = ["llm-provider"]
 scheme-program = ["weaver-governance/scheme-program"]
 arrow = ["dep:arrow-array", "dep:arrow-schema", "dep:arrow-ipc"]
 kubernetes = ["dep:futures-util", "dep:k8s-openapi", "dep:kube"]

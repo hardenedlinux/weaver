@@ -20,6 +20,11 @@ pub struct HttpProfile {
     pub token_sha256: [u8; 32],
 }
 impl HttpProfile {
+    /// Stable Weaver-owned ledger identity, independent of Magpie's settings.
+    pub fn connection_id(principal: &str) -> weaver_contracts::Result<String> {
+        weaver_contracts::identifier(principal)?;
+        Ok(format!("http-{}", weaver_contracts::body_digest(principal)))
+    }
     pub(crate) fn validate(&self, gateway: &crate::grpc::Gateway) -> Result<()> {
         weaver_contracts::identifier(&self.session)?;
         if !cfg!(feature = "llm-provider")
@@ -34,6 +39,7 @@ impl HttpProfile {
         Ok(())
     }
 }
+
 #[derive(Deserialize)]
 struct File {
     gateway: Option<Gateway>,

@@ -480,6 +480,10 @@ impl WriteScope<'_> {
     pub(crate) fn commit_provider(self) -> driver::Result<()> {
         self.commit_observed::<0>()
     }
+    /// Reuse generic native commit cuts for host configuration qualification.
+    pub(crate) fn commit_configuration(self) -> driver::Result<()> {
+        self.commit_observed::<0>()
+    }
 
     pub(crate) fn commit_range_prepare(self) -> driver::Result<()> {
         self.commit_observed::<1>()

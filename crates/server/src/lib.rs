@@ -25,6 +25,9 @@ mod http_compat;
 mod http_delivery;
 #[cfg(feature = "kubernetes")]
 mod kubernetes;
+/// Optional stock-Magpie integration and Weaver-owned connection lifecycle.
+#[cfg(feature = "magpie")]
+pub mod magpie;
 mod meter_issuer;
 mod operation_client;
 pub mod pb;

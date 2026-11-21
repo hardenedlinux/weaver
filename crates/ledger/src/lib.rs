@@ -50,7 +50,12 @@ mod provider_workflow_nested;
 pub use provider_workflow::{ProviderProgression, WorkflowObservation};
 pub use provider_workflow_choice::WorkflowChoiceObservation;
 pub use provider_workflow_nested::NestedObservation;
+mod connection_config;
 mod publication;
+pub use connection_config::{
+    ConnectionChange, ConnectionHead, ConnectionKey, ConnectionLease, ConnectionOutcome,
+    ConnectionProfile, ConnectionReceipt,
+};
 mod publication_barrier;
 mod publication_review;
 mod review_authority;

@@ -114,7 +114,7 @@ func TestSchemeQualificationStaysWithPreparedSchemeOwner(t *testing.T) {
 	for _, stage := range runtime {
 		if stage.Name == "rust-tests" || stage.Name == "rust-clippy" {
 			args := strings.Join(stage.Args, " ")
-			if strings.Contains(args, "--all-features") || !strings.Contains(args, "weaver-server/arrow,weaver-governance/scheme-vm") {
+			if strings.Contains(args, "--all-features") || !strings.Contains(args, "weaver-server/arrow") || !strings.Contains(args, "weaver-server/magpie") || !strings.Contains(args, "weaver-governance/scheme-vm") {
 				t.Fatal("runtime coverage includes test graph or loses Arrow/converter")
 			}
 		}
