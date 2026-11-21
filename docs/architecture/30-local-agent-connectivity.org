@@ -1513,6 +1513,17 @@ prefix in PATH. Go's test launcher prepends that prefix; normalizing it once
 preserves native compiler search order and avoids an SDK rebuild caused only
 by the wrapper environment. Cargo still owns artifact identity and freshness.
 
+CI reuses the official Go module/build cache and honors caller-provided Go
+cache locations. The verification runner does not redirect them into a second
+repository-local cache. Cargo cache families follow actual build roles:
+release consumers share dependencies with the Go integration job as the sole
+writer, retaining its existing cache identity; Rust tests remain separate with
+their existing identity; Scheme retains workspace/AOT products as
+well as dependencies. Compiler, target, lockfile and native build-input checks
+remain authoritative. Architecture-only jobs do not populate a Rust cache.
+Scheme package products retain their existing compiler-bound package cache.
+Cached products accelerate preparation; acceptance receipts are regenerated.
+
 The module-selection fixture dispatches cold A/B, hot B and cleanup through
 one standard Build owner with distinct output directories. It does not spawn
 an interpreter or another build entry. Its independent runtime probe reuses

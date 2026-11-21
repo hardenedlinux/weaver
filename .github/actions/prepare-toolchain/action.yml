@@ -11,7 +11,8 @@ runs:
       uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
       with:
         go-version: '1.27.3'
-        cache: false
+        cache: true
+        cache-dependency-path: go/go.sum
     - name: Select Node for Quint
       if: env.WEAVER_VERIFY_SUITE == 'check-policy'
       uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
@@ -20,11 +21,14 @@ runs:
     - name: Install Ubuntu or Darwin packages
       shell: sh
       run: go -C go run ./cmd/weaver-dev prepare-ci-tools
-    - name: Reuse Cargo dependency builds
+    - name: Reuse Cargo builds
+      if: env.WEAVER_VERIFY_SUITE != 'check-architecture'
       uses: Swatinem/rust-cache@e9d7b9f1e587218970671bac74e5511ed9506e6a # v2
       with:
-        key: ${{ env.WEAVER_VERIFY_SUITE }}
+        shared-key: ${{ env.WEAVER_VERIFY_SUITE == 'check-scheme' && 'scheme-workspace' || env.WEAVER_VERIFY_SUITE == 'check-rust' && 'check-rust-verify' || 'check-go-verify' }}
+        cache-workspace-crates: ${{ env.WEAVER_VERIFY_SUITE == 'check-scheme' }}
         cache-on-failure: true
+        save-if: ${{ env.WEAVER_VERIFY_SUITE == 'check-scheme' || env.WEAVER_VERIFY_SUITE == 'check-rust' || env.WEAVER_VERIFY_SUITE == 'check-go' }}
     - name: Keep Cargo incremental compilation enabled
       shell: sh
       run: echo 'CARGO_INCREMENTAL=1' >> "$GITHUB_ENV"

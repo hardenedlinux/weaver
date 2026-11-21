@@ -124,7 +124,14 @@ package WeaverExecution {
            budget. Runtime acceptance deadlines remain independent and fixed.
            Cargo preparation and Go fixture artifact discovery use the same
            toolchain PATH, including one Go tool prefix. Go's test launcher
-           must not invalidate the SDK image merely by repeating that prefix. */
+           must not invalidate the SDK image merely by repeating that prefix.
+           Build caches are package-manager-owned inputs to preparation, not
+           qualification receipts. Go uses its standard module/build caches.
+           Release consumers share one Cargo dependency family with the Go
+           integration job as its writer. Rust tests and Scheme workspace/AOT
+           products have distinct families; Scheme remains compiler-bound.
+           Cargo validates source, feature, toolchain and header freshness.
+           Restoring a cache never replaces runtime or source-bound checks. */
         doc /* Time domain view, publication and reviewed head, profile, and
            original claim reconciliation separately in the deciding scope. Split
            publication into pending, review match and original task birth.

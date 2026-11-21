@@ -102,12 +102,6 @@ func Run(ctx context.Context, config Config, output io.Writer) (report string, r
 	if goBinary == "" {
 		goBinary = filepath.Join(runtime.GOROOT(), "bin/go")
 	}
-	data := filepath.Join(root, ".cache")
-	for _, name := range []string{"", "go-build-cache", "go-mod-cache"} {
-		if err := os.MkdirAll(filepath.Join(data, name), 0700); err != nil {
-			return "", err
-		}
-	}
 	directory, err := os.MkdirTemp("", "weaver-verification-")
 	if err != nil {
 		return "", err
@@ -118,7 +112,6 @@ func Run(ctx context.Context, config Config, output io.Writer) (report string, r
 		runErr = errors.Join(runErr, err)
 	}()
 	settings := map[string]string{
-		"GOCACHE": filepath.Join(data, "go-build-cache"), "GOMODCACHE": filepath.Join(data, "go-mod-cache"),
 		"GOTMPDIR": directory, "GOTOOLCHAIN": "local",
 	}
 	environment := Environment(settings)
