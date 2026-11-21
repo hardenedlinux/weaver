@@ -110,7 +110,13 @@ package WeaverExecution {
            Cargo artifact identity check. Four Tokio workers, original property
            cases and the group's ten-minute bound qualify the runtime path.
            Ordinary Cargo preparation shares the enclosing suite deadline.
-           Scheme qualification retains its native debug application graph. */
+           Scheme qualification retains its native debug application graph.
+           Its explicit Cargo features cover the Scheme owner, LLM provider
+           and Arrow; Kubernetes defaults remain covered by ordinary Rust CI.
+           Cold A/B, hot B and clean reuse one standard Build owner with
+           distinct output directories. No nested interpreter/build process
+           or thread wrapper prepares those outputs. A separate B runtime
+           probes the actual selected products, not the builder's loaded state. */
         doc /* Time domain view, publication and reviewed head, profile, and
            original claim reconciliation separately in the deciding scope. Split
            publication into pending, review match and original task birth.

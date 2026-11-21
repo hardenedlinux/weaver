@@ -28,9 +28,10 @@ func schemeTool() string {
 
 // SchemeQualificationCargoArgs defines the one Cargo graph for the native
 // qualification tests and the executable used by the Go fixtures.
+// Kubernetes defaults are covered by check-rust, independently of this image.
 func SchemeQualificationCargoArgs() []string {
 	return []string{"test", "-p", "weaver-governance", "-p", "weaver-governance-build", "-p", "weaver-server",
-		"--features", "weaver-governance/scheme-qualification,weaver-server/governance-qualification,weaver-server/arrow",
+		"--no-default-features", "--features", "weaver-governance/scheme-qualification,weaver-server/governance-qualification,weaver-server/llm-provider,weaver-server/arrow",
 		"--locked", "--offline", "-j", "4"}
 }
 

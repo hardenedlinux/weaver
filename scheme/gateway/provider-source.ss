@@ -63,8 +63,9 @@
               (error "Session route derivation incomplete"))
             (set! selected (list-sort < (map car ((.ref result 'rows-of) 'eligible))))
             (set! previous rows)))
-        ;; A returned cut cannot read a later owner state or expose its cache.
-        (.o (scope_commitment := (string-copy binding))
+        ;; The binding check above admits this request's commitment. Return its
+        ;; detached bytes; the mutable retained binding is not an output value.
+        (.o (scope_commitment := (string-copy requested))
             (route_indices := (append selected '())))))))
 
 (def (workflow-session dag? choice?)

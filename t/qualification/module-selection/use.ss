@@ -9,7 +9,7 @@
         (only-in :tao3k/agentic-ai-lab/modules/governance/interface
                  agentic-ai-lab-governance-profile?))
 (export main)
-(def (main)
+(def (main product-directory)
   (unless (and (procedure? agentic-ai-lab-governance-profile?)
                (ormap (lambda (row)
                         (equal? (car row) "tao3k/agentic-ai-lab/modules/governance/interface~0"))
@@ -57,7 +57,7 @@
   (def gateway (.get hardenedlinux/weaver.init.exports Weaver gateway))
   (unless (procedure? (.get gateway compile)) (error "Gateway business entry is absent"))
   (def prefix (string-append (path-strip-trailing-directory-separator
-                              (path-normalize (path-expand "lib" (gerbil-path)))) "/"))
+                              (path-normalize product-directory)) "/"))
   (for-each
     (lambda (id)
       (unless (ormap (lambda (row)

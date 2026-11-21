@@ -113,14 +113,15 @@
           (def a (path-expand "a" temporary)) (def b (path-expand "b" temporary))
           (for-each (lambda (state) (create-directory* (path-expand "lib" state))) (list a b))
           (def completed 0)
-          (def (action state command)
+          (def (use-products state)
+            (def command (list "gerbil" "t/qualification/module-selection/use.ss" (path-expand "lib" state)))
             (displayln "WEAVER-MODULE-ACTION environment=" (path-strip-directory state) " command=" command)
             (force-output)
             (def result
               (run-script
                 (.cc (.get Ops prototypes Script) command: command directory: root
                   timeout: 120 idle-timeout: 60 progress: make-compiler-progress-reader
-                  environment: (.o GERBIL_PATH: state GAMBOPT: runtime-options GERBIL_BUILD_VERBOSE: "1"
+                  environment: (.o GERBIL_PATH: (gerbil-path) GAMBOPT: runtime-options GERBIL_BUILD_VERBOSE: "1"
                     GERBIL_LOADPATH: (string-join (cons (path-expand "lib" state) prerequisites) ":")))
                 '() output-port: (current-error-port)))
             (set! completed (1+ completed)) (execution-progress! 'weaver-actions completed)
@@ -144,20 +145,22 @@
             output)
           (for-each
             (lambda (state)
-              (action state (list "gerbil" "pkg" "link" "github.com/tao3k/agentic-ai-lab" provider))
               (def library (path-expand "lib" state))
-              (check-equal? (interfaces library) '())
-              (def started (time->seconds (current-time)))
-              (displayln "WEAVER-MODULE-COLD environment=" (path-strip-directory state) " state=started")
-              (force-output)
-              (def output (if (equal? state a)
-                            (action state '("gxi" "build.ss" "compile"))
-                            (build-in-state state "compile")))
-              (displayln "WEAVER-MODULE-COLD environment=" (path-strip-directory state)
-                         " state=completed seconds=" (- (time->seconds (current-time)) started))
-              (force-output)
-              (check-equal? (compile-events output) targets)
-              (check-equal? (interfaces library) targets)) (list a b))
+              (check-equal? (interfaces library) '())) (list a b))
+          (def (cold-build state)
+            (def library (path-expand "lib" state))
+            (def started (time->seconds (current-time)))
+            (displayln "WEAVER-MODULE-COLD environment=" (path-strip-directory state) " state=started")
+            (force-output)
+            (def output (build-in-state state "compile"))
+            (displayln "WEAVER-MODULE-COLD environment=" (path-strip-directory state)
+                       " state=completed seconds=" (- (time->seconds (current-time)) started))
+            (force-output)
+            (check-equal? (compile-events output) targets)
+            (check-equal? (interfaces library) targets))
+          ;; Reuse the same standard Build dispatch and source owner for both
+          ;; output roots. Do not start another interpreter or build process.
+          (for-each cold-build (list a b))
           (def b-lib (path-expand "lib" b))
           (def b-products (digests (artifact-files identities b-lib)))
           (def sentinel (path-expand "lib/unrelated.ssi" a))
@@ -167,7 +170,9 @@
           (check-equal? (digests (artifact-files identities b-lib)) b-products)
           (check-equal? (compile-events (build-in-state b "compile")) '())
           (check-equal? (digests (artifact-files identities b-lib)) b-products)
-          (def output (action b '("gxi" "t/qualification/module-selection/use.ss")))
+          ;; Reuse installed dependencies. Only this independent runtime probe
+          ;; starts a process; it must load B's products, not the builder's.
+          (def output (use-products b))
           (check-equal? (and (string-contains output "WEAVER-MODULE-USE-OK") #t) #t)
           (check-equal? (map module-source-read sources) source-before)
           (check-equal? (digests (prerequisite-products)) installed-before)

@@ -1500,6 +1500,18 @@ compilation but its own final installed-interface check fails with
 Replaying only =bindings/c/stage-parser.ss= reproduces that failure. This does
 not qualify the full dependency preparation or Weaver's linked image.
 
+The Scheme qualification image explicitly enables the Scheme owner, LLM
+provider and Arrow. Kubernetes remains a default server feature, covered by
+ordinary Rust CI. Both qualification build and execution use the same Cargo
+feature graph and the original time budgets.
+
+The module-selection fixture dispatches cold A/B, hot B and cleanup through
+one standard Build owner with distinct output directories. It does not spawn
+an interpreter or another build entry. Its independent runtime probe reuses
+installed dependencies and checks that the selected modules actually load
+from B's product directory; the builder's already-loaded modules cannot
+satisfy that check.
+
 The existing =scheme-qualification= Cargo graph now includes
 =session_selector=: one production =SchemeCompiler=, A-B-A scope rebind, warm
 reuse and 64 fixed-seed fact/route cases with independently checked Rust scope

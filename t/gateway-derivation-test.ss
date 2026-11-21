@@ -182,16 +182,23 @@
                (def fresh-owner (make-gateway-derivation))
                (def fresh ((.get fresh-owner derive) (query-for (source) command)))
                ((.get fresh-owner close)) fresh) '(0 1 2 3)))
+      ;; These are the four immutable generated cuts, not generated execution
+      ;; results. Every retained derive still detaches its own input; also check
+      ;; that none of the 32x8 calls changes a shared fixture.
+      (def queries (map (lambda (command) (query-for (source) command)) '(0 1 2 3)))
+      (def (snapshot-queries)
+        (call-with-output-string
+          (lambda (port) (write (map (lambda (query) (data GatewayDerivationRequest query)) queries) port))))
+      (def before (snapshot-queries))
       (def report
         (property.check-property
           (generator.generator-sequence (make-list 8 (generator.generator-integer 0 3)))
           (lambda (commands)
             (def owner (make-gateway-derivation))
-            (def original (source))
             (def result
               (andmap
                 (lambda (command)
-                  (def query (query-for original command))
+                  (def query (list-ref queries command))
                   (def edges (map (lambda (item) (list (.get item dependent) (.get item dependency)))
                                   (.get query dependencies)))
                   (def actual ((.get owner derive) query))
@@ -208,4 +215,5 @@
             (lambda (commands) (apply + commands)))
           seed: 293 cases: 32 size: 32 shrink-budget: 64))
       (check-property report)
+      (check-equal? (snapshot-queries) before)
       (check-equal? (property.report-accepted report) 32))))
