@@ -28,6 +28,14 @@ Go remains for its existing OpenSysML development SDK and concrete integration
 reuse, and currently relays requests until the direct-Rust ingress stage.
 It is not required for Kubernetes or for using Go-implemented cloud services.
 
+Native public libraries and selected Source Modules have separate build roles.
+Lab's package entry publishes its Governance, Session, Governor and Cedar
+library surfaces through the existing native import-closure API and STD Make.
+Weaver imports those published values explicitly, then prepares its selected
+Module products through init. A restored historical library is a reuse candidate;
+it cannot establish that the current provider package actually publishes an
+imported library. This preparation boundary adds no work to the request path.
+
 R1 routes deployed configuration and dynamic selection through the existing
 Rust source lane and affine Scheme owner. Go decodes external syntax and copies
 typed projections. The complete allocation, implemented boundaries and staged

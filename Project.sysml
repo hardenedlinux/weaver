@@ -303,6 +303,13 @@ package WeaverProject {
                local-Git scenario has the existing sixty-second fence and four
                compiler workers; it never installs the real dependency graph.
                Each dependency owns its own Build targets and package tests.
+               A provider package publishes the native public libraries used
+               by explicit imports before a consumer prepares its selected
+               Modules. Public library entries use the existing native import
+               closure; they are not forced into the Module declaration format.
+               Installed historical products cannot qualify a missing provider
+               output. The consumer's native build and source tests must pass
+               against the package outputs actually produced by this revision.
                CI only selects the watchdog and invokes the package manager.
                Native stdout/stderr line buffering exposes package boundaries
                as they occur; buffered batches do not establish phase durations.
