@@ -294,6 +294,17 @@ package WeaverProject {
                The native installer retains conflict checks and Make decides
                incremental reuse. Do not advance the cache format version to
                conceal an incompatible source tag or delete the package store.
+               A compiler-identity cache miss may recover cached source checkouts
+               from the same OS and architecture. Before native package setup,
+               discard its old lib and bin products; preserve pkg and its Git
+               history. A compiler ABI transition must never admit those old
+               products as prerequisites. Native package management owns the
+               subsequent dependency order and rebuild from those sources.
+               SDK selection is challenged by ASCENT's existing unmodified
+               stack-overflow-undo C regression against the actual published
+               headers: retain the rejected old-release control and require
+               the replacement to pass. Header admission alone cannot qualify
+               Linux execution; the complete consumer suite is still required.
                TestSchemeToolCachedDependencyUpdate challenges install-only
                reuse with a changed transitive Git dependency, verifies the
                actual loaded result and preserves an unchanged package artifact.

@@ -64,7 +64,7 @@ jobs:
         id: scheme_sdk
         if: contains(fromJSON('["check-rust", "check-go", "check-policy", "check-scheme", "check-consumers", "bench"]'), inputs.suite)
         timeout-minutes: 5
-        uses: tao3k/gerbil-scheme-rust/.github/actions/setup-gerbil@7c4dd3d8e3b6321113d1a752599ee7f40045c48a
+        uses: tao3k/gerbil-scheme-rust/.github/actions/setup-gerbil@09f0ce39241c772fe19b3a2bb43b542ba5c5b849
         with:
           release-root: ${{ runner.temp }}/gerbil-sdk
       - name: Prepare macOS Scheme build watchdog
@@ -89,7 +89,12 @@ jobs:
         with:
           path: ${{ runner.temp }}/weaver-gerbil
           key: weaver-scheme-v2-${{ runner.os }}-${{ runner.arch }}-${{ steps.scheme_compiler.outputs.identity }}-${{ hashFiles('gerbil.pkg') }}
-          restore-keys: weaver-scheme-v2-${{ runner.os }}-${{ runner.arch }}-${{ steps.scheme_compiler.outputs.identity }}-
+          restore-keys: |
+            weaver-scheme-v2-${{ runner.os }}-${{ runner.arch }}-${{ steps.scheme_compiler.outputs.identity }}-
+            weaver-scheme-v2-${{ runner.os }}-${{ runner.arch }}-
+      - name: Keep cached sources across compiler changes
+        if: inputs.suite == 'check-scheme' && steps.scheme_cache.outputs.cache-matched-key != '' && !startsWith(steps.scheme_cache.outputs.cache-matched-key, format('weaver-scheme-v2-{0}-{1}-{2}-', runner.os, runner.arch, steps.scheme_compiler.outputs.identity))
+        run: rm -rf "$RUNNER_TEMP/weaver-gerbil/lib" "$RUNNER_TEMP/weaver-gerbil/bin"
       - name: Install declared Scheme dependencies
         id: scheme_dependencies
         if: inputs.suite == 'check-scheme'
@@ -138,17 +143,17 @@ jobs:
           GERBIL_PATH: ${{ runner.temp }}/weaver-gerbil
         run: |
           if [ "$RUNNER_OS" = Linux ]; then
-            mkdir -p .cache/verification/native-crashes
-            sudo sysctl -w "kernel.core_pattern=$PWD/.cache/verification/native-crashes/core.%e.%p"
+            mkdir -p .cache/verification/scheme-crashes
+            sudo sysctl -w "kernel.core_pattern=$PWD/.cache/verification/scheme-crashes/core.%e.%p"
             ulimit -c unlimited
           fi
           go -C go run ./cmd/weaver-dev -clean-source -timeout 35m check-scheme
-      - name: Read native Scheme crash backtraces
+      - name: Read Scheme crash backtraces
         if: failure() && inputs.suite == 'check-scheme' && runner.os == 'Linux' && steps.verify_scheme.outcome == 'failure'
         timeout-minutes: 2
         env:
           GERBIL_PATH: ${{ runner.temp }}/weaver-gerbil
-        run: bash "$GERBIL_PATH/pkg/github.com/tao3k/gerbil-ascent/tools/ci/capture-runtime-crashes.sh" .cache/verification/native-crashes
+        run: bash "$GERBIL_PATH/pkg/github.com/tao3k/gerbil-ascent/tools/ci/capture-runtime-crashes.sh" .cache/verification/scheme-crashes
       - name: Write verification job receipt
         if: always()
         timeout-minutes: 1

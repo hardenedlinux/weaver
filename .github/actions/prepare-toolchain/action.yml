@@ -31,6 +31,8 @@ runs:
     - name: Prepare the pinned Lean release
       if: env.WEAVER_VERIFY_SUITE == 'check-policy' && runner.os == 'Linux'
       shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
       run: bash "${{ github.action_path }}/install-lean.sh"
     - name: Bind the Cedar solver
       if: env.WEAVER_VERIFY_SUITE == 'check-policy'
