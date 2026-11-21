@@ -84,7 +84,10 @@ func TestProviderSaturatedExecutionPreservesRevocationAndObservation(t *testing.
 		err   error
 	}
 	results := make(chan outcome, streams)
-	for _, plan := range plans {
+	// Fill resident execution slots through acknowledged first frames. A cold
+	// admission burst also measures scheduling against the one-second delivery
+	// lease; that is a different workload from the saturated-lane checks below.
+	for ready, plan := range plans {
 		go func() {
 			count := 0
 			_, err := f.client.Execute(ctx, plan, pb.Encoding_PROTOBUF, 1, func(event *pb.Event) error {
@@ -96,8 +99,6 @@ func TestProviderSaturatedExecutionPreservesRevocationAndObservation(t *testing.
 			})
 			results <- outcome{node: plan.Node, count: count, err: err}
 		}()
-	}
-	for ready := range streams {
 		select {
 		case <-first:
 		case result := <-results:

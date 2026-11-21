@@ -243,6 +243,14 @@ rejecting service must not appear as a throughput win over successful execution.
 
 * Resource and overload contracts
 
+Saturated occupancy and a cold admission burst have different preconditions.
+The native capacity scenario fills all sixteen execution slots through observed
+first-frame receipts, keeps those streams resident, and then challenges excess
+execution, source revocation and canonical observation. Its one-second delivery
+lease and twelve-second aggregate deadline remain fixed. This scenario does
+not qualify the latency of sixteen simultaneous cold admissions; burst latency
+and expired-grant outcomes require their own reported workload.
+
 | Resource | Required bound | Overload behavior |
 |----------+----------------+-------------------|
 | Connections / handshakes | Per-instance and per-tenant limits | Reject or bounded admission before expensive work |

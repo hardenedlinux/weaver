@@ -161,7 +161,12 @@ package ProviderRpc {
         doc /* Each Rust workspace member declares an executable benchmark target. Dependency versions are inherited from the workspace, and benchmarks remain distinct from safety and deployment qualification. */
     }
     requirement def ReservedAuthorityAdmission {
-        doc /* Execution, source publication and canonical observation retain independent bounded native capacity. Authentication precedes lane selection. Caller disconnect does not release a tracked worker's slot. Publication is effective only after its deciding CAS commits. */
+        doc /* Execution, source publication and canonical observation retain independent bounded native capacity. Authentication precedes lane selection. Caller disconnect does not release a tracked worker's slot. Publication is effective only after its deciding CAS commits.
+           Saturated-occupancy verification fills execution slots through first-frame
+           receipts before challenging the independent source and observation lanes.
+           All streams remain resident; capacity, delivery leases and the aggregate
+           deadline are unchanged. Cold admission bursts are a separate latency
+           workload and are not qualified by this occupancy scenario. */
         doc /* Reserve output queue capacity outside the deciding lock. Capacity
            credit is not Policy or budget authority: recheck full deciding cut,
            every row and observed cancellation after waiting, inside final queue
