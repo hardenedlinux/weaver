@@ -62,7 +62,7 @@ always receive bounded cleanup and are joined.
 The native mutation removes only the final cancellation recheck. The same target
 then receives a successful HTTPS response and the regression fails with
 "cancelled invocation entered HTTPS transport". The
-[[file:../../../dev/proofs/evidence/dispatch-cancellation-20261030/missing-final-check-counterexample.log][raw counterexample]] is retained separately. The mutation was restored before
+[[file:../../../.cache/verification/evidence/proofs/dispatch-cancellation-20261030/missing-final-check-counterexample.log][raw counterexample]] is retained separately. The mutation was restored before
 qualification. An early TLS control failure is also retained: accepted sockets
 inherited nonblocking mode on this host, and the fixture now explicitly switches
 them to blocking mode under the original deadlines. An unreachable/broken TLS
@@ -98,7 +98,7 @@ or arbitrary revocation inside a transport library.
 
 * Restored-source qualification
 
-The [[file:../../../dev/proofs/evidence/dispatch-cancellation-20261030/verification-current/receipt.json][final unified receipt]] passes thirty-seven stages with 156 unchanged input
+The [[file:../../../.cache/verification/evidence/proofs/dispatch-cancellation-20261030/verification-current/receipt.json][final unified receipt]] passes thirty-seven stages with 156 unchanged input
 hashes. Rust reports fifty-six passing tests, including all five ASP deny gates
 and both new transport controls. Go/race integration, strict in-process SysML,
 descriptor equality, the imported Cedar bridge and prior models remain green.
@@ -107,15 +107,15 @@ bounds; ProviderRpc runs twenty controls under its strengthened invocation
 invariant. Its twenty-five checked Lean declarations include the five new
 cancellation/view-binding declarations and print no sorryAx.
 
-The earlier [[file:../../../dev/proofs/evidence/dispatch-cancellation-20261030/verification-before-proof-alignment/receipt.json][pre-alignment receipt]] is retained under its earlier proof hash. The
+The earlier [[file:../../../.cache/verification/evidence/proofs/dispatch-cancellation-20261030/verification-before-proof-alignment/receipt.json][pre-alignment receipt]] is retained under its earlier proof hash. The
 final run was repeated after moving permit-view binding to consumption and adding
 the stale-view no-token theorem; its inputs are not silently relabeled.
 
 * Irreversibility and timing limits
 
-The subsequent [[file:../../../dev/proofs/evidence/dispatch-cancellation-20261030/benchmark-current/receipt.json][measured benchmark receipt]] completes both Rust and Go stages
+The subsequent [[file:../../../.cache/verification/evidence/proofs/dispatch-cancellation-20261030/benchmark-current/receipt.json][measured benchmark receipt]] completes both Rust and Go stages
 and retains 156 unchanged input hashes, identical to the final unified check.
-Its [[file:../../../dev/proofs/evidence/dispatch-cancellation-20261030/benchmark-current/benchmark-summary.org][eighteen-case Rust matrix]] covers all five packages; the raw Rust log contains
+Its [[file:../../../.cache/verification/evidence/proofs/dispatch-cancellation-20261030/benchmark-current/benchmark-summary.org][eighteen-case Rust matrix]] covers all five packages; the raw Rust log contains
 eighteen regression warnings against Criterion's local cached baseline. These
 warnings remain unresolved comparative performance evidence. They are not
 attributed to the fix, nor dismissed as host noise, without a matched experiment.

@@ -15,7 +15,7 @@ the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21
 * Reproduction and bounded result
 
 Run the isolated checker (retired Python driver) for [[file:../../../dev/proofs/lean/LlmAccountCommit.lean][Lean]] and [[file:../../../dev/proofs/quint/LlmAccountCommit.qnt][Quint]]. Retain
-[[file:../../../dev/proofs/evidence/llm-account-commit/commands.json][command results]], [[file:../../../dev/proofs/evidence/llm-account-commit/receipt.json][the receipt]] and [[file:../../../dev/proofs/evidence/llm-account-commit/SHA256SUMS][the byte manifest]]. Preliminary diagnostics are preserved separately.
+[[file:../../../.cache/verification/evidence/proofs/llm-account-commit/commands.json][command results]], [[file:../../../.cache/verification/evidence/proofs/llm-account-commit/receipt.json][the receipt]] and [[file:../../../.cache/verification/evidence/proofs/llm-account-commit/SHA256SUMS][the byte manifest]]. Preliminary diagnostics are preserved separately.
 
 The workload compiles 21 Lean modules and prints 23 new declarations without
 =sorryAx=. Quint checks 43 new controls (33 guarded controls and 10 deliberate broken
@@ -133,8 +133,8 @@ original financial result. Full-cost usage releases zero but consumes both keys.
 
 * Source audit: reuse and required extension
 
-[[file:../../../dev/proofs/evidence/llm-account-commit/source-review.json][Pinned source identities]], [[file:../../../dev/proofs/evidence/llm-account-commit/source-receipt-check.json][fresh blob/excerpt checks]] and
-[[file:../../../dev/proofs/evidence/llm-account-commit/account-source-audit.json][the focused account source extract]] cover the following nineteen files.
+[[file:../../../.cache/verification/evidence/proofs/llm-account-commit/source-review.json][Pinned source identities]], [[file:../../../.cache/verification/evidence/proofs/llm-account-commit/source-receipt-check.json][fresh blob/excerpt checks]] and
+[[file:../../../.cache/verification/evidence/proofs/llm-account-commit/account-source-audit.json][the focused account source extract]] cover the following nineteen files.
 Repeated identifiers denote paired files, not extra dependencies.
 
 | Source | Grounded mechanism | Reuse | Extension needed for this protocol |
@@ -180,9 +180,9 @@ an implementation proof of atomic balance persistence.
 
 * Current source identity and native acceptance
 
-[[file:../../../dev/proofs/evidence/llm-account-commit/working-source-check.json][Working source hashes]] freshly distinguish pinned references from live files.
+[[file:../../../.cache/verification/evidence/proofs/llm-account-commit/working-source-check.json][Working source hashes]] freshly distinguish pinned references from live files.
 Eighteen match the reviewed bytes; P17 differs only in two control-plane import
-paths, captured in [[file:../../../dev/proofs/evidence/llm-account-commit/P17-working-diff.patch][the exact working diff]]. Import-target runtime/ABI equivalence is not
+paths, captured in [[file:../../../.cache/verification/evidence/proofs/llm-account-commit/P17-working-diff.patch][the exact working diff]]. Import-target runtime/ABI equivalence is not
 established by that textual comparison.
 
 | Native gate | Required evidence before implementation acceptance |

@@ -20,7 +20,7 @@ incarnation or replace original claim, budget, history and consumption domains.
 This closes an explicit premise left in [[file:27-anchor-configuration-prefix-inheritance.org][the configuration inheritance review]].
 [[file:../../dev/specs/lean/QuorumDurablePromises.lean][The Lean product]] adds actual node-promise transitions to the initialized Weaver
 execution model; [[file:../../dev/specs/quint/QuorumDurablePromises.qnt][the Quint model]] exposes conflicting quorum certificates after a
-shared witness forgets its promise. [[file:../../dev/specs/evidence/quorum-durable-promises-2026-10-19.org][The evidence receipt]] separates checked
+shared witness forgets its promise. [[file:../../.cache/verification/evidence/specs/quorum-durable-promises-2026-10-19.org][The evidence receipt]] separates checked
 semantics from unimplemented native persistence, signing and transport contracts.
 [[file:diagrams/29-quorum-durable-promises.d2][Canonical D2]] and [[file:diagrams/29-quorum-durable-promises.svg][the rendered diagram]] show core ownership only.
 
@@ -168,9 +168,9 @@ application, not arbitrary provider effects or external payments.
 
 * Source correspondence: direct reuse versus extension
 
-The [[file:../../dev/specs/evidence/quorum-promise-traces/source-review.json][eighteen pinned source blobs and numbered excerpts]] are rechecked byte-for-byte.
+The [[file:../../.cache/verification/evidence/specs/quorum-promise-traces/source-review.json][eighteen pinned source blobs and numbered excerpts]] are rechecked byte-for-byte.
 References below use the existing [[file:01-reference-comparison.org][source register]], not an inferred current main.
-The [[file:../../dev/specs/evidence/quorum-promise-traces/source-owner-boundaries.log][bounded owner-contract search]] confirms the storage/runtime split in the reviewed
+The [[file:../../.cache/verification/evidence/specs/quorum-promise-traces/source-owner-boundaries.log][bounded owner-contract search]] confirms the storage/runtime split in the reviewed
 files; it is not a repository-wide proof that no consensus code exists.
 
 | Source | Direct reuse | Required extension / unproved owner premise |

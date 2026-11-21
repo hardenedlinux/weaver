@@ -17,7 +17,7 @@ the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21
 * Identity and four-artifact scope
 
 [[file:35.00-index.org][35.00 Index]], [[file:35.01-safe-continuation-recovery-progress.org][35.01 Org design]], [[file:35.02-intent-continuation.d2][35.02 Core D2]] / [[file:35.02-intent-continuation.svg][SVG]],
-[[file:../../../dev/proofs/quint/FencedIntentContinuation.qnt][Quint]] and [[file:../../../dev/proofs/lean/FencedIntentContinuation.lean][Lean]] are reviewed together. [[file:../../../dev/proofs/evidence/fenced-intent-continuation/four-artifact-check.json][Ten correspondence rows]] name actual
+[[file:../../../dev/proofs/quint/FencedIntentContinuation.qnt][Quint]] and [[file:../../../dev/proofs/lean/FencedIntentContinuation.lean][Lean]] are reviewed together. [[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/four-artifact-check.json][Ten correspondence rows]] name actual
 predicates, declarations/tests and diagram nodes; the correspondence checker (retired Python driver) verifies
 these references. Reference consistency is not semantic equivalence or native
 extraction. The core diagram contains no versions, acceptance counts or evidence IDs.
@@ -26,14 +26,14 @@ Workspace: /Users/guangtao/ghq/github.com/tao3k/weaver; branch =main=;
 tracked HEAD =4df1f0233f9a78e5a3ea8a1a0d8aaca983698b8d=. Architecture/formal
 artifacts remain untracked working-tree content. No gateway implementation,
 upstream source, dependency pin, commit or push was changed.
-[[file:../../../dev/proofs/evidence/fenced-intent-continuation/dependency-identity.log][Dependency file identities]] are recorded separately from the core design.
+[[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/dependency-identity.log][Dependency file identities]] are recorded separately from the core design.
 
 * Rechecked source boundary
 
-[[file:../../../dev/proofs/evidence/fenced-intent-continuation/source-review.json][Eighteen pinned source blobs]] were freshly read with git show and rehashed at
+[[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/source-review.json][Eighteen pinned source blobs]] were freshly read with git show and rehashed at
 POO Flow =a74fc2fd63437252175b5a67649ee54b886d3bf4= and cedar-poo-spec
 =c8d1a0641120cf65e299e8a98f9fe7666ca96ab5=. All source hashes match the
-registered identities. [[file:../../../dev/proofs/evidence/fenced-intent-continuation/source-boundary-review.log][Fresh numbered recovery/pending/generation excerpts]] support
+registered identities. [[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/source-boundary-review.log][Fresh numbered recovery/pending/generation excerpts]] support
 the per-source reuse/extension matrix in the design. No dependency build, native
 ABI or HSM service was qualified by those source reads.
 
@@ -55,11 +55,11 @@ go -C go run ./cmd/weaver-dev -timeout 28m check-policy
 This runs the maintained registered plan. It does not replay the retired
 per-artifact checks or regenerate the historical observations below.
 
-[[file:../../../dev/proofs/evidence/fenced-intent-continuation/versions.log][Recorded tools]]: Lean 4.34.1, Std only; Quint 0.33.0, TypeScript backend;
+[[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/versions.log][Recorded tools]]: Lean 4.34.1, Std only; Quint 0.33.0, TypeScript backend;
 D2 version recorded. Eighteen Lean modules were compiled in a fresh isolated
 olean directory. The final changed module was rebuilt there after adding
 explicit weak fairness, original/continuation disjointness and fresh protected
-signer read requirements. [[file:../../../dev/proofs/evidence/fenced-intent-continuation/commands.json][31 final command records]] retain exact arguments,
+signer read requirements. [[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/commands.json][31 final command records]] retain exact arguments,
 exit codes, watchdogs and timings. All final commands exited zero. Compile and
 typecheck use 20 seconds; deterministic/focused controls 55 seconds; each sampling
 route 30 seconds. No watchdog was widened. Check timings are not gateway
@@ -67,42 +67,42 @@ performance results.
 
 | Command | Exit | Seconds | Evidence |
 |---------+------+---------+----------|
-| LogicalMessageAuthority | 0 | 1.819 | [[file:../../../dev/proofs/evidence/fenced-intent-continuation/LogicalMessageAuthority.log][raw log]] |
-| SharedMessageBudget | 0 | 1.037 | [[file:../../../dev/proofs/evidence/fenced-intent-continuation/SharedMessageBudget.log][raw log]] |
-| FiniteDomainMigration | 0 | 1.157 | [[file:../../../dev/proofs/evidence/fenced-intent-continuation/FiniteDomainMigration.log][raw log]] |
-| AnchoredRecoveryAndEgress | 0 | 0.837 | [[file:../../../dev/proofs/evidence/fenced-intent-continuation/AnchoredRecoveryAndEgress.log][raw log]] |
-| ComposedGatewayLifecycle | 0 | 0.78 | [[file:../../../dev/proofs/evidence/fenced-intent-continuation/ComposedGatewayLifecycle.log][raw log]] |
-| FiniteStreamManifest | 0 | 0.937 | [[file:../../../dev/proofs/evidence/fenced-intent-continuation/FiniteStreamManifest.log][raw log]] |
-| DriverCompletionRecovery | 0 | 0.617 | [[file:../../../dev/proofs/evidence/fenced-intent-continuation/DriverCompletionRecovery.log][raw log]] |
-| WriterSettlementClosure | 0 | 0.723 | [[file:../../../dev/proofs/evidence/fenced-intent-continuation/WriterSettlementClosure.log][raw log]] |
-| SettlementAnchorRecovery | 0 | 0.77 | [[file:../../../dev/proofs/evidence/fenced-intent-continuation/SettlementAnchorRecovery.log][raw log]] |
-| GateConsumptionPersistence | 0 | 0.67 | [[file:../../../dev/proofs/evidence/fenced-intent-continuation/GateConsumptionPersistence.log][raw log]] |
-| AnchorBrokerCommit | 0 | 0.671 | [[file:../../../dev/proofs/evidence/fenced-intent-continuation/AnchorBrokerCommit.log][raw log]] |
-| AnchorReconfiguration | 0 | 0.724 | [[file:../../../dev/proofs/evidence/fenced-intent-continuation/AnchorReconfiguration.log][raw log]] |
-| QuorumDurablePromises | 0 | 0.562 | [[file:../../../dev/proofs/evidence/fenced-intent-continuation/QuorumDurablePromises.log][raw log]] |
-| ProtectedSignerRelease | 0 | 0.67 | [[file:../../../dev/proofs/evidence/fenced-intent-continuation/ProtectedSignerRelease.log][raw log]] |
-| KeyBoundaryQueue | 0 | 0.672 | [[file:../../../dev/proofs/evidence/fenced-intent-continuation/KeyBoundaryQueue.log][raw log]] |
-| DeviceIsolationRecovery | 0 | 0.839 | [[file:../../../dev/proofs/evidence/fenced-intent-continuation/DeviceIsolationRecovery.log][raw log]] |
-| FloorIntentDecision | 0 | 0.8 | [[file:../../../dev/proofs/evidence/fenced-intent-continuation/FloorIntentDecision.log][raw log]] |
-| FencedIntentContinuation | 0 | 1.954 | [[file:../../../dev/proofs/evidence/fenced-intent-continuation/FencedIntentContinuation.log][raw log]] |
-| typecheck | 0 | 2.066 | [[file:../../../dev/proofs/evidence/fenced-intent-continuation/typecheck.log][raw log]] |
-| tests | 0 | 5.229 | [[file:../../../dev/proofs/evidence/fenced-intent-continuation/tests.log][raw log]] |
-| counterexamples | 0 | 2.451 | [[file:../../../dev/proofs/evidence/fenced-intent-continuation/counterexamples.log][raw log]] |
-| recovering | 0 | 2.227 | [[file:../../../dev/proofs/evidence/fenced-intent-continuation/recovering.log][raw log]] |
-| admittedLink | 0 | 2.71 | [[file:../../../dev/proofs/evidence/fenced-intent-continuation/admittedLink.log][raw log]] |
-| linked | 0 | 2.446 | [[file:../../../dev/proofs/evidence/fenced-intent-continuation/linked.log][raw log]] |
-| prepared | 0 | 2.272 | [[file:../../../dev/proofs/evidence/fenced-intent-continuation/prepared.log][raw log]] |
-| resumedPending | 0 | 2.306 | [[file:../../../dev/proofs/evidence/fenced-intent-continuation/resumedPending.log][raw log]] |
-| resumeReady | 0 | 2.342 | [[file:../../../dev/proofs/evidence/fenced-intent-continuation/resumeReady.log][raw log]] |
-| floor-decision-regression | 0 | 3.736 | [[file:../../../dev/proofs/evidence/fenced-intent-continuation/floor-decision-regression.log][raw log]] |
-| device-isolation-regression | 0 | 3.138 | [[file:../../../dev/proofs/evidence/fenced-intent-continuation/device-isolation-regression.log][raw log]] |
-| protected-signer-regression | 0 | 1.379 | [[file:../../../dev/proofs/evidence/fenced-intent-continuation/protected-signer-regression.log][raw log]] |
-| inherited-account-replay | 0 | 5.111 | [[file:../../../dev/proofs/evidence/fenced-intent-continuation/inherited-account-replay.log][raw log]] |
+| LogicalMessageAuthority | 0 | 1.819 | [[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/LogicalMessageAuthority.log][raw log]] |
+| SharedMessageBudget | 0 | 1.037 | [[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/SharedMessageBudget.log][raw log]] |
+| FiniteDomainMigration | 0 | 1.157 | [[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/FiniteDomainMigration.log][raw log]] |
+| AnchoredRecoveryAndEgress | 0 | 0.837 | [[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/AnchoredRecoveryAndEgress.log][raw log]] |
+| ComposedGatewayLifecycle | 0 | 0.78 | [[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/ComposedGatewayLifecycle.log][raw log]] |
+| FiniteStreamManifest | 0 | 0.937 | [[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/FiniteStreamManifest.log][raw log]] |
+| DriverCompletionRecovery | 0 | 0.617 | [[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/DriverCompletionRecovery.log][raw log]] |
+| WriterSettlementClosure | 0 | 0.723 | [[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/WriterSettlementClosure.log][raw log]] |
+| SettlementAnchorRecovery | 0 | 0.77 | [[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/SettlementAnchorRecovery.log][raw log]] |
+| GateConsumptionPersistence | 0 | 0.67 | [[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/GateConsumptionPersistence.log][raw log]] |
+| AnchorBrokerCommit | 0 | 0.671 | [[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/AnchorBrokerCommit.log][raw log]] |
+| AnchorReconfiguration | 0 | 0.724 | [[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/AnchorReconfiguration.log][raw log]] |
+| QuorumDurablePromises | 0 | 0.562 | [[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/QuorumDurablePromises.log][raw log]] |
+| ProtectedSignerRelease | 0 | 0.67 | [[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/ProtectedSignerRelease.log][raw log]] |
+| KeyBoundaryQueue | 0 | 0.672 | [[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/KeyBoundaryQueue.log][raw log]] |
+| DeviceIsolationRecovery | 0 | 0.839 | [[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/DeviceIsolationRecovery.log][raw log]] |
+| FloorIntentDecision | 0 | 0.8 | [[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/FloorIntentDecision.log][raw log]] |
+| FencedIntentContinuation | 0 | 1.954 | [[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/FencedIntentContinuation.log][raw log]] |
+| typecheck | 0 | 2.066 | [[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/typecheck.log][raw log]] |
+| tests | 0 | 5.229 | [[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/tests.log][raw log]] |
+| counterexamples | 0 | 2.451 | [[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/counterexamples.log][raw log]] |
+| recovering | 0 | 2.227 | [[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/recovering.log][raw log]] |
+| admittedLink | 0 | 2.71 | [[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/admittedLink.log][raw log]] |
+| linked | 0 | 2.446 | [[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/linked.log][raw log]] |
+| prepared | 0 | 2.272 | [[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/prepared.log][raw log]] |
+| resumedPending | 0 | 2.306 | [[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/resumedPending.log][raw log]] |
+| resumeReady | 0 | 2.342 | [[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/resumeReady.log][raw log]] |
+| floor-decision-regression | 0 | 3.736 | [[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/floor-decision-regression.log][raw log]] |
+| device-isolation-regression | 0 | 3.138 | [[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/device-isolation-regression.log][raw log]] |
+| protected-signer-regression | 0 | 1.379 | [[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/protected-signer-regression.log][raw log]] |
+| inherited-account-replay | 0 | 5.111 | [[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/inherited-account-replay.log][raw log]] |
 
 The final =Test$= route passes 110 controls: 73 imported device/key controls and
 37 new controls (32 positive/rejection controls and five intentional
 counterexamples). Importing D and K references the same actual key state;
-[[file:../../../dev/proofs/evidence/fenced-intent-continuation/import-probe.log][a focused import probe]] verified that shared state. Independent regressions pass
+[[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/import-probe.log][a focused import probe]] verified that shared state. Independent regressions pass
 63 floor-decision, 73 device-isolation and 30 protected-signer controls. The
 older actual duplicate-account-application counterexample was separately rerun;
 it remains an unsafe-root demonstration, not a passing native effect guarantee.
@@ -115,7 +115,7 @@ attempts; rejection paths cover stale workers/heads, missing prefixes, repeated
 commit and old completed buffers. Finite sampling is not exhaustive exploration
 or temporal fairness evidence.
 
-[[file:../../../dev/proofs/evidence/fenced-intent-continuation/axiom-audit.log][24 printed Lean declarations]] have no sorryAx or compiler errors. Standard
+[[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/axiom-audit.log][24 printed Lean declarations]] have no sorryAx or compiler errors. Standard
 propext/Quot.sound and inherited Classical.choice remain. The declarations cover
 retained original obligations, immutable attempt outcomes, unique/disjoint root
 completion, current link/fence rejection, initialized key-product projection,
@@ -127,16 +127,16 @@ remain explicit premises, and no wall-clock progress bound is proved.
 
 * Final counterexample observations
 
-[[file:../../../dev/proofs/evidence/fenced-intent-continuation/counterexample-observations.json][Decoded final states]] were independently checked for all five focused ITFs.
+[[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/counterexample-observations.json][Decoded final states]] were independently checked for all five focused ITFs.
 Unsafe actions are absent from the safe step relation.
 
 | Unsafe control | States including setup | Trace |
 |----------------+------------------------+-------|
-| duplicateRootCommit | 38 | [[file:../../../dev/proofs/evidence/fenced-intent-continuation/itf/duplicateRootCommitCounterexampleTest-2.itf.json][ITF]] |
-| lostFenceLineage | 41 | [[file:../../../dev/proofs/evidence/fenced-intent-continuation/itf/lostFenceLineageCounterexampleTest-3.itf.json][ITF]] |
-| newRootLaundering | 34 | [[file:../../../dev/proofs/evidence/fenced-intent-continuation/itf/newRootLaunderingCounterexampleTest-1.itf.json][ITF]] |
-| recutUnlock | 34 | [[file:../../../dev/proofs/evidence/fenced-intent-continuation/itf/recutUnlockCounterexampleTest-0.itf.json][ITF]] |
-| rollbackCommittedContinuation | 38 | [[file:../../../dev/proofs/evidence/fenced-intent-continuation/itf/rollbackCommittedContinuationCounterexampleTest-4.itf.json][ITF]] |
+| duplicateRootCommit | 38 | [[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/itf/duplicateRootCommitCounterexampleTest-2.itf.json][ITF]] |
+| lostFenceLineage | 41 | [[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/itf/lostFenceLineageCounterexampleTest-3.itf.json][ITF]] |
+| newRootLaundering | 34 | [[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/itf/newRootLaunderingCounterexampleTest-1.itf.json][ITF]] |
+| recutUnlock | 34 | [[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/itf/recutUnlockCounterexampleTest-0.itf.json][ITF]] |
+| rollbackCommittedContinuation | 38 | [[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/itf/rollbackCommittedContinuationCounterexampleTest-4.itf.json][ITF]] |
 
 - Recut unlock leaves the original fenced accepted obligation uncommitted and unheld.
 - Root laundering inserts a continuation for a root absent from accepted history.
@@ -165,15 +165,15 @@ relabeled as final evidence.
 
 * Document, diagram and byte checks
 
-[[file:../../../dev/proofs/evidence/fenced-intent-continuation/document-check.log][Document inventory and links]],
-[[file:../../../dev/proofs/evidence/fenced-intent-continuation/diagram-validation.json][D2 validation]],
-[[file:../../../dev/proofs/evidence/fenced-intent-continuation/visual-check.log][Rendered visual inspection]],
-[[file:../../../dev/proofs/evidence/fenced-intent-continuation/org-export.log][Org export]] and
-[[file:../../../dev/proofs/evidence/fenced-intent-continuation/historical-manifests.log][Historical byte verification]] record final checks. Org export disables Babel;
+[[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/document-check.log][Document inventory and links]],
+[[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/diagram-validation.json][D2 validation]],
+[[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/visual-check.log][Rendered visual inspection]],
+[[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/org-export.log][Org export]] and
+[[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/historical-manifests.log][Historical byte verification]] record final checks. Org export disables Babel;
 optional htmlize highlighting diagnostics remain in its raw log. Bundled official
 Go/Kubernetes/Rust icons and the shared four-column theme are retained.
 
-[[file:../../../dev/proofs/evidence/fenced-intent-continuation/SHA256SUMS][The new byte manifest]] seals this category, canonical formal chain, runner,
+[[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/SHA256SUMS][The new byte manifest]] seals this category, canonical formal chain, runner,
 source snapshots and raw evidence. All eleven preceding manifests remain
 byte-valid; no earlier profile or receipt was silently rewritten.
 

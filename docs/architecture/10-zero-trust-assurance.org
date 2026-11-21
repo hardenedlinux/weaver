@@ -475,7 +475,7 @@ explicit. Physical root, storage and native qualification remain pending.
 
 * Recoverable consumption journal with independent-root assurance
 
-[[file:25-gate-consumption-persistence.org][The consumption persistence dossier]] and [[file:../../dev/specs/evidence/gate-consumption-persistence-2026-10-19.org][its executable receipt]] refine the
+[[file:25-gate-consumption-persistence.org][The consumption persistence dossier]] and [[file:../../.cache/verification/evidence/specs/gate-consumption-persistence-2026-10-19.org][its executable receipt]] refine the
 gate nonrollback assumption into separate durable seal/grant/burn/result phases.
 Local journal loss cannot regrant an issued capability or reopen an unknown burn.
 Lean composes archived actual receipts, confirmation coverage and original shared
@@ -487,7 +487,7 @@ final-writer epoch enforcement remain explicit owner premises.
 
 * Anchor confirmation and actual writer handover assurance
 
-[[file:26-anchor-commit-broker-fencing.org][The commit/broker dossier]] and [[file:../../dev/specs/evidence/anchor-broker-commit-2026-10-19.org][its executable receipt]] extend the formal chain
+[[file:26-anchor-commit-broker-fencing.org][The commit/broker dossier]] and [[file:../../.cache/verification/evidence/specs/anchor-broker-commit-2026-10-19.org][its executable receipt]] extend the formal chain
 with qualified committed entries and a separate physical writer state. Election
 alone does not revoke held permission; the barrier/commit/current-read/activation
 join closes the actual submission boundary. Lean preserves the canonical burn
@@ -498,7 +498,7 @@ and actual effect/receipt atomicity remain explicit physical premises.
 
 * Membership and prefix-transfer assurance
 
-[[file:27-anchor-configuration-prefix-inheritance.org][The membership dossier]] and [[file:../../dev/specs/evidence/anchor-reconfiguration-2026-10-19.org][its executable receipt]] extend the initialized formal
+[[file:27-anchor-configuration-prefix-inheritance.org][The membership dossier]] and [[file:../../.cache/verification/evidence/specs/anchor-reconfiguration-2026-10-19.org][its executable receipt]] extend the initialized formal
 chain to dual-quorum joint transitions, exact deciding-image transfer and scoped
 physical activation. Original consumption, reservations and historical records
 survive the control transitions. Native single-prefix publication, learner-copy
@@ -512,7 +512,7 @@ obligations; abstract intersection lemmas do not prove a consensus implementatio
 with protected full-prefix promises, signer incarnation and irreversible
 retirement. [[file:../../dev/specs/lean/QuorumDurablePromises.lean][Lean]] composes with the initialized original consumption/account
 product; [[file:../../dev/specs/quint/QuorumDurablePromises.qnt][Quint]] checks finite witness failures and configuration/election
-interleavings. [[file:../../dev/specs/evidence/quorum-durable-promises-2026-10-19.org][The receipt]] records bounds and counterexamples. Safety is
+interleavings. [[file:../../.cache/verification/evidence/specs/quorum-durable-promises-2026-10-19.org][The receipt]] records bounds and counterexamples. Safety is
 conditional on a qualified protected signing owner outside the permitted rollback
 domain. Sticky pending promises may block indefinitely; no consensus liveness,
 extracted runtime correctness or total-root rollback tolerance is claimed.
@@ -525,5 +525,5 @@ P35's fork-free publication premise. Require atomic durable promise-before-ack,
 nonrollback signer identity/retirement and full deciding-prefix recovery. Go
 orchestrates learners; Scheme owns semantic identities; Rust and the qualified
 protected owner enforce persistence/signing and final submission boundaries.
-[[file:../../dev/specs/evidence/quorum-durable-promises-2026-10-19.org][The check receipt]] does not discharge native key custody, storage durability or
+[[file:../../.cache/verification/evidence/specs/quorum-durable-promises-2026-10-19.org][The check receipt]] does not discharge native key custody, storage durability or
 physical writer isolation merely by proving the initialized logical product.

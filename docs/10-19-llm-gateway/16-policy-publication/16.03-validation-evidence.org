@@ -21,7 +21,7 @@ projections, durable publications, producer acknowledgements and final consumpti
 The source fixture abstracts bootstrap and qualified source recovery, covered by
 the Lean composition and explicit owner predicates.
 
-See [[file:../../../dev/proofs/evidence/llm-policy-publication/commands.json][commands.json]], [[file:../../../dev/proofs/evidence/llm-policy-publication/receipt.json][receipt.json]] and [[file:../../../dev/proofs/evidence/llm-policy-publication/SHA256SUMS][SHA256SUMS]]. Preliminary diagnostics remain
+See [[file:../../../.cache/verification/evidence/proofs/llm-policy-publication/commands.json][commands.json]], [[file:../../../.cache/verification/evidence/proofs/llm-policy-publication/receipt.json][receipt.json]] and [[file:../../../.cache/verification/evidence/proofs/llm-policy-publication/SHA256SUMS][SHA256SUMS]]. Preliminary diagnostics remain
 separate from final acceptance. No Gateway or dependency pin is changed.
 
 * Four-artifact correspondence
@@ -43,7 +43,7 @@ separate from final acceptance. No Gateway or dependency pin is changed.
 
 * Source-by-source review
 
-The [[file:../../../dev/proofs/evidence/llm-policy-publication/source-review.json][POO Flow / Cedar register]] and [[file:../../../dev/proofs/evidence/llm-policy-publication/agentgateway-source-review.json][agentgateway register]] record exact pinned blobs
+The [[file:../../../.cache/verification/evidence/proofs/llm-policy-publication/source-review.json][POO Flow / Cedar register]] and [[file:../../../.cache/verification/evidence/proofs/llm-policy-publication/agentgateway-source-review.json][agentgateway register]] record exact pinned blobs
 and freshly verified excerpts. These are inspected source snapshots, not a claim
 about current upstream releases or ABI compatibility.
 
@@ -103,7 +103,7 @@ The bounded Quint fixture is not exhaustive verification or a liveness proof.
 | Exact staged payload | idAliasPolicyCounterexampleTest | Same stable ID switches to an unstaged Allow payload |
 | Unknown budget hold | unknownRefundPolicyCounterexampleTest | Publication acknowledgement releases unresolved original usage |
 
-Unsafe actions are excluded from =step=. [[file:../../../dev/proofs/evidence/llm-policy-publication/itf][ITF traces]] must show actual prior issuance
+Unsafe actions are excluded from =step=. [[file:../../../.cache/verification/evidence/proofs/llm-policy-publication/itf][ITF traces]] must show actual prior issuance
 for old-permit cases, actual newer committed denial and attributable historical
 confirmation. An invalid placeholder or forged permit is insufficient evidence.
 

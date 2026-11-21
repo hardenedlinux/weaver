@@ -102,11 +102,11 @@ upstream source is changed, and no new external protocol/version claim is made.
 * Receipts and scope
 All exact source snapshots, working-byte differences, compiler/import/artifact
 identities, official Quint phases, negative controls, diagram and Org checks are
-recorded in [[file:../../../dev/proofs/evidence/semantic-gateway-slice/receipt.json][the checkpoint receipt]].
-See [[file:../../../dev/proofs/evidence/semantic-gateway-slice/clean-proof-receipt.json][clean Lean closure]],
-[[file:../../../dev/proofs/evidence/semantic-gateway-slice/api-commands.json][official Quint phase records]],
-[[file:../../../dev/proofs/evidence/semantic-gateway-slice/source-currentness.json][source-currentness observations]] and
-[[file:../../../dev/proofs/evidence/semantic-gateway-slice/SHA256SUMS][byte seal]].
+recorded in [[file:../../../.cache/verification/evidence/proofs/semantic-gateway-slice/receipt.json][the checkpoint receipt]].
+See [[file:../../../.cache/verification/evidence/proofs/semantic-gateway-slice/clean-proof-receipt.json][clean Lean closure]],
+[[file:../../../.cache/verification/evidence/proofs/semantic-gateway-slice/api-commands.json][official Quint phase records]],
+[[file:../../../.cache/verification/evidence/proofs/semantic-gateway-slice/source-currentness.json][source-currentness observations]] and
+[[file:../../../.cache/verification/evidence/proofs/semantic-gateway-slice/SHA256SUMS][byte seal]].
 
 Fresh evidence is conditional design/proof/model validation. It is not native
 Scheme compiler parity, a provider Gerbil toolchain/storage test, remote CI, or a performance

@@ -89,19 +89,19 @@ func TestProofAndArchitectureChangesInvalidateCurrentness(t *testing.T) {
 	}
 }
 
-func TestSourceInventoryExcludesGeneratedAndArchivedArtifacts(t *testing.T) {
+func TestSourceInventoryExcludesGeneratedArtifacts(t *testing.T) {
 	root, before := verificationInputsFixture(t)
-	for _, path := range []string{"dev/proofs/cedar/.lake/packages/generated/BuildOutput.lean", "docs/generated.svg", "dev/proofs/evidence/inventory/receipt.json", "dev/specs/evidence/inventory/receipt.json"} {
+	for _, path := range []string{"dev/proofs/cedar/.lake/packages/generated/BuildOutput.lean", "docs/generated.svg", ".cache/verification/evidence/proofs/inventory/receipt.json", ".cache/verification/evidence/specs/inventory/receipt.json"} {
 		full := filepath.Join(root, path)
 		if err := os.MkdirAll(filepath.Dir(full), 0700); err != nil {
 			t.Fatal(err)
 		}
-		if err := os.WriteFile(full, []byte("generated or historical output"), 0600); err != nil {
+		if err := os.WriteFile(full, []byte("generated output"), 0600); err != nil {
 			t.Fatal(err)
 		}
 	}
 	if after, err := SourceInputs(root); err != nil || !maps.Equal(before, after) {
-		t.Fatal("generated or historical artifacts became project source", err)
+		t.Fatal("generated artifacts became project source", err)
 	}
 }
 

@@ -308,7 +308,7 @@ func stagesForMode(mode, goBinary string) ([]Stage, error) {
 			{"scheme-policy-preflight", "cargo", []string{"test", "-p", "weaver-policy-ffi", "--lib", "--benches", "--locked", "--offline"}},
 			{"scheme-policy-pkg-config", "cargo", []string{"run", "-p", "weaver-policy-ffi", "--example", "policy_pkg_config", "--locked", "--offline"}},
 			{"scheme-module-build", "./build.ss", []string{"compile", "--debug"}},
-			{"scheme-build-environment-tests", goBinary, []string{"-C", "go", "test", "-count=1", "-race", "-tags=schemeintegration", "./internal/devrunner", "-run", "^(Test(SchemePkgConfig|SchemeTool|SchemePackageResult|SchemeTestInventory|SchemeUsesPackageTestEntry|SourceInputsWithArchived)|FuzzSchemePackageResultProtocol)", "-v"}},
+			{"scheme-build-environment-tests", goBinary, []string{"-C", "go", "test", "-count=1", "-race", "-tags=schemeintegration", "./internal/devrunner", "-run", "^(Test(SchemePkgConfig|SchemeTool|SchemePackageResult|SchemeTestInventory|SchemeUsesPackageTestEntry|SourceInputsWithoutGenerated)|FuzzSchemePackageResultProtocol)", "-v"}},
 			// Package tools own discovery, execution and result reporting. Historical
 			// direct-gxi image experiments are not a prerequisite for gerbil test.
 			{"scheme-unit-tests", schemeTool(), []string{"test", "-g", "-v", "5", "t"}},

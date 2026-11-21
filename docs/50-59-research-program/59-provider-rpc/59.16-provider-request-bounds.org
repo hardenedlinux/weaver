@@ -102,7 +102,7 @@ their actual process completion. Historical receipts keep their original source
 hashes. This increment does not qualify commercial provider behavior, distributed
 recovery anchors or the remaining Scheme/cloud controller implementation.
 
-The [[file:../../../dev/proofs/evidence/provider-request-bounds-20261030/][focused evidence]] retains both pre-fix admission counterexamples, the
+The [[file:../../../.cache/verification/evidence/proofs/provider-request-bounds-20261030/][focused evidence]] retains both pre-fix admission counterexamples, the
 missing development-edge compilation failure, and the initial Quint assertion
 ordering failure. Quint's failed action does not assign the next state, so the
 state assertion must precede =.fail()= rather than read an unset successor.
@@ -119,34 +119,34 @@ source-bound gate; they do not replace it or the measured benchmark matrix.
 
 The first complete committed run at =ad24ce3= finishes naturally with exactly one
 failed stage: ASP rejects the new root test target's implementation, non-suite
-fixture mount and glob import. Its [[file:../../../dev/proofs/evidence/provider-request-bounds-20261030/committed-asp-rejected/receipt.json][complete failure receipt]] retains all stages,
+fixture mount and glob import. Its [[file:../../../.cache/verification/evidence/proofs/provider-request-bounds-20261030/committed-asp-rejected/receipt.json][complete failure receipt]] retains all stages,
 including passing final source identity and actual provider integration. The
 correction moves implementation under =tests/unit/provider_bounds.rs=, mounts it
 from the existing thin =unit_test.rs= aggregate and uses explicit owner imports.
 No ASP rule is suppressed and no focused result reclassifies this run as passing.
 
 The corrected implementation commit =13834198e396a87ad1996d041ba0d55cf56e9163=
-passes the [[file:../../../dev/proofs/evidence/provider-request-bounds-20261030/committed-check/receipt.json][complete committed check]]: forty-seven stages and 175 unchanged source
+passes the [[file:../../../.cache/verification/evidence/proofs/provider-request-bounds-20261030/committed-check/receipt.json][complete committed check]]: forty-seven stages and 175 unchanged source
 inputs, including sixty-three Rust tests, all five ASP deny gates, the added
 three-second Go fuzz target, strict SysML, Quint, Lean and real provider recovery
 tests. The earlier rejected receipt remains failed. This qualifies the declared
 local SDK profile, not Linux CI or external provider billing behavior.
 
-The [[file:../../../dev/proofs/evidence/provider-request-bounds-20261030/committed-bench/receipt.json][complete measured run]] passes seven stages and retains all eighteen Rust
+The [[file:../../../.cache/verification/evidence/proofs/provider-request-bounds-20261030/committed-bench/receipt.json][complete measured run]] passes seven stages and retains all eighteen Rust
 cases with thirty paired samples each, plus three repetitions of each actual
-gRPC benchmark. The [[file:../../../dev/proofs/evidence/provider-request-bounds-20261030/paired-source-identity.json][paired identity check]] confirms the same implementation
+gRPC benchmark. The [[file:../../../.cache/verification/evidence/proofs/provider-request-bounds-20261030/paired-source-identity.json][paired identity check]] confirms the same implementation
 revision and all 175 input hashes in verification and measurement.
 
 Performance admission remains =NOT_ESTABLISHED=. The retained
-[[file:../../../dev/proofs/evidence/provider-request-bounds-20261030/committed-bench/rust-benchmarks.log][Criterion log]] reports seventeen regressions and one no-significant-change
+[[file:../../../.cache/verification/evidence/proofs/provider-request-bounds-20261030/committed-bench/rust-benchmarks.log][Criterion log]] reports seventeen regressions and one no-significant-change
 comparison against the local cached baseline. A late-run
-[[file:../../../dev/proofs/evidence/provider-request-bounds-20261030/provider-bounds-host-load.log][host observation]] records load averages of 35.45, 25.88 and 20.06 on a
-[[file:../../../dev/proofs/evidence/provider-request-bounds-20261030/provider-bounds-host-cpus.log][twelve-logical-CPU host]], with
-[[file:../../../dev/proofs/evidence/provider-request-bounds-20261030/provider-bounds-host-processes.log][concurrent Gerbil/GCC processes]]. This observation establishes interference
+[[file:../../../.cache/verification/evidence/proofs/provider-request-bounds-20261030/provider-bounds-host-load.log][host observation]] records load averages of 35.45, 25.88 and 20.06 on a
+[[file:../../../.cache/verification/evidence/proofs/provider-request-bounds-20261030/provider-bounds-host-cpus.log][twelve-logical-CPU host]], with
+[[file:../../../.cache/verification/evidence/proofs/provider-request-bounds-20261030/provider-bounds-host-processes.log][concurrent Gerbil/GCC processes]]. This observation establishes interference
 at that observation, not its timing across every sample or causal attribution
 of the comparisons. No process was interrupted, warning discarded or benchmark
 retried to obtain a passing comparison. A controlled matched performance
-experiment is still required. The [[file:../../../dev/proofs/evidence/provider-request-bounds-20261030/committed-bench/benchmark-summary.org][sample summary]] is empirical data, not an
+experiment is still required. The [[file:../../../.cache/verification/evidence/proofs/provider-request-bounds-20261030/committed-bench/benchmark-summary.org][sample summary]] is empirical data, not an
 accepted throughput/latency result.
 
 Independent [[https://github.com/hardenedlinux/weaver/actions/runs/40956764509][Linux CI for this implementation]] subsequently completed with failures

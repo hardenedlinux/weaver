@@ -23,12 +23,12 @@ execution authority for an AI Agent Gateway, without physical isolation.
 Workspace: /Users/guangtao/ghq/github.com/tao3k/weaver; branch =main=;
 tracked HEAD =4df1f0233f9a78e5a3ea8a1a0d8aaca983698b8d=. Architecture and
 formal artifacts remain untracked. No Gateway implementation, dependency pin,
-upstream source, commit or push was changed. [[file:../../../dev/proofs/evidence/broker-consumption-queue/dependency-identity.log][Dependency identities]] match the
+upstream source, commit or push was changed. [[file:../../../.cache/verification/evidence/proofs/broker-consumption-queue/dependency-identity.log][Dependency identities]] match the
 preceding category-36 receipt. Its historical sealed files remain unchanged.
 
-[[file:../../../dev/proofs/evidence/broker-consumption-queue/source-review.json][Eighteen source images]] were freshly read and SHA256 checked at POO Flow
+[[file:../../../.cache/verification/evidence/proofs/broker-consumption-queue/source-review.json][Eighteen source images]] were freshly read and SHA256 checked at POO Flow
 =a74fc2fd63437252175b5a67649ee54b886d3bf4= and cedar-poo-spec
-=c8d1a0641120cf65e299e8a98f9fe7666ca96ab5=. [[file:../../../dev/proofs/evidence/broker-consumption-queue/source-boundary-review.log][Numbered source readings]] distinguish
+=c8d1a0641120cf65e299e8a98f9fe7666ca96ab5=. [[file:../../../.cache/verification/evidence/proofs/broker-consumption-queue/source-boundary-review.log][Numbered source readings]] distinguish
 pure consumption, serialized local delivery, runtime store ownership, unpublished
 session intents and conditional authorization/application proofs. These readings
 do not establish native queue or provider behavior.
@@ -42,7 +42,7 @@ go -C go run ./cmd/weaver-dev -timeout 28m check-policy
 This runs the maintained registered plan. It does not replay the retired
 per-artifact checks or regenerate the historical observations below.
 
-[[file:../../../dev/proofs/evidence/broker-consumption-queue/commands.json][Final command records]] retain arguments, timings, watchdogs and exit codes.
+[[file:../../../.cache/verification/evidence/proofs/broker-consumption-queue/commands.json][Final command records]] retain arguments, timings, watchdogs and exit codes.
 The final runner compiles five Lean modules into a fresh isolated directory:
 LogicalMessageAuthority, SharedMessageBudget, FiniteDomainMigration,
 GatewayHeadCAS and BrokerConsumptionQueue. Lean uses the installed 4.34.1 toolchain
@@ -51,7 +51,7 @@ not dependency migrations or core diagram labels.
 
 The new Lean log prints 21 declarations without =sorryAx= or errors. Standard
 propext, Quot.sound and inherited Classical.choice are recorded rather than
-hidden. The [[file:../../../dev/proofs/evidence/broker-consumption-queue/dependency-graph.json][source dependency graph]] contains only this five-module software
+hidden. The [[file:../../../.cache/verification/evidence/proofs/broker-consumption-queue/dependency-graph.json][source dependency graph]] contains only this five-module software
 closure; historical hardware-oriented modules are not imported.
 
 The =Test$= command passes 75 controls: 42 directly imported GatewayHeadCAS
@@ -73,8 +73,8 @@ reservation and shared-capacity bounds survive downstream unknown outcomes.
 The downstream model stutters on that semantic ledger: it does not implement
 new concurrent billing updates or prove native I/O.
 
-The six final [[file:../../../dev/proofs/evidence/broker-consumption-queue/itf][ITF traces]] are independently decoded in the archived receipt.
-[[file:../../../dev/proofs/evidence/broker-consumption-queue/counterexample-observations.json][Decoded observations]] confirm the actual failing fields, not just test names:
+The six final [[file:../../../.cache/verification/evidence/proofs/broker-consumption-queue/itf][ITF traces]] are independently decoded in the archived receipt.
+[[file:../../../.cache/verification/evidence/proofs/broker-consumption-queue/counterexample-observations.json][Decoded observations]] confirm the actual failing fields, not just test names:
 
 | Unsafe schedule | Observed violation | Safe contract |
 |-----------------+--------------------+---------------|
@@ -93,19 +93,19 @@ terminal and usage authentication remain explicit runtime predicates.
 
 * Documentation, diagram and integrity evidence
 
-[[file:../../../dev/proofs/evidence/broker-consumption-queue/four-artifact-check.json][Ten correspondence rows]] resolve real Org contracts, Quint tests/properties,
+[[file:../../../.cache/verification/evidence/proofs/broker-consumption-queue/four-artifact-check.json][Ten correspondence rows]] resolve real Org contracts, Quint tests/properties,
 Lean declarations and D2 nodes. This check proves named-reference consistency,
 not semantic equivalence between tools or correctness of generated runtime code.
 
-[[file:../../../dev/proofs/evidence/broker-consumption-queue/document-check.log][Document inventory]] checks English ASCII Org, balanced source blocks, local
-links, pinned source targets and existing acceptance registers. [[file:../../../dev/proofs/evidence/broker-consumption-queue/org-export.log][Org export]] runs
+[[file:../../../.cache/verification/evidence/proofs/broker-consumption-queue/document-check.log][Document inventory]] checks English ASCII Org, balanced source blocks, local
+links, pinned source targets and existing acceptance registers. [[file:../../../.cache/verification/evidence/proofs/broker-consumption-queue/org-export.log][Org export]] runs
 with Babel evaluation disabled. Optional missing-htmlize diagnostics are retained.
-[[file:../../../dev/proofs/evidence/broker-consumption-queue/diagram-validation.json][D2 validation]] covers all core diagram sources; the new bundled SVG is rendered
+[[file:../../../.cache/verification/evidence/proofs/broker-consumption-queue/diagram-validation.json][D2 validation]] covers all core diagram sources; the new bundled SVG is rendered
 and visually inspected. Official Go, Kubernetes and Rust logos use the existing
 shared style. The core diagram contains no versions, check counts or device chain.
 
-[[file:../../../dev/proofs/evidence/broker-consumption-queue/historical-manifests.log][Thirteen historical manifests]] are byte-verified unchanged. The new
-[[file:../../../dev/proofs/evidence/broker-consumption-queue/SHA256SUMS][manifest]] seals the category-37 artifacts, formal dependency sources, shared
+[[file:../../../.cache/verification/evidence/proofs/broker-consumption-queue/historical-manifests.log][Thirteen historical manifests]] are byte-verified unchanged. The new
+[[file:../../../.cache/verification/evidence/proofs/broker-consumption-queue/SHA256SUMS][manifest]] seals the category-37 artifacts, formal dependency sources, shared
 visual assets and evidence. Preliminary parser/type/effect and Lean elaboration
 diagnostics are retained as preliminary logs; final success applies only to the
 final command routes and final source identities.

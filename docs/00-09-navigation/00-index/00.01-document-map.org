@@ -20,7 +20,7 @@ share one artifact ID. Keep formal source under =dev/proofs/lean/= and
 =dev/proofs/quint/=; the latter is the requested directory name and contains Quint
 =.qnt= models. Human-readable check receipts are English Org documents; the
 Go-owned runner writes current structured results under =.cache/verification/=.
-Historical raw evidence under =dev/proofs/evidence/= retains its original identity;
+Historical raw evidence under =.cache/verification/evidence/proofs/= retains its original identity;
 it is not a location for new executable drivers or manually generated run logs.
 Tool versions and acceptance details belong in receipts, not core diagrams.
 

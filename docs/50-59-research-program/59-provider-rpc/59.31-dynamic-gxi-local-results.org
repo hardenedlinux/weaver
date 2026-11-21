@@ -141,7 +141,7 @@ are unchanged by this development packaging repair.
 * CI sparse-checkout source ownership correction
 The first private run, =41062328472= at =8296f11=, failed all seven jobs before
 their test suites began. The common source inventory required the observer
-inside =dev/proofs/evidence/=, while the workflow deliberately excludes that
+inside =.cache/verification/evidence/proofs/=, while the workflow deliberately excludes that
 historical archive from its sparse checkout. The secondary missing-receipt
 message did not indicate a native runtime failure. This failed workflow is
 retained as a separate receipt and does not replace either local result above.

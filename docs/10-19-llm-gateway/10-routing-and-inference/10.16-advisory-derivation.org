@@ -172,7 +172,7 @@ The ordinary =check-scheme= pipeline provides the acceptance gates for Project/
 SDK/trace, FFI preflight, package build/protocol, native rooted SDK and real gRPC
 integration. Its existing whole-package one-minute test budget is unchanged.
 Actual stage verdicts, failures, source cohorts and hashes are in
-[[file:../../../dev/proofs/evidence/advisory-derivation-20261105/receipt.json][the implementation receipt]]; a subprocess exit of zero alone is not a Scheme
+[[file:../../../.cache/verification/evidence/proofs/advisory-derivation-20261105/receipt.json][the implementation receipt]]; a subprocess exit of zero alone is not a Scheme
 harness pass. The focused SDK check uses 61 named requirements after this addition.
 
 The native owner fixture also follows the current mandatory review protocol:
@@ -350,7 +350,7 @@ permission. These distinctions preserve Scheme/POO high-order execution while
 keeping the existing Rust/Cedar effect guards authoritative.
 
 Current-cohort source identities, build gates and actual outcomes are recorded in
-[[file:../../../dev/proofs/evidence/scheme-module-scope-alignment-20261106/receipt.json][the Scheme Module scope alignment receipt]]. Local source qualification is not a published
+[[file:../../../.cache/verification/evidence/proofs/scheme-module-scope-alignment-20261106/receipt.json][the Scheme Module scope alignment receipt]]. Local source qualification is not a published
 release pin or acceptance of every upstream Core scenario.
 
 * Current-cohort validation boundary (2026-11-06)

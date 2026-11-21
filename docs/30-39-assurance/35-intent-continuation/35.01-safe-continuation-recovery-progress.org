@@ -257,7 +257,7 @@ without pretending the earlier no-continuation graph already implemented this.
 | FC9 Historical result is not readiness | Post-commit reset requires fresh qualification | historicalContinuationCannotActivateTest | initialized_zero_phase_means_enabled; initialized_product_refines_key | recovery.activate |
 | FC10 Retained bytes remain mediated | New head cannot relabel old ticket/buffer | retainedOldBufferCannotReleaseTest; newHandleCannotRecreateConsumedJobTest | initialized_product_refines_key | native.release |
 
-[[file:../../../dev/proofs/evidence/fenced-intent-continuation/four-artifact-check.json][The machine-checked correspondence receipt]] verifies that each named test,
+[[file:../../../.cache/verification/evidence/proofs/fenced-intent-continuation/four-artifact-check.json][The machine-checked correspondence receipt]] verifies that each named test,
 Lean declaration/constructor and D2 node exists. This is a consistency gate,
 not an equivalence or native extraction proof. Any future state, guard or failure
 branch change must update and rerun all four artifacts before acceptance.

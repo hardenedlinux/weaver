@@ -109,14 +109,14 @@ present on both listeners.
 The native negative control temporarily removed only source leaf verification.
 The forwarded-source-token case then published a forbid Policy successfully,
 and the following legitimate original-revision CAS failed. The
-[[file:../../../dev/proofs/evidence/source-ingress-20261030/forwarded-credential-counterexample.log][raw failed run]] records both observations. Leaf verification was restored before
+[[file:../../../.cache/verification/evidence/proofs/source-ingress-20261030/forwarded-credential-counterexample.log][raw failed run]] records both observations. Leaf verification was restored before
 qualification. An early Lean implicit-key typing error is retained separately;
 its repair makes the certificate's Key parameter explicit rather than weakening
 the proposition. No deadline, workload, dependency pin or ASP deny rule changed.
 
 * Restored-source qualification
 
-The [[file:../../../dev/proofs/evidence/source-ingress-20261030/verification-current/receipt.json][unified verification receipt]] passes thirty stages with 141 unchanged input
+The [[file:../../../.cache/verification/evidence/proofs/source-ingress-20261030/verification-current/receipt.json][unified verification receipt]] passes thirty stages with 141 unchanged input
 hashes. Rust reports forty-four passing tests, including all five ASP deny gates
 and the source identity configuration test. Go race integration passes the
 combined saturation, cross-ingress identity/method, source capacity and joint
@@ -155,10 +155,10 @@ separately from warm operation Inspect and new-connection Inspect; Go allocation
 counters do not describe Rust allocation, and no transport-only or production
 throughput claim follows from these samples.
 
-The [[file:../../../dev/proofs/evidence/source-ingress-20261030/benchmark-current/receipt.json][new benchmark receipt]] passes all five stages and binds exactly the same 141
+The [[file:../../../.cache/verification/evidence/proofs/source-ingress-20261030/benchmark-current/receipt.json][new benchmark receipt]] passes all five stages and binds exactly the same 141
 input hashes as verification. All fourteen Rust cases across the five packages
 were actually resampled; their estimates and confidence bounds are in the
-[[file:../../../dev/proofs/evidence/source-ingress-20261030/benchmark-current/benchmark-summary.org][Criterion summary]]. The [[file:../../../dev/proofs/evidence/source-ingress-20261030/benchmark-current/grpc-benchmark.log][actual gRPC log]] records three runs per boundary:
+[[file:../../../.cache/verification/evidence/proofs/source-ingress-20261030/benchmark-current/benchmark-summary.org][Criterion summary]]. The [[file:../../../.cache/verification/evidence/proofs/source-ingress-20261030/benchmark-current/grpc-benchmark.log][actual gRPC log]] records three runs per boundary:
 
 | Boundary | Observed ns/op, separate runs | Go allocations/op |
 |----------+------------------------------+-------------------|

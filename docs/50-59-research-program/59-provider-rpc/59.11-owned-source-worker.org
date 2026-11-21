@@ -107,7 +107,7 @@ guard would exclude it and is not an adequate native refinement.
 
 * Source-bound verification and retained failures
 
-The [[file:../../../dev/proofs/evidence/source-owner-20261030/verification-current/receipt.json][unified receipt]] passes thirty-five stages with 154 unchanged input hashes.
+The [[file:../../../.cache/verification/evidence/proofs/source-owner-20261030/verification-current/receipt.json][unified receipt]] passes thirty-five stages with 154 unchanged input hashes.
 Rust reports fifty-four passing tests, including five unchanged ASP deny gates.
 The current Go/race integration, imported Cedar bridge, strict in-process SysML
 SDK, descriptor check and all sampled models pass. The new owner model retains
@@ -124,14 +124,14 @@ the ledger's checked quiescence API rather than exposing its native connection.
 * Matched source-publication experiment
 
 Before implementation, all 150 baseline input hashes were verified against the
-preceding accepted receipt, archived in [[file:../../../dev/proofs/evidence/source-owner-20261030/baseline-sources.tar][baseline sources]], and the current
+preceding accepted receipt, archived in [[file:../../../.cache/verification/evidence/proofs/source-owner-20261030/baseline-sources.tar][baseline sources]], and the current
 arrow-enabled debug executable was rebuilt and retained. The
-[[file:../../../dev/proofs/evidence/source-owner-20261030/baseline-verification-receipt.json][baseline receipt]] remains separate. Its executable is an experiment fixture,
+[[file:../../../.cache/verification/evidence/proofs/source-owner-20261030/baseline-verification-receipt.json][baseline receipt]] remains separate. Its executable is an experiment fixture,
 not an alternate production route or a way to bypass current tests. TestMain
 always builds the current daemon; only the explicitly selected comparison
 benchmark accepts a baseline executable argument.
 
-The [[file:../../../dev/proofs/evidence/source-owner-20261030/source-owner-comparison-receipt.json][comparison receipt]] and [[file:../../../dev/proofs/evidence/source-owner-20261030/source-owner-comparison.log][raw log]] record balanced ABBAAB ordering. Each child
+The [[file:../../../.cache/verification/evidence/proofs/source-owner-20261030/source-owner-comparison-receipt.json][comparison receipt]] and [[file:../../../.cache/verification/evidence/proofs/source-owner-20261030/source-owner-comparison.log][raw log]] record balanced ABBAAB ordering. Each child
 performs exactly 256 unique typed source publications against a fresh fixture,
 with identical Policy/schema, original-parent progression, fence, TLS algorithms,
 durability settings and zero provider calls. Binary hashing and fixture startup
@@ -152,14 +152,14 @@ together, so the experiment does not isolate only parser or syscall cost. FULL
 synchronous WAL is unchanged. This result is not a production throughput/p99
 guarantee, a contested-lock latency bound, or resolution of all earlier benchmark
 regression warnings. Broader admission remains separate.
-An [[file:../../../dev/proofs/evidence/source-owner-20261030/comparison-exploratory.org][earlier exploratory cohort]] is retained separately and is not substituted for
+An [[file:../../../.cache/verification/evidence/proofs/source-owner-20261030/comparison-exploratory.org][earlier exploratory cohort]] is retained separately and is not substituted for
 the post-verification comparison. A successful paired run validates execution and
 source identity, not statistical significance or a production latency threshold.
 
-The [[file:../../../dev/proofs/evidence/source-owner-20261030/benchmark-current/receipt.json][full current benchmark receipt]] also passes five collection stages and binds
+The [[file:../../../.cache/verification/evidence/proofs/source-owner-20261030/benchmark-current/receipt.json][full current benchmark receipt]] also passes five collection stages and binds
 exactly the same 154 input hashes as verification. All eighteen Rust cases across
-the five packages were resampled; [[file:../../../dev/proofs/evidence/source-owner-20261030/benchmark-current/benchmark-summary.org][estimates and confidence intervals]] remain
-separate from the paired debug experiment. The [[file:../../../dev/proofs/evidence/source-owner-20261030/benchmark-current/grpc-benchmark.log][standard source RPC measurements]]
+the five packages were resampled; [[file:../../../.cache/verification/evidence/proofs/source-owner-20261030/benchmark-current/benchmark-summary.org][estimates and confidence intervals]] remain
+separate from the paired debug experiment. The [[file:../../../.cache/verification/evidence/proofs/source-owner-20261030/benchmark-current/grpc-benchmark.log][standard source RPC measurements]]
 are 2858273, 2755297 and 3001501 ns/op at 115 Go allocations/op. They use the
 unchanged two-second, three-run measurement protocol rather than the fixed
 256-commit comparison. No new Criterion regression warning appears in this

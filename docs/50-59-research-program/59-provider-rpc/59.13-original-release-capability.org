@@ -14,7 +14,7 @@ then be passed to release_provider with the other plan's dispatch handle. The
 matching pending row and fresh Cedar decision did not prove ownership of the
 particular token. The supplied encoding could also change after preparation.
 
-The retained [[file:../../../dev/proofs/evidence/release-binding-20261030/unbound-release-counterexamples.log][unmodified-runtime counterexamples]] show both cases entering the
+The retained [[file:../../../.cache/verification/evidence/proofs/release-binding-20261030/unbound-release-counterexamples.log][unmodified-runtime counterexamples]] show both cases entering the
 callback. This is an internal Rust capability-interface defect: public gRPC
 accepts plans, not ProviderRelease values. It does not establish a remotely
 exploitable ticket-forgery path.
@@ -116,7 +116,7 @@ The first Quint attempt also exposed an invalid test composition: inspecting
 state after a failing action produced QNT502. The expectation now precedes the
 failing action; no invariant, sample count or timeout was weakened.
 
-The [[file:../../../dev/proofs/evidence/release-binding-20261030/verification-current/receipt.json][final unified verification receipt]] retains 158 unchanged input hashes;
+The [[file:../../../.cache/verification/evidence/proofs/release-binding-20261030/verification-current/receipt.json][final unified verification receipt]] retains 158 unchanged input hashes;
 thirty-eight of thirty-nine stages pass. Its native suite reports fifty-nine passing Rust tests, including
 all five ASP deny gates, the new sixty-four-case capability PBT and both original
 regressions. Default/all-feature compilation, Clippy, Go race tests, real
@@ -133,20 +133,20 @@ The separate [[file:59.05-benchmarks.org][per-package benchmark contract]] requi
 from the current run. Earlier timing evidence remains attached to its own source
 hashes; safety checks alone cannot qualify performance.
 
-The [[file:../../../dev/proofs/evidence/release-binding-20261030/benchmark-current/receipt.json][complete measured receipt]] records all eighteen Rust cases and all three
+The [[file:../../../.cache/verification/evidence/proofs/release-binding-20261030/benchmark-current/receipt.json][complete measured receipt]] records all eighteen Rust cases and all three
 Go RPC benchmark families. Twelve Rust cases report improvement and six report
 no significant change against the local Criterion cache. That is not a matched
 causal experiment or a production performance qualification. Earlier regression
 warnings remain retained under their original source receipts.
 
-The [[file:../../../dev/proofs/evidence/release-binding-20261030/verification-before-session-model-alignment/receipt.json][earlier unified receipt]] and the measured receipt use identical inputs.
+The [[file:../../../.cache/verification/evidence/proofs/release-binding-20261030/verification-before-session-model-alignment/receipt.json][earlier unified receipt]] and the measured receipt use identical inputs.
 That earlier unified receipt passes all thirty-nine stages.
 The subsequent alignment changes only =ReleaseBinding.qnt=: an old dispatch must
 not prepare a new token after owner restart. The final unified check uses that
 new model hash; runtime, benchmark fixtures and dependency inputs remain the
 same. Timing evidence is not relabeled as an execution of the later model.
 
-The isolated [[file:../../../dev/proofs/evidence/release-binding-20261030/context-propagation-probe.go][Go context propagation probe]] observes three parent-deadline/
+The isolated [[file:../../../.cache/verification/evidence/proofs/release-binding-20261030/context-propagation-probe.go][Go context propagation probe]] observes three parent-deadline/
 child-error ordering windows in 10000 fixed trials. The installed Go source
 closes the parent's Done channel before cancelling children; its fuzz coordinator
 compares a returned context error with the derived fuzz context's current error.

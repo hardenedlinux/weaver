@@ -16,7 +16,7 @@ the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21
 
 The runner (retired Python driver) compiles nine Lean modules in a fresh directory and checks the
 new [[file:../../../dev/proofs/lean/LlmSemanticContract.lean][Lean]] and [[file:../../../dev/proofs/quint/LlmSemanticContract.qnt][Quint]] models. Commands and raw outcomes are in
-[[file:../../../dev/proofs/evidence/llm-semantic-contract/commands.json][commands.json]]; the [[file:../../../dev/proofs/evidence/llm-semantic-contract/receipt.json][receipt]] records final counts and limitations. Preliminary
+[[file:../../../.cache/verification/evidence/proofs/llm-semantic-contract/commands.json][commands.json]]; the [[file:../../../.cache/verification/evidence/proofs/llm-semantic-contract/receipt.json][receipt]] records final counts and limitations. Preliminary
 compiler diagnostics are retained separately from final successful elaboration.
 
 The model concerns one declared attempt scope with arbitrarily finite Lean
@@ -113,7 +113,7 @@ this change cannot clear unknown costs or authorize new account domains.
 | Remove parser bounds | bufferOverflowSemanticCounterexampleTest | Argument buffer exceeds configured limit |
 
 These deliberate unsafe actions are excluded from =step=. Their six exported
-[[file:../../../dev/proofs/evidence/llm-semantic-contract/itf][ITF traces]] are independently decoded and inspected. Guarded scenarios also
+[[file:../../../.cache/verification/evidence/proofs/llm-semantic-contract/itf][ITF traces]] are independently decoded and inspected. Guarded scenarios also
 reject alias collisions, tool-set expansion, parallel/choice/schema weakening,
 wrong history/budget domains, out-of-order fragments, overwritten arguments,
 duplicate proposals, truncated streams and old-worker release.
@@ -129,7 +129,7 @@ and restart recovery. Bind every receipt to exact source and runtime identity.
 Add matched first-token/throughput/memory controls; no performance claim follows
 from these local formal checks.
 
-The [[file:../../../dev/proofs/evidence/llm-semantic-contract/source-review.json][POO Flow / cedar-poo-spec register]] and [[file:../../../dev/proofs/evidence/llm-semantic-contract/agentgateway-source-review.json][agentgateway register]] contain
-freshly verified source hashes and excerpts. The [[file:../../../dev/proofs/evidence/llm-semantic-contract/SHA256SUMS][manifest]] seals this category
+The [[file:../../../.cache/verification/evidence/proofs/llm-semantic-contract/source-review.json][POO Flow / cedar-poo-spec register]] and [[file:../../../.cache/verification/evidence/proofs/llm-semantic-contract/agentgateway-source-review.json][agentgateway register]] contain
+freshly verified source hashes and excerpts. The [[file:../../../.cache/verification/evidence/proofs/llm-semantic-contract/SHA256SUMS][manifest]] seals this category
 without modifying historical receipts. No Gateway implementation or dependency
 pin is changed. Local model checks do not establish deployed behavior.

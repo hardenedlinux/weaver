@@ -29,20 +29,20 @@ dependency pin, deployment, commit or push was changed.
 
 * Fresh source comparison
 
-[[file:../../../dev/proofs/evidence/llm-routing/agentgateway-source-review.json][Ten agentgateway LLM source blobs]] were read and SHA256 checked at
-=955d56fae09b45f3cb8e85e797dbb1eb06134f77=. [[file:../../../dev/proofs/evidence/llm-routing/agentgateway-source-boundaries.log][Numbered excerpts]] cover model
+[[file:../../../.cache/verification/evidence/proofs/llm-routing/agentgateway-source-review.json][Ten agentgateway LLM source blobs]] were read and SHA256 checked at
+=955d56fae09b45f3cb8e85e797dbb1eb06134f77=. [[file:../../../.cache/verification/evidence/proofs/llm-routing/agentgateway-source-boundaries.log][Numbered excerpts]] cover model
 CRDs and routing strategies, virtual/concrete resolution and authorization,
 catalog features/pricing, provider streams, callouts, load balancing, Go model
 translation, retry machinery and golden tests. This is a pinned source study,
 not a claim of latest-release product parity or a selected runtime dependency.
 
-[[file:../../../dev/proofs/evidence/llm-routing/source-review.json][Eighteen POO Flow/cedar-poo-spec source blobs]] were freshly read and hashed at
+[[file:../../../.cache/verification/evidence/proofs/llm-routing/source-review.json][Eighteen POO Flow/cedar-poo-spec source blobs]] were freshly read and hashed at
 =a74fc2fd63437252175b5a67649ee54b886d3bf4= and
 =c8d1a0641120cf65e299e8a98f9fe7666ca96ab5=. The existing strict mediation,
 source-bound recovery, budget/history, typed authorization and error-free compound
 layer contracts remain reusable foundations. The proposed LLM catalog/actions,
 router projections, provider encoders and child-attempt ledger are extensions,
-not asserted existing APIs. [[file:../../../dev/proofs/evidence/llm-routing/dependency-identity.log][Dependency identities]] match the preceding sealed
+not asserted existing APIs. [[file:../../../.cache/verification/evidence/proofs/llm-routing/dependency-identity.log][Dependency identities]] match the preceding sealed
 receipt; research sources and tool versions do not change dependency pins.
 
 * Reproduction and final formal checks
@@ -54,12 +54,12 @@ go -C go run ./cmd/weaver-dev -timeout 28m check-policy
 This runs the maintained registered plan. It does not replay the retired
 per-artifact checks or regenerate the historical observations below.
 
-[[file:../../../dev/proofs/evidence/llm-routing/commands.json][Fifteen final command routes]] retain exact arguments, timings, watchdogs,
+[[file:../../../.cache/verification/evidence/proofs/llm-routing/commands.json][Fifteen final command routes]] retain exact arguments, timings, watchdogs,
 exit codes and raw logs. Seven Lean modules build in a fresh isolated directory:
 LogicalMessageAuthority, SharedMessageBudget, FiniteDomainMigration,
 GatewayHeadCAS, BrokerConsumptionQueue, LogicalRangeRecovery and LlmRouting.
 Lean uses the installed 4.34.1 toolchain and Std; Quint uses 0.33.0 with the
-TypeScript backend. The [[file:../../../dev/proofs/evidence/llm-routing/dependency-graph.json][proof import graph]] contains software semantics only.
+TypeScript backend. The [[file:../../../.cache/verification/evidence/proofs/llm-routing/dependency-graph.json][proof import graph]] contains software semantics only.
 
 The new Lean log prints 15 declarations without =sorryAx= or errors. Standard
 propext, Quot.sound and inherited Classical.choice are recorded. The routing
@@ -94,8 +94,8 @@ becoming an implicit authority source or forcing a new fence on every sample.
 
 * Counterexamples and explicit assumptions
 
-Six final [[file:../../../dev/proofs/evidence/llm-routing/itf][ITF traces]] are independently decoded in the archived receipt.
-[[file:../../../dev/proofs/evidence/llm-routing/counterexample-observations.json][Decoded observations]] check actual final fields:
+Six final [[file:../../../.cache/verification/evidence/proofs/llm-routing/itf][ITF traces]] are independently decoded in the archived receipt.
+[[file:../../../.cache/verification/evidence/proofs/llm-routing/counterexample-observations.json][Decoded observations]] check actual final fields:
 
 | Unsafe schedule | Observed failure |
 |-----------------+------------------|
@@ -125,19 +125,19 @@ contract. Generic provider errors are not assumed to prove zero execution/cost.
 
 * Documentation, diagram and integrity evidence
 
-[[file:../../../dev/proofs/evidence/llm-routing/four-artifact-check.json][Ten mapping rows]] resolve real Org contracts, Quint tests, Lean declarations
+[[file:../../../.cache/verification/evidence/proofs/llm-routing/four-artifact-check.json][Ten mapping rows]] resolve real Org contracts, Quint tests, Lean declarations
 and D2 nodes. This is named-reference consistency, not native code generation or
 complete cross-language refinement.
 
-[[file:../../../dev/proofs/evidence/llm-routing/document-check.log][Document inventory]] checks English ASCII Org, balanced blocks, local links,
-existing pinned reference targets and acceptance registers. [[file:../../../dev/proofs/evidence/llm-routing/org-export.log][Org export]] disables
-Babel execution and retains optional missing-htmlize diagnostics. [[file:../../../dev/proofs/evidence/llm-routing/diagram-validation.json][D2 validation]]
+[[file:../../../.cache/verification/evidence/proofs/llm-routing/document-check.log][Document inventory]] checks English ASCII Org, balanced blocks, local links,
+existing pinned reference targets and acceptance registers. [[file:../../../.cache/verification/evidence/proofs/llm-routing/org-export.log][Org export]] disables
+Babel execution and retains optional missing-htmlize diagnostics. [[file:../../../.cache/verification/evidence/proofs/llm-routing/diagram-validation.json][D2 validation]]
 covers every core source. The new LLM product diagram was rendered and visually
 inspected, with the existing Go/Kubernetes/Rust assets and no software/check
 versions or hardware chain in its labels.
 
-[[file:../../../dev/proofs/evidence/llm-routing/historical-manifests.log][Fifteen historical manifests]] remain byte-identical. The new
-[[file:../../../dev/proofs/evidence/llm-routing/SHA256SUMS][manifest]] seals the current product documents/navigation, formal sources,
+[[file:../../../.cache/verification/evidence/proofs/llm-routing/historical-manifests.log][Fifteen historical manifests]] remain byte-identical. The new
+[[file:../../../.cache/verification/evidence/proofs/llm-routing/SHA256SUMS][manifest]] seals the current product documents/navigation, formal sources,
 checkers, shared assets and evidence.
 
 * Remaining product acceptance

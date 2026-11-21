@@ -30,7 +30,7 @@ with independently tracked reservation, history, original-owner and semantic
 effect facts. Its normal transitions include domain creation, endpoint aliases,
 seal/stage/activate migration, crash, restart and retained old-worker resume.
 Invalid transitions are separately selected counterexamples. Exact bounds and
-results appear in [[file:../../dev/specs/evidence/finite-domains-2026-10-19.org][the validation receipt]]. Existing sources and dated receipts remain intact.
+results appear in [[file:../../.cache/verification/evidence/specs/finite-domains-2026-10-19.org][the validation receipt]]. Existing sources and dated receipts remain intact.
 
 * Four identities and one authoritative join
 
@@ -250,7 +250,7 @@ Each negative test requires the relevant invariant violation. Several keep
 local affinity and capacity valid while violating current executor or canonical
 history binding; local one-use alone is therefore insufficient. Raw traces,
 exact input hashes, commands, tool bounds and axiom inventories are retained in
-[[file:../../dev/specs/evidence/finite-domains-2026-10-19.org][the separate evidence receipt]]. Failed admission tests end at Quint's fail
+[[file:../../.cache/verification/evidence/specs/finite-domains-2026-10-19.org][the separate evidence receipt]]. Failed admission tests end at Quint's fail
 combinator, which supplies no successor ledger state; they are not runtime
 checkpoint-loss evidence.
 

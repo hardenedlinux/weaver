@@ -20,7 +20,7 @@ This extends [[file:23-writer-isolation-settlement-closure.org][the writer/settl
 initialized source relation, adds account authority and full-image recovery, and
 lifts original reservation/capacity proofs. [[file:../../dev/specs/quint/SettlementAnchorRecovery.qnt][The Quint model]] imports the preceding
 model and exercises lost account responses, mixed snapshots, worker fencing and
-excluded rollback/replay designs. [[file:../../dev/specs/evidence/settlement-anchor-recovery-2026-10-19.org][The executable receipt]] records exact scope.
+excluded rollback/replay designs. [[file:../../.cache/verification/evidence/specs/settlement-anchor-recovery-2026-10-19.org][The executable receipt]] records exact scope.
 [[file:diagrams/25-settlement-anchor-recovery.svg][The core diagram]] contains design relationships, without versions or evidence.
 
 The selected profile puts the canonical account gate outside worker and derived

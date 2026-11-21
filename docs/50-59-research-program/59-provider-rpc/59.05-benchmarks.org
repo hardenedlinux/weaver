@@ -201,22 +201,22 @@ Its subsequent paired committed run retains the complete matrix under identical
 regression warnings and observed concurrent compilation leave performance
 admission unestablished. See that chapter's exact evidence and limits.
 
-The subsequent [[file:../../../dev/proofs/evidence/per-package-benchmarks-20261030/measured/benchmark-summary.org][per-package measured baseline]] qualifies all eighteen Rust cases
+The subsequent [[file:../../../.cache/verification/evidence/proofs/per-package-benchmarks-20261030/measured/benchmark-summary.org][per-package measured baseline]] qualifies all eighteen Rust cases
 under the stricter sample gate, with thirty paired samples per case. Coverage is
 four contracts, three Policy, six ledger, one execution and four server cases.
-The [[file:../../../dev/proofs/evidence/per-package-benchmarks-20261030/measured/receipt.json][receipt]] records all five stages passing and binds 171 worktree inputs;
+The [[file:../../../.cache/verification/evidence/proofs/per-package-benchmarks-20261030/measured/receipt.json][receipt]] records all five stages passing and binds 171 worktree inputs;
 this run does not assert committed-source admission or Linux CI qualification.
-The [[file:../../../dev/proofs/evidence/per-package-benchmarks-20261030/benchmark-evidence-controls.log][collector controls]] and
-[[file:../../../dev/proofs/evidence/per-package-benchmarks-20261030/benchmark-gates.log][workspace development gate]] pass with the race detector enabled.
-The [[file:../../../dev/proofs/evidence/per-package-benchmarks-20261030/measured/grpc-benchmark.log][RPC measurements]] retain three repetitions each of warm Inspect,
+The [[file:../../../.cache/verification/evidence/proofs/per-package-benchmarks-20261030/benchmark-evidence-controls.log][collector controls]] and
+[[file:../../../.cache/verification/evidence/proofs/per-package-benchmarks-20261030/benchmark-gates.log][workspace development gate]] pass with the race detector enabled.
+The [[file:../../../.cache/verification/evidence/proofs/per-package-benchmarks-20261030/measured/grpc-benchmark.log][RPC measurements]] retain three repetitions each of warm Inspect,
 reconnect Inspect and authority publication, with Go allocation counters.
-All [[file:../../../dev/proofs/evidence/per-package-benchmarks-20261030/measured/rust-benchmarks.log][Criterion comparisons and outliers]] remain preserved. This is a fresh
+All [[file:../../../.cache/verification/evidence/proofs/per-package-benchmarks-20261030/measured/rust-benchmarks.log][Criterion comparisons and outliers]] remain preserved. This is a fresh
 local baseline and artifact-integrity qualification; comparisons against the
 local cached baseline are not a matched performance acceptance experiment.
 
 * Current twenty-five-case coverage qualification
 
-The [[file:../../../dev/proofs/evidence/per-package-benchmark-coverage-20261030/README.org][expanded per-package qualification]] measures all 25 cases in the current
+The [[file:../../../.cache/verification/evidence/proofs/per-package-benchmark-coverage-20261030/README.org][expanded per-package qualification]] measures all 25 cases in the current
 matrix, including immutable profile hashing, closed request validation, atomic
 task/profile registration and one/256-task replay. Each case has thirty fresh
 paired samples. Three actual Go-to-Rust mTLS RPC benchmarks each complete three

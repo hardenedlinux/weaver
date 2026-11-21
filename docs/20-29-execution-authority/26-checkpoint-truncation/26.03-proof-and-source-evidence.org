@@ -15,7 +15,7 @@ the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21
 * Reproduction and bounded evidence
 
 Run the isolated checker (retired Python driver) for [[file:../../../dev/proofs/lean/LlmCheckpointTruncation.lean][Lean]] and [[file:../../../dev/proofs/quint/LlmCheckpointTruncation.qnt][Quint]]. Retain
-[[file:../../../dev/proofs/evidence/llm-checkpoint-truncation/commands.json][command results]], [[file:../../../dev/proofs/evidence/llm-checkpoint-truncation/receipt.json][the receipt]] and [[file:../../../dev/proofs/evidence/llm-checkpoint-truncation/SHA256SUMS][the byte manifest]]. Preliminary failures remain separate.
+[[file:../../../.cache/verification/evidence/proofs/llm-checkpoint-truncation/commands.json][command results]], [[file:../../../.cache/verification/evidence/proofs/llm-checkpoint-truncation/receipt.json][the receipt]] and [[file:../../../.cache/verification/evidence/proofs/llm-checkpoint-truncation/SHA256SUMS][the byte manifest]]. Preliminary failures remain separate.
 
 The workload compiles 23 Lean modules and prints 16 new declarations without
 =sorryAx=. Quint checks 39 new controls (29 guarded and 10 deliberately broken
@@ -142,8 +142,8 @@ usage is covered by the inherited guarded account controls and Lean composition.
 
 * Source-by-source reuse audit
 
-[[file:../../../dev/proofs/evidence/llm-checkpoint-truncation/source-review.json][Pinned identities and excerpts]], [[file:../../../dev/proofs/evidence/llm-checkpoint-truncation/source-receipt-check.json][fresh blob/excerpt checks]] and
-[[file:../../../dev/proofs/evidence/llm-checkpoint-truncation/checkpoint-source-audit.json][the focused checkpoint/recovery extract]] cover nineteen files.
+[[file:../../../.cache/verification/evidence/proofs/llm-checkpoint-truncation/source-review.json][Pinned identities and excerpts]], [[file:../../../.cache/verification/evidence/proofs/llm-checkpoint-truncation/source-receipt-check.json][fresh blob/excerpt checks]] and
+[[file:../../../.cache/verification/evidence/proofs/llm-checkpoint-truncation/checkpoint-source-audit.json][the focused checkpoint/recovery extract]] cover nineteen files.
 
 | Source | Grounded mechanism | Reuse | Account-checkpoint extension / qualification |
 |--------+--------------------+-------+--------------------------------------------|
@@ -173,9 +173,9 @@ entire Lean/runtime builds were rerun. No upstream source or dependency pin chan
 
 * Implementation acceptance and evidence boundary
 
-[[file:../../../dev/proofs/evidence/llm-checkpoint-truncation/working-source-check.json][Live source hashes]] separate current working files from pinned references.
+[[file:../../../.cache/verification/evidence/proofs/llm-checkpoint-truncation/working-source-check.json][Live source hashes]] separate current working files from pinned references.
 Eighteen match; P17 differs only in two control-plane import paths, recorded in
-[[file:../../../dev/proofs/evidence/llm-checkpoint-truncation/P17-working-diff.patch][the captured working diff]]. That textual comparison does not establish runtime/ABI
+[[file:../../../.cache/verification/evidence/proofs/llm-checkpoint-truncation/P17-working-diff.patch][the captured working diff]]. That textual comparison does not establish runtime/ABI
 equivalence of the new import targets.
 
 | Native gate | Required executable evidence before implementation acceptance |

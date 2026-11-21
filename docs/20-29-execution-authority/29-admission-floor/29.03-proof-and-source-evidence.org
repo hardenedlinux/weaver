@@ -14,7 +14,7 @@ the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21
 
 * Reproduction and bounded evidence
 
-Runner (retired Python driver), [[file:../../../dev/proofs/lean/LlmAdmissionFloor.lean][Lean]], [[file:../../../dev/proofs/quint/LlmAdmissionFloor.qnt][Quint]], [[file:../../../dev/proofs/evidence/llm-admission-floor/commands.json][commands]], [[file:../../../dev/proofs/evidence/llm-admission-floor/receipt.json][receipt]] and [[file:../../../dev/proofs/evidence/llm-admission-floor/SHA256SUMS][byte manifest]] distinguish checked formal
+Runner (retired Python driver), [[file:../../../dev/proofs/lean/LlmAdmissionFloor.lean][Lean]], [[file:../../../dev/proofs/quint/LlmAdmissionFloor.qnt][Quint]], [[file:../../../.cache/verification/evidence/proofs/llm-admission-floor/commands.json][commands]], [[file:../../../.cache/verification/evidence/proofs/llm-admission-floor/receipt.json][receipt]] and [[file:../../../.cache/verification/evidence/proofs/llm-admission-floor/SHA256SUMS][byte manifest]] distinguish checked formal
 contracts from native implementation acceptance. The workload compiles 26 Lean
 modules and prints 14 new declarations without =sorryAx=. Quint checks 33 new
 controls (25 guarded and eight mutation counterexamples) plus 38 directly imported
@@ -127,8 +127,8 @@ independence remain explicit premises.
 
 * Source-by-source audit
 
-[[file:../../../dev/proofs/evidence/llm-admission-floor/source-review.json][Nineteen pinned identities/excerpts]], [[file:../../../dev/proofs/evidence/llm-admission-floor/source-receipt-check.json][fresh blob/excerpt checks]], [[file:../../../dev/proofs/evidence/llm-admission-floor/floor-source-audit.json][focused publication/recovery extract]] and
-[[file:../../../dev/proofs/evidence/llm-admission-floor/working-source-check.json][working hashes/HEAD identities]] distinguish existing mechanisms from extensions.
+[[file:../../../.cache/verification/evidence/proofs/llm-admission-floor/source-review.json][Nineteen pinned identities/excerpts]], [[file:../../../.cache/verification/evidence/proofs/llm-admission-floor/source-receipt-check.json][fresh blob/excerpt checks]], [[file:../../../.cache/verification/evidence/proofs/llm-admission-floor/floor-source-audit.json][focused publication/recovery extract]] and
+[[file:../../../.cache/verification/evidence/proofs/llm-admission-floor/working-source-check.json][working hashes/HEAD identities]] distinguish existing mechanisms from extensions.
 
 | Source | Direct reuse | Required extension or limit |
 |--------+--------------+-----------------------------|
@@ -154,7 +154,7 @@ independence remain explicit premises.
 
 The source bytes and excerpts are freshly rechecked, not relabeled as upstream
 runtime acceptance. Eighteen live files match the reviewed baseline; P17 differs
-only in two control-plane import paths captured in [[file:../../../dev/proofs/evidence/llm-admission-floor/P17-working-diff.patch][the working diff]]. Native
+only in two control-plane import paths captured in [[file:../../../.cache/verification/evidence/proofs/llm-admission-floor/P17-working-diff.patch][the working diff]]. Native
 ABI equivalence of the new import targets remains unqualified. The runner compiles
 Weaver's actual chain; it does not rerun the entire upstream build. No upstream
 source or dependency pin changes.

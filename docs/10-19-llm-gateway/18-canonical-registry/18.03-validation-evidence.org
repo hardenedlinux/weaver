@@ -20,7 +20,7 @@ gates. [[file:../../../dev/proofs/quint/LlmCanonicalRegistry.qnt][Quint]] models
 independent visibility, registry/source changes and current original consumption.
 Its source bootstrap is a fixture; Lean supplies the actual source projection.
 
-Results: [[file:../../../dev/proofs/evidence/llm-canonical-registry/commands.json][commands.json]], [[file:../../../dev/proofs/evidence/llm-canonical-registry/receipt.json][receipt.json]], [[file:../../../dev/proofs/evidence/llm-canonical-registry/SHA256SUMS][SHA256SUMS]]. Preliminary diagnostics remain
+Results: [[file:../../../.cache/verification/evidence/proofs/llm-canonical-registry/commands.json][commands.json]], [[file:../../../.cache/verification/evidence/proofs/llm-canonical-registry/receipt.json][receipt.json]], [[file:../../../.cache/verification/evidence/proofs/llm-canonical-registry/SHA256SUMS][SHA256SUMS]]. Preliminary diagnostics remain
 separate from acceptance. No Gateway implementation or dependency pin is changed.
 
 * Four-artifact correspondence
@@ -42,8 +42,8 @@ separate from acceptance. No Gateway implementation or dependency pin is changed
 
 * Source-by-source comparison
 
-The [[file:../../../dev/proofs/evidence/llm-canonical-registry/source-review.json][POO Flow / Cedar register]], [[file:../../../dev/proofs/evidence/llm-canonical-registry/asp-source-review.json][ASP register]] and [[file:../../../dev/proofs/evidence/llm-canonical-registry/agentgateway-source-review.json][agentgateway register]] retain exact
-pinned source blobs and freshly verified excerpts. [[file:../../../dev/proofs/evidence/llm-canonical-registry/protocol-sources.json][Protocol references]] record the
+The [[file:../../../.cache/verification/evidence/proofs/llm-canonical-registry/source-review.json][POO Flow / Cedar register]], [[file:../../../.cache/verification/evidence/proofs/llm-canonical-registry/asp-source-review.json][ASP register]] and [[file:../../../.cache/verification/evidence/proofs/llm-canonical-registry/agentgateway-source-review.json][agentgateway register]] retain exact
+pinned source blobs and freshly verified excerpts. [[file:../../../.cache/verification/evidence/proofs/llm-canonical-registry/protocol-sources.json][Protocol references]] record the
 selected official MCP/A2A/Client ACP material and its architectural evidence scope.
 Pinned source reads and abstract models are not native protocol conformance.
 
@@ -105,7 +105,7 @@ premise. Native fast-path optimizations need equivalent scoped currentness laws.
 | Original claim/unknown hold | claimResetRegistryCounterexampleTest | New admitted alias resets original spent-state and hold |
 | Pending-intent recovery | droppedPendingRegistryCounterexampleTest | Recovered registry hides or drops the original pending source intent |
 
-Unsafe actions are excluded from =step=. [[file:../../../dev/proofs/evidence/llm-canonical-registry/itf][ITF traces]] are independently decoded.
+Unsafe actions are excluded from =step=. [[file:../../../.cache/verification/evidence/proofs/llm-canonical-registry/itf][ITF traces]] are independently decoded.
 Old-resolution controls must show actual prior issuance. Fresh-resolution positive
 controls must establish the new receipt passes identity currentness before checking
 that original spent/history constraints still reject the actual use.

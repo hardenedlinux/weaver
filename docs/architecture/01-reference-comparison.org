@@ -547,7 +547,7 @@ authenticity to the Host. None supplies a protected account gate by itself.
 [[file:25-gate-consumption-persistence.org][The persistence dossier]] rechecks P12/P13/P15 spent-state ordering,
 P17/P22 storage ownership, P18-P20 conditional receipt/execution closure,
 P31/P43 recovery obligations, P33 budgets, P35 publication domains and C8/C10/C11
-actual-input/Policy composition. [[file:../../dev/specs/evidence/gate-consumption-traces/source-review.json][Eighteen committed blobs were reverified]]
+actual-input/Policy composition. [[file:../../.cache/verification/evidence/specs/gate-consumption-traces/source-review.json][Eighteen committed blobs were reverified]]
 without changing source pins. Existing mechanisms supply semantic joins and
 conditional proofs; the independent durable issuance/consumption root, actual
 owner barrier and authentic account-result recovery require native qualification.
@@ -557,7 +557,7 @@ owner barrier and authentic account-result recovery require native qualification
 
 [[file:26-anchor-commit-broker-fencing.org][The commit/broker dossier]] rechecks all eighteen prior committed source blobs,
 including P35's same-generation fork countermodel and explicit fork-free domain
-premise. [[file:../../dev/specs/evidence/anchor-broker-traces/source-review.json][The renewed source review]] retains exact identities and extended excerpts.
+premise. [[file:../../.cache/verification/evidence/specs/anchor-broker-traces/source-review.json][The renewed source review]] retains exact identities and extended excerpts.
 POO Flow supplies original-binding, indeterminate-spend and retained-obligation
 semantics; cedar-poo-spec supplies conditional actual-input/Policy joins. Neither
 supplies native durable quorum publication or all-alias physical writer isolation.
@@ -567,7 +567,7 @@ supplies native durable quorum publication or all-alias physical writer isolatio
 
 [[file:27-anchor-configuration-prefix-inheritance.org][The reconfiguration review]] reverified the eighteen pinned committed blobs,
 including P35's fork-free publication, complete lineage-prefix and domain-binding
-contracts. [[file:../../dev/specs/evidence/reconfiguration-traces/source-review.json][The review evidence]] retains exact identities and added prefix excerpts.
+contracts. [[file:../../.cache/verification/evidence/specs/reconfiguration-traces/source-review.json][The review evidence]] retains exact identities and added prefix excerpts.
 These source contracts support semantic reuse; neither POO Flow nor cedar-poo-spec
 supplies a native dynamic-quorum replication or actual writer-isolation proof.
 

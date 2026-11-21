@@ -15,7 +15,7 @@ the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21
 * Evidence scope and source correction
 
 The design is recorded in [[file:42.01-custody-publication.org][42.01]]. Actual [[file:../../../dev/proofs/lean/LlmCustodyPublication.lean][Lean]] and [[file:../../../dev/proofs/quint/LlmCustodyPublication.qnt][Quint]] artifacts extend category 41.
-The [[file:../../../dev/proofs/evidence/llm-custody-publication/source-review.json][source receipts]] and [[file:../../../dev/proofs/evidence/llm-custody-publication/publication-source-audit.json][focused source audit]] are freshly checked against pinned blobs;
+The [[file:../../../.cache/verification/evidence/proofs/llm-custody-publication/source-review.json][source receipts]] and [[file:../../../.cache/verification/evidence/proofs/llm-custody-publication/publication-source-audit.json][focused source audit]] are freshly checked against pinned blobs;
 working source identities are checked separately.
 
 A source classification is tightened here: P17 and P22 describe Rust/Marlin runtime
@@ -101,12 +101,12 @@ is claimed. All deliberate mutations are excluded from the guarded random step.
 
 * Acceptance and limitations
 
-Run the checker (retired Python driver); inspect [[file:../../../dev/proofs/evidence/llm-custody-publication/commands.json][command receipts]] and [[file:../../../dev/proofs/evidence/llm-custody-publication/receipt.json][final acceptance receipt]].
+Run the checker (retired Python driver); inspect [[file:../../../.cache/verification/evidence/proofs/llm-custody-publication/commands.json][command receipts]] and [[file:../../../.cache/verification/evidence/proofs/llm-custody-publication/receipt.json][final acceptance receipt]].
 It compiles the local Lean import closure, prints fifteen new declarations,
 typechecks Quint, runs twenty-five new controls and seven exported mutations,
 samples nine recovery initializers and regresses the twenty-three preceding
 custody controls. The raw full-import typecheck exceeded its unchanged watchdog and is retained as
-a timeout. Executed Quint routes use [[file:../../../dev/proofs/evidence/llm-custody-publication/closure-certificate.json][a checked source closure]]: only 308 transitive
+a timeout. Executed Quint routes use [[file:../../../.cache/verification/evidence/proofs/llm-custody-publication/closure-certificate.json][a checked source closure]]: only 308 transitive
 =run= declarations are blanked using official parser source spans. All types,
 actions and helpers retain identical normalized declaration IR; the current
 model and its preceding custody model remain byte-identical, including all

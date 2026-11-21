@@ -20,7 +20,7 @@ published original-task fixture with independent authority reads, external Polic
 generation, issued permits, exact requests, durable decisions and late replies.
 The fixture abstracts source setup; Lean supplies the actual source projection.
 
-Final commands and bounded checks are recorded in [[file:../../../dev/proofs/evidence/llm-recovery-cas/commands.json][commands.json]] and [[file:../../../dev/proofs/evidence/llm-recovery-cas/receipt.json][receipt.json]].
+Final commands and bounded checks are recorded in [[file:../../../.cache/verification/evidence/proofs/llm-recovery-cas/commands.json][commands.json]] and [[file:../../../.cache/verification/evidence/proofs/llm-recovery-cas/receipt.json][receipt.json]].
 Earlier compiler/scenario diagnostics remain distinct from final acceptance.
 
 * Four-artifact correspondence
@@ -42,7 +42,7 @@ Earlier compiler/scenario diagnostics remain distinct from final acceptance.
 
 * Source-by-source comparison
 
-The [[file:../../../dev/proofs/evidence/llm-recovery-cas/source-review.json][POO Flow / Cedar register]] and [[file:../../../dev/proofs/evidence/llm-recovery-cas/agentgateway-source-review.json][agentgateway register]] retain exact pinned source
+The [[file:../../../.cache/verification/evidence/proofs/llm-recovery-cas/source-review.json][POO Flow / Cedar register]] and [[file:../../../.cache/verification/evidence/proofs/llm-recovery-cas/agentgateway-source-review.json][agentgateway register]] retain exact pinned source
 identities and freshly checked excerpts. These are inspected snapshots; no claim
 about a newer release, native ABI or deployed storage behavior follows.
 
@@ -103,7 +103,7 @@ serialization point or a protocol excluding conflicting commits.
 | Exact original profile | profileSwapCASCounterexampleTest | Accepted request names a different commitment from actual original binding |
 | Unknown hold | unknownRefundCASCounterexampleTest | Unknown usage releases the hold and marks settlement |
 
-Unsafe transitions are excluded from =step=. [[file:../../../dev/proofs/evidence/llm-recovery-cas/itf][ITF traces]] are independently decoded;
+Unsafe transitions are excluded from =step=. [[file:../../../.cache/verification/evidence/proofs/llm-recovery-cas/itf][ITF traces]] are independently decoded;
 old-owner cases must demonstrate actual earlier permit/request issuance. Passing
 negative controls mean the intentionally weakened model exposes the specified
 violation, not that the unsafe transition is accepted by the guarded model.
@@ -121,7 +121,7 @@ Verify effective Policy/history acknowledgements cannot precede their publicatio
 to the final serialization authority, or qualify the selected participant protocol.
 Retain unknown budget until attributable original-slot usage and settlement.
 Collect source-bound durable receipts and matched performance controls. Formal
-receipts are sealed by [[file:../../../dev/proofs/evidence/llm-recovery-cas/SHA256SUMS][SHA256SUMS]]; previous receipts remain unchanged.
+receipts are sealed by [[file:../../../.cache/verification/evidence/proofs/llm-recovery-cas/SHA256SUMS][SHA256SUMS]]; previous receipts remain unchanged.
 
 * Local validation result
 

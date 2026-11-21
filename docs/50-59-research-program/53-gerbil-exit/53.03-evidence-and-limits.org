@@ -32,8 +32,8 @@ observed actual duplicate-key rejection, returned normally and recorded exactly
 for the whole native process. Earlier positive exploratory runs are separately
 retained; no cache-cold or population-level latency claim follows.
 
-See [[file:../../../dev/proofs/evidence/native-gerbil-exit/receipt.json][the final receipt]] and
-[[file:../../../dev/proofs/evidence/native-gerbil-exit/qualified-stable/qualified-runs.json][qualified native runs]] for exact exit, unchanged budget, checks, cleanup,
+See [[file:../../../.cache/verification/evidence/proofs/native-gerbil-exit/receipt.json][the final receipt]] and
+[[file:../../../.cache/verification/evidence/proofs/native-gerbil-exit/qualified-stable/qualified-runs.json][qualified native runs]] for exact exit, unchanged budget, checks, cleanup,
 input hashes and scope. A failed candidate is not replaced by a successful later
 receipt; both sources/logs remain in the failure archive. The installed gxi
 interpretation path remains a separate failed/late diagnostic; successful AOT
@@ -50,15 +50,15 @@ Three separate fresh processes use new marker files and the original deadline.
 These are local acceptance runs, not cold-cache or statistically matched timing.
 
 * Receipts
-- [[file:../../../dev/proofs/evidence/native-gerbil-exit/source-snapshot.json][Source snapshots]].
-- [[file:../../../dev/proofs/evidence/native-gerbil-exit/native-inputs-before.json][Native source / reused dependency / input identities]] and [[file:../../../dev/proofs/evidence/native-gerbil-exit/native-inputs-after.json][post-run byte stability]].
-- [[file:../../../dev/proofs/evidence/native-gerbil-exit/post-check-diagnostic/installed-stack.txt][Current cleanup stack sample]].
-- [[file:../../../dev/proofs/evidence/native-gerbil-exit/post-check-diagnostic/installed-diagnostic.json][Post-check diagnostic and failed deadline]].
-- [[file:../../../dev/proofs/evidence/native-gerbil-exit/link-public-load.json][Successful final object link]] / [[file:../../../dev/proofs/evidence/native-gerbil-exit/link-aot.json][retained failed driver link]].
-- [[file:../../../dev/proofs/evidence/native-gerbil-exit/canary-build.json][Canary build]].
-- [[file:../../../dev/proofs/evidence/native-gerbil-exit/clean-proof-receipt.json][Fresh Lean closure]].
-- [[file:../../../dev/proofs/evidence/native-gerbil-exit/api-commands.json][Official Quint phases]].
-- [[file:../../../dev/proofs/evidence/native-gerbil-exit/SHA256SUMS][Byte seal]].
+- [[file:../../../.cache/verification/evidence/proofs/native-gerbil-exit/source-snapshot.json][Source snapshots]].
+- [[file:../../../.cache/verification/evidence/proofs/native-gerbil-exit/native-inputs-before.json][Native source / reused dependency / input identities]] and [[file:../../../.cache/verification/evidence/proofs/native-gerbil-exit/native-inputs-after.json][post-run byte stability]].
+- [[file:../../../.cache/verification/evidence/proofs/native-gerbil-exit/post-check-diagnostic/installed-stack.txt][Current cleanup stack sample]].
+- [[file:../../../.cache/verification/evidence/proofs/native-gerbil-exit/post-check-diagnostic/installed-diagnostic.json][Post-check diagnostic and failed deadline]].
+- [[file:../../../.cache/verification/evidence/proofs/native-gerbil-exit/link-public-load.json][Successful final object link]] / [[file:../../../.cache/verification/evidence/proofs/native-gerbil-exit/link-aot.json][retained failed driver link]].
+- [[file:../../../.cache/verification/evidence/proofs/native-gerbil-exit/canary-build.json][Canary build]].
+- [[file:../../../.cache/verification/evidence/proofs/native-gerbil-exit/clean-proof-receipt.json][Fresh Lean closure]].
+- [[file:../../../.cache/verification/evidence/proofs/native-gerbil-exit/api-commands.json][Official Quint phases]].
+- [[file:../../../.cache/verification/evidence/proofs/native-gerbil-exit/SHA256SUMS][Byte seal]].
 
 * Limits and next boundaries
 This checkpoint addresses the bounded native value-contract/JSON check entry

@@ -105,16 +105,16 @@ compiler version or acceptance count is added to the architecture diagram.
 Existing Quint and Lean models continue to describe the execution contracts;
 source and Gerbil toolchain admission are separately verified host obligations.
 
-The adjacent [[file:../../../dev/proofs/evidence/cold-assurance-20261030/][evidence directory]] retains the initial Gerbil toolchain and bootstrap failures, the
+The adjacent [[file:../../../.cache/verification/evidence/proofs/cold-assurance-20261030/][evidence directory]] retains the initial Gerbil toolchain and bootstrap failures, the
 checksum expansion, the successful preparation and the uncommitted-source
 negative control. Remote completion must be observed for the exact pushed
 revision before it can qualify this independent consumer profile.
 
-The [[file:../../../dev/proofs/evidence/cold-assurance-20261030/verification-before-replacement-guard/receipt.json][local profile run]] passes forty-four stages under the declared Nix Gerbil toolchain,
+The [[file:../../../.cache/verification/evidence/proofs/cold-assurance-20261030/verification-before-replacement-guard/receipt.json][local profile run]] passes forty-four stages under the declared Nix Gerbil toolchain,
 including all existing Rust/Go native checks and the original Quint/Lean gates.
 Its Quint 0.30 safety logs identify the TypeScript interpreter. This receipt
 precedes the final Git-replacement guard and is retained under its own inputs.
-The [[file:../../../dev/proofs/evidence/cold-assurance-20261030/source-admission-controls.log][subsequent source-admission controls]] pass after that guard, including hidden
+The [[file:../../../.cache/verification/evidence/proofs/cold-assurance-20261030/source-admission-controls.log][subsequent source-admission controls]] pass after that guard, including hidden
 index mutation, ignored source, head replacement and literal command arguments.
 
 CI uses clean-source admission at both ends of each mode; that adds two identity
@@ -123,12 +123,12 @@ compiled-input workflow. Changes to any declared verification source still
 trigger it. Repository checks and artifacts remain separately observable at the
 [[https://github.com/hardenedlinux/weaver/actions/workflows/assurance.yml][assurance workflow]].
 
-For commit =6177ce3=, the [[file:../../../dev/proofs/evidence/cold-assurance-20261030/committed-bootstrap/receipt.json][committed local bootstrap]] passes seven stages and the
-[[file:../../../dev/proofs/evidence/cold-assurance-20261030/committed-check/receipt.json][committed local check]] passes forty-six, with 171 unchanged inputs. These are
+For commit =6177ce3=, the [[file:../../../.cache/verification/evidence/proofs/cold-assurance-20261030/committed-bootstrap/receipt.json][committed local bootstrap]] passes seven stages and the
+[[file:../../../.cache/verification/evidence/proofs/cold-assurance-20261030/committed-check/receipt.json][committed local check]] passes forty-six, with 171 unchanged inputs. These are
 the actual declared Darwin Gerbil toolchain profile, not Linux acceptance.
 
 The [[https://github.com/hardenedlinux/weaver/actions/runs/40951720087][first Linux run]] failed at Gerbil toolchain CLI argument parsing before any Go dependency,
-native or formal stage. Its [[file:../../../dev/proofs/evidence/cold-assurance-20261030/ci-40951720087-first-failed.log][raw failure log]] is retained. The fixed Gerbil toolchain was
+native or formal stage. Its [[file:../../../.cache/verification/evidence/proofs/cold-assurance-20261030/ci-40951720087-first-failed.log][raw failure log]] is retained. The fixed Gerbil toolchain was
 invoked through =nix run= with global profile arguments; it interpreted =ci= as
 the old test alias and rejected =shell=. The next workflow explicitly selects
 the fixed package with =nix shell --command devenv= and attaches the profile
@@ -137,11 +137,11 @@ success of that entrypoint must still be observed; no retry reclassifies the
 failed run as passing.
 
 The [[https://github.com/hardenedlinux/weaver/actions/runs/40952881893][second Linux run]] reaches the actual Go bootstrap at =848cfa5=. Its retained
-[[file:../../../dev/proofs/evidence/cold-assurance-20261030/ci-40952881893-bootstrap-failed/receipt.json][source-bound failure receipt]] shows Rust and Go dependency preparation and
+[[file:../../../.cache/verification/evidence/proofs/cold-assurance-20261030/ci-40952881893-bootstrap-failed/receipt.json][source-bound failure receipt]] shows Rust and Go dependency preparation and
 both committed-source guards passing. Elan fails while unpacking the unchanged
 Lean toolchain with =No space left on device=. The imported proof dependency
 stage also fails; native, formal and benchmark qualification did not run.
-The [[file:../../../dev/proofs/evidence/cold-assurance-20261030/pinned-cli-local-entry.log][fixed Gerbil toolchain entrypoint completes locally]] without forcing process exit.
+The [[file:../../../.cache/verification/evidence/proofs/cold-assurance-20261030/pinned-cli-local-entry.log][fixed Gerbil toolchain entrypoint completes locally]] without forcing process exit.
 CLI invocation is therefore no longer the observed Linux blocker. Failed-run
 logs were unavailable from the run/job endpoints at observation time; the
 uploaded per-stage failure artifact provides the retained failure evidence.
@@ -167,7 +167,7 @@ capacity and all original stages; local cleanup controls alone cannot establish
 Linux acceptance.
 
 At implementation commit =472cf7851109a0f495abfe687d6b0d7241f94234=, the
-[[file:../../../dev/proofs/evidence/cold-assurance-20261030/committed-capacity-check/receipt.json][complete committed local check]] passes all forty-six stages with 173 source
+[[file:../../../.cache/verification/evidence/proofs/cold-assurance-20261030/committed-capacity-check/receipt.json][complete committed local check]] passes all forty-six stages with 173 source
 inputs unchanged. This includes the new Go host-preparation controls, all
 existing Rust tests and ASP deny gates, Clippy, Go race/PBT, Quint, Lean and
 actual HTTPS/mTLS provider scenarios. It does not execute privileged cleanup
@@ -175,7 +175,7 @@ on the developer machine. The [[https://github.com/hardenedlinux/weaver/actions/
 observed live at hosted capacity preparation after its fixed Gerbil toolchain identity step
 succeeded; its final bootstrap/native/formal/benchmark outcome remains pending.
 
-A later [[file:../../../dev/proofs/evidence/cold-assurance-20261030/ci-40954543662-live-steps.json][authoritative step observation]] shows both hosted capacity preparation and
+A later [[file:../../../.cache/verification/evidence/proofs/cold-assurance-20261030/ci-40954543662-live-steps.json][authoritative step observation]] shows both hosted capacity preparation and
 the locked dependency bootstrap completed successfully; the same run is then
 executing native/formal verification. This demonstrates progress beyond the
 previous Lean extraction failure. The run is still live at that observation;
@@ -186,10 +186,10 @@ from this intermediate job status.
 
 [[https://github.com/hardenedlinux/weaver/actions/runs/40954543662][Run 40954543662]] subsequently completes successfully at exactly
 =472cf7851109a0f495abfe687d6b0d7241f94234=. Its
-[[file:../../../dev/proofs/evidence/cold-assurance-20261030/ci-40954543662-completed.json][completed job metadata]] and original uploaded artifacts are now retained.
-The [[file:../../../dev/proofs/evidence/cold-assurance-20261030/completed-linux-472cf/verification-3965362697/receipt.json][seven-stage bootstrap]],
-[[file:../../../dev/proofs/evidence/cold-assurance-20261030/completed-linux-472cf/verification-2873743712/receipt.json][forty-six-stage verification]] and
-[[file:../../../dev/proofs/evidence/cold-assurance-20261030/completed-linux-472cf/verification-2864782527/receipt.json][seven-stage benchmark receipt]] all pass and bind the same 173 input hashes
+[[file:../../../.cache/verification/evidence/proofs/cold-assurance-20261030/ci-40954543662-completed.json][completed job metadata]] and original uploaded artifacts are now retained.
+The [[file:../../../.cache/verification/evidence/proofs/cold-assurance-20261030/completed-linux-472cf/verification-3965362697/receipt.json][seven-stage bootstrap]],
+[[file:../../../.cache/verification/evidence/proofs/cold-assurance-20261030/completed-linux-472cf/verification-2873743712/receipt.json][forty-six-stage verification]] and
+[[file:../../../.cache/verification/evidence/proofs/cold-assurance-20261030/completed-linux-472cf/verification-2864782527/receipt.json][seven-stage benchmark receipt]] all pass and bind the same 173 input hashes
 and implementation revision. Natural native exits, 59 Rust tests, the five ASP
 deny gates, actual HTTPS/mTLS integration and formal compilation remain visible
 in their raw stage logs. The benchmark retains eighteen cases with thirty

@@ -92,12 +92,6 @@ func projectPath(root, path, kind string) error {
 		return fmt.Errorf("nonlocal project path: %q", path)
 	}
 	info, err := os.Lstat(filepath.Join(root, path))
-	if kind == "Absent" {
-		if !os.IsNotExist(err) {
-			return fmt.Errorf("retired layout path exists: %s", path)
-		}
-		return nil
-	}
 	if err != nil {
 		return err
 	}
@@ -145,7 +139,7 @@ func TestProjectArchitecture(t *testing.T) {
 	}
 	for _, tracked := range strings.Split(string(tool(t, "git", "ls-files", "-z")), "\x00") {
 		if prohibited[filepath.Ext(tracked)] {
-			t.Fatalf("retired source language remains tracked: %s", tracked)
+			t.Fatalf("prohibited source or generated artifact remains tracked: %s", tracked)
 		}
 		if separator := strings.IndexByte(tracked, '/'); separator >= 0 {
 			if _, ok := rootOwners[tracked[:separator]]; !ok {
@@ -166,7 +160,7 @@ func TestProjectArchitecture(t *testing.T) {
 			continue
 		}
 		switch kind {
-		case "Directory", "File", "ExecutableFile", "RustPackage", "SchemeModule", "GoPackage", "Absent":
+		case "Directory", "File", "ExecutableFile", "RustPackage", "SchemeModule", "GoPackage":
 		default:
 			t.Fatalf("unknown layout kind %s", kind)
 		}
@@ -254,8 +248,5 @@ func TestProjectArchitectureRejectsUnmodeledAndNonlocalOwners(t *testing.T) {
 	}
 	if err := projectPath(repository, "../outside", "File"); err == nil {
 		t.Fatal("nonlocal owner accepted")
-	}
-	if err := projectPath(repository, "crates", "Absent"); err == nil {
-		t.Fatal("retired owner accepted")
 	}
 }

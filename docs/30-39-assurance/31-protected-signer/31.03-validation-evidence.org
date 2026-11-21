@@ -28,10 +28,10 @@ an unreported migration of the earlier archive. New executable sources are
 [[file:../../../dev/proofs/lean/ProtectedSignerRelease.lean][dev/proofs/lean/ProtectedSignerRelease.lean]]. The requested directory name is
 =qunit=; the actual tool/language is Quint.
 
-[[file:../../../dev/proofs/evidence/protected-signer/source-review.json][Eighteen source blobs]] were rehashed against POO Flow
+[[file:../../../.cache/verification/evidence/proofs/protected-signer/source-review.json][Eighteen source blobs]] were rehashed against POO Flow
 =a74fc2fd63437252175b5a67649ee54b886d3bf4= and cedar-poo-spec
 =c8d1a0641120cf65e299e8a98f9fe7666ca96ab5=. Exact hashes and numbered excerpts
-match the registered source identities. [[file:../../../dev/proofs/evidence/protected-signer/source-boundary-review.log][The bounded source audit]] distinguishes
+match the registered source identities. [[file:../../../.cache/verification/evidence/proofs/protected-signer/source-boundary-review.log][The bounded source audit]] distinguishes
 pure consumed-state, runtime fsync/lease ownership and assumed fork-free
 publication. It does not qualify a native protected signer or establish
 repository-wide absence of such an implementation.
@@ -47,38 +47,38 @@ go -C go run ./cmd/weaver-dev -timeout 28m check-policy
 This runs the maintained registered plan. It does not replay the retired
 per-artifact checks or regenerate the historical observations below.
 
-[[file:../../../dev/proofs/evidence/protected-signer/versions.log][Recorded tools]]: Lean =4.34.1=, arm64 Darwin, Std only; Quint =0.33.0=,
+[[file:../../../.cache/verification/evidence/proofs/protected-signer/versions.log][Recorded tools]]: Lean =4.34.1=, arm64 Darwin, Std only; Quint =0.33.0=,
 TypeScript backend. The runner creates a fresh isolated proof directory and
 compiles all thirteen unchanged dependency modules plus the new signer module.
-No dependency toolchain pin is edited. [[file:../../../dev/proofs/evidence/protected-signer/commands.json][Twenty-two command records]] retain exact
+No dependency toolchain pin is edited. [[file:../../../.cache/verification/evidence/proofs/protected-signer/commands.json][Twenty-two command records]] retain exact
 arguments, proof output directory, timings, watchdogs and exits. Compilation and
 typecheck watchdogs are 20 seconds; deterministic routes 55 seconds; sampled
 routes 30 seconds. No limit was widened. Timing is not gateway performance.
 
 | Command | Exit | Seconds | Raw output |
 |---------+------+---------+------------|
-| LogicalMessageAuthority | 0 | 4.526 | [[file:../../../dev/proofs/evidence/protected-signer/LogicalMessageAuthority.log][log]] |
-| SharedMessageBudget | 0 | 0.897 | [[file:../../../dev/proofs/evidence/protected-signer/SharedMessageBudget.log][log]] |
-| FiniteDomainMigration | 0 | 0.787 | [[file:../../../dev/proofs/evidence/protected-signer/FiniteDomainMigration.log][log]] |
-| AnchoredRecoveryAndEgress | 0 | 0.895 | [[file:../../../dev/proofs/evidence/protected-signer/AnchoredRecoveryAndEgress.log][log]] |
-| ComposedGatewayLifecycle | 0 | 0.722 | [[file:../../../dev/proofs/evidence/protected-signer/ComposedGatewayLifecycle.log][log]] |
-| FiniteStreamManifest | 0 | 0.991 | [[file:../../../dev/proofs/evidence/protected-signer/FiniteStreamManifest.log][log]] |
-| DriverCompletionRecovery | 0 | 0.666 | [[file:../../../dev/proofs/evidence/protected-signer/DriverCompletionRecovery.log][log]] |
-| WriterSettlementClosure | 0 | 0.778 | [[file:../../../dev/proofs/evidence/protected-signer/WriterSettlementClosure.log][log]] |
-| SettlementAnchorRecovery | 0 | 0.61 | [[file:../../../dev/proofs/evidence/protected-signer/SettlementAnchorRecovery.log][log]] |
-| GateConsumptionPersistence | 0 | 0.608 | [[file:../../../dev/proofs/evidence/protected-signer/GateConsumptionPersistence.log][log]] |
-| AnchorBrokerCommit | 0 | 0.77 | [[file:../../../dev/proofs/evidence/protected-signer/AnchorBrokerCommit.log][log]] |
-| AnchorReconfiguration | 0 | 0.647 | [[file:../../../dev/proofs/evidence/protected-signer/AnchorReconfiguration.log][log]] |
-| QuorumDurablePromises | 0 | 0.552 | [[file:../../../dev/proofs/evidence/protected-signer/QuorumDurablePromises.log][log]] |
-| ProtectedSignerRelease | 0 | 0.7 | [[file:../../../dev/proofs/evidence/protected-signer/ProtectedSignerRelease.log][log]] |
-| typecheck | 0 | 0.986 | [[file:../../../dev/proofs/evidence/protected-signer/typecheck.log][log]] |
-| tests | 0 | 0.88 | [[file:../../../dev/proofs/evidence/protected-signer/tests.log][log]] |
-| counterexamples | 0 | 0.763 | [[file:../../../dev/proofs/evidence/protected-signer/counterexamples.log][log]] |
-| init | 0 | 0.948 | [[file:../../../dev/proofs/evidence/protected-signer/init.log][log]] |
-| ready | 0 | 0.981 | [[file:../../../dev/proofs/evidence/protected-signer/ready.log][log]] |
-| durable | 0 | 0.897 | [[file:../../../dev/proofs/evidence/protected-signer/durable.log][log]] |
-| signed | 0 | 1.16 | [[file:../../../dev/proofs/evidence/protected-signer/signed.log][log]] |
-| inherited-account-replay | 0 | 5.42 | [[file:../../../dev/proofs/evidence/protected-signer/inherited-account-replay.log][log]] |
+| LogicalMessageAuthority | 0 | 4.526 | [[file:../../../.cache/verification/evidence/proofs/protected-signer/LogicalMessageAuthority.log][log]] |
+| SharedMessageBudget | 0 | 0.897 | [[file:../../../.cache/verification/evidence/proofs/protected-signer/SharedMessageBudget.log][log]] |
+| FiniteDomainMigration | 0 | 0.787 | [[file:../../../.cache/verification/evidence/proofs/protected-signer/FiniteDomainMigration.log][log]] |
+| AnchoredRecoveryAndEgress | 0 | 0.895 | [[file:../../../.cache/verification/evidence/proofs/protected-signer/AnchoredRecoveryAndEgress.log][log]] |
+| ComposedGatewayLifecycle | 0 | 0.722 | [[file:../../../.cache/verification/evidence/proofs/protected-signer/ComposedGatewayLifecycle.log][log]] |
+| FiniteStreamManifest | 0 | 0.991 | [[file:../../../.cache/verification/evidence/proofs/protected-signer/FiniteStreamManifest.log][log]] |
+| DriverCompletionRecovery | 0 | 0.666 | [[file:../../../.cache/verification/evidence/proofs/protected-signer/DriverCompletionRecovery.log][log]] |
+| WriterSettlementClosure | 0 | 0.778 | [[file:../../../.cache/verification/evidence/proofs/protected-signer/WriterSettlementClosure.log][log]] |
+| SettlementAnchorRecovery | 0 | 0.61 | [[file:../../../.cache/verification/evidence/proofs/protected-signer/SettlementAnchorRecovery.log][log]] |
+| GateConsumptionPersistence | 0 | 0.608 | [[file:../../../.cache/verification/evidence/proofs/protected-signer/GateConsumptionPersistence.log][log]] |
+| AnchorBrokerCommit | 0 | 0.77 | [[file:../../../.cache/verification/evidence/proofs/protected-signer/AnchorBrokerCommit.log][log]] |
+| AnchorReconfiguration | 0 | 0.647 | [[file:../../../.cache/verification/evidence/proofs/protected-signer/AnchorReconfiguration.log][log]] |
+| QuorumDurablePromises | 0 | 0.552 | [[file:../../../.cache/verification/evidence/proofs/protected-signer/QuorumDurablePromises.log][log]] |
+| ProtectedSignerRelease | 0 | 0.7 | [[file:../../../.cache/verification/evidence/proofs/protected-signer/ProtectedSignerRelease.log][log]] |
+| typecheck | 0 | 0.986 | [[file:../../../.cache/verification/evidence/proofs/protected-signer/typecheck.log][log]] |
+| tests | 0 | 0.88 | [[file:../../../.cache/verification/evidence/proofs/protected-signer/tests.log][log]] |
+| counterexamples | 0 | 0.763 | [[file:../../../.cache/verification/evidence/proofs/protected-signer/counterexamples.log][log]] |
+| init | 0 | 0.948 | [[file:../../../.cache/verification/evidence/proofs/protected-signer/init.log][log]] |
+| ready | 0 | 0.981 | [[file:../../../.cache/verification/evidence/proofs/protected-signer/ready.log][log]] |
+| durable | 0 | 0.897 | [[file:../../../.cache/verification/evidence/proofs/protected-signer/durable.log][log]] |
+| signed | 0 | 1.16 | [[file:../../../.cache/verification/evidence/proofs/protected-signer/signed.log][log]] |
+| inherited-account-replay | 0 | 5.42 | [[file:../../../.cache/verification/evidence/proofs/protected-signer/inherited-account-replay.log][log]] |
 
 Thirty deterministic Quint controls passed: 25 positive/rejection controls and
 five intentional counterexamples. Four initializers (=init=, =ready=, =durable=,
@@ -89,7 +89,7 @@ does not itself simulate the full account pipeline.
 
 * Counterexample observations
 
-[[file:../../../dev/proofs/evidence/protected-signer/counterexample-observations.json][Decoded observations]] were checked against all five final ITF artifacts.
+[[file:../../../.cache/verification/evidence/proofs/protected-signer/counterexample-observations.json][Decoded observations]] were checked against all five final ITF artifacts.
 Detached CAS, restored raw-key use and checkpoint-based service recovery each
 produce two actually released conflicting equal-length prefixes for signer 0:
 first choice 1 and then choice 2, at the same original root term/revision.
@@ -99,11 +99,11 @@ trace proves an eligibility violation, not duplicate account application.
 
 | Excluded rule / artifact | States | Trace |
 |--------------------------+--------+-------|
-| cachedRecoveryQualificationCounterexampleTest-4.itf | 5 | [[file:../../../dev/proofs/evidence/protected-signer/itf/cachedRecoveryQualificationCounterexampleTest-4.itf.json][ITF]] |
-| checkpointRestoresSigningAuthorityCounterexampleTest-3.itf | 12 | [[file:../../../dev/proofs/evidence/protected-signer/itf/checkpointRestoresSigningAuthorityCounterexampleTest-3.itf.json][ITF]] |
-| concurrentDetachedCASCounterexampleTest-0.itf | 11 | [[file:../../../dev/proofs/evidence/protected-signer/itf/concurrentDetachedCASCounterexampleTest-0.itf.json][ITF]] |
-| oldRawKeyAfterRestartCounterexampleTest-2.itf | 9 | [[file:../../../dev/proofs/evidence/protected-signer/itf/oldRawKeyAfterRestartCounterexampleTest-2.itf.json][ITF]] |
-| signBeforeDurableCommitCounterexampleTest-1.itf | 5 | [[file:../../../dev/proofs/evidence/protected-signer/itf/signBeforeDurableCommitCounterexampleTest-1.itf.json][ITF]] |
+| cachedRecoveryQualificationCounterexampleTest-4.itf | 5 | [[file:../../../.cache/verification/evidence/proofs/protected-signer/itf/cachedRecoveryQualificationCounterexampleTest-4.itf.json][ITF]] |
+| checkpointRestoresSigningAuthorityCounterexampleTest-3.itf | 12 | [[file:../../../.cache/verification/evidence/proofs/protected-signer/itf/checkpointRestoresSigningAuthorityCounterexampleTest-3.itf.json][ITF]] |
+| concurrentDetachedCASCounterexampleTest-0.itf | 11 | [[file:../../../.cache/verification/evidence/proofs/protected-signer/itf/concurrentDetachedCASCounterexampleTest-0.itf.json][ITF]] |
+| oldRawKeyAfterRestartCounterexampleTest-2.itf | 9 | [[file:../../../.cache/verification/evidence/proofs/protected-signer/itf/oldRawKeyAfterRestartCounterexampleTest-2.itf.json][ITF]] |
+| signBeforeDurableCommitCounterexampleTest-1.itf | 5 | [[file:../../../.cache/verification/evidence/proofs/protected-signer/itf/signBeforeDurableCommitCounterexampleTest-1.itf.json][ITF]] |
 
 Unsafe actions are excluded from =step=. Released/delivered observations are a
 test oracle, not a surviving service database from which erased authorization
@@ -113,7 +113,7 @@ Those exclusions are essential deployment premises, with explicit failure traces
 
 * Lean result and exact abstraction boundary
 
-[[file:../../../dev/proofs/evidence/protected-signer/ProtectedSignerRelease.log][Twelve printed theorem dependency reports]] contain no =sorryAx=, new axioms or
+[[file:../../../.cache/verification/evidence/proofs/protected-signer/ProtectedSignerRelease.log][Twelve printed theorem dependency reports]] contain no =sorryAx=, new axioms or
 final compilation errors. Results use no axioms or standard =propext=,
 =Quot.sound= and inherited =Classical.choice=. Checked statements include:
 
@@ -147,22 +147,22 @@ not discharged by the additional list-prefix proof.
 
 * Diagnostics and documentation verification
 
-Preliminary logs remain under =dev/proofs/evidence/protected-signer/preliminary-*=.
+Preliminary logs remain under =.cache/verification/evidence/proofs/protected-signer/preliminary-*=.
 Draft Lean diagnostics concerned missing implicit root binding, a reserved =id=
 name and constructor-case proof scope. They were corrected before the fresh
 final build. Final passed evidence uses the current final sources, not those
 failed drafts. Previous timeout/failure receipts remain unchanged.
 
-[[file:../../../dev/proofs/evidence/protected-signer/document-check.log][English Org/link and source-register checks]],
-[[file:../../../dev/proofs/evidence/protected-signer/org-export.log][Org export with Babel disabled]],
-[[file:../../../dev/proofs/evidence/protected-signer/diagram-validation.json][all core D2 validations]],
-[[file:../../../dev/proofs/evidence/protected-signer/visual-check.log][rendered SVG inspection]] and
-[[file:../../../dev/proofs/evidence/protected-signer/historical-manifests.log][seven unchanged historical manifests]] are recorded independently. The core
+[[file:../../../.cache/verification/evidence/proofs/protected-signer/document-check.log][English Org/link and source-register checks]],
+[[file:../../../.cache/verification/evidence/proofs/protected-signer/org-export.log][Org export with Babel disabled]],
+[[file:../../../.cache/verification/evidence/proofs/protected-signer/diagram-validation.json][all core D2 validations]],
+[[file:../../../.cache/verification/evidence/proofs/protected-signer/visual-check.log][rendered SVG inspection]] and
+[[file:../../../.cache/verification/evidence/proofs/protected-signer/historical-manifests.log][seven unchanged historical manifests]] are recorded independently. The core
 SVG uses bundled Go/Kubernetes/Rust icons and contains no versions or acceptance
 details. Optional missing htmlize syntax-highlighting diagnostics remain in the
 export log; they do not affect structural export or imply runtime execution.
 
-[[file:../../../dev/proofs/evidence/protected-signer/SHA256SUMS][The byte manifest]] binds the new formal sources, checking runner, unchanged
+[[file:../../../.cache/verification/evidence/proofs/protected-signer/SHA256SUMS][The byte manifest]] binds the new formal sources, checking runner, unchanged
 formal dependency sources, Johnny Decimal documents/diagram and retained raw
 evidence. Native protected-storage, key/session queue isolation and final broker
 FD acceptance remain pending. No implementation or pin change is claimed.

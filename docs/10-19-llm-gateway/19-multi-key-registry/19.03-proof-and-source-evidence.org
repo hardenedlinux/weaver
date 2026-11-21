@@ -17,7 +17,7 @@ the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21
 Run the isolated runner (retired Python driver). It compiles the existing Lean dependency chain into a
 fresh temporary directory and checks [[file:../../../dev/proofs/lean/LlmMultiKeyRegistry.lean][the new Lean module]], [[file:../../../dev/proofs/quint/LlmMultiKeyRegistry.qnt][Quint]], focused ITF controls,
 bounded simulations and the category-18 regression. Results are recorded in
-[[file:../../../dev/proofs/evidence/llm-multi-key-registry/commands.json][commands.json]], [[file:../../../dev/proofs/evidence/llm-multi-key-registry/receipt.json][receipt.json]] and [[file:../../../dev/proofs/evidence/llm-multi-key-registry/SHA256SUMS][the byte manifest]]. Failed preliminary proof diagnostics are
+[[file:../../../.cache/verification/evidence/proofs/llm-multi-key-registry/commands.json][commands.json]], [[file:../../../.cache/verification/evidence/proofs/llm-multi-key-registry/receipt.json][receipt.json]] and [[file:../../../.cache/verification/evidence/proofs/llm-multi-key-registry/SHA256SUMS][the byte manifest]]. Failed preliminary proof diagnostics are
 retained separately. Passing negative controls mean that deliberately broken
 alternatives produce the stated violation; they are excluded from the safe step.
 
@@ -124,15 +124,15 @@ then show that spent-state or history still blocks actual consumption.
 | Treat a lost response as a new decision | conflictingDecisionCounterexampleTest | One transaction ID has conflicting bodies/outcomes |
 | Drop unresolved pending during replay | droppedPendingCounterexampleTest | A committed original request no longer appears in pending |
 
-ITFs are in [[file:../../../dev/proofs/evidence/llm-multi-key-registry/itf][the evidence directory]] and decoded by an independent checker.
+ITFs are in [[file:../../../.cache/verification/evidence/proofs/llm-multi-key-registry/itf][the evidence directory]] and decoded by an independent checker.
 Bounded TypeScript simulation is sampled evidence, not exhaustive model checking.
 Lean quantifies finite transition paths but still assumes admitted source steps,
 qualified recovery and one non-forking authority. No liveness proof is claimed.
 
 * Source-by-source reuse and extension
 
-The [[file:../../../dev/proofs/evidence/llm-multi-key-registry/source-review.json][POO Flow / Cedar register]], [[file:../../../dev/proofs/evidence/llm-multi-key-registry/asp-source-review.json][ASP register]] and [[file:../../../dev/proofs/evidence/llm-multi-key-registry/agentgateway-source-review.json][agentgateway register]] preserve pinned blob
-identities and exact excerpts, freshly verified in [[file:../../../dev/proofs/evidence/llm-multi-key-registry/source-receipt-check.json][the source receipt]]. These are
+The [[file:../../../.cache/verification/evidence/proofs/llm-multi-key-registry/source-review.json][POO Flow / Cedar register]], [[file:../../../.cache/verification/evidence/proofs/llm-multi-key-registry/asp-source-review.json][ASP register]] and [[file:../../../.cache/verification/evidence/proofs/llm-multi-key-registry/agentgateway-source-review.json][agentgateway register]] preserve pinned blob
+identities and exact excerpts, freshly verified in [[file:../../../.cache/verification/evidence/proofs/llm-multi-key-registry/source-receipt-check.json][the source receipt]]. These are
 reviewed source identities, not requests to preserve a legacy compatibility layer.
 No upstream checkout, ABI or dependency pin is changed by this design extension.
 

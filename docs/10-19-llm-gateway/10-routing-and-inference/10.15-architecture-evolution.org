@@ -427,14 +427,14 @@ the concurrent dirty workspace. Inherited versions stay as recorded in 10.14.
 External documentation was checked on 2026-11-05; Envoy's latest pages identify
 themselves as development documentation and are mechanism references, not a pin or
 deployment qualification. Focused results and source hashes are recorded in
-[[file:../../../dev/proofs/evidence/architecture-evolution-20261105/receipt.json][the evolution receipt]].
+[[file:../../../.cache/verification/evidence/proofs/architecture-evolution-20261105/receipt.json][the evolution receipt]].
 
 * Governor release qualification disposition
 
 This observation discharges no production requirement. It traces to
 =ArchitectureEvolution::GovernorExecutionPerformance= and its allocation
 to =IncrementalRelations= and =BoundedOperations=. The earlier
-[[file:../../../dev/proofs/evidence/governor-performance-20261106/receipt.json][development receipt]]
+[[file:../../../.cache/verification/evidence/proofs/governor-performance-20261106/receipt.json][development receipt]]
 retains its own source-bound protocol and results.
 
 The formal same-image A/A used the Weaver package module

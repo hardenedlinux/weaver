@@ -67,7 +67,6 @@ package WeaverProject {
     part def File;
     part def ExecutableFile :> File;
     part def IgnoredDirectory;
-    part def Absent;
     part def RuntimeDependency;
     part def ProhibitedExtension;
     part def VerificationSuite;
@@ -97,14 +96,14 @@ package WeaverProject {
         part 'objects.ss' : File;
         part 'config.ss' : File;
         part 'interface.ss' : File;
-        part 'gerbil.pkg' : Absent;
     }
 
     package SourcePolicy {
         doc /* Maintained development orchestration and evidence processing reuse
            the Go owner and native framework entries. Retired scripts are not
-           retained as executable evidence tools. Historical byte manifests and
-           third-party source excerpts remain data, not interpreter dependencies. */
+           retained as executable evidence tools. Execution logs, receipts and captured
+           source archives are generated outputs in ignored cache or CI artifacts. */
+        part '.log' : ProhibitedExtension;
         part '.py' : ProhibitedExtension;
         part '.pyi' : ProhibitedExtension;
         part '.pyw' : ProhibitedExtension;
@@ -195,6 +194,9 @@ package WeaverProject {
         }
         part verificationRuns : VerificationRun {
             doc /* weaver-dev and native suites produce verification outcomes.
+               Run receipts, logs and captured source snapshots are generated
+               outputs under ignored .cache/verification directories or CI
+               artifacts. They must not be committed as proof or spec sources.
                Rust materializes records from those observations under the
                Scheme plan once implemented. Verification::Artifacts declares
                the current local and CI paths. CI retains job attempts for seven days.
@@ -639,8 +641,6 @@ package WeaverProject {
         part 'LICENSES/LGPL-2.1-or-later.txt' : File;
         part 'LICENSES/Apache-2.0.txt' : File;
         part 'rust-toolchain.toml' : File;
-        part 'go.work' : Absent;
-        part 'go.work.sum' : Absent;
         part 'go/go.mod' : File;
         part 'go/go.sum' : File;
         part 'gerbil.pkg' : File;
@@ -937,20 +937,6 @@ package WeaverProject {
         part target : IgnoredDirectory;
         part '.devenv' : IgnoredDirectory;
 
-        part 'dev/benchmarks' : Absent;
-        part api : Absent;
-        part 'dev/policies' : Absent;
-        part 'dev/fixtures/policies' : Absent;
-        part 'scheme/modules' : Absent;
-        part 'scheme/weaver' : Absent;
-        part 'scheme/gerbil.pkg' : Absent;
-        part 'dev/build.ss' : Absent;
-        part 'dev/gerbil.pkg' : Absent;
-        part 'packages/server' : Absent;
-        part 'packages/control' : Absent;
-        part 'dev/models' : Absent;
-        part 'dev/toolchains/go' : Absent;
-        part '.github/workflows/assurance.yml' : Absent;
     }
 
     allocation governanceCode allocate Architecture::semantics to Layout::'scheme/governance';

@@ -48,8 +48,8 @@ func TestProjectArchitectureLicensing(t *testing.T) {
 	copyright := regexp.MustCompile(`(?m)^(?:// |# |;;; |-- |: )?SPDX-FileCopyrightText: .+`)
 	identifier := regexp.MustCompile(`(?m)^(?:// |# |;;; |-- |: )?SPDX-License-Identifier: .+`)
 	for _, path := range paths {
-		// Preserve captured evidence, canonical license texts and third-party marks.
-		if strings.HasPrefix(path, "dev/proofs/evidence/") || strings.HasPrefix(path, "dev/specs/evidence/") || strings.HasPrefix(path, "LICENSES/") {
+		// Preserve canonical license texts and third-party marks.
+		if strings.HasPrefix(path, "LICENSES/") {
 			continue
 		}
 		if strings.HasPrefix(path, "go/") && strings.Contains(path, "/testdata/fuzz/") {

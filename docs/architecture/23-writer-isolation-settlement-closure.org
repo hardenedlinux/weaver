@@ -21,7 +21,7 @@ final usage. Unknown outcomes retain occupancy or escrow.
 This extends [[file:22-driver-completion-recovery.org][the driver recovery contract]]. [[file:../../dev/specs/lean/WriterSettlementClosure.lean][The Lean product]] imports its actual
 initialized transition relation and retains the finite-manifest and original
 ledger projection. [[file:../../dev/specs/quint/WriterSettlementClosure.qnt][The Quint model]] imports the preceding driver model and adds
-split-store and financial receipt schedules. [[file:../../dev/specs/evidence/writer-settlement-closure-2026-10-19.org][The check receipt]] distinguishes
+split-store and financial receipt schedules. [[file:../../.cache/verification/evidence/specs/writer-settlement-closure-2026-10-19.org][The check receipt]] distinguishes
 executed checks from physical qualification. [[file:diagrams/24-writer-settlement-closure.svg][The core diagram]] contains design
 relationships only, with source versions and verification evidence kept in Org.
 

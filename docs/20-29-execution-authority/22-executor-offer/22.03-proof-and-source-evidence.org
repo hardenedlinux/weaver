@@ -15,7 +15,7 @@ the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21
 * Reproduction and bounded result
 
 Run the isolated runner (retired Python driver) for [[file:../../../dev/proofs/lean/LlmExecutorOffer.lean][Lean]] and [[file:../../../dev/proofs/quint/LlmExecutorOffer.qnt][Quint]]. Results are retained in
-[[file:../../../dev/proofs/evidence/llm-executor-offer/commands.json][commands.json]], [[file:../../../dev/proofs/evidence/llm-executor-offer/receipt.json][receipt.json]] and [[file:../../../dev/proofs/evidence/llm-executor-offer/SHA256SUMS][the sealed byte manifest]]. Preliminary diagnostics remain separate.
+[[file:../../../.cache/verification/evidence/proofs/llm-executor-offer/commands.json][commands.json]], [[file:../../../.cache/verification/evidence/proofs/llm-executor-offer/receipt.json][receipt.json]] and [[file:../../../.cache/verification/evidence/proofs/llm-executor-offer/SHA256SUMS][the sealed byte manifest]]. Preliminary diagnostics remain separate.
 
 The workload compiles 19 Lean modules, prints 20 new declarations without =sorryAx=,
 checks 42 Quint controls including 10 deliberate broken-protocol alternatives,
@@ -149,7 +149,7 @@ this extension does not synthesize them.
 | Original immutable interval | tailRewriteExecutorCounterexampleTest | Submitted ticket changes the original interval's lower bound |
 | Dequeue has no effect capability | dequeueSendExecutorCounterexampleTest | Dequeue changes invocation state without a final offer record |
 
-Unsafe alternatives are excluded from =step=. [[file:../../../dev/proofs/evidence/llm-executor-offer/itf][ITFs]] are independently decoded,
+Unsafe alternatives are excluded from =step=. [[file:../../../.cache/verification/evidence/proofs/llm-executor-offer/itf][ITFs]] are independently decoded,
 including real original source commit, durable enqueue, actual ticket issuance,
 burn/submission and partial receipt observations. Fresh-gate controls establish
 currentness before testing denied Policy or a mismatched actual worker. A positive
@@ -158,14 +158,14 @@ under the original operation. Conservative uncertain burns cannot take that path
 
 * Source-by-source reuse and required extensions
 
-The [[file:../../../dev/proofs/evidence/llm-executor-offer/source-review.json][POO Flow / cedar-poo-spec register]] preserves exact pinned blobs and excerpts,
-freshly verified in [[file:../../../dev/proofs/evidence/llm-executor-offer/source-receipt-check.json][the source receipt]]. These are reproducible review identities;
+The [[file:../../../.cache/verification/evidence/proofs/llm-executor-offer/source-review.json][POO Flow / cedar-poo-spec register]] preserves exact pinned blobs and excerpts,
+freshly verified in [[file:../../../.cache/verification/evidence/proofs/llm-executor-offer/source-receipt-check.json][the source receipt]]. These are reproducible review identities;
 no ABI, dependency pin, upstream checkout or compatibility layer is changed.
 
-The separate [[file:../../../dev/proofs/evidence/llm-executor-offer/working-source-check.json][current working-source check]] re-hashes the 19 reviewed files: 18 match
+The separate [[file:../../../.cache/verification/evidence/proofs/llm-executor-offer/working-source-check.json][current working-source check]] re-hashes the 19 reviewed files: 18 match
 the baseline bytes. P17 redirects two control-plane imports from
 =:poo-flow/modules/workflow/= to =:core/modules/funflow/=. Its ownership contract
-and imported binding names are unchanged. The [[file:../../../dev/proofs/evidence/llm-executor-offer/P17-working-store-backend.ss][captured current file]] and [[file:../../../dev/proofs/evidence/llm-executor-offer/P17-working-diff.patch][exact diff]]
+and imported binding names are unchanged. The [[file:../../../.cache/verification/evidence/proofs/llm-executor-offer/P17-working-store-backend.ss][captured current file]] and [[file:../../../.cache/verification/evidence/proofs/llm-executor-offer/P17-working-diff.patch][exact diff]]
 retain this distinction. This audit does not infer ABI/runtime equivalence of the
 new import targets or change either source tree. Native qualification remains open.
 
