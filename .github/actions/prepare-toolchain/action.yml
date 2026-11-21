@@ -25,6 +25,9 @@ runs:
       with:
         key: ${{ env.WEAVER_VERIFY_SUITE }}
         cache-on-failure: true
+    - name: Keep Cargo incremental compilation enabled
+      shell: sh
+      run: echo 'CARGO_INCREMENTAL=1' >> "$GITHUB_ENV"
     - name: Prepare the pinned Lean release
       if: env.WEAVER_VERIFY_SUITE == 'check-policy' && runner.os == 'Linux'
       shell: bash
