@@ -1611,6 +1611,16 @@ prints the original exception before rethrowing; the production ABI still
 returns a semantic refusal. Source/version guards are unchanged.
 
 All seven source revisions have been bound through the native package API.
-Incremental package builds, full publication/admission/mutation controls and
-the new cohort's complete linked runtime qualification remain separate gates;
-the package update itself is not a pass for those gates.
+The persistent Lab development branch is fast-forwarded to the same Lab
+revision, with its clean Core submodule updated through Git's native submodule
+entrypoint. Its previous local mirror remote is preserved.
+
+POO builds and exits naturally within its 480-second preparation watchdog.
+One subsequent serial incremental batch has a separate 480-second aggregate
+preparation fence: Yuanxu, Parser, SDK and ASCENT pass; Orgize exhausts the
+remaining budget and is retained as TIMEOUT, so Lab is not started. A later
+=COMPILED-INTERFACE-ABI-OK= line from Orgize's child does not overturn the
+parent timeout. No matching package build process remains afterwards. Do not
+rerun completed packages or count this batch as complete dependency acceptance.
+Full publication/admission/mutation controls and the new cohort's complete
+linked runtime qualification remain independent pending gates.
