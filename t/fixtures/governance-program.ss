@@ -46,4 +46,12 @@
       (result-or-raise))))
 (unless (getenv "WEAVER_TEST_SKIP_PROGRAM_INSTALL" #f)
   (install-gateway-producer!
-    (lambda (bundle) (if measure-source? (produce-measured bundle) (produce bundle)))))
+    (lambda (bundle)
+      ;; The production ABI deliberately returns false for semantic refusal.
+      ;; Keep the actual cause visible in this qualification-only application.
+      (with-catch
+        (lambda (failure)
+          (display-exception failure (current-error-port))
+          (force-output (current-error-port))
+          (raise failure))
+        (lambda () (if measure-source? (produce-measured bundle) (produce bundle)))))))

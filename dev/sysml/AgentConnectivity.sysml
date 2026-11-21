@@ -407,7 +407,10 @@ package AgentConnectivity {
            views. Lab exports its ModuleSource; ordinary native imports compose
            the typed semantic objects without retired requires/link injection.
            The package manager owns Lab's transitive
-           graph; SDK Build Packages owns its runtime prerequisites. Import
+           graph, including aligned Orgize/Parser/ASCENT Yuanxu pins and the
+           same Core gitlink for Lab's build. SDK Build Packages owns its runtime
+           prerequisites. Updating that cohort invalidates linked qualification
+           until replayed against the new image. Import
            migration and successful compilation alone do not qualify this
            selector or relax the per-turn no-compilation obligation. */
     }
@@ -690,12 +693,12 @@ package AgentConnectivity {
             attribute :>> runtimeProperty = "crates/ledger/tests/unit/provider_session.rs::discovery_matches_current_facts_without_execution_effects";
         }
         part linkedSessionSelection : PlannedAcceptance {
-            attribute :>> status = DeliveryStatus::qualified;
+            attribute :>> status = DeliveryStatus::planned;
             attribute :>> scenario = "One production SchemeCompiler, repeated warm scope, A-B-A route-count rebind and 64 fixed-seed valid/foreign-principal fact cases";
             attribute :>> oracle = "The fixed C ABI returns only the current scope's declared route indices; Rust independently validates the commitment and route bounds; a refused input cannot poison the next warm selection";
             attribute :>> formalModel = "SessionTurnAdmission retained decisions are an admission model, not proof that the linked selector executes";
             attribute :>> runtimeProperty = "crates/governance/tests/integration/session_selector.rs::linked_selector_preserves_warm_scope_rebind_and_fact_boundaries";
-            doc /* Executed through the existing scheme-qualification Cargo graph and one affine VM, including 64 fixed-seed cases. This qualifies the fixed selector export, not a real-Scheme HTTP admission/restart composition or the complete Scheme suite. */
+            doc /* The preceding dependency cohort passed the existing scheme-qualification Cargo graph with one affine VM and 64 fixed-seed cases. The updated full Lab cohort must replay this gate. Its pass would qualify only the fixed selector export, not a real-Scheme HTTP admission/restart composition or the complete Scheme suite. */
         }
         part responseCoordinateBinding : PlannedAcceptance {
             attribute :>> scenario = "64 fragmentations and 64 generated per-part reassignments; foreign item/response ids, duplicate indices and terminal substitutions";

@@ -1474,7 +1474,7 @@ standard archive contract. Required and forbidden module checks still apply;
 the bound neither selects modules nor approves a different application.
 
 The Scheme source migration targets Lab PR 34 revision
-=32af9e083db414288826a6fc60ea9aee362a53b5= and its own declared transitive
+=ebe0779de76ba7fd6da8c74483d7a3eef594beca= and its own declared transitive
 dependencies. The new package namespaces are =tao3k/agentic-ai-lab= and
 =tao3k/yuanxu=. Schema identifiers and protocol strings retain their existing
 values. The root package still declares only Lab; its package manager owns
@@ -1547,11 +1547,11 @@ in =unless= and two self-referential POO test input slots. A filtered call
 that selected zero suites is not evidence. These Scheme tests are separate
 from the Rust-linked =session_selector= executable.
 
-The latest Ubuntu preparation failure is now localized to Orgize importing
-=:gerbil-scheme-rust/scheme/runtime= without an SDK dependency in its package
-declaration. That differs from the local installed-interface failure. Fix
-that dependency at its package owner; do not add a Weaver installer or infer
-SDK pins in Go.
+The earlier Ubuntu preparation failure was localized to Orgize importing
+=:gerbil-scheme-rust/scheme/runtime= without an SDK package dependency.
+Orgize now declares that dependency itself. This differs from its local
+installed-interface failure; a package declaration fix does not establish
+complete build acceptance. No Weaver installer or Go SDK-pin inference is added.
 
 The complete original =check-scheme= run is retained as FAIL. Its module
 build and source integration pass; the package suite reaches its original
@@ -1585,8 +1585,32 @@ admitted again. Authenticity remains an assumed owner guarantee. This bounded
 model evidence does not qualify the current Build implementation or resolve
 the retained 31/40 runtime failure.
 
-Orgize's existing PR now declares its imported Scheme SDK dependency in
-commit =7d241de7c313efe501c58ac257bce103f7213f23=. That PR also carries newer
-Parser/Yuanxu pins from its owner. Weaver retains its current coherent Lab /
-ASCENT dependency cohort until those pins can be integrated together; the
-upstream declaration fix is available, not yet consumed or CI-qualified here.
+The complete dependency cohort is updated through the packages' existing PRs,
+not just Weaver's direct Lab pin. Lab's =core= gitlink matches its transitive
+Yuanxu package revision, so its CI cannot restore a different vendored Core
+after package installation. Existing local Core checkout changes are preserved.
+
+| Owner | Public revision |
+|-------+-----------------|
+| Lab | =ebe0779de76ba7fd6da8c74483d7a3eef594beca= |
+| ASCENT | =90af6adc9ea46f6a6451b6d2f552fc111e5185f6= |
+| Orgize | =936f5d0884559bcbfa9c484e1647fde4fcb64b5e= |
+| Parser | =6b3fa8645d7b6a579bd233a23e3e83c0d11b8556= |
+| Yuanxu | =46a12b01bfc3fe223941c3aeaa91249c81a4b967= |
+| POO | =187fc0eb27c54dee43ab62ecd8154b640849d20a= |
+| Scheme SDK | =7c4dd3d8e3b6321113d1a752599ee7f40045c48a= |
+
+The real linked capture also exposed an upstream publication bug: the reader
+tracked only pair-shaped compiler results. Embedded =__compile-top= returns
+a Gambit source object, so a private declaration's initializer delivery was
+lost and =Governance= appeared unbound. Yuanxu now tracks the exact program
+issued for its already admitted context/body independently of carrier shape.
+Its new embedded/gxi regression reproduces the failure before the correction
+and passes both cases afterwards. Weaver's qualification-only application
+prints the original exception before rethrowing; the production ABI still
+returns a semantic refusal. Source/version guards are unchanged.
+
+All seven source revisions have been bound through the native package API.
+Incremental package builds, full publication/admission/mutation controls and
+the new cohort's complete linked runtime qualification remain separate gates;
+the package update itself is not a pass for those gates.
