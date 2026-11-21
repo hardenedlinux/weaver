@@ -12,6 +12,7 @@
         (only-in :std/misc/ports read-all-as-string)
         (only-in :clan/poo/object .o .get)
         (only-in :clan/poo/type TypeError?)
+        (only-in "../../init.ss" hardenedlinux/weaver.init.exports)
         (only-in "../fixtures/control-inputs.ss" control-inputs)
         (only-in "../fixtures/governed-control.ss" capture-control-fixture prepare-control-fixture))
 (export governed-control-test)
@@ -105,6 +106,10 @@
                   ((.get owner close))
                   ;; The production path also opens and admits its own view.
                   (check-equal? (.get (invoke "valid" init) governance open_nodes) '("infer" "next"))
+                  ;; The real program imports the init owner directly. Keep
+                  ;; the same source admission and typed handoff on this route.
+                  (check-equal? (.get (invoke "valid" hardenedlinux/weaver.init.exports)
+                                     governance open_nodes) '("infer" "next"))
                   #t)))
             (lambda () ((.get view admit-current))))
           directory)))))

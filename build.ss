@@ -4,40 +4,37 @@
 ;;; SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 ;;; The init projection owns module selection and compiler input admission.
-(import (only-in :clan/poo/object .get .call)
+(import (only-in :clan/poo/object .call)
         (only-in :std/source this-source-file)
         (only-in :std/build-script defbuild-script)
-        (only-in :std/make make make-clean)
         (only-in :gerbil/expander import-module expander-context-id)
         (only-in :gerbil/compiler compile-module)
         (only-in :tao3k/yuanxu/module-system/source/observations current-module-source-observer)
-        (only-in "./init.ss" hardenedlinux/weaver.init.exports))
+        (only-in "./init.ss" hardenedlinux/weaver.init.exports std-make-spec))
 
 (export main)
 
-(def (build-options flags)
-  (foldr (lambda (flag options)
-           (match flag
-             ("--release" (cons* build-release: #t options))
-             ("--optimized" (cons* build-optimized: #t options))
-             ("--debug" (cons* debug: #t options))
-             (else (error "Unexpected build option" flag))))
-         '() flags))
+(def (run-standard-build targets root args)
+  ;; STD owns argument parsing and Make dispatch. The admitted source view is
+  ;; the native source directory; it must not be reconstructed by this package.
+  (def (this-source-file) (path-expand "build.ss" root))
+  (defbuild-script targets)
+  (apply main args))
 
 (def (compile-package args)
   (match args
     ([] (compile-package '("compile")))
-    (["compile" . flags]
+    (["compile" . _]
      ;; The init owner supplies the admitted cross-package source view and
      ;; guards Make's input path and outputs for the entire native dispatch.
      (.call hardenedlinux/weaver.init.exports .compile-selection '() '(Lab Weaver)
-       (lambda (targets root) (apply make targets srcdir: root (build-options flags)))))
+       (lambda (targets root) (run-standard-build targets root args))))
     (["clean"]
      (.call hardenedlinux/weaver.init.exports .clean-selection '() '(Lab Weaver)
-       (lambda (targets root) (make-clean targets srcdir: root))))
+       (lambda (targets root) (run-standard-build targets root args))))
     (else
      (let ()
-       (defbuild-script (.get hardenedlinux/weaver.init.exports std-make-spec))
+       (defbuild-script std-make-spec)
        (apply main args)))))
 
 ;; Cargo needs the inputs already read by the package owner to invalidate its
@@ -69,7 +66,7 @@
      (unless (equal? (symbol->string (expander-context-id (import-module source)))
                      expected-module)
        (error "approved application root mismatch")))
-    (["compile"]
+    (["compile" . _]
      (if (getenv "CARGO_FEATURE_SCHEME_PROGRAM" #f)
        (compile-package-for-cargo args)
        (compile-package args)))

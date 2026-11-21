@@ -402,9 +402,14 @@ package AgentConnectivity {
            ledger cut. Rust lane/transaction controls use an explicit advisory
            test owner; actual linked Scheme qualification remains pending.
            Read-only specification uses the init export's std-make-spec through
-           std/build-script; native compile/clean use its compile-selection and
-           clean-selection with standard Make callbacks and admitted source
-           views. Lab exports its ModuleSource; ordinary native imports compose
+           std/build-script; native compile/clean keep its compile-selection and
+           clean-selection guards while STD parses arguments and dispatches Make
+           on the admitted source view. Real provider and debug qualification
+           programs import the same init-owned namespace; the import closure
+           selects init without adding build roots. Gateway Build owns both
+           first-party application targets, so Rust does not hand-compile the
+           qualification helper list. Lab exports its ModuleSource and native
+           Governance declaration; ordinary native imports compose
            the typed semantic objects without retired requires/link injection.
            The package manager owns Lab's transitive
            graph, including aligned Orgize/Parser/ASCENT Yuanxu pins and the

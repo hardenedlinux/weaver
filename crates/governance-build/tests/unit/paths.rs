@@ -56,6 +56,7 @@ fn application_names_cannot_inject_source_or_select_weaver_fixtures() {
         "operator/app) (exit)",
         "operator/app\n",
         "operator/app\0",
+        "hardenedlinux/weaver/scheme/gateway/qualification-program",
         "hardenedlinux/weaver/t/fixtures/governance-program",
     ] {
         assert!(

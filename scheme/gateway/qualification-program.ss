@@ -3,11 +3,11 @@
 ;;; SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 ;;; Explicit qualification application; no ABI implementation or implicit default.
-(import (only-in :std/source this-source-file)
-        (only-in :clan/poo/object .ref)
+(import (only-in :clan/poo/object .ref)
+        (only-in "../../init.ss" hardenedlinux/weaver.init.exports)
         (only-in :tao3k/yuanxu/module-system/source/admission call-with-module-source-operation-measurement)
-        (only-in ../../scheme/gateway/compiled install-gateway-producer!)
-        ./governed-control)
+        (only-in "./compiled.ss" install-gateway-producer!)
+        "../../t/fixtures/governed-control.ss")
 (export main)
 ;;; Returning library initializer required by the SDK, not an executable target.
 (def (main . _) (void))
@@ -15,8 +15,7 @@
 (def source-asset-root (getenv "WEAVER_TEST_GOVERNANCE_ASSET_ROOT" #f))
 (def measure-source? (getenv "WEAVER_TEST_SOURCE_MEASURE" #f))
 (def (produce bundle)
-  (let ((init (path-expand "../../init.ss" (path-directory (this-source-file)))))
-    (capture-control-fixture init
+    (capture-control-fixture hardenedlinux/weaver.init.exports
       (cond ((equal? (.ref (.ref bundle 'governance) 'schema) "weaver.session-nested.v1") "session-nested")
             ((equal? (.ref (.ref bundle 'governance) 'schema) "weaver.session-choice.v1") "session-choice")
             ((equal? (.ref (.ref bundle 'governance) 'schema) "weaver.session-dag.v1") "session-dag")
@@ -24,7 +23,7 @@
             (source-asset-root "assets-only")
             (else "policy-only"))
       (.ref bundle 'tasks) (.ref bundle 'plans) (.ref bundle 'publication)
-      (or source-asset-root "."))))
+      (or source-asset-root ".")))
 (def (produce-measured bundle)
   ;; Upstream owns operation accounting. Emit only fixed metric keys/scalars;
   ;; profiling never supplies an approval, source cache or replacement result.

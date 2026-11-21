@@ -62,10 +62,18 @@ impl<Runtime, Error: std::fmt::Debug> PackageTooling<Runtime, Error> {
         );
         // The standard Gateway Build owns this first-party module. Only the
         // configured application at the exact package path can use its output.
-        if request.application_module == "hardenedlinux/weaver/scheme/gateway/provider-program"
-            && Path::new(request.application_source)
-                == Path::new(request.package).join("scheme/gateway/provider-program.ss")
-        {
+        let module_path = match request.application_module {
+            "hardenedlinux/weaver/scheme/gateway/provider-program" => {
+                Some("scheme/gateway/provider-program.ss")
+            }
+            crate::application::QUALIFICATION_APPLICATION => {
+                Some("scheme/gateway/qualification-program.ss")
+            }
+            _ => None,
+        };
+        if module_path.is_some_and(|path| {
+            Path::new(request.application_source) == Path::new(request.package).join(path)
+        }) {
             return;
         }
         let compile = |source: &str, module: &str| {
@@ -79,17 +87,6 @@ impl<Runtime, Error: std::fmt::Debug> PackageTooling<Runtime, Error> {
                 0
             );
         };
-        if request.application_module == crate::application::QUALIFICATION_APPLICATION {
-            // The existing debug image imports this helper. Native Scheme tests
-            // load their own sources and do not use this image build.
-            let control =
-                Path::new(request.application_source).with_file_name("governed-control.ss");
-            println!("cargo:rerun-if-changed={}", control.display());
-            compile(
-                control.to_str().expect("qualification control source"),
-                crate::application::QUALIFICATION_CONTROL,
-            );
-        }
         compile(request.application_source, request.application_module);
     }
     fn stage_application(&self, runtime: &Runtime, request: &ProgramStageRequest<'_>) {

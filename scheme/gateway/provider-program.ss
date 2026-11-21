@@ -3,8 +3,8 @@
 ;;; SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 ;;; Build-selected initializer for Weaver's declared provider workflows.
-(import (only-in :std/source this-source-file)
-        (only-in :clan/poo/object .o .ref)
+(import (only-in :clan/poo/object .o .ref)
+        (only-in "../../init.ss" hardenedlinux/weaver.init.exports)
         (only-in :tao3k/agentic-ai-lab/modules/loop-engine/control/governor make-loop-governor)
         (only-in :tao3k/agentic-ai-lab/modules/governance/interface AgenticAILabGovernanceProfile.
                  agentic-ai-lab-governance-source)
@@ -17,7 +17,6 @@
 (export main)
 (def (main . _) (void))
 
-(def init-file (path-expand "../../init.ss" (path-directory (this-source-file))))
 (def policy-root (getenv "WEAVER_GOVERNANCE_POLICY_ROOT" #f))
 
 ;;; Use the existing Reader's private scalar accounting. A diagnostic cannot
@@ -63,7 +62,7 @@
   (begin0
     (capture-source
       (lambda ()
-        (capture-governed-gateway init-file governor profile context '()
+        (capture-governed-gateway hardenedlinux/weaver.init.exports governor profile context '()
           (.ref bundle 'tasks) (.ref bundle 'plans) publication)))
     (when phase-observer (phase-observer "source-captured"))))
 

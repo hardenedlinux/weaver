@@ -1474,7 +1474,7 @@ standard archive contract. Required and forbidden module checks still apply;
 the bound neither selects modules nor approves a different application.
 
 The Scheme source migration targets Lab PR 34 revision
-=ebe0779de76ba7fd6da8c74483d7a3eef594beca= and its own declared transitive
+=1e1fee0a959017bc10687dd4b553c8106788edba= and its own declared transitive
 dependencies. The new package namespaces are =tao3k/agentic-ai-lab= and
 =tao3k/yuanxu=. Schema identifiers and protocol strings retain their existing
 values. The root package still declares only Lab; its package manager owns
@@ -1505,7 +1505,7 @@ products and source checkouts remain available.
 The new Yuanxu no longer exports =call-with-init-build-spec=. Read-only
 specification uses the admitted =std-make-spec= in =std/build-script=. Native
 compile/clean use the init owner's =.compile-selection= and =.clean-selection=
-with standard =make=/=make-clean= callbacks. The owner supplies the cross-package
+with STD-generated argument parsing and Make dispatch. The owner supplies the cross-package
 source view, compiler input checks and output locks; a spec alone cannot serve
 foreign relative targets from Weaver's directory. No source view or load-path
 ordering is reconstructed in the builder. Cargo still observes source
@@ -1592,7 +1592,7 @@ after package installation. Existing local Core checkout changes are preserved.
 
 | Owner | Public revision |
 |-------+-----------------|
-| Lab | =ebe0779de76ba7fd6da8c74483d7a3eef594beca= |
+| Lab | =1e1fee0a959017bc10687dd4b553c8106788edba= |
 | ASCENT | =90af6adc9ea46f6a6451b6d2f552fc111e5185f6= |
 | Orgize | =936f5d0884559bcbfa9c484e1647fde4fcb64b5e= |
 | Parser | =6b3fa8645d7b6a579bd233a23e3e83c0d11b8556= |
@@ -1624,3 +1624,38 @@ parent timeout. No matching package build process remains afterwards. Do not
 rerun completed packages or count this batch as complete dependency acceptance.
 Full publication/admission/mutation controls and the new cohort's complete
 linked runtime qualification remain independent pending gates.
+
+* Build entry and real application import migration
+
+Version pinning alone did not qualify Weaver's build entry. The builder now
+imports init's public =std-make-spec= and delegates flags and Make dispatch to
+=std/build-script=, retaining Yuanxu's existing source-view, input-currentness
+and output-lock boundary. Cargo observation applies to compile flags as well.
+There is no additional =build-roots= declaration: the actual application's
+native import closure owns init selection.
+
+The actual provider and qualification programs now import and consume the
+init-owned namespace instead of reopening =init.ss= by pathname. The existing
+source operations accept that owner or their existing source view, retaining
+the same admission checks before and after source preparation. Weaver's three
+Interfaces declare their native imports and export their Module bindings;
+Lab's Governance facade exports its declaration too. Native compilation
+previously exposed missing type and runtime-export bindings at those boundaries.
+
+The debug application is =scheme/gateway/qualification-program.ss=. Gateway's
+Build declaration selects it only for Scheme qualification and selects the
+production program by its existing application configuration. Native imports
+select the existing control helper and init automatically. Rust skips its old
+manual qualification-helper compilation; approved external applications retain
+their separate explicit path. Production rejects the new test application and
+forbids both current and former test application modules in its archive. The
+obsolete =t/fixtures/governance-program.ss= implementation is removed.
+
+The actual program-mode =spec= and =compile --debug= entries pass without
+forced roots, and the spec includes init, qualification program and helper.
+The Rust application-boundary suite passes all four tests. All 31 existing
+source/contract cases and the existing source integration suite pass, including
+direct init-owner handoff and the original semantic refusal controls. The hot
+program build emits zero compile events and exits naturally within its
+unchanged 120-second fence. These entry checks do not qualify the complete
+linked Rust C ABI image, foreign-library A/B custody or runtime tails.

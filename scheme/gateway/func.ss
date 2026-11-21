@@ -521,7 +521,11 @@
                 (else (apply yuanxu-load-modules (list source)))))
          (gateway (begin
                     (source-phase! "source-selection-loaded")
-                    (.get view modules Weaver gateway)))
+                    ;; A loaded source view exposes modules; an init-owned
+                    ;; namespace already exposes its named windows directly.
+                    (if (.slot? view 'modules)
+                      (.get view modules Weaver gateway)
+                      (.get view Weaver gateway))))
          (admit-current (.get view admit-current)))
     (source-phase! "source-module-view-loaded")
     (require-source-open!)

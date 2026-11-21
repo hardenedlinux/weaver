@@ -6,8 +6,10 @@
 (.def Build
   defbuild-script:
   (.o spec: (if (getenv "CARGO_FEATURE_SCHEME_PROGRAM" #f)
-               (if (equal? (getenv "WEAVER_GOVERNANCE_APPLICATION" "")
+               (if (getenv "CARGO_FEATURE_SCHEME_QUALIFICATION" #f)
+                 '("provider-source" "compiled" "qualification-program")
+                 (if (equal? (getenv "WEAVER_GOVERNANCE_APPLICATION" "")
                            "hardenedlinux/weaver/scheme/gateway/provider-program")
                  '("provider-source" "compiled" "provider-program")
-                 '("provider-source" "compiled"))
+                 '("provider-source" "compiled")))
                '("provider-source"))))
