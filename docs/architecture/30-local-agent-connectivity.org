@@ -1508,6 +1508,10 @@ complete image build shares the enclosing suite deadline while its total
 duration and archive phases are measured without the uncalibrated 480-second
 cutoff. Cold preparation and retained builds must be reported separately;
 completion of this calibration does not establish the former eight-minute gate.
+Cargo preparation and Go fixture artifact discovery share a canonical Go tool
+prefix in PATH. Go's test launcher prepends that prefix; normalizing it once
+preserves native compiler search order and avoids an SDK rebuild caused only
+by the wrapper environment. Cargo still owns artifact identity and freshness.
 
 The module-selection fixture dispatches cold A/B, hot B and cleanup through
 one standard Build owner with distinct output directories. It does not spawn

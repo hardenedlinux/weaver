@@ -16,6 +16,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"sort"
+	"strings"
 	"time"
 )
 
@@ -330,6 +331,9 @@ func runStageObserved(ctx context.Context, root, directory string, environment [
 	}
 	cmd.Dir = root
 	cmd.Env = environment
+	if stage.Binary == "cargo" {
+		cmd.Env = CargoEnvironment(environment)
+	}
 	var output io.Writer = log
 	if live != nil {
 		output = io.MultiWriter(log, live)
@@ -466,6 +470,28 @@ func writeReceipt(directory string, receipt Receipt) error {
 		return err
 	}
 	return os.Rename(temporary, filepath.Join(directory, "receipt.json"))
+}
+
+// CargoEnvironment keeps Go's own tool directory first exactly once. go test
+// prepends it to PATH; the SDK tracks PATH as a compiler input, so preparation
+// and artifact discovery must use the same environment rather than rebuild.
+func CargoEnvironment(environment []string) []string {
+	result := append([]string(nil), environment...)
+	goDirectory := filepath.Join(runtime.GOROOT(), "bin")
+	for i, entry := range result {
+		if !strings.HasPrefix(entry, "PATH=") {
+			continue
+		}
+		directories := []string{goDirectory}
+		for _, directory := range filepath.SplitList(strings.TrimPrefix(entry, "PATH=")) {
+			if directory != goDirectory {
+				directories = append(directories, directory)
+			}
+		}
+		result[i] = "PATH=" + strings.Join(directories, string(os.PathListSeparator))
+		return result
+	}
+	return append(result, "PATH="+goDirectory)
 }
 
 // Environment replaces keys rather than relying on duplicate environment ordering.

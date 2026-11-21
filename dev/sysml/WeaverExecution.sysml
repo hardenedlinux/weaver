@@ -121,7 +121,10 @@ package WeaverExecution {
            while its duration is calibrated; do not impose the uncalibrated
            480-second cutoff on Cargo, SDK preparation and native compilation.
            Record total duration and archive phases before setting a new build
-           budget. Runtime acceptance deadlines remain independent and fixed. */
+           budget. Runtime acceptance deadlines remain independent and fixed.
+           Cargo preparation and Go fixture artifact discovery use the same
+           toolchain PATH, including one Go tool prefix. Go's test launcher
+           must not invalidate the SDK image merely by repeating that prefix. */
         doc /* Time domain view, publication and reviewed head, profile, and
            original claim reconciliation separately in the deciding scope. Split
            publication into pending, review match and original task birth.

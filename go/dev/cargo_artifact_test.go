@@ -69,6 +69,7 @@ func readCargoExecutable(input io.Reader, target cargoTarget) (string, error) {
 }
 
 func buildCargoExecutable(cmd *exec.Cmd, target cargoTarget) (string, error) {
+	cmd.Env = devrunner.CargoEnvironment(cmd.Environ())
 	output, err := cmd.StdoutPipe()
 	if err != nil {
 		return "", err
