@@ -1625,40 +1625,54 @@ rerun completed packages or count this batch as complete dependency acceptance.
 Full publication/admission/mutation controls and the new cohort's complete
 linked runtime qualification remain independent pending gates.
 
-* Build entry and real application import migration
+* Build entry and C ABI Module
 
-Version pinning alone did not qualify Weaver's build entry. The builder now
-imports init's public =std-make-spec= and delegates flags and Make dispatch to
-=std/build-script=, retaining Yuanxu's existing source-view, input-currentness
-and output-lock boundary. Cargo observation applies to compile flags as well.
-There is no additional =build-roots= declaration: the actual application's
-native import closure owns init selection.
+Weaver follows the C ABI Module in the GHQ Marlin checkout. The ordinary
+=scheme/c-abi= Module declares native targets, typed operation autoloads and
+link options in =Build=. =yuanxu-build-autoloads= publishes the compiler import
+edges. Both programs obtain the canonical Gateway factory through that binding;
+=GatewayScope= has one definition shared with the Gateway Interface.
 
-The actual provider and qualification programs now import and consume the
-init-owned namespace instead of reopening =init.ss= by pathname. The existing
-source operations accept that owner or their existing source view, retaining
-the same admission checks before and after source preparation. Weaver's three
-Interfaces declare their native imports and export their Module bindings;
-Lab's Governance facade exports its declaration too. Native compilation
-previously exposed missing type and runtime-export bindings at those boundaries.
+Init still owns =std-make-spec= and selected source admission. The builder
+passes STD its native =libdir:= output parameter and uses Core's =.with-link=
+to publish the program manifest and activation stub. Rust consumes that plan,
+inserts the Cargo SDK's two host carriers and links through the SDK archive
+contract. Scheme packages never import the Rust SDK runtime. The configured
+external-application path retains the existing SDK staging entry and exact
+module/source checks; matching a first-party module name alone is insufficient.
 
-The debug application is =scheme/gateway/qualification-program.ss=. Gateway's
-Build declaration selects it only for Scheme qualification and selects the
-production program by its existing application configuration. Native imports
-select the existing control helper and init automatically. Rust skips its old
-manual qualification-helper compilation; approved external applications retain
-their separate explicit path. Production rejects the new test application and
-forbids both current and former test application modules in its archive. The
-obsolete =t/fixtures/governance-program.ss= implementation is removed.
+C ABI roots use the Rust host's existing root/apply/release service. The
+callback's temporary root is released with unwind protection. Compiled requests
+consume published Gateway operations without reopening init's Build projection
+or invoking Make. Development source capture retains its before/after source
+admission checks. Linked code does not grant execution authority: Rust's exact
+source expectations and ledger checks still decide version, intent, withdrawal
+and replay eligibility.
 
-The actual program-mode =spec= and =compile --debug= entries pass without
-forced roots, and the spec includes init, qualification program and helper.
-The Rust application-boundary suite passes all four tests. All 31 existing
-source/contract cases and the existing source integration suite pass, including
-direct init-owner handoff and the original semantic refusal controls. The hot
-program build emits zero compile events and exits naturally within its
-unchanged 120-second fence. These entry checks do not qualify the complete
-linked Rust C ABI image, foreign-library A/B custody or runtime tails.
+The complete linked Rust entry passed 97 tests with four existing ignored
+cases in the earlier linked-image run. The latest Scheme source suite passed
+76 cases, and the expanded source integration suite passed its compiled-entry
+refusal controls. Final linked-image qualification for the updated dependency
+cohort remains pending.
+That final build completed its Scheme/C object archive, then Apple's linker
+failed with =Bus error: 10= before the runtime suite. This is a retained failure,
+not a runtime pass or an Ubuntu result; the macOS matrix remains enabled.
+The latest full cold A/B, hot B, cleanup-isolation and B-use gate reached its
+unchanged 120-second fence during cold B; cold A completed in 48.34 seconds.
+Its result remains a failure. No budget was widened.
+The source specification contains 49 targets: the original 40 plus the shared
+dependency interface, seven C ABI Module files and the callback implementation.
+The exact fourteen foreign Lab products remain mandatory. Ubuntu CI closure
+and final qualification of this complete source set remain pending.
+
+The current direct dependency is Lab
+=0ce88b4fbc9060bbda05bb6f93ac2a7ebf3ce3d7=. Its aligned cohort pins Core
+=df4be3a79cc8cf2922fcce9e129b4f3ddf21d000=, Orgize
+=8f74018939909187d050b9b6cd4bbb0784dbe3e7= and ASCENT
+=2b733a60673e0c21e9704051e5fe7426e601f3e2=. Core's selected-library,
+Build-role, publication and testing-source-admission gates passed. The existing
+four input-context mutations were rejected by their original assertions, with
+correct-code controls passing before/after and source bytes unchanged.
 
 * Shared Scheme dependency interface
 
@@ -1667,7 +1681,8 @@ linked Rust C ABI image, foreign-library A/B custody or runtime tails.
 operations, Types and prototypes with POO =.get=; ordinary functions still own
 the transformations. Existing canonical Type bindings retain their identity.
 The interface neither selects Weaver scopes nor wraps procedures or catches
-their errors. Real programs continue to acquire the init-owned namespace.
+their errors. Development source operations use init-owned scopes; compiled
+programs use the canonical Build-published Gateway factory.
 
 Marlin's interface and functional coding style informed this organization.
 Weaver already selects Lab Governance in init: importing that Module declaration

@@ -20,7 +20,7 @@
   (defvalues (lab first)
     (call-with-module-source-operation-measurement
       (lambda () (.get hardenedlinux/weaver.init.exports Lab governance)) accounting?: #f))
-  (unless (and (= (hash-ref first '(calls candidate-read) 0) 4)
+  (unless (and (= (hash-ref first '(calls candidate-read) 0) 5)
                (= (hash-ref first '(calls scope-factory) 0) 1)
                (= (hash-ref first '(calls (scope-factory tao3k/agentic-ai-lab/modules/governance/interface)) 0) 1)
                (= (hash-ref first '(calls (scope-factory hardenedlinux/weaver/scheme/governance/interface)) 0) 0))
@@ -31,7 +31,7 @@
   (unless (and (eq? lab again) (zero? (hash-ref repeat '(calls candidate-read) 0))
                (zero? (hash-ref repeat '(calls scope-factory) 0)))
     (error "repeated native scope demand did not reuse its POO slot"))
-  (displayln "WEAVER-MODULE-FIRST-GET declarations=4 scopes=1 repeat-scopes=0")
+  (displayln "WEAVER-MODULE-FIRST-GET declarations=5 scopes=1 repeat-scopes=0")
   (def local (.get hardenedlinux/weaver.init.exports Weaver governance))
   (unless (and (not (eq? lab local))
                (eq? lab (.get hardenedlinux/weaver.init.exports Lab governance))

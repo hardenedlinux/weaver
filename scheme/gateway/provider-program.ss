@@ -4,15 +4,18 @@
 
 ;;; Build-selected initializer for Weaver's declared provider workflows.
 (import (only-in :clan/poo/object .o .get .ref)
-        (only-in "../../init.ss" hardenedlinux/weaver.init.exports)
+        (only-in :tao3k/yuanxu/prelude yuanxu-build-autoloads)
+        (for-syntax (only-in "../c-abi/build.ss" Build))
         (only-in "../interface.ss" LabGovernance LabCedar)
         (only-in :tao3k/yuanxu/module-system/source/admission call-with-module-source-operation-measurement)
         :hardenedlinux/weaver/scheme/policy/cedar-ffi
         (only-in "./compiled.ss" install-gateway-producer!)
-        (only-in "./func.ss" capture-governed-gateway gateway-source-phase-observer)
+        "../c-abi/gateway.ss"
+        (only-in "./func.ss" capture-compiled-gateway gateway-source-phase-observer)
         "./provider-source.ss")
 (export main)
 (def (main . _) (void))
+(yuanxu-build-autoloads Build gateway)
 
 (def policy-root (getenv "WEAVER_GOVERNANCE_POLICY_ROOT" #f))
 
@@ -59,7 +62,7 @@
   (begin0
     (capture-source
       (lambda ()
-        (capture-governed-gateway hardenedlinux/weaver.init.exports governor profile context '()
+        (capture-compiled-gateway (gateway-scope) governor profile context '()
           (.ref bundle 'tasks) (.ref bundle 'plans) publication)))
     (when phase-observer (phase-observer "source-captured"))))
 

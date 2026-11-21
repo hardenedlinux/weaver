@@ -4,6 +4,28 @@
 
 use std::path::Path;
 #[test]
+fn a_matching_module_name_does_not_select_another_sources_package_product() {
+    let package = Path::new("/tmp/weaver");
+    for (source, expected) in [
+        ("/tmp/weaver/scheme/gateway/provider-program.ss", true),
+        ("/tmp/operator/provider-program.ss", false),
+    ] {
+        let app = crate::ProgramApplication::approved(
+            "hardenedlinux/weaver/scheme/gateway/provider-program",
+            Path::new(source),
+        )
+        .expect("explicit application");
+        let request = crate::ProgramStageRequest::new(
+            package,
+            Path::new("/tmp/prefix/lib"),
+            Path::new("/tmp/output"),
+            &app,
+        )
+        .expect("native inputs");
+        assert_eq!(crate::tooling::package_application(&request), expected);
+    }
+}
+#[test]
 fn archive_stage_arguments_preserve_data_and_reject_invalid_paths() {
     let app = crate::ProgramApplication::approved(
         "operator/application",

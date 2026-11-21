@@ -24,8 +24,9 @@ Consumers use explicit imports and =.get=, for example:
 #+end_src
 
 Keep this dependency interface independent of Weaver init and its own domain
-roles. Real programs consume init-owned scopes; roles consume the dependency
-interface. This direction prevents a role/import/init cycle. Import hygienic
+roles. Source consumers use init-owned scopes; compiled C ABI entries use
+Build-owned =yuanxu-build-autoloads= to the same typed publications. Roles consume
+the dependency interface. This direction prevents a role/import/init cycle. Import hygienic
 syntax such as ASCENT's =relational-program= and type syntax from its owning
 module directly: runtime slots do not replace macro bindings. Do not wildcard
 reexport Lab, concrete policy catalogs or test programs.
@@ -58,6 +59,15 @@ Gerbil packages and native imports own the dependency closure. STD owns build
 arguments/Make; Yuanxu owns the admitted source view and source/output guards.
 Do not add build roots or repeat file inventories to make a consumer link.
 Gateway Build declares its actual provider and debug qualification programs.
+
+Follow Marlin's ordinary =c-abi= Module: its Build owns targets, autoload groups
+and link options. Keep Scheme roots on the Rust host's C services; do not import
+the Rust SDK Scheme runtime into application packages. Core =.with-link= publishes
+the native programme with its compiler activation plan. Rust consumes that plan
+and binds the SDK host carriers, rather than restaging a replacement programme.
+Never acquire init's Build projection from a compiled request. Live-source
+development retains its own admission checks; Rust source expectations and
+ledger epochs, fact versions and intent guards still decide publication/use.
 
 Model design assumptions in SysML and challenge them with the existing Quint
 models and Scheme properties. Dependency-interface checks compare actual owner

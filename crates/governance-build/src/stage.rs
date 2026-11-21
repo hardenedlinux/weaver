@@ -5,13 +5,8 @@
 //! Validated native build-host arguments; no generated Scheme expressions.
 use std::path::Path;
 
-/// Explicit runtime imports required by the Gateway bridge.
-pub const RUNTIME_IMPORTS: &[&str] = &[
-    ":gerbil/expander",
-    ":hardenedlinux/weaver/scheme/governance/interface",
-    ":hardenedlinux/weaver/scheme/policy/interface",
-    ":hardenedlinux/weaver/scheme/gateway/interface",
-];
+/// Host SDK carrier; application edges belong to Scheme Build/autoload.
+pub const RUNTIME_IMPORTS: &[&str] = &[":gerbil-scheme-rust/scheme/runtime"];
 
 /// Borrowed inputs to the SDK's native package and graph staging APIs.
 pub struct ProgramStageRequest<'a> {

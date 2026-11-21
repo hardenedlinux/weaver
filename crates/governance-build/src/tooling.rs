@@ -62,18 +62,7 @@ impl<Runtime, Error: std::fmt::Debug> PackageTooling<Runtime, Error> {
         );
         // The standard Gateway Build owns this first-party module. Only the
         // configured application at the exact package path can use its output.
-        let module_path = match request.application_module {
-            "hardenedlinux/weaver/scheme/gateway/provider-program" => {
-                Some("scheme/gateway/provider-program.ss")
-            }
-            crate::application::QUALIFICATION_APPLICATION => {
-                Some("scheme/gateway/qualification-program.ss")
-            }
-            _ => None,
-        };
-        if module_path.is_some_and(|path| {
-            Path::new(request.application_source) == Path::new(request.package).join(path)
-        }) {
+        if package_application(request) {
             return;
         }
         let compile = |source: &str, module: &str| {
@@ -90,6 +79,10 @@ impl<Runtime, Error: std::fmt::Debug> PackageTooling<Runtime, Error> {
         compile(request.application_source, request.application_module);
     }
     fn stage_application(&self, runtime: &Runtime, request: &ProgramStageRequest<'_>) {
+        if package_application(request) {
+            stage_published_program(Path::new(request.output));
+            return;
+        }
         assert_eq!(
             (self.stage_package_program)(
                 runtime,
@@ -100,6 +93,67 @@ impl<Runtime, Error: std::fmt::Debug> PackageTooling<Runtime, Error> {
             .expect("program staging"),
             0
         );
+    }
+}
+
+pub(crate) fn package_application(request: &ProgramStageRequest<'_>) -> bool {
+    let relative = match request.application_module {
+        "hardenedlinux/weaver/scheme/gateway/provider-program" => {
+            "scheme/gateway/provider-program.ss"
+        }
+        crate::application::QUALIFICATION_APPLICATION => "scheme/gateway/qualification-program.ss",
+        _ => return false,
+    };
+    Path::new(request.application_source) == Path::new(request.package).join(relative)
+}
+
+/// Consume Core's published loader plan, preserving its activation stub.
+/// The two SDK carriers belong to the Rust host, as in Marlin's ABI linker;
+/// no Scheme dependency, discovery pass or replacement loader is introduced.
+fn stage_published_program(output: &Path) {
+    use serde_json::{Value, json};
+    let published =
+        output.join("package/lib/hardenedlinux/weaver/programs/scheme/gateway/program.json");
+    // This publication is a product of this Cargo build, not a rerun input.
+    let mut plan: Value = serde_json::from_reader(
+        fs::File::open(&published)
+            .expect("Core published Gateway program; native Build with-link required"),
+    )
+    .expect("Core program manifest");
+    let modules = plan
+        .get_mut("modules")
+        .and_then(Value::as_array_mut)
+        .expect("Core compiler module graph");
+    let sdk = gerbil_scheme_aot_build::source_workspace();
+    let mut carriers = Vec::new();
+    for unit in ["utf8", "runtime"] {
+        let identity = format!("gerbil-scheme-rust/scheme/{unit}");
+        assert!(
+            !modules.iter().any(|module| module["module"] == identity),
+            "Scheme program imports the Rust SDK carrier: {identity}"
+        );
+        let source = sdk.join(format!("scheme/generated/{unit}.scm"));
+        assert!(
+            source.is_file(),
+            "Cargo SDK carrier missing: {}",
+            source.display()
+        );
+        println!("cargo:rerun-if-changed={}", source.display());
+        carriers.push(json!({"module": identity, "scm": source, "system": false}));
+    }
+    let position = modules
+        .iter()
+        .position(|module| {
+            !module["module"]
+                .as_str()
+                .is_some_and(|id| id.starts_with("gerbil/runtime/"))
+        })
+        .unwrap_or(modules.len());
+    modules.splice(position..position, carriers);
+    let destination = output.join("program.json");
+    let bytes = serde_json::to_vec(&plan).expect("host-bound Core program manifest");
+    if fs::read(&destination).as_deref().ok() != Some(bytes.as_slice()) {
+        fs::write(destination, bytes).expect("Cargo-owned program manifest");
     }
 }
 

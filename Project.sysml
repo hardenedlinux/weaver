@@ -90,10 +90,11 @@ package WeaverProject {
     }
     part def SchemeModule {
         doc /* The Scheme Module Interface and its native Contract own role
-           semantics. The native package build qualifies selected products. */
+           semantics. Functional and Build libraries are declared by their
+           actual owner; a Module need not manufacture an empty func role.
+           The native package build qualifies selected products. */
         part 'types.ss' : File;
         part 'objects.ss' : File;
-        part 'func.ss' : File;
         part 'config.ss' : File;
         part 'interface.ss' : File;
         part 'gerbil.pkg' : Absent;
@@ -858,7 +859,14 @@ package WeaverProject {
         part 'go/internal/devrunner/testdata/fuzzcontrol' : Directory;
 
         part 'scheme/governance' : SchemeModule;
+        part 'scheme/governance/func.ss' : File;
         part 'scheme/policy' : SchemeModule;
+        part 'scheme/policy/func.ss' : File;
+        part 'scheme/c-abi' : SchemeModule;
+        part 'scheme/c-abi/build.ss' : File;
+        part 'scheme/c-abi/roots.ss' : File;
+        part 'scheme/c-abi/gateway.ss' : File;
+        part 'scheme/gateway/func.ss' : File;
         part 'scheme/gateway' : SchemeModule {
             doc /* program.ss owns a sealed Record/Function lifecycle for one
                approved typed-return producer. Install/close are terminal at

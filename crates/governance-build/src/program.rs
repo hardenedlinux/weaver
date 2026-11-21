@@ -83,6 +83,7 @@ impl BuildPaths {
             "gerbil-ascent/program/scheme-language",
             "gerbil-ascent/program/session",
             "hardenedlinux/weaver/scheme/gateway/compiled",
+            "hardenedlinux/weaver/scheme/c-abi/gateway",
             self.application.module(),
         ];
         let receipt = build_program_archive_with_contract(

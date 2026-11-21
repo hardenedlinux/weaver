@@ -4,18 +4,21 @@
 
 ;;; Explicit qualification application; no ABI implementation or implicit default.
 (import (only-in :clan/poo/object .ref)
-        (only-in "../../init.ss" hardenedlinux/weaver.init.exports)
+        (only-in :tao3k/yuanxu/prelude yuanxu-build-autoloads)
+        (for-syntax (only-in "../c-abi/build.ss" Build))
         (only-in :tao3k/yuanxu/module-system/source/admission call-with-module-source-operation-measurement)
         (only-in "./compiled.ss" install-gateway-producer!)
+        "../c-abi/gateway.ss"
         "../../t/fixtures/governed-control.ss")
 (export main)
 ;;; Returning library initializer required by the SDK, not an executable target.
 (def (main . _) (void))
+(yuanxu-build-autoloads Build gateway)
 ;;; Qualification-only host inputs, fixed for this VM; never selected by RPC.
 (def source-asset-root (getenv "WEAVER_TEST_GOVERNANCE_ASSET_ROOT" #f))
 (def measure-source? (getenv "WEAVER_TEST_SOURCE_MEASURE" #f))
 (def (produce bundle)
-    (capture-control-fixture hardenedlinux/weaver.init.exports
+    (capture-compiled-control-fixture (gateway-scope)
       (cond ((equal? (.ref (.ref bundle 'governance) 'schema) "weaver.session-nested.v1") "session-nested")
             ((equal? (.ref (.ref bundle 'governance) 'schema) "weaver.session-choice.v1") "session-choice")
             ((equal? (.ref (.ref bundle 'governance) 'schema) "weaver.session-dag.v1") "session-dag")

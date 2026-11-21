@@ -25,9 +25,11 @@
         (only-in "./program.ss" make-gateway-program)
         (only-in "./derivation.ss" derive-gateway-source)
         (only-in "./derivation-types.ss" GatewayPreparation)
+        (only-in "./types.ss" GatewayScopeContract)
         "./contracts.ss")
 (export compile-gateway prepare-gateway prepare-governed-gateway emit-gateway emit-governed-gateway capture-governed-gateway make-gateway-program governor-open-nodes governor-ready-steps compose-governor-selection)
 (export gateway-source-phase-observer gateway-source-cancelled? make-retained-governor trace-gateway-source-phase)
+(export capture-compiled-gateway)
 
 ;;; Each source-loaded role has its own parameter. Enable the same numeric
 ;;; diagnostic in both the linked entry and the role only when requested.
@@ -557,6 +559,22 @@
       ((.get gateway capture)
        (lambda ()
          (produce-governed-source gateway admit-current governor profile context states tasks plans publication))))))
+
+;;; A linked publication has already passed the Module compiler's admission.
+;;; Keep live-source checks in capture-governed-gateway; this path cannot run a
+;;; build or load a source-selected replacement. Rust still checks the original
+;;; source expectation and ledger authority after this value-only projection.
+(def (capture-compiled-gateway gateway governor profile context states tasks plans publication)
+  (validate GatewayScopeContract gateway)
+  (require-source-open!)
+  (let ((result
+         ((.get gateway capture)
+           (lambda ()
+             ((.get gateway emit)
+               ((.get gateway compile) governor profile context states tasks plans publication))))))
+    (require-source-open!)
+    (validate GatewayScopeContract gateway)
+    result))
 
 ;;; Rich preparation remains inside the same admitted Yuanxu view. The caller
 ;;; may inspect advisory evidence; existing emit/capture still accept only source.

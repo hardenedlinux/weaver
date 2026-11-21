@@ -3,18 +3,12 @@
 ;;; SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 (import (only-in "./types.ss" GatewayScopeContract)
-        (only-in "./objects.ss" Gateway.)
-        (only-in "./func.ss" compile-gateway prepare-gateway)
-        (only-in "../governance/objects.ss" Governance.)
-        (only-in "../policy/objects.ss" Policy.))
+        (only-in "./config.ss" GatewayScope))
 (export Gateway)
 (.def Gateway
   identity: 'gateway
   tags: '(gateway)
   core:
   (.o scope-contract: GatewayScopeContract
-      exports:
-      (.o (:: @ Gateway.)
-          compile: (lambda args (apply compile-gateway Governance. Policy. args))
-          prepare: (lambda args (apply prepare-gateway Governance. Policy. args))))
+      exports: GatewayScope)
   features: (.o))

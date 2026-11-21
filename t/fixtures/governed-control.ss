@@ -9,7 +9,7 @@
         :hardenedlinux/weaver/scheme/gateway/provider-source
         (only-in :clan/poo/object .o .ref)
         :hardenedlinux/weaver/scheme/gateway/func)
-(export capture-control-fixture prepare-control-fixture)
+(export capture-control-fixture prepare-control-fixture capture-compiled-control-fixture)
 
 (trace-gateway-source-phase "fixture-module-ready")
 
@@ -19,7 +19,10 @@
 (def (prepare-control-fixture init mode tasks plans publication asset-root)
   (control-fixture init mode tasks plans publication asset-root #t))
 
-(def (control-fixture init mode tasks plans publication asset-root (preparation? #f))
+(def (capture-compiled-control-fixture gateway mode tasks plans publication asset-root)
+  (control-fixture gateway mode tasks plans publication asset-root #f capture-compiled-gateway))
+
+(def (control-fixture init mode tasks plans publication asset-root (preparation? #f) (compiled-capture #f))
   (trace-gateway-source-phase "fixture-enter")
   (def prefixed? (string-prefix? "capture-" mode))
   (when prefixed? (set! mode (substring mode 8 (string-length mode))))
@@ -80,7 +83,7 @@
               (else assessment))))))
   (trace-gateway-source-phase "compile-begin")
   (let ((result (parameterize ((gateway-source-phase-observer trace-gateway-source-phase))
-                  ((if preparation? prepare-governed-gateway capture-governed-gateway)
+                  ((or compiled-capture (if preparation? prepare-governed-gateway capture-governed-gateway))
                         init (make-loop-governor 'weaver strategy overrides)
                         profile (if session?
                                   (.o request: 'publish source_root: asset-root session: (if nested? (nested-workflow-session) (workflow-session dag? choice?)))

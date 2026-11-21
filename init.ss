@@ -8,6 +8,7 @@
   :load-modules (from: :tao3k/agentic-ai-lab/init ModulesSource) mode: explicit mount: Lab
   (governance)
   :load-modules "./scheme" mode: explicit mount: Weaver
+  (c-abi)
   (governance)
   (policy)
   (gateway))

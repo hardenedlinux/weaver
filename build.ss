@@ -4,12 +4,14 @@
 ;;; SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 ;;; The init projection owns module selection and compiler input admission.
-(import (only-in :clan/poo/object .call)
+(import (only-in :clan/poo/object .call .get)
         (only-in :std/source this-source-file)
         (only-in :std/build-script defbuild-script)
+        (only-in :tao3k/yuanxu/module-system/building/products build-output-directory)
         (only-in :gerbil/expander import-module expander-context-id)
         (only-in :gerbil/compiler compile-module)
         (only-in :tao3k/yuanxu/module-system/source/observations current-module-source-observer)
+        (only-in "./scheme/c-abi/build.ss" Build)
         (only-in "./init.ss" hardenedlinux/weaver.init.exports std-make-spec))
 
 (export main)
@@ -18,7 +20,7 @@
   ;; STD owns argument parsing and Make dispatch. The admitted source view is
   ;; the native source directory; it must not be reconstructed by this package.
   (def (this-source-file) (path-expand "build.ss" root))
-  (defbuild-script targets)
+  (defbuild-script targets libdir: (build-output-directory))
   (apply main args))
 
 (def (compile-package args)
@@ -34,7 +36,7 @@
        (lambda (targets root) (run-standard-build targets root args))))
     (else
      (let ()
-       (defbuild-script std-make-spec)
+       (defbuild-script std-make-spec libdir: (build-output-directory))
        (apply main args)))))
 
 ;; Cargo needs the inputs already read by the package owner to invalidate its
@@ -57,7 +59,7 @@
           (displayln "cargo:rerun-if-changed=" path)))
       inputs)))
 
-(def (main . args)
+(def (dispatch . args)
   (match args
     (["compile-approved-program" source expected-module]
      ;; An operator can approve a source in a different package.
@@ -71,3 +73,7 @@
        (compile-package-for-cargo args)
        (compile-package args)))
     (else (compile-package args))))
+
+;;; Core publishes the compiler loader plan and its activation metadata.
+(def main
+  (.call hardenedlinux/weaver.init.exports .with-link (.get Build with-link) dispatch))

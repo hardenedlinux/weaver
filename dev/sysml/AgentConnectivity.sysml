@@ -377,6 +377,7 @@ package AgentConnectivity {
         port published : PlanPort;
         attribute archiveModuleLimit : Integer = 1024;
         part dependencies : SchemeDependencyInterface;
+        part abi : SchemeCAbiModule;
         part sourceOwner : WeaverExecution::SchemeSemanticPublisher;
         part turnSelector : RetainedSessionSelector;
         doc /* Reuse Scheme/POO/gerbil-ascent, source lane, durable intent and
@@ -387,13 +388,36 @@ package AgentConnectivity {
            archive contract. This is a build bound, not a per-turn query or
            an authority to expand the approved application. */
     }
+    part def SchemeCAbiModule {
+        attribute ownsExecutionAuthority : Boolean = false;
+        attribute resolvesBuildsDuringRequests : Boolean = false;
+        doc /* Follow the GHQ Marlin c-abi Module: Build declares targets,
+           autoload groups and native link options; yuanxu-build-autoloads
+           admits for-template edges to the selected published operations.
+           Scheme roots borrow input and callback roots from the Rust host,
+           return one owned result and release the temporary callback on failure.
+           Scheme packages do not import the Rust SDK runtime. Cargo's existing
+           SDK Build Packages staging API binds host carriers when linking.
+           Compiled callbacks consume typed published Gateway operations; the
+           live-source development entry retains its source admission guards.
+           No native request acquires an init Build projection or invokes Make.
+           Linked code availability never grants a source publication: existing
+           Rust source expectations and ledger source/fact/intent checks remain
+           decisive, including withdrawal, replacement and restart.
+           Challenge code availability as authority with the existing
+           SessionTurnAdmission source-rotation, pending-intent and parent
+           withdrawal cases. Those finite models do not prove C root layout
+           or loader ordering: linked scheme_vm ownership properties and the
+           exact application-path refusal are separate native obligations. */
+    }
     part def SchemeDependencyInterface {
         attribute ownsExecution : Boolean = false;
         attribute wrapsProcedures : Boolean = false;
         doc /* scheme/interface.ss composes existing published Lab inert leaf
            operations through POO. Preserve procedure/Type/prototype
            identities and native inheritance. Do not import Weaver init or role
-           implementations here; real programs acquire init-owned scopes.
+           implementations here; source consumers acquire init-owned scopes,
+           compiled ABI entries use the Build-owned typed publication autoload.
            Do not enroll an init-selected Module declaration again as a library.
            Hygienic ASCENT/type syntax retains its original native import.
            Challenge facade substitution with independent owner identities,
@@ -670,11 +694,11 @@ package AgentConnectivity {
             attribute :>> hypothesis = "An installed foreign library or equal source content is sufficient to reuse a prepared build cut; all closure artifacts belong to consumer cleanup";
             attribute :>> assumptions = "One shared prerequisite and one private output; compiler authenticity and source/artifact identities are assumed owner guarantees requiring runtime evidence; the model does not authenticate files";
             attribute :>> disturbance = "Source changes and ABA, artifact replacement/tamper, eviction, repeated preparation and consumer cleanup";
-            attribute :>> independentOracle = "Use must bind the actual source epoch and artifact epoch; cleanup cannot delete shared prerequisites. The frozen 40-library closure and B's actual loaded products remain runtime obligations even when Make emits only 31 targets";
+            attribute :>> independentOracle = "Use must bind the actual source epoch and artifact epoch; cleanup cannot delete shared prerequisites. The original forty-library closure plus nine explicit Module/interface additions must produce all forty-nine products; the exact fourteen foreign Lab targets and B's actual loaded products remain runtime obligations";
             attribute :>> progressObligation = "An authentic same-content artifact can be reused after fresh admission across ABA without recompilation; changed content requires a matching build";
             attribute :>> explorationBound = "11 named checks; 256 traces, 30 steps, seed 293 and four threads for strong and competing campaigns; no universal or filesystem atomicity proof";
             attribute :>> modelCampaign = "BuildPrerequisites.step versus presenceStep and contentStep; named cleanup and ABA counterexamples";
-            attribute :>> runtimeProperty = "t/qualification/module-selection/module-selection-test.ss and use.ss; current 31/40 inventory failure is retained, not reclassified as a pass";
+            attribute :>> runtimeProperty = "t/qualification/module-selection/module-selection-test.ss and use.ss; original incomplete inventory and current 120-second A/B timeout remain failures until the entire unchanged gate passes";
             attribute :>> runtimeBudget = "Original 120-second A/B gate, 60-second package gate and four compiler workers; no cold-install retry or changed threshold";
             attribute :>> consequence = "Preserve native Build/prerequisite ownership; obtain exact source/artifact bindings and B path evidence before changing inventory assertions or accepting reuse";
             attribute :>> status = WeaverProject::DesignProcess::ChallengeStatus::openGap;

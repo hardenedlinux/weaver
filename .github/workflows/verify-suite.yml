@@ -94,7 +94,7 @@ jobs:
         with:
           path: ${{ runner.temp }}/weaver-gerbil
           key: weaver-scheme-v2-${{ runner.os }}-${{ runner.arch }}-${{ steps.scheme_compiler.outputs.identity }}-${{ hashFiles('gerbil.pkg') }}
-          restore-keys: weaver-scheme-v1-${{ runner.os }}-${{ runner.arch }}-
+          restore-keys: weaver-scheme-v2-${{ runner.os }}-${{ runner.arch }}-${{ steps.scheme_compiler.outputs.identity }}-
       - name: Install declared Scheme dependencies
         id: scheme_dependencies
         if: inputs.suite == 'check-scheme'

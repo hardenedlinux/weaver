@@ -5,6 +5,8 @@
         (only-in :clan/poo/object .o .get)
         (only-in "../scheme/interface.ss" LabGovernance LabSession LabGovernor LabCedar)
         (only-in "../scheme/gateway/provider-source.ss" make-session-turn-selector)
+        (only-in "../scheme/gateway/config.ss" GatewayScope gateway-scope)
+        (only-in "../scheme/gateway/interface.ss" Gateway)
         (only-in :tao3k/agentic-ai-lab/modules/governance/interface
                  Governance AgenticAILabGovernanceProfile agentic-ai-lab-governance-evaluate)
         (only-in :tao3k/agentic-ai-lab/modules/session/objects-core
@@ -19,6 +21,9 @@
 
 (def interface-test
   (test-suite "Weaver dependency interface preserves its actual owners"
+    (test-case "Gateway Module and factory share the canonical publication"
+      (check-equal? (eq? (gateway-scope) GatewayScope) #t)
+      (check-equal? (eq? (gateway-scope) (.get Gateway core exports)) #t))
     (test-case "Types, prototypes and procedures retain native identity"
       (check-equal? (eq? (.get LabGovernance Profile) (.get Governance core exports Profile)) #t)
       (check-equal? (eq? (.get LabGovernance profile-type) AgenticAILabGovernanceProfile) #t)
