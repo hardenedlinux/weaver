@@ -20,6 +20,11 @@ runs:
     - name: Install Ubuntu or Darwin packages
       shell: sh
       run: go -C go run ./cmd/weaver-dev prepare-ci-tools
+    - name: Reuse Cargo dependency builds
+      uses: Swatinem/rust-cache@e9d7b9f1e587218970671bac74e5511ed9506e6a # v2
+      with:
+        key: ${{ env.WEAVER_VERIFY_SUITE }}
+        cache-on-failure: true
     - name: Prepare the pinned Lean release
       if: env.WEAVER_VERIFY_SUITE == 'check-policy' && runner.os == 'Linux'
       shell: bash
