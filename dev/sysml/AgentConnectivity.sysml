@@ -376,6 +376,7 @@ package AgentConnectivity {
         port proposed : ~PlanPort;
         port published : PlanPort;
         attribute archiveModuleLimit : Integer = 1024;
+        part dependencies : SchemeDependencyInterface;
         part sourceOwner : WeaverExecution::SchemeSemanticPublisher;
         part turnSelector : RetainedSessionSelector;
         doc /* Reuse Scheme/POO/gerbil-ascent, source lane, durable intent and
@@ -385,6 +386,19 @@ package AgentConnectivity {
            and retains required/forbidden module validation through the SDK
            archive contract. This is a build bound, not a per-turn query or
            an authority to expand the approved application. */
+    }
+    part def SchemeDependencyInterface {
+        attribute ownsExecution : Boolean = false;
+        attribute wrapsProcedures : Boolean = false;
+        doc /* scheme/interface.ss composes existing published Lab inert leaf
+           operations through POO. Preserve procedure/Type/prototype
+           identities and native inheritance. Do not import Weaver init or role
+           implementations here; real programs acquire init-owned scopes.
+           Do not enroll an init-selected Module declaration again as a library.
+           Hygienic ASCENT/type syntax retains its original native import.
+           Challenge facade substitution with independent owner identities,
+           generated Session values and existing semantic refusal controls.
+           Coding conventions are maintained in scheme/CODING-STYLE.org. */
     }
     part def RetainedSessionSelector {
         port facts : ~CompactTurnFactsPort;
@@ -600,6 +614,19 @@ package AgentConnectivity {
         doc /* Executable scenario contract; qualified status covers only its stated oracle and runtime scope, not the whole integration. */
     }
     part acceptance {
+        part retainedSelectionChallenge : WeaverProject::DesignProcess::DesignChallenge {
+            attribute :>> hypothesis = "A result getter may read mutable owner slots later; eager capture alone prevents callers from modifying retained state";
+            attribute :>> assumptions = "One affine Scheme selector owner; returned commitment and route list are mutable values; source authority remains with existing admission";
+            attribute :>> disturbance = "Read A only after binding B or A-B-A; edit the returned string or route list before the next selection";
+            attribute :>> independentOracle = "Unedited results equal their original admitted inputs; caller edits never change current retained owner data; native Lab procedure and Type identities remain unchanged";
+            attribute :>> progressObligation = "The next current selection succeeds after a caller edits its private result; no new cache, lock or dispatch owner";
+            attribute :>> explorationBound = "Three owner generations, two retained results, four reads; 256 traces of 30 steps, seed 293, four threads; integer payload abstracts both mutable leaves";
+            attribute :>> modelCampaign = "RetainedSelection.step under safe versus delayedStep and aliasStep; named delayed-getter and eager-alias counterexamples";
+            attribute :>> runtimeProperty = "t/interface-test.ss: an unread selection retains its original scope across owner rebind; mutating a returned selection cannot poison the retained owner; 64 generated Lab Session values";
+            attribute :>> runtimeBudget = "Existing 60-second Scheme source entry, four compiler workers, installed dependencies reused";
+            attribute :>> consequence = "Capture copied commitment and route list at return time; constant slots preserve dependency identities but per-request mutable data requires its own lifetime";
+            attribute :>> status = WeaverProject::DesignProcess::ChallengeStatus::refutedHypothesis;
+        }
         part httpOperationChallenge : WeaverProject::DesignProcess::DesignChallenge {
             attribute :>> hypothesis = "A model catalog read and any locally accepted bearer are sufficient to start a standard HTTP stream";
             attribute :>> assumptions = "Loopback capability selects one source Session/principal; source lane and ledger decide current authority; HTTP is not a source or RPC identity";

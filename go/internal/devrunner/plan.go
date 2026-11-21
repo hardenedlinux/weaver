@@ -74,6 +74,8 @@ func Plan(goBinary string) []Stage {
 		{"stream-coordinates-tests", "quint", []string{"test", "dev/proofs/quint/StreamCoordinates.qnt", "--main", "StreamCoordinates", "--seed", "293"}},
 		{"stream-projection-tests", "quint", []string{"test", "dev/proofs/quint/StreamProjection.qnt", "--main", "StreamProjection", "--seed", "293"}},
 		{"prepared-snapshot-tests", "quint", []string{"test", "dev/proofs/quint/PreparedSnapshot.qnt", "--main", "PreparedSnapshot", "--seed", "293"}},
+		{"retained-selection-tests", "quint", []string{"test", "dev/proofs/quint/RetainedSelection.qnt", "--main", "RetainedSelection", "--seed", "293"}},
+		{"retained-selection-safety", "quint", []string{"run", "dev/proofs/quint/RetainedSelection.qnt", "--main", "RetainedSelection", "--invariant", "safe", "--n-threads", "4", "--max-samples", "256", "--max-steps", "30", "--seed", "293"}},
 		{"http-operation-tests", "quint", []string{"test", "dev/proofs/quint/HttpOperation.qnt", "--main", "HttpOperation", "--seed", "293"}},
 		{"http-delivery-credit-tests", "quint", []string{"test", "dev/proofs/quint/HttpDeliveryCredit.qnt", "--main", "HttpDeliveryCredit", "--seed", "293"}},
 		{"http-delivery-credit-safety", "quint", []string{"run", "dev/proofs/quint/HttpDeliveryCredit.qnt", "--main", "HttpDeliveryCredit", "--invariant", "safe", "--n-threads", "4", "--max-samples", "256", "--max-steps", "30", "--seed", "293"}},

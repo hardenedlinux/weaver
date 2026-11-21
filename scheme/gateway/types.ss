@@ -3,12 +3,12 @@
 ;;; SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 ;;; Gateway semantic operations; Rust retains final validation and authority.
-(import (only-in :clan/poo/object .cc)
+(import (only-in :clan/poo/object .cc .get)
         (only-in :clan/poo/type Function Bool)
         (only-in :clan/poo/type Record List Pair Or Symbol String Enum)
         (only-in :hardenedlinux/weaver/scheme/governance/types GovernanceScopeContract
                  GovernanceContext AgenticAILabGovernanceProfile)
-        (only-in :tao3k/agentic-ai-lab/modules/loop-engine/control/governor +loop-governor-type-contract+)
+        (only-in "../interface.ss" LabGovernor)
         (only-in :hardenedlinux/weaver/scheme/policy/types PolicyScopeContract)
         (only-in "./derivation-types.ss" GatewayPreparation GatewayDerivation GatewayDerivationResult)
         "./contracts.ss")
@@ -26,11 +26,11 @@
 (def GatewayScopeContract
   (.cc (Record
          compile: (list (Function (list GatewayArtifact)
-                                 (list +loop-governor-type-contract+ AgenticAILabGovernanceProfile
+                                 (list (.get LabGovernor type) AgenticAILabGovernanceProfile
                                        GovernanceContext (List GovernorState)
                                        (List TaskContract) (List ProviderPlanContract) PublicationContract)))
          prepare: (list (Function (list GatewayPreparation)
-                                 (list +loop-governor-type-contract+ AgenticAILabGovernanceProfile
+                                 (list (.get LabGovernor type) AgenticAILabGovernanceProfile
                                        GovernanceContext (List GovernorState)
                                        (List TaskContract) (List ProviderPlanContract) PublicationContract)))
          derive: (list (Function (list GatewayDerivationResult) (list GatewayArtifact)))

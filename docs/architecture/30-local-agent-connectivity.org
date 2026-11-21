@@ -1659,3 +1659,36 @@ direct init-owner handoff and the original semantic refusal controls. The hot
 program build emits zero compile events and exits naturally within its
 unchanged 120-second fence. These entry checks do not qualify the complete
 linked Rust C ABI image, foreign-library A/B custody or runtime tails.
+
+* Shared Scheme dependency interface
+
+=scheme/interface.ss= owns Weaver's bounded Lab dependency vocabulary through
+=LabGovernance=, =LabSession=, =LabGovernor= and =LabCedar=. Roles read their
+operations, Types and prototypes with POO =.get=; ordinary functions still own
+the transformations. Existing canonical Type bindings retain their identity.
+The interface neither selects Weaver scopes nor wraps procedures or catches
+their errors. Real programs continue to acquire the init-owned namespace.
+
+Marlin's interface and functional coding style informed this organization.
+Weaver already selects Lab Governance in init: importing that Module declaration
+again through the dependency facade is rejected as conflicting source/publication
+build contributions. The facade therefore composes the published leaf values,
+leaving Module selection at its existing owner. Hygienic ASCENT/type syntax
+keeps its original imports. All Scheme Lab imports are centralized in the
+dependency interface; no additional build roots or dependency inventory is added.
+
+=scheme/CODING-STYLE.org= documents the direction of dependencies, functional
+composition, lexical constant captures, role/effect ownership and finite native
+verification. =t/interface-test.ss= compares actual upstream procedure, Type
+and prototype identities, checks inheritance and invalid-input refusal, and
+uses 64 fixed-seed generated Session values with independent Lab predicates.
+The original source mutation, refusal and ownership gates remain separate;
+identity properties are not a claim of complete runtime or CI qualification.
+
+Applying this style exposed a real retained-selector defect: an unread A result
+read the mutable owner's B commitment after rebind. Constant slots now capture
+the current commitment and routes, with copied mutable leaves so callers cannot
+poison later selections. The Scheme regression failed before the correction.
+=RetainedSelection.qnt= independently challenges delayed getters and eager
+aliases, including A-B-A and caller edits, rather than using the output itself
+as the oracle. SysML records these assumptions, disturbances and finite bounds.

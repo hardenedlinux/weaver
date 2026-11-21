@@ -3,10 +3,7 @@
 ;;; SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 ;;; Weaver's declared provider workflows and Governor strategy.
-(import :tao3k/agentic-ai-lab/modules/loop-engine/control/strategy
-        :tao3k/agentic-ai-lab/modules/loop-engine/control/descriptor
-        (only-in :tao3k/agentic-ai-lab/modules/session/objects-core agentic-ai-lab-session-value
-                 agentic-ai-lab-session-lineage agentic-ai-lab-session-placement)
+(import (only-in "../interface.ss" LabGovernor LabSession)
         (only-in :tao3k/yuanxu/modules/funflow/control-plane/flow flow-compose external-flow flow-steps flow-then flow-branch flow-output-contract Fun String PairValue)
         (only-in :clan/poo/object .o .get .ref .slot? object<-alist)
         (only-in :clan/poo/type validate)
@@ -14,7 +11,6 @@
         (only-in :gerbil-ascent/program/session gerbil-ascent-open-session gerbil-ascent-session-run
                  gerbil-ascent-session-replace-sources!)
         (only-in "./snapshot.ss" copy-source-data)
-        (only-in :tao3k/agentic-ai-lab/modules/loop-engine/control/governor make-loop-governor)
         (only-in "./func.ss" compose-governor-selection)
         "./contracts.ss")
 (export workflow-session nested-workflow-session provider-source-strategy provider-source-budget compose-provider-configuration provider-source-controls make-session-turn-selector)
@@ -67,7 +63,9 @@
               (error "Session route derivation incomplete"))
             (set! selected (list-sort < (map car ((.ref result 'rows-of) 'eligible))))
             (set! previous rows)))
-        (.o scope_commitment: binding route_indices: selected)))))
+        ;; A returned cut cannot read a later owner state or expose its cache.
+        (.o (scope_commitment := (string-copy binding))
+            (route_indices := (append selected '())))))))
 
 (def (workflow-session dag? choice?)
   (def signature (Fun String <- String))
@@ -81,9 +79,9 @@
       (flow-compose 'control
         (apply append (map (lambda (node) (flow-steps (step node))) '(infer next finish)))
         signature)))
-  (.o (:: @ (agentic-ai-lab-session-value 'control '()
-              (agentic-ai-lab-session-lineage 'control '() 'root)
-              (agentic-ai-lab-session-placement 'provider)))
+  (.o (:: @ ((.get LabSession value) 'control '()
+              ((.get LabSession lineage) 'control '() 'root)
+              ((.get LabSession placement) 'provider)))
       workflow: routine workflow-choice: choice?))
 
 (def (nested-workflow-session)
@@ -104,22 +102,22 @@
       (flow-then 'outer-start (provider 'infer)
         (flow-branch 'outer inner (provider 'outer-skip)))
       'finish))
-  (.o (:: @ (agentic-ai-lab-session-value 'control '()
-              (agentic-ai-lab-session-lineage 'control '() 'root)
-              (agentic-ai-lab-session-placement 'provider)))
+  (.o (:: @ ((.get LabSession value) 'control '()
+              ((.get LabSession lineage) 'control '() 'root)
+              ((.get LabSession placement) 'provider)))
       workflow: routine workflow-choices: '(outer inner)))
 
 (def (provider-source-strategy nested? dag? session?)
-    (make-loop-strategy-plan 'weaver-routing
-      (append (list (make-loop-pattern-descriptor 'infer "Original inference" '((level . l2)))
-                    (make-loop-pattern-descriptor 'next "Original continuation" '((level . l2))))
+    ((.get LabGovernor strategy) 'weaver-routing
+      (append (list ((.get LabGovernor pattern) 'infer "Original inference" '((level . l2)))
+                    ((.get LabGovernor pattern) 'next "Original continuation" '((level . l2))))
               (if nested?
-                (map (lambda (name) (make-loop-pattern-descriptor name "Nested provider step" '((level . l2))))
+                (map (lambda (name) ((.get LabGovernor pattern) name "Nested provider step" '((level . l2))))
                   '(gate fork-a fork-b inner-finish outer-skip))
                 '())
-              (if dag? (list (make-loop-pattern-descriptor 'side "Parallel continuation" '((level . l2)))) '())
+              (if dag? (list ((.get LabGovernor pattern) 'side "Parallel continuation" '((level . l2)))) '())
               (if session?
-                (list (make-loop-pattern-descriptor 'finish "Original final inference" '((level . l2))))
+                (list ((.get LabGovernor pattern) 'finish "Original final inference" '((level . l2))))
                 '()))))
 
 (def (provider-source-budget nested? dag? session?)
@@ -135,7 +133,7 @@
   (def session? (or dag? (equal? schema "weaver.session-workflow.v1")))
   (unless (or session? (equal? schema "agentic-ai-lab.loop-governor.v1"))
     (error "unsupported Weaver provider workflow"))
-  (list (make-loop-governor 'weaver (provider-source-strategy nested? dag? session?)
+  (list ((.get LabGovernor make) 'weaver (provider-source-strategy nested? dag? session?)
             (provider-source-budget nested? dag? session?))
         (if session?
           (.o request: 'publish session: (if nested? (nested-workflow-session) (workflow-session dag? choice?)))

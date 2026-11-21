@@ -9,8 +9,7 @@
         (only-in :std/encoding/json json->string JSONWriteOptions)
         (only-in :tao3k/yuanxu/module-system/interface yuanxu-load-modules)
         (only-in :tao3k/yuanxu/module-system/source/admission module-source-measure-operation)
-        (only-in :tao3k/agentic-ai-lab/modules/loop-engine/control/governor loop-governor->contract)
-        (only-in :tao3k/agentic-ai-lab/modules/session/objects-core agentic-ai-lab-session? agentic-ai-lab-session-id)
+        (only-in "../interface.ss" LabGovernor LabSession)
         (only-in :tao3k/yuanxu/modules/funflow/control-plane/flow admit-flow flow-name flow-steps branch-step? branch-step-name branch-step-left branch-step-right)
         (only-in :tao3k/yuanxu/modules/funflow/control-plane/task task? task-name task-kind task-request-operation)
         (only-in :hardenedlinux/weaver/scheme/governance/types GovernanceAssessmentContext)
@@ -62,7 +61,7 @@
 ;;; Only project upstream symbolic node names to the gateway's wire identifiers.
 ;;; Governor owns selection; Governance assessment cannot replace its result.
 (def (governor-open-nodes governor states)
-  (map symbol->string (cdr (assq 'open-patterns (loop-governor->contract governor states)))))
+  (map symbol->string (cdr (assq 'open-patterns ((.get LabGovernor contract) governor states)))))
 
 ;;; Compile sequential and fan-out/fan-in Funflow steps into a sealed topology.
 ;;; Each recursive walk returns the set of leaves needed by the next step.
@@ -70,8 +69,8 @@
   (and (.slot? context 'session)
        (let* ((session (.get context session))
               (identity (string->symbol family)))
-         (unless (and (agentic-ai-lab-session? session)
-                      (eq? identity (agentic-ai-lab-session-id session)))
+         (unless (and ((.get LabSession session?) session)
+                      (eq? identity ((.get LabSession id) session)))
            (error "Workflow Session must name the original family"))
          (def workflow (admit-flow (.get session workflow)))
          (def nodes '())

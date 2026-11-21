@@ -4,13 +4,11 @@
 
 ;;; Canonical data capture is independent of caller-owned mutable strings/lists.
 ;;; It grants neither producer authenticity nor authority over external facts.
-(import (only-in :clan/poo/object .o .ref .all-slots)
+(import (only-in :clan/poo/object .o .get .ref .all-slots)
         (only-in :clan/poo/type validate)
         (only-in :clan/poo/mop json<-)
         (only-in :std/encoding/json json->string JSONWriteOptions)
-        (only-in :tao3k/agentic-ai-lab/modules/governance/types agentic-ai-lab-governance-profile?
-                 agentic-ai-lab-governance-source?)
-        (only-in :tao3k/agentic-ai-lab/modules/authorization/providers/cedar/objects agentic-ai-lab-cedar-policy?)
+        (only-in "../interface.ss" LabGovernance LabCedar)
         "./types.ss")
 (export governance-profile-snapshot governance-context-snapshot)
 
@@ -32,7 +30,7 @@
       acceptance_authority: (.ref value 'acceptance-authority)))
 
 (def (governance-profile-snapshot profile)
-  (unless (and (agentic-ai-lab-governance-profile? profile)
+  (unless (and ((.get LabGovernance profile?) profile)
                (null? (.all-slots (.ref profile 'ontology))))
     (error "unsupported or invalid Governance source Profile obligations"))
   (def policies (.ref profile 'policies))
@@ -43,13 +41,13 @@
   (def policy-values
     (map (lambda (slot-name)
            (let ((value (.ref policies slot-name)))
-             (unless (and (agentic-ai-lab-cedar-policy? value) (eq? (.ref value 'runtime-executed?) #f))
+             (unless (and ((.get LabCedar policy?) value) (eq? (.ref value 'runtime-executed?) #f))
                (error "unsupported Governance policy value"))
              (.o name: (symbol->string slot-name) identity: (.ref value 'identity) source: (.ref value 'source))))
          (list-sort (lambda (left right) (string<? (symbol->string left) (symbol->string right))) names)))
   (def asset-values
     (map (lambda (value)
-           (unless (agentic-ai-lab-governance-source? value) (error "unsupported Governance source asset"))
+           (unless ((.get LabGovernance source?) value) (error "unsupported Governance source asset"))
            (.o identity: (.ref value 'identity) path: (.ref value 'path) language: (.ref value 'language))) assets))
   (let ((model (.ref profile 'threat-model)))
     (snapshot-json GovernanceProfileSnapshot

@@ -3,12 +3,9 @@
 ;;; SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 ;;; Build-selected initializer for Weaver's declared provider workflows.
-(import (only-in :clan/poo/object .o .ref)
+(import (only-in :clan/poo/object .o .get .ref)
         (only-in "../../init.ss" hardenedlinux/weaver.init.exports)
-        (only-in :tao3k/agentic-ai-lab/modules/loop-engine/control/governor make-loop-governor)
-        (only-in :tao3k/agentic-ai-lab/modules/governance/interface AgenticAILabGovernanceProfile.
-                 agentic-ai-lab-governance-source)
-        (only-in :tao3k/agentic-ai-lab/modules/authorization/providers/cedar/objects agentic-ai-lab-cedar-policy)
+        (only-in "../interface.ss" LabGovernance LabCedar)
         (only-in :tao3k/yuanxu/module-system/source/admission call-with-module-source-operation-measurement)
         :hardenedlinux/weaver/scheme/policy/cedar-ffi
         (only-in "./compiled.ss" install-gateway-producer!)
@@ -45,13 +42,13 @@
 (def (capture bundle)
   (def schema (.ref (.ref bundle 'governance) 'schema))
   (def publication (.ref bundle 'publication))
-  (def policy (agentic-ai-lab-cedar-policy "weaver/runtime" (.ref publication 'policy)))
+  (def policy ((.get LabCedar policy) "weaver/runtime" (.ref publication 'policy)))
   (def profile
-    (.o (:: @ AgenticAILabGovernanceProfile.)
+    (.o (:: @ (.get LabGovernance Profile))
         identity: "weaver/source" revision: "1" owner: "source-owner"
         policies: (.o runtime: policy)
         source-assets: (if policy-root
-                         (list (agentic-ai-lab-governance-source "weaver/runtime" "policy.cedar" 'cedar))
+                         (list ((.get LabGovernance source) "weaver/runtime" "policy.cedar" 'cedar))
                          '())))
   (def controls (provider-source-controls schema))
   (def governor (car controls))

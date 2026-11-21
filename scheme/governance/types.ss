@@ -3,14 +3,14 @@
 ;;; SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 ;;; Scheme POO scope Contract for inert governance semantics.
-(import (only-in :clan/poo/object .cc)
+(import (only-in :clan/poo/object .cc .get)
         (only-in :clan/poo/type Function Bool Type. define-type)
         (only-in :clan/poo/type Record List String Symbol Or Enum)
-        (only-in :tao3k/agentic-ai-lab/modules/governance/types AgenticAILabGovernanceProfile)
-        (only-in :tao3k/agentic-ai-lab/modules/session/objects-core agentic-ai-lab-session?))
+        (only-in "../interface.ss" LabGovernance LabSession))
 (export GovernanceScopeContract GovernanceContext GovernanceAssessmentContext
         AgenticAILabGovernanceProfile GovernanceProfileSnapshot)
-(define-type (GovernanceSession @ Type.) .element?: agentic-ai-lab-session?)
+(def AgenticAILabGovernanceProfile (.get LabGovernance profile-type))
+(define-type (GovernanceSession @ Type.) .element?: (.get LabSession session?))
 (def GovernanceContext
   (.cc (Record request: (list (Enum publish)) source_root: (list String optional: #t)
                session: (list GovernanceSession optional: #t))

@@ -197,6 +197,9 @@ dependency-install acceptance remain separate publication gates.
 
 * Development
 
+Scheme extensions follow the [[file:scheme/CODING-STYLE.org][functional Scheme coding style]].
+The [[file:scheme/interface.ss][dependency interface]] groups the Lab vocabulary consumed through POO =.get=.
+
 Use the toolchains and prerequisites described in the
 [[file:docs/50-59-research-program/59-provider-rpc/59.22-parallel-ci.org][verification guide]]. The Go development entrypoint runs the same suites locally
 and in CI:
