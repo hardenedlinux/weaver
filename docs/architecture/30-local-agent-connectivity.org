@@ -21,8 +21,7 @@ contracts. Strict model analysis checks their structure and trace coverage;
 it does not establish a working Magpie adapter, HTTP endpoint or installer.
 Existing runtime, credential and source qualification retains its own evidence.
 
-The upstream reference is Magpie revision
-=eae77a48a025c5e3f005301ee885cd20b74b0ece=, inspected on 2026-11-20:
+The upstream Magpie references, inspected on 2026-11-20, are:
 [[https://github.com/yetone/magpie/blob/eae77a48a025c5e3f005301ee885cd20b74b0ece/docs/integrating.md][integration contract]],
 [[https://github.com/yetone/magpie/blob/eae77a48a025c5e3f005301ee885cd20b74b0ece/docs/subsystems/agent-wiring.md][Agent configuration ownership]],
 [[https://github.com/yetone/magpie/blob/eae77a48a025c5e3f005301ee885cd20b74b0ece/docs/subsystems/gateway-routing.md][routing]], and
@@ -409,8 +408,7 @@ not performance p50/p99 or whole-Session qualification.
 
 The developer package cache initially held a different Lab/Core cohort from
 =gerbil.pkg=. The existing exported package-manager =pkg-update= restored Lab
-=b020c32a= and its Core =520aa69e=; Core's declared POO =6394e95c= was restored
-as well. Missing Git objects were reused from local repositories at those exact
+and its declared Core and POO dependencies. Missing Git objects were reused from local repositories at those exact
 revisions. No version declaration, upstream checkout, dependency cold install
 or TAGS generation was changed. Cached compiled libraries still need refresh
 through their existing build entries.
@@ -667,12 +665,12 @@ integration. The built-in GOAL stays active with those remaining gates.
 
 * Magpie ownership persistence slice
 
-The separate =.data/magpie= repository was cloned at upstream
-=f65fe92ef93557e9a2098d2606a4d9c0175a4213=. This confirms that the previously
+The separate =.data/magpie= repository uses the upstream source declared by
+the consumer workflow. This confirms that the previously
 audited ordering still applies: =Apply= invokes the setter before recording
 ownership, and the original =appliedSave= drops directory/write failures.
 
-Local Magpie commit =0ec27b703= changes only =internal/agent/applied.go=, its
+The Magpie ownership-save change affects only =internal/agent/applied.go=, its
 new =applied_write_test.go= and the owning =agent-wiring.md= reference.
 =appliedSave= now reuses the existing =steady.WriteFile= atomic primitive,
 returns its errors and updates the memo only after success. =Apply= returns
@@ -708,7 +706,7 @@ the separate ownership-failure acceptance obligation in AgentConnectivity.
 
 * Pending config intent checkpoint
 
-Magpie local commit =afde872d8= advances the same ownership file rather than
+The Magpie intent checkpoint advances the same ownership file rather than
 creating a second journal. =Apply= persists a version-1 intent before invoking
 its existing setter. It stores an operation id, field/config path and digests
 of the requested value, observed fields and prior ownership. It does not retain
@@ -1143,7 +1141,7 @@ actual competing-design counterexamples. No new status or verifier was added.
 
 Remote Scheme qualification remains separate: both platform jobs for the
 preceding publication fail while checking out the transitive =gerbil-parser=
-revision =e5fdd53b33c376dabb927f79b047e4d5cae9f7ac=, with =unable to read tree=.
+revision declared by the package graph, with =unable to read tree=.
 They do not reach Scheme compilation. The local native evidence uses the
 existing installed dependencies and does not close that package-provenance gap.
 
@@ -1204,7 +1202,7 @@ broker/SDK backpressure tests do not by themselves qualify the new listener.
 
 * Reuse the prepared Cargo feature graph for the meter fixture
 
-The remote Go receipt on =af610a90= reports a timeout in provider integration,
+The remote Go receipt reports a timeout in provider integration,
 not a failed protocol assertion. Its tail shows dependency compilation inside
 =TestProviderTerminalUsageIndependentIssuer=. Server and observer preparation
 had already passed, but the meter helper selected =--no-default-features=
@@ -1417,8 +1415,8 @@ WEAVER_MAGPIE_BIN="$PWD/.cache/magpie-interoperability/bin/magpie" cargo test -p
 
 It requires an independently prepared nogui executable; absence fails when the
 gate is invoked. Prepare it once with Magpie's declared Go toolchain and normal
-module manager, not inside a runtime test. This local run used checkout
-=afde872d8c0d1f259eeb0a429c4b09ba5cd28426=; its prior Agent ownership changes do
+module manager, not inside a runtime test. The prepared checkout's prior
+Agent ownership changes do
 not change the Provider/gateway paths. Existing documentation/test edits were
 preserved. Initial full CLI preparation reached its 120-second limit after
 populating the build cache; read-only stale analysis then showed no uncached
@@ -1433,8 +1431,8 @@ the standard Provider join, not the complete managed CLI configuration lifecycle
 
 =Verification::consumers= allocates a separate =check-consumers= job through the
 same reusable workflow and verification owner. The standard checkout action
-fetches public Magpie commit =f65fe92ef93557e9a2098d2606a4d9c0175a4213=, verified
-available upstream. It includes the relative replacement modules required by
+fetches the public Magpie revision pinned in
+[[file:../../.github/workflows/verify-suite.yml][the consumer workflow]]. It includes the relative replacement modules required by
 Magpie's own =go.mod=; a standalone =go install module@revision= is not a
 substitute for that source tree. Its original nogui build is the only consumer
 builder. No installer, alternate network adapter or pin-scanning Go layer is
@@ -1465,17 +1463,16 @@ matrix. Local success does not establish the hosted job's eventual outcome.
 
 * Linked Scheme dependency migration
 
-The SDK dependency and setup action now use PR 18 revision
-=7c4dd3d8e3b6321113d1a752599ee7f40045c48a=. Its existing
+The SDK dependency and setup action use the same revision declared by
+[[file:../../Cargo.toml][Cargo]] and [[file:../../.github/workflows/verify-suite.yml][the workflow]]. Its existing
 =gerbil-scheme-aot-build= crate remains the public archive owner, although its
 source moved under =build-support=. Weaver retains that API and explicitly
 bounds the complete compiler manifest to 1024 modules, matching the SDK's
 standard archive contract. Required and forbidden module checks still apply;
 the bound neither selects modules nor approves a different application.
 
-The Scheme source migration targets Lab PR 34 revision
-=1e1fee0a959017bc10687dd4b553c8106788edba= and its own declared transitive
-dependencies. The new package namespaces are =tao3k/agentic-ai-lab= and
+The Scheme source migration follows [[https://github.com/tao3k/agentic-ai-lab/pull/34][Lab PR 34]] and the dependency
+revision in [[file:../../gerbil.pkg][gerbil.pkg]], including Lab's own declared transitive dependencies. The new package namespaces are =tao3k/agentic-ai-lab= and
 =tao3k/yuanxu=. Schema identifiers and protocol strings retain their existing
 values. The root package still declares only Lab; its package manager owns
 Orgize, Parser, POO and gerbil-ascent resolution. Updating source checkouts is
@@ -1590,15 +1587,8 @@ not just Weaver's direct Lab pin. Lab's =core= gitlink matches its transitive
 Yuanxu package revision, so its CI cannot restore a different vendored Core
 after package installation. Existing local Core checkout changes are preserved.
 
-| Owner | Public revision |
-|-------+-----------------|
-| Lab | =1e1fee0a959017bc10687dd4b553c8106788edba= |
-| ASCENT | =90af6adc9ea46f6a6451b6d2f552fc111e5185f6= |
-| Orgize | =936f5d0884559bcbfa9c484e1647fde4fcb64b5e= |
-| Parser | =6b3fa8645d7b6a579bd233a23e3e83c0d11b8556= |
-| Yuanxu | =46a12b01bfc3fe223941c3aeaa91249c81a4b967= |
-| POO | =187fc0eb27c54dee43ab62ecd8154b640849d20a= |
-| Scheme SDK | =7c4dd3d8e3b6321113d1a752599ee7f40045c48a= |
+Package declarations, Git history and CI source receipts own exact versions;
+this architecture document does not maintain another revision inventory.
 
 The real linked capture also exposed an upstream publication bug: the reader
 tracked only pair-shaped compiler results. Embedded =__compile-top= returns
@@ -1665,11 +1655,8 @@ dependency interface, seven C ABI Module files and the callback implementation.
 The exact fourteen foreign Lab products remain mandatory. Ubuntu CI closure
 and final qualification of this complete source set remain pending.
 
-The current direct dependency is Lab
-=0ce88b4fbc9060bbda05bb6f93ac2a7ebf3ce3d7=. Its aligned cohort pins Core
-=df4be3a79cc8cf2922fcce9e129b4f3ddf21d000=, Orgize
-=8f74018939909187d050b9b6cd4bbb0784dbe3e7= and ASCENT
-=2b733a60673e0c21e9704051e5fe7426e601f3e2=. Core's selected-library,
+The root package declares Lab alone; Lab and its dependency packages declare
+the aligned transitive versions. Core's selected-library,
 Build-role, publication and testing-source-admission gates passed. The existing
 four input-context mutations were rejected by their original assertions, with
 correct-code controls passing before/after and source bytes unchanged.
