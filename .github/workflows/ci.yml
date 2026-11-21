@@ -30,6 +30,12 @@ jobs:
     with:
       suite: check-go
       label: Go control, routing and gRPC streaming
+  consumers:
+    name: Magpie standard Provider interoperability
+    uses: ./.github/workflows/verify-suite.yml
+    with:
+      suite: check-consumers
+      label: Magpie standard Provider interoperability
   scheme:
     name: Scheme Governance and Cedar FFI (${{ matrix.runner }})
     strategy:

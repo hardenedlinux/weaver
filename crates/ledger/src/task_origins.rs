@@ -11,12 +11,23 @@ use weaver_contracts::{
     DomainBinding, Error, Result, Task, TaskAdmission, TaskAdmissionReceipt, body_digest,
 };
 
-fn digests(task: &Task, binding: &DomainBinding) -> Result<(String, String)> {
+fn digests(
+    task: &Task,
+    binding: &DomainBinding,
+    provenance: Option<&str>,
+) -> Result<(String, String)> {
     task.validate()?;
     binding.validate()?;
     Ok((
         body_digest(&serde_json::to_string(task)?),
-        body_digest(&serde_json::to_string(binding)?),
+        match provenance {
+            Some(record) => body_digest(&serde_json::to_string(&(
+                "weaver.provider-session-origin.v1",
+                binding,
+                body_digest(record),
+            ))?),
+            None => body_digest(&serde_json::to_string(binding)?),
+        },
     ))
 }
 fn retain(
@@ -27,7 +38,14 @@ fn retain(
     publication: Option<&weaver_contracts::PublicationKey>,
 ) -> Result<()> {
     weaver_contracts::identifier(key)?;
-    let (task_digest, binding_digest) = digests(task, binding)?;
+    let provenance: Option<String> = persistence::maybe(
+        tx,
+        "SELECT record FROM provider_session_turns WHERE family=?1",
+        [task.family.as_str()],
+        |r| r.get(0),
+    )
+    .map_err(db)?;
+    let (task_digest, binding_digest) = digests(task, binding, provenance.as_deref())?;
     let old = persistence::maybe(
         tx,
         "SELECT family,origin,task_digest,binding_digest FROM original_tasks WHERE task_key=?1",
@@ -110,6 +128,7 @@ struct Original {
     binding: String,
     publication: String,
     key: String,
+    provenance: Option<String>,
 }
 
 pub(crate) struct PreparedOriginal {
@@ -129,11 +148,12 @@ struct ObservedOriginal {
     budget: u64,
 }
 
-const ORIGINAL: &str = "SELECT r.task_digest,r.binding_digest,t.record,o.binding,r.publication,r.task_key,p.operation_id,p.digest,t.held,t.budget
+const ORIGINAL: &str = "SELECT r.task_digest,r.binding_digest,t.record,o.binding,r.publication,r.task_key,p.operation_id,p.digest,t.held,t.budget,st.record
     FROM original_tasks r
     JOIN tasks t ON t.family=r.family
     JOIN execution_origins o ON o.id=r.origin AND o.canonical_family=r.family
-    LEFT JOIN task_publications p ON p.family=r.family WHERE r.family=?1";
+    LEFT JOIN task_publications p ON p.family=r.family
+    LEFT JOIN provider_session_turns st ON st.family=r.family WHERE r.family=?1";
 
 #[cfg(feature = "commit-observer")]
 thread_local! {
@@ -167,6 +187,7 @@ fn read(
                 binding: r.get(3)?,
                 publication: r.get(4)?,
                 key: r.get(5)?,
+                provenance: r.get(10)?,
             },
             publication,
             held: crate::store::integer(r, 8)?,
@@ -183,7 +204,7 @@ fn read(
 fn verify(original: &Original) -> Result<u64> {
     let task: Task = weaver_contracts::decode(original.task.as_bytes())?;
     let binding: DomainBinding = weaver_contracts::decode(original.binding.as_bytes())?;
-    let (task_digest, binding_digest) = digests(&task, &binding)?;
+    let (task_digest, binding_digest) = digests(&task, &binding, original.provenance.as_deref())?;
     if task_digest != original.task_digest || binding_digest != original.binding_digest {
         return Err(Error::Conflict(
             "original task or domain commitment changed",

@@ -8,7 +8,7 @@
         (only-in :std/misc/ports read-all-as-string)
         (only-in :std/source this-source-file)
         (only-in :clan/poo/object .o)
-        (only-in :agentic-ai-lab/modules/governance/interface AgenticAILabGovernanceProfile.)
+        (only-in :tao3k/agentic-ai-lab/modules/governance/interface AgenticAILabGovernanceProfile.)
         (only-in ../scheme/policy/assets policy-document)
         (prefix-in :clan/poo/testing/property/generator generator.)
         (prefix-in :clan/poo/testing/property property.)

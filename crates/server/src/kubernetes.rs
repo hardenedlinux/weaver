@@ -49,7 +49,7 @@ async fn reconcile(
 ) -> Result<()> {
     // Capture the ledger predecessor before reading the desired state. A competing
     // write after that capture invalidates the exact floor used for any new intent.
-    let state = source
+    let mut state = source
         .inspect_hard_fact(pb::Empty {})
         .await
         .map_err(|_| Error::Conflict("hard fact feed observation failed"))?
@@ -80,7 +80,7 @@ async fn reconcile(
         None => (false, None),
     };
 
-    let mut pending = state.pending;
+    let mut pending = std::mem::take(&mut state.pending);
     let (effective, prior_revision, previous_snapshot) = match pending.last() {
         Some(tail) => {
             let barrier = tail
@@ -117,7 +117,7 @@ async fn reconcile(
         ))?;
         let intent = weaver_contracts::FactIntent {
             operation_id: body_digest(&encoded),
-            domain: state.domain,
+            domain: state.domain.clone(),
             source_epoch: state.source_epoch,
             revision,
             previous_snapshot: previous_snapshot.to_owned(),
@@ -154,7 +154,7 @@ async fn reconcile(
         });
     }
 
-    let mut cut = (state.revision, state.snapshot);
+    let resolved = !pending.is_empty();
     for item in pending {
         let barrier = item
             .barrier
@@ -169,51 +169,50 @@ async fn reconcile(
                 "Kubernetes hard fact resolution receipt binding",
             ));
         }
-        cut = (barrier.revision, barrier.snapshot);
+        state.floor = barrier.floor;
+        state.revision = barrier.revision;
+        state.snapshot = barrier.snapshot;
+        state.available = Some(item.available);
     }
 
-    // Observe the ledger after all attempts. A concurrent staging or resolution
-    // supersedes the status update even if an earlier exact receipt still exists.
-    if cut.0 != state.revision {
+    let status_update = matching.zip(generation).and_then(|(object, generation)| {
+        let status = json!({
+            "observedGeneration": generation,
+            "sourceEpoch": state.source_epoch,
+            "revision": state.revision,
+            "snapshot": state.snapshot,
+        });
+        (object.data.get("status") != Some(&status)).then_some((object, status))
+    });
+    // Even a status-only repair can race with staging or resolution. Require
+    // the same installed ledger cut, including its floor and empty prefix.
+    if resolved || status_update.is_some() {
         let installed = source
             .inspect_hard_fact(pb::Empty {})
             .await
             .map_err(|_| Error::Conflict("hard fact installation observation failed"))?
             .into_inner();
-        if !installed.pending.is_empty()
-            || installed.source_epoch != state.source_epoch
-            || installed.revision != cut.0
-            || installed.snapshot != cut.1
-            || installed.available != Some(available)
-        {
+        if installed != state {
             return Err(Error::Conflict("Kubernetes hard fact cut superseded"));
         }
     }
-    if let (Some(object), Some(generation)) = (matching, generation) {
-        let status = json!({
-            "observedGeneration": generation,
-            "sourceEpoch": state.source_epoch,
-            "revision": cut.0,
-            "snapshot": cut.1,
+    if let Some((object, status)) = status_update {
+        let resource_version = object
+            .metadata
+            .resource_version
+            .as_deref()
+            .ok_or(Error::Invalid("ProviderAvailability resource version"))?;
+        let patch = json!({
+            "metadata": {"resourceVersion": resource_version},
+            "status": status,
         });
-        if object.data.get("status") != Some(&status) {
-            let resource_version = object
-                .metadata
-                .resource_version
-                .as_deref()
-                .ok_or(Error::Invalid("ProviderAvailability resource version"))?;
-            let patch = json!({
-                "metadata": {"resourceVersion": resource_version},
-                "status": status,
-            });
-            api.patch_status(
-                &binding.name,
-                &PatchParams::default(),
-                &Patch::Merge(&patch),
-            )
-            .await
-            .map_err(|_| Error::Conflict("ProviderAvailability status write rejected"))?;
-        }
+        api.patch_status(
+            &binding.name,
+            &PatchParams::default(),
+            &Patch::Merge(&patch),
+        )
+        .await
+        .map_err(|_| Error::Conflict("ProviderAvailability status write rejected"))?;
     }
     Ok(())
 }

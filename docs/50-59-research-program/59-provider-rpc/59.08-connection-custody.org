@@ -80,11 +80,11 @@ fifteen-second gate, and no peer socket may remain usable afterward.
 A native negative control temporarily changed only the server capacity from
 sixteen to seventeen. The same established-connection test failed because the
 over-budget probe completed TLS. The constant was restored immediately; the
-[[file:../../../dev/proofs/evidence/connection-admission-20261030/over-budget-counterexample.log][raw failed run]] remains separate from restored-source acceptance evidence.
+[[file:../../../.cache/verification/evidence/proofs/connection-admission-20261030/over-budget-counterexample.log][raw failed run]] remains separate from restored-source acceptance evidence.
 
 * Restored-source verification
 
-The [[file:../../../dev/proofs/evidence/connection-admission-20261030/verification-current/receipt.json][unified receipt]] passes all twenty-eight stages with 138 unchanged source
+The [[file:../../../.cache/verification/evidence/proofs/connection-admission-20261030/verification-current/receipt.json][unified receipt]] passes all twenty-eight stages with 138 unchanged source
 hashes. Rust reports forty-three passing tests, including five ASP deny gates and
 the two new socket-custody tests. Go race integration passes the established,
 pre-TLS and natural-shutdown scenarios alongside prior routing, partial-write,
@@ -102,11 +102,11 @@ canonical Inspect and client close separately from warm Inspect. Both benchmark
 families use the same source-bound provider operation and preserve its hold.
 They do not measure model inference or infer Rust allocations from Go counters.
 
-The [[file:../../../dev/proofs/evidence/connection-admission-20261030/benchmark-current/receipt.json][new benchmark receipt]] passes all five stages and binds exactly the same 138
+The [[file:../../../.cache/verification/evidence/proofs/connection-admission-20261030/benchmark-current/receipt.json][new benchmark receipt]] passes all five stages and binds exactly the same 138
 input hashes as the verification receipt. All fourteen Criterion cases across
 the five Rust packages were actually resampled. Their means and confidence
-intervals are in the [[file:../../../dev/proofs/evidence/connection-admission-20261030/benchmark-current/benchmark-summary.org][generated benchmark summary]]. The
-[[file:../../../dev/proofs/evidence/connection-admission-20261030/benchmark-current/grpc-benchmark.log][actual gRPC measurements]] retain three runs for each family:
+intervals are in the [[file:../../../.cache/verification/evidence/proofs/connection-admission-20261030/benchmark-current/benchmark-summary.org][generated benchmark summary]]. The
+[[file:../../../.cache/verification/evidence/proofs/connection-admission-20261030/benchmark-current/grpc-benchmark.log][actual gRPC measurements]] retain three runs for each family:
 
 | Boundary | Observed ns/op, three separate runs | Go allocations/op |
 |----------+------------------------------------+-------------------|

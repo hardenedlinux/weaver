@@ -82,17 +82,22 @@ pub(super) fn relay<O: ProviderOutput>(
 }
 
 fn capture_workflow_result(mut capture: String, ranges: &[Vec<ProviderEvent>]) -> Option<String> {
-    let deltas = ranges.iter().flatten().filter(|event| {
-        matches!(
-            event.kind,
-            ProviderEventKind::Delta | ProviderEventKind::Finish
-        )
-    });
-    for delta in deltas {
-        if delta.text.len() > MAX_WORKFLOW_RESULT_BYTES - capture.len() {
+    let deltas = ranges
+        .iter()
+        .flatten()
+        .filter_map(|event| match &event.kind {
+            ProviderEventKind::Delta | ProviderEventKind::Finish => Some(event.text.as_str()),
+            ProviderEventKind::Turn(turn) => match &turn.payload {
+                weaver_contracts::ProviderTurnPayload::Text { text } => Some(text.as_str()),
+                _ => None,
+            },
+            _ => None,
+        });
+    for text in deltas {
+        if text.len() > MAX_WORKFLOW_RESULT_BYTES - capture.len() {
             return None;
         }
-        capture.push_str(&delta.text);
+        capture.push_str(text);
     }
     Some(capture)
 }
@@ -106,7 +111,8 @@ fn preparation_width<O: ProviderOutput>(_output: &O, rows: usize) -> usize {
 }
 
 fn push_event(range: &mut Vec<ProviderEvent>, event: ProviderEvent) -> bool {
-    let terminal = event.kind == ProviderEventKind::Done;
+    let terminal = event.kind == ProviderEventKind::Done
+        || matches!(&event.kind, ProviderEventKind::Turn(turn) if turn.is_terminal());
     range.push(event);
     terminal
 }
@@ -196,7 +202,19 @@ fn queue_snapshot<O: ProviderOutput>(
         .first()
         .ok_or(Error::Conflict("empty response snapshot"))?
         .first_sequence();
-    let first_frame = prepare_range::<O>(permit, &mut ready[0], format, first)?;
+    let mut sequence = first;
+    let prepared = ready
+        .iter_mut()
+        .map(|events| {
+            let frame = prepare_range(output, permit, events, format, sequence)?;
+            sequence += events.len() as u64;
+            Ok(frame)
+        })
+        .collect::<Result<Vec<_>>>()?;
+    let mut prepared = prepared.into_iter();
+    let first_frame = prepared
+        .next()
+        .ok_or(Error::Conflict("empty prepared snapshot"))?;
     let (_, remaining) = ledger.release_provider_group_for_delivery(
         permit,
         releases,
@@ -209,12 +227,11 @@ fn queue_snapshot<O: ProviderOutput>(
         },
     )?;
     output.finish_delivery(ledger, permit, format)?;
-    for (events, receipt) in ready.iter_mut().skip(1).zip(remaining) {
+    for (frame, receipt) in prepared.zip(remaining) {
         let slot = output.reserve_for_delivery(ledger, permit, format)?;
         if output.stopped() {
             return Err(Error::Conflict("provider snapshot cancelled"));
         }
-        let frame = prepare_range::<O>(permit, events, format, receipt.interval().first)?;
         output.emit(slot, frame, receipt)?;
         output.finish_delivery(ledger, permit, format)?;
     }
@@ -222,6 +239,7 @@ fn queue_snapshot<O: ProviderOutput>(
 }
 
 fn prepare_range<O: ProviderOutput>(
+    output: &mut O,
     permit: &ProviderDispatch,
     events: &mut [ProviderEvent],
     format: &str,
@@ -230,7 +248,7 @@ fn prepare_range<O: ProviderOutput>(
     for (offset, event) in events.iter_mut().enumerate() {
         event.sequence = first + offset as u64;
     }
-    O::prepare(permit.route(), &permit.plan().model, events, format)
+    output.prepare(permit.route(), &permit.plan().model, events, format)
 }
 
 fn take_slot<O: ProviderOutput>(
@@ -262,7 +280,7 @@ fn queue_range<O: ProviderOutput>(
     for (offset, event) in events.iter_mut().enumerate() {
         event.sequence = first + offset as u64;
     }
-    let frame = O::prepare(permit.route(), &permit.plan().model, events, format)?;
+    let frame = output.prepare(permit.route(), &permit.plan().model, events, format)?;
     ledger.release_provider_for_delivery(permit, release, format, |actual, receipt| {
         if actual != first || output.stopped() {
             return Err(Error::Conflict("provider release cancelled or rebound"));
@@ -271,3 +289,7 @@ fn queue_range<O: ProviderOutput>(
     })?;
     output.finish_delivery(ledger, permit, format)
 }
+
+#[cfg(test)]
+#[path = "../../tests/unit/prepared_snapshot.rs"]
+mod tests;

@@ -7,12 +7,12 @@
         (only-in :std/misc/ports read-all-as-u8vector)
         (only-in :std/crypto/digest sha256)
         (only-in :gerbil/tools/gxpkg pkg-root-dir)
-        (only-in :yuanxu/ops/interface Ops)
-        (only-in :yuanxu/ops/func run-script)
-        (only-in :yuanxu/ops/progress execution-progress!)
-        (only-in :yuanxu/observability/testing-script make-compiler-progress-reader)
-        (only-in :yuanxu/module-system/building/products artifact-files current-build-output-directory)
-        (only-in :yuanxu/module-system/source/admission module-source-read call-with-module-source-operation-measurement)
+        (only-in :tao3k/yuanxu/ops/interface Ops)
+        (only-in :tao3k/yuanxu/ops/func run-script)
+        (only-in :tao3k/yuanxu/ops/progress execution-progress!)
+        (only-in :tao3k/yuanxu/observability/testing-script make-compiler-progress-reader)
+        (only-in :tao3k/yuanxu/module-system/building/products artifact-files current-build-output-directory)
+        (only-in :tao3k/yuanxu/module-system/source/admission module-source-read call-with-module-source-operation-measurement)
         (only-in "../../../init.ss" hardenedlinux/weaver.init.exports)
         (rename-in (only-in "../../../build.ss" main) (main weaver-build-main)))
 (export module-selection-test)
@@ -48,21 +48,38 @@
             (lambda (out) (parameterize ((current-output-port out) (current-directory root))
                             (weaver-build-main "spec"))))) accounting?: #f))
       (check-equal? (hash-ref counts '(calls scope-factory) 0) 0)
-      (check-equal? (hash-ref counts '(calls candidate-read) 0) 4)
-      (def targets (list-sort string<? (map cadr (call-with-input-string spec read))))
-      (check-equal? (length targets) 40)
+      (check-equal? (hash-ref counts '(calls candidate-read) 0) 5)
+      (def (target-name target)
+        (match target
+          ((? string?) target)
+          ([gxc: name . _] name)
+          (else (error "unexpected native Make target" target))))
+      (def targets (list-sort string<? (map target-name (call-with-input-string spec read))))
+      ;; Original 40 plus the shared dependency interface, seven C ABI Module
+      ;; files and the now independently compiled callback implementation.
+      ;; The original fourteen Lab products below remain mandatory.
+      (check-equal? (length targets) 49)
       (for-each (lambda (target) (check-equal? (and (member target targets) #t) #t))
-        '("agentic-ai-lab/modules/governance/interface"
+        '("tao3k/agentic-ai-lab/modules/governance/interface"
           "hardenedlinux/weaver/scheme/governance/interface"
           "hardenedlinux/weaver/scheme/policy/interface"
           "hardenedlinux/weaver/scheme/gateway/interface"
-          "hardenedlinux/weaver/scheme/policy/cedar-ffi"))
+          "hardenedlinux/weaver/scheme/policy/cedar-ffi"
+          "hardenedlinux/weaver/scheme/interface"
+          "hardenedlinux/weaver/scheme/gateway/compiled"
+          "hardenedlinux/weaver/scheme/c-abi/interface"
+          "hardenedlinux/weaver/scheme/c-abi/config"
+          "hardenedlinux/weaver/scheme/c-abi/types"
+          "hardenedlinux/weaver/scheme/c-abi/objects"
+          "hardenedlinux/weaver/scheme/c-abi/build"
+          "hardenedlinux/weaver/scheme/c-abi/roots"
+          "hardenedlinux/weaver/scheme/c-abi/gateway"))
       ;; Exact foreign targets: one selected owner plus the native libraries
       ;; its consumer imports. A missing dependency and an unrelated Lab
       ;; module are both failures, even if Make agrees with the spec.
       (check-equal?
-        (filter (cut string-prefix? "agentic-ai-lab/" <>) targets)
-        (map (cut string-append "agentic-ai-lab/modules/" <>)
+        (filter (cut string-prefix? "tao3k/agentic-ai-lab/" <>) targets)
+        (map (cut string-append "tao3k/agentic-ai-lab/modules/" <>)
           '("authorization/providers/cedar/objects"
             "governance/config"
             "governance/funs"
@@ -86,7 +103,7 @@
         (append (list (path-expand "init.ss" root) (path-expand "init.ss" provider))
           (map (lambda (target)
                  (let* ((local? (string-prefix? "hardenedlinux/weaver/" target))
-                        (prefix (if local? "hardenedlinux/weaver/" "agentic-ai-lab/")))
+                        (prefix (if local? "hardenedlinux/weaver/" "tao3k/agentic-ai-lab/")))
                    (path-expand (string-append (substring target (string-length prefix) (string-length target)) ".ss")
                                 (if local? root provider)))) targets)))
       (def source-before (map module-source-read sources))
@@ -130,9 +147,16 @@
               (action state (list "gerbil" "pkg" "link" "github.com/tao3k/agentic-ai-lab" provider))
               (def library (path-expand "lib" state))
               (check-equal? (interfaces library) '())
-              (check-equal? (compile-events (if (equal? state a)
-                                             (action state '("gxi" "build.ss" "compile"))
-                                             (build-in-state state "compile"))) targets)
+              (def started (time->seconds (current-time)))
+              (displayln "WEAVER-MODULE-COLD environment=" (path-strip-directory state) " state=started")
+              (force-output)
+              (def output (if (equal? state a)
+                            (action state '("gxi" "build.ss" "compile"))
+                            (build-in-state state "compile")))
+              (displayln "WEAVER-MODULE-COLD environment=" (path-strip-directory state)
+                         " state=completed seconds=" (- (time->seconds (current-time)) started))
+              (force-output)
+              (check-equal? (compile-events output) targets)
               (check-equal? (interfaces library) targets)) (list a b))
           (def b-lib (path-expand "lib" b))
           (def b-products (digests (artifact-files identities b-lib)))
@@ -148,4 +172,4 @@
           (check-equal? (map module-source-read sources) source-before)
           (check-equal? (digests (prerequisite-products)) installed-before)
           (displayln "WEAVER-MODULE-SELECTION-OK targets=" (length targets)
-                     " roots=Lab/Weaver selected=4 scopes-before-build=0 cold=A/B hot=0 clean-isolation=ok source=unchanged"))))))
+                     " roots=Lab/Weaver selected=5 scopes-before-build=0 cold=A/B hot=0 clean-isolation=ok source=unchanged"))))))

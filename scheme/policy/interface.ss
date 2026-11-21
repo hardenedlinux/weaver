@@ -2,10 +2,12 @@
 ;;;
 ;;; SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
-(import (only-in :yuanxu/module-system/source/declaration .def))
+(import (only-in :clan/poo/object .def .o)
+        (only-in "./types.ss" PolicyScopeContract)
+        (only-in "./objects.ss" Policy.))
+(export Policy)
 (.def Policy
   identity: 'policy
   tags: '(policy)
-  core: (.o requires: (.o) scope-contract: PolicyScopeContract exports: Policy.
-            projections: (list Build))
+  core: (.o scope-contract: PolicyScopeContract exports: Policy.)
   features: (.o))

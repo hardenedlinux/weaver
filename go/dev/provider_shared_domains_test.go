@@ -172,9 +172,9 @@ func (c *domainMigrationReplyLoss) MigrateExecutionDomains(ctx context.Context, 
 }
 
 func TestProviderDomainMigrationFencesStreamingReleaseAndRecoversLostReply(t *testing.T) {
-	for _, control := range []bool{false, true} {
-		t.Run(map[bool]string{false: "rust-owner", true: "go-control"}[control], func(t *testing.T) {
-			providerDomainMigrationRecovery(t, control, "")
+	for _, prepared := range []bool{false, true} {
+		t.Run(map[bool]string{false: "rust-owner", true: "rust-prepared"}[prepared], func(t *testing.T) {
+			providerDomainMigrationRecovery(t, prepared, "")
 		})
 	}
 }
@@ -187,7 +187,7 @@ func TestProviderSameViewRevocationAroundLostMigrationReply(t *testing.T) {
 	}
 }
 
-func providerDomainMigrationRecovery(t *testing.T, useControl bool, revokeOrder string) {
+func providerDomainMigrationRecovery(t *testing.T, prepared bool, revokeOrder string) {
 	t.Setenv("WEAVER_STORAGE_JOURNAL", "mvcc")
 	proceed := make(chan struct{})
 	var once sync.Once
@@ -200,16 +200,15 @@ func providerDomainMigrationRecovery(t *testing.T, useControl bool, revokeOrder 
 		emitChunk(w, "", true)
 		fmt.Fprint(w, "data: [DONE]\n\n")
 	}, false)
-	plan, client := f.plan, f.client
+	plan := f.plan
 	from, to := "left", "right"
 	var control *controlProcess
 	var bundle config.Bundle
-	if useControl {
+	if prepared {
 		bundle = controlBundle(t, f)
 		control = newControlProcess(t, f, writeControlBundle(t, f, bundle, "json"))
-		control.start(t)
-		t.Cleanup(func() { control.stop(t) })
-		plan, client = bundle.Plans[0], control.client
+		control.prepareUsing(t, serverBinary, "prepare")
+		plan = bundle.Plans[0]
 		from, to = "control", "f"
 	} else {
 		plan = independentProviderPlans(t, f)[0]
@@ -220,7 +219,7 @@ func providerDomainMigrationRecovery(t *testing.T, useControl bool, revokeOrder 
 	done := make(chan error, 1)
 	var text string
 	go func() {
-		_, err := client.Execute(ctx, plan, pb.Encoding_PROTOBUF, 1, func(e *pb.Event) error {
+		_, err := f.client.Execute(ctx, plan, pb.Encoding_PROTOBUF, 1, func(e *pb.Event) error {
 			text += e.Text
 			select {
 			case first <- struct{}{}:
@@ -268,14 +267,10 @@ func providerDomainMigrationRecovery(t *testing.T, useControl bool, revokeOrder 
 	if text != "prefix" {
 		t.Fatalf("stale release: %q", text)
 	}
-	if revokeOrder != "" {
-		control.stop(t)
-	}
 	f.stop(t)
 	f.start(t)
 	if revokeOrder != "" {
-		control.start(t)
-		client = control.client
+		control.prepareUsing(t, serverBinary, "prepare")
 	}
 	recovered, err := f.admin.RPC.MigrateExecutionDomains(f.admin.Context(ctx), command)
 	if err != nil || !proto.Equal(loss.committed, recovered) {
@@ -285,12 +280,19 @@ func providerDomainMigrationRecovery(t *testing.T, useControl bool, revokeOrder 
 	if err != nil || view.GetHeld() != 4 || view.GetHistoryCount() != 1 || view.GetStamp().GetBudgetEpoch() != 2 {
 		t.Fatalf("migration lost original exposure: %v %v", view, err)
 	}
-	if _, err = client.Execute(ctx, plan, pb.Encoding_PROTOBUF, 1, func(*pb.Event) error { return nil }); err == nil {
-		t.Fatal("migration replayed consumed invocation")
+	if _, err = f.client.Execute(ctx, plan, pb.Encoding_PROTOBUF, 1, func(*pb.Event) error { return nil }); status.Code(err) != codes.FailedPrecondition {
+		t.Fatalf("live Rust ingress did not reject the consumed original after restart: %v", err)
 	}
 	if revokeOrder != "" {
-		if _, err = client.Execute(ctx, bundle.Plans[1], pb.Encoding_PROTOBUF, 1, func(*pb.Event) error { t.Error("post-restart output"); return nil }); status.Code(err) != codes.FailedPrecondition {
-			t.Fatalf("historical Go publication did not reject unused node: %v", err)
+		next := bundle.Plans[1]
+		request := &pb.ProviderRequest{Plan: &pb.ProviderPlan{Family: next.Family, Node: next.Node},
+			Encoding: pb.Encoding_PROTOBUF, BatchRows: 1}
+		stream, err := f.client.RPC.ExecuteProvider(f.client.Context(ctx), request)
+		if err == nil {
+			_, err = stream.Recv()
+		}
+		if status.Code(err) != codes.FailedPrecondition {
+			t.Fatalf("historical Rust preparation did not reject unused node: %v", err)
 		}
 		after, err := f.admin.RPC.InspectExecutionDomains(f.admin.Context(ctx), &pb.OperationKey{Family: from})
 		if err != nil || !proto.Equal(view, after) {

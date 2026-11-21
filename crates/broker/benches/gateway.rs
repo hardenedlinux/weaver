@@ -44,7 +44,13 @@ impl ProviderOutput for Sink {
     fn reserve(&mut self) -> Result<()> {
         Ok(())
     }
-    fn prepare(_: &ProviderRoute, _: &str, events: &[ProviderEvent], _: &str) -> Result<usize> {
+    fn prepare(
+        &mut self,
+        _: &ProviderRoute,
+        _: &str,
+        events: &[ProviderEvent],
+        _: &str,
+    ) -> Result<usize> {
         Ok(events.len())
     }
     fn emit(&mut self, _: (), count: usize, _: weaver_ledger::ProviderDelivery) -> Result<()> {

@@ -14,7 +14,7 @@ the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21
 
 * Reproduction and bounded evidence
 
-Runner (retired Python driver), [[file:../../../dev/proofs/lean/LlmSourceJoin.lean][Lean]], [[file:../../../dev/proofs/quint/LlmSourceJoin.qnt][Quint]], [[file:../../../dev/proofs/evidence/llm-source-join/commands.json][commands]], [[file:../../../dev/proofs/evidence/llm-source-join/receipt.json][receipt]] and [[file:../../../dev/proofs/evidence/llm-source-join/SHA256SUMS][byte manifest]] separate executable formal
+Runner (retired Python driver), [[file:../../../dev/proofs/lean/LlmSourceJoin.lean][Lean]], [[file:../../../dev/proofs/quint/LlmSourceJoin.qnt][Quint]], [[file:../../../.cache/verification/evidence/proofs/llm-source-join/commands.json][commands]], [[file:../../../.cache/verification/evidence/proofs/llm-source-join/receipt.json][receipt]] and [[file:../../../.cache/verification/evidence/proofs/llm-source-join/SHA256SUMS][byte manifest]] separate executable formal
 contracts from native acceptance. The workload compiles 27 Lean modules and prints
 14 new declarations without =sorryAx=. Quint checks 27 new controls (20 guarded
 and seven mutation counterexamples), 33 directly imported floor controls and
@@ -126,8 +126,8 @@ checks that distinction instead of demanding an unchanged account for every test
 
 * Source-by-source reuse and extensions
 
-[[file:../../../dev/proofs/evidence/llm-source-join/source-review.json][Nineteen pinned source identities/excerpts]], [[file:../../../dev/proofs/evidence/llm-source-join/source-receipt-check.json][fresh blob/excerpt checks]], [[file:../../../dev/proofs/evidence/llm-source-join/join-source-audit.json][focused actual-state/CAS extract]] and
-[[file:../../../dev/proofs/evidence/llm-source-join/working-source-check.json][fresh working hashes and HEAD identities]] distinguish code reuse from native obligations.
+[[file:../../../.cache/verification/evidence/proofs/llm-source-join/source-review.json][Nineteen pinned source identities/excerpts]], [[file:../../../.cache/verification/evidence/proofs/llm-source-join/source-receipt-check.json][fresh blob/excerpt checks]], [[file:../../../.cache/verification/evidence/proofs/llm-source-join/join-source-audit.json][focused actual-state/CAS extract]] and
+[[file:../../../.cache/verification/evidence/proofs/llm-source-join/working-source-check.json][fresh working hashes and HEAD identities]] distinguish code reuse from native obligations.
 
 | Source | Direct reuse | Source-join extension or limit |
 |--------+--------------+--------------------------------|
@@ -153,7 +153,7 @@ checks that distinction instead of demanding an unchanged account for every test
 
 Pinned bytes and every registered excerpt are freshly checked. Eighteen current
 working files match baseline; P17 differs only in two control-plane imports
-captured in [[file:../../../dev/proofs/evidence/llm-source-join/P17-working-diff.patch][the working diff]]. That does not qualify new import targets' native ABI.
+captured in [[file:../../../.cache/verification/evidence/proofs/llm-source-join/P17-working-diff.patch][the working diff]]. That does not qualify new import targets' native ABI.
 The runner compiles Weaver's actual chain; full upstream runtime/proof builds are
 not claimed. No dependency pin or upstream source is changed.
 

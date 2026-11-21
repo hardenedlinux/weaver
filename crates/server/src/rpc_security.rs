@@ -18,6 +18,11 @@ pub struct GrpcListeners {
     pub operation: tokio::net::TcpListener,
     pub source: tokio::net::TcpListener,
 }
+/// Named transport inputs for the same runtime; HTTP adds no source listener.
+pub struct ServiceListeners {
+    pub rpc: GrpcListeners,
+    pub http: Option<(tokio::net::TcpListener, crate::HttpProfile)>,
+}
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub(crate) enum RpcRole {

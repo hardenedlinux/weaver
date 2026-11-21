@@ -3,12 +3,12 @@
 ;;; SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 ;;; This Contract describes an inert Rust preflight, not an authorization grant.
-(import (only-in :clan/poo/object .cc)
-        (only-in :clan/poo/mop Function Bool)
+(import (only-in :clan/poo/object .cc .get)
+        (only-in :clan/poo/type Function Bool)
         (only-in :clan/poo/type Record String)
         (only-in "./source-bytes.ss" bounded-cedar-source?))
 (import (only-in :clan/poo/type List)
-        (only-in :agentic-ai-lab/modules/governance/types AgenticAILabGovernanceProfile))
+        (only-in "../interface.ss" LabGovernance))
 (export PolicyScopeContract CedarPolicySource CedarSchemaSource PolicyDocument PolicyProjection)
 (def CedarPolicySource (.cc String sexp: 'CedarPolicySource '.element? bounded-cedar-source?))
 (def CedarSchemaSource (.cc String sexp: 'CedarSchemaSource '.element? bounded-cedar-source?))
@@ -23,5 +23,5 @@
   (.cc
        (Record validate: (list (Function (list Bool) (list CedarPolicySource CedarSchemaSource)))
                project: (list (Function (list PolicyProjection)
-                                        (list AgenticAILabGovernanceProfile CedarPolicySource String))))
+                                        (list (.get LabGovernance profile-type) CedarPolicySource String))))
        identity: 'weaver/policy/scope))

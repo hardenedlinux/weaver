@@ -39,7 +39,7 @@ func SourceInputs(root string) (map[string]string, error) {
 		result[filepath.ToSlash(relative)] = hex.EncodeToString(sum[:])
 		return nil
 	}
-	for _, path := range []string{"LICENSE", "LICENSING.org", "REUSE.toml", "LICENSES/LGPL-2.1-or-later.txt", "LICENSES/Apache-2.0.txt", "Project.sysml", "README.org", ".gitignore", "Cargo.toml", "Cargo.lock", "Cargo.lock.license", "rust-toolchain.toml", "go/go.mod", "go/go.sum", "rustfmt.toml", "clippy.toml", "gerbil.pkg", "build.ss", "init.ss",
+	for _, path := range []string{"LICENSE", "LICENSING.org", "REUSE.toml", "LICENSES/LGPL-2.1-or-later.txt", "LICENSES/Apache-2.0.txt", "Project.sysml", "README.org", ".gitignore", ".gitattributes", "Cargo.toml", "Cargo.lock", "Cargo.lock.license", "rust-toolchain.toml", "go/go.mod", "go/go.sum", "rustfmt.toml", "clippy.toml", "gerbil.pkg", "build.ss", "init.ss",
 		"devenv.nix", "devenv.lock", "devenv.lock.license", "devenv.yaml", ".envrc"} {
 		if err := add(filepath.Join(root, path)); err != nil {
 			return nil, err
@@ -48,7 +48,7 @@ func SourceInputs(root string) (map[string]string, error) {
 	// Inventory source owners, not a second hand-maintained list of proof roots.
 	// Include Lake manifests/pins, but do not traverse its dependency/build cache.
 	// Cache/toolchain integrity remains a separate qualification prerequisite.
-	// Historical evidence and generated diagrams are not source inputs.
+	// Generated verification artifacts and diagrams are not source inputs.
 	for _, directory := range []string{"crates", "go", "proto", "scheme", "t", "prod", "dev/sysml", "dev/d2", ".github", "docs", "dev/proofs/lean", "dev/proofs/quint", "dev/proofs/cedar", "dev/specs/lean", "dev/specs/quint"} {
 		err := filepath.WalkDir(filepath.Join(root, directory), func(path string, entry fs.DirEntry, err error) error {
 			if err != nil {
@@ -78,7 +78,7 @@ func SourceInputs(root string) (map[string]string, error) {
 				if directory == "dev/d2" {
 					return add(path)
 				}
-			case ".license", ".go", ".rs", ".h", ".sh", ".ss", ".pkg", ".toml", ".json", ".yaml", ".yml", ".proto", ".sysml", ".cedar", ".lean", ".qnt", ".org", ".d2":
+			case ".license", ".go", ".rs", ".h", ".sh", ".ss", ".sse", ".pkg", ".toml", ".json", ".yaml", ".yml", ".proto", ".sysml", ".cedar", ".lean", ".qnt", ".org", ".d2":
 				return add(path)
 			case ".svg":
 				if directory == "dev/d2" || strings.Contains(filepath.ToSlash(path), "/diagrams/assets/") {

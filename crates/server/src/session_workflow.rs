@@ -178,6 +178,7 @@ impl Gateway {
                     step.admission,
                     None,
                     StreamSettings {
+                        projection: None,
                         arrow: false,
                         batch_rows: 1,
                         catalog: step.catalog,
@@ -277,7 +278,8 @@ impl Gateway {
                 })
                 .collect::<Result<Vec<_>>>()?,
             weaver_governance::DerivationOutput::Indices(indices) => indices,
-            weaver_governance::DerivationOutput::Source(_) => {
+            weaver_governance::DerivationOutput::Source(_)
+            | weaver_governance::DerivationOutput::SessionTurn(_) => {
                 return Err(Error::Conflict("Governor result kind"));
             }
         };

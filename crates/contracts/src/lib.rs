@@ -24,12 +24,20 @@ pub use metering::{
     MeteringApplication, MeteringDeployment, MeteringReceipt, MeteringTenant, ProviderQuote,
 };
 mod provider;
+mod provider_turn;
+pub use provider_turn::{
+    MAX_PROVIDER_TURN_BYTES, ProviderTokenCategories, ProviderToolCall, ProviderTurnBlockKind,
+    ProviderTurnControl, ProviderTurnEvent, ProviderTurnIdentity, ProviderTurnItemKind,
+    ProviderTurnMetadata, ProviderTurnPayload, ProviderTurnPosition, ProviderTurnUsage,
+};
 mod provider_catalog;
 mod provider_routing;
+mod provider_session;
 pub use provider_routing::{
     ProviderOperationBinding, ProviderOperationScope, ProviderRoutingScope, RoutingCandidate,
     RoutingSelection,
 };
+pub use provider_session::{ProviderSessionScope, ProviderTurnDerivation, ProviderTurnSubmission};
 mod provider_oauth;
 pub use provider_catalog::{CatalogEntry, ProviderCatalog};
 pub use provider_oauth::{
@@ -39,7 +47,8 @@ pub use provider_oauth::{
 mod provider_profile;
 mod quotas;
 pub use provider_profile::{
-    ANTHROPIC_MESSAGES_SSE, CHAT_TEXT_SSE, ProviderProfile, ProviderProtocol, ProviderRequestFacts,
+    ANTHROPIC_MESSAGES_SSE, ANTHROPIC_TURN_SSE, CHAT_TEXT_SSE, CHAT_TURN_SSE, ProviderProfile,
+    ProviderProtocol, ProviderRequestFacts, RESPONSES_TURN_SSE,
 };
 pub use quotas::{QuotaDeployment, QuotaKey};
 mod publication;

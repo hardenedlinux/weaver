@@ -26,7 +26,7 @@ finite ledger still starts empty and retains canonical account/claim semantics.
 [[file:../../dev/specs/quint/FiniteStreamManifest.qnt][FiniteStreamManifest.qnt]] imports the existing Quint coordinator and selects
 its administrative actions explicitly, then supplies finite manifest fixtures,
 partial offers, uncertainty, shared-stream exclusion and bad-design controls.
-[[file:../../dev/specs/evidence/finite-stream-manifest-2026-10-19.org][The receipt]] records the actual checks, finite samples and source identities.
+[[file:../../.cache/verification/evidence/specs/finite-stream-manifest-2026-10-19.org][The receipt]] records the actual checks, finite samples and source identities.
 
 The proof establishes safety for the declared abstract ownership/persistence
 relation. It does not authenticate physical buffers, implement a transport,

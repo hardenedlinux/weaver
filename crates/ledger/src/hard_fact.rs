@@ -96,12 +96,23 @@ pub(crate) fn has_fact_state(c: &Connection) -> Result<bool> {
     )
 }
 
-#[derive(PartialEq, Eq)]
+#[derive(Clone, PartialEq, Eq)]
 pub(crate) struct UseCut {
     pub(crate) expects_workflow_result: bool,
     floor: u64,
     revision: u64,
     snapshot: String,
+}
+impl UseCut {
+    pub(crate) fn commitment(&self) -> Result<String> {
+        Ok(body_digest(&serde_json::to_string(&(
+            "weaver.hard-fact-use-cut.v1",
+            self.expects_workflow_result,
+            self.floor,
+            self.revision,
+            &self.snapshot,
+        ))?))
+    }
 }
 
 pub(crate) fn require_available(
@@ -109,16 +120,19 @@ pub(crate) fn require_available(
     family: &str,
     node: &str,
 ) -> Result<Option<UseCut>> {
+    let parent = crate::provider_session::parent(c, family, node)?;
+    let scope_family = parent.as_deref().unwrap_or(family);
     let scoped = maybe_current(
         c,
-        "SELECT feed.record,feed.revision,feed.pending IS NOT NULL,
+        "SELECT feed.record,feed.revision,
+          feed.pending IS NOT NULL OR EXISTS(SELECT 1 FROM main.hard_fact_intents WHERE resolution IS NULL),
           feed.floor,feed.snapshot,
           EXISTS(SELECT 1 FROM json_each(feed.unavailable) WHERE value=?2)
          FROM main.hard_fact_feed feed
          WHERE feed.family=?1 OR EXISTS(
            SELECT 1 FROM main.family_origins own JOIN main.family_origins alias ON own.origin=alias.origin
            WHERE own.family=feed.family AND alias.family=?1)",
-        params![family.to_owned(), node.to_owned()],
+        params![scope_family.to_owned(), node.to_owned()],
         |row| {
             Ok((
                 row.get::<String>(0)?,
@@ -133,7 +147,7 @@ pub(crate) fn require_available(
     .map_err(db)?;
     if let Some((record, revision, pending, floor, snapshot, unavailable)) = scoped {
         let feed: FactFeed = decode(record.as_bytes())?;
-        if !feed.workflow_path.is_empty() && feed.family != family {
+        if !feed.workflow_path.is_empty() && (feed.family != family || parent.is_some()) {
             return Err(Error::Conflict("workflow requires the original family"));
         }
         if revision == 0
@@ -149,6 +163,9 @@ pub(crate) fn require_available(
             revision,
             snapshot,
         }));
+    }
+    if parent.is_some() {
+        return Err(Error::Conflict("Session parent fact feed missing"));
     }
     Ok(None)
 }
@@ -375,7 +392,14 @@ fn next_barrier(
     {
         return Err(Error::Conflict("hard fact predecessor changed"));
     }
-    let task = crate::stream_state::task(connection, &head.feed.family)?;
+    let task = match crate::provider_session::fact_template(
+        connection,
+        &head.feed.family,
+        &head.feed.authority,
+    )? {
+        Some(template) => template,
+        None => crate::stream_state::task(connection, &head.feed.family)?,
+    };
     if !task.nodes.contains(&head.feed.root)
         || head
             .feed

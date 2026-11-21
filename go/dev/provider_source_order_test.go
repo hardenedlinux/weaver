@@ -10,12 +10,13 @@ import (
 	"context"
 	"crypto/tls"
 	"net"
+	"strings"
+	"sync/atomic"
 	"testing"
 	"time"
 
 	pb "github.com/HardenedLinux/weaver/go/api/gateway/v1"
 	v1 "github.com/HardenedLinux/weaver/go/api/v1"
-	"github.com/HardenedLinux/weaver/go/internal/controlplane"
 	"github.com/HardenedLinux/weaver/go/internal/gatewayclient"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -27,53 +28,66 @@ import (
 // after registration, before bootstrap can request its final publication.
 type sourceOrderingProbe struct {
 	*publicationReplyLoss
-	operation *gatewayclient.Client
-	plan      v1.ProviderPlan
+	operation        *gatewayclient.Client
+	plan             *pb.ProviderPlan
+	unsupported      bool
+	registrations    atomic.Int64
+	rawRegistrations atomic.Int64
 }
 
-type missingPublishedRegistration struct {
-	pb.GatewayClient
-	rawRegistrations int
-}
-
-func (p *missingPublishedRegistration) RegisterPublishedTask(context.Context, *pb.RegisterPublishedTaskRequest, ...grpc.CallOption) (*pb.Empty, error) {
-	return nil, status.Error(codes.Unimplemented, "publication-bound registration unavailable")
-}
-func (p *missingPublishedRegistration) RegisterTask(ctx context.Context, in *pb.RegisterTaskRequest, options ...grpc.CallOption) (*pb.Empty, error) {
-	p.rawRegistrations++
-	return p.GatewayClient.RegisterTask(ctx, in, options...)
-}
-
-func TestProviderControlCannotDowngradePublicationBoundRegistration(t *testing.T) {
+func TestProviderRustDirectCannotDowngradePublicationBoundRegistration(t *testing.T) {
 	f := newFixture(t, completeSSE, false)
-	proxy := &missingPublishedRegistration{GatewayClient: f.admin.RPC}
-	source := *f.admin
-	source.RPC = proxy
-	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
+	probe := &sourceOrderingProbe{publicationReplyLoss: &publicationReplyLoss{source: f.admin}, unsupported: true}
+	control := newControlProcess(t, f, writeControlBundle(t, f, controlBundle(t, f), "json"))
+	control.env = append(control.env, "WEAVER_CONTROL_AUTHORITY_SOURCE_ADDRESS="+startSourceOrderingProbe(t, f, probe))
+	ctx, cancel := context.WithTimeout(t.Context(), 12*time.Second)
 	defer cancel()
-	if _, err := controlplane.Bootstrap(ctx, &source, f.client, controlBundle(t, f)); status.Code(err) != codes.Unimplemented {
-		t.Fatal("unsupported task-origin capability did not stop activation", err)
+	output, err := control.prepareCommand(ctx, serverBinary, "prepare").CombinedOutput()
+	if err == nil || !strings.Contains(string(output), "source registration result unknown") {
+		t.Fatalf("unsupported task-origin capability did not stop activation: %v: %s", err, output)
 	}
-	if proxy.rawRegistrations != 0 || f.primary.Load()+f.backup.Load()+f.denied.Load() != 0 {
+	if probe.registrations.Load() != 1 || probe.stages.Load() != 1 || probe.calls.Load() != 0 ||
+		probe.rawRegistrations.Load() != 0 || f.primary.Load()+f.backup.Load()+f.denied.Load() != 0 {
 		t.Fatal("source task registration silently fell back to a weaker capability")
 	}
 }
 
+func (p *sourceOrderingProbe) RegisterTask(ctx context.Context, in *pb.RegisterTaskRequest) (*pb.Empty, error) {
+	p.rawRegistrations.Add(1)
+	return p.publicationReplyLoss.RegisterTask(ctx, in)
+}
+
 func (p *sourceOrderingProbe) RegisterPublishedTask(ctx context.Context, in *pb.RegisterPublishedTaskRequest) (*pb.Empty, error) {
+	p.registrations.Add(1)
+	if p.unsupported {
+		return nil, status.Error(codes.Unimplemented, "publication-bound registration unavailable")
+	}
+	if p.stages.Load() != 1 || p.calls.Load() != 0 {
+		return nil, status.Error(codes.Internal, "registration escaped the staged publication window")
+	}
 	source := p.sourceClient()
 	result, err := source.RPC.RegisterPublishedTask(source.Context(ctx), in)
 	if err != nil {
 		return nil, err
 	}
-	_, _ = p.operation.Execute(ctx, p.plan, pb.Encoding_PROTOBUF, 1, func(*pb.Event) error { return nil })
+	request := &pb.ProviderRequest{Plan: p.plan,
+		Encoding: pb.Encoding_PROTOBUF, BatchRows: 1}
+	stream, err := p.operation.RPC.ExecuteProvider(p.operation.Context(ctx), request)
+	if err == nil {
+		_, err = stream.Recv()
+	}
+	if status.Code(err) != codes.FailedPrecondition {
+		return nil, status.Errorf(codes.Internal, "operation escaped pending source barrier: %v", err)
+	}
 	return result, nil
 }
 func (p *sourceOrderingProbe) PublishAuthority(ctx context.Context, in *pb.PublishRequest) (*pb.PublicationReceipt, error) {
+	p.calls.Add(1)
 	source := p.sourceClient()
 	return source.RPC.PublishAuthority(source.Context(ctx), in)
 }
 
-func TestProviderControlStagesBeforeTaskRegistration(t *testing.T) {
+func TestProviderRustDirectStagesBeforeTaskRegistration(t *testing.T) {
 	f := newFixture(t, completeSSE, false)
 	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
 	defer cancel()
@@ -90,10 +104,19 @@ func TestProviderControlStagesBeforeTaskRegistration(t *testing.T) {
 		bundle.Plans[i].Revision = 2
 		bundle.Plans[i].Fence = 3
 	}
-	probePlan := bundle.Plans[0]
-	probePlan.Revision = 1
-	probePlan.Fence = 2
+	probePlan := &pb.ProviderPlan{Family: bundle.Plans[0].Family, Node: bundle.Plans[0].Node}
 	probe := &sourceOrderingProbe{publicationReplyLoss: &publicationReplyLoss{source: f.admin}, operation: f.client, plan: probePlan}
+	c := newControlProcess(t, f, writeControlBundle(t, f, bundle, "json"))
+	c.env = append(c.env, "WEAVER_CONTROL_AUTHORITY_SOURCE_ADDRESS="+startSourceOrderingProbe(t, f, probe))
+	c.prepareUsing(t, serverBinary, "prepare")
+	if probe.stages.Load() != 1 || probe.registrations.Load() != 1 || probe.calls.Load() != 1 ||
+		probe.rawRegistrations.Load() != 0 || f.primary.Load()+f.backup.Load()+f.denied.Load() != 0 {
+		t.Fatal("new task escaped through old Policy before its pending barrier")
+	}
+}
+
+func startSourceOrderingProbe(t *testing.T, f *fixture, probe *sourceOrderingProbe) string {
+	t.Helper()
 	certificate, err := tls.X509KeyPair(f.pki.serverPEM, f.pki.serverKey)
 	if err != nil {
 		t.Fatal(err)
@@ -107,12 +130,7 @@ func TestProviderControlStagesBeforeTaskRegistration(t *testing.T) {
 	exited := make(chan error, 1)
 	go func() { exited <- server.Serve(listener) }()
 	t.Cleanup(func() { server.Stop(); <-exited })
-	c := newControlProcess(t, f, writeControlBundle(t, f, bundle, "json"))
-	c.env = append(c.env, "WEAVER_CONTROL_AUTHORITY_SOURCE_ADDRESS="+listener.Addr().String())
-	c.start(t)
-	if f.primary.Load()+f.backup.Load()+f.denied.Load() != 0 {
-		t.Fatal("new task escaped through old Policy before its pending barrier")
-	}
+	return listener.Addr().String()
 }
 
 func TestProviderRejectedTaskPublicationCannotUseUnrelatedAllowingImage(t *testing.T) {

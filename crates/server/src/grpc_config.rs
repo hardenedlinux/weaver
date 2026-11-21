@@ -193,8 +193,12 @@ async fn run_owned(runtime: crate::ServiceRuntime) -> Result<()> {
         "weaver startup stage=listeners-bound elapsed={:?}",
         started.elapsed()
     );
-    let result = crate::grpc::serve_grpc_with_runtime(
-        GrpcListeners { operation, source },
+    let http = crate::http_compat::load().await?;
+    let result = crate::grpc::serve_with_http(
+        crate::ServiceListeners {
+            rpc: GrpcListeners { operation, source },
+            http,
+        },
         settings,
         runtime,
         shutdown,

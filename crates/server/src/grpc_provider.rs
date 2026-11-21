@@ -14,6 +14,7 @@ use weaver_contracts::{ProviderOAuthUse, ProviderPlan};
 use weaver_ledger::{Ledger, WorkflowObservation};
 
 pub(crate) struct StreamSettings {
+    pub projection: Option<weaver_broker::ProviderSseEncoder>,
     pub arrow: bool,
     pub batch_rows: u32,
     pub catalog: String,
@@ -159,6 +160,7 @@ impl Gateway {
             },
             oauth,
             StreamSettings {
+                projection: None,
                 arrow,
                 batch_rows: request.batch_rows,
                 catalog,
@@ -176,6 +178,7 @@ impl Gateway {
         settings: StreamSettings,
     ) -> Result<ResponseStream, Status> {
         let StreamSettings {
+            projection,
             arrow,
             batch_rows,
             catalog,
@@ -183,7 +186,15 @@ impl Gateway {
         let cursor = weaver_ledger::DeliveryCursor::new(&plan).map_err(status)?;
         let (sender, receiver) = mpsc::channel(crate::grpc_output::DELIVERY_QUEUE_CAPACITY);
         let cancelled = CancellationToken::new();
+        let format = if projection.is_some() {
+            "sse"
+        } else if arrow {
+            "arrow"
+        } else {
+            "protobuf"
+        };
         let mut output = Output {
+            projection,
             telemetry: self.runtime.telemetry().clone(),
             pending: None,
             deliveries: Default::default(),
@@ -317,7 +328,7 @@ impl Gateway {
                         weaver_broker::ProviderExecution {
                             plan: &plan,
                             transport: &transport,
-                            format: if arrow { "arrow" } else { "protobuf" },
+                            format,
                             batch_rows: batch_rows as usize,
                         },
                         &mut output,

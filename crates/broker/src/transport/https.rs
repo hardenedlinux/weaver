@@ -60,10 +60,19 @@ impl HttpsTransport {
         protocol: weaver_contracts::ProviderProtocol,
     ) -> Result<()> {
         Self::validate_endpoint(endpoint)?;
-        if matches!(protocol, weaver_contracts::ProviderProtocol::Anthropic) {
+        if protocol.is_anthropic() {
             let url = Url::parse(endpoint).map_err(|_| Error::Invalid("provider endpoint"))?;
             if url.path() != "/v1/messages" || url.query().is_some() {
                 return Err(Error::Invalid("Anthropic Messages endpoint required"));
+            }
+        }
+        if matches!(
+            protocol,
+            weaver_contracts::ProviderProtocol::OpenAiResponses
+        ) {
+            let url = Url::parse(endpoint).map_err(|_| Error::Invalid("provider endpoint"))?;
+            if url.path() != "/v1/responses" || url.query().is_some() {
+                return Err(Error::Invalid("OpenAI Responses endpoint required"));
             }
         }
         Ok(())

@@ -23,16 +23,16 @@ dependency pin, upstream source, commit or push was changed.
 
 Workspace: /Users/guangtao/ghq/github.com/tao3k/weaver; branch =main=;
 tracked HEAD =4df1f0233f9a78e5a3ea8a1a0d8aaca983698b8d=. Architecture/formal
-artifacts remain untracked working-tree content. [[file:../../../dev/proofs/evidence/floor-intent-decision/dependency-identity.log][Dependency file identities]]
+artifacts remain untracked working-tree content. [[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/dependency-identity.log][Dependency file identities]]
 are recorded for this receipt; they are not architecture design requirements.
 
 * Exact pinned source comparison
 
-[[file:../../../dev/proofs/evidence/floor-intent-decision/source-review.json][Eighteen source blob identities and numbered excerpts]] were independently
+[[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/source-review.json][Eighteen source blob identities and numbered excerpts]] were independently
 rehydrated with git show and rehashed from POO Flow
 =a74fc2fd63437252175b5a67649ee54b886d3bf4= and cedar-poo-spec
 =c8d1a0641120cf65e299e8a98f9fe7666ca96ab5=. Every SHA256 matches the
-preceding source register. [[file:../../../dev/proofs/evidence/floor-intent-decision/source-boundary-review.log][Additional targeted numbered source readings]] cover
+preceding source register. [[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/source-boundary-review.log][Additional targeted numbered source readings]] cover
 commit, pending, recovery, checkpoint, context lineage and bound operations.
 The design gives a source-by-source reuse/extension matrix. In particular,
 strict-mediation's indeterminate consumption is not cancellation; session
@@ -44,49 +44,52 @@ no extraction of upstream proofs or native ABI qualification was performed.
 * Reproduction and final checks
 
 #+begin_src sh :eval never
-python3 dev/proofs/check_floor_intent_decision.py
+go -C go run ./cmd/weaver-dev -timeout 28m check-policy
 #+end_src
 
-[[file:../../../dev/proofs/evidence/floor-intent-decision/versions.log][Tools]]: Lean 4.34.1, Std only; Quint 0.33.0, TypeScript backend; D2 renderer
+This runs the maintained registered plan. It does not replay the retired
+per-artifact checks or regenerate the historical observations below.
+
+[[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/versions.log][Tools]]: Lean 4.34.1, Std only; Quint 0.33.0, TypeScript backend; D2 renderer
 recorded separately. Seventeen Lean modules were compiled in a fresh isolated
 olean directory; the changed final module was rebuilt there after adding the
 explicit DecisionOwner evidence and final properties. Exact paths and arguments
-are in [[file:../../../dev/proofs/evidence/floor-intent-decision/commands.json][29 final command records]]. All final commands exited zero. Compile/typecheck
+are in [[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/commands.json][29 final command records]]. All final commands exited zero. Compile/typecheck
 watchdogs are 20 seconds, deterministic/focused tests 55 seconds, each sampling
 route 30 seconds; none was widened. Timings are check timings, not gateway
 performance measurements.
 
 | Command | Exit | Seconds | Evidence |
 |---------+------+---------+----------|
-| LogicalMessageAuthority | 0 | 0.786 | [[file:../../../dev/proofs/evidence/floor-intent-decision/LogicalMessageAuthority.log][raw log]] |
-| SharedMessageBudget | 0 | 0.77 | [[file:../../../dev/proofs/evidence/floor-intent-decision/SharedMessageBudget.log][raw log]] |
-| FiniteDomainMigration | 0 | 0.796 | [[file:../../../dev/proofs/evidence/floor-intent-decision/FiniteDomainMigration.log][raw log]] |
-| AnchoredRecoveryAndEgress | 0 | 0.719 | [[file:../../../dev/proofs/evidence/floor-intent-decision/AnchoredRecoveryAndEgress.log][raw log]] |
-| ComposedGatewayLifecycle | 0 | 0.673 | [[file:../../../dev/proofs/evidence/floor-intent-decision/ComposedGatewayLifecycle.log][raw log]] |
-| FiniteStreamManifest | 0 | 0.827 | [[file:../../../dev/proofs/evidence/floor-intent-decision/FiniteStreamManifest.log][raw log]] |
-| DriverCompletionRecovery | 0 | 0.667 | [[file:../../../dev/proofs/evidence/floor-intent-decision/DriverCompletionRecovery.log][raw log]] |
-| WriterSettlementClosure | 0 | 0.886 | [[file:../../../dev/proofs/evidence/floor-intent-decision/WriterSettlementClosure.log][raw log]] |
-| SettlementAnchorRecovery | 0 | 0.669 | [[file:../../../dev/proofs/evidence/floor-intent-decision/SettlementAnchorRecovery.log][raw log]] |
-| GateConsumptionPersistence | 0 | 0.676 | [[file:../../../dev/proofs/evidence/floor-intent-decision/GateConsumptionPersistence.log][raw log]] |
-| AnchorBrokerCommit | 0 | 0.717 | [[file:../../../dev/proofs/evidence/floor-intent-decision/AnchorBrokerCommit.log][raw log]] |
-| AnchorReconfiguration | 0 | 0.616 | [[file:../../../dev/proofs/evidence/floor-intent-decision/AnchorReconfiguration.log][raw log]] |
-| QuorumDurablePromises | 0 | 0.614 | [[file:../../../dev/proofs/evidence/floor-intent-decision/QuorumDurablePromises.log][raw log]] |
-| ProtectedSignerRelease | 0 | 0.621 | [[file:../../../dev/proofs/evidence/floor-intent-decision/ProtectedSignerRelease.log][raw log]] |
-| KeyBoundaryQueue | 0 | 0.982 | [[file:../../../dev/proofs/evidence/floor-intent-decision/KeyBoundaryQueue.log][raw log]] |
-| DeviceIsolationRecovery | 0 | 0.782 | [[file:../../../dev/proofs/evidence/floor-intent-decision/DeviceIsolationRecovery.log][raw log]] |
-| FloorIntentDecision | 0 | 3.231 | [[file:../../../dev/proofs/evidence/floor-intent-decision/FloorIntentDecision.log][raw log]] |
-| typecheck | 0 | 1.736 | [[file:../../../dev/proofs/evidence/floor-intent-decision/typecheck.log][raw log]] |
-| tests | 0 | 3.467 | [[file:../../../dev/proofs/evidence/floor-intent-decision/tests.log][raw log]] |
-| counterexamples | 0 | 2.068 | [[file:../../../dev/proofs/evidence/floor-intent-decision/counterexamples.log][raw log]] |
-| init | 0 | 2.072 | [[file:../../../dev/proofs/evidence/floor-intent-decision/init.log][raw log]] |
-| boot | 0 | 1.993 | [[file:../../../dev/proofs/evidence/floor-intent-decision/boot.log][raw log]] |
-| pending | 0 | 2.219 | [[file:../../../dev/proofs/evidence/floor-intent-decision/pending.log][raw log]] |
-| committedPending | 0 | 2.107 | [[file:../../../dev/proofs/evidence/floor-intent-decision/committedPending.log][raw log]] |
-| fencedPending | 0 | 2.186 | [[file:../../../dev/proofs/evidence/floor-intent-decision/fencedPending.log][raw log]] |
-| signed | 0 | 2.365 | [[file:../../../dev/proofs/evidence/floor-intent-decision/signed.log][raw log]] |
-| device-isolation-regression | 0 | 3.272 | [[file:../../../dev/proofs/evidence/floor-intent-decision/device-isolation-regression.log][raw log]] |
-| protected-signer-regression | 0 | 0.937 | [[file:../../../dev/proofs/evidence/floor-intent-decision/protected-signer-regression.log][raw log]] |
-| inherited-account-replay | 0 | 5.245 | [[file:../../../dev/proofs/evidence/floor-intent-decision/inherited-account-replay.log][raw log]] |
+| LogicalMessageAuthority | 0 | 0.786 | [[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/LogicalMessageAuthority.log][raw log]] |
+| SharedMessageBudget | 0 | 0.77 | [[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/SharedMessageBudget.log][raw log]] |
+| FiniteDomainMigration | 0 | 0.796 | [[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/FiniteDomainMigration.log][raw log]] |
+| AnchoredRecoveryAndEgress | 0 | 0.719 | [[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/AnchoredRecoveryAndEgress.log][raw log]] |
+| ComposedGatewayLifecycle | 0 | 0.673 | [[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/ComposedGatewayLifecycle.log][raw log]] |
+| FiniteStreamManifest | 0 | 0.827 | [[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/FiniteStreamManifest.log][raw log]] |
+| DriverCompletionRecovery | 0 | 0.667 | [[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/DriverCompletionRecovery.log][raw log]] |
+| WriterSettlementClosure | 0 | 0.886 | [[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/WriterSettlementClosure.log][raw log]] |
+| SettlementAnchorRecovery | 0 | 0.669 | [[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/SettlementAnchorRecovery.log][raw log]] |
+| GateConsumptionPersistence | 0 | 0.676 | [[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/GateConsumptionPersistence.log][raw log]] |
+| AnchorBrokerCommit | 0 | 0.717 | [[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/AnchorBrokerCommit.log][raw log]] |
+| AnchorReconfiguration | 0 | 0.616 | [[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/AnchorReconfiguration.log][raw log]] |
+| QuorumDurablePromises | 0 | 0.614 | [[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/QuorumDurablePromises.log][raw log]] |
+| ProtectedSignerRelease | 0 | 0.621 | [[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/ProtectedSignerRelease.log][raw log]] |
+| KeyBoundaryQueue | 0 | 0.982 | [[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/KeyBoundaryQueue.log][raw log]] |
+| DeviceIsolationRecovery | 0 | 0.782 | [[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/DeviceIsolationRecovery.log][raw log]] |
+| FloorIntentDecision | 0 | 3.231 | [[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/FloorIntentDecision.log][raw log]] |
+| typecheck | 0 | 1.736 | [[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/typecheck.log][raw log]] |
+| tests | 0 | 3.467 | [[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/tests.log][raw log]] |
+| counterexamples | 0 | 2.068 | [[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/counterexamples.log][raw log]] |
+| init | 0 | 2.072 | [[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/init.log][raw log]] |
+| boot | 0 | 1.993 | [[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/boot.log][raw log]] |
+| pending | 0 | 2.219 | [[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/pending.log][raw log]] |
+| committedPending | 0 | 2.107 | [[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/committedPending.log][raw log]] |
+| fencedPending | 0 | 2.186 | [[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/fencedPending.log][raw log]] |
+| signed | 0 | 2.365 | [[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/signed.log][raw log]] |
+| device-isolation-regression | 0 | 3.272 | [[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/device-isolation-regression.log][raw log]] |
+| protected-signer-regression | 0 | 0.937 | [[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/protected-signer-regression.log][raw log]] |
+| inherited-account-replay | 0 | 5.245 | [[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/inherited-account-replay.log][raw log]] |
 
 The final named =Test$= route passes 63 controls: 38 directly imported device
 controls and 25 new controls (20 positive/rejection controls and five intentional
@@ -102,7 +105,7 @@ steps, seed 113: 60 bounded samples with no invariant violation. This is not
 exhaustive exploration or liveness evidence. The signed fixture reaches the
 inherited actual protected release, rather than concluding from a local status bit.
 
-[[file:../../../dev/proofs/evidence/floor-intent-decision/axiom-audit.log][Nineteen printed Lean declarations]] have no sorryAx or compiler errors.
+[[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/axiom-audit.log][Nineteen printed Lean declarations]] have no sorryAx or compiler errors.
 Standard propext/Quot.sound and inherited Classical.choice remain. The proofs
 include conservation, unique resolution, retained fenced intent, original-commit
 unlock, current owner evidence, context-fence invalidation, stale-worker rejection,
@@ -113,16 +116,16 @@ is an explicit DecisionOwner predicate, not a theorem about an HSM service.
 
 * Decoded intentional counterexamples
 
-[[file:../../../dev/proofs/evidence/floor-intent-decision/counterexample-observations.json][Final-state assertions]] independently inspect the five focused ITFs.
+[[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/counterexample-observations.json][Final-state assertions]] independently inspect the five focused ITFs.
 Every unsafe mutation is excluded from the safe step relation.
 
 | Unsafe control | States including setup | Focused trace |
 |----------------+------------------------+---------------|
-| lateCommitAfterFence | 30 | [[file:../../../dev/proofs/evidence/floor-intent-decision/itf/lateCommitAfterFenceCounterexampleTest-1.itf.json][ITF]] |
-| negativeResolutionUnlock | 31 | [[file:../../../dev/proofs/evidence/floor-intent-decision/itf/negativeResolutionUnlockCounterexampleTest-3.itf.json][ITF]] |
-| oldWorkerReceiptRelabel | 31 | [[file:../../../dev/proofs/evidence/floor-intent-decision/itf/oldWorkerReceiptRelabelCounterexampleTest-4.itf.json][ITF]] |
-| rollbackDecisionPrefix | 32 | [[file:../../../dev/proofs/evidence/floor-intent-decision/itf/rollbackDecisionPrefixCounterexampleTest-2.itf.json][ITF]] |
-| timeoutUnlock | 30 | [[file:../../../dev/proofs/evidence/floor-intent-decision/itf/timeoutUnlockCounterexampleTest-0.itf.json][ITF]] |
+| lateCommitAfterFence | 30 | [[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/itf/lateCommitAfterFenceCounterexampleTest-1.itf.json][ITF]] |
+| negativeResolutionUnlock | 31 | [[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/itf/negativeResolutionUnlockCounterexampleTest-3.itf.json][ITF]] |
+| oldWorkerReceiptRelabel | 31 | [[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/itf/oldWorkerReceiptRelabelCounterexampleTest-4.itf.json][ITF]] |
+| rollbackDecisionPrefix | 32 | [[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/itf/rollbackDecisionPrefixCounterexampleTest-2.itf.json][ITF]] |
+| timeoutUnlock | 30 | [[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/itf/timeoutUnlockCounterexampleTest-0.itf.json][ITF]] |
 
 - Timeout unlock leaves an accepted intent neither committed nor occupying its slot.
 - Late commit after a retained fence creates two conflicting outcomes and lacks
@@ -149,17 +152,17 @@ logs remain identifiable; they are not relabeled as final passes.
 
 * Documentation, visuals and sealed evidence
 
-[[file:../../../dev/proofs/evidence/floor-intent-decision/document-check.log][Document inventory and link validation]],
-[[file:../../../dev/proofs/evidence/floor-intent-decision/diagram-validation.json][D2 validation]],
-[[file:../../../dev/proofs/evidence/floor-intent-decision/visual-check.log][Visual inspection]],
-[[file:../../../dev/proofs/evidence/floor-intent-decision/org-export.log][Org export]] and
-[[file:../../../dev/proofs/evidence/floor-intent-decision/historical-manifests.log][Historical byte verification]] record the final documentation checks.
+[[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/document-check.log][Document inventory and link validation]],
+[[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/diagram-validation.json][D2 validation]],
+[[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/visual-check.log][Visual inspection]],
+[[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/org-export.log][Org export]] and
+[[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/historical-manifests.log][Historical byte verification]] record the final documentation checks.
 Org export disables Babel evaluation. Missing optional htmlize highlighting,
 if reported, is retained in the raw log. The final diagram was rendered and
 visually inspected, with bundled official Go/Kubernetes/Rust icons and a separate
 retained-intent branch; no version or acceptance data appears in the diagram.
 
-[[file:../../../dev/proofs/evidence/floor-intent-decision/SHA256SUMS][The final byte manifest]] seals the new category, raw results, focused ITFs,
+[[file:../../../.cache/verification/evidence/proofs/floor-intent-decision/SHA256SUMS][The final byte manifest]] seals the new category, raw results, focused ITFs,
 source snapshots, checker and canonical formal chain. All ten preceding manifests
 remain byte-valid. No earlier receipt or historical source identity was rewritten.
 

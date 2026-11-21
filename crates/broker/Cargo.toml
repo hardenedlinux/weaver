@@ -13,6 +13,7 @@ llm-provider = []
 test-loopback = []
 [dependencies]
 weaver-contracts.workspace = true
+weaver-llm = { path = "../llm" }
 weaver-ledger.workspace = true
 reqwest.workspace = true
 bytes.workspace = true
@@ -26,6 +27,7 @@ rustls.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 [dev-dependencies]
+weaver-ledger = { workspace = true, features = ["commit-observer"] }
 asp-rust.workspace = true
 futures-executor.workspace = true
 criterion = { workspace = true, features = ["async_tokio"] }

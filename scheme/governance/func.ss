@@ -3,10 +3,9 @@
 ;;; SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 ;;; Reuse Agentic AI Lab's actual Profile and assessment protocols.
-(import (only-in :agentic-ai-lab/modules/governance/funs agentic-ai-lab-governance-evaluate)
-        (only-in :agentic-ai-lab/modules/governance/types agentic-ai-lab-governance-assessment?)
-        (only-in :clan/poo/mop element?)
-        (only-in :clan/poo/object .ref)
+(import (only-in "../interface.ss" LabGovernance)
+        (only-in :clan/poo/type element?)
+        (only-in :clan/poo/object .get .ref)
         "./types.ss" "./capture.ss")
 (export assess-governance!)
 
@@ -24,13 +23,13 @@
          (model-method (.ref model '.assess-threats)))
     (when (ormap blocking-threat? (.ref model 'threats))
       (error "Scheme Governance assessment does not admit an inert source handoff"))
-    (def assessment (agentic-ai-lab-governance-evaluate profile context))
+    (def assessment ((.get LabGovernance evaluate) profile context))
     (unless (and (equal? original-profile (governance-profile-snapshot profile))
                  (equal? original-context (governance-context-snapshot context))
                  (eq? profile-method (.ref profile '.assess-governance))
                  (eq? model-method (.ref (.ref profile 'threat-model) '.assess-threats)))
       (error "Governance source changed during assessment"))
-    (unless (and (agentic-ai-lab-governance-assessment? assessment)
+    (unless (and ((.get LabGovernance assessment?) assessment)
                  (equal? (.ref assessment 'profile-identity) (.ref profile 'identity))
                  (equal? (.ref assessment 'model-identity) (.ref model 'identity))
                  (equal? (.ref assessment 'assessed-threats) (.ref model 'threats))

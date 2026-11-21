@@ -21,6 +21,7 @@ import (
 
 	pb "github.com/HardenedLinux/weaver/go/api/gateway/v1"
 	v1 "github.com/HardenedLinux/weaver/go/api/v1"
+	"github.com/HardenedLinux/weaver/go/internal/gatewayclient"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -204,20 +205,96 @@ func TestProviderRustDirectFixedPlanSurvivesSourceHandoff(t *testing.T) {
 					t.Fatalf("catalog precondition consumed fixed plan: %v", err)
 				}
 			}
+			old := f.pki.source
 			next := secondaryClient(t, f.pki)
-			token := sha256.Sum256([]byte(f.admin.Token))
+			const nextToken = "test-source-publisher-successor"
+			token := sha256.Sum256([]byte(nextToken))
 			rotation := v1.SourceRotation{OperationID: "fixed-source-handoff", ExpectedEpoch: 0, NextCertificate: next.Certificate[0], NextCredentialSHA256: hex.EncodeToString(token[:])}
-			if receipt, err := f.admin.RotateSource(ctx, rotation); err != nil || receipt.GetAuthority().GetEpoch() != 1 {
+			receipt, err := f.admin.RotateSource(ctx, rotation)
+			if err != nil || receipt.GetAuthority().GetEpoch() != 1 {
 				t.Fatalf("source handoff: %v %v", receipt, err)
 			}
 			if _, err := f.admin.SourceAuthority(ctx); status.Code(err) != codes.PermissionDenied {
 				t.Fatalf("retired source retained mutation identity: %v", err)
 			}
 			if mode == "restart" {
-				restartWithSourceCertificate(t, f, next)
+				restartWithSourceIdentity(t, f, next, nextToken)
+				view, err := f.admin.SourceAuthority(ctx)
+				if err != nil || view.GetEpoch() != 1 || view.GetIdentityDigest() != receipt.GetAuthority().GetIdentityDigest() {
+					t.Fatalf("new source identity did not recover the durable epoch: %v", err)
+				}
+				retired := *f.admin
+				retired.Token = adminToken
+				if _, err := retired.SourceAuthority(ctx); status.Code(err) != codes.Unauthenticated {
+					t.Fatalf("new certificate accepted retired source credential: %v", err)
+				}
+				security := connectionTLS(f)
+				security.Certificates[0] = old
+				retiredPeer, err := gatewayclient.Dial(ctx, f.sourceAddress, nextToken, security)
+				if err != nil {
+					t.Fatal(err)
+				}
+				defer retiredPeer.Connection.Close()
+				if _, err := retiredPeer.SourceAuthority(ctx); status.Code(err) != codes.Unauthenticated {
+					t.Fatalf("retired certificate accepted new source credential: %v", err)
+				}
 			}
 			if err := call(""); err != nil || f.primary.Load() != 1 || f.backup.Load() != 0 {
 				t.Fatalf("fixed publication changed after source handoff: sends=%d error=%v", f.primary.Load(), err)
+			}
+		})
+	}
+}
+
+func TestProviderRustDirectFixedPlanRespectsObjectWithdrawal(t *testing.T) {
+	for _, mode := range []string{"warm", "cold", "restart"} {
+		t.Run(mode, func(t *testing.T) {
+			f := newFixture(t, completeSSE, false)
+			bundle := controlBundle(t, f)
+			newControlProcess(t, f, writeControlBundle(t, f, bundle, "json")).prepareUsing(t, serverBinary, "prepare")
+			ctx, cancel := context.WithTimeout(t.Context(), 12*time.Second)
+			defer cancel()
+			key := &pb.OperationKey{Family: bundle.Plans[1].Family, Node: bundle.Plans[1].Node}
+			attempt := func(catalog string) error {
+				stream, err := f.client.RPC.ExecuteProvider(f.client.Context(ctx), &pb.ProviderRequest{
+					Plan: &pb.ProviderPlan{Family: key.Family, Node: key.Node}, BatchRows: 1, CatalogVersion: catalog,
+				})
+				if err == nil {
+					_, err = stream.Recv()
+				}
+				return err
+			}
+			if mode == "warm" {
+				// The catalog precondition refuses only after the fixed plan was resolved.
+				if result := status.Convert(attempt(strings.Repeat("a", 64))); result.Code() != codes.FailedPrecondition ||
+					result.Message() != "provider catalog coordinate changed" {
+					t.Fatalf("fixed plan was not resolved before the precondition: %v", result)
+				}
+			}
+			parent := bundle.View().Revision
+			withdrawal := bundle.Publication
+			withdrawal.OperationID = "fixed-object-withdrawal"
+			withdrawal.ExpectedRevision = &parent
+			withdrawal.Fence++
+			withdrawal.Policy += `
+forbid(principal, action, resource) when { context.family == "control" && context.node == "next" };`
+			receipt, err := f.admin.Publish(ctx, withdrawal)
+			if err != nil || receipt.GetOutcome() != pb.PublicationOutcome_COMMITTED {
+				t.Fatalf("publish fixed object withdrawal: %v", err)
+			}
+			if mode == "restart" {
+				f.stop(t)
+				f.start(t)
+			}
+			if err := attempt(""); status.Code(err) != codes.FailedPrecondition || f.primary.Load()+f.backup.Load()+f.denied.Load() != 0 {
+				t.Fatalf("withdrawn fixed plan reached transport: %v", err)
+			}
+			if observed, err := f.client.RPC.Inspect(f.client.Context(ctx), key); err == nil || observed != nil {
+				t.Fatalf("withdrawn unused node acquired a receipt: %v %v", observed, err)
+			}
+			f.plan.Revision, f.plan.Fence = receipt.GetRevision(), receipt.GetFence()
+			if _, _, err := execute(t, f, pb.Encoding_PROTOBUF, 1); err != nil || f.primary.Load() != 1 {
+				t.Fatalf("unrelated operation did not survive the withdrawal: %v", err)
 			}
 		})
 	}

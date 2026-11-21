@@ -1,0 +1,1696 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+#+title: Local Agent connectivity: Magpie user surface and Weaver backend
+#+language: en
+#+date: 2026-11-20
+#+property: STATUS design-only
+
+* Decision and current boundary
+
+Reuse Magpie's user operation surface, running local host and Agent-specific
+configuration ownership for the first integration stage. Connect a fixed Weaver
+backend through a supported interface. A later unified distribution may deliver
+those components in one installation; it does not make the local host disappear.
+The embedded Marlin model client remains an independent deployment choice.
+
+The normative design is [[file:../../dev/sysml/AgentConnectivity.sysml][AgentConnectivity.sysml]], linked from =Project.sysml=.
+Its requirements, state machine, typed ports and acceptance cases are planned
+contracts. Strict model analysis checks their structure and trace coverage;
+it does not establish a working Magpie adapter, HTTP endpoint or installer.
+Existing runtime, credential and source qualification retains its own evidence.
+
+The upstream Magpie references, inspected on 2026-11-20, are:
+[[https://github.com/yetone/magpie/blob/eae77a48a025c5e3f005301ee885cd20b74b0ece/docs/integrating.md][integration contract]],
+[[https://github.com/yetone/magpie/blob/eae77a48a025c5e3f005301ee885cd20b74b0ece/docs/subsystems/agent-wiring.md][Agent configuration ownership]],
+[[https://github.com/yetone/magpie/blob/eae77a48a025c5e3f005301ee885cd20b74b0ece/docs/subsystems/gateway-routing.md][routing]], and
+[[https://github.com/yetone/magpie/blob/eae77a48a025c5e3f005301ee885cd20b74b0ece/docs/subsystems/gateway-middleware.md][middleware failure behavior]].
+The model alone introduces no Magpie runtime dependency. Implementation now uses
+the separate ignored =.data/magpie= checkout; its configuration owner remains
+owned and verified in that repository, not copied into Weaver.
+
+* Responsibility and deployment
+
+| Owner | Responsibility | Delivery boundary |
+|-------+----------------+-------------------|
+| Magpie UI and local host | Select Agent/profile/model; expose state; run the local gateway | Required in the first stage; includes Magpie's Go request proxy |
+| Existing Magpie Agent/config owners | Edit the CLI's native format; retain applied/stash ownership; detect drift; disconnect/restore | Reuse these owners; qualify crash windows before promising recovery |
+| Weaver ingress adapter | Authenticate bounded turn submissions; translate request, result and catalog through existing owners | Concrete join is planned; source admission retains authority |
+| Scheme/POO/gerbil-ascent and source lane | Compose profiles and candidate semantics; publish version-bound plans through existing intent/ledger mechanisms | Existing semantic owners; no independent Go selection DSL |
+| HTTP compatibility | Connect stock Magpie's standard provider to Weaver | Thin ingress in the existing runtime; internal RPC is a separate reusable execution contract |
+| Rust broker/runtime | Current authorization, budget, wire binding, bounded stream and cancellation | Reuse existing final-effect and Tokio owners |
+| Harness | Conversation, final tool authorization and execution | A valid complete model result is not a tool execution grant |
+
+The first request path is:
+
+#+begin_example
+User UI -> Magpie local host -> native CLI config adapter -> Codex / Claude Code
+CLI -> Magpie local gateway -> Weaver HTTP ingress -> bounded turn admission
+Admitted turn -> existing Rust broker -> guarded provider send
+Selection -> existing Scheme/source publication -> Rust session/profile plan
+#+end_example
+
+Stock Magpie's standard HTTP provider is the first public join. Existing Go/RPC
+can be reused internally; it is not an existing Magpie extension. Both projects
+have Go =internal= packages that cannot simply be imported across repositories.
+An in-host RPC integration requires a maintained Magpie-side adapter and is a
+separate future choice. Select one external binding per profile. HTTP ingress
+and internal RPC are different layers, not competing route authorities.
+This stage includes Magpie's proxy and the Weaver backend;
+performance accounting includes both and the selected transport adapter. Magpie
+must remain on a fixed Weaver provider for a Weaver-backed profile; its direct
+provider/account fallbacks cannot silently bypass Weaver. Independent direct
+Magpie profiles remain visibly separate and have a different enforcement scope.
+
+| Deployment | User-facing installation | Required execution owners |
+|------------+--------------------------+---------------------------|
+| Embedded Harness | Marlin or another SDK consumer | =weaver-llm= and the caller's runtime; no Magpie/UI/listener dependency |
+| First local integration | Magpie client/host plus a reachable Weaver backend | Magpie config ownership and local gateway; qualified HTTP compatibility ingress and session admission |
+| Unified local distribution | One supported installer, once qualified | UI, local host, config adapters and Weaver backend lifecycle still exist |
+| Server | Local connection surface plus authenticated remote endpoint | Existing source/Cedar/ledger/final-effect boundaries; local labels are not tenant identity |
+
+* Connection lifecycle and invariants
+
+The =AgentConnectionLifecycle= state machine models disconnected, preparing,
+applying, verifying, connected, drifted, unavailable, restoring and
+recoveryRequired. Events represent checked owner outcomes, not UI assertions.
+State is scoped to the selected profile/generation. A refused rebind preserves
+and reports the prior observed configuration; Disconnected does not mean that
+the CLI cannot use a different provider.
+
+1. Prepare the chosen endpoint, protocol, model and credential reference.
+   Read model choices from the backend's source-versioned, caller-scoped
+   catalog through the chosen interface (=GET /v1/models= for HTTP); preparation
+   rejects a stale selected generation.
+   Require host/backend readiness before changing the CLI configuration.
+2. Reuse the config owner's protected ownership record and original intent.
+   Qualify intent-before-write recovery instead of presuming the upstream
+   applied/stash records already provide it. Check file identity and expected
+   owned fields, then atomically edit through that same owner.
+3. Verify the connection before showing Connected. A failed verification
+   requests owned-field restoration; it never switches to a direct vendor.
+4. Report external changes as drift. Preserve unrelated fields, comments and
+   formatting. Reconciliation of a conflicting owned field requires an explicit
+   user choice. Disconnect cannot blindly restore an old whole-file snapshot.
+5. Inspect an unknown write using its original intent. A recovered applied
+   connection goes to verification; a verified restoration goes to Disconnected;
+   a safely pending original restoration resumes restoration. An unresolved
+   outcome stays in recoveryRequired, rather than replaying the write.
+6. Report host/backend loss as Unavailable. Reconnection requires readiness of
+   the same selected generation. The status is observed by a live or reopened
+   operation surface; a terminated desktop process cannot display it. Reopen
+   the local config owner after whole-host loss. Disconnect/restore must work
+   without the gateway or upstream network. Update/uninstall restores owned CLI
+   settings before removing the host.
+
+The three credentials have separate custody: CLI-to-local-host,
+host-to-Weaver and Weaver-to-provider. Application names and session headers
+are observations. A shared host credential cannot establish distinct CLI users;
+narrower identities require explicit authenticated delegation. Reuse existing
+credential/OAuth owners and secret references. A managed distribution defaults
+subscription discovery off through Magpie's existing control. An existing user
+host retains its user's privacy choices; the Weaver adapter does not import
+discovered accounts. Exporting provider secrets or enabling remote binding is
+a separate explicit configuration, not a consequence of installing the adapter.
+
+All transformations precede the final request commitment. No reply delivered
+to the client is not evidence of no provider execution: existing unknown-budget
+holds and final-use checks remain decisive. Optional enrichment and mandatory
+security checks retain distinct failure behavior. Scheme derives on bounded
+fact changes; ordinary stream events do not call back into the semantic VM.
+
+* Planned acceptance and source trace
+
+Each row below is a design obligation, not an executed test or proof witness.
+The existing requirement trace gate records these named design declarations;
+runtime implementation will add its actual code, property and native scenario
+witnesses when delivered. No Go scanner or alternate validation runner is added.
+
+| Requirement | Planned cases and oracle |
+|-------------+--------------------------|
+| LocalAgentHostReadiness | publicIntegration, connectDisconnect, hostLoss: supported public API; isolated Codex/Claude homes; failed readiness leaves config untouched |
+| ReversibleAgentConfiguration | configCrashDurability, driftAndConflict, restartRecovery: durable ownership errors surfaced; CAS rejects stale writes and preserves unrelated edits |
+| SingleAgentRoutingAuthority | conversationalAdmission, identityAndFallback: shared session budget and exact turn binding; fixed Weaver profile cannot bypass; revoked source cannot authorize |
+| AgentCredentialCustody | identityAndFallback: separate credential legs, sanitized observations and no user identity invented from two CLI labels |
+| AgentDeploymentSeparation | distribution: install/start/update/uninstall retain UI/host ownership; SDK dependency graph stays independent |
+| AgentConnectivityQualification | richProtocolRoundTrip, protocolCompatibility and lifecycle cases: finite four-worker Snake Oil; terminal tool release, cancellation, slow consumer and original authority checks |
+
+Reuse Weaver's upstream protocol/backpressure qualification. Downstream Agent
+tests validate native config wiring and the resulting request, rather than
+reimplementing protocol acceptance. Separate preparation/compilation from warm
+first-event and terminal latency; include both gateway hops. Freeze a bounded
+workload and total run budget before execution, retaining failures. These are
+acceptance obligations, not a newly asserted latency result.
+
+* Code audit and landing batches
+
+This integration is feasible, but current source does not implement the joins
+below. SDK protocol support must not be reported as governed Server support.
+
+| Batch | Existing code to reuse | Missing implementation and acceptance |
+|-------+------------------------+---------------------------------------|
+| 1. Rich protocol contract | =crates/llm/src/stream.rs=, =protocol.rs=; broker stream/final-send owners | Extract bounded transport-independent codecs; version contract/profile and =proto/gateway/v1/gateway.proto= events for tools, reasoning and Responses. Preserve old text-only contracts. First qualify a two-turn tool call/result, not just text SSE. |
+| 2. Session-turn admission | =crates/server/src/source_owner/handle.rs=, =crates/ledger/src/task_origins.rs=, Scheme session/profile publication | Instantiate changing bounded bodies under one approved session/profile and shared budget; retain exact wire digest, idempotency and current facts. Do not republish/compile all Scheme source per prompt. |
+| 3. Public compatibility ingress | Existing Rust server/Tokio and guarded broker; public generated Go RPC where needed | Decode standard HTTP request into an untrusted turn submission, authenticate and admit, then encode lossless released events. Scope model catalog to actual qualified backend capabilities. No second router, database or provider-send owner. |
+| 4. Config lifecycle | Magpie Agent format adapters, =internal/agent/applied.go= and =internal/edit/file.go= | Refine the same upstream/fork owner for durable intent, error propagation and compare-before-restore. Inject crashes around both config and ownership writes. No second Weaver config journal. |
+
+The present fixed-body and operation-key paths are deliberate boundaries:
+=go/internal/controlplane/gateway.go::compileProvider= checks the registered
+body or accepts only a deferred original key; =crates/contracts/src/provider.rs=
+binds the exact body digest. =RegisterTask= requires source identity. Giving the
+frontend that identity or removing body equality would bypass the intended
+boundary. Batch 2 needs an explicit bounded admission contract, not only JSON
+translation, and must preserve the original ledger's shared limits.
+
+At the initial audit the governed profile allowlist rejected tools, Anthropic
+decoding was text-only and Responses had no governed variant. Those closed text
+profiles remain strict. Versioned rich profiles and the shared codec are now
+connected through the implementation below; SDK support alone never establishes
+Server support. Batch 1 keeps =admit_and_consume= before =open_guarded= in
+=crates/broker/src/provider/runtime.rs=. Calling the SDK network client directly
+from that path would lose the broker's send ownership. Keep the lightweight
+SDK dependency graph free of Server, ledger and Scheme dependencies. Arrow
+transport must not advertise rich events before it has a lossless mapping.
+
+At the pinned Magpie revision, =Apply= writes configuration before recording
+applied ownership; =appliedSave= ignores the final write result. =edit.Atomically=
+keeps rollback snapshots in memory. Individual atomic file replacement does not
+establish crash consistency across configuration and ownership files. Stock
+Magpie can therefore support early HTTP interoperability, but full lifecycle
+qualification requires changes and tests in its existing config owner.
+
+Run batch 1 and 2 local fixture qualification before the external join. Then
+qualify Responses/Codex and Messages/Claude with actual two-turn tools, four
+workers, cancellation and bounded slow consumers. Freeze finite case counts and
+one total watchdog through existing upstream test entrypoints before running;
+no real provider credentials or repeated cold installation are needed. Record
+runtime evidence only after execution. Complete lifecycle and identity cases
+before offering the managed profile as connected.
+
+* Delivery order
+
+** Active GOAL and bounded execution
+
+Continue the existing built-in GOAL; do not replace it with a narrower goal when
+one gate fails. The whole exit criterion remains a stock Magpie conversation
+through Weaver plus recovery through Magpie's existing configuration owner.
+The SDK, transaction and model passes below establish individual obligations.
+
+| Next gate | Concrete output | Required evidence and stopping rule |
+|-----------+-----------------+-------------------------------------|
+| Retained retry | Existing Session cut carries an exact retained projection; source owner bypasses repeated advisory work | Ten ledger Session cases and one source-owner case, four Rust workers, 120 seconds per package command; prove two new turns require two advisory calls, changed retry bytes require none, withdrawn replay fails, and restart preserves the exact decision. Recheck the persisted row at commit. |
+| Linked semantic owner | Existing package build and fixed ABI execute the retained Scheme selector | Use installed locked dependencies and the SDK package entry. The previous 180-second rebuild and exit-70 linked build remain failed evidence. Diagnose a changed cause before rerunning; no dependency-install loop. Only actual ABI execution qualifies Scheme behavior. |
+| Compatibility ingress | Existing runtime authenticates standard HTTP, admits a bounded turn and delivers guarded output; source-scoped model catalog | Add one transport adapter to existing owners. Qualify Responses/Codex and Messages/Claude two-turn tools, cancellation, bounded slow consumer, replay and credential separation in finite four-worker Snake Oil cases. A socket listener or codec alone is insufficient. Freeze case counts before this gate runs. |
+| Configuration recovery | Magpie's existing config owner persists intent, propagates write errors and compares owned fields | Modify and verify its own checkout; do not create a Weaver journal. Isolated Codex/Claude homes cover successful connect/restore, drift, write failure and each config/ownership crash cut. No configuration-recovery pass before actual code and tests exist. |
+
+Existing source mappings and exact quotes must also qualify for generated turn
+families before advertising configured key/user/tenant metering. HTTP or model
+discovery must not silently downgrade to the budget-only fixture. A catalog may
+advertise only protocols qualified through the actual configured source.
+
+After each code slice run its focused gate, then the affected package regression
+and existing architecture check. Stop a failed invocation at its frozen watchdog;
+preserve the failure and change the identified cause before another invocation.
+Do not rerun a passed workload without a new change or unresolved concern.
+Compilation/preparation, test execution, first ABI call and warm p50/p99 are
+separate measurements. No local result implies remote CI or production approval.
+
+** Original codec slice
+
+The built-in GOAL follows batches 1 through 4 above and remains active until
+runtime and config lifecycle acceptance are complete. The first owned code slice
+extracts =weaver_llm::TurnDecoder= from =TurnStream= without changing the network
+owner. Its total wire-byte budget includes heartbeat/control frames; errors and
+premature EOF close the decoder and discard partial tools. The original async
+stream delegates to the same codec. This is a prerequisite, not completion of
+Server rich-event support or Magpie connectivity.
+
+First-slice verification is fixed to 128 generated fragmentations, incomplete
+prefix enumeration of one bounded tool turn, byte-budget and malformed-input
+controls, followed by existing SDK protocol/backpressure regression. Use four
+Rust test workers. Each focused command has a 180-second watchdog; if compilation
+exceeds that budget, retain the incomplete result and report compilation
+separately from test execution. Do not expand workloads or retry a failed case
+until its cause or code has changed. No new CI script or evidence format is
+introduced.
+
+Initial local verification of this slice passed six stream unit tests (including
+the 128-case property), 81 SDK integration tests with one opt-in test ignored,
+and the 25 existing =StreamingExecution= Quint scenarios. The SDK integration
+suite took 8.57 seconds with four test workers. Existing architecture,
+workflow-contract and source-currentness checks passed. These results qualify
+codec reuse and existing SDK behavior, not the planned Server protocol extension.
+The first property run exposed an incorrect test assumption: an SSE terminal
+can end at CR before the final LF arrives. The corrected consumer stops at
+=Finished=; the standard proptest regression seed remains in
+=crates/llm/tests/unit/stream.txt=.
+
+The initial full library run failed its ASP gate on the public anonymous tuple
+in =resolve_direct_target= and a manual iterator transformation in
+=AnthropicOutput::matches_observed=. These are now fixed without disabling the
+gate: resolution returns =ResolvedTarget { endpoint, model }= and thinking
+matching uses a native fallible iterator. Marlin's existing pinned dependency
+retains its old API; upgrading that pin requires named-field destructuring at
+its current resolver call site. The full SDK suite subsequently passed 107
+tests with one opt-in test ignored.
+The sandbox also denied loopback socket creation; SDK integration passed with
+local socket permission. The existing HTTP/2 library scenario also passed with
+that permission in 0.49 seconds: a paused stream permits sibling progress and
+independent cancellation. Keep these separate from the six codec tests; do not infer
+whole-package or remote CI completion.
+
+After compatibility is qualified, decide UI/host ownership and unified
+packaging, preserve upstream license notices, and qualify update and uninstall.
+Do not require desktop packaging, Magpie or Server dependencies for the embedded
+Harness client. The model authorizes no source extraction or distribution change.
+
+* Rich-event contract implementation
+
+=crates/contracts/src/provider_turn.rs= now defines a bounded version-1 event
+with text, thinking and terminal payloads. Terminal observations retain tool
+IDs/arguments, response identity, reported usage and opaque Responses or
+Anthropic continuation blocks. Duplicate keys, unknown versions, duplicate tool
+IDs, incomplete tool finishes and oversized payloads are rejected. Debug output
+does not disclose thinking, tool arguments or retained continuation blocks.
+Construction and serialization confer no execution or publication authority.
+
+The existing =ProviderEventKind= carries this payload explicitly. Its canonical
+serialization participates in the existing range digest; the rich terminal is
+recognized by the existing range collector. Protobuf carries a separate
+=turn_json= field with =kind: turn.v1=. The Rust encoder refuses mixed legacy and
+rich fields. Rich Arrow adds a fifth binary =turn_json= column; text-only batches
+retain their four-column schema. The Go transport preserves bounded opaque bytes without adding
+a second policy interpreter; its existing text-only execution API still rejects
+the unsupported event kind. An approved source must explicitly choose a rich
+profile; installing the codec alone cannot advertise a new backend capability.
+
+The shared RPC was regenerated through =weaver-dev generate-rpc=, including its
+already-pinned Go generator. No generator wrapper or CI shell script was added.
+An unused direct =gerbil-scheme-sys= Server dev-dependency was removed: no Server
+source imports it. Scheme qualification retains the SDK through its existing
+explicit feature/dependency graph. Pure encoding tests should not pull a Scheme
+build solely through that unused dev-dependency.
+
+The contract library passed its full six-test gate, including ASP checks and
+the 128-case opaque-continuation property. Existing Go gateway-client tests and
+the two new envelope tests passed. =ProviderTurnRelease.qnt= passed nine named
+scenarios and 256 traces of at most 30 steps, seed 293; these commands are part
+of the existing development plan. The model covers abstract handoff guards and
+an omitted-binding counterexample, not wire-code equivalence or Session admission.
+The architecture checks passed. The first Server check exceeded its 180-second
+compilation watchdog; the subsequent incremental library check passed in 54.67
+seconds. The two focused Server encoder tests subsequently passed through the
+native Cargo library target; they exercise payload round-trip and refusal of
+mixed/unsupported encoding. This is separate from full Server qualification.
+The complete =--lib --no-default-features= Server target then passed 38 tests,
+with three opt-in tests ignored, in 0.74 seconds using four test workers. This
+does not qualify the default Kubernetes feature graph or Scheme deployment.
+These initial results are superseded for rich execution by the following
+qualification; whole-system Session/HTTP qualification remains open.
+
+* Source-bound rich provider execution
+
+Three explicit source profile names now select the shared decoder:
+=openai.chat-turn-sse.v1=, =openai.responses-turn-sse.v1= and
+=anthropic.messages-turn-sse.v1=. Closed text profiles retain their request
+allowlists and decoders. Generic plan validation checks the bounded streaming
+envelope; profile binding still checks exact body, source profile commitment,
+original task, models, routes and shared budget. Responses requires stateless
+=store=false=, its exact endpoint path and a bounded output cap. Only Harness
+function tools are admitted; vendor-hosted built-in tools remain outside this
+profile. Rich source requests cannot evade the original resource limits by
+providing competing token caps or unknown top-level fields.
+
+=crates/broker/src/provider/turn_sse.rs= reads the broker-owned response through
+=weaver_llm::TurnDecoder=. No SDK network client is invoked. Cancellation and
+all final guards remain in the existing broker/ledger path. Reported model and
+response identity are checked; tools require a complete terminal identity.
+Opaque continuation objects move through native consuming iterators without a
+JSON serialize/parse round-trip. Text capture for existing Workflow selection
+uses only text events, excluding thinking and tool data.
+
+Rust protobuf and rich Arrow encoders preserve the same terminal payload. Go
+accepts either the old four-column text schema or the exact five-column rich
+schema, enforces aggregate allocation/payload limits and returns owned bytes.
+The Go text execution API still refuses rich semantics rather than inventing
+its own policy or tool interpreter. Rich usage remains an observation, with
+disjoint cache categories now normalized by the shared codec and persisted in
+the existing metering ledger. Missing usage remains unknown. Counts do not
+invent prices or refund authority.
+
+The contract suite passed 18 tests. Native broker scenarios exercise Chat tool
+call/result over two source-bound nodes sharing one Task/budget, repeat denial,
+third-node budget exhaustion and real TLS Responses/Messages tool terminals.
+The complete broker library passed 34 tests with four workers in 5.45 seconds.
+The SDK passed 107 tests (one opt-in ignored); Server with
+=--no-default-features --features llm-provider,arrow= passed 40 tests (three
+opt-in ignored) in the final source-state run in 8.99 seconds; Go gateway-client
+tests passed in 5.845 seconds.
+These are local finite fixture results, not whole-Session dynamic admission,
+default Kubernetes deployment, Magpie connectivity or vendor credential evidence.
+
+The first full broker run retained a failure in the existing raw TCP partial
+write scenario. A bounded diagnostic separated approximately 330 ms preparation
+from a 4.17-second blocking write despite a requested one-second socket timeout.
+The deciding TCP/TLS write boundary now switches to nonblocking mode after
+connection/handshake preparation. Partial acceptance or WouldBlock closes the
+connection and retains unknown exposure; no continuation is queued. The
+original five-second scenario threshold was preserved. The diagnostic observed
+about 48 microseconds for the corrected write and about 915 ms for its complete
+range path under four-worker load. These single observations are not p50/p99
+measurements. Temporary instrumentation was removed before the 34-test pass.
+
+Scheme's existing ProviderProfileContract now declares the five closed/rich
+protocols. Local test discovery initially missed the installed Yuanxu prelude;
+the module exists in the project's existing =.gerbil= package environment.
+Using that environment exposed stale compiled project contracts and an existing
+module-publication negative-control failure. The installed project artifact still
+names =OpenAIChatTextSseV1= instead of the new protocol type. A zero process exit
+with test error markers is a failed acceptance. The existing
+=./build.ss compile --debug= entry then failed before C compilation because
+the installed Yuanxu package lacks =module-system/building/products=; its
+=call-with-init-build-spec= also has the older four-argument signature. Align
+the build entry and dependency cohort before requalification. No dependency cold
+installation, alternate launcher or weakened assertion is authorized by these
+local Rust results. Batch 1 remains open for this source
+qualification. Batch 2 must admit changing turns
+under a durable Session; the fixed two-node fixture does not establish it.
+
+* Terminal token-category handoff
+
+=TokenCategories= in the existing SDK partitions ordinary input, cache reads,
+cache writes and inclusive output. OpenAI's input total includes cached reads
+and writes, so ordinary input subtracts both. Claude reports those three input
+categories separately; cumulative message deltas replace their earlier values.
+See the vendor definitions in
+[[https://developers.openai.com/api/docs/guides/prompt-caching][OpenAI prompt caching]] and
+[[https://platform.claude.com/docs/en/build-with-claude/prompt-caching][Claude prompt caching]].
+The codec checks underflow, overflow, invalid numbers and inconsistent totals.
+Reasoning output is part of inclusive output and is not charged a second time.
+
+The codec exposes categories only after a validated terminal. The draft rich
+contract retains raw reported usage and an optional named category record;
+these categories participate in the released frame commitment. The broker
+passes the same four values to =complete_provider_with_result=; no second
+metering store or price source is introduced. Native TLS tests read the resulting
+=provider_terminal_usage= rows and compare them to the released payload, while
+asserting the original hold is unchanged. Unknown usage creates no fabricated
+zero report. The existing issuer, quote and ledger own settlement.
+
+The SDK's complete local suite passed 111 tests, with one opt-in test ignored:
+30 library tests and 81 integration tests. Normalization includes a 128-case
+property and cumulative/null/invalid/incomplete controls. Contract tests also
+mutate categories while retaining aggregate usage to check frame commitment
+sensitivity. The existing Quint handoff model includes usage binding, premature
+observations and unknown-usage retention. These are local semantics checks,
+not performance p50/p99 or whole-Session qualification.
+
+The developer package cache initially held a different Lab/Core cohort from
+=gerbil.pkg=. The existing exported package-manager =pkg-update= restored Lab
+and its declared Core and POO dependencies. Missing Git objects were reused from local repositories at those exact
+revisions. No version declaration, upstream checkout, dependency cold install
+or TAGS generation was changed. Cached compiled libraries still need refresh
+through their existing build entries.
+
+The bounded four-core POO incremental refresh exposed a host GCC 16 link failure
+on =memset= and reached its 180-second watchdog while draining failed jobs.
+A two-line C bundle reproduces the error independently of Scheme; system Clang
+succeeds. Explicit SDKROOT and libSystem did not fix GCC. Use the compiler's
+supported override without editing Gambit or relaxing unresolved-symbol checks,
+then refresh the existing products and rerun the original Scheme suite. Source
+qualification remains unproven until that gate passes.
+
+* Session scope contract and next deciding transaction
+
+=crates/contracts/src/provider_session.rs= now defines source-owned
+=ProviderSessionScope=, untrusted =ProviderTurnSubmission= and the named
+=ProviderTurnDerivation= returned by Scheme. The scope reuses =Task= limits,
+=ProviderProfile= interpretation, =PublicationKey= and =DomainBinding=.
+Its template has exactly one unbound node and 1--64 allowed turns. Normal
+=Task::validate= still rejects that template: it cannot be registered or sent
+until an exact derived original is independently checked.
+
+The turn family derives from the scope commitment and retry key, excluding
+request bytes. A changed retry body therefore changes the command commitment
+while retaining the conflicting identity; it cannot silently become another
+original. A changed source scope changes the family. Each derived original
+retains the source's principal, profile, models, routes, reservation bound and
+total budget. Its origin changes, but budget/history domains do not. This is a
+pure contract boundary, not a new admission service or send owner.
+
+Four contract tests include a 64-case property and adversarial internally
+consistent route, profile, quota, history and wire substitutions. The minimized
+template-validation regression is retained as a replayable proptest seed.
+=SessionTurnAdmission.qnt= records the transaction's design obligations:
+16 named cases and a fixed 256-trace, 30-step safety run, seed 293. Its missing
+parent-fact-binding counterexample is deliberately unsafe. This abstract model
+does not substitute for the native ledger acceptance below.
+
+The source lane join must use these existing ledger steps; step 2 remains open:
+
+1. Register the exact authenticated source Session scope and capture its source
+   epoch, publication, parent fact floor/revision/snapshot and intent prefix.
+2. Let the existing Scheme/POO/gerbil-ascent owner select a bounded concrete
+   turn outside SQL; use =ProviderSessionScope::admits= for independent checks.
+3. In one ledger write scope, compare the exact captured coordinates, retain
+   the unique retry decision and finite turn count, register the original with
+   the existing shared domains, and persist its parent fact-scope linkage.
+4. Reuse that linkage at existing final-send and range-release guards. Checking
+   only the generated family would miss withdrawal of the parent Session;
+   independent origins are not aliases of the parent's execution origin.
+
+No HTTP compatibility route is enabled until these runtime joins are tested.
+The bounded runtime acceptance remains two changing turns/tool results, replay
+with changed bytes, concurrent shared-budget exhaustion, restart and hard-fact
+withdrawal with zero unauthorized provider calls. Keep four workers and one
+watchdog per package; do not expand this into repeated cold-start experiments.
+
+The current rich-pipeline local checks passed: broker 34 tests (3.31 seconds
+execution), Server LLM/Arrow 40 tests (8.21 seconds), with its three Go-owned
+child-server fixtures intentionally ignored. Compilation is reported separately;
+these times are not p50/p99 throughput evidence or complete Session acceptance.
+
+The host compiler probe subsequently produced a valid arm64 Mach-O bundle with
+Gambit's existing =BUILD_DYN_CC_PARAM=/usr/bin/clang -bundle= override. The
+four-core POO incremental build through its original =build.ss compile --debug=
+entry exited normally within its 180-second budget. This did not establish a
+coherent dependency image: the next Core import failed because cached
+=read-route= called =make-slot-values= with an incompatible arity. Source heads
+are aligned, but the POO compiled cohort still needs a package-owned clean and
+bounded rebuild; no Scheme qualification is claimed from the build exit code.
+
+Current Session contract verification passed all 23 contract tests, including
+the ASP gate. The existing ledger routing/restart/source-rotation controls also
+passed (two focused tests; 93-second compilation, 0.14-second execution, within
+the 120-second package watchdog). Go verification-plan/source-binding controls
+passed in 5.895 seconds. The Session Quint model passed 16 named cases and the
+fixed 256-trace safety run. Architecture/workflow/currentness checks passed.
+
+| GOAL workstream | Current delivered slice | Remaining acceptance |
+|-----------------+-------------------------+----------------------|
+| Rich protocol | Shared bounded codec; governed rich events; protobuf/Arrow; terminal cache-category binding | Coherent Scheme source products and original module suite |
+| Session admission | Atomic ledger; two existing lanes joined; compact rooted ABI and retained POO/ASCENT implementation; typed internal RPC | Qualify actual linked Scheme, public HTTP tool/result turns and configured metering |
+| HTTP compatibility | Existing Tokio/broker owners identified | Authenticated thin ingress, released-event encoding and scoped model catalog; stock Magpie fixture |
+| Magpie lifecycle | Original owner persists a versioned intent before Apply and checks it with prior ownership at final save; interruption remains inspectable and blocks replay | Full file/write-set CAS reconciliation, coordination of all background writers, positive restoration, caller-visible Keep/reconciliation failures, broader upstream/race qualification and remote delivery |
+
+The built-in GOAL remains active. Pure contract/model results do not close the
+three pending runtime joins or the Magpie config lifecycle. No fixed release,
+production approval or real-provider credentials are prerequisites for the
+local Snake Oil acceptance above.
+
+* Session ledger transaction
+
+=crates/ledger/src/provider_session.rs= adds the transaction to the existing
+Turso ledger. Authenticated =register_provider_session= declares an immutable
+scope and its exact source authority. =prepare_provider_turn= validates request
+bytes outside the writer and then rejoins the unchanged scope, source epoch,
+committed publication and clear parent fact prefix. It returns opaque observed
+coordinates, never a permit.
+
+=register_provider_turn= independently validates the external derivation and
+prepares commitments/encoding before SQL. One deciding write scope compares the
+exact cut, enforces the finite turn limit, retains the unique retry decision and
+registers the original with the existing budget/history domains. It uses the
+existing observed native commit mechanism: a rolled-back attempt creates no
+partial original, while a committed attempt with lost acknowledgment recovers
+the same decision. Actual holds and execution claims still belong to the
+existing =enqueue_provider=/consume/final-send transactions.
+
+Two bounded record types live in that same database. Source scopes retain their
+authenticated authority and limits. Turn records retain compact command,
+scope/authority, task, plan and domain commitments plus bounded chosen routing
+semantics for recovery. They do not duplicate prompt bytes. A retry supplies
+the exact original body; changed bytes conflict before recovery. Final-use
+guards read compact provenance and do not retrieve the recovery projection.
+
+The original task's domain commitment includes its compact Session provenance.
+Deleting the parent link therefore cannot turn an existing original into an
+independent request. Altering lookup keys also conflicts with the committed
+record. Existing hard-fact checks resolve child origins to this parent scope at
+admission, final send and output release; missing parent facts refuse use.
+Unresolved intent rows block use even if a damaged head loses its pending field.
+Fact staging accepts the authenticated unbound Session graph without registering
+a placeholder executable Task or allocating an artificial budget.
+
+Ten bounded native cases cover two changing requests, exact replay/restart,
+four simultaneous turn-limit contenders, four shared-budget contenders, pending
+withdrawal and A-B-A, source rotation, missing/redirected provenance, lost fact
+projection, real pre/post-commit fault cuts, and exact recovery without duplicate
+prompt storage. The tests explicitly use a derivation fixture: they do not
+establish the Scheme/POO/ASCENT or HTTP join. Their source policy uses the actual
+provider protocol and existing final guards; no alternate provider client sends.
+
+Configured key/user/tenant quotas and metering still require their original
+source mappings and exact quotes. Generated families do not bypass those checks;
+their inheritance/quote projection is part of the remaining source-owner join.
+These cases establish shared budget/history domains in the local profile, not
+complete metering-feature qualification or sub-millisecond latency.
+
+Current verification used four Rust workers throughout. The final ledger
+library suite passed 78 tests, with one opt-in performance probe ignored:
+24.25-second compilation and 11.98-second execution within the 120-second
+watchdog. Existing original-task controls (four tests) and Workflow fact/frontier
+controls (three tests) passed as focused integration checks. The guarded broker
+regression passed all 34 tests, including real local TLS and rich tool codecs:
+23.53-second compilation, 3.73-second execution within 180 seconds. Ledger library
+Clippy passed with warnings denied. Architecture, workflow and source-currentness
+checks passed. No Scheme install, compiler/source edit or cold-start series was
+run for this slice.
+
+* Retained selector and source lane join
+
+The existing =SourceClient= now carries =SessionTurnInput= advisory work to its
+same affine owner. Only source data and compact principal/model/token/message/
+byte facts cross it. No request body, source credential or execution permit
+crosses this lane. =SchemeCompiler= calls the fixed =weaver_session_turn_v1=
+export. Full selector bounds are sent when its source commitment changes;
+warm calls send only that commitment and facts.
+
+=make-session-turn-selector= in the existing =provider-source.ss= validates POO
+records and retains one ASCENT session. Scope replacement clears the old state;
+unchanged eligibility reuses the completed relation. The default declared policy
+preserves source target order and returns at most eight routes. Foreign warm
+bindings fail and reset the retained state. Returned indices and commitment are
+independently bounded in Rust. Rust keeps the exact request bytes and canonical
+hashes, rather than asking Scheme to copy or reparse prompt text.
+
+=source_owner/session.rs= observes a native cut through the existing source SQL
+worker, releases that lane, awaits the advisory owner, and submits the concrete
+projection back to the same worker. It calls the existing atomic turn transaction;
+it does not install another router, database, sender or quota counter. A blocked
+advisory call cannot block source withdrawal, and a changed cut refuses the
+otherwise valid projection.
+
+Two typed internal RPCs expose these existing owners. =RegisterProviderSession=
+requires source ingress/certificate/credential and declares the scope only.
+=AdmitProviderTurn= requires operation ingress; its request has no principal or
+source-identity field. The authenticated server configuration supplies principal.
+The returned plan is inert: existing final-use guards and claims remain necessary
+for execution. Stock Magpie still needs the separate HTTP compatibility join.
+
+Rust governance acceptance passed 30 tests, including 64 generated fact-bound
+cases and four concurrent advisory calls whose compile callback must never run.
+The Server actor fixture admits two changing requests and an exact replay,
+reserves one shared budget through existing ledger calls, then withdraws facts
+while the advisory owner is blocked and proves that registration refuses its old
+cut. Its advisory owner is explicitly a test double; this proves lane/transaction
+wiring, not execution of the Scheme/ASCENT code.
+
+Actual linked Scheme qualification remains open. A package-owned POO clean and
+four-core rebuild reused installed sources and the Clang override but reached
+the frozen 180-second watchdog while draining C jobs. An import smoke reached its
+12-second diagnostic budget; that is preparation evidence, not a VM startup or
+hot-path latency result. The first program-feature check omitted the already-known
+application environment; it was corrected to Weaver's existing provider-program
+module/source. The corrected standard build reaches dependency/module resolution
+and exits 70 with an unformatted Scheme exception, before checking the linked
+program Rust surface. No whole dependency installation, TAGS run, Gambit edit or
+relaxed source check was used. The retained selector's Scheme suite and linked ABI
+must pass before reporting this join as fully qualified.
+
+The Server LLM/Arrow suite passed 41 tests with three Go-owned child fixtures
+ignored (3.26-second execution); the real mTLS fixture was then rerun with both
+new RPC role-confusion controls and passed. Generated Go protocol/transport
+tests passed in 6.166 seconds. Governance and Server library Clippy passed with
+warnings denied. The larger rich decoder is boxed once per stream to keep the
+other Tokio decoder variants compact; it introduces no per-event allocation.
+Architecture/workflow/currentness checks passed, including explicit compact-fact
+and selected-index ports between the two existing owners.
+
+A smaller fresh diagnostic import of =slot-layout= followed by =read-route=
+completed successfully in 0.25 seconds. That narrows the failed path past these
+base modules; it does not establish a coherent whole POO/Core image. The actual
+program build still fails during broader module resolution. Keep preparation,
+native VM execution and hot-path latency as separate evidence.
+
+The decoder-footprint change passed the existing 34 broker tests, including
+actual local TLS, in 3.02 seconds after an 8.15-second rebuild. Source work now
+uses shared static owner-status mapping rather than labeling every advisory
+failure as source compilation. No source or prompt text enters these statuses.
+
+** Exact retained retry without repeated advisory work
+
+=prepare_provider_turn= now observes an existing retry decision within its
+source/fact cut. Recovery validates the saved authority, scope, command and
+generation commitments before returning an inert retained projection. Changed
+retry bytes fail here. =source_owner/session.rs= reuses that projection instead
+of queueing another advisory call. A new turn still uses the existing semantic
+lane. Both paths return to the same final registration transaction, which
+rereads the stored decision and checks current source/fact coordinates. No
+execution permit, reservation or provider send is produced by recovery.
+
+The source-owner fixture counts two advisory calls for two new turns. Exact
+replay and changed retry bytes add none. While a third advisory call is blocked,
+the exact replay still completes within its three-second fixture watchdog;
+source withdrawal then completes and rejects both the blocked new turn and a
+later replay. Existing shared holds remain eight. The standalone focused case
+passed in 0.84 seconds; the ten ledger Session cases passed in 0.86 seconds after
+a 15.14-second incremental compilation. The actual linked Scheme owner remains
+outside this fixture's claim.
+
+The subsequent affected-package regression used one 120-second watchdog, four
+Rust workers, installed dependencies and local TLS sockets. Ledger passed its
+78 active library cases with one opt-in probe ignored; Server passed 41 with
+three existing Go-owned child fixtures ignored (2.12-second execution).
+Compilation took 8.10 seconds. Combined Ledger/Server library Clippy passed
+with warnings denied in 4.17 seconds. Architecture, workflow, source-currentness,
+formatting and whitespace checks passed.
+
+=SessionTurnAdmission.qnt= now includes retained restart replay, withdrawal
+between recovery and commit, and changed-byte recovery refusal: 19 scenarios
+pass, as do 256 traces of 30 steps at seed 293. These checks establish bounded
+semantic controls, not a warm latency measurement or completion of HTTP/Magpie
+integration. The built-in GOAL stays active with those remaining gates.
+
+* Magpie ownership persistence slice
+
+The separate =.data/magpie= repository uses the upstream source declared by
+the consumer workflow. This confirms that the previously
+audited ordering still applies: =Apply= invokes the setter before recording
+ownership, and the original =appliedSave= drops directory/write failures.
+
+The Magpie ownership-save change affects only =internal/agent/applied.go=, its
+new =applied_write_test.go= and the owning =agent-wiring.md= reference.
+=appliedSave= now reuses the existing =steady.WriteFile= atomic primitive,
+returns its errors and updates the memo only after success. =Apply= returns
+ownership-save failures for both its own field and sibling fields changed by
+the setter. Void/background helpers still log failures; they are not newly
+qualified error-returning lifecycle APIs.
+
+The new controls use actual isolated Codex TOML and Claude JSON setters with
+a blocked =applied.json= destination. They require a returned failure, preserve
+the successful config edit and unrelated user values, and do not call it
+rolled back. Restoring the upstream =applied.go= made the Codex control fail:
+=Apply= incorrectly returned nil. Restoring the candidate and running eight
+focused cases passed, including prior bad-record preservation, drift and
+Claude default behavior (7.128-second package execution). The existing =steady=,
+=lastgood= and =edit= suites passed in 5.883, 9.363 and 12.499 seconds. Vet for
+these four packages, formatting and whitespace checks passed. Four build/test
+workers and 120-second outer watchdogs bounded the commands.
+
+Preparation used Magpie's declared Go 1.26.8 via Go's normal toolchain cache.
+The first link selected Nix clang and failed to find =libresolv=; selecting the
+installed system clang/SDK resolved it. The old Go launcher also refused an
+offline toolchain revalidation with the checksum database disabled; subsequent
+commands used the already installed, verified toolchain directly. No Go version
+declaration or compiler source changed. Later verification used cached modules.
+
+This commit is local to Magpie; it has not been pushed or merged upstream.
+Whole-repository, GUI and Linux/Windows suites remain unrun. Most importantly,
+the CLI and ownership files are still separate writes. Durable intent, exact
+file/generation comparison and interrupted-write recovery remain required;
+this slice neither installs a second journal nor closes the configuration
+lifecycle goal. Weaver's architecture/workflow/currentness check passed with
+the separate ownership-failure acceptance obligation in AgentConnectivity.
+
+* Pending config intent checkpoint
+
+The Magpie intent checkpoint advances the same ownership file rather than
+creating a second journal. =Apply= persists a version-1 intent before invoking
+its existing setter. It stores an operation id, field/config path and digests
+of the requested value, observed fields and prior ownership. It does not retain
+the plaintext requested value or a restoration image. After a successful setter,
+all changed ownership fields and intent removal are saved together, after checking
+the same persisted intent and prior ownership.
+
+Intent preparation failure now prevents the CLI edit; this supersedes the prior
+commit's post-edit failure behavior for that cut. Setter or final ownership-save
+failure keeps the intent unresolved. =PendingEdit= returns a detached inspection
+of that same record after restart. Ordinary =Apply=, =ConnectHow=, =Reapply=,
+=Disconnect=, rewire's =setAgain= and catalog sync refuse or skip it; Keep and
+the record/forget helpers cannot erase it. The common ownership reader now
+returns errors for unread, malformed, null, trailing-data, unknown-field and
+unsupported-intent generations, instead of treating them as empty. Existing
+read consumers and their tests handle this shared error contract.
+
+The final finite native set passed in 35.544 seconds. It includes 64 generated
+request substitutions at seed 293, four competing calls running one setter,
+actual isolated Codex/Claude intent preparation failures, setter/final-save
+failures, changed ownership refusal and adjacent drift/disconnect/group controls.
+Two child processes exit at real points before and after Codex's original setter;
+restart reads the same intent and refuses replay/connect/reapply/disconnect.
+Skipping only the intent save made both crash-cut cases fail because no intent
+survived (17.004 seconds). Restoring the candidate made both pass (13.678 seconds).
+This was a behavioral negative control, not a compilation failure.
+
+The affected-set race command reached its unchanged 120-second outer watchdog
+and exited 124. It is not qualified, and the available output does not identify
+how much time belonged to preparation versus execution. Follow-up process
+inventory found no matching Go compiler, linker or agent-test process. The gate
+was not widened or replaced with a narrower passing race workload. Final Go vet,
+formatting and whitespace checks passed. Whole-repository, GUI and Linux/Windows
+qualification and remote delivery remain open; the commit is local only.
+
+=AgentConfigIntent.qnt= passed 11 named scenarios and a fixed 256-trace,
+30-step safety run at seed 293. It models retained unknown completion, not a
+complete filesystem transaction. It is registered in the existing verification
+plan. Weaver's four focused plan/source-currentness controls passed in 17.249
+seconds; architecture/workflow/source-currentness also passed. The new SysML
+pending-edit item explicitly distinguishes this checkpoint from the existing
+whole-file identity/compare-and-restore obligations.
+
+This checkpoint cannot automatically clear or restore an interrupted operation.
+Even unchanged getters are insufficient: setters can also change stash/catalog
+files. Complete declared write sets, file identities, coordinated writers,
+positive CAS reconciliation and caller-visible recovery remain required before
+the managed lifecycle can be reported complete. Linked Scheme and the actual
+HTTP/Magpie protocol join remain independent open workstreams of the active GOAL.
+
+* Design challenges and counterexample feedback
+
+=Project.sysml::ArchitectureFalsification= assigns distinct responsibilities:
+SysML declares a falsifiable hypothesis, its assumptions, independent observable
+oracle, progress obligation, exploration bound, runtime budget and disposition.
+Quint explores competing designs and fault schedules. Runtime properties
+challenge actual owners using generated inputs, metamorphic relations and
+separately observed effects. Neither layer copies a second implementation.
+The existing requirement trace only records these links; it proves no behavior.
+
+The three =AgentConnectivity::acceptance= design challenges bind these owners:
+
+| Hypothesis under challenge | Independent observation and exploration | Runtime consequence / status |
+|---------------------------+-----------------------------------------+------------------------------|
+| Scope/model identity suffices for a catalog version; a cached catalog permits use | =SessionDiscovery=: receipt histories distinguish relevant cuts; separate effect histories require current independent admission | Existing ledger ABA/withdrawal/restart and generated histories check actual versions and zero discovery side effects; discovery remains no send permit |
+| Equal aggregate text and unique block indices preserve streamed content | =StreamCoordinates= reassigns parts without changing concatenated text; =MessageBlockOrder= permits unique but reordered arrival | Native reordered-block regression failed before correction; shared decoder now requires contiguous final-array positions; generated fragmentation/order checks cover both public decoding paths |
+| Unchanged getters justify clearing/restoring an interrupted edit | =ConfigRecoveryDesign= explores auxiliary-write crash cuts and equal-byte external replacement; its oracle observes surviving effects and overwritten identities | Magpie generates 64 auxiliary-file effects with unchanged getters and verifies the persisted intent survives retries; complete write-set preparation and identity-checked restoration remain an open gap |
+
+The Messages positional requirement is grounded in the standard content-array
+projection, not the current map implementation: see the
+[[https://platform.claude.com/docs/en/build-with-claude/streaming][provider streaming contract]] and
+[[https://github.com/anthropics/anthropic-sdk-python/blob/main/src/anthropic/lib/streaming/_messages.py][official SDK accumulator]].
+
+The four models passed 34 named scenarios. Their strong =step= designs each
+completed 256 traces of at most 30 steps, seed 293, four simulator threads,
+without a safety violation. All eight alternative campaigns produced actual
+invariant violations: =coarseVersionStep=, =catalogPermitStep=, =cachedViewStep=,
+=aggregateOnlyStep=, =uniqueIndexStep=, =fieldOnlyStep=, =blindRestoreStep= and
+=checkpointStep= (the last checks =recoverable=, not =safe=). The named witness
+scenarios retain reproducible examples in the model sources, exercised through
+the existing verification plan. These are bounded simulations, not exhaustive
+proofs. An expected violation in a current capability remains a defect or gap.
+
+Reproduce a candidate exploration with the standard Quint CLI, changing the
+module/step/invariant to the named campaign above:
+
+#+begin_src sh
+quint run dev/proofs/quint/MessageBlockOrder.qnt \
+  --step uniqueIndexStep --invariant safe --n-threads 4 \
+  --max-samples 256 --max-steps 30 --seed 293
+#+end_src
+
+An invariant-violation exit is the expected falsification result for that
+candidate, not a passing qualification command. Ordinary gates run the strong
+design and named positive/negative witnesses without accepting arbitrary errors.
+
+Safety simulation does not establish eventual completion. The SysML declarations
+therefore name stable-environment, fair scheduling and consumer-demand
+assumptions separately. The full configuration model abstracts per-file
+compare/replace; that assumption and positive restoration are not yet qualified
+in Magpie. Its current digest checkpoint has a demonstrated recoverability
+information gap even though it conservatively retains unknown completion.
+
+The native stream observation group passed eight tests, including three
+64-case properties at seed 293. The new Magpie auxiliary-effect property plus
+setter-error and actual process-cut regressions passed in 15.071 seconds inside
+the unchanged 120-second outer / 90-second test limits. No cold dependency
+installation was used. The standard strict OpenSysML architecture, workflow
+contract and source-currentness gates passed after updating the existing trace.
+The complete affected Rust library regression also passed: broker 34 tests in
+5.89 seconds and SDK 38 tests in 1.90 seconds, after 43.81 seconds of incremental
+compilation, inside the unchanged 120-second command watchdog with four build
+jobs and four test workers. Real loopback transport checks were included.
+
+* Governed coordinate handoff
+
+The broker now selects strict =TurnDecoder::next_observation= before the first
+frame. Its structural projection carries closed identity, content coordinates
+and block controls in the existing draft =ProviderTurnEvent= v1 envelope.
+=ProviderTurnPayload::Control= carries no tool arguments and is never terminal.
+The SDK keeps its transport-independent types; the broker maps them into the
+existing contracts owner without a second protocol parser or send owner.
+
+All emitted controls follow the existing output credit, exact serialized-frame
+commitment, ledger release and delivery paths. Metadata changes therefore change
+the committed bytes even when text is identical. Protobuf and Arrow continue to
+carry the same bounded rich envelope. The draft wire format now has an optional
+=metadata= field and a closed =control= payload; a strict older draft reader needs
+the current branch contract. No stable protocol release is claimed here.
+
+Private tool-argument and signature fragments have no public logical event or
+block control. They are drained locally while retaining codec/frame limits;
+they do not create per-fragment delivery/queue work. A matching Messages block
+stop carries the complete signature, while complete tools and opaque continuation
+remain at the validated whole-turn terminal. Source-selected model identity is
+also checked before an early control can be emitted.
+
+The new broker property generates 64 distinct part assignments and network
+fragment widths at seed 293. A valid stream preserves its coordinates; swapping
+the parts leaves concatenated text identical but cannot produce a terminal.
+A separate Messages fixture checks that private fragments create no extra
+released events, only one closed signature is exposed and metering remains
+unknown before the terminal. Contract properties independently check coordinate
+round trips and changed frame commitments at identical text.
+
+The actual HTTPS/ledger pipeline has a finite two-case boundary check: cancel
+after the first control, or exhaust output credit after that control. Both
+produce exactly one nonterminal event, retain the original hold, make one
+provider request and record no terminal usage. This checks cancellation and
+exhaustion; it is not qualification of a prolonged asynchronous stall or the
+future compatibility HTTP listener.
+
+=ProviderTurnRelease.qnt= now uses observed receipt histories rather than an
+=unsafeRelease= marker. Its payload seal includes the coordinate fingerprint.
+Fifteen named scenarios and 256 traces of 30 steps, seed 293 and four simulator
+threads passed the strong design. =payloadUnboundStep= produced a real invariant
+violation; the named coordinate-substitution witness retains the falsification
+case. The model covers the terminal handoff, not the entire ledger or filesystem.
+
+A native negative control temporarily replaced the broker's strict observation
+read with the prior logical-only =next_event= read and no metadata. It compiled
+successfully; the actual codec test then failed behaviorally with zero controls
+where three were required. The strict implementation was restored before the
+post-control regression. The two output-boundary cases isolate their faults:
+cancellation keeps output credit available; exhaustion leaves cancellation off.
+
+The server whole-library invocation reached its unchanged 120-second outer
+watchdog before a =Finished= build marker or test execution and exited 124.
+It is not a server test pass or a measured runtime failure. Process sampling
+after termination found no surviving matching Rust compiler/server test process;
+the separately observed Gerbil/Cargo-nextest task was left alone. No timeout was
+widened and no narrower test is substituted for that failed command. Server
+Protobuf/Arrow qualification, the real compatibility listener, the prolonged
+backpressure/restart join and the linked Scheme Session route remain open.
+
+After restoring the strict reader and isolating the output faults, the complete
+broker/contracts library regression passed 37 + 9 tests: 11.05 seconds of
+incremental compilation, then 17.52 and 0.84 seconds of execution, within the
+original 120-second command limit and with four build/test workers. Clippy with
+warnings denied and formatting checks passed. Existing Go opaque-turn transport
+and source/plan controls passed in their two packages; they do not reimplement
+the new contract semantics. Strict architecture/workflow/source-currentness
+checks also passed. The failed server build remains an independent open gate.
+
+The future HTTP encoder must additionally challenge mixed tool/text ordering.
+A tool category/index control intentionally lacks its name and arguments until
+the terminal. If an earlier tool item precedes a later text item, translating
+that text immediately may require inventing an earlier header or reordering
+content. The design must use bounded staging under declared profile limits,
+preserve original positions and release complete tool data only through the
+existing owner. Current coordinate transport is a prerequisite for this design,
+not evidence that this encoding/ordering problem is already solved.
+
+* Ordered SSE projection without a second tail buffer
+
+The shared SDK now owns pure =TurnEncoder= projection for Chat Completions,
+Responses and Messages. It takes strict validated observations, a cumulative
+output-byte budget capped at four MiB, and the gateway response creation time.
+It owns no network, source authority, ledger, policy or credential. Initial
+Messages usage must be reported; unknown terminal usage stays unknown. Known
+terminal token categories are supplied by the existing usage owner. Complete
+thinking signatures are required by this encoder rather than fabricated.
+
+The design reuses the canonical output already retained for the validated
+terminal. Known headers/text stream immediately. An unknown tool or opaque block
+header establishes a barrier; later content waits for terminal projection from
+that original position. Already emitted content is never replayed. No second
+tail-fragment buffer or per-fragment VM call is introduced. Responses can keep
+streaming earlier item positions after a later tool barrier appears. Messages
+retains its ordered block prefix. Identity binding does not clone the same
+identity again on every fragment.
+
+The protocol references are the
+[[https://developers.openai.com/api/docs/guides/function-calling][OpenAI streaming tool guide]],
+[[https://raw.githubusercontent.com/openai/openai-python/main/src/openai/types/responses/response_function_call_arguments_delta_event.py][official Responses event type]] and
+[[https://platform.claude.com/docs/en/build-with-claude/streaming][Messages streaming contract]]. The
+[[https://raw.githubusercontent.com/anthropics/anthropic-sdk-python/main/src/anthropic/types/thinking_block.py][official thinking block type]] requires an opaque signature string;
+projection emits an empty initial signature followed by the complete closed
+signature and preserves signed/redacted continuation in the canonical result.
+The standard response/item/part/delta/done framing also follows the directly
+inspected Magpie =internal/gateway/whole_stream.go= reference. It is not imported
+as a runtime dependency.
+
+The SysML =orderedProjectionChallenge= names two falsifiable alternatives:
+immediate forwarding past an unknown earlier header, and replaying the entire
+final result. =StreamProjection.qnt= uses observable emitted positions and
+tool-at-completion records as its oracle. Nine named scenarios and 256 traces
+of at most 30 steps (seed 293, four simulator threads) passed the strong design;
+both =immediateStep= and =replayStep= produced actual invariant violations. These
+are finite abstract scheduling checks, not cryptographic or liveness proofs.
+
+The native property generates 64 mixed-order/fragment-width cases at seed 293
+for both Messages and Responses. It independently checks emitted headers,
+concatenated text, absence of premature tool names/arguments, contiguous
+Responses event sequence numbers and exact canonical terminal round trips.
+Deterministic controls cover Chat tool/usage completion, earlier Responses
+items interleaving across a barrier, signed/redacted thinking, duplicate
+terminal, abort, identity substitution, UTF-8 and SSE-looking text, and aggregate
+byte exhaustion after an already emitted prefix. A failed terminal projection
+returns no partially encoded terminal batch and closes against retry.
+
+A native negative control disabled the Responses barrier while keeping a
+successful compilation. The independent prefix test then observed item headers
+1 and 2 overtaking the withheld tool at position 0 and failed. The barrier was
+restored before full regression. No decoder-produced expected output was used
+to define that header-order oracle.
+
+After restoration, all 46 SDK library tests passed, including the ASP owner gate
+and actual HTTP/2 pause/cancellation regression. Incremental compilation took
+9.20 seconds and execution 1.82 seconds inside the unchanged 120-second command
+limit, with four build/test workers. Clippy with warnings denied passed. The
+existing four Go source/plan controls also passed. No dependency cold install
+or series of process startups was run. These results qualify codec behavior,
+not gateway latency, capacity or a working compatibility listener.
+
+HTTP integration remains a concrete next step in the same GOAL: existing
+=ProviderOutput.prepare= is static, while a streaming projection retains view
+state across frames. Keep that state on the existing native output owner and
+perform bounded encoding before its deciding release guard. Do not introduce a
+second sender that mutates already committed RPC bytes. Rejection/cancellation
+discards projection state without replay; full projected terminal handoff must
+finish before the existing Session/Workflow successor is released. The server
+build-budget failure and actual listener/model-catalog/authentication join remain
+open; pure SDK projection does not replace those gates.
+
+* Stateful preparation on the existing output owner
+
+=ProviderOutput.prepare= now borrows that response's output owner mutably. The
+existing RPC implementation remains bounded encoding with no I/O; the broker's
+=ProviderSseEncoder= retains the same response's SDK projection state. This is
+an extension of the existing preparation/guard/handoff path, not a second router,
+database, provider client or sender. The benchmark and test implementors use the
+same interface. The bridge uses existing named SDK/Serde representations rather
+than adding public constructors accepting untyped JSON. Its terminal conversion
+is bounded; no zero-copy or gateway latency claim is made.
+
+The prior snapshot implementation encoded only the first frame before the final
+transaction and encoded the remaining frames afterwards. The coordinator now
+prepares the complete bounded snapshot in order, then enters the existing final
+guard and hands off immutable prepared frames. Existing limits stay four ranges
+and 32 rows. Preparation failure therefore publishes none of that snapshot;
+earlier committed snapshots remain historical. Queue-credit exhaustion or
+cancellation after a successful guard may leave an authorized prefix and an
+unknown tail, retaining the original hold as before.
+
+The explicit =sse= format uses this same ledger path. Only source-selected rich
+profiles are eligible; a legacy profile is rejected before provider I/O. The
+projection binds route, endpoint, model and original event sequence, rejects
+mixed legacy fields and closes on error/replay. It neither obtains a source
+identity nor reads credentials. Native HTTPS tests now exercise Chat, Responses
+and Messages through the actual consumed broker/ledger pipeline and decode the
+resulting standard SSE. Tool IDs, opaque continuation and known or missing usage
+are retained. These are upstream-provider fixtures and an inert output capture;
+they are not tests of a public HTTP compatibility listener.
+
+Four-frame timing/failure checks call the existing native snapshot function
+directly with real ledger capabilities. They do not assume a network read
+contains the entire reply. All four preparation-failure positions leave that
+snapshot unpublished and retain the hold. A Tokio-coordinated independent
+policy writer commits after all four preparations and before the final guard;
+no handoff is then observed. Cancellation after preparation also blocks the
+callback. Separate actual-HTTPS cases check cancellation and output-credit
+exhaustion after a control frame, without combining their fault conditions.
+
+The =PreparedSnapshot.qnt= review also challenged its oracle. The initial
+=frameOnlySafe= predicate checks individual preparation timestamps but misses
+an already published first frame followed by a later preparation failure.
+The native failure case exposed that omission. The retained named witness
+=frameOnlyOracleMissesFailedSnapshotPrefixTest= now requires the independent
+snapshot-completeness condition as well. With the same seed 293, 256-trace,
+30-step, four-thread budget, =lateMixedFailuresStep= still finds no violation
+under the insufficient =frameOnlySafe= oracle, while =safe= finds a real
+violation. The stable-authority =latePreparationStep= is separately explored;
+both challenge campaigns fail under the complete oracle. The strong =step=
+passes all seven named scenarios and the bounded safety run. No sample budget
+or seed was changed to make the weak oracle look effective.
+
+A native negative control restored the old first-frame-only preparation order.
+It compiled and then failed the real ledger test with =prefix escaped at failure
+2=. Restoring complete preparation fixed the counterexample. This validates a
+behavioral assertion, not simply a model-file/implementation naming match.
+
+The latest unified local library entry passed 49 broker, 46 SDK and 42 server
+tests, with the same three explicitly ignored Go-driven integration fixtures.
+It includes actual TLS/HTTP2, source-role isolation, Protobuf/Arrow coordinate
+round trips, queue-capacity cancellation, policy replacement, source-owner drain
+and the new SSE/snapshot cases. The unchanged 120-second command budget and four
+build/test workers were retained: incremental compilation took 21.86 seconds;
+the three package execution times were 7.65, 2.17 and 10.60 seconds. Source
+dependencies were reused, not cold installed. The previous server build-budget
+failure remains historical evidence; the current local server library gate is
+now closed, including its coordinate encoding tests.
+
+Broker Clippy now passes for all targets, including its benchmark and test
+implementors. Server/SDK library Clippy and formatting checks pass. Test diagnostics
+use contextual failures and the snapshot tests reuse the existing native fixture
+module rather than load it twice. Four Go plan/source controls also passed.
+None of these controls is a substitute for runtime behavior or a production
+release/remote CI result.
+
+The next section implements the thin compatibility listener and its
+authenticated Session/model-catalog admission on this same runtime. Its body
+receiver reuses the existing delivery cursor/cancellation/receipt custody;
+the prepared bytes are not re-encoded after the deciding guard. Linked
+Scheme qualification, the three Go-driven process/receiver fixtures, public
+Magpie interoperability, full HTTP restart/backpressure and complete Magpie
+write-set restoration remain open work in the unchanged GOAL.
+
+* HTTP operation capability on the existing runtime
+
+The optional compatibility listener now mounts a thin =v1= service using the
+existing Tonic/Tokio transport. =GET /v1/models= observes the deployment-selected
+Session through the existing source lane. The three POST paths select the
+corresponding source protocol and submit unchanged bounded JSON through Session
+admission. Rust independently verifies the admitted profile again before
+starting the existing broker worker. This does not grant the HTTP adapter
+source authority or introduce another routing or persistence owner.
+
+An optional section in =weaver.toml= enables the local capability:
+
+#+begin_src toml
+[gateway.http]
+listen = "127.0.0.1:18082"
+session = "session-a"
+token_env = "WEAVER_HTTP_TOKEN"
+#+end_src
+
+=WEAVER_CONFIG= can select another configuration file. The token is read from
+the named environment variable, hashed, and kept separate from RPC operation,
+source and provider credentials. It must have 16--256 ASCII non-whitespace
+characters. Bearer authentication and Anthropic's =x-api-key= are alternative
+encodings of one dedicated credential. One of each may be supplied together
+only when their bounded values match exactly; conflicting values and repeated
+fields fail. There is no choice between credentials or union of identities.
+Loopback binding is required. A
+delegated-OAuth deployment is rejected until its workload-peer binding has an
+explicit HTTP design. The existing mTLS RPC profile is not downgraded.
+
+Source policy must explicitly allow the =sse= output format and the selected
+rich protocol. The legacy text policy remains unchanged and cannot implicitly
+authorize this output. The HTTP capability does not rewrite Cedar permissions.
+
+The response keeps the same bounded queue and =DeliveryCursor=. =Output.prepare=
+uses one =ProviderSseEncoder= per response before its deciding release guard;
+=SseStream= transfers those prepared bytes only after the existing receiver
+guard. An execution failure terminates the body with an error, without a forged
+success marker. The HTTP listener joins the same shutdown and owner drain as
+both RPC listeners. Request bodies have the source bound and a five-second
+read deadline; the existing one-second delivery credit deadline is unchanged.
+
+The native HTTP fixture qualifies two exact-wire turns over a real TLS provider,
+four concurrent wrong-credential controls, ambiguous headers, protocol/source
+endpoint rejection, changed retry bytes, fact withdrawal and ABA catalog
+versions. Its advisory selector is explicitly a test double, not linked Scheme
+evidence. The credential property uses 64 cases and seed 293. Fragmented UTF-8
+body checks use every split point at and above the byte limit. =HttpOperation=
+has twelve named checks and a finite campaign of 256 traces, 30 steps and four
+simulator threads under seed 293. Its cached-catalog and credential-union
+strategies both produce actual invariant violations; the strong campaign does
+not establish universal safety or runtime scheduling progress.
+
+The tool-continuation and owner-restart cases below extend this initial HTTP
+fixture. Real linked Scheme, slow-reader and process-crash integration, stock
+Magpie and complete Magpie write-set restore remain separate acceptance work.
+
+The final native library entry passed 142 active tests with three existing
+Go-driven process fixtures ignored, using four test workers and the unchanged
+120-second command watchdog. This acceptance run is not a request latency
+measurement.
+The new direct SSE receiver test uses actual committed delivery receipts:
+current authority transfers bytes, a policy replacement after enqueue rejects
+them before body transfer, and cancellation produces no success marker. Every
+case retains the original hold. The fixture drives the original producer's
+receipt-refresh handshake and waits for consumption before closing a successful
+receiver. An earlier fixture that withheld that handshake hit its fixed
+three-second bound; its failed result was not counted as acceptance.
+
+Clippy passes for all targets of the five touched server/SDK/contracts/ledger/
+governance crates under the same local HTTP/Arrow feature profile, without lint
+suppression. The earlier library-only Clippy result had missed test-only
+=unwrap= calls. The remote structured Rust receipt confirms that same failure
+in the preceding publication. Their replacements preserve the assertions and
+add fixture context. An expanded local Clippy invocation first reached its
+90-second watchdog without a result; the raw diagnostic invocation exposed
+the test errors rather than counting that timeout as success.
+
+The strict architecture, Workflow and source-currentness entry and four Go
+plan/inventory controls passed. An earlier model reference used a nonexistent
+=ChallengeStatus::pending= enumerator; strict OpenSysML analysis rejected it.
+The declared status now uses the existing =refutedHypothesis= value for the
+actual competing-design counterexamples. No new status or verifier was added.
+
+Remote Scheme qualification remains separate: both platform jobs for the
+preceding publication fail while checking out the transitive =gerbil-parser=
+revision declared by the package graph, with =unable to read tree=.
+They do not reach Scheme compilation. The local native evidence uses the
+existing installed dependencies and does not close that package-provenance gap.
+
+* HTTP tool continuation and durable owner recovery
+
+[[file:../../crates/server/tests/unit/http_turns.rs][The HTTP tool scenario]] now
+executes Chat Completions, Responses and Messages against independent raw
+[[file:../../crates/server/tests/fixtures/http-turns/][SSE source fixtures]]. Each
+case makes a tool-call turn, destroys the HTTP, source SQL and advisory owners,
+then creates fresh owners over the same ledger before sending the tool result.
+The test does not register a second scope or reuse an in-memory catalog.
+
+The expected tool ID, name and parsed arguments are external fixture values.
+Responses retains the encrypted reasoning item. Messages retains the complete
+signature assembled from two deltas, a redacted block and the tool-use block in
+their original order. The next request uses the actual retained continuation,
+and the TLS peer checks its exact body bytes. Upstream HTTP chunks are seven
+bytes; the downstream codec is independently partitioned into three-byte input.
+
+After recovery, an exact completed retry performs no new advisory derivation.
+A third declaration under the same Session exhausts the shared budget before
+provider I/O. Fact withdrawal rejects another request. Read-only SQL observations
+then require three declarations, two provider runs, one budget/history root,
+and two complete reported token-category records. The advisory actor is a
+labeled test double and its compiler callback must never run. These cases
+qualify owner recovery, not an OS-process crash or linked Scheme execution.
+
+The external TLS peer remains listening after its two expected responses until
+all retry, exhaustion and withdrawal checks finish. It fails on any extra TCP
+connection, including one queued when shutdown is already ready. A separate
+negative control establishes a real extra connection and requires that exact
+observer failure. A stopped listener or an empty request channel alone is not
+evidence of no attempted send. A completed retry currently fails the stream;
+this is not a transcript replay API, and no tool result is manufactured.
+
+One candidate constructed every wire event with Rust JSON macros and exhausted
+the original 120-second command watchdog before tests started. Moving the same
+protocol data into static, licensed source fixtures kept the original cases and
+budget. The focused seven HTTP controls then passed, followed by the original
+three-library entry with 144 active tests and three existing ignored process
+fixtures. Test compilation and request-runtime performance remain distinct.
+
+The static input change also exposed an actual verification gap: the source
+inventory ignored SSE fixtures. The existing create/edit/delete currentness
+test failed before the inventory recognized =.sse=, then passed after that
+generic source-format addition. The existing leading-notice check now recognizes
+SSE's colon comment syntax. No fixture manifest, generated evidence directory,
+alternate runner or new CI script was introduced. Strict architecture, Workflow,
+source-currentness and server library/test Clippy checks passed.
+
+The SSE event terminator is a required empty line, so the format-specific Git
+attribute permits that final blank line while retaining other whitespace checks.
+That attribute is also included in the existing root-source fingerprint.
+
+HTTP slow-reader/stream-reset behavior, real linked Scheme, stock Magpie and
+complete Magpie config restoration remain open in the full GOAL. The existing
+broker/SDK backpressure tests do not by themselves qualify the new listener.
+
+* Reuse the prepared Cargo feature graph for the meter fixture
+
+The remote Go receipt reports a timeout in provider integration,
+not a failed protocol assertion. Its tail shows dependency compilation inside
+=TestProviderTerminalUsageIndependentIssuer=. Server and observer preparation
+had already passed, but the meter helper selected =--no-default-features=
+instead of their default/Arrow graph, triggering another release dependency
+build inside the remaining runtime budget.
+
+The existing server preparation and integration fixture now request the package
+binaries together with =--bins=. The meter fallback uses the same release,
+default features and Arrow selection. Cargo still owns dependency resolution
+and reports each executable; the existing artifact reader selects the requested
+target and rejects ambiguity. Its control includes the other prepared binary
+in the same stream. No new CI stage, Bash wrapper or wider budget was added.
+The focused Cargo argument/artifact checks pass; remote closure and the real
+meter integration remain separate acceptance results.
+
+* HTTP/2 delivery credit challenges
+
+The native receipt queue is not sufficient evidence that an HTTP adapter bounds
+read-ahead. =HttpDeliveryCredit= imports =ProviderDeliveryPipeline= and observes
+transport backlog separately. Eight adapter checks reuse ten native checks.
+The eager handoff witness preserves native safety while violating the transport
+bound. A second witness rejects a design that couples sibling queries to stream
+credit. This abstract slot is a bounded frame, not an exact Hyper byte limit.
+
+The fixed simulator campaign uses 256 traces, 30 steps, seed 293 and four threads.
+Generic initialization found no violation for either variant; that result alone
+does not distinguish the designs. From the named =second= paused prefix, the
+same campaign refutes eager handoff and passes demand-coupled handoff. The prefix
+represents one transport-held frame and another prepared native frame, rather
+than a new scheduling assumption hidden in the native receipt guards.
+
+The real HTTP/2 acceptance fixes four cases: consume, unread stream window,
+stream reset and hard-fact withdrawal. Each uses two MiB of deterministic text,
+a 1024-byte stream window and four Tokio workers. A sibling catalog request on
+the same connection completes while the stream is paused and after failure.
+Only the healthy control delivers all text and one terminal. Negative cases
+retain the original SQL hold, persist unknown outcome, record no terminal usage
+and cannot forge a successful terminal. Observation counters do not authorize
+handoff. The existing one-second delivery deadline, bounded three-second
+observations and 120-second library watchdog remain unchanged.
+
+The source advisory is explicitly a test double. These results do not establish
+linked Scheme execution, process-crash recovery, stock Magpie integration or
+request latency percentiles.
+
+* Upstream observation after cancellation
+
+The TLS fixture must outlive a response write failure. Previously, cancellation
+could make it return immediately: later forbidden sends would reach a closed
+port instead of the extra-connection assertion. The fixture now retains the
+first transmission error while continuing to accept and reject extra requests.
+Its final result still exposes that error; normal replies must complete fully.
+
+The independent negative control sends a real TLS request, drops its response,
+waits for the server write to fail, then opens a forbidden TCP connection. It
+requires the extra-connection panic rather than accepting any error. Restoring
+only early return after the write error made this test fail with connection
+refused, demonstrating that the observer lifetime is part of the oracle.
+The control uses a temporary local peer, four Tokio workers, a three-second
+observation bound and the original library-command watchdog.
+
+The restored candidate passed all 146 active SDK/broker/server library tests
+(three existing process fixtures ignored), server library/test Clippy and the
+architecture/Workflow/source-currentness gates. No timeout or budget changed.
+
+A separate bounded attempt to execute the existing Scheme source suite reused
+the installed dependencies and performed no installation. It did not qualify
+the selector: expansion of the local Yuanxu =module-prelude.ssi= failed with
+=Bad syntax; no matching export= against =:clan/poo/object=. The test launcher
+returned zero despite reporting =ERROR MODULE=, so its exit status is explicitly
+not counted as a pass. Repairing that package artifact boundary and exercising
+the linked runtime remain open; the advisory-double HTTP tests cannot replace
+them.
+
+* Process recovery after a complete HTTP tool turn
+
+The Unix process acceptance now runs the existing HTTP/native fixture inside
+real child processes for Chat, Responses and Messages. The first process reads
+a complete tool terminal, verifies tool identity/arguments and opaque metadata,
+and retains its continuation in the temporary harness directory. It then waits
+without draining owners. The parent observes the cut, sends SIGKILL and checks
+the actual signal exit status. A second process opens the same ledger without
+registering another Session and submits the tool-result turn.
+
+The parent independently checks the retained continuation against static fixture
+identities, the exact actual upstream request, two persisted runs and two known
+usage records. Both processes share one budget/history root. Completed retries,
+the next over-budget turn and fact withdrawal cannot cause another provider
+connection; the TLS observer remains live until all those checks finish.
+The continuation file belongs to the test's simulated harness, not a new Weaver
+configuration store or journal. No Scheme identity is supplied by it.
+
+The complete SDK/broker/server library command passed 148 tests, with three
+existing ignored process fixtures, in 17.62 seconds of test execution. This
+count includes the inactive child entry when no recovery environment is given;
+the parent test itself executes all three protocol cases. Every Tokio runtime
+and the test harness use four workers. Each child observation/exit has an
+eight-second bound, within the unchanged 120-second command watchdog.
+=SessionTurnAdmission= now has 21 named checks, including shared-budget reuse
+across restart and withdrawal before the next preparation. Its fixed safety
+campaign passes 256 traces of at most 30 steps at seed 293 with four threads.
+
+A behavioral negative control changed only the checkpoint's encrypted reasoning
+from the fixture's expected value to another value. Both child processes still
+ran, but the parent's independent assertion failed on the corrupted continuation.
+Thus copying the checkpoint into the second request is not its own correctness
+oracle. The original candidate was restored after this isolated control.
+
+This closes the completed-terminal process cut only. A crash during an
+uncommitted provider send, real linked Scheme, stock Magpie interoperability and
+complete Magpie write-set restoration remain separate obligations.
+
+For the local Scheme boundary, one four-worker, 120-second package-owner rebuild
+refreshed the stale Yuanxu prelude interface but timed out before completing the
+whole package. Its process group was confirmed empty afterward. The bounded
+source-suite follow-up no longer reported the old POO export error; it instead
+reported that Weaver's provider-source library module was unavailable. The
+installed ASCENT checkout also lacks the revision declared by the locked Lab
+dependency. These partial cache repairs do not establish a source-bound Scheme
+pass. No dependency installation, upstream source edit or wider budget was used.
+
+* Unanswered dispatch process recovery
+
+The next native process cut is after the independent TLS peer has read the
+complete exact request but before it sends any response byte. The existing
+fixture can gate its first response at that point. A child has already polled
+its real HTTP body future pending; the parent checks actual upstream receipt,
+then SIGKILLs the owner. Only after observing its signal exit does the parent
+release the peer. This does not use a local callback marker as proof of remote
+receipt, and it does not require a production pause hook.
+
+A fresh process opens the original ledger without registering a Session.
+Two exact retries produce no successful body, no new provider connection and
+no advisory derivation. Adding trailing whitespace changes the exact request
+commitment and conflicts even though the JSON meaning is unchanged. Withdrawing
+the hard fact then rejects a new key. The original live TLS observer remains
+responsible for catching any extra connection after the interrupted write.
+
+The final independent SQL oracle requires one unknown run, one Session turn,
+the original reservation of four, four units still held, zero response rows and
+zero terminal usage. Dispatch burn may be one or two: remote receipt cannot
+prove that the guarded callback transaction completed before process death.
+Neither value supplies retry or refund permission.
+
+The three frozen protocol cases reuse the same child entry and bounded process
+helpers as the completed-terminal cut, with four Tokio/test workers, eight-second
+child observations and the original 120-second library-command watchdog. The
+unchanged =ProviderRpc= model contributes its 91 passing named checks, including
+=partialWriteCannotFallbackTest=, =restartCannotReissueBurnTest= and the competing
+=unknownRefundCounterexampleTest=. Those model guards are not reimplemented in
+another HTTP model or Go test layer.
+
+This qualifies the externally received, unanswered request cut. It does not
+enumerate every partial kernel write, conditional response-release transaction
+or lost acknowledgement interleaving. Linked Scheme, stock Magpie interoperability
+and full Magpie configuration restoration remain independent open work.
+
+* Standard Magpie Provider interoperability
+
+The external-consumer acceptance invokes Magpie's real =provider add= and
+=serve= commands. Its ordinary custom Provider reads Weaver's live model list,
+then its real listener carries two tool/result turns for each of Chat, Responses
+and Messages. It uses a temporary HOME and empty inherited environment/PATH;
+non-loopback HTTP goes to a local rejecting proxy. The listener address and pid
+come from Magpie's existing =gateway.json=, not a guessed free port or a second
+configuration writer. No Magpie Provider, gateway or CLI source was modified.
+
+This check exposed a missing design assumption. The original Weaver rule
+rejected any combination of Authorization and x-api-key. Magpie's model-list
+client normally sends the same key in both headers for every API; its native
+single-header learning is confined to Anthropic. The first actual consumer run
+failed Messages, and the stronger live-discovery assertion then exposed the
+same issue for Chat despite explicitly configured model names. A generic 401
+and the original header-count property did not establish interoperability.
+
+The admitted identity is now one dedicated operation credential, with either
+one standard encoding or two byte-identical bounded encodings. Every present
+field must agree; matching inputs are hashed once and compared in constant time
+against the expected digest. Different values, repeated fields, malformed values
+and other credential realms remain rejected. This does not select whichever
+credential happens to work. The fixed conflict message can be public, while
+arbitrary credential, policy and SQL errors remain hidden.
+
+=HttpOperation= models this identity normalization, and the raw-header property
+varies bearer and API-key realms independently instead of assigning both one
+assumed realm. Twelve named checks pass. In fixed campaigns of 256 traces,
+30 steps, seed 293 and four simulator threads, strong admission passes; cached
+catalog admission and credential union each produce an invariant violation.
+The explicit conflict controls exercise both orders of every foreign key, and
+the matching-header control also rejects repeated physical fields.
+
+An isolated native negative control removed only the cross-header equality
+guard. The conflict test then failed because the valid bearer wrongly hid a
+foreign API key. Restoring the guard removes that unauthorized fallback. Both
+the encoding comparison and the expected-hash comparison use the existing
+=subtle= constant-time primitives; credential values are bounded and borrowed.
+
+The real consumer preserves the static fixtures' tool ids, names, arguments,
+encrypted reasoning and signed/redacted thinking through its native paths.
+Weaver's ledger retains two runs, two terminal usage records and one shared
+budget/history root. Each exact body observed by the independent TLS peer must
+match the corresponding admitted task's body digest. Model display aliases are
+checked separately from the upstream model identity.
+
+The external gate is explicit and separate from default library CI:
+
+#+begin_src sh
+WEAVER_MAGPIE_BIN="$PWD/.cache/magpie-interoperability/bin/magpie" cargo test -p weaver-server --lib --no-default-features --features llm-provider,arrow --locked --offline -j4 magpie_standard_provider_preserves_three_protocol_tool_turns -- --ignored --test-threads=4
+#+end_src
+
+It requires an independently prepared nogui executable; absence fails when the
+gate is invoked. Prepare it once with Magpie's declared Go toolchain and normal
+module manager, not inside a runtime test. The prepared checkout's prior
+Agent ownership changes do
+not change the Provider/gateway paths. Existing documentation/test edits were
+preserved. Initial full CLI preparation reached its 120-second limit after
+populating the build cache; read-only stale analysis then showed no uncached
+dependency packages, and a separate offline cached build completed within
+30 seconds. This preparation result is not a runtime-latency claim.
+
+Real linked Scheme, full Magpie agent-config recovery and unified installation
+remain open. This test qualifies
+the standard Provider join, not the complete managed CLI configuration lifecycle.
+
+* Consumer CI preparation and execution
+
+=Verification::consumers= allocates a separate =check-consumers= job through the
+same reusable workflow and verification owner. The standard checkout action
+fetches the public Magpie revision pinned in
+[[file:../../.github/workflows/verify-suite.yml][the consumer workflow]]. It includes the relative replacement modules required by
+Magpie's own =go.mod=; a standalone =go install module@revision= is not a
+substitute for that source tree. Its original nogui build is the only consumer
+builder. No installer, alternate network adapter or pin-scanning Go layer is
+introduced. The checkout action's =commit= output binds the CI job receipt.
+
+=prepare-consumers= uses two existing runner stages: CLI build and Cargo
+=--no-run=, each bounded to eight minutes. Its eighteen-minute runner deadline
+precedes the nineteen-minute GitHub cutoff. Those are separately preregistered
+cold preparation budgets, not a reinterpretation of the earlier timed-out
+local preparation. Runtime =check-consumers= selects the identical Cargo graph,
+explicitly includes the opt-in test and retains its two-minute stage deadline,
+inside a three-minute runner and four-minute GitHub cutoff. Four compiler/test
+workers remain fixed. Existing JSON preparation and suite receipts retain the
+distinct outcomes, elapsed times and source identity after failure or success.
+
+The local path reuses the existing executable without another preparation:
+
+#+begin_src sh
+WEAVER_MAGPIE_BIN="$PWD/.cache/magpie-interoperability/bin/magpie" go -C go run ./cmd/weaver-dev -timeout 3m check-consumers
+#+end_src
+
+The standard CLI and runtime build stages remain available through
+=go -C go run ./cmd/weaver-dev -timeout 18m prepare-consumers=. CI bootstraps
+its ordinary toolchain/locked dependencies and published SDK first, without
+installing the full Scheme package graph for this advisory-double consumer gate.
+The independent consumer job does not alter the existing Linux/macOS Scheme
+matrix. Local success does not establish the hosted job's eventual outcome.
+
+* Linked Scheme dependency migration
+
+The SDK dependency and setup action use the same revision declared by
+[[file:../../Cargo.toml][Cargo]] and [[file:../../.github/workflows/verify-suite.yml][the workflow]]. Its existing
+=gerbil-scheme-aot-build= crate remains the public archive owner, although its
+source moved under =build-support=. Weaver retains that API and explicitly
+bounds the complete compiler manifest to 1024 modules, matching the SDK's
+standard archive contract. Required and forbidden module checks still apply;
+the bound neither selects modules nor approves a different application.
+
+The Scheme source migration follows [[https://github.com/tao3k/agentic-ai-lab/pull/34][Lab PR 34]] and the dependency
+revision in [[file:../../gerbil.pkg][gerbil.pkg]], including Lab's own declared transitive dependencies. The new package namespaces are =tao3k/agentic-ai-lab= and
+=tao3k/yuanxu=. Schema identifiers and protocol strings retain their existing
+values. The root package still declares only Lab; its package manager owns
+Orgize, Parser, POO and gerbil-ascent resolution. Updating source checkouts is
+distinct from compiling them, and neither establishes linked runtime
+qualification. The existing native Session, withdrawal, recovery and exit
+gates remain required before claiming real Scheme integration.
+
+The SDK archive adapter passes its four library tests, and the unchanged
+120-second, four-worker server/broker/LLM command passes 152 tests with four
+existing exclusions. This is not linked Scheme evidence. The first targeted
+POO build in the migrated source graph stopped at its 120-second watchdog after
+arm64 =_memset= link errors from the configured C compiler. Do not promote that
+partial preparation, retry a whole cold install, or relax runtime gates to
+hide it; correct the native toolchain binding before resuming preparation.
+
+The single-module diagnosis isolates a mixed host toolchain: Homebrew GCC 16
+resolves the Nix assembler/linker through PATH. The same generated module links
+under the original GCC at its formal =-O2= setting when PATH selects the system
+assembler/linker; system Clang also succeeds. Adding =-lSystem= under the mixed
+environment does not fix the error. Gambit and package sources are unchanged.
+Partial compiler output is not a reusable successful build: interrupted POO
+preparation left interfaces without their macro-stage compiled artifacts, so
+the package manager cleans that package's products before rebuilding it with
+four workers and the separate eight-minute compile budget. Other dependency
+products and source checkouts remain available.
+
+The new Yuanxu no longer exports =call-with-init-build-spec=. Read-only
+specification uses the admitted =std-make-spec= in =std/build-script=. Native
+compile/clean use the init owner's =.compile-selection= and =.clean-selection=
+with STD-generated argument parsing and Make dispatch. The owner supplies the cross-package
+source view, compiler input checks and output locks; a spec alone cannot serve
+foreign relative targets from Weaver's directory. No source view or load-path
+ordering is reconstructed in the builder. Cargo still observes source
+paths already read by that owner and does not introduce a second file inventory.
+
+After correcting host tool selection, the targeted POO, Yuanxu, Parser and ASCENT builds
+exit naturally. Actual VM probes load a POO value and the new Yuanxu init syntax
+within their twelve-second watchdogs. Orgize proceeds through its library/fold
+compilation but its own final installed-interface check fails with
+=Unexpected import ()= while importing =orgize/bindings/c/event-tape.ssi=.
+Replaying only =bindings/c/stage-parser.ss= reproduces that failure. This does
+not qualify the full dependency preparation or Weaver's linked image.
+
+The existing =scheme-qualification= Cargo graph now includes
+=session_selector=: one production =SchemeCompiler=, A-B-A scope rebind, warm
+reuse and 64 fixed-seed fact/route cases with independently checked Rust scope
+commitments. Foreign principal/model and invalid scalar bounds must refuse
+without poisoning the next valid selection. This test uses the fixed linked
+Session export, has no advisory double and starts one VM. The first execution passes after adapting the property closure to Proptest's
+=Fn= requirement with an affine =RefCell= borrow; it still uses one VM, not
+one VM per generated input.
+
+The published Lab change exports =ModulesSource= from its existing modules
+window. Weaver selects it through =from:= and retains the Lab/Weaver mounts;
+retired =package:=/=rename:= windows are removed. Primitive type/validation
+imports use POO's =type= facade; serialization remains on its public MOP.
+The Prelude provides =.def=, and the standard =Build.defbuild-script.spec=
+projection replaces kind/roots and explicit duplicate Build registrations.
+Native imports compose the existing Governance/Policy objects instead of the
+retired requires/link injection protocol. Their typed operations and Rust's
+final authority checks remain in force. Contract tests explicitly refuse the
+retired publication fields.
+
+Weaver's original =./build.ss compile --debug= now exits naturally. The real
+=gerbil test -g -v 5 t/gateway-source-test.ss= executes and passes all 24 cases,
+including retained ASCENT facts, withdrawal/replacement, route fanout and
+foreign scope binding. This required correcting an illegal local definition
+in =unless= and two self-referential POO test input slots. A filtered call
+that selected zero suites is not evidence. These Scheme tests are separate
+from the Rust-linked =session_selector= executable.
+
+The earlier Ubuntu preparation failure was localized to Orgize importing
+=:gerbil-scheme-rust/scheme/runtime= without an SDK package dependency.
+Orgize now declares that dependency itself. This differs from its local
+installed-interface failure; a package declaration fix does not establish
+complete build acceptance. No Weaver installer or Go SDK-pin inference is added.
+
+The complete original =check-scheme= run is retained as FAIL. Its module
+build and source integration pass; the package suite reaches its original
+60-second timeout in the generated source-replacement property. A/B admission
+initially fails because its inventory assumes every standard Make target is a
+list, while native specs also contain strings. The inventory now admits only
+those two standard forms and retains the exact 40-target and isolation checks.
+All 474 generated C units and their objects complete in the first Rust image
+preparation, followed by a Rust property-closure compile error. After correcting
+that error, the same Cargo feature graph reuses the prepared objects and runs
+the actual linked selector test successfully (one test, 64 fixed-seed cases,
+0.31-second test execution). This is not whole-suite or latency qualification.
+
+After the Make-row reader fix, the A/B gate still refuses: both the default
+std-make-spec and an explicit selection of the same four modules declare
+31 targets, rather than the frozen 40. The absent nine are the Cedar object
+library and the Loop-engine/Session helper libraries from the original
+foreign-target inventory. Do not change the expectation to 31 or count the
+474-unit AOT closure as proving isolated B ownership. Audit their native Build
+projection versus prerequisite ownership before accepting cold A/B, hot B,
+clean isolation or B's own runtime products.
+
+The prerequisite custody challenge is registered in SysML and the existing
+Quint development entrypoint. Its eleven named checks cover source changes,
+artifact replacement, ABA, fresh admission and cleanup ownership. With seed
+293, four simulator threads, 256 traces and 30 steps, the strong model has no
+observed violation; both presence-only and content-only alternatives produce
+counterexamples. An authentic same-content artifact may survive ABA, but an
+old prepared cut cannot: the current source and artifact identities must be
+admitted again. Authenticity remains an assumed owner guarantee. This bounded
+model evidence does not qualify the current Build implementation or resolve
+the retained 31/40 runtime failure.
+
+The complete dependency cohort is updated through the packages' existing PRs,
+not just Weaver's direct Lab pin. Lab's =core= gitlink matches its transitive
+Yuanxu package revision, so its CI cannot restore a different vendored Core
+after package installation. Existing local Core checkout changes are preserved.
+
+Package declarations, Git history and CI source receipts own exact versions;
+this architecture document does not maintain another revision inventory.
+
+The real linked capture also exposed an upstream publication bug: the reader
+tracked only pair-shaped compiler results. Embedded =__compile-top= returns
+a Gambit source object, so a private declaration's initializer delivery was
+lost and =Governance= appeared unbound. Yuanxu now tracks the exact program
+issued for its already admitted context/body independently of carrier shape.
+Its new embedded/gxi regression reproduces the failure before the correction
+and passes both cases afterwards. Weaver's qualification-only application
+prints the original exception before rethrowing; the production ABI still
+returns a semantic refusal. Source/version guards are unchanged.
+
+All seven source revisions have been bound through the native package API.
+The persistent Lab development branch is fast-forwarded to the same Lab
+revision, with its clean Core submodule updated through Git's native submodule
+entrypoint. Its previous local mirror remote is preserved.
+
+POO builds and exits naturally within its 480-second preparation watchdog.
+One subsequent serial incremental batch has a separate 480-second aggregate
+preparation fence: Yuanxu, Parser, SDK and ASCENT pass; Orgize exhausts the
+remaining budget and is retained as TIMEOUT, so Lab is not started. A later
+=COMPILED-INTERFACE-ABI-OK= line from Orgize's child does not overturn the
+parent timeout. No matching package build process remains afterwards. Do not
+rerun completed packages or count this batch as complete dependency acceptance.
+Full publication/admission/mutation controls and the new cohort's complete
+linked runtime qualification remain independent pending gates.
+
+* Build entry and C ABI Module
+
+Weaver follows the C ABI Module in the GHQ Marlin checkout. The ordinary
+=scheme/c-abi= Module declares native targets, typed operation autoloads and
+link options in =Build=. =yuanxu-build-autoloads= publishes the compiler import
+edges. Both programs obtain the canonical Gateway factory through that binding;
+=GatewayScope= has one definition shared with the Gateway Interface.
+
+Init still owns =std-make-spec= and selected source admission. The builder
+passes STD its native =libdir:= output parameter and uses Core's =.with-link=
+to publish the program manifest and activation stub. Rust consumes that plan,
+inserts the Cargo SDK's two host carriers and links through the SDK archive
+contract. Scheme packages never import the Rust SDK runtime. The configured
+external-application path retains the existing SDK staging entry and exact
+module/source checks; matching a first-party module name alone is insufficient.
+
+C ABI roots use the Rust host's existing root/apply/release service. The
+callback's temporary root is released with unwind protection. Compiled requests
+consume published Gateway operations without reopening init's Build projection
+or invoking Make. Development source capture retains its before/after source
+admission checks. Linked code does not grant execution authority: Rust's exact
+source expectations and ledger checks still decide version, intent, withdrawal
+and replay eligibility.
+
+The complete linked Rust entry passed 97 tests with four existing ignored
+cases in the earlier linked-image run. The latest Scheme source suite passed
+76 cases, and the expanded source integration suite passed its compiled-entry
+refusal controls. Final linked-image qualification for the updated dependency
+cohort remains pending.
+That final build completed its Scheme/C object archive, then Apple's linker
+failed with =Bus error: 10= before the runtime suite. This is a retained failure,
+not a runtime pass or an Ubuntu result; the macOS matrix remains enabled.
+The latest full cold A/B, hot B, cleanup-isolation and B-use gate reached its
+unchanged 120-second fence during cold B; cold A completed in 48.34 seconds.
+Its result remains a failure. No budget was widened.
+The source specification contains 49 targets: the original 40 plus the shared
+dependency interface, seven C ABI Module files and the callback implementation.
+The exact fourteen foreign Lab products remain mandatory. Ubuntu CI closure
+and final qualification of this complete source set remain pending.
+
+The root package declares Lab alone; Lab and its dependency packages declare
+the aligned transitive versions. Core's selected-library,
+Build-role, publication and testing-source-admission gates passed. The existing
+four input-context mutations were rejected by their original assertions, with
+correct-code controls passing before/after and source bytes unchanged.
+
+* Shared Scheme dependency interface
+
+=scheme/interface.ss= owns Weaver's bounded Lab dependency vocabulary through
+=LabGovernance=, =LabSession=, =LabGovernor= and =LabCedar=. Roles read their
+operations, Types and prototypes with POO =.get=; ordinary functions still own
+the transformations. Existing canonical Type bindings retain their identity.
+The interface neither selects Weaver scopes nor wraps procedures or catches
+their errors. Development source operations use init-owned scopes; compiled
+programs use the canonical Build-published Gateway factory.
+
+Marlin's interface and functional coding style informed this organization.
+Weaver already selects Lab Governance in init: importing that Module declaration
+again through the dependency facade is rejected as conflicting source/publication
+build contributions. The facade therefore composes the published leaf values,
+leaving Module selection at its existing owner. Hygienic ASCENT/type syntax
+keeps its original imports. All Scheme Lab imports are centralized in the
+dependency interface; no additional build roots or dependency inventory is added.
+
+=scheme/CODING-STYLE.org= documents the direction of dependencies, functional
+composition, lexical constant captures, role/effect ownership and finite native
+verification. =t/interface-test.ss= compares actual upstream procedure, Type
+and prototype identities, checks inheritance and invalid-input refusal, and
+uses 64 fixed-seed generated Session values with independent Lab predicates.
+The original source mutation, refusal and ownership gates remain separate;
+identity properties are not a claim of complete runtime or CI qualification.
+
+Applying this style exposed a real retained-selector defect: an unread A result
+read the mutable owner's B commitment after rebind. Constant slots now capture
+the current commitment and routes, with copied mutable leaves so callers cannot
+poison later selections. The Scheme regression failed before the correction.
+=RetainedSelection.qnt= independently challenges delayed getters and eager
+aliases, including A-B-A and caller edits, rather than using the output itself
+as the oracle. SysML records these assumptions, disturbances and finite bounds.

@@ -1,0 +1,5 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+# SSE requires an empty line to terminate its final event.
+*.sse text eol=lf whitespace=-blank-at-eof

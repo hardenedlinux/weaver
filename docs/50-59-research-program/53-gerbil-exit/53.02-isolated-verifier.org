@@ -76,15 +76,15 @@ uses an actual prior LlmRouting Step to retain those guards; native pass cannot
 substitute for original claim, budget, history or final broker authority.
 
 * Build recipe and platform boundary
-The source visitor is [[file:../../../dev/proofs/evidence/native-gerbil-exit/compile-source.ss][the staged prelude-aware builder]]. Its reuse table names
+The source visitor is [[file:../../../.cache/verification/evidence/proofs/native-gerbil-exit/compile-source.ss][the staged prelude-aware builder]]. Its reuse table names
 only artifacts produced earlier in this same isolated source build, recorded in
-[[file:../../../dev/proofs/evidence/native-gerbil-exit/prelude-stage-reuse.json][the reuse manifest]]. For a new empty output directory, use
-[[file:../../../dev/proofs/evidence/native-gerbil-exit/compile-fresh.ss][the empty-set variant]], with the captured build environment and source root.
+[[file:../../../.cache/verification/evidence/proofs/native-gerbil-exit/prelude-stage-reuse.json][the reuse manifest]]. For a new empty output directory, use
+[[file:../../../.cache/verification/evidence/proofs/native-gerbil-exit/compile-fresh.ss][the empty-set variant]], with the captured build environment and source root.
 Do not point it at shared Core build products.
 
 The gxc executable stage generates the final entry and static Scheme objects.
 Its retained failed system-link invocation does not become a pass. The successful
-[[file:../../../dev/proofs/evidence/native-gerbil-exit/link-public-load.json][explicit final link]] uses those freshly generated object paths and an explicit
+[[file:../../../.cache/verification/evidence/proofs/native-gerbil-exit/link-public-load.json][explicit final link]] uses those freshly generated object paths and an explicit
 platform Gerbil toolchain plus system library at the end of the argument vector. This local
 build recipe is recorded separately from dependency pins. The
 link replay helper (retired Python driver) preserves that exact argument vector; use a new receipt

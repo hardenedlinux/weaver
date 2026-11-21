@@ -20,9 +20,19 @@ runs:
     - name: Install Ubuntu or Darwin packages
       shell: sh
       run: go -C go run ./cmd/weaver-dev prepare-ci-tools
+    - name: Reuse Cargo dependency builds
+      uses: Swatinem/rust-cache@e9d7b9f1e587218970671bac74e5511ed9506e6a # v2
+      with:
+        key: ${{ env.WEAVER_VERIFY_SUITE }}
+        cache-on-failure: true
+    - name: Keep Cargo incremental compilation enabled
+      shell: sh
+      run: echo 'CARGO_INCREMENTAL=1' >> "$GITHUB_ENV"
     - name: Prepare the pinned Lean release
       if: env.WEAVER_VERIFY_SUITE == 'check-policy' && runner.os == 'Linux'
       shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
       run: bash "${{ github.action_path }}/install-lean.sh"
     - name: Bind the Cedar solver
       if: env.WEAVER_VERIFY_SUITE == 'check-policy'

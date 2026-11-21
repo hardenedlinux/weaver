@@ -157,19 +157,19 @@ exact-head CI result. The prior 1 ms and four-way readiness failures remain open
 ** R2 implementation: direct Rust operation ingress
 
 DirectRustOperationIngress and SourceBoundOperationPreparation refine the
-existing RustSchemeRuntimeBoundary. The default =weaver-control= command is
-source preparation; =prepare= names the same action. It opens no operation
-listener, needs no operation certificate/token and exits after known source
-activation. Operation clients connect directly to Rust's existing authenticated
-gRPC listener. Explicit =serve= retains the old relay for reference controls;
-its packaging retirement is R5. Go OpenSysML tooling and independently held
-review/metering keys remain separate responsibilities.
+existing RustSchemeRuntimeBoundary. The initial R2 split used =weaver-control
+prepare= to publish source, with the operation listener already owned by Rust.
+The current source command is =weaver-server prepare=. It uses separate source
+credentials and exits after known activation. Rust also owns the authenticated
+operation listener. The Go =serve= consumer lives in =go/dev/controlref= for
+the remaining compatibility controls. Go OpenSysML tooling and independently
+held review/metering keys have separate owners.
 
 | Stage | Implemented owner/mechanism | Acceptance |
 |-------+-----------------------------+------------|
 | R2-A source preparation and direct fixed operations | Existing source bootstrap, RegisterPublishedTask and ledger; exact fixed plans retained as inert declared data | Ordinary JSON source and compiled Weaver Scheme producer; source-only command exits; no Go process in response path; exact complete output; mutation refusal and restart replay refusal |
 | R2-B identity and delivery | Existing Rust TLS, provider_oauth, bounded output and broker; direct mode rejects supplied relay evidence before execution admission | Direct OAuth and explicit signed two-hop controls; cancellation, status, both encodings, every-row validation and complete/partial response controls |
-| R2-C default/consumer migration | Default prepare, generated source-scope RPC field and existing Rust operation listener; explicit serve for reference tests | Same frozen release; direct fixed and catalog operations; old relay comparison; shared-budget contention and native Workflow regression |
+| R2-C default/consumer migration | Rust prepare, generated source-scope RPC field and existing Rust operation listener; Go serve for reference tests | Same frozen release; direct fixed and catalog operations; old relay comparison; shared-budget contention and native Workflow regression |
 | R2-D dynamic source custody | Existing source lane and ledger provider_operation_scopes; retained Scheme/POO/gerbil-ascent composition owner | Alternate candidate, four contenders, no duplicate effects, catalog replacement, cached-projection source retirement, restart and source/catalog cut negative controls |
 
 *** Declare, derive and register
@@ -280,6 +280,61 @@ R3 still owns further startup/configuration consolidation. R4 cloud adapters
 and R5 reference/packaging removal are separate work; neither is required to
 route a default R2 operation through Go.
 
+** Reconstructing the R1 and R2 source checkpoints
+
+| Scope | Commit | Git tree | Bound owners |
+|-------+--------+----------+--------------|
+| R1 composition and initial R2 ingress | =156c89a9bb460040e1cc43ad65113e6022466889= | =ad578703dbe0dd5458564b5f0e488cf9f2b55310= | Scheme Gateway and ASCENT, Rust governance/contracts, ledger and broker |
+| R2 direct-runtime and file preparation controls | =b73813fe6049a0abbdf357e9fde52e7b36720950= | =44b345a07da458b97d35c85e912d8f65b9bd04eb= | Rust source preparation, source lane, operation listener and ledger, with the independent Go test consumer |
+
+Export each commit with =git archive= into its own verification directory.
+Check the archived files against =git ls-tree -rz=, including executable modes
+and symlink targets. Each tree passed the existing strict OpenSysML and
+requirement-trace checks, architecture and runtime asset checks, locked offline
+Cargo workspace metadata, and the four-worker Go race checks for configuration,
+routing and the reference source consumer, including its mTLS fixture.
+The checked-in =LlmRouting.qnt= and =AuthorityPublication.qnt= also passed on
+each tree. These bounded source checks are tied to the two exact Git objects.
+The 480-second linked Scheme rebuild at the R1 checkpoint and the direct
+R2 runtime controls retain their separate outcomes recorded above and below.
+An isolated R1 rebuild reused the installed Gerbil dependency store and copied
+Cargo build cache. The archived Policy FFI and its pkg-config entry built.
+The first 480-second server build expired during native object compilation.
+An unchanged Cargo resume used the SDK's input-fingerprint checks for the
+retained objects and produced a linked release under the same per-run bound.
+The initial build timeout and the successful resumed link are separate outcomes.
+The release ran the four existing R1 cases. Shared-budget retry rejection and
+direct catalog selection passed. Scheme composition timed out at CompileSource
+after restart. The nested Workflow case was still running when the outer
+90-second limit ended the cohort. This is partial runtime evidence for the
+exact historical tree.
+A second run of the same historical release completed within the outer
+budget. Composition, direct catalog selection and nested Workflow passed.
+The first shared-budget fixture hit the listener deadline. Each historical
+case has a passing observation on that release across the two runs. Both
+historical cohort failures remain in the qualification record.
+
+The successor composition control runs =weaver-server prepare= and the direct
+Rust operation listener. It requires the revocation to commit during the
+stream, preserves the full original execution receipt on restart and rejects
+the unused operation key. The focused run with existing Scheme phase markers
+passed under the original deadlines. The preceding five-case run retained
+its source preparation and drain failures and its outer timeout during the
+nested Workflow control.
+
+The successor's nested Workflow functional control now uses the same Rust
+preparation and direct operation listener. The preregistered Governor
+comparison retains its reference path. The current release passed the four
+R1 runtime controls in one four-worker run under the original 90-second
+limit. The nested recovery retained the pending withdrawal across restart,
+waited for both parallel releases, and finished both joins within the
+existing 12-second scenario budget. Earlier timed-out runs remain separate
+qualification records.
+
+The current R2 release also passed its six original operation-boundary
+controls together with the fixed-object withdrawal control. The latter
+passed in warm, cold and restart modes through the ordinary entry.
+
 ** R3 startup and source handoff
 
 Publisher credential rotation changes the source mutation identity. A fixed task
@@ -288,6 +343,22 @@ revision and fence. Cold lookup, a warmed projection and restart must make the
 same original available to the broker. Withdrawal uses the existing publication
 or hard-fact decision path. A catalog scope still needs its declaring epoch when
 it registers a selected task.
+
+The fixed-plan control rotates both the source certificate and bearer. It
+tests an unused node after the handoff, with warm lookup, cold lookup and
+restart. After restart the new credentials observe the original handoff
+receipt's authority view. Pairing the retired certificate or bearer with its
+new counterpart fails authentication. The ingress controls exercise each
+listener's own methods with crossed identities and separately reject methods
+assigned to the other ingress.
+
+The separate fixed-object withdrawal control commits a denying publication
+before trying an unused operation key. Warm, cold and restart cases require
+no frames, no provider send and no new execution receipt for that key. An
+unrelated operation still reaches the provider under the new publication.
+The original cold-image run passed cold lookup and restart. The warm-lookup
+case passed in a separate same-image diagnostic after a listener readiness
+failure in the original run.
 
 Qualify =weaver-server prepare= first with an approved Weaver Scheme producer
 and the existing Snake Oil deployment. The command uses the separate source TLS
@@ -313,6 +384,34 @@ listener readiness deadline before the main marker. The bounded single-case
 follow-up on the same image passed hard-fact withdrawal, exact pending-barrier
 recovery and A-to-B-to-A. The whole cohort remains open.
 
+With the linked Weaver Cedar asset path enabled in the release, the staging
+and publication reply-loss cases retain separate ledgers, credentials, asset
+directories and source proxies. The existing Go test scheduler can run them
+together. Each keeps all four capture attempts, including the captures after
+restart and revocation. In the subsequent same-release cohort all thirteen
+top-level cases reached a verdict within the outer budget. Twelve passed.
+The first JSON file case exhausted its listener deadline before Rust main.
+Preserve the earlier serial cohort's outer timeout and this cohort's failed
+readiness result separately.
+
+The Go reference executable is now built on first use by a reference
+consumer. The next complete cohort reached the same JSON readiness failure
+before that executable was built, while the other twelve cases passed. On
+macOS a bounded, separate probe of a fresh SHA-verified copy placed most of
+the launch time before the first loader diagnostic, with only a short
+interval from that diagnostic to Rust main. Removing local symbols in a
+separate candidate did not show a first-execution improvement. Both probes
+are diagnostic and do not contribute a pass to the listener gate.
+
+The same release subsequently passed all thirteen original-entry cases with
+the dual-credential handoff control, four workers and the 90-second outer
+budget. That run met the first listener gate without an image warm-up. It
+covered the original Snake Oil and TOML paths, both reply-loss variants,
+hard-fact withdrawal and A-to-B-to-A, and Kubernetes reconciliation.
+The earlier first-launch failures remain part of the startup record. The
+historical R1 native build and the separate deployment gates retain their own
+qualification status.
+
 The Ubuntu Scheme job at =fd782458= stopped during dependency preparation.
 Agentic AI Lab's declared Parser pin =21fdb58642b135c48ad0006aab40e58e99e58c24=
 could be queried directly on GitHub, but the standard dependency clone did not
@@ -320,11 +419,62 @@ contain its tree. The job produced no Weaver native result for that revision.
 See [[https://github.com/hardenedlinux/weaver/actions/runs/42799007497/job/129771406740][Ubuntu Scheme job]].
 
 The published macOS SDK can be restored independently of the project packages.
-Native verification also needs a prepared =GERBIL_PATH= for the exact Lab
-revision declared in =gerbil.pkg= and the transitive revisions declared by that
-Lab checkout. The available older local package prefix differs in the Lab,
-Parser, Gerbil Scheme Rust, Orgize and ASCENT revisions. It cannot qualify this
-release.
+The native build uses the Lab revision declared in =gerbil.pkg= and the
+transitive revisions declared by that Lab checkout. For local verification,
+reuse an existing package prefix and the local Git objects for any missing
+locked checkout, then build only the missing packages with =gxpkg build=.
+The ordinary project-local package directory is =.gerbil=. A separate
+=GERBIL_PATH= isolates a verification run from a shared package directory.
+For a relocated SDK, set its =GERBIL_HOME= and select the matching compiler
+with =GERBIL_GSC=. Set Gambit's resource root to the same directory.
+
+#+begin_src sh
+export GAMBOPT="~~=$GERBIL_HOME"
+#+end_src
+
+For the same-release tests, put the SDK-staged application library first in
+=GERBIL_LOADPATH=, followed by the prepared dependency and SDK libraries.
+The application library is =program/package/lib= under the
+=weaver-governance= build script's Cargo =out_dir=. The linked program provides
+the runtime exports. Yuanxu also needs the staged module interfaces when it
+admits the selected source roles.
+
+The restored local prefix passed the locked Lab package build. A release build
+with a cold AOT object set exceeded 480 seconds. After the SDK reused verified
+AOT objects, the warm release build completed in 5m40s. Its 13-case runtime
+cohort completed in 80.655s. File preparation, fixed-plan handoff, catalog
+selection, offline import, metering and independent review passed. Six cases
+stopped at approved Scheme source compilation, including hard-fact recovery
+and the Kubernetes fixture. The Scheme-backed runtime gate remains open.
+The local result and the Ubuntu clean-clone Parser failure are separate.
+
+Restoring the staged library in the same release resolved source-role
+selection and passed the single approved preparation control. In the
+unmodified 13-case replay, hard-fact withdrawal, restart and A-to-B-to-A
+passed in 10.63s. The Kubernetes case exceeded the existing natural-exit
+gate, and the whole replay hit its 90-second watchdog. Preserve these as
+separate runtime outcomes.
+
+A bounded Kubernetes diagnostic sampled the owner after shutdown had
+started. It was still resolving the selected Yuanxu role under the Scheme
+capture call. That span took about 14.4 seconds wall time and 6.1 seconds CPU
+before the next cancellation check. The diagnostic exited naturally after
+the cancelled capture. This separates late source-role resolution from VM
+teardown and keeps the 10-second source gate open.
+
+The RPC and source owner were separated into service, command admission and
+ledger worker modules. The existing RPC bodies and ledger dispatch stayed
+identical. Server unit tests passed 36 cases, including ASP, with three
+ignored. OpenSysML requirement trace and runtime allocation checks passed
+against the moved sources.
+
+The corresponding local release built in 1m45s with the prepared prefix and
+retained AOT cache. Its four-worker runtime replay passed fixed-plan
+handoff, JSON/YAML file preparation, file reply-loss recovery, catalog
+selection, import and metering. Compiled source preparation failed in the
+hard-fact, Kubernetes and reply-loss cases, and the full 90-second replay
+expired. The two reply-loss compile calls reached the 10-second deadline.
+This run does not qualify the cold baseline or Scheme-backed recovery.
 
 ** R4 Kubernetes source observation
 
@@ -333,6 +483,8 @@ UID. The Rust watcher reads the current resource after events, stages a new
 intent before resolving older pending work, and writes status with an exact
 resource-version precondition. The feed observation API authenticates the
 existing source credential and returns the installed cut and pending barriers.
+The adapter is included in the default =weaver-server= feature set. Builds
+with =--no-default-features= can opt in explicitly with =--features kubernetes=.
 
 The initial Kubernetes-feature build exceeded the 480-second budget. The
 subsequent incremental build completed in 2m39s. On that release, the
@@ -355,7 +507,7 @@ Scheme impact, ledger and broker. Live Kubernetes deployment remains separate.
 | config/provider_import.go, provider_yaml.go, provider_profile.go | Decode external formats and reviewed catalog mappings | Rust decoding adapter feeding existing typed source input; Scheme owns profile interpretation | Reuse current source contract, limits and review binding; TOML/YAML/JSON are syntax, not new planning languages |
 | controlplane/provider_catalog.go | Catalog currentness, projection cache and registration | Rust source_owner/ledger/catalog admission; Scheme object projection | Cache only exact version-bound immutable projections, never permission; no second cache or ledger |
 | gatewayclient | RPC client, publication/source operations, Arrow observation decoding | Existing Rust RPC/contracts/encoding; generated client retained only for remaining Go consumers | Arrow limits and malformed-batch controls remain at actual consumer; do not convert columnar data to row objects just for forwarding |
-| metering/issuer.go and cmd/weaver-meter | Independent terminal-usage signing and settlement | Separate issuer role, optionally implemented in Rust | Preserve independent key custody, deterministic application ID and restart idempotence; do not fold signer into gateway authority |
+| Go metering/issuer.go and the former Go command | Independent terminal-usage signing and settlement | Separate Rust =weaver-meter= process | Preserve independent key custody, deterministic application ID and restart idempotence. Keep the Go signature reference in tests |
 | specreview/producer.go | Deployment-qualified SPEC catalog binding and independent review signing | Separate review role using existing SPEC outputs and Rust contracts | Preserve pinned artifact, audience/epoch and independent keys; Scheme cannot self-approve a migration |
 | telemetry/metrics.go | Admission/completion/frame counters | Rust telemetry plus bounded protocol export | Equivalent meanings; no synchronous collector dependency in frame loop |
 | Offline LiteLLM import | Operator import utility | Rust =weaver-server import-provider= and existing catalog contract | Preserve explicit review, original plan digest and no publication side effects |
@@ -380,8 +532,8 @@ offline proposal equal to the existing reviewed Go import. The offline import
 also runs in the standard Go/Rust integration suite without a Scheme owner.
 Independent review tests cover signature interoperability and rejection of changed signed
 coordinates. Metering application and review recovery are separate integration
-cases. The Go entry list and the production asset boundary verify which
-packages remain reachable from =weaver-meter=.
+cases. The SysML entry allocation and production asset boundary verify that
+the Go reference consumers stay outside the production runtime.
 
 On the same Rust release built with =arrow,kubernetes= at =0fe24eb0=, the
 ordinary integration suite passed signed JSON and TOML-selected YAML
@@ -409,7 +561,39 @@ must exist through Scheme staging and consumer verification.
 Current go/go.mod contains OpenSysML, Arrow, gRPC, Protobuf and format handling;
 it does not contain Kubernetes client-go/controller-runtime, Helm or Istio.
 The former Go gateway used the shared RPC protocol and carried no cloud-native
-SDK integration. The retained Go command owns independent metering.
+SDK integration. The checked-in production commands now use Rust. OpenSysML
+and the Go reference consumers remain development tools.
+
+Build the independent signer with
+=cargo build -p weaver-server --bin weaver-meter --no-default-features --release --locked --offline=.
+The process uses the existing =WEAVER_METER_*= settings and source RPC
+with its own mTLS certificate, bearer and signing seed. The OpenAI and
+Anthropic independent issuer controls passed against the same Gateway release,
+including restart with a rotated credential and replay after a lost response.
+These are local consumer results. Site deployment and issuer approval have
+their own acceptance records.
+
+** Embedded model client
+
+Marlin's =ModelGateway= is the consumer boundary. Its current completion
+adapter delegates through =litellm-rs=, and its endpoint contract already
+represents provider and model separately. Keep those identities explicit in a
+Weaver-owned Rust client. The caller supplies the chosen endpoint, credential
+and request, and owns cancellation and deadlines.
+
+The =weaver-llm= crate implements direct OpenAI Chat Completions and Anthropic
+Messages with a shared text request, normalized text completion and bounded
+provider-native SSE chunks. The Gateway broker owns its guarded send path,
+exact binding, Cedar admission, ledger, budget and release custody. The
+embedded client has no server, broker, ledger, policy, Scheme or Kubernetes
+dependency. Normalized streaming tool calls and Gateway codec consolidation
+are separate follow-on work.
+
+First qualify the exact Marlin completion surface against loopback provider
+fixtures, then run the same wire vectors through the Gateway broker. Confirm
+that cancellation and incomplete upstream streams terminate cleanly, and
+exercise the broker's existing single-send and complete-release controls.
+Once that parity holds, Marlin can switch its adapter behind =ModelGateway=.
 
 ** Cloud-native integration beyond Kubernetes
 
@@ -501,9 +685,9 @@ consumer paths pass; eliminating a Go relay does not by itself solve the measure
 3.419--3.605 ms Scheme-owner tail.
 
 The existing TestProjectArchitecture and TestSysMLSDKAndRequirementTrace
-gates passed for this linked-model change. This qualifies model structure and
-named trace coverage only. R1 composition and R2 direct ingress have passed
-local acceptance. Their behavioral evidence is recorded above. R3 startup
+gates passed for this linked-model change. The version table above binds the
+bounded source checks to the exact R1/R2 trees. The separate runtime records
+identify the release and scope used for each behavioral result. R3 startup
 consolidation, R4 cloud integration and R5 retirement have separate gates.
 
 Production approval/site replay remain separate deployment gaps. No production
@@ -2509,8 +2693,8 @@ qualification separate.
 
 ** 3. Verify Rust and Scheme integration and measure the affected path
 
-Use the existing SDK owner tests followed by the focused Go test
-=TestProviderControlSessionNestedChoiceAndParallelRecovery=. Pair it with
+Use the existing SDK owner tests followed by the focused native integration
+=TestProviderRustDirectSessionNestedChoiceAndParallelRecovery=. Pair it with
 =TestProviderControlHardFactWithdrawalRestartAndABA= when touching source or
 ledger authority. Set up the [[file:../../../crates/governance/README.org][Gerbil Scheme SDK environment]]
 and reuse the prepared policy pkg-config metadata before invoking the Go
@@ -2518,7 +2702,7 @@ fixture:
 
 #+begin_src sh
 go -C go test -parallel=4 -json -count=1 -race -tags=integration,schemeintegration \
-  -timeout=10m ./dev -run '^TestProviderControl(SessionNestedChoiceAndParallelRecovery|HardFactWithdrawalRestartAndABA)$'
+  -timeout=10m ./dev -run '^(TestProviderRustDirectSessionNestedChoiceAndParallelRecovery|TestProviderControlHardFactWithdrawalRestartAndABA)$'
 #+end_src
 
 Keep the existing 12-second recovery and 15-second natural exit bounds. Run the
@@ -3178,6 +3362,15 @@ upstream attention beyond string conversion. Reusing a prepared scope must retai
 its exact generation, fresh admission before and after delegated effects, and
 terminal refusal on stale source. An unguarded downstream view cache would be
 unsafe. Moving initialization outside a timed interval is not a latency fix.
+
+The Kubernetes diagnostic loaded the Yuanxu selection and was
+cancelled while resolving the Gateway role, before entering Weaver's
+=compile-gateway-source=. The interval contained reader bootstrap and nested role
+imports. A separate, ordered Scheme probe compared a fresh view in a cold
+process, Yuanxu's native =.refresh=, and a new view in the same warm process.
+In that sample, refresh took longer than the warm new view and could only run
+after the initial role resolution. Keep the current per-capture admission until
+an upstream change improves first-use role resolution with the same checks.
 
 The signed Gambit VM account was negative for some measured operations and was
 explicitly marked accounting-invalid by the upstream API. No allocation, heap

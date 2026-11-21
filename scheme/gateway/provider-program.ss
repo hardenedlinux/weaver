@@ -3,20 +3,21 @@
 ;;; SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 ;;; Build-selected initializer for Weaver's declared provider workflows.
-(import (only-in :std/source this-source-file)
-        (only-in :clan/poo/object .o .ref)
-        (only-in :agentic-ai-lab/modules/loop-engine/control/governor make-loop-governor)
-        (only-in :agentic-ai-lab/modules/governance/interface AgenticAILabGovernanceProfile.)
-        (only-in :agentic-ai-lab/modules/authorization/providers/cedar/objects agentic-ai-lab-cedar-policy)
-        (only-in :yuanxu/module-system/source/admission call-with-module-source-operation-measurement)
+(import (only-in :clan/poo/object .o .get .ref)
+        (only-in :tao3k/yuanxu/prelude yuanxu-build-autoloads)
+        (for-syntax (only-in "../c-abi/build.ss" Build))
+        (only-in "../interface.ss" LabGovernance LabCedar)
+        (only-in :tao3k/yuanxu/module-system/source/admission call-with-module-source-operation-measurement)
         :hardenedlinux/weaver/scheme/policy/cedar-ffi
         (only-in "./compiled.ss" install-gateway-producer!)
-        (only-in "./func.ss" capture-governed-gateway gateway-source-phase-observer)
+        "../c-abi/gateway.ss"
+        (only-in "./func.ss" capture-compiled-gateway gateway-source-phase-observer)
         "./provider-source.ss")
 (export main)
 (def (main . _) (void))
+(yuanxu-build-autoloads Build gateway)
 
-(def init-file (path-expand "../../init.ss" (path-directory (this-source-file))))
+(def policy-root (getenv "WEAVER_GOVERNANCE_POLICY_ROOT" #f))
 
 ;;; Use the existing Reader's private scalar accounting. A diagnostic cannot
 ;;; supply a callback during admission, retain contexts or change the result.
@@ -44,20 +45,24 @@
 (def (capture bundle)
   (def schema (.ref (.ref bundle 'governance) 'schema))
   (def publication (.ref bundle 'publication))
-  (def policy (agentic-ai-lab-cedar-policy "weaver/runtime" (.ref publication 'policy)))
+  (def policy ((.get LabCedar policy) "weaver/runtime" (.ref publication 'policy)))
   (def profile
-    (.o (:: @ AgenticAILabGovernanceProfile.)
+    (.o (:: @ (.get LabGovernance Profile))
         identity: "weaver/source" revision: "1" owner: "source-owner"
-        policies: (.o runtime: policy)))
+        policies: (.o runtime: policy)
+        source-assets: (if policy-root
+                         (list ((.get LabGovernance source) "weaver/runtime" "policy.cedar" 'cedar))
+                         '())))
   (def controls (provider-source-controls schema))
   (def governor (car controls))
-  (def context (cadr controls))
+  (def context
+    (if policy-root (.o (:: @ (cadr controls)) source_root: policy-root) (cadr controls)))
   (def phase-observer (gateway-source-phase-observer))
   (when phase-observer (phase-observer "compile-begin"))
   (begin0
     (capture-source
       (lambda ()
-        (capture-governed-gateway init-file governor profile context '()
+        (capture-compiled-gateway (gateway-scope) governor profile context '()
           (.ref bundle 'tasks) (.ref bundle 'plans) publication)))
     (when phase-observer (phase-observer "source-captured"))))
 

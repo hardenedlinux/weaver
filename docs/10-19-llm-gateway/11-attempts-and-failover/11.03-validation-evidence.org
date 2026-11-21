@@ -20,8 +20,8 @@ and a fixed root allowance. Its finite fixtures do not establish unbounded model
 checking. The immutable profile and =Owner= predicates model trusted contract
 inputs, not a native Cedar evaluator or durable SDK implementation.
 
-Run check_llm_attempt_ledger.py (retired Python driver). Machine-readable results are in
-[[file:../../../dev/proofs/evidence/llm-attempt-ledger/commands.json][commands.json]]. Lean is compiled in a fresh isolated output directory; no
+The former per-artifact checker is retired. Historical machine-readable results are in
+[[file:../../../.cache/verification/evidence/proofs/llm-attempt-ledger/commands.json][commands.json]]. Lean is compiled in a fresh isolated output directory; no
 dependency pins or Gateway code are modified. Historical manifests are checked
 without modifying their sealed artifacts.
 
@@ -100,10 +100,10 @@ No liveness or remote exactly-once result is claimed.
 | Apply usage twice | duplicateUsageAttemptCounterexampleTest | Charge differs from single accepted usage slot |
 | Re-root a child | foreignRootAttemptCounterexampleTest | Child root differs from original root |
 
-Final trace files are retained in [[file:../../../dev/proofs/evidence/llm-attempt-ledger/itf][itf]]. Source identity and excerpts are
-in the [[file:../../../dev/proofs/evidence/llm-attempt-ledger/source-review.json][POO Flow / Cedar register]] and [[file:../../../dev/proofs/evidence/llm-attempt-ledger/agentgateway-source-review.json][agentgateway register]].
-The [[file:../../../dev/proofs/evidence/llm-attempt-ledger/receipt.json][final receipt]] records actual check outcomes and remaining qualification.
-The [[file:../../../dev/proofs/evidence/llm-attempt-ledger/SHA256SUMS][manifest]] seals this category and its evidence without rewriting earlier receipts.
+Final trace files are retained in [[file:../../../.cache/verification/evidence/proofs/llm-attempt-ledger/itf][itf]]. Source identity and excerpts are
+in the [[file:../../../.cache/verification/evidence/proofs/llm-attempt-ledger/source-review.json][POO Flow / Cedar register]] and [[file:../../../.cache/verification/evidence/proofs/llm-attempt-ledger/agentgateway-source-review.json][agentgateway register]].
+The [[file:../../../.cache/verification/evidence/proofs/llm-attempt-ledger/receipt.json][final receipt]] records actual check outcomes and remaining qualification.
+The [[file:../../../.cache/verification/evidence/proofs/llm-attempt-ledger/SHA256SUMS][manifest]] seals this category and its evidence without rewriting earlier receipts.
 
 * Runtime acceptance still required
 

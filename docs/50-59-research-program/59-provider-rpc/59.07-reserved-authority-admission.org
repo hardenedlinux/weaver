@@ -73,13 +73,13 @@ Only the sixteen original provider calls may occur; backup invocation remains ze
 The regression test was also run against a deliberate native mutation that routed
 both source methods back to the full execution lane. It failed at publication
 with ResourceExhausted. The mutation was restored immediately. The retained
-[[file:../../../dev/proofs/evidence/native-admission-20261030/shared-publication-counterexample.log][counterexample excerpt]] records the expected failure; it is not a passing receipt.
+[[file:../../../.cache/verification/evidence/proofs/native-admission-20261030/shared-publication-counterexample.log][counterexample excerpt]] records the expected failure; it is not a passing receipt.
 Early malformed Quint and Lean checks are retained separately in the same evidence
 directory. Their errors were repaired before qualification; no timeout, lane
 capacity, sample count, ASP rule or failure expectation was relaxed.
 
 The restored implementation passes the
-[[file:../../../dev/proofs/evidence/native-admission-20261030/verification-current/receipt.json][unified verification receipt]]: twenty-six stages, with 134 unchanged SHA-256
+[[file:../../../.cache/verification/evidence/proofs/native-admission-20261030/verification-current/receipt.json][unified verification receipt]]: twenty-six stages, with 134 unchanged SHA-256
 inputs and no failed stage. Rust reports forty-one passing tests, including all
 five ASP deny gates, the detached-custody regression and sixty-four generated
 lane schedules. Go race checks include the actual saturation test, which passes

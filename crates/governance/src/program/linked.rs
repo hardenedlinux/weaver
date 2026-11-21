@@ -38,6 +38,7 @@ unsafe extern "C" {
     fn weaver_hard_fact_impact_v1(root: i64) -> i64;
     fn weaver_capture_source_v1(root: i64) -> i64;
     fn weaver_compose_source_v1(root: i64) -> i64;
+    fn weaver_session_turn_v1(root: i64) -> i64;
     fn weaver_governance_ready_v1(root: i64) -> i64;
     fn weaver_install_source_cancel_v1(callback: *const std::ffi::c_void);
 }
@@ -101,5 +102,15 @@ pub(super) fn compose<'r>(
 ) -> Result<RootedSchemeObject<'r>, GerbilError> {
     // SAFETY: fixed same-graph rooted export; input and result stay on this owner.
     let export = unsafe { runtime.bind_object_export(weaver_compose_source_v1) }?;
+    export.call(input).into_result()
+}
+
+pub(super) fn session_turn<'r>(
+    runtime: &'r GerbilRuntime,
+    input: &RootedSchemeObject<'_>,
+) -> Result<RootedSchemeObject<'r>, GerbilError> {
+    // SAFETY: fixed same-graph rooted export on the affine owner. No caller-
+    // selected code or unrooted word crosses this synchronous boundary.
+    let export = unsafe { runtime.bind_object_export(weaver_session_turn_v1) }?;
     export.call(input).into_result()
 }

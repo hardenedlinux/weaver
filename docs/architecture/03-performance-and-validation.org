@@ -87,6 +87,59 @@ unless the capability explicitly authorizes a bounded session.
 
 * Planned high-performance paths
 
+** Execution allocation
+
+[[file:../../dev/sysml/WeaverExecution.sysml][RuntimePerformanceAllocation]] sets the owner boundaries before selecting
+an executor. Tokio owns network, TLS, gRPC, file I/O, bounded queues and
+cancellation. The four-worker qualification includes both a slow SSE consumer
+and a concurrent authority change. Capture the routing queue time separately
+from candidate computation and the deciding ledger transaction.
+
+Keep prepared lookups inline. Use a bounded, deployment-owned Rayon pool for
+larger pure Rust batches only after measuring the crossover with one and four
+callers. Examples include independent candidate scoring and read-only
+projection across immutable fact partitions. Compare the sorted output and
+exact winner to the serial result, including equal scores, empty shards and
+late stale results. Measure p50/p95/p99, throughput, queue time and memory
+with the same arrival schedule and CPU quota.
+
+Scheme keeps one affine owner per admitted VM and retains the ASCENT Session
+and POO graph there. Apply fact deltas and reuse prepared indexes first.
+Parallel inference across independent owners or safe relation partitions
+requires an explicit immutable source cut and a deterministic merge. Join
+dependencies and recursive rule components stay together unless the engine
+provides an equivalent parallel execution plan. The deciding Rust ledger
+still checks the exact cut and intent prefix before any effect.
+
+Each dispatched batch carries the scope, source digest and generation,
+intent prefix and exact input digest. The merge accepts one completion per
+planned partition, including empty partitions, in any order. Cancellation,
+missing work, duplicate completion or mismatched inputs prevent the result
+from becoming a proposal. A source returning to an earlier digest still
+has a different generation. Final currentness belongs to the ledger.
+
+Qualify these boundaries in the following order.
+
+1. Run strict OpenSysML and the existing trace inventory. =LlmRouting.qnt=
+   checks serial versus partitioned rank equivalence and rejects incomplete,
+   mixed, cancelled and stale batches. =RuntimeLifecycle.qnt= checks close
+   and drain ordering.
+2. Reuse Rust properties for independent lane admission and bounded output
+   custody, and the [[file:../../t/gateway-governor-retained-test.ss][Scheme retained Governor property]]
+   for incremental versus fresh evaluation. When adding the compute path,
+   exercise its actual serial and Rayon kernels on shuffled partitions,
+   equal-score ties, empty partitions, cancellation and replacement. Extend
+   the same ASCENT comparison to each proposed owner partition and its
+   merged output after insertions, withdrawals and A→B→A.
+3. Use the same release and offered load for the serial and parallel runs.
+   Measure isolated scoring, isolated ASCENT delta evaluation, and the
+   full Rust admission path separately. For the mixed run, keep four Tokio
+   workers, add slow SSE and a concurrent source withdrawal, and report
+   p99 ingress and SSE progress, queue and retained-byte peaks, CPU and
+   throughput. Select the Rayon threshold only where the tail improves
+   within the same resource envelope. Report the 1 ms prepared-route
+   target separately from source preparation and provider wait.
+
 ** Publication path
 
 Resolve composition, validate policy/schema artifacts, analyze data needs,
@@ -189,6 +242,14 @@ and burst behavior, successful goodput, and rejection/failure rates. A fast
 rejecting service must not appear as a throughput win over successful execution.
 
 * Resource and overload contracts
+
+Saturated occupancy and a cold admission burst have different preconditions.
+The native capacity scenario fills all sixteen execution slots through observed
+first-frame receipts, keeps those streams resident, and then challenges excess
+execution, source revocation and canonical observation. Its one-second delivery
+lease and twelve-second aggregate deadline remain fixed. This scenario does
+not qualify the latency of sixteen simultaneous cold admissions; burst latency
+and expired-grant outcomes require their own reported workload.
 
 | Resource | Required bound | Overload behavior |
 |----------+----------------+-------------------|

@@ -3,20 +3,69 @@
 ;;; SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 ;;; Weaver's declared provider workflows and Governor strategy.
-(import :agentic-ai-lab/modules/loop-engine/control/strategy
-        :agentic-ai-lab/modules/loop-engine/control/descriptor
-        (only-in :agentic-ai-lab/modules/session/objects-core agentic-ai-lab-session-value
-                 agentic-ai-lab-session-lineage agentic-ai-lab-session-placement)
-        (only-in :yuanxu/modules/funflow/control-plane/flow flow-compose external-flow flow-steps flow-then flow-branch flow-output-contract Fun String PairValue)
-        (only-in :clan/poo/object .o .get .ref object<-alist)
-        (only-in :clan/poo/mop validate)
+(import (only-in "../interface.ss" LabGovernor LabSession)
+        (only-in :tao3k/yuanxu/modules/funflow/control-plane/flow flow-compose external-flow flow-steps flow-then flow-branch flow-output-contract Fun String PairValue)
+        (only-in :clan/poo/object .o .get .ref .slot? object<-alist)
+        (only-in :clan/poo/type validate)
         (only-in :gerbil-ascent/program/scheme-language relational-program)
-        (only-in :gerbil-ascent/program/session gerbil-ascent-open-session gerbil-ascent-session-run)
+        (only-in :gerbil-ascent/program/session gerbil-ascent-open-session gerbil-ascent-session-run
+                 gerbil-ascent-session-replace-sources!)
         (only-in "./snapshot.ss" copy-source-data)
-        (only-in :agentic-ai-lab/modules/loop-engine/control/governor make-loop-governor)
         (only-in "./func.ss" compose-governor-selection)
         "./contracts.ss")
-(export workflow-session nested-workflow-session provider-source-strategy provider-source-budget compose-provider-configuration provider-source-controls)
+(export workflow-session nested-workflow-session provider-source-strategy provider-source-budget compose-provider-configuration provider-source-controls make-session-turn-selector)
+
+;;; One bounded retained projection on the existing affine owner. The default
+;;; source policy preserves declaration order and admits at most eight routes.
+;;; This is advisory selection; current authority/facts and holds stay in Rust.
+(def (make-session-turn-selector)
+  (def binding #f)
+  (def scope #f)
+  (def session #f)
+  (def previous #f)
+  (def selected '())
+  (def (forget!)
+    (set! binding #f) (set! scope #f) (set! session #f)
+    (set! previous #f) (set! selected '()))
+  (lambda (input)
+    (with-catch (lambda (failure) (forget!) (raise failure))
+      (lambda ()
+        (def cut (validate SessionSelectorCut (copy-source-data input)))
+        (def requested (.get cut scope_commitment))
+        (when (.slot? cut 'scope)
+          (forget!)
+          (set! scope (.get cut scope))
+          (set! binding requested))
+        (unless (and scope (equal? requested binding))
+          (error "Session selector binding unavailable"))
+        (def facts (.get cut facts))
+        (def eligible?
+          (and (equal? (.get facts principal) (.get scope principal))
+               (member (.get facts model) (.get scope models))
+               (<= (.get facts output_token_limit) (.get scope max_output_tokens))
+               (<= (.get facts message_count) (.get scope max_messages))
+               (<= (.get facts body_bytes) (.get scope max_body_bytes))))
+        (def rows (if eligible? '((0)) '()))
+        (unless (equal? rows previous)
+          (let (result
+                (if session
+                  (gerbil-ascent-session-replace-sources! session (list (cons 'request rows)))
+                  (let* ((routes (map list (iota (min 8 (.get scope route_count)))))
+                         (program (relational-program
+                           (relation route (id) routes)
+                           (relation request (ticket) rows)
+                           (relation eligible (id) '())
+                           (rule (eligible ?id) (route ?id) (request ?ticket))
+                           (limits 24 8 32))))
+                    (set! session (gerbil-ascent-open-session program))
+                    (gerbil-ascent-session-run session))))
+            (unless (eq? (.ref result 'finished) #t)
+              (error "Session route derivation incomplete"))
+            (set! selected (list-sort < (map car ((.ref result 'rows-of) 'eligible))))
+            (set! previous rows)))
+        ;; A returned cut cannot read a later owner state or expose its cache.
+        (.o (scope_commitment := (string-copy binding))
+            (route_indices := (append selected '())))))))
 
 (def (workflow-session dag? choice?)
   (def signature (Fun String <- String))
@@ -30,9 +79,9 @@
       (flow-compose 'control
         (apply append (map (lambda (node) (flow-steps (step node))) '(infer next finish)))
         signature)))
-  (.o (:: @ (agentic-ai-lab-session-value 'control '()
-              (agentic-ai-lab-session-lineage 'control '() 'root)
-              (agentic-ai-lab-session-placement 'provider)))
+  (.o (:: @ ((.get LabSession value) 'control '()
+              ((.get LabSession lineage) 'control '() 'root)
+              ((.get LabSession placement) 'provider)))
       workflow: routine workflow-choice: choice?))
 
 (def (nested-workflow-session)
@@ -53,22 +102,22 @@
       (flow-then 'outer-start (provider 'infer)
         (flow-branch 'outer inner (provider 'outer-skip)))
       'finish))
-  (.o (:: @ (agentic-ai-lab-session-value 'control '()
-              (agentic-ai-lab-session-lineage 'control '() 'root)
-              (agentic-ai-lab-session-placement 'provider)))
+  (.o (:: @ ((.get LabSession value) 'control '()
+              ((.get LabSession lineage) 'control '() 'root)
+              ((.get LabSession placement) 'provider)))
       workflow: routine workflow-choices: '(outer inner)))
 
 (def (provider-source-strategy nested? dag? session?)
-    (make-loop-strategy-plan 'weaver-routing
-      (append (list (make-loop-pattern-descriptor 'infer "Original inference" '((level . l2)))
-                    (make-loop-pattern-descriptor 'next "Original continuation" '((level . l2))))
+    ((.get LabGovernor strategy) 'weaver-routing
+      (append (list ((.get LabGovernor pattern) 'infer "Original inference" '((level . l2)))
+                    ((.get LabGovernor pattern) 'next "Original continuation" '((level . l2))))
               (if nested?
-                (map (lambda (name) (make-loop-pattern-descriptor name "Nested provider step" '((level . l2))))
+                (map (lambda (name) ((.get LabGovernor pattern) name "Nested provider step" '((level . l2))))
                   '(gate fork-a fork-b inner-finish outer-skip))
                 '())
-              (if dag? (list (make-loop-pattern-descriptor 'side "Parallel continuation" '((level . l2)))) '())
+              (if dag? (list ((.get LabGovernor pattern) 'side "Parallel continuation" '((level . l2)))) '())
               (if session?
-                (list (make-loop-pattern-descriptor 'finish "Original final inference" '((level . l2))))
+                (list ((.get LabGovernor pattern) 'finish "Original final inference" '((level . l2))))
                 '()))))
 
 (def (provider-source-budget nested? dag? session?)
@@ -84,7 +133,7 @@
   (def session? (or dag? (equal? schema "weaver.session-workflow.v1")))
   (unless (or session? (equal? schema "agentic-ai-lab.loop-governor.v1"))
     (error "unsupported Weaver provider workflow"))
-  (list (make-loop-governor 'weaver (provider-source-strategy nested? dag? session?)
+  (list ((.get LabGovernor make) 'weaver (provider-source-strategy nested? dag? session?)
             (provider-source-budget nested? dag? session?))
         (if session?
           (.o request: 'publish session: (if nested? (nested-workflow-session) (workflow-session dag? choice?)))

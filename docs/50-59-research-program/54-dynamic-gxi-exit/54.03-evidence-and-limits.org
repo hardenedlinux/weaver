@@ -23,10 +23,10 @@ rejection remain unchanged.
 Three fresh audit-extended ordinary-launcher runs exit naturally in 9.320,
 3.588 and 4.932 seconds. Each records LU from the newly rebuilt official-option
 canary. The fifteen-second whole-process gate is unchanged. The final
-[[file:../../../dev/proofs/evidence/dynamic-gxi-exit/official-abi/inputs-before.json][before input manifest]] and [[file:../../../dev/proofs/evidence/dynamic-gxi-exit/official-abi/inputs-after.json][after input verification]] retain 1,782 native/source
-byte targets. The [[file:../../../dev/proofs/evidence/dynamic-gxi-exit/official-abi/image-entry-audit.json][entry and image audit]] preserves all 98 original independent
+[[file:../../../.cache/verification/evidence/proofs/dynamic-gxi-exit/official-abi/inputs-before.json][before input manifest]] and [[file:../../../.cache/verification/evidence/proofs/dynamic-gxi-exit/official-abi/inputs-after.json][after input verification]] retain 1,782 native/source
+byte targets. The [[file:../../../.cache/verification/evidence/proofs/dynamic-gxi-exit/official-abi/image-entry-audit.json][entry and image audit]] preserves all 98 original independent
 entries in seven shared images, with no C init/term sections. The corrected
-[[file:../../../dev/proofs/evidence/dynamic-gxi-exit/official-abi/lazy-entry-control.json][native two-entry bridge]] verifies lazy initialization and complete cleanup.
+[[file:../../../.cache/verification/evidence/proofs/dynamic-gxi-exit/official-abi/lazy-entry-control.json][native two-entry bridge]] verifies lazy initialization and complete cleanup.
 
 This is local ordinary dynamic execution qualification. The initial profile,
 failed controls and host timing variability below are retained; no universal
@@ -59,7 +59,7 @@ packing experiment. Every sample keeps its own fifteen-second verdict; none is
 reclassified by a later warm-cache result. No cache-cold or universal latency SLA
 is claimed.
 
-The [[file:../../../dev/proofs/evidence/dynamic-gxi-exit/module-path-and-order-audit.json][module-path and ordinal comparison]] shows equal logical module keys but
+The [[file:../../../.cache/verification/evidence/proofs/dynamic-gxi-exit/module-path-and-order-audit.json][module-path and ordinal comparison]] shows equal logical module keys but
 some different total load ordinals. Some ordinals differ between repeated packed
 runs too. Full total-order equivalence is not proved. The bounded claim covers
 preserved binding owners and source bodies, required initialization, distinct lazy
@@ -67,7 +67,7 @@ entries, actual exercised Contracts and balanced cleanup. Arbitrary order-sensit
 plugins require additional qualification.
 
 * Evidence authority
-The [[file:../../../dev/proofs/evidence/dynamic-gxi-exit/receipt.json][final receipt]] classifies ordinary dynamic gxi acceptance separately from the
+The [[file:../../../.cache/verification/evidence/proofs/dynamic-gxi-exit/receipt.json][final receipt]] classifies ordinary dynamic gxi acceptance separately from the
 previous AOT result and from its failed dynamic control. Exact outputs, elapsed
 time, whole-process verdict, fresh cleanup marker, resolved module paths and
 before/after input hashes are required. Source equality alone does not establish
@@ -75,15 +75,15 @@ runtime path equality; the module registry must show rebuilt native JSON/parser 
 the preserved required Core/POO body modules under their original identities.
 
 * Retained artifacts
-- [[file:../../../dev/proofs/evidence/dynamic-gxi-exit/isolated.json][Repeated unmodified dynamic failure]] and [[file:../../../dev/proofs/evidence/dynamic-gxi-exit/isolated.log][its output]].
-- [[file:../../../dev/proofs/evidence/dynamic-gxi-exit/source-build.json][Fresh isolated source build]] and [[file:../../../dev/proofs/evidence/dynamic-gxi-exit/source-build.log][complete build output]].
-- [[file:../../../dev/proofs/evidence/dynamic-gxi-exit/source-loader-publication.json][Failed source-loader publication research]].
-- [[file:../../../dev/proofs/evidence/dynamic-gxi-exit/dynamic-images.json][Independent entries and shared image ownership]].
-- [[file:../../../dev/proofs/evidence/dynamic-gxi-exit/stdlib-abi-audit.json][Actual source-body and public phase/name/binding comparison]].
-- [[file:../../../dev/proofs/evidence/dynamic-gxi-exit/packed-observed/module-cleanup.json][Observed successful reference cleanup]].
-- [[file:../../../dev/proofs/evidence/dynamic-gxi-exit/clean-proof-receipt.json][Fresh Lean closure and axiom outputs]].
-- [[file:../../../dev/proofs/evidence/dynamic-gxi-exit/api-commands.json][Official Quint pipeline and counterexample controls]].
-- [[file:../../../dev/proofs/evidence/dynamic-gxi-exit/SHA256SUMS][Byte seal]].
+- [[file:../../../.cache/verification/evidence/proofs/dynamic-gxi-exit/isolated.json][Repeated unmodified dynamic failure]] and [[file:../../../.cache/verification/evidence/proofs/dynamic-gxi-exit/isolated.log][its output]].
+- [[file:../../../.cache/verification/evidence/proofs/dynamic-gxi-exit/source-build.json][Fresh isolated source build]] and [[file:../../../.cache/verification/evidence/proofs/dynamic-gxi-exit/source-build.log][complete build output]].
+- [[file:../../../.cache/verification/evidence/proofs/dynamic-gxi-exit/source-loader-publication.json][Failed source-loader publication research]].
+- [[file:../../../.cache/verification/evidence/proofs/dynamic-gxi-exit/dynamic-images.json][Independent entries and shared image ownership]].
+- [[file:../../../.cache/verification/evidence/proofs/dynamic-gxi-exit/stdlib-abi-audit.json][Actual source-body and public phase/name/binding comparison]].
+- [[file:../../../.cache/verification/evidence/proofs/dynamic-gxi-exit/packed-observed/module-cleanup.json][Observed successful reference cleanup]].
+- [[file:../../../.cache/verification/evidence/proofs/dynamic-gxi-exit/clean-proof-receipt.json][Fresh Lean closure and axiom outputs]].
+- [[file:../../../.cache/verification/evidence/proofs/dynamic-gxi-exit/api-commands.json][Official Quint pipeline and counterexample controls]].
+- [[file:../../../.cache/verification/evidence/proofs/dynamic-gxi-exit/SHA256SUMS][Byte seal]].
 
 Historical failures remain immutable. A candidate that fails must retain its
 exact log and process result before the next attempt; do not overwrite a failed
@@ -106,7 +106,7 @@ references, zero close errors. The later complete-input-stability run returned
 naturally in 11.114 seconds under the same original deadline. The audited
 workload adds one canary acquisition, explaining its 261-reference count.
 
-[[file:../../../dev/proofs/evidence/dynamic-gxi-exit/lazy-entry-control.json][The two-entry native bridge control]] maps one hard-linked image, requests entry A,
+[[file:../../../.cache/verification/evidence/proofs/dynamic-gxi-exit/lazy-entry-control.json][The two-entry native bridge control]] maps one hard-linked image, requests entry A,
 observes only INIT A followed by AFTER A, then requests B and observes INIT B
 followed by AFTER B. Both requested entries remain lazy; cleanup and the separate
 canary complete normally. This is executable support for the lazy-entry premise,
@@ -149,10 +149,10 @@ but omitted several configured C semantic/optimization options, including fwrapv
 Its measurements remain exploratory and are not the final compiler-profile gate.
 No failure or earlier pass was overwritten.
 
-The [[file:../../../dev/proofs/evidence/dynamic-gxi-exit/official-compiler-options.json][configured compiler defaults]] are extracted from the installed gambuild-C
+The [[file:../../../.cache/verification/evidence/proofs/dynamic-gxi-exit/official-compiler-options.json][configured compiler defaults]] are extracted from the installed gambuild-C
 owner, including FLAGS_OPT, FLAGS_OBJ, FLAGS_DYN and DEFS_DYN. The
 separate corrected builder (retired Python driver) recompiles every admitted generated C body into
 new objects/images and rebuilds the canary with those complete options. The
-[[file:../../../dev/proofs/evidence/dynamic-gxi-exit/official-dynamic-images.json][corrected image manifest]] and the official-abi receipt namespace define the
+[[file:../../../.cache/verification/evidence/proofs/dynamic-gxi-exit/official-dynamic-images.json][corrected image manifest]] and the official-abi receipt namespace define the
 final candidate. Its original-script and cleanup gates must pass independently;
 no initial-candidate timing substitutes for that qualification.

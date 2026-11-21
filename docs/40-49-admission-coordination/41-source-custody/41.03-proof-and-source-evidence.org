@@ -28,7 +28,7 @@ sources and dependency pins remain unchanged.
 * Source comparison and reuse decisions
 
 The 19 pinned source files and every recorded excerpt are freshly verified in
-[[file:../../../dev/proofs/evidence/llm-source-custody/source-review.json][source-review.json]]. The [[file:../../../dev/proofs/evidence/llm-source-custody/custody-source-audit.json][focused source audit]] records matching source lines.
+[[file:../../../.cache/verification/evidence/proofs/llm-source-custody/source-review.json][source-review.json]]. The [[file:../../../.cache/verification/evidence/proofs/llm-source-custody/custody-source-audit.json][focused source audit]] records matching source lines.
 Current working hashes are checked separately: 18 match reviewed bytes; P17 has
 only the two already recorded control-plane import-path changes. This source
 comparison does not relabel those local bytes as a qualified native deployment.
@@ -118,7 +118,7 @@ it is retained as tool failure evidence, not counted as a safety result.
 
 * Reproducible acceptance
 
-Run the isolated checker (retired Python driver); see [[file:../../../dev/proofs/evidence/llm-source-custody/commands.json][command receipts]] and [[file:../../../dev/proofs/evidence/llm-source-custody/receipt.json][final receipt]].
+Run the isolated checker (retired Python driver); see [[file:../../../.cache/verification/evidence/proofs/llm-source-custody/commands.json][command receipts]] and [[file:../../../.cache/verification/evidence/proofs/llm-source-custody/receipt.json][final receipt]].
 The checker compiles the complete local Lean import closure, prints new theorem
 axioms, typechecks Quint, runs guarded and mutation controls, exports ITF traces,
 samples nine recovery initializers and regresses the preceding source-join model.

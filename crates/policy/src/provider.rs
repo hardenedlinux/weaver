@@ -36,12 +36,23 @@ pub fn bind_provider(
         .as_ref()
         .ok_or(Error::Denied)?
         .adapter()?;
-    if matches!(protocol, weaver_contracts::ProviderProtocol::Anthropic)
+    if protocol.is_anthropic()
         && route
             .endpoint
             .strip_prefix("https://")
             .and_then(|endpoint| endpoint.split_once('/'))
             .is_none_or(|(_, path)| path != "v1/messages")
+    {
+        return Err(Error::Denied);
+    }
+    if matches!(
+        protocol,
+        weaver_contracts::ProviderProtocol::OpenAiResponses
+    ) && route
+        .endpoint
+        .strip_prefix("https://")
+        .and_then(|endpoint| endpoint.split_once('/'))
+        .is_none_or(|(_, path)| path != "v1/responses")
     {
         return Err(Error::Denied);
     }

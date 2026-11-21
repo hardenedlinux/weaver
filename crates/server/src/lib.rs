@@ -7,6 +7,7 @@
 mod admission;
 mod config;
 mod connections;
+mod delivery_payload;
 pub mod encoding;
 pub mod entrypoint;
 mod governance_deployment;
@@ -20,8 +21,11 @@ mod grpc_hard_fact;
 mod grpc_listeners;
 mod grpc_output;
 mod grpc_provider;
+mod http_compat;
+mod http_delivery;
 #[cfg(feature = "kubernetes")]
 mod kubernetes;
+mod meter_issuer;
 mod operation_client;
 pub mod pb;
 #[cfg(all(test, unix))]
@@ -49,9 +53,11 @@ pub use config::ServerConfig;
 pub use governance_owner::GovernanceWorker;
 pub use grpc::serve_grpc;
 pub use grpc::serve_grpc_with_runtime;
+pub use grpc::serve_with_http;
 pub use grpc_config::run_from_env;
+pub use http_compat::HttpProfile;
 pub use operation_client::OperationClient;
-pub use rpc_security::{GrpcConfig, GrpcListeners, RpcSecurity};
+pub use rpc_security::{GrpcConfig, GrpcListeners, RpcSecurity, ServiceListeners};
 pub use runtime::RuntimeOwner as ServiceRuntime;
 pub use source_identity::certificate_identity as source_certificate_identity;
 #[cfg(test)]

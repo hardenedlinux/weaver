@@ -24,11 +24,11 @@ is required. Earlier sealed evidence remains unchanged.
 Workspace: /Users/guangtao/ghq/github.com/tao3k/weaver; branch =main=;
 tracked HEAD =4df1f0233f9a78e5a3ea8a1a0d8aaca983698b8d=. Architecture and
 proof artifacts remain untracked. No Gateway runtime, upstream source, dependency
-pin, commit or push was changed. [[file:../../../dev/proofs/evidence/logical-range-recovery/dependency-identity.log][Dependency identities]] match category 37.
+pin, commit or push was changed. [[file:../../../.cache/verification/evidence/proofs/logical-range-recovery/dependency-identity.log][Dependency identities]] match category 37.
 
-[[file:../../../dev/proofs/evidence/logical-range-recovery/source-review.json][Eighteen pinned source images]] were freshly read and SHA256 checked at POO Flow
+[[file:../../../.cache/verification/evidence/proofs/logical-range-recovery/source-review.json][Eighteen pinned source images]] were freshly read and SHA256 checked at POO Flow
 =a74fc2fd63437252175b5a67649ee54b886d3bf4= and cedar-poo-spec
-=c8d1a0641120cf65e299e8a98f9fe7666ca96ab5=. [[file:../../../dev/proofs/evidence/logical-range-recovery/source-boundary-review.log][Numbered source excerpts]] support
+=c8d1a0641120cf65e299e8a98f9fe7666ca96ab5=. [[file:../../../.cache/verification/evidence/proofs/logical-range-recovery/source-boundary-review.log][Numbered source excerpts]] support
 the reuse/extension matrix in 38.01. Pure state transitions, serialized local
 handoff and conditional source-bound proofs do not establish native persistence,
 provider execution or an encoding implementation.
@@ -36,12 +36,13 @@ provider execution or an encoding implementation.
 * Reproduction and final checks
 
 #+begin_src sh :eval never
-python3 dev/proofs/check_logical_range_recovery.py
-python3 dev/proofs/evidence/logical-range-recovery/check-counterexample-observations.py
-python3 dev/proofs/evidence/logical-range-recovery/check-four-artifacts.py
+go -C go run ./cmd/weaver-dev -timeout 28m check-policy
 #+end_src
 
-[[file:../../../dev/proofs/evidence/logical-range-recovery/commands.json][Sixteen final command routes]] retain raw logs, arguments, timings, watchdogs
+This runs the maintained registered plan. It does not replay the retired
+per-artifact checks or regenerate the historical observations below.
+
+[[file:../../../.cache/verification/evidence/proofs/logical-range-recovery/commands.json][Sixteen final command routes]] retain raw logs, arguments, timings, watchdogs
 and exit codes. The runner compiles six modules in a fresh isolated directory:
 LogicalMessageAuthority, SharedMessageBudget, FiniteDomainMigration,
 GatewayHeadCAS, BrokerConsumptionQueue and LogicalRangeRecovery. Lean 4.34.1 uses
@@ -50,7 +51,7 @@ not new dependency pins or core architecture labels.
 
 The new Lean log prints 21 declarations without =sorryAx= or errors. Standard
 propext, Quot.sound and inherited Classical.choice are recorded. The
-[[file:../../../dev/proofs/evidence/logical-range-recovery/dependency-graph.json][dependency graph]] contains only this six-module software authority closure.
+[[file:../../../.cache/verification/evidence/proofs/logical-range-recovery/dependency-graph.json][dependency graph]] contains only this six-module software authority closure.
 
 The final =Test$= route passes 66 controls: 33 directly imported queue controls
 and 33 new recovery controls, including six intentional unsafe schedules. The
@@ -99,8 +100,8 @@ are fixture abstractions; no Cedar evaluation or SDK encoder is executed.
 
 * Counterexamples and retained investigation
 
-Six final [[file:../../../dev/proofs/evidence/logical-range-recovery/itf][ITF traces]] are independently decoded by the stored Python checker.
-[[file:../../../dev/proofs/evidence/logical-range-recovery/counterexample-observations.json][Decoded final states]] verify these concrete violations:
+Six final [[file:../../../.cache/verification/evidence/proofs/logical-range-recovery/itf][ITF traces]] are independently decoded in the archived receipt.
+[[file:../../../.cache/verification/evidence/proofs/logical-range-recovery/counterexample-observations.json][Decoded final states]] verify these concrete violations:
 
 | Unsafe schedule | Observed failure |
 |-----------------+------------------|
@@ -118,25 +119,25 @@ original invocation and full interval length.
 
 Preliminary Lean diagnostics, the pre-manifest-binding model and the pre-policy-
 revision model are retained. An initial focused test selector also selected an
-imported SDK replay control; [[file:../../../dev/proofs/evidence/logical-range-recovery/pre-selector-refinement][that seven-trace run]] is archived separately. Final
+imported SDK replay control; [[file:../../../.cache/verification/evidence/proofs/logical-range-recovery/pre-selector-refinement][that seven-trace run]] is archived separately. Final
 controls use a distinct recovery replay name and exactly six final ITFs. Only
 the final source identities and command routes support final counts.
 
 * Document, diagram and integrity evidence
 
-[[file:../../../dev/proofs/evidence/logical-range-recovery/four-artifact-check.json][Ten correspondence rows]] resolve actual Org contracts, Quint declarations,
+[[file:../../../.cache/verification/evidence/proofs/logical-range-recovery/four-artifact-check.json][Ten correspondence rows]] resolve actual Org contracts, Quint declarations,
 Lean declarations and D2 nodes. This is named-reference consistency, not a
 compiler extraction or semantic-equivalence proof across all tools.
 
-[[file:../../../dev/proofs/evidence/logical-range-recovery/document-check.log][Document inventory]] checks English ASCII Org, balanced blocks, local links,
-pinned source targets and acceptance registers. [[file:../../../dev/proofs/evidence/logical-range-recovery/org-export.log][Org export]] disables Babel
-evaluation and retains optional missing-htmlize diagnostics. [[file:../../../dev/proofs/evidence/logical-range-recovery/diagram-validation.json][D2 validation]]
+[[file:../../../.cache/verification/evidence/proofs/logical-range-recovery/document-check.log][Document inventory]] checks English ASCII Org, balanced blocks, local links,
+pinned source targets and acceptance registers. [[file:../../../.cache/verification/evidence/proofs/logical-range-recovery/org-export.log][Org export]] disables Babel
+evaluation and retains optional missing-htmlize diagnostics. [[file:../../../.cache/verification/evidence/proofs/logical-range-recovery/diagram-validation.json][D2 validation]]
 covers all core diagram sources. The new bundled SVG is visually inspected with
 the established style and official Go, Kubernetes and Rust assets. Its labels
 contain no version, hash, acceptance count or hardware chain.
 
-[[file:../../../dev/proofs/evidence/logical-range-recovery/historical-manifests.log][Fourteen historical manifests]] are verified unchanged. The new
-[[file:../../../dev/proofs/evidence/logical-range-recovery/SHA256SUMS][manifest]] seals the current four artifacts, formal dependency sources, checker
+[[file:../../../.cache/verification/evidence/proofs/logical-range-recovery/historical-manifests.log][Fourteen historical manifests]] are verified unchanged. The new
+[[file:../../../.cache/verification/evidence/proofs/logical-range-recovery/SHA256SUMS][manifest]] seals the current four artifacts, formal dependency sources, checker
 scripts, shared visual assets and final/retained evidence.
 
 * Remaining runtime obligation

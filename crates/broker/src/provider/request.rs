@@ -63,9 +63,15 @@ impl PreparedRequest {
             .ok_or(Error::Invalid("provider authority"))?
             .as_str();
         let (header, value) = match protocol {
-            ProviderProtocol::OpenAi => ("authorization", format!("Bearer {secret}")),
-            ProviderProtocol::Anthropic if expires.is_none() => ("x-api-key", secret.to_owned()),
-            ProviderProtocol::Anthropic => ("authorization", format!("Bearer {secret}")),
+            ProviderProtocol::OpenAi
+            | ProviderProtocol::OpenAiTurn
+            | ProviderProtocol::OpenAiResponses => ("authorization", format!("Bearer {secret}")),
+            ProviderProtocol::Anthropic | ProviderProtocol::AnthropicTurn if expires.is_none() => {
+                ("x-api-key", secret.to_owned())
+            }
+            ProviderProtocol::Anthropic | ProviderProtocol::AnthropicTurn => {
+                ("authorization", format!("Bearer {secret}"))
+            }
         };
         let mut authorization = hyper::header::HeaderValue::try_from(value)
             .map_err(|_| Error::Invalid("provider authorization"))?;
@@ -79,7 +85,7 @@ impl PreparedRequest {
             .header("Accept", "text/event-stream")
             .header("Content-Length", body.len())
             .header("Connection", "close");
-        if matches!(protocol, ProviderProtocol::Anthropic) {
+        if protocol.is_anthropic() {
             builder = builder.header("anthropic-version", "2023-06-01");
         }
         let request = builder

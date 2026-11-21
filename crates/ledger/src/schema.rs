@@ -27,6 +27,12 @@ CREATE TABLE IF NOT EXISTS domain_history (
 CREATE TABLE IF NOT EXISTS domain_migrations (operation_id TEXT PRIMARY KEY, digest TEXT NOT NULL, receipt TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS provider_operation_scopes (
  family TEXT NOT NULL, node TEXT NOT NULL, digest TEXT NOT NULL, record TEXT NOT NULL, PRIMARY KEY(family,node));
+CREATE TABLE IF NOT EXISTS provider_session_scopes (
+ session TEXT PRIMARY KEY, digest TEXT NOT NULL, record TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS provider_session_turns (
+ session TEXT NOT NULL REFERENCES provider_session_scopes(session), operation_id TEXT NOT NULL,
+ family TEXT NOT NULL UNIQUE, node TEXT NOT NULL, digest TEXT NOT NULL, record TEXT NOT NULL, derivation TEXT NOT NULL,
+ PRIMARY KEY(session,operation_id));
 CREATE TABLE IF NOT EXISTS source_authority (
  singleton INTEGER PRIMARY KEY CHECK(singleton=1), epoch INTEGER NOT NULL CHECK(epoch>=0), record TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS source_keys (

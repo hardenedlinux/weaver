@@ -14,7 +14,7 @@ the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21
 
 * Reproduction and bounded receipts
 
-Runner (retired Python driver), [[file:../../../dev/proofs/lean/LlmAppendHandoff.lean][Lean]], [[file:../../../dev/proofs/quint/LlmAppendHandoff.qnt][Quint]], [[file:../../../dev/proofs/evidence/llm-append-handoff/commands.json][commands]], [[file:../../../dev/proofs/evidence/llm-append-handoff/receipt.json][receipt]] and [[file:../../../dev/proofs/evidence/llm-append-handoff/SHA256SUMS][byte manifest]] keep executable evidence separate
+Runner (retired Python driver), [[file:../../../dev/proofs/lean/LlmAppendHandoff.lean][Lean]], [[file:../../../dev/proofs/quint/LlmAppendHandoff.qnt][Quint]], [[file:../../../.cache/verification/evidence/proofs/llm-append-handoff/commands.json][commands]], [[file:../../../.cache/verification/evidence/proofs/llm-append-handoff/receipt.json][receipt]] and [[file:../../../.cache/verification/evidence/proofs/llm-append-handoff/SHA256SUMS][byte manifest]] keep executable evidence separate
 from native acceptance. The runner compiles 25 Lean modules and prints 13 new
 declarations without =sorryAx=. Quint checks 38 new controls (30 guarded and eight
 mutation counterexamples) plus 39 directly imported checkpoint controls: 77 total.
@@ -127,8 +127,8 @@ spent nonce, exposure, application/reservation state and pending hold are decode
 
 * Source-by-source reuse and extension
 
-[[file:../../../dev/proofs/evidence/llm-append-handoff/source-review.json][Pinned source identities and excerpts]], [[file:../../../dev/proofs/evidence/llm-append-handoff/source-receipt-check.json][fresh blob/excerpt checks]], [[file:../../../dev/proofs/evidence/llm-append-handoff/append-source-audit.json][focused append/CAS extract]] and
-[[file:../../../dev/proofs/evidence/llm-append-handoff/working-source-check.json][fresh working hashes and HEAD identities]] cover nineteen source files.
+[[file:../../../.cache/verification/evidence/proofs/llm-append-handoff/source-review.json][Pinned source identities and excerpts]], [[file:../../../.cache/verification/evidence/proofs/llm-append-handoff/source-receipt-check.json][fresh blob/excerpt checks]], [[file:../../../.cache/verification/evidence/proofs/llm-append-handoff/append-source-audit.json][focused append/CAS extract]] and
+[[file:../../../.cache/verification/evidence/proofs/llm-append-handoff/working-source-check.json][fresh working hashes and HEAD identities]] cover nineteen source files.
 
 | Source | Direct reuse | Extension or qualification |
 |--------+--------------+----------------------------|
@@ -154,7 +154,7 @@ spent nonce, exposure, application/reservation state and pending hold are decode
 
 The upstream source blobs and registered excerpts are freshly rechecked. Eighteen
 live files match the reviewed baseline; P17 differs only in two control-plane
-import paths recorded in [[file:../../../dev/proofs/evidence/llm-append-handoff/P17-working-diff.patch][the working diff]]. That does not qualify the new
+import paths recorded in [[file:../../../.cache/verification/evidence/proofs/llm-append-handoff/P17-working-diff.patch][the working diff]]. That does not qualify the new
 import targets' native ABI. The runner compiles Weaver's real composition chain,
 not the full upstream build. Dependency pins and upstream sources remain unchanged.
 

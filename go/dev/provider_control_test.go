@@ -97,8 +97,8 @@ func newControlProcess(t testing.TB, f *fixture, path string) *controlProcess {
 	l.Close()
 	leaf, token := sha256.Sum256(f.pki.client.Certificate[0]), sha256.Sum256([]byte(ownerToken))
 	settings := map[string]string{"CONFIG": path, "SERVER_CERT": filepath.Join(d, "server"), "SERVER_KEY": filepath.Join(d, "server-key"), "CLIENT_CA": filepath.Join(d, "ca"), "PEER_SHA256": hex.EncodeToString(leaf[:]), "TOKEN_SHA256": hex.EncodeToString(token[:]), "LISTEN": address,
-		"AUTHORITY_CA": filepath.Join(d, "ca"), "AUTHORITY_OPERATION_CERT": filepath.Join(d, "operation"), "AUTHORITY_OPERATION_KEY": filepath.Join(d, "operation-key"), "AUTHORITY_SOURCE_CERT": filepath.Join(d, "source"), "AUTHORITY_SOURCE_KEY": filepath.Join(d, "source-key"), "AUTHORITY_OPERATION_TOKEN": ownerToken, "AUTHORITY_SOURCE_TOKEN": adminToken, "AUTHORITY_OPERATION_ADDRESS": f.address, "AUTHORITY_SOURCE_ADDRESS": f.sourceAddress, "AUTHORITY_SERVER_NAME": "localhost"}
-	c := &controlProcess{fixture: f, address: address, directory: d, image: controlBinary}
+		"AUTHORITY_CA": filepath.Join(d, "ca"), "AUTHORITY_OPERATION_CERT": filepath.Join(d, "operation"), "AUTHORITY_OPERATION_KEY": filepath.Join(d, "operation-key"), "AUTHORITY_SOURCE_CERT": filepath.Join(d, "source"), "AUTHORITY_SOURCE_KEY": filepath.Join(d, "source-key"), "AUTHORITY_OPERATION_TOKEN": ownerToken, "AUTHORITY_SOURCE_TOKEN": f.sourceToken, "AUTHORITY_OPERATION_ADDRESS": f.address, "AUTHORITY_SOURCE_ADDRESS": f.sourceAddress, "AUTHORITY_SERVER_NAME": "localhost"}
+	c := &controlProcess{fixture: f, address: address, directory: d}
 	for name, value := range settings {
 		c.env = append(c.env, "WEAVER_CONTROL_"+name+"="+value)
 	}
@@ -111,7 +111,15 @@ func newControlProcess(t testing.TB, f *fixture, path string) *controlProcess {
 
 // Source preparation needs no operation credential or Go ingress socket.
 func (c *controlProcess) prepare(t testing.TB) {
-	c.prepareUsing(t, c.image)
+	c.prepareUsing(t, c.referenceImage(t))
+}
+
+func (c *controlProcess) referenceImage(t testing.TB) string {
+	t.Helper()
+	if c.image != "" {
+		return c.image
+	}
+	return goControlImage(t)
 }
 
 func (c *controlProcess) prepareUsing(t testing.TB, image string, args ...string) {
@@ -150,7 +158,7 @@ func (c *controlProcess) start(t testing.TB) {
 		log.Close()
 		t.Fatal(err)
 	}
-	child := exec.Command(c.image, "serve")
+	child := exec.Command(c.referenceImage(t), "serve")
 	child.Env = append(os.Environ(), c.env...)
 	child.Stdout, child.Stderr = log, log
 	if os.Getenv("WEAVER_TEST_CONTROL_HEAP") == "1" {
@@ -290,6 +298,7 @@ func exerciseControl(t *testing.T, format string, source func(*testing.T, *fixtu
 type controlPolicySources struct {
 	initial, revoked, producer string
 	configure                  func(*testing.T, *fixture, config.Bundle)
+	direct                     bool
 }
 
 func exerciseControlPolicies(t *testing.T, format string, source func(*testing.T, *fixture, config.Bundle) string, policies controlPolicySources) {
@@ -322,7 +331,19 @@ func exerciseControlPolicies(t *testing.T, format string, source func(*testing.T
 	}
 	c := newControlProcess(t, f, path)
 	c.useProducer(policies.producer)
-	c.start(t)
+	activate := func() *gatewayclient.Client {
+		if policies.direct {
+			c.prepareUsing(t, serverBinary, "prepare")
+			return f.client
+		}
+		c.start(t)
+		return c.client
+	}
+	client := activate()
+	address, peerDenied, methodDenied := c.address, codes.PermissionDenied, codes.Unimplemented
+	if policies.direct {
+		address, peerDenied, methodDenied = f.address, codes.Unauthenticated, codes.PermissionDenied
+	}
 	parent := uint64(1)
 	revocation := v1.Publication{OperationID: "control-revoke", ExpectedRevision: &parent, Fence: 3, Policy: `forbid(principal,action,resource);`, Schema: f.schema}
 	if policies.revoked != "" {
@@ -340,85 +361,98 @@ func exerciseControlPolicies(t *testing.T, format string, source func(*testing.T
 	if f.primary.Load() != 0 || f.backup.Load() != 0 {
 		t.Fatal("source activation executed provider")
 	}
-	if _, err := c.client.RPC.Inspect(ctx, &pb.OperationKey{Family: "control", Node: "infer"}); status.Code(err) != codes.Unauthenticated {
+	if _, err := client.RPC.Inspect(ctx, &pb.OperationKey{Family: "control", Node: "infer"}); status.Code(err) != codes.Unauthenticated {
 		t.Fatalf("missing frontend credential admitted: %v", err)
 	}
 	// Shared Kubernetes names and a valid bearer do not identify the pinned caller.
-	wrong, err := gatewayclient.Dial(ctx, c.address, ownerToken, &tls.Config{RootCAs: f.pki.root, Certificates: []tls.Certificate{secondaryClient(t, f.pki)}, ServerName: "localhost", MinVersion: tls.VersionTLS13})
+	wrong, err := gatewayclient.Dial(ctx, address, ownerToken, &tls.Config{RootCAs: f.pki.root, Certificates: []tls.Certificate{secondaryClient(t, f.pki)}, ServerName: "localhost", MinVersion: tls.VersionTLS13})
 	if err != nil {
 		t.Fatal(err)
 	}
 	_, err = wrong.RPC.Inspect(wrong.Context(ctx), &pb.OperationKey{Family: "control", Node: "infer"})
 	wrong.Connection.Close()
-	if status.Code(err) != codes.PermissionDenied {
+	if status.Code(err) != peerDenied {
 		t.Fatalf("same-name peer admitted: %v", err)
 	}
-	if _, err = c.client.RPC.PublishAuthority(c.client.Context(ctx), gatewayclient.Publication(bundle.Publication)); status.Code(err) != codes.Unimplemented {
+	if _, err = client.RPC.PublishAuthority(client.Context(ctx), gatewayclient.Publication(bundle.Publication)); status.Code(err) != methodDenied {
 		t.Fatalf("frontend exposes source publication: %v", err)
 	}
-	if _, err = c.client.RPC.RegisterTask(c.client.Context(ctx), &pb.RegisterTaskRequest{Task: gatewayclient.Task(bundle.Tasks[0])}); status.Code(err) != codes.Unimplemented {
+	if _, err = client.RPC.RegisterTask(client.Context(ctx), &pb.RegisterTaskRequest{Task: gatewayclient.Task(bundle.Tasks[0])}); status.Code(err) != methodDenied {
 		t.Fatalf("frontend exposes registration: %v", err)
 	}
-	if _, err = c.client.RPC.RegisterPublishedTask(c.client.Context(ctx), &pb.RegisterPublishedTaskRequest{Task: gatewayclient.Task(bundle.Tasks[0])}); status.Code(err) != codes.Unimplemented {
+	if _, err = client.RPC.RegisterPublishedTask(client.Context(ctx), &pb.RegisterPublishedTaskRequest{Task: gatewayclient.Task(bundle.Tasks[0])}); status.Code(err) != methodDenied {
 		t.Fatalf("frontend exposes publication-bound registration: %v", err)
 	}
 	wrongPlan := bundle.Plans[0]
 	wrongPlan.Body = strings.Replace(wrongPlan.Body, "hello", "forged", 1)
-	if _, err = c.client.Execute(ctx, wrongPlan, pb.Encoding_PROTOBUF, 1, func(*pb.Event) error { return nil }); err == nil {
+	if _, err = client.Execute(ctx, wrongPlan, pb.Encoding_PROTOBUF, 1, func(*pb.Event) error { return nil }); err == nil {
 		t.Fatal("changed source body admitted")
 	}
 	wrongPlan = bundle.Plans[0]
 	wrongPlan.Routes = append([]v1.ProviderRoute(nil), wrongPlan.Routes...)
 	wrongPlan.Routes[0], wrongPlan.Routes[2] = wrongPlan.Routes[2], wrongPlan.Routes[0]
-	if _, err = c.client.Execute(ctx, wrongPlan, pb.Encoding_PROTOBUF, 1, func(*pb.Event) error { return nil }); err == nil {
+	if _, err = client.Execute(ctx, wrongPlan, pb.Encoding_PROTOBUF, 1, func(*pb.Event) error { return nil }); err == nil {
 		t.Fatal("route order changed")
 	}
 	if f.primary.Load() != 0 || f.backup.Load() != 0 || f.denied.Load() != 0 {
 		t.Fatal("invalid proposal reached provider")
 	}
-	var prefix bool
+	var prefix, revoked bool
 	encoding := pb.Encoding_PROTOBUF
 	if format == "yaml" {
 		encoding = pb.Encoding_ARROW_IPC
 	}
-	_, err = c.client.Execute(ctx, bundle.Plans[0], encoding, 1, func(event *pb.Event) error {
+	_, err = client.Execute(ctx, bundle.Plans[0], encoding, 1, func(event *pb.Event) error {
 		if strings.Contains(event.GetText(), "forbidden-tail") {
 			t.Error("revoked output escaped")
 		}
 		if !prefix && event.GetText() == "prefix" {
 			prefix = true
-			_, e := f.admin.Publish(ctx, revocation)
+			receipt, e := f.admin.Publish(ctx, revocation)
+			revoked = e == nil && receipt.GetOutcome() == pb.PublicationOutcome_COMMITTED
 			unblock()
 			return e
 		}
 		return nil
 	})
-	if !prefix || err == nil {
-		t.Fatalf("partial/revoke boundary prefix=%v err=%v", prefix, err)
+	if !prefix || !revoked || err == nil {
+		t.Fatalf("partial/revoke boundary prefix=%v revoked=%v err=%v", prefix, revoked, err)
 	}
-	observed, err := c.client.RPC.Inspect(c.client.Context(ctx), &pb.OperationKey{Family: "control", Node: "infer"})
+	observed, err := client.RPC.Inspect(client.Context(ctx), &pb.OperationKey{Family: "control", Node: "infer"})
 	if err != nil || observed.GetHeld() != 4 || f.primary.Load() != 1 || f.backup.Load() != 0 {
 		t.Fatalf("unknown hold: %v %v calls=%d", observed, err, f.primary.Load())
 	}
-	// Restart both processes. Exact publication replay observes its original outcome,
+	// Restart the gateway and replay preparation. Exact publication replay observes its original outcome,
 	// but must not overwrite the newer revocation or recreate an execution root.
 	cancel()
 	c.stop(t)
 	f.stop(t)
 	f.start(t)
-	c.start(t)
+	client = activate()
 	ctx, cancel = context.WithTimeout(context.Background(), 12*time.Second)
 	defer cancel()
 	for _, p := range bundle.Plans {
-		if _, err = c.client.Execute(ctx, p, pb.Encoding_PROTOBUF, 1, func(*pb.Event) error { t.Error("post-restart output"); return nil }); status.Code(err) != codes.FailedPrecondition {
+		if _, err = client.Execute(ctx, p, pb.Encoding_PROTOBUF, 1, func(*pb.Event) error { t.Error("post-restart output"); return nil }); status.Code(err) != codes.FailedPrecondition {
 			t.Fatal("historical publication became current authority")
 		}
 	}
-	observed, err = c.client.RPC.Inspect(c.client.Context(ctx), &pb.OperationKey{Family: "control", Node: "infer"})
-	if err != nil || observed.GetHeld() != 4 || f.primary.Load() != 1 || f.backup.Load() != 0 {
-		t.Fatalf("restart duplicated/refunded original: %v %v", observed, err)
+	if policies.direct {
+		next := bundle.Plans[1]
+		stream, err := client.RPC.ExecuteProvider(client.Context(ctx), &pb.ProviderRequest{
+			Plan: &pb.ProviderPlan{Family: next.Family, Node: next.Node}, Encoding: pb.Encoding_PROTOBUF, BatchRows: 1,
+		})
+		if err == nil {
+			_, err = stream.Recv()
+		}
+		if status.Code(err) != codes.FailedPrecondition {
+			t.Fatalf("historical source reopened the unused operation key: %v", err)
+		}
 	}
-	t.Log("Governor source handoff -> source publication -> mTLS control -> Rust partial send -> revoke -> dual restart: original hold retained")
+	recovered, err := client.RPC.Inspect(client.Context(ctx), &pb.OperationKey{Family: "control", Node: "infer"})
+	if err != nil || !proto.Equal(observed, recovered) || f.primary.Load() != 1 || f.backup.Load() != 0 {
+		t.Fatalf("restart changed the original receipt or send count: %v %v", recovered, err)
+	}
+	t.Log("Source publication, mTLS operation, partial send, revocation and restart retained the original hold")
 }
 
 func TestProviderControlJSONYAMLRevocationAndRestart(t *testing.T) {
@@ -587,10 +621,12 @@ func exerciseSourceReplyLoss(t *testing.T, source func(*testing.T, *fixture, con
 	go func() { exited <- server.Serve(listener) }()
 	t.Cleanup(func() { server.Stop(); <-exited })
 	c.env = append(c.env, "WEAVER_CONTROL_AUTHORITY_SOURCE_ADDRESS="+listener.Addr().String())
-	child := exec.Command(controlBinary, "serve")
-	child.Env = append(os.Environ(), c.env...)
+	var child *exec.Cmd
 	if preparationImage != "" {
 		child = c.prepareCommand(t.Context(), preparationImage, "prepare")
+	} else {
+		child = exec.Command(c.referenceImage(t), "serve")
+		child.Env = append(os.Environ(), c.env...)
 	}
 	recoverSource := func() {
 		if preparationImage == "" {

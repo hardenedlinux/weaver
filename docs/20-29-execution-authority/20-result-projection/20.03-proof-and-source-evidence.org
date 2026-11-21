@@ -14,8 +14,8 @@ the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21
 
 * Reproduction and bounded claims
 
-Run the isolated runner (retired Python driver) for [[file:../../../dev/proofs/lean/LlmResultProjection.lean][Lean]] and [[file:../../../dev/proofs/quint/LlmResultProjection.qnt][Quint]]. Read [[file:../../../dev/proofs/evidence/llm-result-projection/commands.json][commands.json]], [[file:../../../dev/proofs/evidence/llm-result-projection/receipt.json][receipt.json]],
-and [[file:../../../dev/proofs/evidence/llm-result-projection/SHA256SUMS][the sealed byte manifest]]. Preliminary diagnostics remain separate from acceptance.
+Run the isolated runner (retired Python driver) for [[file:../../../dev/proofs/lean/LlmResultProjection.lean][Lean]] and [[file:../../../dev/proofs/quint/LlmResultProjection.qnt][Quint]]. Read [[file:../../../.cache/verification/evidence/proofs/llm-result-projection/commands.json][commands.json]], [[file:../../../.cache/verification/evidence/proofs/llm-result-projection/receipt.json][receipt.json]],
+and [[file:../../../.cache/verification/evidence/proofs/llm-result-projection/SHA256SUMS][the sealed byte manifest]]. Preliminary diagnostics remain separate from acceptance.
 
 The workload compiles 17 Lean modules and prints 22 new declarations without
 =sorryAx=. It checks 41 Quint controls, including 10 deliberate broken-protocol
@@ -114,7 +114,7 @@ its native gate and application CAS must both serialize with owner retirement.
 | Observation has no queue authority | lateObservationResendCounterexampleTest | Original operation is counted as another send after a late query |
 | Original profile commitment | profileReplacementCounterexampleTest | Authority profile differs from the committed source result |
 
-Unsafe alternatives are excluded from =step=. [[file:../../../dev/proofs/evidence/llm-result-projection/itf][ITF traces]] are independently decoded,
+Unsafe alternatives are excluded from =step=. [[file:../../../.cache/verification/evidence/proofs/llm-result-projection/itf][ITF traces]] are independently decoded,
 including actual original commits, partial applications and restart epochs. The
 invariants check complete fixture result chains, participant prefix images, CAS
 application observations, activation observations and held exposure. The fixture
@@ -124,8 +124,8 @@ failures are not proved by these finite controls.
 
 * Source-by-source comparison
 
-The [[file:../../../dev/proofs/evidence/llm-result-projection/source-review.json][POO Flow / Cedar register]], [[file:../../../dev/proofs/evidence/llm-result-projection/asp-source-review.json][optional ASP register]] and [[file:../../../dev/proofs/evidence/llm-result-projection/agentgateway-source-review.json][agentgateway register]] retain pinned blobs and
-freshly verified exact excerpts in [[file:../../../dev/proofs/evidence/llm-result-projection/source-receipt-check.json][the source receipt]]. These identities keep the
+The [[file:../../../.cache/verification/evidence/proofs/llm-result-projection/source-review.json][POO Flow / Cedar register]], [[file:../../../.cache/verification/evidence/proofs/llm-result-projection/asp-source-review.json][optional ASP register]] and [[file:../../../.cache/verification/evidence/proofs/llm-result-projection/agentgateway-source-review.json][agentgateway register]] retain pinned blobs and
+freshly verified exact excerpts in [[file:../../../.cache/verification/evidence/proofs/llm-result-projection/source-receipt-check.json][the source receipt]]. These identities keep the
 comparison reproducible; no runtime compatibility layer or dependency change follows.
 
 | Source | Existing source mechanism | Reuse / new obligation |

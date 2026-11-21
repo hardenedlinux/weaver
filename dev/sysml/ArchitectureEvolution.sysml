@@ -511,7 +511,9 @@ package ArchitectureEvolution {
            retires the old mutation identity. An already registered fixed task
            stays bound to its committed publication, with the same outcome on
            cache hit, cold lookup or restart. Object withdrawal changes deciding
-           authority through publication or the hard-fact barrier. Catalog derivation uses the
+           authority through publication or the hard-fact barrier. A withdrawn
+           unused fixed node must stay unexecuted in all three lookup modes.
+           Catalog derivation uses the
            existing affine Scheme/POO/gerbil-ascent owner. Coalesce identical
            immutable projections; never cache permission. Before registering a
            selected task, one existing ledger transaction rejoins the exact
@@ -557,6 +559,10 @@ package ArchitectureEvolution {
            relist, deletion, restart and A-to-B-to-A cannot restore stale authority.
            Separate bounded adapter work from operation admission and owner work.
            A disconnected adapter cannot authorize new use of revoked facts. */
+        doc /* Before publishing or repairing observed status, re-observe the
+           exact installed ledger cut and require no pending intent. Bind the
+           status write to the matched Kubernetes resource version. Status
+           publication is observational and grants no effect authority. */
     }
     requirement def GoIntegrationLeverage {
         doc /* Go is optional in the target production graph. Retain an owned Go

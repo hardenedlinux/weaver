@@ -92,6 +92,35 @@ fn process(
         };
         ledger.require_quiescent()?;
         let (caller, command) = match command {
+            Envelope::SessionCatalog {
+                session,
+                principal,
+                reply,
+                slot,
+            } => {
+                let result = ledger.provider_session_catalog(&session, &principal);
+                answer(ledger, reply, result, slot)?;
+                continue;
+            }
+            Envelope::SessionCut {
+                request,
+                reply,
+                slot,
+            } => {
+                let result = ledger.prepare_provider_turn(request);
+                answer(ledger, reply, result, slot)?;
+                continue;
+            }
+            Envelope::SessionTurn {
+                observed,
+                derived,
+                reply,
+                slot,
+            } => {
+                let result = ledger.register_provider_turn(&observed, &derived);
+                answer(ledger, reply, result, slot)?;
+                continue;
+            }
             Envelope::Source { caller, command } => (caller, *command),
             Envelope::RoutingCut {
                 family,
@@ -116,6 +145,11 @@ fn process(
             }
         };
         match command {
+            Command::RegisterSession { scope, reply, slot } => {
+                let result = ledger
+                    .with_authenticated_source(&caller, |l| l.register_provider_session(&scope));
+                answer(ledger, reply, result, slot)?;
+            }
             Command::RegisterOperationSource { scope, reply, slot } => {
                 let result = ledger.with_authenticated_source(&caller, |ledger| {
                     ledger.register_provider_source(&scope)

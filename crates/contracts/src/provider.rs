@@ -55,24 +55,30 @@ impl ProviderPlan {
         if body.get("model").and_then(|v| v.as_str()) != Some(&self.model)
             || body.get("stream") != Some(&serde_json::Value::Bool(true))
             || body.get("n").is_some_and(|v| v.as_u64() != Some(1))
-            || body.get("tools").is_some()
-            || body.get("tool_choice").is_some()
             || body.get("functions").is_some()
             || body.get("function_call").is_some()
         {
-            return Err(Error::Invalid("text-only streaming profile required"));
+            return Err(Error::Invalid("streaming provider envelope required"));
         }
         // A source commitment is not a provider-specific precedence rule.
         // Never let a bounded preferred field hide a competing unbounded cap.
-        let limit = match (body.get("max_completion_tokens"), body.get("max_tokens")) {
-            (Some(value), None) | (None, Some(value)) => value.as_u64(),
+        let limit = match (
+            body.get("max_completion_tokens"),
+            body.get("max_tokens"),
+            body.get("max_output_tokens"),
+        ) {
+            (Some(value), None, None) | (None, Some(value), None) | (None, None, Some(value)) => {
+                value.as_u64()
+            }
             _ => None,
         };
         if limit.is_none_or(|n| n == 0 || n > 4096)
-            || body
-                .get("messages")
-                .and_then(|v| v.as_array())
-                .is_none_or(|m| m.is_empty() || m.len() > 64)
+            || match (body.get("messages"), body.get("input")) {
+                (Some(value), None) | (None, Some(value)) => value
+                    .as_array()
+                    .is_none_or(|m| m.is_empty() || m.len() > 64),
+                _ => true,
+            }
         {
             return Err(Error::Invalid("bounded provider request required"));
         }
@@ -140,6 +146,7 @@ pub enum ProviderEventKind {
     Finish,
     Usage,
     Done,
+    Turn(Box<crate::ProviderTurnEvent>),
 }
 impl ProviderEventKind {
     pub fn as_str(&self) -> &'static str {
@@ -148,6 +155,7 @@ impl ProviderEventKind {
             Self::Finish => "finish",
             Self::Usage => "usage",
             Self::Done => "done",
+            Self::Turn(_) => "turn.v1",
         }
     }
 }

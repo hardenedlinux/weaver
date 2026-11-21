@@ -120,7 +120,7 @@ async fn serve_observed_gateway() {
         .expect("observed server natural shutdown");
 }
 
-fn full_output() -> (Output, QueueReceiver, QueueSender) {
+pub(super) fn full_output() -> (Output, QueueReceiver, QueueSender) {
     let (sender, receiver) = mpsc::channel(2);
     for _ in 0..2 {
         sender
@@ -129,6 +129,7 @@ fn full_output() -> (Output, QueueReceiver, QueueSender) {
     }
     (
         Output {
+            projection: None,
             pending: None,
             deliveries: Default::default(),
             telemetry: std::sync::Arc::new(weaver_telemetry::Metrics::default()),
@@ -152,12 +153,26 @@ async fn wait_for_reservation(sender: &QueueSender) {
     assert_eq!(sender.capacity(), 0);
 }
 fn prepared_ledger(path: &std::path::Path) -> (Ledger, weaver_ledger::ProviderDispatch) {
+    prepared_protocol_ledger(path, None)
+}
+pub(super) fn prepared_protocol_ledger(
+    path: &std::path::Path,
+    protocol: Option<&str>,
+) -> (Ledger, weaver_ledger::ProviderDispatch) {
     let mut ledger = Ledger::open(path).expect("ledger");
     let schema = include_str!("../../../../prod/policies/provider/schema.json");
     ledger
         .publish_typed(None, "permit(principal,action,resource);", schema, 1)
         .expect("policy");
-    let (task, plan) = fixtures::task_plan(16, "https://provider.invalid/v1/chat/completions");
+    let (mut task, mut plan) =
+        fixtures::task_plan(16, "https://provider.invalid/v1/chat/completions");
+    if let Some(protocol) = protocol {
+        let profile = task.provider_profile.as_mut().expect("source profile");
+        profile.protocol = protocol.into();
+        plan.profile_commitment = profile.digest().expect("profile commitment");
+        task.stream_contracts
+            .insert(plan.node.clone(), plan.digest().expect("plan commitment"));
+    }
     ledger.register_task(&task).expect("original task");
     ledger.enqueue_provider(&plan).expect("queue original");
     let permit = ledger
@@ -266,7 +281,7 @@ proptest::proptest! {
         let first=release.first_sequence();
         let events=(0..rows).map(|offset|weaver_contracts::ProviderEvent {sequence:first+offset as u64,kind:weaver_contracts::ProviderEventKind::Delta,text:format!("row-{offset}"),tokens:0}).collect::<Vec<_>>();
         let before=ledger.transaction_timings();
-        let frame=Output::prepare(permit.route(),&permit.plan().model,&events,"arrow").expect("pure encoding");
+        let frame=output.prepare(permit.route(),&permit.plan().model,&events,"arrow").expect("pure encoding");
         proptest::prop_assert!(receiver.try_recv().is_err(),"preparation inserted a frame");
         proptest::prop_assert_eq!(ledger.transaction_timings().transaction_hold.attempts,before.transaction_hold.attempts);
         match fault {

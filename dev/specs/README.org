@@ -39,7 +39,7 @@ resume a claimed message on a different stream, even if it had not yet offered.
 to two canonical semantic intents, many aliases and one shared weighted budget
 and restrictive-history domain. [[file:../../docs/architecture/17-shared-identity-budget-proof.org][The cross-message dossier]] provides exact source
 reuse, new premises, action/theorem correspondence and executable controls.
-[[file:evidence/shared-identity-budget-2026-10-19.org][Its separate evidence receipt]] binds the new artifact bytes and results;
+[[file:../../.cache/verification/evidence/specs/shared-identity-budget-2026-10-19.org][Its separate evidence receipt]] binds the new artifact bytes and results;
 the earlier receipt below remains unchanged.
 
 Lean imports LogicalMessageAuthority and proves that each product transition
@@ -77,7 +77,7 @@ replay in separately selected mutants.
 
 [[file:../../docs/architecture/18-finite-domains-and-migration.org][The finite-domain dossier]] records source reuse, exact theorem/action mappings,
 allowed identity-preserving migration, rejected semantic reparenting and the
-storage/physical premises. [[file:evidence/finite-domains-2026-10-19.org][Its validation receipt]] records exact byte identities,
+storage/physical premises. [[file:../../.cache/verification/evidence/specs/finite-domains-2026-10-19.org][Its validation receipt]] records exact byte identities,
 checked commands, sampling bounds, axiom inventory and retained traces. Earlier
 single-message and two-key artifacts/receipts retain their historical scope.
 
@@ -94,7 +94,7 @@ missing-versus-unknown results, host snapshot rollback, same-height incomplete
 state, independent transport/receiver cuts and deliberately co-rolled-back
 actors. [[file:../../docs/architecture/19-anchor-recovery-and-egress-contract.org][The contract dossier]] makes anchor identity/fate, materialization,
 actual-writer mediation, bounded delegation and receiver authenticity explicit.
-[[file:evidence/anchor-recovery-2026-10-19.org][Its receipt]] records final source hashes, commands, actual results and traces.
+[[file:../../.cache/verification/evidence/specs/anchor-recovery-2026-10-19.org][Its receipt]] records final source hashes, commands, actual results and traces.
 
 The range fixture starts after one claimed range is admitted. The journal
 initialization is separately empty; no automatic end-to-end product/initial-state
@@ -209,7 +209,7 @@ quint run dev/specs/quint/LogicalMessageAuthority.qnt --backend typescript --max
 elan run leanprover/lean4:v4.34.1 lean dev/specs/lean/LogicalMessageAuthority.lean
 #+end_src
 
-The [[file:evidence/2026-10-19.org][local evidence receipt]] records exact scope, artifact identities and results.
+The [[file:../../.cache/verification/evidence/specs/2026-10-19.org][local evidence receipt]] records exact scope, artifact identities and results.
 Quint simulation is sampled exploration, not exhaustive TLC/Apalache checking.
 Lean compilation checks the inductive proof for the declared abstract relation;
 it does not turn those samples into exhaustive Quint model checking. Both are
@@ -305,7 +305,7 @@ one bounded range per canonical message, subordinate to its admitted complete
 message offer; arbitrary multi-range streams need a manifest/sum extension.
 
 [[file:../../docs/architecture/20-composed-journal-transport-lifecycle.org][The composition dossier]] maps source reuse and physical obligations.
-[[file:evidence/composed-lifecycle-2026-10-19.org][The receipt]] records exact hashes, commands, checks and reproducibility.
+[[file:../../.cache/verification/evidence/specs/composed-lifecycle-2026-10-19.org][The receipt]] records exact hashes, commands, checks and reproducibility.
 Owner restart preserves its external durable store by premise; no arbitrary
 owner-image restore is admitted. Full source-to-storage/driver refinement and
 physical acceptance remain pending. No gateway implementation or pin changes.
@@ -330,7 +330,7 @@ and a declared fixed-per-run quota-unit conversion; Lean permits arbitrary
 positive range lengths and admitted quota weights.
 
 [[file:../../docs/architecture/21-finite-stream-manifest-proof.org][The manifest dossier]] records exact source reuse, input/physical premises,
-Scheme/Go/Rust roles and the high-performance path. [[file:evidence/finite-stream-manifest-2026-10-19.org][The new receipt]] retains
+Scheme/Go/Rust roles and the high-performance path. [[file:../../.cache/verification/evidence/specs/finite-stream-manifest-2026-10-19.org][The new receipt]] retains
 checked commands, byte identities, deterministic traces and sampling bounds,
 including an incomplete larger sampling attempt. The previous one-range files
 and receipts retain their original scope. No arbitrary driver reconstruction,
@@ -350,7 +350,7 @@ event. Neither a PID nor an SDK callback proves that fact.
 late receipts, driver versus owner restart and conservative quarantine. Its six
 excluded mutants distinguish semantic violations from direct byte/settlement
 invariant failures. [[file:../../docs/architecture/22-driver-completion-recovery.org][The design dossier]] maps source reuse, proof assumptions and
-physical acceptance. [[file:evidence/driver-completion-recovery-2026-10-19.org][The executable receipt]] records exact scope and commands.
+physical acceptance. [[file:../../.cache/verification/evidence/specs/driver-completion-recovery-2026-10-19.org][The executable receipt]] records exact scope and commands.
 No gateway code, owner dependency pins or original proof receipts are changed.
 
 
@@ -367,7 +367,7 @@ and physical writer isolation remain explicit owner premises.
 [[file:quint/WriterSettlementClosure.qnt][WriterSettlementClosure.qnt]] imports the preceding driver model and adds
 cross-store reply-loss, terminal-branch races, old FD adoption, late/conflicting
 usage and shared-account scenarios. [[file:../../docs/architecture/23-writer-isolation-settlement-closure.org][The dossier]] states event correspondence
-and source reuse; [[file:evidence/writer-settlement-closure-2026-10-19.org][the check receipt]] retains exact commands, bounded runs,
+and source reuse; [[file:../../.cache/verification/evidence/specs/writer-settlement-closure-2026-10-19.org][the check receipt]] retains exact commands, bounded runs,
 negative controls and preliminary diagnostics. No gateway implementation or
 owner dependency pins are changed.
 
@@ -384,7 +384,7 @@ and do not grant authority.
 [[file:quint/SettlementAnchorRecovery.qnt][SettlementAnchorRecovery.qnt]] imports the preceding model and adds account
 response-loss, full-row mixed-snapshot and old-worker controls. Cold and anchored/
 accepted initializers keep sampled scope explicit. [[file:../../docs/architecture/24-settlement-anchor-recovery.org][The dossier]] documents gate
-nonrollback/atomicity premises and [[file:evidence/settlement-anchor-recovery-2026-10-19.org][the receipt]] retains exact checks and failed
+nonrollback/atomicity premises and [[file:../../.cache/verification/evidence/specs/settlement-anchor-recovery-2026-10-19.org][the receipt]] retains exact checks and failed
 fixtures. No gateway implementation, external payment proof or pin changes.
 
 
@@ -400,7 +400,7 @@ shared-account conservation from the initialized finite source relation.
 consumption responses, held old capabilities, fake local results and authentic
 late receipt recovery. Excluded mutants retain actual duplicate writes and
 forbidden boundary events. [[file:../../docs/architecture/25-gate-consumption-persistence.org][The dossier]] defines correspondence and physical
-premises; [[file:evidence/gate-consumption-persistence-2026-10-19.org][the receipt]] retains exact commands, bounds and diagnostics. No
+premises; [[file:../../.cache/verification/evidence/specs/gate-consumption-persistence-2026-10-19.org][the receipt]] retains exact commands, bounds and diagnostics. No
 capability is reconstructed by recovery; unknown burns can prevent progress.
 
 
@@ -416,7 +416,7 @@ The registered single prefix is an owner premise; no consensus algorithm is prov
 [[file:quint/AnchorBrokerCommit.qnt][AnchorBrokerCommit.qnt]] exercises election before actual isolation, lost commit
 responses, late original confirmations, stale activation reads, root/configuration
 substitution and forked-root replay. [[file:../../docs/architecture/26-anchor-commit-broker-fencing.org][The dossier]] defines the exact internal account
-application scope; [[file:evidence/anchor-broker-commit-2026-10-19.org][the receipt]] retains commands, traces, source review and
+application scope; [[file:../../.cache/verification/evidence/specs/anchor-broker-commit-2026-10-19.org][the receipt]] retains commands, traces, source review and
 conditional proof boundaries. No gateway implementation or dependency-pin changes.
 
 
@@ -431,7 +431,7 @@ Quorum-family intersection and native durable publication remain explicit inputs
 [[file:quint/AnchorReconfiguration.qnt][AnchorReconfiguration.qnt]] exercises disjoint majority families, late original
 acknowledgements, stale copied prefixes and elections/fencing during joint transfer.
 [[file:../../docs/architecture/27-anchor-configuration-prefix-inheritance.org][The dossier]] explains erasure to the prior fixed logical namespace; it is proof
-bookkeeping, not a runtime compatibility interface. [[file:evidence/anchor-reconfiguration-2026-10-19.org][The receipt]] retains exact
+bookkeeping, not a runtime compatibility interface. [[file:../../.cache/verification/evidence/specs/anchor-reconfiguration-2026-10-19.org][The receipt]] retains exact
 checks, negative traces and the bounded full-ITF export failure. No gateway code
 or dependency pins are changed.
 
@@ -448,5 +448,5 @@ budget/reservation preservation under explicit native owner premises.
 and four excluded rollback/re-enrollment traces. The full account-replay control
 is rerun in the previous model, not simulated by the small quorum abstraction.
 [[file:../../docs/architecture/28-quorum-durable-promises-prefix-recovery.org][The dossier]] documents the deliberately blocking sticky-prefix profile and
-[[file:evidence/quorum-durable-promises-2026-10-19.org][the receipt]] retains exact bounds, outputs and byte identities. Neither a
+[[file:../../.cache/verification/evidence/specs/quorum-durable-promises-2026-10-19.org][the receipt]] retains exact bounds, outputs and byte identities. Neither a
 consensus implementation nor total-root rollback recovery is proved.

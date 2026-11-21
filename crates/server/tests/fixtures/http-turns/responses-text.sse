@@ -1,0 +1,18 @@
+: SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+: SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+event: response.created
+data: {"type":"response.created","response":{"id":"r2","model":"model-a","status":"in_progress"}}
+
+event: response.output_item.added
+data: {"type":"response.output_item.added","output_index":0,"item":{"id":"m2","type":"message","role":"assistant","content":[]}}
+
+event: response.content_part.added
+data: {"type":"response.content_part.added","item_id":"m2","output_index":0,"content_index":0,"part":{"type":"output_text","text":"","annotations":[]}}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","item_id":"m2","output_index":0,"content_index":0,"delta":"hello"}
+
+event: response.completed
+data: {"type":"response.completed","response":{"id":"r2","model":"model-a","status":"completed","output":[{"id":"m2","type":"message","role":"assistant","status":"completed","content":[{"type":"output_text","text":"hello","annotations":[]}]}],"usage":{"input_tokens":2,"output_tokens":3,"total_tokens":5}}}
+

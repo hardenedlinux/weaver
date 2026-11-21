@@ -5,7 +5,7 @@
 ;;; One owner-local approved source producer. This is a lifecycle contract,
 ;;; not a Governance DSL, module loader, publisher or execution authority.
 (import (only-in :clan/poo/object .o .get .ref seal-object!)
-        (only-in :clan/poo/mop validate)
+        (only-in :clan/poo/type validate)
         (only-in :std/list/list delete-duplicates/hash)
         (only-in :gerbil-ascent/program/scheme-language relational-program)
         (only-in :gerbil-ascent/program/session gerbil-ascent-open-session gerbil-ascent-session-run)

@@ -26,10 +26,10 @@ Decimal under =docs/30-39-assurance/33-device-isolation/=. Executable sources ar
 [[file:../../../dev/proofs/lean/DeviceIsolationRecovery.lean][dev/proofs/lean/DeviceIsolationRecovery.lean]]. The requested =qunit= directory
 contains Quint language models.
 
-[[file:../../../dev/proofs/evidence/device-isolation/source-review.json][Eighteen source blobs]] were rehashed at POO Flow
+[[file:../../../.cache/verification/evidence/proofs/device-isolation/source-review.json][Eighteen source blobs]] were rehashed at POO Flow
 =a74fc2fd63437252175b5a67649ee54b886d3bf4= and cedar-poo-spec
 =c8d1a0641120cf65e299e8a98f9fe7666ca96ab5=. Exact hashes match the registered
-identities. [[file:../../../dev/proofs/evidence/device-isolation/source-boundary-review.log][Targeted numbered excerpts]] distinguish semantic payload/generation
+identities. [[file:../../../.cache/verification/evidence/proofs/device-isolation/source-boundary-review.log][Targeted numbered excerpts]] distinguish semantic payload/generation
 binding and prior committed receipt validity from actual output isolation and
 native durable publication. This source review does not qualify any HSM/driver.
 
@@ -38,45 +38,48 @@ native durable publication. This source review does not qualify any HSM/driver.
 Run from the workspace root:
 
 #+begin_src sh :eval never
-python3 dev/proofs/check_device_isolation.py
+go -C go run ./cmd/weaver-dev -timeout 28m check-policy
 #+end_src
 
-[[file:../../../dev/proofs/evidence/device-isolation/versions.log][Recorded tools]]: Lean =4.34.1=, arm64 Darwin, Std only; Quint =0.33.0=,
+This runs the maintained registered plan. It does not replay the retired
+per-artifact checks or regenerate the historical observations below.
+
+[[file:../../../.cache/verification/evidence/proofs/device-isolation/versions.log][Recorded tools]]: Lean =4.34.1=, arm64 Darwin, Std only; Quint =0.33.0=,
 TypeScript backend. All sixteen Lean modules were rebuilt in the fresh isolated
-directory identified in [[file:../../../dev/proofs/evidence/device-isolation/commands.json][twenty-seven command records]]. These retain exact arguments,
+directory identified in [[file:../../../.cache/verification/evidence/proofs/device-isolation/commands.json][twenty-seven command records]]. These retain exact arguments,
 exits, timings and watchdogs: 20 seconds for compile/typecheck, 55 seconds for
 deterministic routes and 30 seconds for each sampled route. No watchdog was
 widened. Timings measure checks, not HSM or gateway performance.
 
 | Command | Exit | Seconds | Raw output |
 |---------+------+---------+------------|
-| LogicalMessageAuthority | 0 | 0.831 | [[file:../../../dev/proofs/evidence/device-isolation/LogicalMessageAuthority.log][log]] |
-| SharedMessageBudget | 0 | 0.79 | [[file:../../../dev/proofs/evidence/device-isolation/SharedMessageBudget.log][log]] |
-| FiniteDomainMigration | 0 | 0.874 | [[file:../../../dev/proofs/evidence/device-isolation/FiniteDomainMigration.log][log]] |
-| AnchoredRecoveryAndEgress | 0 | 0.657 | [[file:../../../dev/proofs/evidence/device-isolation/AnchoredRecoveryAndEgress.log][log]] |
-| ComposedGatewayLifecycle | 0 | 0.617 | [[file:../../../dev/proofs/evidence/device-isolation/ComposedGatewayLifecycle.log][log]] |
-| FiniteStreamManifest | 0 | 0.82 | [[file:../../../dev/proofs/evidence/device-isolation/FiniteStreamManifest.log][log]] |
-| DriverCompletionRecovery | 0 | 0.552 | [[file:../../../dev/proofs/evidence/device-isolation/DriverCompletionRecovery.log][log]] |
-| WriterSettlementClosure | 0 | 0.715 | [[file:../../../dev/proofs/evidence/device-isolation/WriterSettlementClosure.log][log]] |
-| SettlementAnchorRecovery | 0 | 0.637 | [[file:../../../dev/proofs/evidence/device-isolation/SettlementAnchorRecovery.log][log]] |
-| GateConsumptionPersistence | 0 | 0.595 | [[file:../../../dev/proofs/evidence/device-isolation/GateConsumptionPersistence.log][log]] |
-| AnchorBrokerCommit | 0 | 0.668 | [[file:../../../dev/proofs/evidence/device-isolation/AnchorBrokerCommit.log][log]] |
-| AnchorReconfiguration | 0 | 0.609 | [[file:../../../dev/proofs/evidence/device-isolation/AnchorReconfiguration.log][log]] |
-| QuorumDurablePromises | 0 | 0.489 | [[file:../../../dev/proofs/evidence/device-isolation/QuorumDurablePromises.log][log]] |
-| ProtectedSignerRelease | 0 | 0.554 | [[file:../../../dev/proofs/evidence/device-isolation/ProtectedSignerRelease.log][log]] |
-| KeyBoundaryQueue | 0 | 0.616 | [[file:../../../dev/proofs/evidence/device-isolation/KeyBoundaryQueue.log][log]] |
-| DeviceIsolationRecovery | 0 | 0.825 | [[file:../../../dev/proofs/evidence/device-isolation/DeviceIsolationRecovery.log][log]] |
-| typecheck | 0 | 1.684 | [[file:../../../dev/proofs/evidence/device-isolation/typecheck.log][log]] |
-| tests | 0 | 3.174 | [[file:../../../dev/proofs/evidence/device-isolation/tests.log][log]] |
-| counterexamples | 0 | 2.048 | [[file:../../../dev/proofs/evidence/device-isolation/counterexamples.log][log]] |
-| init | 0 | 1.693 | [[file:../../../dev/proofs/evidence/device-isolation/init.log][log]] |
-| boot | 0 | 1.609 | [[file:../../../dev/proofs/evidence/device-isolation/boot.log][log]] |
-| running | 0 | 1.631 | [[file:../../../dev/proofs/evidence/device-isolation/running.log][log]] |
-| computed | 0 | 1.573 | [[file:../../../dev/proofs/evidence/device-isolation/computed.log][log]] |
-| barrierPending | 0 | 1.901 | [[file:../../../dev/proofs/evidence/device-isolation/barrierPending.log][log]] |
-| freshPending | 0 | 1.665 | [[file:../../../dev/proofs/evidence/device-isolation/freshPending.log][log]] |
-| protected-signer-regression | 0 | 0.825 | [[file:../../../dev/proofs/evidence/device-isolation/protected-signer-regression.log][log]] |
-| inherited-account-replay | 0 | 4.349 | [[file:../../../dev/proofs/evidence/device-isolation/inherited-account-replay.log][log]] |
+| LogicalMessageAuthority | 0 | 0.831 | [[file:../../../.cache/verification/evidence/proofs/device-isolation/LogicalMessageAuthority.log][log]] |
+| SharedMessageBudget | 0 | 0.79 | [[file:../../../.cache/verification/evidence/proofs/device-isolation/SharedMessageBudget.log][log]] |
+| FiniteDomainMigration | 0 | 0.874 | [[file:../../../.cache/verification/evidence/proofs/device-isolation/FiniteDomainMigration.log][log]] |
+| AnchoredRecoveryAndEgress | 0 | 0.657 | [[file:../../../.cache/verification/evidence/proofs/device-isolation/AnchoredRecoveryAndEgress.log][log]] |
+| ComposedGatewayLifecycle | 0 | 0.617 | [[file:../../../.cache/verification/evidence/proofs/device-isolation/ComposedGatewayLifecycle.log][log]] |
+| FiniteStreamManifest | 0 | 0.82 | [[file:../../../.cache/verification/evidence/proofs/device-isolation/FiniteStreamManifest.log][log]] |
+| DriverCompletionRecovery | 0 | 0.552 | [[file:../../../.cache/verification/evidence/proofs/device-isolation/DriverCompletionRecovery.log][log]] |
+| WriterSettlementClosure | 0 | 0.715 | [[file:../../../.cache/verification/evidence/proofs/device-isolation/WriterSettlementClosure.log][log]] |
+| SettlementAnchorRecovery | 0 | 0.637 | [[file:../../../.cache/verification/evidence/proofs/device-isolation/SettlementAnchorRecovery.log][log]] |
+| GateConsumptionPersistence | 0 | 0.595 | [[file:../../../.cache/verification/evidence/proofs/device-isolation/GateConsumptionPersistence.log][log]] |
+| AnchorBrokerCommit | 0 | 0.668 | [[file:../../../.cache/verification/evidence/proofs/device-isolation/AnchorBrokerCommit.log][log]] |
+| AnchorReconfiguration | 0 | 0.609 | [[file:../../../.cache/verification/evidence/proofs/device-isolation/AnchorReconfiguration.log][log]] |
+| QuorumDurablePromises | 0 | 0.489 | [[file:../../../.cache/verification/evidence/proofs/device-isolation/QuorumDurablePromises.log][log]] |
+| ProtectedSignerRelease | 0 | 0.554 | [[file:../../../.cache/verification/evidence/proofs/device-isolation/ProtectedSignerRelease.log][log]] |
+| KeyBoundaryQueue | 0 | 0.616 | [[file:../../../.cache/verification/evidence/proofs/device-isolation/KeyBoundaryQueue.log][log]] |
+| DeviceIsolationRecovery | 0 | 0.825 | [[file:../../../.cache/verification/evidence/proofs/device-isolation/DeviceIsolationRecovery.log][log]] |
+| typecheck | 0 | 1.684 | [[file:../../../.cache/verification/evidence/proofs/device-isolation/typecheck.log][log]] |
+| tests | 0 | 3.174 | [[file:../../../.cache/verification/evidence/proofs/device-isolation/tests.log][log]] |
+| counterexamples | 0 | 2.048 | [[file:../../../.cache/verification/evidence/proofs/device-isolation/counterexamples.log][log]] |
+| init | 0 | 1.693 | [[file:../../../.cache/verification/evidence/proofs/device-isolation/init.log][log]] |
+| boot | 0 | 1.609 | [[file:../../../.cache/verification/evidence/proofs/device-isolation/boot.log][log]] |
+| running | 0 | 1.631 | [[file:../../../.cache/verification/evidence/proofs/device-isolation/running.log][log]] |
+| computed | 0 | 1.573 | [[file:../../../.cache/verification/evidence/proofs/device-isolation/computed.log][log]] |
+| barrierPending | 0 | 1.901 | [[file:../../../.cache/verification/evidence/proofs/device-isolation/barrierPending.log][log]] |
+| freshPending | 0 | 1.665 | [[file:../../../.cache/verification/evidence/proofs/device-isolation/freshPending.log][log]] |
+| protected-signer-regression | 0 | 0.825 | [[file:../../../.cache/verification/evidence/proofs/device-isolation/protected-signer-regression.log][log]] |
+| inherited-account-replay | 0 | 4.349 | [[file:../../../.cache/verification/evidence/proofs/device-isolation/inherited-account-replay.log][log]] |
 
 The final named =Test$= route has 73 passing controls: 35 direct imported
 key-boundary controls and 38 new controls (31 positive/rejection controls and
@@ -92,7 +95,7 @@ liveness evidence or a native reset/driver acceptance result.
 
 * Observed counterexamples
 
-[[file:../../../dev/proofs/evidence/device-isolation/counterexample-observations.json][Decoded final observations]] were checked against seven focused ITFs:
+[[file:../../../.cache/verification/evidence/proofs/device-isolation/counterexample-observations.json][Decoded final observations]] were checked against seven focused ITFs:
 
 - Reset receipt replay accepts a certificate for a different device incarnation.
 - The omitted-FD certificate leaves registered alias 0 outside the manifest and
@@ -109,13 +112,13 @@ an accepted consensus fork, native signature forgery or duplicate payment.
 
 | Excluded rule / artifact | States | Trace |
 |--------------------------+--------+-------|
-| floorScalarWithoutCommitPrefixCounterexampleTest-6.itf | 28 | [[file:../../../dev/proofs/evidence/device-isolation/itf/floorScalarWithoutCommitPrefixCounterexampleTest-6.itf.json][ITF]] |
-| lateCallbackRelabelsNewJobCounterexampleTest-3.itf | 50 | [[file:../../../dev/proofs/evidence/device-isolation/itf/lateCallbackRelabelsNewJobCounterexampleTest-3.itf.json][ITF]] |
-| omittedOldFDIsolationCounterexampleTest-1.itf | 9 | [[file:../../../dev/proofs/evidence/device-isolation/itf/omittedOldFDIsolationCounterexampleTest-1.itf.json][ITF]] |
-| resetForgetsAcceptedFloorIntentCounterexampleTest-5.itf | 34 | [[file:../../../dev/proofs/evidence/device-isolation/itf/resetForgetsAcceptedFloorIntentCounterexampleTest-5.itf.json][ITF]] |
-| resetReceiptReplayCounterexampleTest-0.itf | 32 | [[file:../../../dev/proofs/evidence/device-isolation/itf/resetReceiptReplayCounterexampleTest-0.itf.json][ITF]] |
-| resettableDeviceCounterRestoresFloorCounterexampleTest-4.itf | 29 | [[file:../../../dev/proofs/evidence/device-isolation/itf/resettableDeviceCounterRestoresFloorCounterexampleTest-4.itf.json][ITF]] |
-| retainedDMABufferLeaksOnResetCounterexampleTest-2.itf | 29 | [[file:../../../dev/proofs/evidence/device-isolation/itf/retainedDMABufferLeaksOnResetCounterexampleTest-2.itf.json][ITF]] |
+| floorScalarWithoutCommitPrefixCounterexampleTest-6.itf | 28 | [[file:../../../.cache/verification/evidence/proofs/device-isolation/itf/floorScalarWithoutCommitPrefixCounterexampleTest-6.itf.json][ITF]] |
+| lateCallbackRelabelsNewJobCounterexampleTest-3.itf | 50 | [[file:../../../.cache/verification/evidence/proofs/device-isolation/itf/lateCallbackRelabelsNewJobCounterexampleTest-3.itf.json][ITF]] |
+| omittedOldFDIsolationCounterexampleTest-1.itf | 9 | [[file:../../../.cache/verification/evidence/proofs/device-isolation/itf/omittedOldFDIsolationCounterexampleTest-1.itf.json][ITF]] |
+| resetForgetsAcceptedFloorIntentCounterexampleTest-5.itf | 34 | [[file:../../../.cache/verification/evidence/proofs/device-isolation/itf/resetForgetsAcceptedFloorIntentCounterexampleTest-5.itf.json][ITF]] |
+| resetReceiptReplayCounterexampleTest-0.itf | 32 | [[file:../../../.cache/verification/evidence/proofs/device-isolation/itf/resetReceiptReplayCounterexampleTest-0.itf.json][ITF]] |
+| resettableDeviceCounterRestoresFloorCounterexampleTest-4.itf | 29 | [[file:../../../.cache/verification/evidence/proofs/device-isolation/itf/resettableDeviceCounterRestoresFloorCounterexampleTest-4.itf.json][ITF]] |
+| retainedDMABufferLeaksOnResetCounterexampleTest-2.itf | 29 | [[file:../../../.cache/verification/evidence/proofs/device-isolation/itf/retainedDMABufferLeaksOnResetCounterexampleTest-2.itf.json][ITF]] |
 
 Unsafe rules stay outside =step=. Accepted-intent, callback and export observation
 histories are checker witnesses; an implementation cannot recover erased authority
@@ -125,7 +128,7 @@ not erased by reset in the safe model; final current-context checks reject them.
 
 * Lean result and composition boundary
 
-[[file:../../../dev/proofs/evidence/device-isolation/DeviceIsolationRecovery.log][Fourteen printed theorem reports]] contain no =sorryAx=, added axioms or final
+[[file:../../../.cache/verification/evidence/proofs/device-isolation/DeviceIsolationRecovery.log][Fourteen printed theorem reports]] contain no =sorryAx=, added axioms or final
 compiler errors. Dependencies are none or standard =propext=, =Quot.sound= and
 inherited =Classical.choice=. Checked results include:
 
@@ -196,15 +199,15 @@ Final sources add the forged-archive rejection and unresolved-intent preservatio
 read/admission guards and counterexample; all final routes were rerun to produce
 the 73-control result. No historical receipt or pin is rewritten to hide failures.
 
-[[file:../../../dev/proofs/evidence/device-isolation/document-check.log][English Org/link/source-register checks]],
-[[file:../../../dev/proofs/evidence/device-isolation/org-export.log][Org export without Babel]],
-[[file:../../../dev/proofs/evidence/device-isolation/diagram-validation.json][all core D2 validations]],
-[[file:../../../dev/proofs/evidence/device-isolation/visual-check.log][final SVG inspection]] and
-[[file:../../../dev/proofs/evidence/device-isolation/historical-manifests.log][nine historical manifests]] are independent receipts. The diagram uses bundled
+[[file:../../../.cache/verification/evidence/proofs/device-isolation/document-check.log][English Org/link/source-register checks]],
+[[file:../../../.cache/verification/evidence/proofs/device-isolation/org-export.log][Org export without Babel]],
+[[file:../../../.cache/verification/evidence/proofs/device-isolation/diagram-validation.json][all core D2 validations]],
+[[file:../../../.cache/verification/evidence/proofs/device-isolation/visual-check.log][final SVG inspection]] and
+[[file:../../../.cache/verification/evidence/proofs/device-isolation/historical-manifests.log][nine historical manifests]] are independent receipts. The diagram uses bundled
 Go/Kubernetes/Rust assets and core relationships only. Optional missing htmlize
 source-highlighting diagnostics remain in the Org export log.
 
-[[file:../../../dev/proofs/evidence/device-isolation/SHA256SUMS][The final byte manifest]] covers new formal sources, checking runner, formal
+[[file:../../../.cache/verification/evidence/proofs/device-isolation/SHA256SUMS][The final byte manifest]] covers new formal sources, checking runner, formal
 dependencies, Johnny Decimal artifacts and raw evidence. Native HSM/driver/FD/DMA
 isolation, protected persistence and final broker acceptance remain pending.
 No gateway implementation or dependency-pin change is delivered.

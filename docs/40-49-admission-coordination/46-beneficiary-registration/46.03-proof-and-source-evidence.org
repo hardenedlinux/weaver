@@ -24,17 +24,17 @@ publication images before downstream consumption or activation.
 - Official pipeline phase watchdog (retired Python driver)
 - [[file:../../../dev/proofs/run_beneficiary_registration.cjs][Official load, parse, type/effect analysis and fresh evaluators]]
 - Source-preserving ancestor bundle preparation (retired Python driver)
-- [[file:../../../dev/proofs/evidence/llm-beneficiary-registration/receipt.json][Final classification receipt]]
-- [[file:../../../dev/proofs/evidence/llm-beneficiary-registration/commands.json][Current Lean and Quint phase receipts]]
-- [[file:../../../dev/proofs/evidence/llm-beneficiary-registration/api-commands.json][Current official Quint phase results]]
-- [[file:../../../dev/proofs/evidence/llm-beneficiary-registration/api-invocation.json][Executed source and proof-tool hashes]]
-- [[file:../../../dev/proofs/evidence/llm-beneficiary-registration/typed-stage-summary.json][Official typed IR and installed tool identities]]
-- [[file:../../../dev/proofs/evidence/llm-beneficiary-registration/bundle-certificate.json][Exact ancestor and current-source association]]
-- [[file:../../../dev/proofs/evidence/llm-beneficiary-registration/counterexample-observations.json][Decoded fault and quarantine observations]]
-- [[file:../../../dev/proofs/evidence/llm-beneficiary-registration/source-review.json][Pinned source paths, hashes and exact excerpts]]
-- [[file:../../../dev/proofs/evidence/llm-beneficiary-registration/source-receipt-check.json][Fresh Git object checks]]
-- [[file:../../../dev/proofs/evidence/llm-beneficiary-registration/working-source-check.json][Current checkout source comparison]]
-- [[file:../../../dev/proofs/evidence/llm-beneficiary-registration/SHA256SUMS][Sealed evidence manifest]]
+- [[file:../../../.cache/verification/evidence/proofs/llm-beneficiary-registration/receipt.json][Final classification receipt]]
+- [[file:../../../.cache/verification/evidence/proofs/llm-beneficiary-registration/commands.json][Current Lean and Quint phase receipts]]
+- [[file:../../../.cache/verification/evidence/proofs/llm-beneficiary-registration/api-commands.json][Current official Quint phase results]]
+- [[file:../../../.cache/verification/evidence/proofs/llm-beneficiary-registration/api-invocation.json][Executed source and proof-tool hashes]]
+- [[file:../../../.cache/verification/evidence/proofs/llm-beneficiary-registration/typed-stage-summary.json][Official typed IR and installed tool identities]]
+- [[file:../../../.cache/verification/evidence/proofs/llm-beneficiary-registration/bundle-certificate.json][Exact ancestor and current-source association]]
+- [[file:../../../.cache/verification/evidence/proofs/llm-beneficiary-registration/counterexample-observations.json][Decoded fault and quarantine observations]]
+- [[file:../../../.cache/verification/evidence/proofs/llm-beneficiary-registration/source-review.json][Pinned source paths, hashes and exact excerpts]]
+- [[file:../../../.cache/verification/evidence/proofs/llm-beneficiary-registration/source-receipt-check.json][Fresh Git object checks]]
+- [[file:../../../.cache/verification/evidence/proofs/llm-beneficiary-registration/working-source-check.json][Current checkout source comparison]]
+- [[file:../../../.cache/verification/evidence/proofs/llm-beneficiary-registration/SHA256SUMS][Sealed evidence manifest]]
 
 * Source comparison: reuse and extension
 Nineteen pinned source blobs and all recorded excerpts were freshly verified.
@@ -258,19 +258,15 @@ bound channel cannot be distinguished as a different physical process by this
 model. This design enforces logical execution authority and makes no physical
 isolation or hardware claim.
 
-* Reproduction
-Use an isolated evidence copy to preserve the sealed current and historical receipts.
-The certified ancestor bundle is an input. Rebuild official parser/source-map and
-raw-leaf parser receipts after any source edit; never reuse an IR for changed bytes.
+* Historical reproduction boundary
+The recorded experiment used an isolated evidence copy and a certified ancestor
+bundle. Changed source cannot reuse its official parser/source-map or raw-leaf
+parser receipts. The sealed results retain their original source identities.
 
-#+begin_src sh
-python3 dev/proofs/prepare_beneficiary_registration.py
-quint parse dev/proofs/evidence/llm-beneficiary-registration/bundle/LlmBeneficiaryRegistration.qnt --out dev/proofs/evidence/llm-beneficiary-registration/bundle-parsed.json --source-map dev/proofs/evidence/llm-beneficiary-registration/bundle-source-map.json
-node dev/proofs/evidence/llm-beneficiary-registration/parse-raw-leaf.cjs
-python3 dev/proofs/check_llm_beneficiary_registration.py
-python3 dev/proofs/evidence/llm-beneficiary-registration/check-source-receipts.py
-python3 dev/proofs/evidence/llm-beneficiary-registration/check-working-sources.py
-#+end_src
+The historical reproduction driver and its dependent artifact-checking
+pipeline are retired. This experiment has no maintained equivalent entry;
+its original receipt remains historical evidence. The current registered
+Go verification plan is described in [[file:../../50-59-research-program/59-provider-rpc/59.21-verification-ownership.org][verification ownership]].
 
-The checker reuses only exact current invocation bytes when explicitly requested
-with --reuse-api. Native acceptance remains separate from these model receipts.
+The retired checker's reuse option admitted only exact invocation bytes. That
+historical behavior is not a current command or native acceptance result.

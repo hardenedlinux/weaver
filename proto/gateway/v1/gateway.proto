@@ -16,6 +16,12 @@ service Gateway {
   // Source-only admission. Domain roots and the immutable task commit together.
   rpc RegisterDomainTask(RegisterDomainTaskRequest) returns (Empty);
   rpc RegisterOriginalTask(RegisterOriginalTaskRequest) returns (TaskAdmissionReceipt);
+  // Source-only declaration; operation callers receive no source credential.
+  rpc RegisterProviderSession(ProviderSessionScope) returns (Empty);
+  // Authenticated operation ingress supplies principal; reply is inert plan data.
+  rpc AdmitProviderTurn(SessionTurnSubmission) returns (ProviderPlan);
+  // Operation-only discovery; this is source-scoped data, not a send permit.
+  rpc InspectProviderSession(ProviderSessionQuery) returns (ProviderSessionCatalog);
   rpc RegisterFamilyAlias(FamilyAliasRequest) returns (DomainView);
   rpc MigrateExecutionDomains(DomainMigration) returns (DomainMigrationReceipt);
   rpc InspectExecutionDomains(OperationKey) returns (DomainView);
@@ -129,7 +135,11 @@ enum Encoding { PROTOBUF = 0; ARROW_IPC = 1; }
 message ProviderRequest { ProviderPlan plan = 1; Encoding encoding = 2; uint32 batch_rows = 3; string catalog_version = 4; }
 message ProviderCatalogSnapshot { string version = 1; bytes record = 2; }
 message ProviderCatalogChange { bytes record = 1; }
-message Event { uint64 sequence = 1; string kind = 2; string text = 3; uint64 tokens = 4; }
+message Event {
+  uint64 sequence = 1; string kind = 2; string text = 3; uint64 tokens = 4;
+  // Bounded ProviderTurnEvent v1. Present only for kind=turn.v1; never text JSON.
+  bytes turn_json = 5;
+}
 message ArrowBatch { bytes ipc = 1; uint64 first_sequence = 2; uint32 rows = 3; }
 message ProviderFrame { string target = 1; string model = 2; oneof payload { Event event = 3; ArrowBatch arrow = 4; } }
 message ProviderReceipt { string family = 1; string node = 2; string digest = 3; string state = 4; string target = 5; uint64 reserved = 6; uint64 held = 7; uint64 events = 8; }
@@ -145,6 +155,8 @@ message DomainBinding { string origin = 1; string budget = 2; string history = 3
 message DomainStamp { string origin = 1; string budget_root = 2; string history_root = 3; uint64 budget_epoch = 4; uint64 history_epoch = 5; string task_key = 6; }
 message DomainView { string family = 1; string canonical_family = 2; DomainStamp stamp = 3; uint64 budget_limit = 4; uint64 held = 5; uint64 history_count = 6; }
 message RegisterDomainTaskRequest { Task task = 1; DomainBinding domains = 2; PublicationKey publication = 3; }
+message ProviderSessionScope { Task template = 1; DomainBinding domains = 2; PublicationKey publication = 3; uint64 max_turns = 4; }
+message SessionTurnSubmission { string session = 1; string operation_id = 2; string body = 3; }
 message TaskAdmission { string task_key = 1; string operation_id = 2; uint64 expected_source_epoch = 3; }
 message RegisterOriginalTaskRequest { Task task = 1; DomainBinding domains = 2; TaskAdmission admission = 3; PublicationKey publication = 4; }
 message TaskAdmissionReceipt { string operation_id = 1; string digest = 2; string task_key = 3; string family = 4; string origin = 5; uint64 source_epoch = 6; }
@@ -225,4 +237,11 @@ message ProviderOAuthIssuerRotation {
   uint64 expected_epoch = 1;
   string public_key = 2;
   string signature = 3;
+}
+message ProviderSessionQuery { string session = 1; }
+message ProviderSessionCatalog {
+  string scope_commitment = 1;
+  string version = 2;
+  repeated string models = 3;
+  ProviderProfile profile = 4;
 }

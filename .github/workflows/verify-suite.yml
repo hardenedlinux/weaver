@@ -32,6 +32,7 @@ jobs:
       WEAVER_VERIFY_SUITE: ${{ inputs.suite }}
       # Gerbil std/make defaults to serial compilation without this setting.
       GERBIL_BUILD_CORES: '4'
+      WEAVER_MAGPIE_BIN: ${{ github.workspace }}/.cache/magpie-interoperability/bin/magpie
     steps:
       - name: Check out committed source
         id: checkout
@@ -39,11 +40,6 @@ jobs:
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           persist-credentials: false
-          sparse-checkout-cone-mode: false
-          sparse-checkout: |
-            /*
-            !/dev/proofs/evidence/
-            !/dev/specs/evidence/
       - name: Verify tested revision
         id: source
         timeout-minutes: 1
@@ -66,9 +62,9 @@ jobs:
         run: go -C go run ./cmd/weaver-dev -clean-source -timeout 7m bootstrap-proofs
       - name: Prepare published Scheme SDK
         id: scheme_sdk
-        if: contains(fromJSON('["check-rust", "check-go", "check-policy", "check-scheme", "bench"]'), inputs.suite)
+        if: contains(fromJSON('["check-rust", "check-go", "check-policy", "check-scheme", "check-consumers", "bench"]'), inputs.suite)
         timeout-minutes: 5
-        uses: tao3k/gerbil-scheme-rust/.github/actions/setup-gerbil@bfe803f597a15a3654b70a64c3a039980c31da8a
+        uses: tao3k/gerbil-scheme-rust/.github/actions/setup-gerbil@09f0ce39241c772fe19b3a2bb43b542ba5c5b849
         with:
           release-root: ${{ runner.temp }}/gerbil-sdk
       - name: Prepare macOS Scheme build watchdog
@@ -93,7 +89,12 @@ jobs:
         with:
           path: ${{ runner.temp }}/weaver-gerbil
           key: weaver-scheme-v2-${{ runner.os }}-${{ runner.arch }}-${{ steps.scheme_compiler.outputs.identity }}-${{ hashFiles('gerbil.pkg') }}
-          restore-keys: weaver-scheme-v1-${{ runner.os }}-${{ runner.arch }}-
+          restore-keys: |
+            weaver-scheme-v2-${{ runner.os }}-${{ runner.arch }}-${{ steps.scheme_compiler.outputs.identity }}-
+            weaver-scheme-v2-${{ runner.os }}-${{ runner.arch }}-
+      - name: Keep cached sources across compiler changes
+        if: inputs.suite == 'check-scheme' && steps.scheme_cache.outputs.cache-matched-key != '' && !startsWith(steps.scheme_cache.outputs.cache-matched-key, format('weaver-scheme-v2-{0}-{1}-{2}-', runner.os, runner.arch, steps.scheme_compiler.outputs.identity))
+        run: rm -rf "$RUNNER_TEMP/weaver-gerbil/lib" "$RUNNER_TEMP/weaver-gerbil/bin"
       - name: Install declared Scheme dependencies
         id: scheme_dependencies
         if: inputs.suite == 'check-scheme'
@@ -106,9 +107,29 @@ jobs:
         with:
           path: ${{ runner.temp }}/weaver-gerbil
           key: weaver-scheme-v2-${{ runner.os }}-${{ runner.arch }}-${{ steps.scheme_compiler.outputs.identity }}-${{ hashFiles('gerbil.pkg') }}
+      - name: Check out the standard consumer
+        id: consumer_checkout
+        if: inputs.suite == 'check-consumers'
+        timeout-minutes: 2
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          repository: yetone/magpie
+          ref: f65fe92ef93557e9a2098d2606a4d9c0175a4213
+          path: .data/magpie
+          persist-credentials: false
+      - name: Prepare standard consumer and protocol test executable
+        id: prepare_consumers
+        if: inputs.suite == 'check-consumers'
+        timeout-minutes: 19
+        run: go -C go run ./cmd/weaver-dev -clean-source -timeout 18m prepare-consumers
+      - name: Verify standard Provider interoperability
+        id: verify_consumer
+        if: inputs.suite == 'check-consumers'
+        timeout-minutes: 4
+        run: go -C go run ./cmd/weaver-dev -clean-source -timeout 3m check-consumers
       - name: Verify declared suite
         id: verify_suite
-        if: inputs.suite != 'check-scheme'
+        if: inputs.suite != 'check-scheme' && inputs.suite != 'check-consumers'
         timeout-minutes: 30
         run: go -C go run ./cmd/weaver-dev -clean-source -timeout 28m "$WEAVER_VERIFY_SUITE"
       - name: Verify Scheme modules, Cedar FFI and streaming recovery
@@ -120,7 +141,19 @@ jobs:
         env:
           GERBIL_GXI: ${{ env.GERBIL_PREFIX }}/bin/gxi
           GERBIL_PATH: ${{ runner.temp }}/weaver-gerbil
-        run: go -C go run ./cmd/weaver-dev -clean-source -timeout 35m check-scheme
+        run: |
+          if [ "$RUNNER_OS" = Linux ]; then
+            mkdir -p .cache/verification/scheme-crashes
+            sudo sysctl -w "kernel.core_pattern=$PWD/.cache/verification/scheme-crashes/core.%e.%p"
+            ulimit -c unlimited
+          fi
+          go -C go run ./cmd/weaver-dev -clean-source -timeout 35m check-scheme
+      - name: Read Scheme crash backtraces
+        if: failure() && inputs.suite == 'check-scheme' && runner.os == 'Linux' && steps.verify_scheme.outcome == 'failure'
+        timeout-minutes: 2
+        env:
+          GERBIL_PATH: ${{ runner.temp }}/weaver-gerbil
+        run: bash "$GERBIL_PATH/pkg/github.com/tao3k/gerbil-ascent/tools/ci/capture-runtime-crashes.sh" .cache/verification/scheme-crashes
       - name: Write verification job receipt
         if: always()
         timeout-minutes: 1
@@ -139,6 +172,7 @@ jobs:
               "status": ${{ toJSON(job.status) }},
               "schemeDependencyBudgetMinutes": null,
               "schemeDependencyBuildCores": ${{ inputs.suite == 'check-scheme' && 4 || 'null' }},
+              "consumerRevision": ${{ toJSON(steps.consumer_checkout.outputs.commit || null) }},
               "phases": {
                 "checkout": ${{ toJSON(steps.checkout.outcome || 'skipped') }},
                 "source": ${{ toJSON(steps.source.outcome || 'skipped') }},
@@ -148,6 +182,9 @@ jobs:
                 "schemeSdk": ${{ toJSON(steps.scheme_sdk.outcome || 'skipped') }},
                 "schemeWatchdog": ${{ toJSON(steps.scheme_watchdog.outcome || 'skipped') }},
                 "schemeDependencies": ${{ toJSON(steps.scheme_dependencies.outcome || 'skipped') }},
+                "consumerCheckout": ${{ toJSON(steps.consumer_checkout.outcome || 'skipped') }},
+                "prepareConsumers": ${{ toJSON(steps.prepare_consumers.outcome || 'skipped') }},
+                "verifyConsumer": ${{ toJSON(steps.verify_consumer.outcome || 'skipped') }},
                 "verifySuite": ${{ toJSON(steps.verify_suite.outcome || 'skipped') }},
                 "verifyScheme": ${{ toJSON(steps.verify_scheme.outcome || 'skipped') }}
               }
@@ -166,6 +203,7 @@ jobs:
             .cache/verification/latest-bootstrap-build.json
             .cache/verification/latest-bootstrap-proofs.json
             .cache/verification/latest-bootstrap-scheme.json
+            .cache/verification/latest-prepare-consumers.json
             .cache/verification/latest-${{ inputs.suite }}.json
             .cache/verification/spec/*/receipt.json
           include-hidden-files: true

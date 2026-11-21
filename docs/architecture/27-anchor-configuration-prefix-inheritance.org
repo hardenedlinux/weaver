@@ -28,7 +28,7 @@ No timeout, failed migration or election rolls the configuration back to old-onl
 model; [[file:../../dev/specs/quint/AnchorReconfiguration.qnt][the Quint extension]] exercises concrete majority families, copied-prefix
 faults, elections, late confirmations and actual account replay counterexamples.
 These are formal semantic models, not extracted proofs of Scheme/Go/Rust or a
-consensus engine. [[file:../../dev/specs/evidence/anchor-reconfiguration-2026-10-19.org][The check receipt]] keeps that boundary explicit. [[file:diagrams/28-anchor-configuration-prefix.d2][Canonical D2]]
+consensus engine. [[file:../../.cache/verification/evidence/specs/anchor-reconfiguration-2026-10-19.org][The check receipt]] keeps that boundary explicit. [[file:diagrams/28-anchor-configuration-prefix.d2][Canonical D2]]
 and [[file:diagrams/28-anchor-configuration-prefix.svg][its preview]] contain core design only.
 
 The tracked external effect is the original internal account application. Its
@@ -219,7 +219,7 @@ premises rather than converting them into success assumptions.
 
 * Source-grounded reuse and language responsibilities
 
-[[file:01-reference-comparison.org][The source register]] and [[file:../../dev/specs/evidence/reconfiguration-traces/source-review.json][renewed eighteen-blob review]] retain exact pinned source
+[[file:01-reference-comparison.org][The source register]] and [[file:../../.cache/verification/evidence/specs/reconfiguration-traces/source-review.json][renewed eighteen-blob review]] retain exact pinned source
 identity, including P35's fork and complete lineage-prefix/domain contracts.
 
 | Sources | Reuse | Required extension / limitation |

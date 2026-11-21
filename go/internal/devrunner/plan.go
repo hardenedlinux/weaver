@@ -15,6 +15,10 @@ const providerSpecReviewCase = "^TestProviderRealSPECReviewRevocationLostReplies
 
 const proofToolchain = "leanprover/lean4:v4.35.0"
 
+func consumerCargoArgs() []string {
+	return []string{"test", "-p", "weaver-server", "--lib", "--no-default-features", "--features", "llm-provider,arrow", "--locked", "--offline", "-j", "4"}
+}
+
 func schemeTool() string {
 	if tool := os.Getenv("WEAVER_SCHEME_TOOL"); tool != "" {
 		return tool
@@ -57,6 +61,33 @@ func Plan(goBinary string) []Stage {
 		{"go-decoder-pbt", goBinary, []string{"-C", "go", "test", "./api/v1", "-run", "^$", "-fuzz", "FuzzDecoderNeverPanics", "-fuzztime=3s"}},
 		{"go-stream-pbt", goBinary, []string{"-C", "go", "test", "./internal/streaming", "-run", "^$", "-fuzz", "FuzzMessageBounds", "-fuzztime=3s"}},
 		{"quint-stream-tests", "quint", []string{"test", "dev/proofs/quint/StreamingExecution.qnt", "--main", "StreamingExecution", "--seed", "293"}},
+		{"provider-turn-release-tests", "quint", []string{"test", "dev/proofs/quint/ProviderTurnRelease.qnt", "--main", "ProviderTurnRelease", "--seed", "293"}},
+		{"provider-turn-release-safety", "quint", []string{"run", "dev/proofs/quint/ProviderTurnRelease.qnt", "--main", "ProviderTurnRelease", "--invariant", "safe", "--n-threads", "4", "--max-samples", "256", "--max-steps", "30", "--seed", "293"}},
+		{"session-turn-admission-tests", "quint", []string{"test", "dev/proofs/quint/SessionTurnAdmission.qnt", "--main", "SessionTurnAdmission", "--seed", "293"}},
+		{"session-turn-admission-safety", "quint", []string{"run", "dev/proofs/quint/SessionTurnAdmission.qnt", "--main", "SessionTurnAdmission", "--invariant", "safe", "--max-samples", "256", "--max-steps", "30", "--seed", "293"}},
+		{"agent-config-intent-tests", "quint", []string{"test", "dev/proofs/quint/AgentConfigIntent.qnt", "--main", "AgentConfigIntent", "--seed", "293"}},
+		{"agent-config-intent-safety", "quint", []string{"run", "dev/proofs/quint/AgentConfigIntent.qnt", "--main", "AgentConfigIntent", "--invariant", "safe", "--max-samples", "256", "--max-steps", "30", "--seed", "293"}},
+		{"session-discovery-tests", "quint", []string{"test", "dev/proofs/quint/SessionDiscovery.qnt", "--main", "SessionDiscovery", "--seed", "293"}},
+		{"build-prerequisite-tests", "quint", []string{"test", "dev/proofs/quint/BuildPrerequisites.qnt", "--main", "BuildPrerequisites", "--seed", "293"}},
+		{"build-prerequisite-safety", "quint", []string{"run", "dev/proofs/quint/BuildPrerequisites.qnt", "--main", "BuildPrerequisites", "--invariant", "safe", "--n-threads", "4", "--max-samples", "256", "--max-steps", "30", "--seed", "293"}},
+		{"session-discovery-safety", "quint", []string{"run", "dev/proofs/quint/SessionDiscovery.qnt", "--main", "SessionDiscovery", "--invariant", "safe", "--n-threads", "4", "--max-samples", "256", "--max-steps", "30", "--seed", "293"}},
+		{"stream-coordinates-tests", "quint", []string{"test", "dev/proofs/quint/StreamCoordinates.qnt", "--main", "StreamCoordinates", "--seed", "293"}},
+		{"stream-projection-tests", "quint", []string{"test", "dev/proofs/quint/StreamProjection.qnt", "--main", "StreamProjection", "--seed", "293"}},
+		{"prepared-snapshot-tests", "quint", []string{"test", "dev/proofs/quint/PreparedSnapshot.qnt", "--main", "PreparedSnapshot", "--seed", "293"}},
+		{"retained-selection-tests", "quint", []string{"test", "dev/proofs/quint/RetainedSelection.qnt", "--main", "RetainedSelection", "--seed", "293"}},
+		{"retained-selection-safety", "quint", []string{"run", "dev/proofs/quint/RetainedSelection.qnt", "--main", "RetainedSelection", "--invariant", "safe", "--n-threads", "4", "--max-samples", "256", "--max-steps", "30", "--seed", "293"}},
+		{"http-operation-tests", "quint", []string{"test", "dev/proofs/quint/HttpOperation.qnt", "--main", "HttpOperation", "--seed", "293"}},
+		{"http-delivery-credit-tests", "quint", []string{"test", "dev/proofs/quint/HttpDeliveryCredit.qnt", "--main", "HttpDeliveryCredit", "--seed", "293"}},
+		{"http-delivery-credit-safety", "quint", []string{"run", "dev/proofs/quint/HttpDeliveryCredit.qnt", "--main", "HttpDeliveryCredit", "--invariant", "safe", "--n-threads", "4", "--max-samples", "256", "--max-steps", "30", "--seed", "293"}},
+		{"http-delivery-paused-prefix-safety", "quint", []string{"run", "dev/proofs/quint/HttpDeliveryCredit.qnt", "--main", "HttpDeliveryCredit", "--init", "second", "--invariant", "safe", "--n-threads", "4", "--max-samples", "256", "--max-steps", "30", "--seed", "293"}},
+		{"http-operation-safety", "quint", []string{"run", "dev/proofs/quint/HttpOperation.qnt", "--main", "HttpOperation", "--invariant", "safe", "--n-threads", "4", "--max-samples", "256", "--max-steps", "30", "--seed", "293"}},
+		{"prepared-snapshot-safety", "quint", []string{"run", "dev/proofs/quint/PreparedSnapshot.qnt", "--main", "PreparedSnapshot", "--invariant", "safe", "--n-threads", "4", "--max-samples", "256", "--max-steps", "30", "--seed", "293"}},
+		{"stream-projection-safety", "quint", []string{"run", "dev/proofs/quint/StreamProjection.qnt", "--main", "StreamProjection", "--invariant", "safe", "--n-threads", "4", "--max-samples", "256", "--max-steps", "30", "--seed", "293"}},
+		{"stream-coordinates-safety", "quint", []string{"run", "dev/proofs/quint/StreamCoordinates.qnt", "--main", "StreamCoordinates", "--invariant", "safe", "--n-threads", "4", "--max-samples", "256", "--max-steps", "30", "--seed", "293"}},
+		{"message-block-order-tests", "quint", []string{"test", "dev/proofs/quint/MessageBlockOrder.qnt", "--main", "MessageBlockOrder", "--seed", "293"}},
+		{"message-block-order-safety", "quint", []string{"run", "dev/proofs/quint/MessageBlockOrder.qnt", "--main", "MessageBlockOrder", "--invariant", "safe", "--n-threads", "4", "--max-samples", "256", "--max-steps", "30", "--seed", "293"}},
+		{"config-recovery-design-tests", "quint", []string{"test", "dev/proofs/quint/ConfigRecoveryDesign.qnt", "--main", "ConfigRecoveryDesign", "--seed", "293"}},
+		{"config-recovery-design-safety", "quint", []string{"run", "dev/proofs/quint/ConfigRecoveryDesign.qnt", "--main", "ConfigRecoveryDesign", "--invariant", "safe", "--n-threads", "4", "--max-samples", "256", "--max-steps", "30", "--seed", "293"}},
 		{"quint-stream-safety", "quint", []string{"run", "dev/proofs/quint/StreamingExecution.qnt", "--main", "StreamingExecution", "--invariant", "safe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
 		{"quint-lifecycle-tests", "quint", []string{"test", "dev/proofs/quint/RuntimeLifecycle.qnt", "--main", "RuntimeLifecycle", "--seed", "293"}},
 		{"quint-lifecycle-safety", "quint", []string{"run", "dev/proofs/quint/RuntimeLifecycle.qnt", "--main", "RuntimeLifecycle", "--invariant", "safe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
@@ -158,7 +189,7 @@ func Plan(goBinary string) []Stage {
 		{"publication-lean", "elan", []string{"run", proofToolchain, "lean", "--json", "dev/proofs/lean/PublicationRecovery.lean"}},
 		{"source-owner-quint-tests", "quint", []string{"test", "dev/proofs/quint/SourceOwner.qnt", "--main", "SourceOwner", "--seed", "293"}},
 		{"source-owner-quint-safety", "quint", []string{"run", "dev/proofs/quint/SourceOwner.qnt", "--main", "SourceOwner", "--invariant", "safe", "--max-samples", "1000", "--max-steps", "60", "--seed", "293"}},
-		{"go-provider-server-build", "cargo", []string{"build", "--release", "-p", "weaver-server", "--bin", "weaver-server", "--features", "arrow", "--locked", "--offline", "-j", "4"}},
+		{"go-provider-server-build", "cargo", []string{"build", "--release", "-p", "weaver-server", "--bins", "--features", "arrow", "--locked", "--offline", "-j", "4"}},
 		{"go-provider-observer-build", "cargo", []string{"test", "--release", "-p", "weaver-server", "--lib", "--features", "arrow", "--locked", "--offline", "-j", "4", "--no-run"}},
 		{"go-provider-grpc-integration", goBinary, []string{"-C", "go", "test", "-json", "-count=1", "-race", "-tags=integration", "-timeout=10m", "./dev", "-run", "TestProvider", "-skip", providerSpecReviewCase}},
 		{"policy-provider-spec-integration", goBinary, []string{"-C", "go", "test", "-count=1", "-race", "-tags=integration", "-timeout=4m", "./dev", "-run", providerSpecReviewCase, "-v"}},
@@ -186,6 +217,13 @@ func Stages(mode, goBinary string) ([]Stage, error) {
 
 func stagesForMode(mode, goBinary string) ([]Stage, error) {
 	switch mode {
+	case "prepare-consumers":
+		return []Stage{
+			{"consumer-cli-build", goBinary, []string{"-C", ".data/magpie", "build", "-tags", "nogui", "-p", "4", "-o", "../../.cache/magpie-interoperability/bin/magpie", "."}},
+			{"consumer-runtime-build", "cargo", append(consumerCargoArgs(), "--no-run")},
+		}, nil
+	case "check-consumers":
+		return []Stage{{"consumer-protocol-integration", "cargo", append(consumerCargoArgs(), "magpie_standard_provider_preserves_three_protocol_tool_turns", "--", "--ignored", "--test-threads=4")}}, nil
 	case "bootstrap":
 		return []Stage{
 			{"rust-dependencies", "cargo", []string{"fetch", "--locked"}},
@@ -211,10 +249,22 @@ func stagesForMode(mode, goBinary string) ([]Stage, error) {
 		}
 		return append(selected, Stage{"storage-grpc-integration", goBinary, []string{"-C", "go", "test", "-count=1", "-race", "-tags=integration", "./dev", "-run", "^TestProvider", "-v"}}), nil
 	case "bootstrap-scheme":
-		// The package manager's public script API owns the same recursive
-		// installation and version checks without generating an editor TAGS index.
+		// Update cached checkouts with the package manager before installation.
+		// Native APIs own manifests, fetching, tag checks and incremental builds.
 		return []Stage{{"scheme-dependencies", schemeTool(), []string{"-:1n,2n", "interactive", "-e",
-			`(import :gerbil/tools/gxpkg) (with-pkg-build-env (for-each pkg-install (pgetq depend: (pkg-plist ".") '())))`}}}, nil
+			`(import :gerbil/tools/gxpkg)
+(with-pkg-build-env
+  (def installed (pkg-list))
+  (def updated (make-hash-table))
+  (def (update-installed dependency)
+    (def package (car (string-split dependency #\@)))
+    (when (and (member package installed) (not (hash-get updated dependency)))
+      (pkg-update dependency)
+      (hash-put! updated dependency #t)
+      (for-each update-installed (pgetq depend: (pkg-plist package) '()))))
+  (def dependencies (pgetq depend: (pkg-plist ".") '()))
+  (for-each update-installed dependencies)
+  (for-each pkg-install dependencies))`}}}, nil
 	case "bootstrap-build", "bootstrap-proofs":
 		stages, err := stagesForMode("bootstrap", goBinary)
 		if err != nil {
@@ -258,7 +308,7 @@ func stagesForMode(mode, goBinary string) ([]Stage, error) {
 			{"scheme-policy-preflight", "cargo", []string{"test", "-p", "weaver-policy-ffi", "--lib", "--benches", "--locked", "--offline"}},
 			{"scheme-policy-pkg-config", "cargo", []string{"run", "-p", "weaver-policy-ffi", "--example", "policy_pkg_config", "--locked", "--offline"}},
 			{"scheme-module-build", "./build.ss", []string{"compile", "--debug"}},
-			{"scheme-build-environment-tests", goBinary, []string{"-C", "go", "test", "-count=1", "-race", "-tags=schemeintegration", "./internal/devrunner", "-run", "^(Test(SchemePkgConfig|SchemeTool|SchemePackageResult|SchemeTestInventory|SchemeUsesPackageTestEntry|SourceInputsWithArchived)|FuzzSchemePackageResultProtocol)", "-v"}},
+			{"scheme-build-environment-tests", goBinary, []string{"-C", "go", "test", "-count=1", "-race", "-tags=schemeintegration", "./internal/devrunner", "-run", "^(Test(SchemePkgConfig|SchemeTool|SchemePackageResult|SchemeTestInventory|SchemeUsesPackageTestEntry|SourceInputsWithoutGenerated)|FuzzSchemePackageResultProtocol)", "-v"}},
 			// Package tools own discovery, execution and result reporting. Historical
 			// direct-gxi image experiments are not a prerequisite for gerbil test.
 			{"scheme-unit-tests", schemeTool(), []string{"test", "-g", "-v", "5", "t"}},

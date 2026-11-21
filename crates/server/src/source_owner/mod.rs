@@ -5,6 +5,7 @@
 //! Source command admission and the affine ledger worker.
 mod command;
 mod handle;
+mod session;
 mod worker;
 
 pub(crate) use handle::{OperationResolver, SourceOwner};

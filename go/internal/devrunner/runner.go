@@ -291,6 +291,10 @@ func runStageObserved(ctx context.Context, root, directory string, environment [
 	// commands retain their own acceptance timeout after preparation.
 	deadline := time.Duration(0)
 	switch stage.Name {
+	case "consumer-cli-build", "consumer-runtime-build":
+		deadline = 8 * time.Minute
+	case "consumer-protocol-integration":
+		deadline = 2 * time.Minute
 	case "scheme-module-build":
 		deadline = schemeModuleBuildTimeout
 	case "scheme-provider-server-build":

@@ -15,6 +15,81 @@ use weaver_ledger::Ledger;
 
 #[tonic::async_trait]
 impl pb::gateway_server::Gateway for Gateway {
+    async fn inspect_provider_session(
+        &self,
+        request: Request<pb::ProviderSessionQuery>,
+    ) -> Result<Response<pb::ProviderSessionCatalog>, Status> {
+        self.authenticate(&request, RpcRole::Operation)?;
+        let catalog = self
+            .routing
+            .session_catalog(request.into_inner().session, self.config.principal.clone())
+            .await?;
+        Ok(Response::new(pb::ProviderSessionCatalog {
+            scope_commitment: catalog.scope_commitment,
+            version: catalog.version,
+            models: catalog.models,
+            profile: Some(crate::source_artifact::profile(&catalog.profile)),
+        }))
+    }
+    async fn register_provider_session(
+        &self,
+        request: Request<pb::ProviderSessionScope>,
+    ) -> Result<Response<pb::Empty>, Status> {
+        let caller = self.source_identity(&request)?;
+        let r = request.into_inner();
+        let template = r
+            .template
+            .ok_or(Status::invalid_argument("Session template required"))?;
+        let domains = r
+            .domains
+            .ok_or(Status::invalid_argument("Session domains required"))?;
+        let publication = r
+            .publication
+            .ok_or(Status::invalid_argument("Session publication required"))?;
+        self.ingress
+            .source()?
+            .register_session(
+                caller,
+                weaver_contracts::ProviderSessionScope {
+                    template: task_contract(template),
+                    domains: weaver_contracts::DomainBinding {
+                        origin: domains.origin,
+                        budget: domains.budget,
+                        history: domains.history,
+                        budget_limit: domains.budget_limit,
+                    },
+                    publication: weaver_contracts::PublicationKey {
+                        operation_id: publication.operation_id,
+                        digest: publication.digest,
+                    },
+                    max_turns: r.max_turns,
+                },
+            )
+            .await?;
+        Ok(Response::new(pb::Empty {}))
+    }
+    async fn admit_provider_turn(
+        &self,
+        request: Request<pb::SessionTurnSubmission>,
+    ) -> Result<Response<pb::ProviderPlan>, Status> {
+        self.authenticate(&request, RpcRole::Operation)?;
+        let r = request.into_inner();
+        let derived = self
+            .routing
+            .admit_turn(
+                &self.runtime,
+                weaver_ledger::ProviderSessionRequest {
+                    session: r.session,
+                    principal: self.config.principal.clone(),
+                    submission: weaver_contracts::ProviderTurnSubmission {
+                        operation_id: r.operation_id,
+                        body: r.body,
+                    },
+                },
+            )
+            .await?;
+        Ok(Response::new(crate::source_artifact::plan(&derived.plan)))
+    }
     async fn inspect_hard_fact(
         &self,
         request: Request<pb::Empty>,
