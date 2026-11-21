@@ -3,13 +3,13 @@
 ;;; SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 ;;; Native source fixture for cross-language integration; no Go governance DSL.
-(import :agentic-ai-lab/modules/loop-engine/control/governor
-        :agentic-ai-lab/modules/governance/interface
-        (only-in :agentic-ai-lab/modules/authorization/providers/cedar/objects agentic-ai-lab-cedar-policy)
+(import :tao3k/agentic-ai-lab/modules/loop-engine/control/governor
+        :tao3k/agentic-ai-lab/modules/governance/interface
+        (only-in :tao3k/agentic-ai-lab/modules/authorization/providers/cedar/objects agentic-ai-lab-cedar-policy)
         :hardenedlinux/weaver/scheme/gateway/provider-source
         (only-in :clan/poo/object .o .ref)
         :hardenedlinux/weaver/scheme/gateway/func)
-(export capture-control-fixture prepare-control-fixture)
+(export capture-control-fixture prepare-control-fixture capture-compiled-control-fixture)
 
 (trace-gateway-source-phase "fixture-module-ready")
 
@@ -19,7 +19,10 @@
 (def (prepare-control-fixture init mode tasks plans publication asset-root)
   (control-fixture init mode tasks plans publication asset-root #t))
 
-(def (control-fixture init mode tasks plans publication asset-root (preparation? #f))
+(def (capture-compiled-control-fixture gateway mode tasks plans publication asset-root)
+  (control-fixture gateway mode tasks plans publication asset-root #f capture-compiled-gateway))
+
+(def (control-fixture init mode tasks plans publication asset-root (preparation? #f) (compiled-capture #f))
   (trace-gateway-source-phase "fixture-enter")
   (def prefixed? (string-prefix? "capture-" mode))
   (when prefixed? (set! mode (substring mode 8 (string-length mode))))
@@ -80,7 +83,7 @@
               (else assessment))))))
   (trace-gateway-source-phase "compile-begin")
   (let ((result (parameterize ((gateway-source-phase-observer trace-gateway-source-phase))
-                  ((if preparation? prepare-governed-gateway capture-governed-gateway)
+                  ((or compiled-capture (if preparation? prepare-governed-gateway capture-governed-gateway))
                         init (make-loop-governor 'weaver strategy overrides)
                         profile (if session?
                                   (.o request: 'publish source_root: asset-root session: (if nested? (nested-workflow-session) (workflow-session dag? choice?)))

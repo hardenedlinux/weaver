@@ -61,6 +61,9 @@ pub struct Message {
     /// Stateless OpenAI Responses output to replay for this assistant turn.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub responses_output: Option<crate::ResponsesOutput>,
+    /// Anthropic content blocks required for lossless continuation.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub anthropic_output: Option<crate::AnthropicOutput>,
 }
 
 /// A function the Harness offers to the model.
@@ -164,6 +167,94 @@ impl ResponseFormat {
     }
 }
 
+/// Anthropic Messages thinking mode; model support depends on the provider.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum AnthropicThinking {
+    /// Model decides when and how much to think.
+    Adaptive,
+    /// Manual thinking budget for models supporting extended thinking.
+    Enabled { budget_tokens: u32 },
+    /// Explicitly disable thinking where the selected model supports it.
+    Disabled,
+}
+
+impl<'de> Deserialize<'de> for AnthropicThinking {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        #[derive(Deserialize)]
+        #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
+        enum Repr {
+            Adaptive {},
+            Enabled { budget_tokens: u32 },
+            Disabled {},
+        }
+        Ok(match Repr::deserialize(deserializer)? {
+            Repr::Adaptive {} => Self::Adaptive,
+            Repr::Enabled { budget_tokens } => Self::Enabled { budget_tokens },
+            Repr::Disabled {} => Self::Disabled,
+        })
+    }
+}
+
+/// Anthropic output effort; model support depends on the provider.
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "lowercase")]
+pub enum AnthropicEffort {
+    Low,
+    Medium,
+    High,
+    Max,
+}
+
+/// Optional Anthropic generation settings for a configured provider route.
+#[derive(Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct AnthropicSettings {
+    /// Thinking mode, if explicitly configured.
+    pub thinking: Option<AnthropicThinking>,
+    /// Output effort, if explicitly configured.
+    pub effort: Option<AnthropicEffort>,
+    /// Maximum generated tokens, including any thinking budget.
+    pub max_tokens: Option<u32>,
+}
+
+impl AnthropicSettings {
+    /// Validate and translate the settings into library request options.
+    ///
+    /// # Errors
+    /// Rejects a non-Anthropic route or an invalid thinking budget.
+    pub fn options(self, protocol: Protocol) -> Result<Options, Error> {
+        if protocol != Protocol::Anthropic || self.max_tokens == Some(0) {
+            return Err(Error::Request("invalid Anthropic generation settings"));
+        }
+        validate_anthropic_options(protocol, self.thinking, self.effort, self.max_tokens)?;
+        Ok(Options {
+            anthropic_thinking: self.thinking,
+            anthropic_effort: self.effort,
+            max_tokens: self.max_tokens,
+            ..Options::default()
+        })
+    }
+}
+
+fn validate_anthropic_options(
+    protocol: Protocol,
+    thinking: Option<AnthropicThinking>,
+    effort: Option<AnthropicEffort>,
+    max_tokens: Option<u32>,
+) -> Result<(), Error> {
+    if protocol != Protocol::Anthropic && (thinking.is_some() || effort.is_some()) {
+        return Err(Error::Request(
+            "Anthropic thinking options require Anthropic Messages",
+        ));
+    }
+    if let Some(AnthropicThinking::Enabled { budget_tokens }) = thinking
+        && (budget_tokens < 1024 || budget_tokens >= max_tokens.unwrap_or(1024))
+    {
+        return Err(Error::Request("invalid Anthropic thinking budget"));
+    }
+    Ok(())
+}
+
 /// Portable generation options. Unsupported provider options are rejected.
 #[derive(Clone, Debug, Default, Serialize)]
 pub struct Options {
@@ -179,6 +270,12 @@ pub struct Options {
     /// Request terminal usage on OpenAI-compatible streams that support it.
     #[serde(skip)]
     pub stream_usage: bool,
+    /// Explicit thinking mode for Anthropic Messages.
+    #[serde(skip)]
+    pub anthropic_thinking: Option<AnthropicThinking>,
+    /// Explicit output effort for Anthropic Messages.
+    #[serde(skip)]
+    pub anthropic_effort: Option<AnthropicEffort>,
     /// Sampling temperature.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub temperature: Option<f32>,
@@ -238,6 +335,8 @@ impl Request<'_> {
                 ((!message.tool_calls.is_empty() || message.responses_output.is_some())
                     && message.role != Role::Assistant)
                     || (message.responses_output.is_some() && protocol != Protocol::OpenAiResponses)
+                    || (message.anthropic_output.is_some()
+                        && (protocol != Protocol::Anthropic || message.role != Role::Assistant))
                     || (message.role == Role::Tool
                         && message.tool_call_id.as_deref().is_none_or(str::is_empty))
                     || (message.role != Role::Tool && message.tool_call_id.is_some())
@@ -247,6 +346,15 @@ impl Request<'_> {
             })
         {
             return Err(Error::Request("invalid tool definition, call or result"));
+        }
+        validate_anthropic_options(
+            protocol,
+            self.options.anthropic_thinking,
+            self.options.anthropic_effort,
+            self.options.max_tokens,
+        )?;
+        for message in self.messages {
+            crate::responses::validate_continuation(message)?;
         }
         self.validate_images()?;
         let tool_choice = self.options.tool_choice.as_ref();
@@ -368,14 +476,29 @@ impl Request<'_> {
             .collect();
         let mut payload = json!({
             "model": self.model,
-            "messages": anthropic_turns(turns),
+            "messages": anthropic_turns(turns)?,
             "stream": stream,
             "max_tokens": self.options.max_tokens.unwrap_or(1024),
         });
+        let mut output_config = serde_json::Map::new();
+        if let Some(format) = response_format {
+            output_config.insert("format".into(), format);
+        }
+        if let Some(effort) = self.options.anthropic_effort {
+            output_config.insert("effort".into(), json!(effort));
+        }
+        let thinking = self.options.anthropic_thinking.map(|mode| match mode {
+            AnthropicThinking::Adaptive => json!({"type": "adaptive"}),
+            AnthropicThinking::Enabled { budget_tokens } => {
+                json!({"type": "enabled", "budget_tokens": budget_tokens})
+            }
+            AnthropicThinking::Disabled => json!({"type": "disabled"}),
+        });
         for (key, value) in [
+            ("thinking", thinking),
             ("system", (!system.is_empty()).then(|| json!(system))),
             ("tool_choice", tool_choice),
-            ("output_config", response_format.map(|format| json!({"format": format}))),
+            ("output_config", (!output_config.is_empty()).then_some(Value::Object(output_config))),
             ("tools", (!self.options.tools.is_empty()).then(|| json!(
                 self.options.tools.iter().map(|tool| json!({
                     "name": tool.name, "description": tool.description, "input_schema": tool.parameters,
@@ -447,7 +570,7 @@ impl<'a> From<&'a Message> for OpenAiMessage<'a> {
     }
 }
 
-fn anthropic_turns(turns: &[Message]) -> Vec<Value> {
+fn anthropic_turns(turns: &[Message]) -> Result<Vec<Value>, Error> {
     let mut encoded = Vec::with_capacity(turns.len());
     let mut results = Vec::new();
     for message in turns {
@@ -459,6 +582,15 @@ fn anthropic_turns(turns: &[Message]) -> Vec<Value> {
         }
         if !results.is_empty() {
             encoded.push(json!({"role": "user", "content": std::mem::take(&mut results)}));
+        }
+        if let Some(output) = &message.anthropic_output {
+            if !output.matches(message) {
+                return Err(Error::Request(
+                    "Anthropic output does not match assistant message",
+                ));
+            }
+            encoded.push(json!({"role": "assistant", "content": output.0}));
+            continue;
         }
         if !message.images.is_empty() {
             let content = content_blocks(&message.content, &message.images, Protocol::Anthropic);
@@ -483,7 +615,7 @@ fn anthropic_turns(turns: &[Message]) -> Vec<Value> {
     if !results.is_empty() {
         encoded.push(json!({"role": "user", "content": results}));
     }
-    encoded
+    Ok(encoded)
 }
 
 /// Provider-reported token usage.
@@ -564,6 +696,7 @@ fn openai_message<'de, D: serde::Deserializer<'de>>(value: D) -> Result<Message,
         tool_call_id: None,
         tool_calls,
         responses_output: None,
+        anthropic_output: None,
     })
 }
 
@@ -645,19 +778,8 @@ impl Completion {
         {
             return Err(Error::Refused);
         }
-        let mut content = String::new();
-        let mut tool_calls = Vec::new();
-        for block in response.content {
-            match block["type"].as_str() {
-                Some("text") => content.push_str(block["text"].as_str().ok_or(Error::Response)?),
-                Some("tool_use") => tool_calls.push(ToolCall {
-                    id: block["id"].as_str().ok_or(Error::Response)?.into(),
-                    name: block["name"].as_str().ok_or(Error::Response)?.into(),
-                    arguments: block["input"].clone(),
-                }),
-                _ => return Err(Error::Response),
-            }
-        }
+        let (anthropic_output, content, tool_calls) =
+            crate::AnthropicOutput::parse(response.content)?;
         Ok(Self {
             id: response.id,
             model: response.model,
@@ -671,6 +793,7 @@ impl Completion {
                     tool_call_id: None,
                     tool_calls,
                     responses_output: None,
+                    anthropic_output: Some(anthropic_output),
                 },
                 finish_reason: response.stop_reason,
             }],

@@ -1965,7 +1965,7 @@ dependencies = [
 [[package]]
 name = "gerbil-scheme"
 version = "0.1.0"
-source = "git+https://github.com/tao3k/gerbil-scheme-rust?rev=bfe803f597a15a3654b70a64c3a039980c31da8a#bfe803f597a15a3654b70a64c3a039980c31da8a"
+source = "git+https://github.com/tao3k/gerbil-scheme-rust?rev=09f0ce39241c772fe19b3a2bb43b542ba5c5b849#09f0ce39241c772fe19b3a2bb43b542ba5c5b849"
 dependencies = [
  "gerbil-scheme-rust-project-harness-policy",
  "gerbil-scheme-sys",
@@ -1975,7 +1975,7 @@ dependencies = [
 [[package]]
 name = "gerbil-scheme-aot-build"
 version = "0.1.0"
-source = "git+https://github.com/tao3k/gerbil-scheme-rust?rev=bfe803f597a15a3654b70a64c3a039980c31da8a#bfe803f597a15a3654b70a64c3a039980c31da8a"
+source = "git+https://github.com/tao3k/gerbil-scheme-rust?rev=09f0ce39241c772fe19b3a2bb43b542ba5c5b849#09f0ce39241c772fe19b3a2bb43b542ba5c5b849"
 dependencies = [
  "cbindgen",
  "cc",
@@ -1990,7 +1990,7 @@ dependencies = [
 [[package]]
 name = "gerbil-scheme-rust-project-harness"
 version = "0.1.2"
-source = "git+https://github.com/tao3k/gerbil-scheme-rust?rev=bfe803f597a15a3654b70a64c3a039980c31da8a#bfe803f597a15a3654b70a64c3a039980c31da8a"
+source = "git+https://github.com/tao3k/gerbil-scheme-rust?rev=09f0ce39241c772fe19b3a2bb43b542ba5c5b849#09f0ce39241c772fe19b3a2bb43b542ba5c5b849"
 dependencies = [
  "cargo-lock",
  "cargo_toml",
@@ -2008,7 +2008,7 @@ dependencies = [
 [[package]]
 name = "gerbil-scheme-rust-project-harness-policy"
 version = "0.1.0"
-source = "git+https://github.com/tao3k/gerbil-scheme-rust?rev=bfe803f597a15a3654b70a64c3a039980c31da8a#bfe803f597a15a3654b70a64c3a039980c31da8a"
+source = "git+https://github.com/tao3k/gerbil-scheme-rust?rev=09f0ce39241c772fe19b3a2bb43b542ba5c5b849#09f0ce39241c772fe19b3a2bb43b542ba5c5b849"
 dependencies = [
  "gerbil-scheme-rust-project-harness",
 ]
@@ -2016,7 +2016,7 @@ dependencies = [
 [[package]]
 name = "gerbil-scheme-sys"
 version = "0.1.0"
-source = "git+https://github.com/tao3k/gerbil-scheme-rust?rev=bfe803f597a15a3654b70a64c3a039980c31da8a#bfe803f597a15a3654b70a64c3a039980c31da8a"
+source = "git+https://github.com/tao3k/gerbil-scheme-rust?rev=09f0ce39241c772fe19b3a2bb43b542ba5c5b849#09f0ce39241c772fe19b3a2bb43b542ba5c5b849"
 dependencies = [
  "gerbil-scheme-aot-build",
  "gerbil-scheme-rust-project-harness-policy",
@@ -6326,6 +6326,7 @@ dependencies = [
  "tokio-rustls",
  "weaver-contracts",
  "weaver-ledger",
+ "weaver-llm",
 ]
 
 [[package]]
@@ -6368,6 +6369,7 @@ dependencies = [
  "asp-rust",
  "criterion",
  "gerbil-scheme-aot-build",
+ "serde_json",
 ]
 
 [[package]]
@@ -6386,6 +6388,7 @@ dependencies = [
  "serde",
  "serde_json",
  "tempfile",
+ "tokio",
  "tracing",
  "tracing-subscriber",
  "weaver-contracts",
@@ -6462,11 +6465,14 @@ dependencies = [
  "arrow-schema",
  "asp-rust",
  "base64 0.22.1",
+ "bytes",
  "criterion",
  "futures-util",
  "gerbil-scheme",
- "gerbil-scheme-sys",
+ "h2",
  "hex",
+ "http-body-util",
+ "hyper",
  "jsonwebtoken",
  "k8s-openapi",
  "kube",
@@ -6475,6 +6481,7 @@ dependencies = [
  "prost",
  "rand 0.8.8",
  "rcgen",
+ "reqwest",
  "ring",
  "rsa",
  "rustls",
@@ -6500,6 +6507,7 @@ dependencies = [
  "weaver-llm",
  "weaver-policy-ffi",
  "weaver-telemetry",
+ "zeroize",
 ]
 
 [[package]]

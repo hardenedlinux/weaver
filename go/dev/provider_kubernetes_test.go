@@ -53,8 +53,10 @@ func TestProviderKubernetesAvailability(t *testing.T) {
 	var mu sync.Mutex
 	var installed map[string]any
 	uid, generation, resourceVersion, available := "original-uid", 1, 1, false
+	var raceStatusRepair, replaceAfterRepair bool
 	events := make(chan string, 8)
 	statusRevisions := make(chan uint64, 8)
+	statusRaceStaged := make(chan struct{})
 	cluster := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		if r.Header.Get("Authorization") != "Bearer cluster-fixture" {
@@ -63,6 +65,11 @@ func TestProviderKubernetesAvailability(t *testing.T) {
 			return
 		}
 		mu.Lock()
+		resourceRead := r.Method == http.MethodGet && r.URL.Path == collection+"/"+name
+		relist := r.Method == http.MethodGet && r.URL.Path == collection && r.URL.Query().Get("watch") != "true"
+		if relist && replaceAfterRepair && uid == "original-uid" {
+			uid, generation, resourceVersion, installed = "replacement-uid", 1, resourceVersion+1, nil
+		}
 		version := strconv.Itoa(resourceVersion)
 		object := map[string]any{"apiVersion": group, "kind": "ProviderAvailability",
 			"metadata": map[string]any{"name": name, "namespace": "weaver-system", "uid": uid,
@@ -80,6 +87,12 @@ func TestProviderKubernetesAvailability(t *testing.T) {
 				w.WriteHeader(http.StatusConflict)
 				return
 			}
+			if replaceAfterRepair {
+				mu.Unlock()
+				t.Error("status repair attempted a patch after a concurrent ledger intent")
+				w.WriteHeader(http.StatusConflict)
+				return
+			}
 			installed = patch.Status
 			resourceVersion++
 			object["status"] = installed
@@ -88,8 +101,37 @@ func TestProviderKubernetesAvailability(t *testing.T) {
 			mu.Unlock()
 			_ = json.NewEncoder(w).Encode(object)
 			statusRevisions <- revision
-		case r.Method == http.MethodGet && r.URL.Path == collection+"/"+name:
+		case resourceRead:
+			if replaceAfterRepair && uid == "original-uid" {
+				mu.Unlock()
+				w.WriteHeader(http.StatusServiceUnavailable)
+				return
+			}
+			race := raceStatusRepair
+			raceStatusRepair = false
 			mu.Unlock()
+			if race {
+				// The adapter already read revision 3 with no pending work.
+				// Stage a withdrawal without changing this GET's resource version.
+				cut, err := f.admin.RPC.InspectHardFact(f.admin.Context(ctx), &pb.Empty{})
+				if err != nil || cut.GetRevision() != 3 || !cut.GetAvailable() || len(cut.GetPending()) != 0 {
+					t.Error("status repair did not start from the installed available cut", err)
+					w.WriteHeader(http.StatusServiceUnavailable)
+					return
+				}
+				if _, err := f.admin.RPC.StageHardFact(f.admin.Context(ctx), &pb.HardFactIntent{
+					OperationId: "kubernetes-status-race", Domain: cut.Domain, SourceEpoch: cut.SourceEpoch,
+					Revision: 4, PreviousSnapshot: cut.Snapshot, ExpectedFloor: cut.Floor, Available: proto.Bool(false),
+				}); err != nil {
+					t.Error("could not stage the concurrent withdrawal", err)
+					w.WriteHeader(http.StatusServiceUnavailable)
+					return
+				}
+				mu.Lock()
+				replaceAfterRepair = true
+				mu.Unlock()
+				close(statusRaceStaged)
+			}
 			_ = json.NewEncoder(w).Encode(object)
 		case r.Method == http.MethodGet && r.URL.Path == collection:
 			mu.Unlock()
@@ -212,13 +254,23 @@ domain = "availability"
 		t.Fatal("restored Kubernetes fact failed real provider execution", err)
 	}
 	mu.Lock()
-	uid, generation, resourceVersion, installed = "replacement-uid", 1, resourceVersion+1, nil
+	resourceVersion++
+	installed = nil
+	raceStatusRepair = true
 	mu.Unlock()
+	events <- update
+	select {
+	case <-statusRaceStaged:
+	case <-ctx.Done():
+		data, _ := os.ReadFile(logPath)
+		t.Fatalf("status repair did not observe the resource: %v: %s", ctx.Err(), data)
+	}
 	events <- `{"type":"ERROR","object":{"apiVersion":"v1","kind":"Status","status":"Failure","reason":"Expired","code":410}}`
 	for {
 		cut, err := f.admin.RPC.InspectHardFact(f.admin.Context(ctx), &pb.Empty{})
 		if err != nil {
-			t.Fatal(err)
+			data, _ := os.ReadFile(logPath)
+			t.Fatalf("replacement UID ledger observation: %v: %s", err, data)
 		}
 		if cut.GetRevision() == 4 && cut.Available != nil && !cut.GetAvailable() && len(cut.Pending) == 0 {
 			break

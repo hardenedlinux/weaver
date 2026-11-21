@@ -5,7 +5,8 @@
 ;;; Fixed, finite application rules over detached integer projections. ASCENT
 ;;; owns evaluation/replacement; this adapter owns the existing Gateway image.
 (import (only-in :clan/poo/object .o .get .ref seal-object!)
-        (only-in :clan/poo/mop validate json<-)
+        (only-in :clan/poo/type validate)
+        (only-in :clan/poo/mop json<-)
         (only-in :std/encoding/json json->string JSONWriteOptions)
         (only-in :std/crypto/digest sha256)
         (only-in :std/encoding/hex hex-encode)
@@ -97,7 +98,9 @@
       (and (pair? left)
            (or (string<? (car left) (car right))
                (and (equal? (car left) (car right)) (loop (cdr left) (cdr right)))))))
-  (owned GatewayDerivationResult
+  ;; All fields come from the detached input and bounded evaluator. Admit this
+  ;; private report once; only delivery crosses the ownership boundary.
+  (validate GatewayDerivationResult
     (.o source_digest: (digest (canonical GatewayArtifact (.get request source)))
         request_digest: (digest request-image)
         family: (.get task family) generation: report-generation rule_profile: +rule-profile+
@@ -138,7 +141,8 @@
     (def input (validate GatewayDerivationRequest (copy-source-data request)))
     (def image (canonical GatewayDerivationRequest input))
     (if (and last-input (equal? image last-input))
-      (owned GatewayDerivationResult last-report)
+      ;; The public Function contract validates the detached result on return.
+      (copy-source-data last-report)
       (let-values (((task raw names inputs) (project input)))
         (def next (next-generation))
         (def report #f)
@@ -160,7 +164,7 @@
                   (begin
                     (set! session (gerbil-ascent-open-session (make-program inputs)))
                     (set! report (make-report input image task raw names (gerbil-ascent-session-run session) next))))
-                (def delivery (owned GatewayDerivationResult report))
+                (def delivery (copy-source-data report))
                 (set! generation next)
                 (set! last-input image)
                 (set! last-report report)

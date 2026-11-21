@@ -4,7 +4,7 @@
 
 ;;; Data-only advisory derivation. No field is an execution capability.
 (import (only-in :clan/poo/object .cc)
-        (only-in :clan/poo/mop Function Bool)
+        (only-in :clan/poo/type Function Bool)
         (only-in :clan/poo/type Record List String Enum)
         "./contracts.ss")
 (export GatewayDependency GatewayDerivationRequest GatewayDerivationResult

@@ -1,0 +1,88 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+#+title: Weaver Functional Scheme Style
+
+* Dependencies and interfaces
+
+=scheme/interface.ss= publishes the bounded Lab vocabulary used by Weaver.
+Compose the existing published leaf operations with ordinary POO objects.
+An init-selected Module remains owned by init: do not import its declaration
+again through the dependency interface, which would enroll the same source
+as both a publication and an ordinary library. Keep its original procedures,
+Types and prototypes;
+do not wrap them in another validator, loader, cache or authority layer.
+Consumers use explicit imports and =.get=, for example:
+
+#+begin_src scheme
+(import (only-in "../interface.ss" LabGovernance LabCedar))
+(def policy ((.get LabCedar policy) "weaver/runtime" source))
+(def profile
+  (.o (:: @ (.get LabGovernance Profile))
+      identity: "weaver/source" revision: "1" owner: "source-owner"
+      policies: (.o runtime: policy)))
+#+end_src
+
+Keep this dependency interface independent of Weaver init and its own domain
+roles. Source consumers use init-owned scopes; compiled C ABI entries use
+Build-owned =yuanxu-build-autoloads= to the same typed publications. Roles consume
+the dependency interface. This direction prevents a role/import/init cycle. Import hygienic
+syntax such as ASCENT's =relational-program= and type syntax from its owning
+module directly: runtime slots do not replace macro bindings. Do not wildcard
+reexport Lab, concrete policy catalogs or test programs.
+
+* Functions, objects and effects
+
+Use functions with explicit inputs/results for transformations and projections.
+Use POO prototypes, contracts and inheritance for related values and extensible
+operations. Keep declarations in =interface.ss=, contracts in =types.ss= and
+objects in =objects.ss=. Existing =func.ss= files own their value operations;
+use descriptive files for distinct responsibilities rather than renaming the
+native Module roles. Use Gerbil STD/SRFI operations for standard work.
+
+Capture lexical constants with =(slot := expression)=, or a same-name shorthand.
+Use =slot: expression= when it needs final receiver/inheritance computation.
+Do not create arbitrary local-name suffixes to hide a self-referential slot.
+When publishing data from a mutable retained owner, capture the current value
+at return time and detach mutable leaves. A constant slot alone does not copy
+a string or list. A selection therefore captures a copied commitment and route
+list; an unread result must survive owner rebind, and editing it must not poison
+the next result. Shared dependency procedures/Types retain their original
+identities, while per-request data retains its own lifetime and ownership.
+Keep mutable state at its current owner: retained ASCENT sessions on the affine
+Scheme owner, and admission, network effects, reservations and settlement in Rust.
+An interface value or inferred route never grants execution authority.
+
+* Build and verification
+
+Gerbil packages and native imports own the dependency closure. STD owns build
+arguments/Make; Yuanxu owns the admitted source view and source/output guards.
+Weaver's gerbil.pkg declares the package and its dependency, not a replacement
+package prelude. Import the needed POO and Yuanxu bindings explicitly at their
+owning library or entrypoint.
+Keep exact revisions in package declarations and lockfiles. Architecture Org
+describes contracts, decisions and validation limits, not another commit inventory.
+Do not add build roots or repeat file inventories to make a consumer link.
+Gateway Build declares its actual provider and debug qualification programs.
+Keep one command dispatcher and one =.with-link= wrapper in the entrypoint.
+Its clean callback uses STD inside the existing selection lock; it must not
+reenter =.clean-selection=. Cargo observes actual admitted source reads rather
+than a second file inventory. Preserve the exact external application identity
+check when composing SDK staging.
+
+Follow Marlin's ordinary =c-abi= Module: its Build owns targets, autoload groups
+and link options. Keep Scheme roots on the Rust host's C services; do not import
+the Rust SDK Scheme runtime into application packages. Core =.with-link= publishes
+the native programme with its compiler activation plan. Rust consumes that plan
+and binds the SDK host carriers, rather than restaging a replacement programme.
+Never acquire init's Build projection from a compiled request. Live-source
+development retains its own admission checks; Rust source expectations and
+ledger epochs, fact versions and intent guards still decide publication/use.
+
+Model design assumptions in SysML and challenge them with the existing Quint
+models and Scheme properties. Dependency-interface checks compare actual owner
+identity and behavior, including inherited overrides and invalid-input refusal;
+a matching list of slot names is insufficient. Retain source mutation and
+ownership controls. Use existing finite build/test entrypoints and four compiler
+workers; preparation, source tests, linked C ABI, performance and CI are distinct
+gates. Require actual CASE/SUITE/HARNESS markers, not exit status alone.

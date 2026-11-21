@@ -126,7 +126,7 @@ separates proposal acknowledgment, historical decision and execution authority.
 Go and Rust communicate through the shared typed gRPC service in
 [[file:../../../proto/gateway/v1/gateway.proto][gateway.proto]]. The Rust server executable starts this service by default.
 The previous operation CLI, proposal CLI, HTTP ingress and command-based replay
-are retired under [[file:../../../dev/proofs/evidence/provider-routing-20261030/retired-interfaces/][historical interface evidence]]. They are not alternate production
+are retired under [[file:../../../.cache/verification/evidence/proofs/provider-routing-20261030/retired-interfaces/][historical interface evidence]]. They are not alternate production
 paths. A Go test may start a Rust daemon, but all task registration, publication,
 execution and observation traffic uses authenticated gRPC.
 

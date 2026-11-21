@@ -200,8 +200,8 @@ with realistic text/tool/schema workloads before claiming performance.
 
 * Source-grounded reuse and extensions
 
-The [[file:../../../dev/proofs/evidence/llm-semantic-contract/source-review.json][POO Flow / Cedar register]] freshly verifies 18 pinned blobs. The
-[[file:../../../dev/proofs/evidence/llm-semantic-contract/agentgateway-source-review.json][agentgateway register]] verifies 12 pinned blobs, including request-role,
+The [[file:../../../.cache/verification/evidence/proofs/llm-semantic-contract/source-review.json][POO Flow / Cedar register]] freshly verifies 18 pinned blobs. The
+[[file:../../../.cache/verification/evidence/proofs/llm-semantic-contract/agentgateway-source-review.json][agentgateway register]] verifies 12 pinned blobs, including request-role,
 namespace/tool-choice and conversion boundaries. Snapshot identities remain in
 evidence, not core diagrams; no upstream code or dependency pin is changed.
 

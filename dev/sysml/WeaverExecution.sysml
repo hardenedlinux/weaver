@@ -110,7 +110,28 @@ package WeaverExecution {
            Cargo artifact identity check. Four Tokio workers, original property
            cases and the group's ten-minute bound qualify the runtime path.
            Ordinary Cargo preparation shares the enclosing suite deadline.
-           Scheme qualification retains its native debug application graph. */
+           Scheme qualification retains its native debug application graph.
+           Its explicit Cargo features cover the Scheme owner, LLM provider
+           and Arrow; Kubernetes defaults remain covered by ordinary Rust CI.
+           Cold A/B, hot B and clean reuse one standard Build owner with
+           distinct output directories. No nested interpreter/build process
+           or thread wrapper prepares those outputs. A separate B runtime
+           probes the actual selected products, not the builder's loaded state.
+           The complete Scheme image build shares the enclosing suite deadline
+           while its duration is calibrated; do not impose the uncalibrated
+           480-second cutoff on Cargo, SDK preparation and native compilation.
+           Record total duration and archive phases before setting a new build
+           budget. Runtime acceptance deadlines remain independent and fixed.
+           Cargo preparation and Go fixture artifact discovery use the same
+           toolchain PATH, including one Go tool prefix. Go's test launcher
+           must not invalidate the SDK image merely by repeating that prefix.
+           Build caches are package-manager-owned inputs to preparation, not
+           qualification receipts. Go uses its standard module/build caches.
+           Release consumers share one Cargo dependency family with the Go
+           integration job as its writer. Rust tests and Scheme workspace/AOT
+           products have distinct families; Scheme remains compiler-bound.
+           Cargo validates source, feature, toolchain and header freshness.
+           Restoring a cache never replaces runtime or source-bound checks. */
         doc /* Time domain view, publication and reviewed head, profile, and
            original claim reconciliation separately in the deciding scope. Split
            publication into pending, review match and original task birth.
@@ -1160,6 +1181,12 @@ package WeaverExecution {
         attribute glyph : String = "authorization";
         attribute visualRole : String = "execution";
         doc /* Use the consuming ledger handle; serialize the final guard through the bounded transport call. */
+        doc /* The synchronous raw stream leaf switches TCP/TLS sockets to
+           nonblocking mode after connection/handshake preparation. A deciding
+           write cannot rely on blocking SO_SNDTIMEO as an absolute deadline.
+           Partial acceptance or WouldBlock closes the owner and retains unknown
+           exposure, without queuing a continuation. Provider HTTP orchestration
+           remains on the existing Tokio reactor and guarded request pipeline. */
         doc /* Target rollback-safe mode requires the sole transport owner and
            provider credentials outside the restored worker domain. Its current
            cut/epoch check, durable one-use send burn and bounded socket admission
@@ -1251,102 +1278,6 @@ package WeaverExecution {
            Stage computation outside the gate; do not weaken final exclusion to
            hide the present bounded-call contention cost. */
     }
-    part def TelemetryService {
-        attribute overviewName : String = "Local metrics";
-        attribute overviewSummary : String = "No execution rights";
-        attribute overviewGlyph : String = "telemetry";
-        attribute displayName : String = "Telemetry";
-        attribute responsibility : String = "Local counters\nAuthenticated reads\nNo execution rights";
-        attribute glyph : String = "telemetry";
-        attribute visualRole : String = "capture";
-        doc /* Current Go source/startup producers emit fixed-label local slog
-           metadata; native integration fixtures supply clocked phase records.
-           These ordinary stderr diagnostics are not the target bounded event
-           bus, loss counters, exporter, durable audit or readiness authority.
-           Their presence cannot prove completion or discharge unknown holds. */
-        doc /* Local metrics are implemented by weaver-telemetry and the Go
-           telemetry package, enabled with each existing runtime owner. Fixed
-           counters accept no payload, identity label, arbitrary trace context,
-           callback or exporter. Existing authenticated gRPC carries snapshots;
-           Rust additionally checks current source authority. No new listener.
-           Snapshots are independent relaxed atomic observations, not a coherent
-           ledger image. Saturating updates use constant space but do not promise
-           wait-free latency under contention. Counter reset on restart cannot
-           clear durable claims or unknown holds. OTLP, traces, security event
-           export and durable audit remain delivery gates requiring explicit
-           destination/credential publication and Policy. */
-        doc /* Observe already extracted metadata with bounded nonblocking
-           submission. Do not re-read a mutable request, retry an effect or mutate
-           authority/history/accounting from a telemetry callback. */
-    }
-    requirement def TelemetryNoninterference {
-        doc /* Metrics cannot issue sends, change claims, settle budgets or
-           acknowledge source commits. Only fixed counter kinds cross the API;
-           no prompt, response text, credential or variable-cardinality identity.
-           Rust source-only inspection and Go authenticated inspection use existing
-           listeners. Unknown effects stay consumed/held across arbitrary reads
-           and local-counter reset. No external exporter is currently enabled. */
-    }
-    part def DerivedEvidenceAdapter {
-        action maintainObjectRelations : ControllerObjectLifecycle::MaintainObjectRelations;
-        attribute overviewName : String = "Evidence";
-        attribute overviewSummary : String = "Bound observations";
-        attribute displayName : String = "Derived evidence";
-        attribute responsibility : String = "Provenance-bound candidates\nGoverned semantic observations\nDerivation is not authority";
-        attribute glyph : String = "document";
-        attribute visualRole : String = "selection";
-        doc /* Optional derived-evidence target. Prefer Agentic AI Lab's inherited
-           Gerbil Ascent sessions, rules and context invalidation; MRR is selected
-           only for a demonstrated semantic-query/lineage requirement or measured
-           advantage. No new direct dependency is added by this model. Both
-           backends emit typed candidates, never authorization or accounting.
-           mrr-data remains an optional physical adapter for derived evidence.
-           This is separate from RustLedger's target mrr-data-backend storage
-           ownership; neither role makes MRR derivation a Policy authority. */
-        attribute selectedBackend : PolicyEvidenceDesign::DerivationBackend = PolicyEvidenceDesign::DerivationBackend::inheritedAscent;
-        port candidates : PolicyEvidenceDesign::DerivedFactsPort;
-    }
-    action def Propose;
-    action def Enqueue;
-    action def Consume;
-    action def GuardAndSend;
-    action def RecoverOutcome {
-        doc /* The source client observes the durable result under the frozen
-           publication identity and digest before submitting an absent decision.
-           A known result is read-only recovery. Unknown or rejected results do
-           not activate ingress. A historical receipt never replaces current
-           Rust Policy, fence, original claim, history or budget checks. */
-    }
-
-    part def Gateway {
-        attribute displayName : String = "Agent Gateway / logical execution boundary";
-        attribute glyph : String = "model";
-    }
-    part gateway : Gateway {
-        part semanticPublisher : SchemeSemanticPublisher;
-        part controlAdapter : SourceControlAdapter;
-        part policy : RustPolicy;
-        part ledger : RustLedger;
-        part broker : RustFinalBroker;
-        part executor : HttpsExecutor;
-        part provider : LlmProviderEndpoint;
-        part telemetry : TelemetryService;
-        part derivedEvidence : DerivedEvidenceAdapter[0..1];
-        connection proposeTask connect semanticPublisher.sourceCandidates to controlAdapter.sourceCandidates;
-        connection controlAdapter_sourceCommands_to_ledger_sourceCommands connect controlAdapter.sourceCommands to ledger.sourceCommands;
-        connection ledger_sourceOutcomes_to_controlAdapter_sourceOutcomes connect ledger.sourceOutcomes to controlAdapter.sourceOutcomes;
-        connection controlAdapter_semanticObservations_to_semanticPublisher_sourceObservations connect controlAdapter.semanticObservations to semanticPublisher.sourceObservations;
-        connection ledger_effectOutcomes_to_controlAdapter_effectObservations connect ledger.effectOutcomes to controlAdapter.effectObservations;
-        connection controlAdapter_semanticEffectObservations_to_semanticPublisher_effectObservations connect controlAdapter.semanticEffectObservations to semanticPublisher.effectObservations;
-        connection derivedEvidence_candidates_to_semanticPublisher_derivedFacts connect derivedEvidence.candidates to semanticPublisher.derivedFacts;
-        connection proposeEffect connect controlAdapter.proposals to ledger.proposals;
-        connection checkPolicy connect ledger.policyEvaluation to policy.evaluation;
-        connection ledger_observations_to_controlAdapter_observations connect ledger.observations to controlAdapter.observations;
-        connection consumedClaim connect ledger.consumed to broker.consumed;
-        connection recheckUse connect broker.wire to executor.wire;
-        connection boundedWrite connect executor.provider to provider.request;
-    }
-    part targetDeployment : ExecutionAuthorityDeployment;
     requirement def HarnessModelConnection {
         doc /* An embedded Coding Harness calls its configured provider directly
            through the weaver-llm Rust package. OpenAI Chat Completions,
@@ -1602,4 +1533,268 @@ package WeaverExecution {
         requirement registeredOidc : RegisteredOidcIdentity;
         requirement delegatedExchange : DelegatedTokenExchange;
     }
+    requirement def BoundedParallelExecution {
+        doc /* Tokio owns asynchronous ingress, upstream I/O, SSE backpressure,
+           deadlines and cancellation. Admit work before it enters a blocking
+           or compute executor. Keep the ready Rust routing path inline when
+           its prepared lookup and currentness check fit the hot budget. */
+        doc /* Parallelize pure work over immutable inputs. Partition provider
+           candidates or fact sets only where joins and rule dependencies permit.
+           Preserve the exact candidate set and deterministic ordering, including
+           cost, latency and digest ties. Capture the input version and intent
+           prefix before dispatch; reject stale or cancelled results at commit. */
+        doc /* Rust may use a deployment-owned Rayon pool for CPU-bound
+           batches after crossover and tail qualification. No global pool or
+           per-request pool. A Rayon task cannot invoke an affine Scheme VM,
+           hold the deciding ledger transaction, wait for I/O or send. */
+        doc /* A Scheme owner holds its VM, POO graph and ASCENT Session.
+           Reuse prepared indexes and replace fact deltas on the owner. Group
+           independent inference by exact source identity and revision. Add
+           owners or engine partitions only with an isolated-state and
+           deterministic merge qualification. No Scheme reference crosses
+           an owner boundary. Independent workflow branches may derive in
+           parallel; the existing ledger alone claims and releases effects. */
+    }
+
+    item def RuntimeWorkCut {
+        attribute scopeId : String;
+        attribute sourceDigest : String;
+        attribute sourceGeneration : Integer;
+        attribute intentPrefix : Integer;
+        attribute inputDigest : String;
+        doc /* Bind the exact source generation even when the digest returns
+           to an earlier value. Input identity includes the rule/topology or
+           route plan and the fact/score snapshot used by every partition. */
+    }
+    item def RuntimeBatch {
+        item cut : RuntimeWorkCut;
+        attribute partitionCount : Integer;
+        attribute retainedBytes : Integer;
+        assert constraint { partitionCount > 0 }
+        assert constraint { retainedBytes >= 0 }
+    }
+    item def RuntimeCandidates {
+        item cut : RuntimeWorkCut;
+        doc /* Complete, canonical candidate output from one batch. Merge
+           requires exactly one completion per planned partition, all under
+           the same cut. An empty completed partition counts. Partial output,
+           mixed cuts and duplicate completions cannot become a proposal. */
+    }
+    port def RuntimeBatchPort { out item batch : RuntimeBatch; }
+    port def RuntimeCandidatePort { out item candidates : RuntimeCandidates; }
+
+    part def RuntimeBatchAdmission {
+        attribute maxQueuedBatches : Integer;
+        attribute maxRetainedBytes : Integer;
+        attribute maxBatchWaitMicros : Integer;
+        assert constraint { maxQueuedBatches > 0 }
+        assert constraint { maxRetainedBytes > 0 }
+        assert constraint { maxBatchWaitMicros >= 0 }
+        doc /* Retained bytes include queued and running inputs and results.
+           The wait bound limits coalescing. The caller's remaining deadline
+           still limits queue admission and end-to-end work. */
+    }
+    part def TokioIoLane {
+        doc /* Existing Tokio runtime, bounded channels, admission permits
+           and tracked shutdown. The target admission path reserves both a
+           queue entry and bytes before copying input. SSE reads and writes
+           suspend on downstream credit. Overload returns an explicit bounded
+           outcome and cancellation keeps running work charged until exit. */
+        port scoringBatch : RuntimeBatchPort;
+        port inferenceBatch : RuntimeBatchPort;
+        port preparedCandidates : RuntimeCandidatePort;
+    }
+    part def RustComputeLane {
+        part admission : RuntimeBatchAdmission;
+        doc /* Use one deployment-owned Rayon pool for qualified CPU batches.
+           Route scoring partitions by stable candidate identity and uses a
+           total order for the merge. Keep the serial kernel for small batches.
+           Select the crossover using measured queue, compute and merge costs.
+           Use cooperative cancellation between bounded chunks. */
+        port workload : ~RuntimeBatchPort;
+        port ranked : RuntimeCandidatePort;
+    }
+    part def SchemeInferenceLane {
+        part admission : RuntimeBatchAdmission;
+        doc /* Existing affine FFI owner and ASCENT Sessions. Bind immutable
+           topology, apply current fact deltas and return inert candidates.
+           A long-running owner needs an explicit cancellation and join
+           contract. Dropping an async waiter does not finish its native call. */
+        doc /* Partition by independent scopes or complete join keys. Keep each
+           recursive dependency component together unless an engine plan
+           provides equivalent fixpoint and retraction semantics. For a shared
+           dependency, stage its complete immutable projection for every
+           consumer or keep that computation on the same owner. */
+        doc /* Coalesce only work bound to the same immutable cut and within
+           its admitted wait budget. Keep Scheme objects and GC roots on the
+           owning VM. Use one bounded native message per batch and measure
+           mailbox, FFI, incremental evaluation, allocation and GC separately. */
+        port workload : ~RuntimeBatchPort;
+        port inferredCandidates : RuntimeCandidatePort;
+    }
+    part def RuntimeDecisionLane {
+        part ledger : RustLedger;
+        port prepared : ~RuntimeCandidatePort;
+        port ranked : ~RuntimeCandidatePort;
+        port inferredCandidates : ~RuntimeCandidatePort;
+        doc /* Recheck the exact source generation and intent prefix in the
+           deciding transaction. An advisory proposal gives no claim, budget
+           reservation or provider send permission until that transaction. */
+    }
+    part def RuntimeCpuCapacity {
+        attribute effectiveCpuQuota : Integer;
+        attribute ioReservedSlots : Integer;
+        attribute rustBatchSlots : Integer;
+        attribute schemeSlots : Integer;
+        assert constraint { ioReservedSlots > 0 }
+        assert constraint { rustBatchSlots >= 0 }
+        assert constraint { schemeSlots >= 0 }
+        assert constraint { ioReservedSlots + rustBatchSlots + schemeSlots <= effectiveCpuQuota }
+        doc /* Slots express simultaneous CPU admission, not configured
+           thread count. Set from deployment quota. Track bounded queue entries
+           and retained bytes separately; admission precedes copying. */
+    }
+    part def RuntimePerformanceAllocation {
+        part io : TokioIoLane;
+        part compute : RustComputeLane;
+        part inference : SchemeInferenceLane;
+        part decision : RuntimeDecisionLane;
+        part cpu : RuntimeCpuCapacity;
+        connection score connect io.scoringBatch to compute.workload;
+        connection infer connect io.inferenceBatch to inference.workload;
+        connection admitPrepared connect io.preparedCandidates to decision.prepared;
+        connection admitRanked connect compute.ranked to decision.ranked;
+        connection admitDerived connect inference.inferredCandidates to decision.inferredCandidates;
+        requirement isolation : BoundedParallelExecution;
+        attribute qualificationTokioWorkers : Integer = 4;
+        attribute preparedRouteTargetNs : Integer = 1000000;
+        attribute sourceDeadlineSeconds : Integer = 10;
+        attribute recoveryDeadlineSeconds : Integer = 12;
+        attribute naturalExitDeadlineSeconds : Integer = 15;
+        assert constraint { sourceDeadlineSeconds < recoveryDeadlineSeconds }
+        assert constraint { recoveryDeadlineSeconds < naturalExitDeadlineSeconds }
+        doc /* Count asynchronous workers, blocking owners and CPU workers
+           together when allocating runnable CPU capacity. Measure queue wait,
+           service, merge, FFI/GC and commit separately. Compare p50/p95/p99
+           and memory for inline and parallel paths at one and four callers
+           with a fixed offered load, slow SSE and concurrent revocation.
+           Separate cold source preparation from warm routing. One millisecond
+           is a target; a fast kernel alone does not qualify the request path. */
+    }
+
+    requirement def IndependentTerminalUsageIssuer {
+        doc /* A separate process owns the signing seed and its own mTLS
+           certificate and bearer. Read terminal usage over the authenticated
+           source RPC. Match audience, tenant, issuer and original operation.
+           Sign only unsigned evidence whose application is its terminal
+           digest. Apply the same signed original on restart. The deciding
+           ledger transaction owns credential epochs and one-time settlement.
+           A lost reply grants no new authority and cannot release twice. */
+        doc /* Use Tokio for file and RPC I/O under one 12-second process
+           operation deadline. Test request binding and signature determinism
+           with generated inputs. SharedDomains exercises credential rotation,
+           wrong-tenant refusal, original formula and restart replay. Native
+           OpenAI and Anthropic fixtures qualify the separate process, partial
+           streams, lost replies and retained settlement. */
+    }
+    part def TerminalUsageIssuer {
+        requirement settlement : IndependentTerminalUsageIssuer;
+    }
+
+    part def TelemetryService {
+        attribute overviewName : String = "Local metrics";
+        attribute overviewSummary : String = "No execution rights";
+        attribute overviewGlyph : String = "telemetry";
+        attribute displayName : String = "Telemetry";
+        attribute responsibility : String = "Local counters\nAuthenticated reads\nNo execution rights";
+        attribute glyph : String = "telemetry";
+        attribute visualRole : String = "capture";
+        doc /* Current Go source/startup producers emit fixed-label local slog
+           metadata; native integration fixtures supply clocked phase records.
+           These ordinary stderr diagnostics are not the target bounded event
+           bus, loss counters, exporter, durable audit or readiness authority.
+           Their presence cannot prove completion or discharge unknown holds. */
+        doc /* Local metrics are implemented by weaver-telemetry and the Go
+           telemetry package, enabled with each existing runtime owner. Fixed
+           counters accept no payload, identity label, arbitrary trace context,
+           callback or exporter. Existing authenticated gRPC carries snapshots;
+           Rust additionally checks current source authority. No new listener.
+           Snapshots are independent relaxed atomic observations, not a coherent
+           ledger image. Saturating updates use constant space but do not promise
+           wait-free latency under contention. Counter reset on restart cannot
+           clear durable claims or unknown holds. OTLP, traces, security event
+           export and durable audit remain delivery gates requiring explicit
+           destination/credential publication and Policy. */
+        doc /* Observe already extracted metadata with bounded nonblocking
+           submission. Do not re-read a mutable request, retry an effect or mutate
+           authority/history/accounting from a telemetry callback. */
+    }
+    requirement def TelemetryNoninterference {
+        doc /* Metrics cannot issue sends, change claims, settle budgets or
+           acknowledge source commits. Only fixed counter kinds cross the API;
+           no prompt, response text, credential or variable-cardinality identity.
+           Rust source-only inspection and Go authenticated inspection use existing
+           listeners. Unknown effects stay consumed/held across arbitrary reads
+           and local-counter reset. No external exporter is currently enabled. */
+    }
+    part def DerivedEvidenceAdapter {
+        action maintainObjectRelations : ControllerObjectLifecycle::MaintainObjectRelations;
+        attribute overviewName : String = "Evidence";
+        attribute overviewSummary : String = "Bound observations";
+        attribute displayName : String = "Derived evidence";
+        attribute responsibility : String = "Provenance-bound candidates\nGoverned semantic observations\nDerivation is not authority";
+        attribute glyph : String = "document";
+        attribute visualRole : String = "selection";
+        doc /* Optional derived-evidence target. Prefer Agentic AI Lab's inherited
+           Gerbil Ascent sessions, rules and context invalidation; MRR is selected
+           only for a demonstrated semantic-query/lineage requirement or measured
+           advantage. No new direct dependency is added by this model. Both
+           backends emit typed candidates, never authorization or accounting.
+           mrr-data remains an optional physical adapter for derived evidence.
+           This is separate from RustLedger's target mrr-data-backend storage
+           ownership; neither role makes MRR derivation a Policy authority. */
+        attribute selectedBackend : PolicyEvidenceDesign::DerivationBackend = PolicyEvidenceDesign::DerivationBackend::inheritedAscent;
+        port candidates : PolicyEvidenceDesign::DerivedFactsPort;
+    }
+    action def Propose;
+    action def Enqueue;
+    action def Consume;
+    action def GuardAndSend;
+    action def RecoverOutcome {
+        doc /* The source client observes the durable result under the frozen
+           publication identity and digest before submitting an absent decision.
+           A known result is read-only recovery. Unknown or rejected results do
+           not activate ingress. A historical receipt never replaces current
+           Rust Policy, fence, original claim, history or budget checks. */
+    }
+
+    part def Gateway {
+        attribute displayName : String = "Agent Gateway / logical execution boundary";
+        attribute glyph : String = "model";
+    }
+    part gateway : Gateway {
+        part semanticPublisher : SchemeSemanticPublisher;
+        part controlAdapter : SourceControlAdapter;
+        part policy : RustPolicy;
+        part ledger : RustLedger;
+        part broker : RustFinalBroker;
+        part executor : HttpsExecutor;
+        part provider : LlmProviderEndpoint;
+        part telemetry : TelemetryService;
+        part derivedEvidence : DerivedEvidenceAdapter[0..1];
+        connection proposeTask connect semanticPublisher.sourceCandidates to controlAdapter.sourceCandidates;
+        connection controlAdapter_sourceCommands_to_ledger_sourceCommands connect controlAdapter.sourceCommands to ledger.sourceCommands;
+        connection ledger_sourceOutcomes_to_controlAdapter_sourceOutcomes connect ledger.sourceOutcomes to controlAdapter.sourceOutcomes;
+        connection controlAdapter_semanticObservations_to_semanticPublisher_sourceObservations connect controlAdapter.semanticObservations to semanticPublisher.sourceObservations;
+        connection ledger_effectOutcomes_to_controlAdapter_effectObservations connect ledger.effectOutcomes to controlAdapter.effectObservations;
+        connection controlAdapter_semanticEffectObservations_to_semanticPublisher_effectObservations connect controlAdapter.semanticEffectObservations to semanticPublisher.effectObservations;
+        connection derivedEvidence_candidates_to_semanticPublisher_derivedFacts connect derivedEvidence.candidates to semanticPublisher.derivedFacts;
+        connection proposeEffect connect controlAdapter.proposals to ledger.proposals;
+        connection checkPolicy connect ledger.policyEvaluation to policy.evaluation;
+        connection ledger_observations_to_controlAdapter_observations connect ledger.observations to controlAdapter.observations;
+        connection consumedClaim connect ledger.consumed to broker.consumed;
+        connection recheckUse connect broker.wire to executor.wire;
+        connection boundedWrite connect executor.provider to provider.request;
+    }
+    part targetDeployment : ExecutionAuthorityDeployment;
 }

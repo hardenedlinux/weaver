@@ -22,12 +22,13 @@ import (
 
 	pb "github.com/HardenedLinux/weaver/go/api/gateway/v1"
 	"github.com/HardenedLinux/weaver/go/internal/config"
+	"github.com/HardenedLinux/weaver/go/internal/gatewayclient"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 )
 
-func TestProviderControlSessionNestedChoiceAndParallelRecovery(t *testing.T) {
+func TestProviderRustDirectSessionNestedChoiceAndParallelRecovery(t *testing.T) {
 	t.Run("nested-right-after-restart", func(t *testing.T) { checkNestedSession(t, false) })
 	t.Run("outer-right-skips-entire-nested-arm", func(t *testing.T) { checkNestedSession(t, true) })
 }
@@ -249,7 +250,15 @@ func runNestedSession(t *testing.T, outerRight bool, trial *governorTrial) {
 	if trial != nil {
 		defer trial.finish(t, f, c)
 	}
-	c.start(t)
+	activate := func() *gatewayclient.Client {
+		if trial != nil {
+			c.start(t)
+			return c.client
+		}
+		c.prepareUsing(t, serverBinary, "prepare")
+		return f.client
+	}
+	client := activate()
 	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
 	defer cancel()
 	started := time.Now()
@@ -282,7 +291,7 @@ func runNestedSession(t *testing.T, outerRight bool, trial *governorTrial) {
 		}
 	}
 	inspect := func(node string) (*pb.ProviderReceipt, error) {
-		return c.client.RPC.Inspect(c.client.Context(ctx), &pb.OperationKey{Family: root.Family, Node: node})
+		return client.RPC.Inspect(client.Context(ctx), &pb.OperationKey{Family: root.Family, Node: node})
 	}
 	missing := func(nodes ...string) {
 		t.Helper()
@@ -309,7 +318,7 @@ func runNestedSession(t *testing.T, outerRight bool, trial *governorTrial) {
 		}
 	}
 	execute := func() error {
-		_, err := c.client.Execute(ctx, root, pb.Encoding_PROTOBUF, 1, func(*pb.Event) error { return nil })
+		_, err := client.Execute(ctx, root, pb.Encoding_PROTOBUF, 1, func(*pb.Event) error { return nil })
 		return err
 	}
 	replay := func() {
@@ -324,7 +333,7 @@ func runNestedSession(t *testing.T, outerRight bool, trial *governorTrial) {
 		result := make(chan error, 1)
 		partial := make(chan struct{}, 1)
 		go func() {
-			_, err := c.client.Execute(ctx, root, pb.Encoding_PROTOBUF, 1, func(event *pb.Event) error {
+			_, err := client.Execute(ctx, root, pb.Encoding_PROTOBUF, 1, func(event *pb.Event) error {
 				if event.GetKind() == "delta" && event.GetText() == `{"route":"right"}` {
 					select {
 					case partial <- struct{}{}:
@@ -413,15 +422,13 @@ func runNestedSession(t *testing.T, outerRight bool, trial *governorTrial) {
 	}
 	withdrawn := stage(2, first, false)
 	phase("withdrawal-staged")
-	c.stop(t)
-	phase("control-stopped")
 	f.stop(t)
 	phase("rust-stopped")
 	f.env = append(f.env, `WEAVER_PROVIDER_CREDENTIAL_ENVS={"primary":"WEAVER_TEST_KEY","backup":"WEAVER_TEST_KEY"}`)
 	f.start(t)
 	phase("rust-restarted")
-	c.start(t)
-	phase("control-restarted")
+	client = activate()
+	phase("source-reprepared")
 	if other := stage(2, first, false); !proto.Equal(withdrawn, other) {
 		t.Fatal("restart changed pending withdrawal")
 	}

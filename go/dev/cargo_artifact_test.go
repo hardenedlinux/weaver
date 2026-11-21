@@ -69,6 +69,7 @@ func readCargoExecutable(input io.Reader, target cargoTarget) (string, error) {
 }
 
 func buildCargoExecutable(cmd *exec.Cmd, target cargoTarget) (string, error) {
+	cmd.Env = devrunner.CargoEnvironment(cmd.Environ())
 	output, err := cmd.StdoutPipe()
 	if err != nil {
 		return "", err
@@ -93,6 +94,7 @@ func TestCargoExecutableUsesReportedTargetAndRejectsAmbiguity(t *testing.T) {
 		valid        bool
 	}{
 		{"reported path", record + "\n" + `{"reason":"build-finished","success":true}`, true},
+		{"other prepared binary", record + "\n" + strings.ReplaceAll(record, "weaver-server", "weaver-meter"), true},
 		{"duplicate", record + "\n" + record, false},
 		{"wrong target", strings.ReplaceAll(record, "weaver-server", "another-server"), false},
 		{"wrong kind", strings.ReplaceAll(record, `"bin"`, `"lib"`), false},
@@ -165,7 +167,7 @@ func providerCargoBuildArgs(features, benchmark string, lookup func(string) (str
 	if features == providerSchemeQualificationFeatures {
 		return append(devrunner.SchemeQualificationCargoArgs(), "--no-run", "--message-format=json-render-diagnostics"), false, nil
 	}
-	args := []string{"build", "-p", "weaver-server", "--bin", "weaver-server", "--features", features, "--locked", "--offline", "--message-format=json-render-diagnostics"}
+	args := []string{"build", "-p", "weaver-server", "--bins", "--features", features, "--locked", "--offline", "--message-format=json-render-diagnostics"}
 	if optimized {
 		args = append(args, "--release")
 	}

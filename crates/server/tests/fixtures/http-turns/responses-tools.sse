@@ -1,0 +1,21 @@
+: SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+: SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+event: response.created
+data: {"type":"response.created","response":{"id":"r1","model":"model-a","status":"in_progress"}}
+
+event: response.output_item.added
+data: {"type":"response.output_item.added","output_index":0,"item":{"id":"reason-1","type":"reasoning","summary":[]}}
+
+event: response.output_item.added
+data: {"type":"response.output_item.added","output_index":1,"item":{"id":"call-item-1","type":"function_call","call_id":"call-1","name":"read","arguments":"","status":"in_progress"}}
+
+event: response.function_call_arguments.delta
+data: {"type":"response.function_call_arguments.delta","item_id":"call-item-1","output_index":1,"delta":"{\"path\":"}
+
+event: response.function_call_arguments.delta
+data: {"type":"response.function_call_arguments.delta","item_id":"call-item-1","output_index":1,"delta":"\"file\"}"}
+
+event: response.completed
+data: {"type":"response.completed","response":{"id":"r1","model":"model-a","status":"completed","output":[{"id":"reason-1","type":"reasoning","summary":[],"encrypted_content":"opaque-keep"},{"id":"call-item-1","type":"function_call","call_id":"call-1","name":"read","arguments":"{\"path\":\"file\"}","status":"completed"}],"usage":{"input_tokens":2,"output_tokens":3,"total_tokens":5}}}
+

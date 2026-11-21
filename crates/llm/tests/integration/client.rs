@@ -63,6 +63,7 @@ fn messages() -> [Message; 2] {
             tool_call_id: None,
             tool_calls: Vec::new(),
             responses_output: None,
+            anthropic_output: None,
         },
         Message {
             role: Role::User,
@@ -72,6 +73,7 @@ fn messages() -> [Message; 2] {
             tool_call_id: None,
             tool_calls: Vec::new(),
             responses_output: None,
+            anthropic_output: None,
         },
     ]
 }
@@ -315,6 +317,7 @@ async fn harness_replays_tool_results_to_both_providers() -> TestResult {
                 tool_call_id: Some(call.id.clone()),
                 tool_calls: Vec::new(),
                 responses_output: None,
+                anthropic_output: None,
             })
             .collect();
         conversation.push(Message {
@@ -325,6 +328,7 @@ async fn harness_replays_tool_results_to_both_providers() -> TestResult {
             tool_call_id: None,
             tool_calls,
             responses_output: None,
+            anthropic_output: None,
         });
         conversation.extend(results);
 
@@ -406,6 +410,7 @@ async fn responses_stream_replays_reasoning_and_tool_results_without_server_stat
         "data: {\"type\":\"response.function_call_arguments.delta\",\"delta\":\"{\"}\n\n",
         "data: {\"type\":\"response.completed\",\"response\":{\"status\":\"completed\",\"id\":\"resp_1\",\"model\":\"gpt-fixture\",",
         "\"output\":[{\"type\":\"reasoning\",\"id\":\"rs_1\",\"summary\":[],\"encrypted_content\":\"opaque-fixture\"},",
+        "{\"type\":\"message\",\"content\":[{\"type\":\"output_text\",\"text\":\"Checking.\"}]},",
         "{\"type\":\"function_call\",\"id\":\"fc_1\",\"call_id\":\"call_1\",\"name\":\"read_file\",\"arguments\":\"{\\\"path\\\":\\\"README\\\"}\",\"status\":\"completed\"}],",
         "\"usage\":{\"input_tokens\":10,\"output_tokens\":4}}}\n\n",
     )).await?;
@@ -468,6 +473,7 @@ async fn responses_stream_replays_reasoning_and_tool_results_without_server_stat
             tool_call_id: None,
             tool_calls,
             responses_output,
+            anthropic_output: None,
         },
         Message {
             role: Role::Tool,
@@ -477,8 +483,20 @@ async fn responses_stream_replays_reasoning_and_tool_results_without_server_stat
             tool_call_id: Some(call_id),
             tool_calls: Vec::new(),
             responses_output: None,
+            anthropic_output: None,
         },
     ]);
+    let mut altered = conversation.clone();
+    altered[2].content.push('!');
+    assert!(matches!(
+        Request {
+            model: "gpt-fixture",
+            messages: &altered,
+            options: &options
+        }
+        .encode(Protocol::OpenAiResponses, true),
+        Err(Error::Request(_))
+    ));
     let (url, captured) = upstream(concat!(
         "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nConnection: close\r\n\r\n",
         "{\"status\":\"completed\",\"id\":\"resp_2\",\"model\":\"gpt-fixture\",",
@@ -498,9 +516,10 @@ async fn responses_stream_replays_reasoning_and_tool_results_without_server_stat
     assert_eq!(response.choices[0].message.content, "Done.");
     let payload = captured.await??.1;
     assert_eq!(payload["input"][2]["encrypted_content"], "opaque-fixture");
-    assert_eq!(payload["input"][3]["call_id"], "call_1");
-    assert_eq!(payload["input"][4]["type"], "function_call_output");
+    assert_eq!(payload["input"][3]["type"], "message");
     assert_eq!(payload["input"][4]["call_id"], "call_1");
+    assert_eq!(payload["input"][5]["type"], "function_call_output");
+    assert_eq!(payload["input"][5]["call_id"], "call_1");
     assert!(payload.get("previous_response_id").is_none());
     Ok(())
 }
@@ -558,6 +577,7 @@ async fn live_openai_responses_replays_reasoning_and_tool_output() -> TestResult
         while let Some(event) = turn.next_event().await? {
             match event {
                 TurnEvent::Text(delta) => text.push_str(&delta),
+                TurnEvent::Thinking(_) => {}
                 terminal @ TurnEvent::Finished { .. } => return Ok((text, terminal)),
             }
         }
@@ -577,6 +597,7 @@ async fn live_openai_responses_replays_reasoning_and_tool_output() -> TestResult
             tool_call_id: None,
             tool_calls: Vec::new(),
             responses_output: None,
+            anthropic_output: None,
         }];
         let options = Options {
             max_tokens: Some(512),
@@ -638,6 +659,7 @@ async fn live_openai_responses_replays_reasoning_and_tool_output() -> TestResult
                 tool_call_id: None,
                 tool_calls,
                 responses_output,
+                anthropic_output: None,
             },
             Message {
                 role: Role::Tool,
@@ -647,6 +669,7 @@ async fn live_openai_responses_replays_reasoning_and_tool_output() -> TestResult
                 tool_call_id: Some(call_id),
                 tool_calls: Vec::new(),
                 responses_output: None,
+                anthropic_output: None,
             },
         ]);
         let (text, event) = terminal(
@@ -767,3 +790,6 @@ mod oauth_lifecycle;
 mod openai_login;
 #[path = "provider_failures.rs"]
 mod provider_failures;
+
+#[path = "anthropic_reasoning.rs"]
+mod anthropic_reasoning;

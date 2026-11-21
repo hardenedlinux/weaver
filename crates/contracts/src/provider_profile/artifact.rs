@@ -10,12 +10,36 @@ use serde::{Deserialize, Serialize};
 pub const CHAT_TEXT_SSE: &str = "openai.chat-text-sse.v1";
 /// Anthropic Messages text streaming with the validated SSE event sequence.
 pub const ANTHROPIC_MESSAGES_SSE: &str = "anthropic.messages-text-sse.v1";
+/// Tool-capable OpenAI Chat turns, distinct from the closed text profile.
+pub const CHAT_TURN_SSE: &str = "openai.chat-turn-sse.v1";
+/// Stateless OpenAI Responses turns with opaque continuation preservation.
+pub const RESPONSES_TURN_SSE: &str = "openai.responses-turn-sse.v1";
+/// Tool-capable Anthropic Messages turns with ordered continuation blocks.
+pub const ANTHROPIC_TURN_SSE: &str = "anthropic.messages-turn-sse.v1";
 
 /// Supported request and stream adapters selected from a validated profile.
 #[derive(Clone, Copy)]
 pub enum ProviderProtocol {
     OpenAi,
     Anthropic,
+    OpenAiTurn,
+    OpenAiResponses,
+    AnthropicTurn,
+}
+
+impl ProviderProtocol {
+    /// Whether the provider uses Anthropic Messages authentication and routing.
+    pub fn is_anthropic(self) -> bool {
+        matches!(self, Self::Anthropic | Self::AnthropicTurn)
+    }
+
+    /// Whether the profile requires the versioned rich-event contract.
+    pub fn is_rich(self) -> bool {
+        matches!(
+            self,
+            Self::OpenAiTurn | Self::OpenAiResponses | Self::AnthropicTurn
+        )
+    }
 }
 
 /// Authenticated source artifact, registered atomically with its original task.
@@ -52,6 +76,9 @@ impl ProviderProfile {
         match self.protocol.as_str() {
             CHAT_TEXT_SSE => Ok(ProviderProtocol::OpenAi),
             ANTHROPIC_MESSAGES_SSE => Ok(ProviderProtocol::Anthropic),
+            CHAT_TURN_SSE => Ok(ProviderProtocol::OpenAiTurn),
+            RESPONSES_TURN_SSE => Ok(ProviderProtocol::OpenAiResponses),
+            ANTHROPIC_TURN_SSE => Ok(ProviderProtocol::AnthropicTurn),
             _ => Err(Error::Invalid("provider protocol")),
         }
     }

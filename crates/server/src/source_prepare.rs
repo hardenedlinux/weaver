@@ -11,6 +11,7 @@ use std::{
     path::{Path, PathBuf},
     time::Duration,
 };
+use tokio::io::AsyncReadExt;
 use tonic::{
     Code, Request, Status,
     metadata::{Ascii, MetadataValue},
@@ -111,6 +112,27 @@ impl SourceConnection {
 }
 
 pub(crate) async fn connect(settings: &SourceConnection) -> Result<Client> {
+    connect_with_timeout(settings, Duration::from_secs(10)).await
+}
+
+pub(crate) async fn connect_meter(timeout: Duration) -> Result<Client> {
+    connect_with_timeout(
+        &SourceConnection {
+            producer: None,
+            file: None,
+            address: required("WEAVER_METER_SOURCE_ADDR")?,
+            server_name: required("WEAVER_METER_TLS_SERVER_NAME")?,
+            ca: required("WEAVER_METER_TLS_CA")?.into(),
+            certificate: required("WEAVER_METER_TLS_CERT")?.into(),
+            key: required("WEAVER_METER_TLS_KEY")?.into(),
+            token_env: "WEAVER_METER_TOKEN".into(),
+        },
+        timeout,
+    )
+    .await
+}
+
+async fn connect_with_timeout(settings: &SourceConnection, timeout: Duration) -> Result<Client> {
     let _ = rustls::crypto::ring::default_provider().install_default();
     let secret = required(&settings.token_env)?;
     if secret.is_empty() {
@@ -120,15 +142,17 @@ pub(crate) async fn connect(settings: &SourceConnection) -> Result<Client> {
         .parse()
         .map_err(|_| Error::Invalid("source bearer"))?;
     token.set_sensitive(true);
+    let (ca, certificate, key) = tokio::try_join!(
+        read_tls_file(&settings.ca),
+        read_tls_file(&settings.certificate),
+        read_tls_file(&settings.key)
+    )?;
     let tls = ClientTlsConfig::new()
         .domain_name(&settings.server_name)
-        .ca_certificate(Certificate::from_pem(read_path(&settings.ca)?))
-        .identity(Identity::from_pem(
-            read_path(&settings.certificate)?,
-            read_path(&settings.key)?,
-        ));
+        .ca_certificate(Certificate::from_pem(ca))
+        .identity(Identity::from_pem(certificate, key));
     let channel = Endpoint::from_shared(format!("https://{}", settings.address))
-        .and_then(|endpoint| endpoint.timeout(Duration::from_secs(10)).tls_config(tls))
+        .and_then(|endpoint| endpoint.timeout(timeout).tls_config(tls))
         .map_err(|_| Error::Invalid("source listener configuration"))?
         .connect()
         .await
@@ -138,6 +162,21 @@ pub(crate) async fn connect(settings: &SourceConnection) -> Result<Client> {
             .max_decoding_message_size(4 * 1024 * 1024)
             .max_encoding_message_size(2 * 1024 * 1024),
     )
+}
+
+async fn read_tls_file(path: &Path) -> Result<Vec<u8>> {
+    let file = tokio::fs::File::open(path)
+        .await
+        .map_err(|_| Error::Invalid("RPC configuration file"))?;
+    let mut bytes = Vec::new();
+    file.take(65537)
+        .read_to_end(&mut bytes)
+        .await
+        .map_err(|_| Error::Invalid("RPC configuration read"))?;
+    if bytes.len() > 65536 {
+        return Err(Error::Invalid("RPC configuration bound"));
+    }
+    Ok(bytes)
 }
 
 async fn compile(client: &mut Client, producer: String) -> Result<pb::SourceCompositionRequest> {

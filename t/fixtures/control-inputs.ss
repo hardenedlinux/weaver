@@ -4,7 +4,7 @@
 
 ;;; Structural Scheme contracts only; Rust owns cryptographic plan commitments.
 (import (only-in :clan/poo/object .o)
-        (only-in :clan/poo/mop validate)
+        (only-in :clan/poo/type validate)
         (only-in ../../scheme/gateway/contracts GatewaySourceInput))
 (export control-inputs)
 

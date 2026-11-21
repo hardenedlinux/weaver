@@ -21,7 +21,7 @@ root publication, confirmation, recovery projections and consuming permits.
 Its original-claim/ledger fixture abstracts source setup, which is covered by the
 Lean projection into the prior initialized model.
 
-Raw results are in [[file:../../../dev/proofs/evidence/llm-registry-publication/commands.json][commands.json]] and [[file:../../../dev/proofs/evidence/llm-registry-publication/receipt.json][receipt.json]]. Preliminary compiler and
+Raw results are in [[file:../../../.cache/verification/evidence/proofs/llm-registry-publication/commands.json][commands.json]] and [[file:../../../.cache/verification/evidence/proofs/llm-registry-publication/receipt.json][receipt.json]]. Preliminary compiler and
 scenario diagnostics remain separate from final acceptance. Old-permit scenarios
 use literal, actually issued fixture receipts; decoded traces verify their exact
 identity and prior issuance. A stale/invalid placeholder is not accepted as
@@ -46,7 +46,7 @@ evidence of an old-worker race.
 
 * Source review and reuse boundary
 
-The [[file:../../../dev/proofs/evidence/llm-registry-publication/source-review.json][POO Flow / Cedar source register]] and [[file:../../../dev/proofs/evidence/llm-registry-publication/agentgateway-source-review.json][agentgateway register]] contain
+The [[file:../../../.cache/verification/evidence/proofs/llm-registry-publication/source-review.json][POO Flow / Cedar source register]] and [[file:../../../.cache/verification/evidence/proofs/llm-registry-publication/agentgateway-source-review.json][agentgateway register]] contain
 freshly verified pinned blobs and excerpts. These snapshots are not assertions
 about an uninspected latest release or native ABI compatibility. No upstream
 source or dependency pin is changed.
@@ -111,7 +111,7 @@ merely because the model presents a single transition.
 | Exact readable profile object | missingBlobPublicationCounterexampleTest | Activation succeeds without the committed object |
 | Unknown budget hold | unknownRefundPublicationCounterexampleTest | Parent is charged/settled while child usage remains unknown |
 
-Unsafe actions are excluded from =step=. Their [[file:../../../dev/proofs/evidence/llm-registry-publication/itf][ITF traces]] are independently
+Unsafe actions are excluded from =step=. Their [[file:../../../.cache/verification/evidence/proofs/llm-registry-publication/itf][ITF traces]] are independently
 decoded. Guarded scenarios also cover profile-key conflicts, wrong source vector,
 foreign claim, publication Policy denial, late commit/certification after fencing,
 source recovery evidence, repeated permits and late final usage.
@@ -128,7 +128,7 @@ Preserve unknown holds until attributable terminal/usage reconciliation and the
 existing account application protocol completes.
 
 Collect native source-bound receipts and matched latency/memory controls. The
-[[file:../../../dev/proofs/evidence/llm-registry-publication/SHA256SUMS][manifest]] seals current artifacts while leaving historical receipts unchanged.
+[[file:../../../.cache/verification/evidence/proofs/llm-registry-publication/SHA256SUMS][manifest]] seals current artifacts while leaving historical receipts unchanged.
 Model verification is not deployed acceptance or a performance result.
 
 * Local validation result

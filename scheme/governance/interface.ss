@@ -2,9 +2,12 @@
 ;;;
 ;;; SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
-(import (only-in :yuanxu/module-system/source/declaration .def))
+(import (only-in :clan/poo/object .def .o)
+        (only-in "./types.ss" GovernanceScopeContract)
+        (only-in "./objects.ss" Governance.))
+(export Governance)
 (.def Governance
   identity: 'governance
   tags: '(governance)
-  core: (.o requires: (.o) scope-contract: GovernanceScopeContract exports: Governance.)
+  core: (.o scope-contract: GovernanceScopeContract exports: Governance.)
   features: (.o))

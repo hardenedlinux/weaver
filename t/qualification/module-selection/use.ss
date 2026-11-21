@@ -3,35 +3,40 @@
 (import (only-in "../../../init.ss" hardenedlinux/weaver.init.exports)
         (only-in :clan/poo/object .get .o .cc .slot?)
         (only-in :std/source this-source-file)
-        (only-in :yuanxu/module-system/source/admission call-with-module-source-operation-measurement)
+        (only-in :tao3k/yuanxu/module-system/source/admission call-with-module-source-operation-measurement)
         (only-in :std/misc/ports read-all-as-string)
         (only-in :gerbil/runtime/loader list-modules)
-        (only-in :agentic-ai-lab/modules/governance/interface
+        (only-in :tao3k/agentic-ai-lab/modules/governance/interface
                  agentic-ai-lab-governance-profile?))
 (export main)
-(def (main)
+(def (main product-directory)
   (unless (and (procedure? agentic-ai-lab-governance-profile?)
                (ormap (lambda (row)
-                        (equal? (car row) "agentic-ai-lab/modules/governance/interface~0"))
+                        (equal? (car row) "tao3k/agentic-ai-lab/modules/governance/interface~0"))
                       (list-modules))
                (.slot? hardenedlinux/weaver.init.exports 'Lab)
                (.slot? hardenedlinux/weaver.init.exports 'Weaver))
     (error "Gerbil Governance import or Yuanxu export layout differs"))
-  (defvalues (lab first)
-    (call-with-module-source-operation-measurement
-      (lambda () (.get hardenedlinux/weaver.init.exports Lab governance)) accounting?: #f))
-  (unless (and (= (hash-ref first '(calls candidate-read) 0) 4)
-               (= (hash-ref first '(calls scope-factory) 0) 1)
-               (= (hash-ref first '(calls (scope-factory agentic-ai-lab/modules/governance/interface)) 0) 1)
-               (= (hash-ref first '(calls (scope-factory hardenedlinux/weaver/scheme/governance/interface)) 0) 0))
-    (error "first Lab scope demand constructed an unrelated or conflated owner"))
+  ;; A Module leaf is lazy: demand its actual exports before counting scope
+  ;; construction. Merely retrieving the leaf must not force the factory.
+  (def (exports)
+    (let (lab (.get hardenedlinux/weaver.init.exports Lab governance))
+      (list lab (.get lab Profile) (.get lab evaluate))))
+  (defvalues (first-values first)
+    (call-with-module-source-operation-measurement exports accounting?: #f))
+  (def lab (car first-values))
+  (unless (and (= (hash-ref first '(calls scope-factory) 0) 1)
+               (= (hash-ref first '(calls (scope-factory tao3k/agentic-ai-lab/modules/governance/interface)) 0) 1)
+               (= (hash-ref first '(calls (scope-factory hardenedlinux/weaver/scheme/governance/interface)) 0) 0)
+               (procedure? (caddr first-values)))
+    (error "first export demand constructed an unrelated or conflated scope" (hash->list first)))
   (defvalues (again repeat)
-    (call-with-module-source-operation-measurement
-      (lambda () (.get hardenedlinux/weaver.init.exports Lab governance)) accounting?: #f))
-  (unless (and (eq? lab again) (zero? (hash-ref repeat '(calls candidate-read) 0))
+    (call-with-module-source-operation-measurement exports accounting?: #f))
+  (unless (and (andmap eq? first-values again)
+               (zero? (hash-ref repeat '(calls candidate-read) 0))
                (zero? (hash-ref repeat '(calls scope-factory) 0)))
-    (error "repeated native scope demand did not reuse its POO slot"))
-  (displayln "WEAVER-MODULE-FIRST-GET declarations=4 scopes=1 repeat-scopes=0")
+    (error "repeated native export demand lost its retained values" (hash->list repeat)))
+  (displayln "WEAVER-MODULE-FIRST-GET export-demand-scopes=1 repeat-scopes=0")
   (def local (.get hardenedlinux/weaver.init.exports Weaver governance))
   (unless (and (not (eq? lab local))
                (eq? lab (.get hardenedlinux/weaver.init.exports Lab governance))
@@ -52,16 +57,16 @@
   (def gateway (.get hardenedlinux/weaver.init.exports Weaver gateway))
   (unless (procedure? (.get gateway compile)) (error "Gateway business entry is absent"))
   (def prefix (string-append (path-strip-trailing-directory-separator
-                              (path-normalize (path-expand "lib" (gerbil-path)))) "/"))
+                              (path-normalize product-directory)) "/"))
   (for-each
     (lambda (id)
       (unless (ormap (lambda (row)
                        (and (equal? (car row) id) (string-prefix? prefix (cdr row))))
                      (list-modules))
         (error "business runtime did not load its own selected product" id)))
-    '("agentic-ai-lab/modules/governance/interface~0"
-      "agentic-ai-lab/modules/governance/types~0"
-      "agentic-ai-lab/modules/authorization/providers/cedar/objects~0"
-      "agentic-ai-lab/modules/loop-engine/control/governor-core~0"
+    '("tao3k/agentic-ai-lab/modules/governance/interface~0"
+      "tao3k/agentic-ai-lab/modules/governance/types~0"
+      "tao3k/agentic-ai-lab/modules/authorization/providers/cedar/objects~0"
+      "tao3k/agentic-ai-lab/modules/loop-engine/control/governor-core~0"
       "hardenedlinux/weaver/scheme/policy/cedar-ffi~0"))
   (displayln "WEAVER-MODULE-USE-OK roots=Lab/Weaver same-leaf=distinct repeat=same governance=ready cedar=valid gateway=present products=own"))

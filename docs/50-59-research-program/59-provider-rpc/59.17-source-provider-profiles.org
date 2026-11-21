@@ -14,7 +14,7 @@ An isolated pre-change Rust checker and Go routing witness both accept a request
 containing the recognized cap and an additional =max_output_tokens= alias.
 The negative assertions fail as expected; they establish an admission gap,
 not actual provider billing behavior. The original failures are retained under
-[[file:../../../dev/proofs/evidence/source-provider-profiles-20261030/README.org][the profile evidence record]].
+[[file:../../../.cache/verification/evidence/proofs/source-provider-profiles-20261030/README.org][the profile evidence record]].
 
 The implemented source contract now binds an immutable typed provider profile
 to the original task. The operation proposal includes its exact digest. A valid
@@ -172,7 +172,7 @@ naturally with 52 stages and unchanged 196 inputs. All Rust tests (77), five ASP
 deny gates, Clippy, Go/race/PBT, SysML, Quint and Lean stages pass. Its actual
 integration stage fails at the first daemon's unchanged three-second startup
 deadline. Subsequent integration cases pass, including the source profile/Cedar
-and restart witnesses. The [[file:../../../dev/proofs/evidence/source-provider-profiles-20261030/committed-startup-failed/receipt.json][whole run remains failed]].
+and restart witnesses. The [[file:../../../.cache/verification/evidence/proofs/source-provider-profiles-20261030/committed-startup-failed/receipt.json][whole run remains failed]].
 
 Connection-level diagnostics observe two refused TCP attempts followed by gRPC
 backoff and eventual operation/source readiness at approximately 2.58 seconds.

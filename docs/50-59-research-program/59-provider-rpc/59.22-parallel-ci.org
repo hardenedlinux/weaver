@@ -44,6 +44,8 @@ Each language suite includes project/workflow admission. The disjoint Rust, Go,
 Policy and Architecture stages preserve the unified local =check= inventory;
 a Go regression test rejects a dropped or unintentionally duplicated check.
 The local unified command remains available for complete serial reproduction.
+Multithreaded Tokio test runtimes use four workers in both environments. The
+shared entrypoint sets Go's per-package test parallelism to four.
 No fuzz duration, sample count or execution watchdog is increased for CI.
 
 * Scheme dependency closure

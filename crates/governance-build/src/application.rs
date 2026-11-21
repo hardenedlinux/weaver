@@ -5,7 +5,8 @@
 //! Build-owned application selection, never runtime source/module dispatch.
 use std::path::{Path, PathBuf};
 /// Test application forbidden in an approved production graph.
-pub const QUALIFICATION_APPLICATION: &str = "hardenedlinux/weaver/t/fixtures/governance-program";
+pub const QUALIFICATION_APPLICATION: &str =
+    "hardenedlinux/weaver/scheme/gateway/qualification-program";
 /// Test Governor/Profile implementation forbidden in a production graph.
 pub const QUALIFICATION_CONTROL: &str = "hardenedlinux/weaver/t/fixtures/governed-control";
 /// One explicit build-owned application; validity does not prove authenticity.
@@ -19,6 +20,7 @@ impl ProgramApplication {
     /// Syntax validity is not approval: the operator owns graph review/build.
     pub fn approved(module: &str, source: &Path) -> Result<Self, &'static str> {
         if !valid_module(module)
+            || module == QUALIFICATION_APPLICATION
             || module.starts_with("hardenedlinux/weaver/t/")
             || !source.is_absolute()
             || source.extension().is_none_or(|ext| ext != "ss")
@@ -40,7 +42,7 @@ impl ProgramApplication {
         }
         Ok(Self {
             module: QUALIFICATION_APPLICATION.into(),
-            source: root.join("t/fixtures/governance-program.ss"),
+            source: root.join("scheme/gateway/qualification-program.ss"),
             qualification: true,
         })
     }
@@ -55,7 +57,11 @@ impl ProgramApplication {
         if self.qualification {
             &[]
         } else {
-            &[QUALIFICATION_APPLICATION, QUALIFICATION_CONTROL]
+            &[
+                QUALIFICATION_APPLICATION,
+                QUALIFICATION_CONTROL,
+                "hardenedlinux/weaver/t/fixtures/governance-program",
+            ]
         }
     }
 }

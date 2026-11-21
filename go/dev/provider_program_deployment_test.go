@@ -635,8 +635,10 @@ func compiledControlSources(assets bool) controlPolicySources {
 	return composedControlSources(assets, false)
 }
 
-func TestProviderControlSchemeCompositionRevocationAndRestart(t *testing.T) {
-	exerciseControlPolicies(t, "json", nil, composedControlSources(false, true))
+func TestProviderRustDirectSchemeCompositionRevocationAndRestart(t *testing.T) {
+	source := composedControlSources(false, true)
+	source.direct = true
+	exerciseControlPolicies(t, "json", nil, source)
 }
 
 func composedControlSources(assets, compose bool) controlPolicySources {
@@ -683,14 +685,7 @@ func composedControlSources(assets, compose bool) controlPolicySources {
 		f.stop(t)
 		f.env = append(f.env, "WEAVER_GOVERNANCE_CATALOG="+path)
 		if assets {
-			assetRoot := filepath.Join(f.directory, "governance-assets")
-			if err := os.Mkdir(assetRoot, 0700); err != nil {
-				t.Fatal(err)
-			}
-			if err := os.WriteFile(filepath.Join(assetRoot, "policy.cedar"), []byte(bundle.Publication.Policy), 0600); err != nil {
-				t.Fatal(err)
-			}
-			f.env = append(f.env, "WEAVER_TEST_GOVERNANCE_ASSET_ROOT="+assetRoot)
+			configureGovernanceAsset(t, f, bundle.Publication.Policy)
 		}
 		f.start(t)
 		// CompileSource returns the frozen source artifact, never the reviewer's
@@ -716,6 +711,56 @@ func composedControlSources(assets, compose bool) controlPolicySources {
 	}}
 }
 
+func configureGovernanceAsset(t testing.TB, f *fixture, policy string) {
+	t.Helper()
+	assetRoot := filepath.Join(f.directory, "governance-assets")
+	if err := os.Mkdir(assetRoot, 0700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(assetRoot, "policy.cedar"), []byte(policy), 0600); err != nil {
+		t.Fatal(err)
+	}
+	switch application := os.Getenv("WEAVER_GOVERNANCE_APPLICATION"); application {
+	case "":
+		f.env = append(f.env, "WEAVER_TEST_GOVERNANCE_ASSET_ROOT="+assetRoot)
+	case "hardenedlinux/weaver/scheme/gateway/provider-program":
+		f.env = append(f.env, "WEAVER_GOVERNANCE_POLICY_ROOT="+assetRoot)
+	default:
+		t.Fatalf("no Cedar asset configuration for approved application %q", application)
+	}
+}
+
+func TestProviderRustDirectCompiledSourceRejectsAssetSubstitution(t *testing.T) {
+	f := newFixture(t, completeSSE, false)
+	bundle := controlBundle(t, f)
+	source := compiledControlSources(true)
+	source.configure(t, f, bundle)
+	asset := filepath.Join(f.directory, "governance-assets", "policy.cedar")
+	writeAsset := func(policy string) {
+		t.Helper()
+		if err := os.WriteFile(asset, []byte(policy), 0600); err != nil {
+			t.Fatal(err)
+		}
+	}
+	compile := func() (*pb.CompiledSource, error) {
+		ctx, cancel := context.WithTimeout(t.Context(), 10*time.Second)
+		defer cancel()
+		return f.admin.RPC.CompileSource(f.admin.Context(ctx), &pb.ProducerRequest{Producer: source.producer})
+	}
+	writeAsset("forbid(principal, action, resource);")
+	if reply, err := compile(); reply != nil || status.Code(err) != codes.FailedPrecondition {
+		t.Fatalf("changed Cedar asset did not cause a semantic refusal: %v", err)
+	}
+	writeAsset(bundle.Publication.Policy)
+	reply, err := compile()
+	if err != nil || reply.GetArtifact().GetPublication().GetPolicy() != bundle.Publication.Policy {
+		t.Fatalf("restored Cedar asset did not compile the original publication: %v", err)
+	}
+	if f.primary.Load()+f.backup.Load()+f.denied.Load() != 0 {
+		t.Fatal("source capture contacted a provider")
+	}
+}
+
 func TestProviderControlCompiledAssetsPublicationReplyLossAndRestart(t *testing.T) {
 	exerciseControlSourceReplyLoss(t, nil, false, compiledControlSources(true))
 }
@@ -725,10 +770,13 @@ func TestProviderControlCompiledAssetsStagingReplyLossAndRestart(t *testing.T) {
 }
 
 func TestProviderRustDirectPreparationLostReplies(t *testing.T) {
+	// Each case owns its ledger, credentials, asset directory and source proxy.
 	t.Run("staging", func(t *testing.T) {
+		t.Parallel()
 		exerciseSourceReplyLoss(t, nil, true, compiledControlSources(true), serverBinary)
 	})
 	t.Run("publication", func(t *testing.T) {
+		t.Parallel()
 		exerciseSourceReplyLoss(t, nil, false, compiledControlSources(true), serverBinary)
 	})
 }
@@ -889,7 +937,7 @@ func checkDirectPreparedOperation(t *testing.T, preparationImage string, useTOML
 	ctx, cancel := context.WithTimeout(t.Context(), 15*time.Second)
 	defer cancel()
 	if preparationImage == "" {
-		preparationImage = control.image
+		preparationImage = control.referenceImage(t)
 	}
 	command := control.prepareCommand(ctx, preparationImage, "prepare")
 	if useTOML {

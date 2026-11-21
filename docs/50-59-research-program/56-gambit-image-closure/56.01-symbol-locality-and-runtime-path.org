@@ -40,7 +40,7 @@ Gambit's current dlopen path resolves the requested symbol with dlsym against th
 returned image handle. The handle/entry pair, together with the manifest's logical
 module identity, supplies locality. Bare symbol names, physical image hashes,
 inodes and UUIDs do not identify logical modules or authorize Gateway effects.
-The [[file:../../../dev/proofs/evidence/native-image-closure/partition.json][partition]] and [[file:../../../dev/proofs/evidence/native-image-closure/images.json][native manifest]] retain that relation explicitly.
+The [[file:../../../.cache/verification/evidence/proofs/native-image-closure/partition.json][partition]] and [[file:../../../.cache/verification/evidence/proofs/native-image-closure/images.json][native manifest]] retain that relation explicitly.
 
 * Publication and consumption
 Object progress records are diagnostic only. The producer publishes a completed,
@@ -57,7 +57,7 @@ local rename/hash checks do not establish a distributed publication or filesyste
 anti-rollback protocol; before/after hashes cannot exclude transient tampering.
 
 * Fixed first-use controls
-The [[file:../../../dev/proofs/evidence/native-image-closure/plan.json][pre-execution plan]] fixes four paired blocks with reversed cell order.
+The [[file:../../../.cache/verification/evidence/proofs/native-image-closure/plan.json][pre-execution plan]] fixes four paired blocks with reversed cell order.
 Every cell first use is followed by a repeat. Controls use the exact same 238
 objects as the candidate: the original directory grouping for the first 98 and
 independent images for the other 140. Only the packing partition differs.
@@ -88,7 +88,7 @@ The first expanded link generation rejected an unresolved legacy math import,
 _pow, against the newer SDK stubs. No native matrix sample used that generation.
 The same unchanged object resolves against the already installed workspace SDK
 stubs and still imports the runtime libSystem implementation. The separate
-[[file:../../../dev/proofs/evidence/native-image-closure/link-profile.json][link profile]] is applied symmetrically to control and candidate; no unresolved
+[[file:../../../.cache/verification/evidence/proofs/native-image-closure/link-profile.json][link profile]] is applied symmetrically to control and candidate; no unresolved
 symbol suppression, symbol renaming, global SDK change or dependency pin change
 is used. The rejected artifacts and exact linker output remain retained.
 
@@ -97,7 +97,7 @@ its selected candidate images. RTLD_NOW import binding and checked original math
 operations provide bounded ABI evidence; they are not a universal numerical proof.
 
 * Stronger ordinary-entry supplement
-A separate [[file:../../../dev/proofs/evidence/native-image-closure/launcher-cold-plan.json][ordinary-launcher supplement]] is declared before creating and executing
+A separate [[file:../../../.cache/verification/evidence/proofs/native-image-closure/launcher-cold-plan.json][ordinary-launcher supplement]] is declared before creating and executing
 four additional candidate generations. These have new random UUIDs and native
 files disjoint from the primary matrix. All four must pass the same fifteen-second
 whole-process gate through the unchanged original shell launcher, without an

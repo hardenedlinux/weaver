@@ -16,6 +16,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"sort"
+	"strings"
 	"time"
 )
 
@@ -101,12 +102,6 @@ func Run(ctx context.Context, config Config, output io.Writer) (report string, r
 	if goBinary == "" {
 		goBinary = filepath.Join(runtime.GOROOT(), "bin/go")
 	}
-	data := filepath.Join(root, ".cache")
-	for _, name := range []string{"", "go-build-cache", "go-mod-cache"} {
-		if err := os.MkdirAll(filepath.Join(data, name), 0700); err != nil {
-			return "", err
-		}
-	}
 	directory, err := os.MkdirTemp("", "weaver-verification-")
 	if err != nil {
 		return "", err
@@ -117,7 +112,6 @@ func Run(ctx context.Context, config Config, output io.Writer) (report string, r
 		runErr = errors.Join(runErr, err)
 	}()
 	settings := map[string]string{
-		"GOCACHE": filepath.Join(data, "go-build-cache"), "GOMODCACHE": filepath.Join(data, "go-mod-cache"),
 		"GOTMPDIR": directory, "GOTOOLCHAIN": "local",
 	}
 	environment := Environment(settings)
@@ -281,7 +275,6 @@ const (
 	schemeModuleBuildTimeout     = 2 * time.Minute
 	schemePackageTestTimeout     = time.Minute
 	schemeModuleSelectionTimeout = 2 * time.Minute
-	schemeProviderBuildTimeout   = 8 * time.Minute
 )
 
 func runStageObserved(ctx context.Context, root, directory string, environment []string, stage Stage, streamSchemeOutput bool, onStart func(int), live io.Writer) Result {
@@ -291,10 +284,12 @@ func runStageObserved(ctx context.Context, root, directory string, environment [
 	// commands retain their own acceptance timeout after preparation.
 	deadline := time.Duration(0)
 	switch stage.Name {
+	case "consumer-cli-build", "consumer-runtime-build":
+		deadline = 8 * time.Minute
+	case "consumer-protocol-integration":
+		deadline = 2 * time.Minute
 	case "scheme-module-build":
 		deadline = schemeModuleBuildTimeout
-	case "scheme-provider-server-build":
-		deadline = schemeProviderBuildTimeout
 	case "scheme-rooted-sdk-integration":
 		deadline = 5 * time.Minute
 	case "scheme-unit-tests":
@@ -329,6 +324,9 @@ func runStageObserved(ctx context.Context, root, directory string, environment [
 	}
 	cmd.Dir = root
 	cmd.Env = environment
+	if stage.Binary == "cargo" {
+		cmd.Env = CargoEnvironment(environment)
+	}
 	var output io.Writer = log
 	if live != nil {
 		output = io.MultiWriter(log, live)
@@ -465,6 +463,28 @@ func writeReceipt(directory string, receipt Receipt) error {
 		return err
 	}
 	return os.Rename(temporary, filepath.Join(directory, "receipt.json"))
+}
+
+// CargoEnvironment keeps Go's own tool directory first exactly once. go test
+// prepends it to PATH; the SDK tracks PATH as a compiler input, so preparation
+// and artifact discovery must use the same environment rather than rebuild.
+func CargoEnvironment(environment []string) []string {
+	result := append([]string(nil), environment...)
+	goDirectory := filepath.Join(runtime.GOROOT(), "bin")
+	for i, entry := range result {
+		if !strings.HasPrefix(entry, "PATH=") {
+			continue
+		}
+		directories := []string{goDirectory}
+		for _, directory := range filepath.SplitList(strings.TrimPrefix(entry, "PATH=")) {
+			if directory != goDirectory {
+				directories = append(directories, directory)
+			}
+		}
+		result[i] = "PATH=" + strings.Join(directories, string(os.PathListSeparator))
+		return result
+	}
+	return append(result, "PATH="+goDirectory)
 }
 
 // Environment replaces keys rather than relying on duplicate environment ordering.

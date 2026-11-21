@@ -82,19 +82,19 @@ settlement remain outside this increment.
 
 The [[file:59.03-provider-rpc-core.svg][core diagram]] retains language ownership and final guards, without versions
 or acceptance data. Raw study and verification logs are retained under
-[[file:../../../dev/proofs/evidence/transport-setup-20261030/README.org][the transport evidence record]]. Full current committed-source verification,
+[[file:../../../.cache/verification/evidence/proofs/transport-setup-20261030/README.org][the transport evidence record]]. Full current committed-source verification,
 the complete twenty-five-case benchmark matrix and independent CI remain
 separate acceptance requirements.
 
 * Complete committed local qualification
 
 At =8374926ead52c379dc378bb114bbb2a5e97b2c90= the
-[[file:../../../dev/proofs/evidence/transport-setup-20261030/committed-check/receipt.json][full 54-stage check]] passes naturally, including the original three-second
+[[file:../../../.cache/verification/evidence/proofs/transport-setup-20261030/committed-check/receipt.json][full 54-stage check]] passes naturally, including the original three-second
 startup gate, 77 Rust tests, five ASP deny gates, strict Clippy, all Go/race/PBT,
 SysML, imported Cedar bridge, Quint/Lean and actual mTLS/provider scenarios.
-The [[file:../../../dev/proofs/evidence/transport-setup-20261030/committed-bench/receipt.json][eight-stage measured run]] also passes. It retains all 25 Rust cases with
+The [[file:../../../.cache/verification/evidence/proofs/transport-setup-20261030/committed-bench/receipt.json][eight-stage measured run]] also passes. It retains all 25 Rust cases with
 thirty fresh paired samples and three repetitions of each of the three Go RPC
-benchmarks. The [[file:../../../dev/proofs/evidence/transport-setup-20261030/transport-paired-source-identity.json][identity comparison]] confirms the same commit and all 201 input
+benchmarks. The [[file:../../../.cache/verification/evidence/proofs/transport-setup-20261030/transport-paired-source-identity.json][identity comparison]] confirms the same commit and all 201 input
 hashes in verification and measurement. Earlier failed/interrupted receipts are
 not reclassified by these results.
 

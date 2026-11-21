@@ -8,6 +8,8 @@ mod decoder;
 mod provider_bounds;
 #[path = "unit/provider_profiles.rs"]
 mod provider_profiles;
+#[path = "unit/provider_session.rs"]
+mod provider_session;
 #[path = "unit/publication_review.rs"]
 mod publication_review;
 #[path = "unit/source_authority.rs"]

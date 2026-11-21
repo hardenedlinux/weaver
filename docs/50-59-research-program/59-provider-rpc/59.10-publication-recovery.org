@@ -132,7 +132,7 @@ key-binder/type errors are also retained; final proofs require explicit key type
 
 * Verified restoration evidence
 
-The [[file:../../../dev/proofs/evidence/publication-recovery-20261030/verification-current/receipt.json][unified receipt]] passes all thirty-three stages with 150 unchanged SHA-256
+The [[file:../../../.cache/verification/evidence/proofs/publication-recovery-20261030/verification-current/receipt.json][unified receipt]] passes all thirty-three stages with 150 unchanged SHA-256
 input hashes. Rust reports forty-nine passing tests, including all five ASP deny
 gates and the five new ledger regressions/PBT. Go race integration passes the
 actual mTLS lost-result/restart scenario alongside earlier ingress, streaming,
@@ -151,13 +151,13 @@ measurements now include the durable outcome record. Fresh store creation and
 teardown remain outside timed ledger closures; all package targets and Criterion
 settings remain workspace-managed.
 
-The [[file:../../../dev/proofs/evidence/publication-recovery-20261030/benchmark-current/receipt.json][benchmark execution receipt]] passes all five collection stages and binds the
+The [[file:../../../.cache/verification/evidence/proofs/publication-recovery-20261030/benchmark-current/receipt.json][benchmark execution receipt]] passes all five collection stages and binds the
 same 150 hashes as verification. All eighteen Rust cases across five packages
-were actually measured. The [[file:../../../dev/proofs/evidence/publication-recovery-20261030/benchmark-current/benchmark-summary.org][full estimates and confidence intervals]] retain
+were actually measured. The [[file:../../../.cache/verification/evidence/proofs/publication-recovery-20261030/benchmark-current/benchmark-summary.org][full estimates and confidence intervals]] retain
 the complete batch. New-case mean observations are 58537.604 ns for publication
 commitment, 372032.507 ns for atomic commit, 8516.272 ns for exact replay and
 3067.935 ns for historical lookup. These are local serial measurements, not
-production latency guarantees. The [[file:../../../dev/proofs/evidence/publication-recovery-20261030/benchmark-current/grpc-benchmark.log][actual source RPC samples]] are 4967394,
+production latency guarantees. The [[file:../../../.cache/verification/evidence/proofs/publication-recovery-20261030/benchmark-current/grpc-benchmark.log][actual source RPC samples]] are 4967394,
 5073022 and 4479093 ns/op, with 114 Go allocations/op; these include ledger open,
 validation, persistence and transport, rather than isolated gRPC overhead.
 
@@ -171,8 +171,8 @@ A bounded follow-up measured the four encoding cases twice with exactly the
 same optimized binary and unchanged thirty-sample, one-second warm-up and
 two-second requested-measurement settings. Run A saves the named baseline
 publication-pair-a; run B compares against it. The
-[[file:../../../dev/proofs/evidence/publication-recovery-20261030/encoding-pair-receipt.json][paired source/binary receipt]] confirms all 150 inputs unchanged and the same
-binary SHA-256 before and after. [[file:../../../dev/proofs/evidence/publication-recovery-20261030/encoding-pair-a.log][Run A]] and [[file:../../../dev/proofs/evidence/publication-recovery-20261030/encoding-pair-b.log][run B]] retain their raw output. A's named
+[[file:../../../.cache/verification/evidence/proofs/publication-recovery-20261030/encoding-pair-receipt.json][paired source/binary receipt]] confirms all 150 inputs unchanged and the same
+binary SHA-256 before and after. [[file:../../../.cache/verification/evidence/proofs/publication-recovery-20261030/encoding-pair-a.log][Run A]] and [[file:../../../.cache/verification/evidence/proofs/publication-recovery-20261030/encoding-pair-b.log][run B]] retain their raw output. A's named
 baseline and B's new samples remain in the adjacent data directories; no full-batch
 sample or earlier failure was replaced.
 

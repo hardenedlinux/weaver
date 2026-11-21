@@ -33,9 +33,14 @@ impl OwnedSink {
                 "plaintext is limited to loopback qualification",
             ));
         }
-        Ok(Self::Tcp(
-            DeadlineSocket::connect(address).map_err(|_| Error::Invalid("TCP connect"))?,
-        ))
+        let socket = DeadlineSocket::connect(address).map_err(|_| Error::Invalid("TCP connect"))?;
+        // A single deciding write must not depend on a blocking SO_SNDTIMEO:
+        // kernels may continue a large write while the peer makes progress.
+        socket
+            .stream
+            .set_nonblocking(true)
+            .map_err(|_| Error::Invalid("TCP nonblocking writer"))?;
+        Ok(Self::Tcp(socket))
     }
     pub(crate) fn tls(destination: &str, config: StreamTlsConfig) -> Result<Self> {
         let url =
@@ -81,6 +86,13 @@ impl OwnedSink {
                 .complete_io(&mut stream.sock)
                 .map_err(|_| Error::Invalid("TLS handshake"))?;
         }
+        // Handshake preparation is complete. The final write/flush may only
+        // accept bytes now; WouldBlock is unknown, never a queued continuation.
+        stream
+            .sock
+            .stream
+            .set_nonblocking(true)
+            .map_err(|_| Error::Invalid("TLS nonblocking writer"))?;
         Ok(Self::Tls(Box::new(stream)))
     }
     pub(crate) fn write_once(&mut self, bytes: &[u8]) -> WriteObservation {

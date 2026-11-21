@@ -19,7 +19,7 @@ use std::{
 use weaver_contracts::{ProviderEvent, ProviderRoute, Result};
 use weaver_ledger::Ledger;
 #[path = "../../../contracts/benches/support/fixtures.rs"]
-mod fixtures;
+pub(crate) mod fixtures;
 const SCHEMA: &str = include_str!("../../../../prod/policies/provider/schema.json");
 
 struct Endpoint {
@@ -39,6 +39,9 @@ impl Endpoint {
         Self::with_read_mode(delay, false)
     }
     fn with_read_mode(delay: Duration, wait_for_close: bool) -> Self {
+        Self::with_replies(delay, wait_for_close, None)
+    }
+    fn with_replies(delay: Duration, wait_for_close: bool, replies: Option<Vec<String>>) -> Self {
         let _ = rustls::crypto::ring::default_provider().install_default();
         let listener = TcpListener::bind("127.0.0.1:0").expect("listener");
         listener.set_nonblocking(true).expect("nonblocking");
@@ -71,7 +74,7 @@ impl Endpoint {
             while !closing.load(Ordering::SeqCst) && start.elapsed() < Duration::from_secs(2) {
                 match listener.accept() {
                     Ok((socket, _)) => {
-                        seen.fetch_add(1, Ordering::SeqCst);
+                        let request_index = seen.fetch_add(1, Ordering::SeqCst);
                         socket
                             .set_nonblocking(false)
                             .expect("accepted blocking mode");
@@ -111,7 +114,20 @@ impl Endpoint {
                         }
                         thread::sleep(delay);
 
-                        stream.write_all(b"HTTP/1.1 200 OK\r\nContent-Type: text/event-stream\r\nContent-Length: 14\r\nConnection: close\r\n\r\ndata: [DONE]\n\n").expect("response");
+                        if let Some(replies) = &replies {
+                            let body = replies
+                                .get(request_index)
+                                .expect("bounded fixture request count");
+                            let response = format!(
+                                "HTTP/1.1 200 OK\r\nContent-Type: text/event-stream\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{body}",
+                                body.len()
+                            );
+                            stream
+                                .write_all(response.as_bytes())
+                                .expect("rich response");
+                        } else {
+                            stream.write_all(b"HTTP/1.1 200 OK\r\nContent-Type: text/event-stream\r\nContent-Length: 14\r\nConnection: close\r\n\r\ndata: [DONE]\n\n").expect("response");
+                        }
                         stream.flush().expect("flush");
                     }
                     Err(error) if error.kind() == std::io::ErrorKind::WouldBlock => {
@@ -132,6 +148,9 @@ impl Endpoint {
         }
     }
 }
+
+#[path = "provider_turn_dispatch.rs"]
+mod turn_dispatch;
 impl Drop for Endpoint {
     fn drop(&mut self) {
         self.stop.store(true, Ordering::SeqCst);
@@ -169,7 +188,7 @@ impl ProviderOutput for Cancellation {
     fn reserve(&mut self) -> Result<()> {
         panic!("no response release expected")
     }
-    fn prepare(_: &ProviderRoute, _: &str, _: &[ProviderEvent], _: &str) -> Result<()> {
+    fn prepare(&mut self, _: &ProviderRoute, _: &str, _: &[ProviderEvent], _: &str) -> Result<()> {
         panic!("no response preparation expected")
     }
     fn emit(&mut self, _: (), _: (), _: weaver_ledger::ProviderDelivery) -> Result<()> {

@@ -16,8 +16,8 @@ the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21
 
 [[file:43.01-caller-custody.org][43.01]] states the protocol. The executable [[file:../../../dev/proofs/lean/LlmCallerCustody.lean][Lean model]] and
 [[file:../../../dev/proofs/quint/LlmCallerCustody.qnt][Quint model]] extend category 42 without modifying its sealed files.
-[[file:../../../dev/proofs/evidence/llm-caller-custody/source-review.json][Nineteen source receipts]] are freshly verified against exact pinned Git blobs;
-[[file:../../../dev/proofs/evidence/llm-caller-custody/working-source-check.json][working source identities]] are independently checked. Eighteen match the reviewed
+[[file:../../../.cache/verification/evidence/proofs/llm-caller-custody/source-review.json][Nineteen source receipts]] are freshly verified against exact pinned Git blobs;
+[[file:../../../.cache/verification/evidence/proofs/llm-caller-custody/working-source-check.json][working source identities]] are independently checked. Eighteen match the reviewed
 bytes; P17 differs only in the two recorded control-plane import paths. No native
 ABI compatibility or changed pin is inferred from these checks.
 
@@ -181,9 +181,9 @@ is byte-identical to the raw predecessor. These are two qualified execution
 closures, not a claim that all ancestor tests execute in the new leaf. No other
 omitted ancestor tests are claimed rerun.
 
-See [[file:../../../dev/proofs/evidence/llm-caller-custody/commands.json][command receipts]], [[file:../../../dev/proofs/evidence/llm-caller-custody/closure-certificate.json][closure certificate]],
-[[file:../../../dev/proofs/evidence/llm-caller-custody/counterexample-observations.json][decoded counterexamples]], [[file:../../../dev/proofs/evidence/llm-caller-custody/receipt.json][acceptance receipt]] and
-[[file:../../../dev/proofs/evidence/llm-caller-custody/SHA256SUMS][sealed byte manifest]]. Receipt acceptance separately checks source identities,
+See [[file:../../../.cache/verification/evidence/proofs/llm-caller-custody/commands.json][command receipts]], [[file:../../../.cache/verification/evidence/proofs/llm-caller-custody/closure-certificate.json][closure certificate]],
+[[file:../../../.cache/verification/evidence/proofs/llm-caller-custody/counterexample-observations.json][decoded counterexamples]], [[file:../../../.cache/verification/evidence/proofs/llm-caller-custody/receipt.json][acceptance receipt]] and
+[[file:../../../.cache/verification/evidence/proofs/llm-caller-custody/SHA256SUMS][sealed byte manifest]]. Receipt acceptance separately checks source identities,
 dependency identity, historical manifests, four-artifact links, English Org export
 and rendered core D2. Native authentication/enrollment, monotonic time, protected
 whole-event durability and anti-rollback recovery are explicit unqualified owner

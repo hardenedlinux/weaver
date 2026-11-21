@@ -12,6 +12,7 @@ asset_name="lean-${tag#v}-linux.tar.zst"
 tag_uri="$(jq -nr --arg tag "$tag" '$tag | @uri')"
 read -r asset_id sha256 < <(
   curl --fail --silent --show-error --location --retry 3 \
+    --header "Authorization: Bearer ${GH_TOKEN:?}" \
     "https://api.github.com/repos/leanprover/lean4/releases/tags/$tag_uri" |
     jq -er --arg name "$asset_name" \
       '.assets[] | select(.name == $name) | [.id, (.digest | ltrimstr("sha256:"))] | @tsv'
@@ -20,6 +21,7 @@ read -r asset_id sha256 < <(
 archive="${RUNNER_TEMP:?}/$asset_name"
 release_root="$RUNNER_TEMP/weaver-lean"
 curl --fail --location --retry 3 --header 'Accept: application/octet-stream' \
+  --header "Authorization: Bearer ${GH_TOKEN:?}" \
   --output "$archive" \
   "https://api.github.com/repos/leanprover/lean4/releases/assets/$asset_id"
 echo "$sha256  $archive" | shasum -a 256 --check

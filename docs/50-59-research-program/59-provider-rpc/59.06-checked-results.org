@@ -12,10 +12,10 @@ admission lanes. They are retained under their original hashes. See
 [[file:59.07-reserved-authority-admission.org][the reserved-authority admission increment]] for the subsequent sources and
 verification. Baseline timing samples are not silently reassigned to newer code.
 
-- [[file:../../../dev/proofs/evidence/provider-routing-20261030/verification-current/receipt.json][Verification receipt]]: PASS for 24 stages, including source currentness.
-- [[file:../../../dev/proofs/evidence/provider-routing-20261030/benchmark-current/receipt.json][Benchmark receipt]]: PASS for compiler environment, Go environment, Rust measurements, gRPC measurements and source currentness.
-- [[file:../../../dev/proofs/evidence/provider-routing-20261030/benchmark-current/benchmark-summary.org][Full Criterion estimates and confidence intervals]]: fourteen measured cases across all five Rust packages.
-- [[file:../../../dev/proofs/evidence/provider-routing-20261030/benchmark-current/grpc-benchmark.log][Actual warm mTLS gRPC benchmark]]: three measured runs, with Go client allocation counters.
+- [[file:../../../.cache/verification/evidence/proofs/provider-routing-20261030/verification-current/receipt.json][Verification receipt]]: PASS for 24 stages, including source currentness.
+- [[file:../../../.cache/verification/evidence/proofs/provider-routing-20261030/benchmark-current/receipt.json][Benchmark receipt]]: PASS for compiler environment, Go environment, Rust measurements, gRPC measurements and source currentness.
+- [[file:../../../.cache/verification/evidence/proofs/provider-routing-20261030/benchmark-current/benchmark-summary.org][Full Criterion estimates and confidence intervals]]: fourteen measured cases across all five Rust packages.
+- [[file:../../../.cache/verification/evidence/proofs/provider-routing-20261030/benchmark-current/grpc-benchmark.log][Actual warm mTLS gRPC benchmark]]: three measured runs, with Go client allocation counters.
 
 Verification and benchmark receipts bind the same 130 input hashes. The nineteen
 SysML requirements map to native/formal witnesses. Rust reports 39 passing tests,

@@ -4,7 +4,7 @@
 
 ;;; Explicit operator-owned Cedar assets; no Scheme or alternate DSL evaluation.
 (import (only-in :clan/poo/object .ref .o)
-        (only-in :clan/poo/mop validate)
+        (only-in :clan/poo/type validate)
         (only-in :std/crypto/digest sha256)
         (only-in :std/encoding/hex hex-encode)
         (only-in :std/string/path path-absolute?)

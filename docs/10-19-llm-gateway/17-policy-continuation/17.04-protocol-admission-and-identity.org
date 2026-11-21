@@ -15,7 +15,7 @@ differences while joining admitted operations to the same original task, semanti
 profile, canonical intent family, budget/history domains and final broker.
 
 The protocol taxonomy below is grounded in official documentation listed in the
-[[file:../../../dev/proofs/evidence/llm-policy-continuation/protocol-sources.json][protocol reference register]]. It is an architectural admission plan, not a
+[[file:../../../.cache/verification/evidence/proofs/llm-policy-continuation/protocol-sources.json][protocol reference register]]. It is an architectural admission plan, not a
 claim of implemented or certified adapter support. Mutable official documentation
 must be resolved to a reviewed explicit profile before native implementation;
 this review changes no dependency pin.
@@ -31,7 +31,7 @@ this review changes no dependency pin.
 | AG-UI | Agent/frontend interaction through bidirectional events and shared UI/agent state; [[https://docs.ag-ui.com/introduction][official overview]] | Optional presentation/event boundary; user interaction and replayed state updates are requests or data, not authority publications |
 | A2UI | Declarative agent-generated UI content; [[https://a2ui.org/introduction/what-is-a2ui/][official introduction]] | Typed output/artifact content profile; distinguish UI description from AG-UI transport/lifecycle and from execution permission |
 | ANP: Agent Network Protocol | Layered agent identity, discovery and communication; [[https://github.com/agent-network-protocol/AgentNetworkProtocol/blob/main/docs/anp-getting-started-guide.md][official project guide]] | Evaluate for federated discovery under a separate trust profile; external identity/discovery never grants original-root authority by itself |
-| ASP: this project's Agent Semantic Protocols | Local shared semantic schemas/provider contracts and source-bound query projection; [[file:../../../dev/proofs/evidence/llm-policy-continuation/asp-source-review.json][inspected local sources]] | Semantic provenance and typed source evidence; distinct from both meanings of ACP and from A2A; packets do not own mutation or Gateway execution authority |
+| ASP: this project's Agent Semantic Protocols | Local shared semantic schemas/provider contracts and source-bound query projection; [[file:../../../.cache/verification/evidence/proofs/llm-policy-continuation/asp-source-review.json][inspected local sources]] | Semantic provenance and typed source evidence; distinct from both meanings of ACP and from A2A; packets do not own mutation or Gateway execution authority |
 | LLM provider APIs | Provider-specific request/response, tool proposal, streaming and usage representations | Existing LLM routing/codec layer; bind actual model, target, input, response mode and retry to the original admitted operation |
 | HTTP/JSON, gRPC, SSE, WebSocket and webhooks | Transport/binding choices for selected operation profiles | Framing, connection and delivery properties do not allocate claims, intent families or budgets |
 

@@ -93,7 +93,7 @@ while retaining the necessary durable execution mechanisms.
 |--------------------+-----------------|
 | =crates/governance/src/catalog/admission.rs= | Immutable approved producer catalog; trusted embedding supplies the original, so construction alone does not authenticate its truth |
 | =crates/governance/src/binding.rs= | SourceExpectation captures before compilation; BoundSource requires typed equality, not agreement between two caller-selected aliases |
-| =crates/server/src/grpc.rs= | compile_source checks actual source authority before and after the bounded compiler call; returned data remains inert |
+| =crates/server/src/grpc/rpc.rs= | compile_source checks actual source authority before and after the bounded compiler call; returned data remains inert |
 | =go/internal/controlplane/source_compile.go= | BootstrapProducer retains the original-bound artifact and rechecks source authority; successful compilation grants no send right |
 | =crates/ledger/src/task_origins.rs= | Existing source transaction persists task/origin/domain commitments and exact admission outcomes; final use rejects missing bindings |
 | =dev/proofs/cedar/WeaverPolicyBridge.lean= | Existing registered-original and matched-context composition laws retain authenticated-original and runtime-refinement premises |

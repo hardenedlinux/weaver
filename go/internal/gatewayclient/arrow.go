@@ -22,6 +22,13 @@ func Events(frame *pb.ProviderFrame, encoding pb.Encoding) ([]*pb.Event, error) 
 		if event == nil {
 			return nil, errors.New("protobuf event required")
 		}
+		// Transport bounds only. Rust owns versioned turn semantics; legacy
+		// Execute refuses unknown kinds rather than interpreting rich JSON here.
+		if len(event.TurnJson) > 65536 ||
+			(event.Kind != "turn.v1" && len(event.TurnJson) != 0) ||
+			(event.Kind == "turn.v1" && (len(event.TurnJson) == 0 || event.Text != "" || event.Tokens != 0)) {
+			return nil, errors.New("rich event transport envelope")
+		}
 		return []*pb.Event{event}, nil
 	}
 	batch := frame.GetArrow()
@@ -41,7 +48,9 @@ func Events(frame *pb.ProviderFrame, encoding pb.Encoding) ([]*pb.Event, error) 
 	}
 	defer reader.Release()
 	schema := arrow.NewSchema([]arrow.Field{{Name: "sequence", Type: arrow.PrimitiveTypes.Uint64}, {Name: "kind", Type: arrow.BinaryTypes.String}, {Name: "text", Type: arrow.BinaryTypes.String}, {Name: "tokens", Type: arrow.PrimitiveTypes.Uint64}}, nil)
-	if !reader.Schema().Equal(schema) {
+	richFields := append(schema.Fields(), arrow.Field{Name: "turn_json", Type: arrow.BinaryTypes.Binary})
+	rich := reader.Schema().Equal(arrow.NewSchema(richFields, nil))
+	if !reader.Schema().Equal(schema) && !rich {
 		return nil, errors.New("Arrow schema or record missing")
 	}
 	if !reader.Next() {
@@ -58,6 +67,10 @@ func Events(frame *pb.ProviderFrame, encoding pb.Encoding) ([]*pb.Event, error) 
 	kind := record.Column(1).(*array.String)
 	text := record.Column(2).(*array.String)
 	tokens := record.Column(3).(*array.Uint64)
+	var turns *array.Binary
+	if rich {
+		turns = record.Column(4).(*array.Binary)
+	}
 	result := make([]*pb.Event, batch.Rows)
 	remaining := arrowTextBudget
 	for i := range result {
@@ -71,6 +84,19 @@ func Events(frame *pb.ProviderFrame, encoding pb.Encoding) ([]*pb.Event, error) 
 		remaining -= len(k) + len(value)
 		// Return owned strings; no Event retains an entire IPC data buffer.
 		result[i] = &pb.Event{Sequence: seq.Value(i), Kind: strings.Clone(k), Text: strings.Clone(value), Tokens: tokens.Value(i)}
+		if turns != nil {
+			if turns.IsNull(i) || len(turns.Value(i)) > 65536 || len(turns.Value(i)) > remaining {
+				return nil, errors.New("Arrow rich payload bound")
+			}
+			payload := turns.Value(i)
+			if (k == "turn.v1") != (len(payload) != 0) || (k == "turn.v1" && (value != "" || tokens.Value(i) != 0)) {
+				return nil, errors.New("Arrow rich event envelope")
+			}
+			remaining -= len(payload)
+			result[i].TurnJson = bytes.Clone(payload)
+		} else if k == "turn.v1" {
+			return nil, errors.New("Arrow rich payload missing")
+		}
 	}
 	if reader.Next() || reader.Err() != nil {
 		return nil, errors.New("Arrow trailing or invalid record")

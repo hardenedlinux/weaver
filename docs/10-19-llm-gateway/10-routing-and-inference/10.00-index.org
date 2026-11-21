@@ -33,6 +33,10 @@ Area =10-19 LLM Gateway=; category =10 Routing and inference=.
 | 10.04 | [[file:10.04-validation-evidence.org][Formal evidence and remaining qualification]] |
 | 10.06 | [[file:10.06-provider-egress-window.org][Bounded provider egress window design candidate]] |
 | 10.07 | [[file:10.07-provider-egress-window.d2][Candidate D2]] / [[file:10.07-provider-egress-window.svg][SVG]] |
+| 10.13 | [[file:10.13-praxis-envoy-and-ascent.org][Praxis/Envoy comparison and Gateway execution experiments]] |
+| 10.14 | [[file:10.14-object-lifecycle.org][Scheme/POO lifecycle audit and inherited ASCENT integration]] |
+| 10.15 | [[file:10.15-architecture-evolution.org][Architecture reflection, reinforcing capabilities and qualification plan]] |
+| 10.16 | [[file:10.16-advisory-derivation.org][ASCENT advisory derivation, explanations and retained source lifecycle]] |
 
 [[file:../../../dev/proofs/lean/LlmRouting.lean][Lean]] and [[file:../../../dev/proofs/quint/LlmRouting.qnt][Quint]] model candidate eligibility, selection, current route
 binding and the initial single-provider-admission profile. Detailed downstream
@@ -42,10 +46,11 @@ Earlier sealed documents remain historical receipts. The product design delta,
 its source comparison and four-artifact mapping are maintained in this category.
 
 #+begin_src sh :eval never
-python3 dev/proofs/check_llm_routing.py
-python3 dev/proofs/evidence/llm-routing/check-four-artifacts.py
-python3 dev/proofs/evidence/llm-routing/check-counterexample-observations.py
+go -C go run ./cmd/weaver-dev -timeout 28m check-policy
 #+end_src
+
+This runs the maintained registered plan. It does not replay the retired
+per-artifact checks or regenerate the historical observations below.
 
 No Gateway runtime or dependency pin is changed.
 

@@ -175,6 +175,7 @@ async fn dynamic_registration_restart_refresh_and_logout_use_the_issued_client()
         while let Some(event) = stream.next_event().await? {
             match event {
                 weaver_llm::TurnEvent::Text(delta) => text.push_str(&delta),
+                weaver_llm::TurnEvent::Thinking(_) => {}
                 weaver_llm::TurnEvent::Finished { .. } => finished = true,
             }
         }

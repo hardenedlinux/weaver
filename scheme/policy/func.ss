@@ -4,9 +4,9 @@
 
 ;;; POO owns deferred compiled-module loading; source discovery never runs C FFI.
 (import (only-in :clan/poo/io module-action)
-        (only-in :clan/poo/object .ref .all-slots .o)
-        (only-in :clan/poo/mop validate)
-        (only-in :agentic-ai-lab/modules/authorization/providers/cedar/objects agentic-ai-lab-cedar-policy?)
+        (only-in :clan/poo/object .get .ref .all-slots .o)
+        (only-in :clan/poo/type validate)
+        (only-in "../interface.ss" LabCedar)
         "./types.ss"
         (only-in "./assets.ss" policy-document))
 (export validate-source-policy! validate-policy-projection! project-policy)
@@ -39,7 +39,7 @@
   (def inline
     (map (lambda (name)
            (let ((value (.ref policies name)))
-             (unless (and (agentic-ai-lab-cedar-policy? value)
+             (unless (and ((.get LabCedar policy?) value)
                           (eq? (.ref value 'runtime-executed?) #f))
                (error "unsupported Governance policy value"))
              (policy-document (.ref value 'identity) (.ref value 'source) ""))) names))

@@ -4,12 +4,13 @@
 
 ;;; Exact POO records for the shared wire contract. Go and Rust revalidate it.
 (import (only-in :clan/poo/object .cc)
-        (only-in :clan/poo/mop MonomorphicObject)
+        (only-in :clan/poo/type MonomorphicObject)
         (only-in :clan/poo/type Record List String)
         (only-in :clan/poo/number UIntN)
         (only-in :hardenedlinux/weaver/scheme/policy/types CedarPolicySource CedarSchemaSource))
 (export GatewayArtifact GatewaySourceInput TaskContract ProviderPlanContract PublicationContract
-        ProviderProfileContract ProviderRouteContract Identifier Counter Credits Digest ProviderComposition)
+        ProviderProfileContract ProviderRouteContract Identifier Counter Credits Digest ProviderComposition
+        SessionSelectorScope SessionTurnFactsContract SessionSelectorCut)
 
 ;;; Preserve exact JSON integer tokens above 2^53; the default Integer JSON
 ;;; encoder intentionally uses strings there, which this wire schema forbids.
@@ -44,8 +45,11 @@
 (def BodyLimit (.cc Counter sexp: 'BodyByteLimit '.element?
                    (lambda (value) (and (exact-integer? value) (<= 1 value 1048576)))))
 (def ProviderProtocol
-  (.cc String sexp: 'OpenAIChatTextSseV1 '.element?
-       (lambda (value) (equal? value "openai.chat-text-sse.v1"))))
+  (.cc String sexp: 'ProviderStreamProtocolV1 '.element?
+       (lambda (value)
+         (and (member value '("openai.chat-text-sse.v1" "anthropic.messages-text-sse.v1"
+                              "openai.chat-turn-sse.v1" "openai.responses-turn-sse.v1"
+                              "anthropic.messages-turn-sse.v1")) #t))))
 (def ProviderProfileContract
   (.cc (Record id: (list Identifier) protocol: (list ProviderProtocol)
                max_output_tokens: (list TokenLimit) max_messages: (list MessageLimit)
@@ -104,3 +108,17 @@
 (def ProviderComposition
   (.cc (Record source: (list GatewayArtifact) routing: (list (List ProviderSelectionFacts)))
        identity: 'weaver/provider-composition sealed: #t))
+
+;;; Compact advisory input: exact request bytes stay in Rust and the ledger.
+(def SessionSelectorScope
+  (.cc (Record principal: (list Identifier) models: (list (List Identifier))
+        max_output_tokens: (list TokenLimit) max_messages: (list MessageLimit)
+        max_body_bytes: (list BodyLimit) route_count: (list MessageLimit))
+       identity: 'weaver/session-selector-scope sealed: #t))
+(def SessionTurnFactsContract
+  (.cc (Record principal: (list Identifier) model: (list Identifier)
+        output_token_limit: (list TokenLimit) message_count: (list MessageLimit)
+        body_bytes: (list BodyLimit)) identity: 'weaver/session-turn-facts sealed: #t))
+(def SessionSelectorCut
+  (.cc (Record scope_commitment: (list Digest) scope: (list SessionSelectorScope optional: #t)
+        facts: (list SessionTurnFactsContract)) identity: 'weaver/session-selector-cut sealed: #t))

@@ -83,6 +83,7 @@ impl BuildPaths {
             "gerbil-ascent/program/scheme-language",
             "gerbil-ascent/program/session",
             "hardenedlinux/weaver/scheme/gateway/compiled",
+            "hardenedlinux/weaver/scheme/c-abi/gateway",
             self.application.module(),
         ];
         let receipt = build_program_archive_with_contract(
@@ -94,6 +95,7 @@ impl BuildPaths {
                 out_dir: &self.out.join("archive"),
             },
             ProgramArchiveContract {
+                max_modules: std::num::NonZeroUsize::new(1024).expect("nonzero module bound"),
                 required_modules: &required,
                 forbidden_modules: self.application.forbidden_modules(),
                 linker_main_symbol: "weaver_governance_program_main",

@@ -23,7 +23,7 @@ func PrepareCITools(ctx context.Context, output io.Writer) error {
 	}
 	suite := os.Getenv("WEAVER_VERIFY_SUITE")
 	switch suite {
-	case "check-rust", "check-go", "check-scheme", "check-policy", "check-architecture", "bench":
+	case "check-rust", "check-go", "check-scheme", "check-policy", "check-architecture", "check-consumers", "bench":
 	default:
 		return fmt.Errorf("unsupported CI suite %q", suite)
 	}
@@ -51,6 +51,9 @@ func PrepareCITools(ctx context.Context, output io.Writer) error {
 			return err
 		}
 		packages := []string{"apt-get", "install", "-y", "--no-install-recommends", "build-essential", "ca-certificates", "pkg-config", "libssl-dev", "zlib1g-dev", "protobuf-compiler"}
+		if suite == "check-scheme" {
+			packages = append(packages, "gdb")
+		}
 		if suite == "check-policy" {
 			packages = append(packages, "elan", "cvc5", "zstd")
 		}

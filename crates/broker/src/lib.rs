@@ -10,7 +10,7 @@ pub use broker::execute::execute;
 pub use broker::stream_session::StreamSession;
 pub use provider::{
     AnthropicWifConfig, ProviderExecution, ProviderExecutionAdmission, ProviderExecutionAuthority,
-    ProviderOutput, ProviderTransport, ProviderTransportPhases, TransportStage,
+    ProviderOutput, ProviderSseEncoder, ProviderTransport, ProviderTransportPhases, TransportStage,
     execute_catalog_provider, execute_catalog_provider_with_oauth, execute_provider,
     execute_provider_progression,
 };

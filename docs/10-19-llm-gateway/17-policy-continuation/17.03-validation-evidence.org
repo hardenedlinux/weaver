@@ -19,7 +19,7 @@ the actual category-16 model. [[file:../../../dev/proofs/quint/LlmPolicyContinua
 external publications, linked candidates, current approval cuts, stable winners
 and protocol aliases. It abstracts source bootstrap behind an admitted fixture.
 
-Results: [[file:../../../dev/proofs/evidence/llm-policy-continuation/commands.json][commands.json]], [[file:../../../dev/proofs/evidence/llm-policy-continuation/receipt.json][receipt.json]], [[file:../../../dev/proofs/evidence/llm-policy-continuation/SHA256SUMS][SHA256SUMS]]. Preliminary diagnostics remain
+Results: [[file:../../../.cache/verification/evidence/proofs/llm-policy-continuation/commands.json][commands.json]], [[file:../../../.cache/verification/evidence/proofs/llm-policy-continuation/receipt.json][receipt.json]], [[file:../../../.cache/verification/evidence/proofs/llm-policy-continuation/SHA256SUMS][SHA256SUMS]]. Preliminary diagnostics remain
 separate from final acceptance. No Gateway code or dependency pin is changed.
 
 * Four-artifact correspondence
@@ -41,8 +41,8 @@ separate from final acceptance. No Gateway code or dependency pin is changed.
 
 * Source comparison
 
-The [[file:../../../dev/proofs/evidence/llm-policy-continuation/source-review.json][POO Flow / Cedar register]], [[file:../../../dev/proofs/evidence/llm-policy-continuation/asp-source-review.json][ASP register]] and [[file:../../../dev/proofs/evidence/llm-policy-continuation/agentgateway-source-review.json][agentgateway register]] identify pinned
-source blobs and checked excerpts. [[file:../../../dev/proofs/evidence/llm-policy-continuation/protocol-sources.json][Official protocol references]] support the
+The [[file:../../../.cache/verification/evidence/proofs/llm-policy-continuation/source-review.json][POO Flow / Cedar register]], [[file:../../../.cache/verification/evidence/proofs/llm-policy-continuation/asp-source-review.json][ASP register]] and [[file:../../../.cache/verification/evidence/proofs/llm-policy-continuation/agentgateway-source-review.json][agentgateway register]] identify pinned
+source blobs and checked excerpts. [[file:../../../.cache/verification/evidence/proofs/llm-policy-continuation/protocol-sources.json][Official protocol references]] support the
 interface taxonomy in [[file:17.04-protocol-admission-and-identity.org][17.04]]. Native protocol conformance is not inferred from
 these source reads or from the abstract alias model.
 
@@ -103,7 +103,7 @@ remote exactly-once or performance claim is made.
 | Canonical identity across protocols | protocolResetContinuationCounterexampleTest | A2A alias resets original spent-state/unknown hold |
 | Pending-intent retention | droppedIntentContinuationCounterexampleTest | Original staged intent disappears after candidate approval |
 
-Unsafe actions are excluded from =step=. [[file:../../../dev/proofs/evidence/llm-policy-continuation/itf][ITF traces]] are independently decoded;
+Unsafe actions are excluded from =step=. [[file:../../../.cache/verification/evidence/proofs/llm-policy-continuation/itf][ITF traces]] are independently decoded;
 old-permit evidence must show actual earlier issuance and a newer committed Deny.
 A negative control can deliberately remove a linked pair of enforcement guards;
 it does not demonstrate that removing any unrelated single guard is sufficient.

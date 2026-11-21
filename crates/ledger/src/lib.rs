@@ -33,8 +33,10 @@ pub use provider_delivery::{
 };
 mod provider_catalog;
 mod provider_routing;
+mod provider_session;
 pub use provider_catalog::ProviderCatalogProjection;
 pub use provider_routing::ProviderOperationCut;
+pub use provider_session::{ProviderSessionCatalog, ProviderSessionCut, ProviderSessionRequest};
 mod provider_oauth;
 mod provider_oauth_witness;
 mod provider_profiles;
@@ -48,7 +50,12 @@ mod provider_workflow_nested;
 pub use provider_workflow::{ProviderProgression, WorkflowObservation};
 pub use provider_workflow_choice::WorkflowChoiceObservation;
 pub use provider_workflow_nested::NestedObservation;
+mod connection_config;
 mod publication;
+pub use connection_config::{
+    ConnectionChange, ConnectionHead, ConnectionKey, ConnectionLease, ConnectionOutcome,
+    ConnectionProfile, ConnectionReceipt,
+};
 mod publication_barrier;
 mod publication_review;
 mod review_authority;

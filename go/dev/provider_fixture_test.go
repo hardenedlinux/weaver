@@ -32,6 +32,7 @@ import (
 	"runtime"
 	"slices"
 	"strings"
+	"sync"
 	"sync/atomic"
 	"syscall"
 	"testing"
@@ -47,7 +48,7 @@ const ownerToken = "test-agent-operation-token"
 const adminToken = "test-source-publisher-token"
 
 var serverBinary string
-var controlBinary string
+var controlReference func() (string, error)
 
 func TestMain(m *testing.M) {
 	flag.Parse()
@@ -114,35 +115,47 @@ func TestMain(m *testing.M) {
 		fmt.Fprintln(os.Stderr, "test-owned release image differs from the frozen SHA-256")
 		os.Exit(1)
 	}
-	controlBinary = filepath.Join(directory, "weaver-control")
+	controlReference = sync.OnceValues(func() (string, error) {
+		return buildControlReference(repo, directory, benchmark == "")
+	})
+	result := m.Run()
+	os.RemoveAll(directory)
+	os.Exit(result)
+}
+
+func goControlImage(t testing.TB) string {
+	t.Helper()
+	image, err := controlReference()
+	if err != nil {
+		t.Fatalf("build Go control reference: %v", err)
+	}
+	return image
+}
+
+func buildControlReference(repo, directory string, race bool) (string, error) {
+	controlBinary := filepath.Join(directory, "weaver-control")
 	controlArgs := []string{"-C", "go", "build", "-mod=readonly"}
 	if os.Getenv("WEAVER_TEST_CONTROL_HEAP") == "1" {
 		controlArgs = []string{"-C", "go", "test", "-c", "-mod=readonly", "-tags=integration"}
 	}
-	if benchmark == "" {
+	if race {
 		controlArgs = append(controlArgs, "-race")
 	}
 	controlArgs = append(controlArgs, "-o", controlBinary, "./dev/controlref")
 	controlBuild := exec.Command(filepath.Join(runtime.GOROOT(), "bin/go"), controlArgs...)
 	controlBuild.Dir, controlBuild.Stdout, controlBuild.Stderr = repo, os.Stderr, os.Stderr
 	if err := controlBuild.Run(); err != nil {
-		os.RemoveAll(directory)
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
+		return "", err
 	}
 	image, err := os.ReadFile(controlBinary)
 	if err != nil {
-		os.RemoveAll(directory)
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
+		return "", err
 	}
 	fmt.Fprintf(os.Stderr, "test-owned Go control image sha256=%x\n", sha256.Sum256(image))
 	if os.Getenv("WEAVER_TEST_CONTROL_HEAP") == "1" {
 		fmt.Fprintf(os.Stderr, "Go control heap observation image sha256=%x\n", sha256.Sum256(image))
 	}
-	result := m.Run()
-	os.RemoveAll(directory)
-	os.Exit(result)
+	return controlBinary, nil
 }
 
 type testPKI struct {
@@ -218,6 +231,7 @@ type fixture struct {
 	arguments                         []string
 	exited                            chan error
 	client, admin                     *gatewayclient.Client
+	sourceToken                       string
 	plan                              v1.ProviderPlan
 	plans                             []v1.ProviderPlan
 	primary, backup, denied           atomic.Int64
@@ -247,7 +261,7 @@ func providerFixture(t testing.TB, handler http.HandlerFunc, large bool, binary 
 		path = "/v1/messages"
 	}
 	t.Helper()
-	f := &fixture{directory: t.TempDir(), binary: binary, arguments: append([]string(nil), arguments...)}
+	f := &fixture{directory: t.TempDir(), binary: binary, arguments: append([]string(nil), arguments...), sourceToken: adminToken}
 	if suppliedPKI != nil {
 		f.pki = suppliedPKI
 	} else if wif != nil {
@@ -354,7 +368,7 @@ func providerFixture(t testing.TB, handler http.HandlerFunc, large bool, binary 
 		}
 	}
 	ownerHash := sha256.Sum256([]byte(ownerToken))
-	adminHash := sha256.Sum256([]byte(adminToken))
+	adminHash := sha256.Sum256([]byte(f.sourceToken))
 	peerHash := sha256.Sum256(f.pki.client.Certificate[0])
 	f.env = []string{"WEAVER_DB=" + filepath.Join(f.directory, "owner.db"), "WEAVER_PRINCIPAL=alice", "WEAVER_LISTEN=" + f.address, "WEAVER_TOKEN_SHA256=" + hex.EncodeToString(ownerHash[:]), "WEAVER_ADMIN_TOKEN_SHA256=" + hex.EncodeToString(adminHash[:]), "WEAVER_GRPC_PEER_SHA256=" + hex.EncodeToString(peerHash[:]), "WEAVER_GRPC_CERT=" + filepath.Join(f.directory, "server.pem"), "WEAVER_GRPC_KEY=" + filepath.Join(f.directory, "server-key.pem"), "WEAVER_GRPC_CLIENT_CA=" + filepath.Join(f.directory, "ca.pem"), "WEAVER_PROVIDER_CA=" + filepath.Join(f.directory, "ca.pem"), `WEAVER_PROVIDER_CREDENTIAL_ENVS={"primary":"WEAVER_TEST_KEY","backup":"WEAVER_TEST_KEY","denied":"WEAVER_TEST_KEY"}`, "WEAVER_TEST_KEY=test-provider-key"}
 	sourceHash := sha256.Sum256(f.pki.source.Certificate[0])
@@ -477,7 +491,7 @@ func (f *fixture) start(t testing.TB) {
 	}
 	sourceSecurity := security.Clone()
 	sourceSecurity.Certificates = []tls.Certificate{f.pki.source}
-	f.admin, err = gatewayclient.Dial(ctx, f.sourceAddress, adminToken, sourceSecurity)
+	f.admin, err = gatewayclient.Dial(ctx, f.sourceAddress, f.sourceToken, sourceSecurity)
 	t.Logf("Rust owner startup source-channel elapsed=%s error=%v", time.Since(started), err)
 	if err != nil {
 		f.stop(t)
@@ -528,7 +542,7 @@ func (f *fixture) stopObserved(t testing.TB, observe func(string, time.Time)) {
 	if os.Getenv("WEAVER_TEST_SOURCE_MEASURE") != "" {
 		data, _ := os.ReadFile(filepath.Join(f.directory, "server.log"))
 		for _, line := range strings.Split(string(data), "\n") {
-			if strings.HasPrefix(line, "weaver source metric=") {
+			if strings.HasPrefix(line, "weaver source metric=") || strings.HasPrefix(line, "weaver scheme phase=") {
 				t.Log(line)
 			}
 		}

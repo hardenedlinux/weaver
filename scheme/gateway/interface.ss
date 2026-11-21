@@ -2,18 +2,14 @@
 ;;;
 ;;; SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
-(import (only-in :yuanxu/module-system/source/declaration .def))
+(import (only-in :clan/poo/object .def .o)
+        (only-in "./types.ss" GatewayScopeContract)
+        (only-in "./config.ss" GatewayScope))
+(export Gateway)
 (.def Gateway
   identity: 'gateway
   tags: '(gateway)
   core:
-  (.o requires:
-      (.o Governance: (.o module-id: 'governance contract: GovernanceScopeContract)
-          Policy: (.o module-id: 'policy contract: PolicyScopeContract))
-      scope-contract: GatewayScopeContract
-      exports:
-      (.o (:: @ Gateway.)
-          compile: (lambda args (apply compile-gateway Governance Policy args))
-          prepare: (lambda args (apply prepare-gateway Governance Policy args)))
-      projections: (list Build))
+  (.o scope-contract: GatewayScopeContract
+      exports: GatewayScope)
   features: (.o))

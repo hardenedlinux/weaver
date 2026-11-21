@@ -4,14 +4,14 @@
 
 ;;; Compose admitted module capabilities into the existing typed wire artifact.
 (import (only-in :clan/poo/object .get .ref .o .slot?)
-        (only-in :clan/poo/mop validate json<-)
+        (only-in :clan/poo/type validate)
+        (only-in :clan/poo/mop json<-)
         (only-in :std/encoding/json json->string JSONWriteOptions)
-        (only-in :yuanxu/module-system/interface yuanxu-load-modules)
-        (only-in :yuanxu/module-system/source/admission module-source-measure-operation)
-        (only-in :agentic-ai-lab/modules/loop-engine/control/governor loop-governor->contract)
-        (only-in :agentic-ai-lab/modules/session/objects-core agentic-ai-lab-session? agentic-ai-lab-session-id)
-        (only-in :yuanxu/modules/funflow/control-plane/flow admit-flow flow-name flow-steps branch-step? branch-step-name branch-step-left branch-step-right)
-        (only-in :yuanxu/modules/funflow/control-plane/task task? task-name task-kind task-request-operation)
+        (only-in :tao3k/yuanxu/module-system/interface yuanxu-load-modules)
+        (only-in :tao3k/yuanxu/module-system/source/admission module-source-measure-operation)
+        (only-in "../interface.ss" LabGovernor LabSession)
+        (only-in :tao3k/yuanxu/modules/funflow/control-plane/flow admit-flow flow-name flow-steps branch-step? branch-step-name branch-step-left branch-step-right)
+        (only-in :tao3k/yuanxu/modules/funflow/control-plane/task task? task-name task-kind task-request-operation)
         (only-in :hardenedlinux/weaver/scheme/governance/types GovernanceAssessmentContext)
         (only-in :hardenedlinux/weaver/scheme/governance/capture governance-profile-snapshot)
         (only-in :hardenedlinux/weaver/scheme/policy/types PolicyProjection)
@@ -25,9 +25,11 @@
         (only-in "./program.ss" make-gateway-program)
         (only-in "./derivation.ss" derive-gateway-source)
         (only-in "./derivation-types.ss" GatewayPreparation)
+        (only-in "./types.ss" GatewayScopeContract)
         "./contracts.ss")
 (export compile-gateway prepare-gateway prepare-governed-gateway emit-gateway emit-governed-gateway capture-governed-gateway make-gateway-program governor-open-nodes governor-ready-steps compose-governor-selection)
 (export gateway-source-phase-observer gateway-source-cancelled? make-retained-governor trace-gateway-source-phase)
+(export capture-compiled-gateway)
 
 ;;; Each source-loaded role has its own parameter. Enable the same numeric
 ;;; diagnostic in both the linked entry and the role only when requested.
@@ -61,7 +63,7 @@
 ;;; Only project upstream symbolic node names to the gateway's wire identifiers.
 ;;; Governor owns selection; Governance assessment cannot replace its result.
 (def (governor-open-nodes governor states)
-  (map symbol->string (cdr (assq 'open-patterns (loop-governor->contract governor states)))))
+  (map symbol->string (cdr (assq 'open-patterns ((.get LabGovernor contract) governor states)))))
 
 ;;; Compile sequential and fan-out/fan-in Funflow steps into a sealed topology.
 ;;; Each recursive walk returns the set of leaves needed by the next step.
@@ -69,8 +71,8 @@
   (and (.slot? context 'session)
        (let* ((session (.get context session))
               (identity (string->symbol family)))
-         (unless (and (agentic-ai-lab-session? session)
-                      (eq? identity (agentic-ai-lab-session-id session)))
+         (unless (and ((.get LabSession session?) session)
+                      (eq? identity ((.get LabSession id) session)))
            (error "Workflow Session must name the original family"))
          (def workflow (admit-flow (.get session workflow)))
          (def nodes '())
@@ -520,7 +522,11 @@
                 (else (apply yuanxu-load-modules (list source)))))
          (gateway (begin
                     (source-phase! "source-selection-loaded")
-                    (.get view modules Weaver gateway)))
+                    ;; A loaded source view exposes modules; an init-owned
+                    ;; namespace already exposes its named windows directly.
+                    (if (.slot? view 'modules)
+                      (.get view modules Weaver gateway)
+                      (.get view Weaver gateway))))
          (admit-current (.get view admit-current)))
     (source-phase! "source-module-view-loaded")
     (require-source-open!)
@@ -553,6 +559,22 @@
       ((.get gateway capture)
        (lambda ()
          (produce-governed-source gateway admit-current governor profile context states tasks plans publication))))))
+
+;;; A linked publication has already passed the Module compiler's admission.
+;;; Keep live-source checks in capture-governed-gateway; this path cannot run a
+;;; build or load a source-selected replacement. Rust still checks the original
+;;; source expectation and ledger authority after this value-only projection.
+(def (capture-compiled-gateway gateway governor profile context states tasks plans publication)
+  (validate GatewayScopeContract gateway)
+  (require-source-open!)
+  (let ((result
+         ((.get gateway capture)
+           (lambda ()
+             ((.get gateway emit)
+               ((.get gateway compile) governor profile context states tasks plans publication))))))
+    (require-source-open!)
+    (validate GatewayScopeContract gateway)
+    result))
 
 ;;; Rich preparation remains inside the same admitted Yuanxu view. The caller
 ;;; may inspect advisory evidence; existing emit/capture still accept only source.

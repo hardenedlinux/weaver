@@ -1,0 +1,341 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+#+title: Praxis, Envoy and ASCENT: architecture and execution experiments
+#+language: en
+#+date: 2026-11-05
+#+property: STATUS loopback-gateway-experiments-complete
+#+options: toc:2
+
+* Scope and source identities
+
+This comparison studies three different responsibilities: generic network proxying,
+programmable policy/semantic composition, and governed physical execution. The
+requested experiments cover SSE output release, shared quota concurrency and
+primary promotion, and request modification/retry after logical binding.
+Synthetic loopback services and a disposable datastore are used. No provider
+account, production traffic, dependency pin or production implementation is changed.
+
+| Source | Inspected revision |
+|--------+--------------------|
+| [[https://github.com/praxis-proxy/praxis][Praxis core]] | =70f900cbff41124c9ac22dab504d63a239e0d4cb= |
+| [[https://github.com/praxis-proxy/ai][Praxis AI]] | =06ebb2552561b1d7ce19e051dcad53ad198eaab5= |
+| Praxis Policy | Core's Cargo.lock selects =praxis-policy 0.5.0=; documentation also inspected at =b6c008f91ddebc3f8c96ccd6d3fa262dc6caaa66= |
+| Weaver | =8aa7d68000618687fd801f8593361a857b697e37= plus the concurrent dirty workspace; exact participating source identities must accompany each receipt |
+| Installed gerbil-ascent | Weaver's existing =.gerbil/pkg/github.com/tao3k/gerbil-ascent= at =96faa6917cc389018fde049455d1d0d0c058beef=; installed native modules are used without rebuilding or upgrading |
+| Inherited Agentic AI Lab | =aeac4f4c12b1722f992da9354695b611d3e0851f= |
+
+Foreign-repository patches add experiment fixtures only. Their observed behavior
+does not imply that an unmodified configuration has enabled those experimental
+features. Build failures, sandbox failures and native results remain separate.
+
+* Architectural comparison
+
+| Responsibility | Envoy | Praxis | Weaver |
+|----------------+-------+--------+--------|
+| Primary unit | Connection, HTTP stream, route, cluster and endpoint | Listener, filter pipeline, protocol/body hooks and subrequest | Original task, immutable plan, admitted publication, shared domains and concrete effect |
+| Traffic runtime | C++ event-driven workers, connection pools and protocol/filter machinery | Rust filter framework over the selected network backend; Pingora is default | Narrow Rust provider/broker paths plus Go control/RPC integration |
+| Configuration producer | External control plane using xDS, or static configuration | YAML/pipeline reload and AI routing overlays | Scheme/POO semantic Controller, authenticated source publication, durable deciding authority |
+| Policy integration | Built-in filters and external authorization/processing interfaces | In-process PPE: APL phases, identity, PDPs, delegation, mutation, taint and audit plugins | Scheme Governance/Policy projections; current Cedar checks at admission, dispatch and release |
+| Programmable semantics | Host services and extensions | Ordered APL effects and custom Rust/plugin implementations | Existing POO/Yuanxu/Agentic AI Lab composition; inherited ASCENT can derive relations |
+| Durable execution accounting | Requires application-specific integration | Quota/session/store contracts depend on the configured backend and filter | Ledger joins original claim, reservation, policy/fence and output state |
+
+These are responsibilities, not a universal ranking. A mature generic proxy
+does not establish a business operation's one-use authority; a durable task
+ledger does not establish parity with a generic proxy's protocol/operations stack.
+
+** Scheme/POO owns the semantic Controller
+
+The architectural direction clarified in this review is a programmable
+Scheme/POO Controller, not a Go Controller with a Scheme preprocessing helper.
+Its domain objects, composition, rule derivation, strategy selection, planning,
+reconciliation and proposed publications belong together. ASCENT is an existing
+logical-programming capability inside that Controller, not a replacement service.
+Go supplies protocol/cloud observation and publication adapters. Rust supplies the
+deciding durable authority and the mediated actual effect. Programmable semantic
+control and constrained effect execution are complementary responsibilities.
+
+Weaver already separates these responsibilities through its Scheme handoff and
+execution contracts. Scheme is also the owner of high-order task execution and
+workflow/governor orchestration; it is not confined to offline configuration.
+The control/reconciliation loop and the task-execution loop can share the
+Scheme/POO semantic substrate. Separation is about responsibilities, publication
+and authority, not one programming language or process per architectural plane.
+
+This permits a richer Controller than a fixed configuration translator:
+an observed source change updates admitted relations; ASCENT derives affected
+tasks/resources and obligations; POO composes the relevant domain behavior and
+governance; Scheme constructs a new desired plan/publication; the adapters submit
+it and return attributable outcomes for reconciliation. Existing ordinary
+Scheme programming remains available around the relational program.
+
+There is a concrete ownership seam today:
+[[file:../../../go/internal/routing/selection.go][routing.Select]] implements module
+eligibility, procurement-cost and latency ranking in Go during activation.
+Under the clarified architecture this semantic selection should be supplied by
+the Scheme Controller/its inherited rule and Governor capabilities. Go may
+retain wire-shape, bound and commitment checks; it should not acquire a second
+independently evolving domain-selection engine. The current review does not
+implement that migration or claim a complete Scheme reconciliation runtime.
+
+** Evaluate the complete policy system
+
+Both projects use Cedar. Its presence is not a Praxis-specific differentiator.
+Weaver's policy capability is the composition of Scheme/POO, inherited ASCENT,
+Cedar, the existing Lean SPEC foundation and Rust execution. Comparing PPE only
+with the Rust =weaver-policy= adapter would omit most of that architecture.
+
+The existing =cedar-poo-spec= dependency supplies formal semantic and composition
+interfaces; Weaver already imports =Admission.BoundOperation= and related
+preservation contracts in its policy bridge. The architecture should reuse that
+foundation for actual composition and policy evolution rather than introducing
+a competing APL-like governance language or rebuilding existing formal semantics.
+The availability of that foundation and qualification of a particular integrated
+path are separate evidence questions. Neither justifies calling Weaver's policy
+architecture weaker because another proxy has more packaged filters.
+
+** Praxis Policy and Weaver Policy
+
+[[https://github.com/praxis-proxy/policy/blob/b6c008f91ddebc3f8c96ccd6d3fa262dc6caaa66/docs/content/apl/effects.md][APL effects]]
+are an ordered execution language. The default route phases are argument
+processing, pre-invocation, result processing and post-invocation. Effects can
+invoke plugins, call a PDP, delegate credentials, attach taint or request approval.
+A deny stops subsequent work. Cedar is one possible PDP inside this orchestration.
+APL's =allow= continues the sequence; it is not an irrevocable effect capability.
+
+Weaver's [[file:../../../crates/policy/src/authorize.rs][Cedar adapter]] requires both
+Allow and zero evaluation errors. Its
+[[file:../../../crates/policy/src/provider.rs][BoundProviderPolicy]] retains immutable
+source facts, while each use supplies current Policy and effect coordinates.
+[[file:../../../crates/policy/src/compiled.rs][Compiled policy caching]] caches exact
+immutable policy source, not decisions. Rust's ledger/broker owns the durable
+consumption and physical use beyond that decision.
+
+Scheme's [[file:../../../scheme/gateway/func.ss][gateway compiler]] already composes
+Governor selection and Governance assessment with source/context mutation checks.
+However, [[file:../../../scheme/policy/func.ss][project-policy]] currently sorts and
+aggregates complete Cedar documents and checks exact publication equality. This
+must not be described as completed upstream =PolicyModules=/POO root resolution.
+The stronger composition/export/evidence contract is a stated integration target
+in [[file:../../50-59-research-program/59-provider-rpc/59.27-policy-evidence-architecture.org][59.27]].
+
+** What to learn from Envoy's implementation of an existing separation
+
+[[https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/intro/threading_model][Envoy's threading model]]
+assigns accepted connections to workers and keeps most traffic processing local
+to that worker. A main thread coordinates configuration and operational tasks.
+This reduces coordination on the common path; it is not a claim that every
+extension or shared operation is lock-free.
+
+[[https://www.envoyproxy.io/docs/envoy/latest/api-docs/xds_protocol][xDS]] separates
+configuration production from traffic handling with typed resources, versions,
+subscriptions, ACK/NACK and incremental transport. Configuration can be prepared
+and distributed without calling a control-plane service for every route lookup.
+ADS orders related discovery streams; it does not provide an application-wide
+transaction joining configuration, financial state and an external write.
+
+The generic runtime includes connection management, health checks, outlier
+detection, retry/circuit controls, overload management and operational visibility.
+This is reusable engineering for many workloads. No matched Envoy/Praxis/Weaver
+performance experiment was run here; architecture alone does not establish a
+latency, memory or throughput winner.
+
+The useful lessons are concrete: typed independently updateable resource units,
+dependency-aware preparation/warming, immutable reusable worker state, explicit
+owner lifetimes, bounded queues/backpressure, versioned update outcomes and
+coalescing satisfied refresh demand. These can improve Weaver's existing
+separation. They are not a reason to move its semantic Controller into Go or
+claim that adding xDS creates a missing architectural boundary. Exact task,
+budget and original-outcome identities must survive any incremental publication;
+a last-good configuration policy cannot silently reopen withdrawn authority.
+
+Typeful resources are already expressible more richly through POO/Scheme.
+They may carry domain contracts, composed behavior, higher-order selection,
+Policy/Governance requirements and source/dependency relations. A model deployment
+can be such an object, not merely a protobuf record. ASCENT derives relations
+over admitted object projections; Scheme executes their high-order behavior.
+Only the concrete operation view needed at an execution boundary is materialized
+and bound to the source object/contract identity. The whole object graph need
+not be flattened into a new universal configuration DSL or JSON interface.
+The comparison target is lifecycle implementation, not a missing type system.
+
+[[https://www.envoyproxy.io/docs/envoy/latest/configuration/http/http_filters/ext_authz_filter][ext_authz]]
+and [[https://www.envoyproxy.io/docs/envoy/latest/configuration/http/http_filters/ext_proc_filter][ext_proc]]
+provide useful external integration boundaries. They remain subject to filter
+ordering, request mutation, timeout and failure-mode contracts. Envoy explicitly
+documents the authorization risk of downstream route-cache clearing. An external
+authorization response alone cannot establish Weaver's exact final wire binding.
+
+* Execution experiments
+
+[[file:../../../.cache/verification/evidence/proofs/praxis-comparison-20261105/receipt.json][The run receipt]],
+[[file:../../../.cache/verification/evidence/proofs/praxis-comparison-20261105/replay.org][replay instructions]],
+fixture patches and raw logs record the concrete outcomes below.
+The comparison keeps output authorization separate from sensitive-content
+classification, local restart separate from replicated failover, and logical
+cluster binding separate from exact wire identity.
+
+** SSE output release
+
+The native HTTP experiment configured PPE to reject a completion with more than
+100 reported tokens. The synthetic completion reported 1,000 total tokens and
+contained =SYNTHETIC_OUTPUT_SENTINEL=. No production filter was modified.
+
+| Actual response | Request stream flag | HTTP status | Sentinel reached client |
+|-----------------+---------------------+-------------+-------------------------|
+| JSON | false | 200 | no; body contains =output_limit= |
+| JSON | true | 200 | no; body contains =output_limit= |
+| Real SSE frames | false | 200 | yes |
+| Real SSE frames | true | 200 | yes |
+
+This confirms that the actual response media type controls the uncovered path;
+the request flag alone does not bypass JSON output checking. The JSON denial
+rewrites the body after response headers, so HTTP 200 alone is not a successful
+inference verdict. The upstream's configured request-level streaming-denial
+example is exercised separately as a mitigation control.
+
+This is a PPE LLM output-rule coverage limit, not proof that every other HTTP
+response filter is skipped. It also does not establish sensitive-content
+classification in Weaver: its current Cedar output context has a different,
+execution-oriented contract.
+
+** Shared quota concurrency and promotion
+
+The live pair experiments used capacity 100 and two concurrent estimates of 60,
+with no refill/time advance between them. Twenty independent namespaces were
+used for each algorithm. The initial single-backend/shared-connection run admitted
+one request in every pair for both algorithms: no overshoot was observed in that
+schedule. That negative result is retained.
+
+The corrected fleet-shaped experiment uses two independently constructed,
+prewarmed native backend clients sharing the same accounting namespace:
+
+| Algorithm | Pairs | Admissions per pair | Acknowledged estimate per pair |
+|-----------+-------+---------------------+--------------------------------|
+| Sliding window | 20 | 2 in all 20 pairs | 120 against capacity 100 |
+| Token bucket | 20 | 1 in all 20 pairs | 60 against capacity 100 |
+
+The sliding-window result is consistent with its separate read/check and
+increment operations. The token bucket uses WATCH transactions; these bounded
+pair observations are not an exhaustive linearizability or failover proof.
+
+The promotion experiment used real Valkey 8.1 containers, image digest
+=sha256:8f836008e0986c36adf50da714c7060cf689dbb335f61fe077939d90fa650809=:
+
+1. Reserve 20; write a synchronization marker and confirm one replica with WAIT.
+2. Pause the replica and disconnect its replication client.
+3. Receive a successful native-backend reservation for another 60 on the primary.
+4. Kill only the disposable primary, resume the replica and promote it.
+5. Construct a native backend for the promoted endpoint with the same namespace,
+   rule fingerprint and accounting settings. A further reservation of 60 succeeds.
+
+The original 20 and compatibility markers survive, while the acknowledged 60 is
+lost. Across promotion, acknowledged estimates total 140 against capacity 100.
+This is a controlled asynchronous-replication loss plus primary promotion, not
+a Sentinel-election qualification or a claim about every deployment profile.
+
+Seven existing scripted-RESP settlement tests also pass, including lost EXEC
+reply remaining unconfirmed and never replayed. That is useful client behavior,
+but does not recover an acknowledged reservation absent from a promoted replica.
+
+** Bound-request mutation and retries
+
+The native HTTP control requests an unlisted =denied-model= and receives 403.
+The experiment then submits =allowed-model=, passes the policy filter, freezes
+=bound-cluster=, and executes a trusted experimental bound-body hook replacing
+the model with =denied-model=. The real echo backend receives that rewritten
+model and returns HTTP 200. Cluster binding remains intact throughout.
+
+This demonstrates that frozen cluster identity is not a commitment to the body
+that the earlier model policy authorized. It is supported trusted extension
+behavior and a composition/order obligation, not an unauthenticated remote exploit.
+
+The existing =retry_replays_bound_rewrite_without_rerunning_phase= native HTTP
+test also passes: after a 503, an explicitly enabled non-idempotent retry reaches
+the live endpoint with the once-rewritten body. The bound phase is not rerun.
+That behavior is useful for a generic proxy, but a governed billable inference
+needs an explicit contract for each attempt and its original reservation.
+
+** Weaver comparison and retained limits
+
+The existing joint ledger/broker test entry passed 18 broker tests, three ledger
+library tests and 56 provider-related integration tests. Two additional native
+concurrency tests passed: eight competing consumers dispatch once, and eight
+competing nodes share one capacity. These are focused implementation results,
+not a complete project check.
+
+The selected provider tests exercise affine dispatch, changed source/profile and
+wire commitments, current release guards, range identity, callback failure,
+unknown exposure and restart. Importantly, the passing selection includes the
+intentional =whole_database_rollback_requires_an_independent_recovery_floor=
+counterexample. It must not be counted as proof that whole-image rollback is
+safe. Local durable recovery and replicated promotion are different fault models.
+
+Five real Go gRPC/TLS tests passed on the test-owned dev image
+=47439702aa91475c9f7efe409c125610ada80a1e01432d2a8238fccd56c55e78=:
+
+| Native case | Observed contract |
+|-------------+-------------------|
+| CallerRouteMutationCannotChangeActiveStream | Caller-owned route changes do not retarget the active request; the original cannot be replayed |
+| FailuresNeverRetryOrFallback | Redirect, 503, truncated SSE and unsupported tool output do not cause retry/fallback; unknown state and original hold remain |
+| RevocationDuringSSEStopsNextRelease | The authorized prefix arrives; after committed revocation the next tail is blocked, held=4 and no second provider call occurs |
+| QuotaUnknownAcrossKeys | Concurrent separate keys share the configured user/tenant cap; exactly one provider call occurs and held=4 survives process restart |
+| MeteringApplications | Existing exact metering-application and reservation assertions pass, including incomplete usage controls |
+
+The participating-source maps before and after this five-test run are identical
+(map digest =4f276a35953db512391c85f63bb04c3e4d2d01bdfef136a4f17a4eaad60038c1=).
+They are focused source observations, not full SourceInputs or dependency-cache
+authentication.
+
+Supplemental source-profile and request-extension controls passed on the later
+test-owned image
+=19b39da47b4a34e9f2b90a4b1e1dbc67ca16a6785bf4393700cb13ae31b49af0=.
+Its first Arrow per-row control hit the unchanged three-second gRPC startup
+deadline before the assertion ran. The failure is retained. A repeat of the
+same three tests, with unchanged budgets, passed all three: source profile plus
+fresh Cedar, committed extension rejection, and checking every Arrow row.
+That repeat's before/after source maps match
+(=ef2ba5643fddfcdf4a10b1659e0cde6d09fd888694127b97a8567f86294006d6=).
+Concurrent edits between the cohorts affected persistence scheduler/scope/trace
+and Go domain/scope tests; the two image identities are not interchangeable.
+
+These results support concrete local execution/recovery conclusions. They do
+not establish a replicated Weaver datastore's failover contract, global
+anti-rollback, general output content classification or a whole-project pass.
+No original timeout, assertion or property case count was reduced.
+
+* ASCENT's concrete place
+
+[[file:../../50-59-research-program/59-provider-rpc/59.28-ascent-mrr-and-fact-review.org][59.28]]
+already selects inherited AA/ASCENT for bounded derivation and source invalidation.
+The next step should reuse that surface, not introduce another policy language,
+second Context owner or independent reservation ledger.
+
+| Derivation | ASCENT contribution | Authoritative consumer |
+|------------+---------------------+------------------------|
+| Candidate models, tools and routine nodes | Joins, recursive dependencies, capability/region relations and explainable exclusions | Existing semantic producer; Rust still admits the actual selected effect |
+| Data-flow constraints | Recursive source-to-transform-to-sink propagation and affected outputs | Existing hard-fact projection/publication protocol when permissions change |
+| Source/rule replacement | Affected closure, retraction and retained results | Existing pending barrier/floor and exact source-cut checks |
+| Explanation | Rule/support/source identities and unresolved obligations | Review/audit data; no credential or consumption right follows from a derivation |
+
+The native scratch experiment derives model 10 for admitted region 100 and a
+review obligation at sink 3 through three data-flow edges. Withdrawing the last
+edge retracts that obligation. Replacing the region with 200 changes the model
+candidate to 20. Previously returned results remain unchanged. The checks use
+the real Scheme ASCENT retained-session API and independent expected relations.
+They do not exercise a new Weaver-to-ASCENT production adapter, prove source
+truth, create a financial reservation, or authorize external execution.
+
+The useful integration object is a derived candidate/projection bound to the
+admitted source cut, rule/query identities, coverage/completion state and support
+references. Soft ranking may consume such data directly. Permission-relevant
+facts require the existing authenticated publication and pending-barrier protocol.
+Deletion can broaden permission if it removes a denial; incomplete derivation,
+missing rows or a timeout must not be treated as proof of absence.
+
+Current provider Cedar context contains original plan/request/profile identifiers,
+sequence, format and current shared-domain coordinates. It does not contain a
+general sensitive-text classifier. Per-batch output authorization therefore does
+not establish semantic safety of all released text. Any classification-to-ASCENT
+path needs its own exact content/source binding and external-truth premises.

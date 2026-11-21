@@ -3,10 +3,10 @@
 ;;; SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
 ;;; Semantic scope: no transport, ledger, scheduling or execution capability.
-(import (only-in :clan/poo/object .o)
-        (only-in :agentic-ai-lab/modules/governance/objects agentic-ai-lab-governance-threat-blocking?)
+(import (only-in :clan/poo/object .o .get)
+        (only-in "../interface.ss" LabGovernance)
         "./func.ss")
 (export Governance.)
 (def Governance.
   (.o assess: (lambda (profile context)
-                (assess-governance! profile context agentic-ai-lab-governance-threat-blocking?))))
+                (assess-governance! profile context (.get LabGovernance threat-blocking?)))))

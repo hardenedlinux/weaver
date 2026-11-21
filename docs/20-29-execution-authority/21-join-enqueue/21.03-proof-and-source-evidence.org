@@ -15,7 +15,7 @@ the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21
 * Reproduction and evidence scope
 
 Run the isolated runner (retired Python driver) against [[file:../../../dev/proofs/lean/LlmJoinEnqueue.lean][Lean]] and [[file:../../../dev/proofs/quint/LlmJoinEnqueue.qnt][Quint]]. Results are in
-[[file:../../../dev/proofs/evidence/llm-join-enqueue/commands.json][commands.json]], [[file:../../../dev/proofs/evidence/llm-join-enqueue/receipt.json][receipt.json]] and [[file:../../../dev/proofs/evidence/llm-join-enqueue/SHA256SUMS][the sealed byte manifest]]. Failed preliminary diagnostics are retained.
+[[file:../../../.cache/verification/evidence/proofs/llm-join-enqueue/commands.json][commands.json]], [[file:../../../.cache/verification/evidence/proofs/llm-join-enqueue/receipt.json][receipt.json]] and [[file:../../../.cache/verification/evidence/proofs/llm-join-enqueue/SHA256SUMS][the sealed byte manifest]]. Failed preliminary diagnostics are retained.
 
 The workload compiles 18 Lean modules and prints 19 new declarations without
 =sorryAx=. It checks 40 Quint controls, including 10 deliberate broken alternatives,
@@ -133,7 +133,7 @@ it does not prove parser, transport, replication or filesystem behavior.
 | Compare complete join at final CAS | partialJoinJoinCounterexampleTest | Admission occurs while a new prefix is only partly projected |
 | Retain durable queue/slot tombstones | queueRollbackJoinCounterexampleTest | Restart loses the exact previously admitted operation |
 
-Unsafe alternatives are excluded from =step=. [[file:../../../dev/proofs/evidence/llm-join-enqueue/itf][ITFs]] are independently decoded.
+Unsafe alternatives are excluded from =step=. [[file:../../../.cache/verification/evidence/proofs/llm-join-enqueue/itf][ITFs]] are independently decoded.
 The stale-prefix control deliberately catches projections up before attempting the
 old permit, so it does not merely exploit an incomplete join. Duplicate-slot
 controls demonstrate current issued permits; safe controls first establish current
@@ -141,8 +141,8 @@ gate success before proving original slot or Policy still blocks admission.
 
 * Source-by-source audit and reuse
 
-The [[file:../../../dev/proofs/evidence/llm-join-enqueue/source-review.json][POO Flow / cedar-poo-spec source register]] retains exact pinned blob identities
-and excerpts, freshly verified in [[file:../../../dev/proofs/evidence/llm-join-enqueue/source-receipt-check.json][the source receipt]]. These source identities are
+The [[file:../../../.cache/verification/evidence/proofs/llm-join-enqueue/source-review.json][POO Flow / cedar-poo-spec source register]] retains exact pinned blob identities
+and excerpts, freshly verified in [[file:../../../.cache/verification/evidence/proofs/llm-join-enqueue/source-receipt-check.json][the source receipt]]. These source identities are
 comparison evidence, not instructions to add a compatibility layer or change pins.
 
 | Source | Existing contract | Reuse / extension in this boundary |

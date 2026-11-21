@@ -17,6 +17,7 @@ let
     pkgs.protobuf
     pkgs.quint
     pkgs.elan
+    pkgs.cvc5
     pkgs.actionlint
     pkgs.git
     pkgs.stdenv.cc
@@ -25,6 +26,7 @@ in
 {
   # https://devenv.sh/basics/
   env.GREET = "devenv";
+  env.CVC5 = "${pkgs.cvc5}/bin/cvc5";
 
   # https://devenv.sh/packages/
   packages = assurancePackages ++ [

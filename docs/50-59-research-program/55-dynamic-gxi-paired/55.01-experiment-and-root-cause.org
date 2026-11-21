@@ -23,7 +23,7 @@ Gambit's reference accounting, skip destructors or disable host notification.
 No deterministic host-latency ceiling follows from a lower mapping count.
 
 * Predetermined matrix
-The [[file:../../../dev/proofs/evidence/dynamic-gxi-paired/plan.json][pre-execution plan]] fixes two reversed blocks. Each cell has its own newly
+The [[file:../../../.cache/verification/evidence/proofs/dynamic-gxi-paired/plan.json][pre-execution plan]] fixes two reversed blocks. Each cell has its own newly
 linked selected-image paths/inodes; first use is followed immediately by a repeat.
 
 | Cell | Import scope | Selected native images |
@@ -90,13 +90,13 @@ blocking attribution; old stacks alone cannot identify a new sample's blocker.
 * New first-use finding: library validation is a separate bottleneck
 The new-UUID sampled generation distinguishes first-use mapping from warmed image
 notification. Three cold load windows put 95/97, 96/96 and 95/97 main-thread
-samples in fcntl beneath Loader::mapSegments. The [[file:../../../dev/proofs/evidence/dynamic-gxi-paired/binary-attribution.json][installed-binary attribution]]
+samples in fcntl beneath Loader::mapSegments. The [[file:../../../.cache/verification/evidence/proofs/dynamic-gxi-paired/binary-attribution.json][installed-binary attribution]]
 checks the sampled dyld UUID against the actual binary, maps the sampled return
 address to the call instruction, reads command 0x62 from w2, and checks the SDK
 constant: F_CHECK_LV is 98. This is library-validation preflight, not proof that
 the entire first-use delay is debugger notification or signature registration.
 
-The [[file:../../../dev/proofs/evidence/dynamic-gxi-paired/dyld-map-segments-excerpt.txt][exact local disassembly]] supplies the command evidence. [[https://github.com/apple-oss-distributions/dyld/blob/main/dyld/Loader.cpp][Apple's public Loader source]]
+The [[file:../../../.cache/verification/evidence/proofs/dynamic-gxi-paired/dyld-map-segments-excerpt.txt][exact local disassembly]] supplies the command evidence. [[https://github.com/apple-oss-distributions/dyld/blob/main/dyld/Loader.cpp][Apple's public Loader source]]
 corroborates the library-validation role; its main branch is not asserted to be
 identical to the installed binary. The separate warmed diagnostic and teardown
 stacks still establish synchronous image-notification waits. The kernel/service

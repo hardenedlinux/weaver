@@ -34,7 +34,7 @@ model does not prove external payment or provider delivery exactly-once.
 [[file:../../dev/specs/quint/AnchorBrokerCommit.qnt][The Quint product]] extends the preceding real formal pipeline. [[file:../../dev/specs/lean/AnchorBrokerCommit.lean][The Lean product]]
 projects into all ten preceding initialized Weaver model layers. These are formal
 models of source semantics, not an automatically extracted refinement of Scheme,
-Go, Rust or a consensus implementation. [[file:../../dev/specs/evidence/anchor-broker-commit-2026-10-19.org][The receipt]] retains checkable evidence.
+Go, Rust or a consensus implementation. [[file:../../.cache/verification/evidence/specs/anchor-broker-commit-2026-10-19.org][The receipt]] retains checkable evidence.
 [[file:diagrams/27-anchor-commit-broker-fencing.d2][Canonical D2]] and [[file:diagrams/27-anchor-commit-broker-fencing.svg][its preview]] contain core ownership and protocol only.
 
 * Four independent coordinates
@@ -188,7 +188,7 @@ it does not implement consensus, fencing or irrevocable one-use publication.
 
 * Source-grounded reuse and extensions
 
-[[file:01-reference-comparison.org][The source register]] owns all pinned identities. [[file:../../dev/specs/evidence/anchor-broker-traces/source-review.json][This review reverified eighteen
+[[file:01-reference-comparison.org][The source register]] owns all pinned identities. [[file:../../.cache/verification/evidence/specs/anchor-broker-traces/source-review.json][This review reverified eighteen
 committed blobs]], extending the P35 fork countermodel excerpts. No upstream source,
 ABI or dependency pin is changed.
 

@@ -31,8 +31,11 @@ Area =30-39 Assurance=; category =34 Floor decision=. This category extends
 initialized composition back to original consumption, account and budget state.
 
 #+begin_src sh :eval never
-python3 dev/proofs/check_floor_intent_decision.py
+go -C go run ./cmd/weaver-dev -timeout 28m check-policy
 #+end_src
+
+This runs the maintained registered plan. It does not replay the retired
+per-artifact checks or regenerate the historical observations below.
 
 The requested =dev/proofs/quint/= spelling is retained. These are Quint models,
 not QUnit JavaScript tests. No gateway implementation or dependency migration

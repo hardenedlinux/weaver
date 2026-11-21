@@ -8,11 +8,10 @@ package dev
 
 import (
 	"context"
+	"testing"
+
 	"github.com/HardenedLinux/weaver/go/internal/config"
 	"github.com/HardenedLinux/weaver/go/internal/controlplane"
-	"os"
-	"path/filepath"
-	"testing"
 )
 
 // Same complete compiled-source benchmark, sharing the real final-send fixture
@@ -29,14 +28,7 @@ func BenchmarkGatewayCompiledPipeline(b *testing.B) {
 				f.stop(b)
 				f.env = append(f.env, "WEAVER_GOVERNANCE_CATALOG="+catalog)
 				if assets {
-					dir := filepath.Join(f.directory, "assets")
-					if err := os.Mkdir(dir, 0700); err != nil {
-						b.Fatal(err)
-					}
-					if err := os.WriteFile(filepath.Join(dir, "policy.cedar"), []byte(bundle.Publication.Policy), 0600); err != nil {
-						b.Fatal(err)
-					}
-					f.env = append(f.env, "WEAVER_TEST_GOVERNANCE_ASSET_ROOT="+dir)
+					configureGovernanceAsset(b, f, bundle.Publication.Policy)
 				}
 				f.start(b)
 			}

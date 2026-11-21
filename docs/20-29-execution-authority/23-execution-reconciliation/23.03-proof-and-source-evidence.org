@@ -15,7 +15,7 @@ the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21
 * Reproduction and bounded evidence
 
 Run the isolated checker (retired Python driver) for [[file:../../../dev/proofs/lean/LlmExecutionReconciliation.lean][Lean]] and [[file:../../../dev/proofs/quint/LlmExecutionReconciliation.qnt][Quint]].
-Retain [[file:../../../dev/proofs/evidence/llm-execution-reconciliation/commands.json][command results]], [[file:../../../dev/proofs/evidence/llm-execution-reconciliation/receipt.json][the receipt]] and [[file:../../../dev/proofs/evidence/llm-execution-reconciliation/SHA256SUMS][the byte manifest]].
+Retain [[file:../../../.cache/verification/evidence/proofs/llm-execution-reconciliation/commands.json][command results]], [[file:../../../.cache/verification/evidence/proofs/llm-execution-reconciliation/receipt.json][the receipt]] and [[file:../../../.cache/verification/evidence/proofs/llm-execution-reconciliation/SHA256SUMS][the byte manifest]].
 
 The runner compiles 20 Lean modules and prints 17 new declarations with no
 =sorryAx=. Quint checks 46 new controls, including 10 deliberate broken-protocol
@@ -125,7 +125,7 @@ and anti-rollback prefix inheritance remain separate native prerequisites.
 
 * Source-by-source reuse audit
 
-[[file:../../../dev/proofs/evidence/llm-execution-reconciliation/source-review.json][Pinned source identities and excerpts]] and [[file:../../../dev/proofs/evidence/llm-execution-reconciliation/source-receipt-check.json][fresh blob checks]] cover 19 source files.
+[[file:../../../.cache/verification/evidence/proofs/llm-execution-reconciliation/source-review.json][Pinned source identities and excerpts]] and [[file:../../../.cache/verification/evidence/proofs/llm-execution-reconciliation/source-receipt-check.json][fresh blob checks]] cover 19 source files.
 Repeated identifiers below denote separate Lean/Quint or paired proof files.
 
 | Source | Inspected mechanism | Reuse | Required extension / non-claim |
@@ -156,9 +156,9 @@ were independently checked. No upstream source or dependency pin is changed.
 
 * Current working source qualification
 
-[[file:../../../dev/proofs/evidence/llm-execution-reconciliation/working-source-check.json][Current source hashes]] distinguish live working files from pinned references.
+[[file:../../../.cache/verification/evidence/proofs/llm-execution-reconciliation/working-source-check.json][Current source hashes]] distinguish live working files from pinned references.
 Eighteen of the nineteen inspected files match the reviewed bytes. P17 changes
-only two control-plane import paths; the captured [[file:../../../dev/proofs/evidence/llm-execution-reconciliation/P17-working-diff.patch][working diff]] preserves the exact change.
+only two control-plane import paths; the captured [[file:../../../.cache/verification/evidence/proofs/llm-execution-reconciliation/P17-working-diff.patch][working diff]] preserves the exact change.
 The comments assigning native persistence responsibility still hold. Import target
 runtime/ABI equivalence is not established by that textual observation.
 

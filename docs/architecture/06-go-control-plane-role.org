@@ -46,6 +46,45 @@ Deployment bootstrap and dynamic request materialization no longer invoke them.
 Their later physical removal follows consumer migration; there is no second
 production selector or Workflow runtime in Go.
 
+* Go reuse in the checked-in system
+
+| Current entry | What Weaver reuses | Allocation |
+|---------------+--------------------+------------|
+| =weaver-dev= and architecture tests | OpenSysML strict parsing, queries and rendering through the existing SDK | Keep the development model toolchain |
+| Go integration and =go/dev/controlref= | Independent gRPC/Protobuf and Arrow consumers, compatibility fixtures and negative controls | Keep the cases that exercise a distinct consumer contract. Retire the reference relay when those controls move to the direct Rust entry |
+| =weaver-meter= | Independent Rust issuer over the same TLS and source gRPC contracts | Preserve separate key custody. Go signing remains a reference in interoperability tests |
+| Kubernetes observation and embedded model calls | Rust kube-rs and the independent =weaver-llm= client | Keep both outside Go |
+
+OpenSysML is the current Go-specific reason to keep a development dependency.
+The Go wire clients add interoperability coverage while a separate consumer
+exists. The production signer retains independent authority and custody in
+its Rust process. Add a Go production component when a named integration has a
+real consumer and an existing Go SDK provides required behavior through a
+bounded interface.
+
+The source-order controls and shared-domain migration recovery now exercise
+direct Rust preparation and ingress through the existing mTLS fixtures. The
+migration tests replay the original lost receipt on a new Rust connection and
+probe an unused operation key after revocation. The Go reference process still
+serves the two-hop OAuth controls and the Go control benchmark arms, including
+the preregistered Governor comparisons. Keep those consumers separately
+identified when retiring the reference process.
+The Scheme composition and revocation control uses Rust preparation as well.
+It requires a committed revocation during the stream, retains the exact
+execution receipt across restart, and checks the unused operation key.
+The nested Workflow functional cases also use Rust preparation and direct
+ingress. Their assertions retain pending withdrawal across restart, require
+both parallel releases before the joins and skip an inactive nested arm.
+The mixed-entry compatibility case still uses the Go source command with Rust
+operation ingress. The test harness builds and hashes the Go executable once,
+on first use by a reference consumer. A Rust-only selection can run using
+only the release image and the independent wire fixtures.
+
+The existing native OpenAI and Anthropic terminal-usage controls passed on
+the current Gateway release with the separate Rust =weaver-meter= executable.
+The two binaries have independent identities and the signer uses its own
+certificate, bearer and signing key.
+
 * Composition and authority are different boundaries
 
 Startup catalogs can declare an already composed original or a bounded source
@@ -140,11 +179,24 @@ listener readiness, first source assessment, hot execution and drain are separat
 measurements. The same release and original acceptance thresholds apply; a
 language-placement change alone does not satisfy the outstanding 1 ms target.
 
+The linked Weaver producer accepts an optional
+=WEAVER_GOVERNANCE_POLICY_ROOT= at server start. Point it at an absolute
+operator-owned directory containing =policy.cedar=, mounted read-only in
+deployment. Scheme requires the file to match the producer catalog's original
+publication bytes and checks the policy projection again after Governance
+assessment. Without this setting the producer uses the inline catalog Policy.
+The source RPC never carries a filesystem path.
+
 The first R4 integration uses the Weaver-owned
 [[file:../../prod/kubernetes/provideravailability.crd.yaml][ProviderAvailability resource]]
 in =weaver.hardenedlinux.org/v1alpha1=. Its namespace, name and UID identify
 the bound resource. =spec.available= is the requested hard fact. The =status=
 subresource records the observed generation and resolved ledger coordinates.
+Before writing Status, the adapter re-observes the same domain, source epoch,
+floor, revision, snapshot and availability with an empty pending queue. This
+also applies when repairing missing Status without a new resolution. The
+Kubernetes patch uses the resource version from the matched UID observation.
+Status remains an observation, with separate ledger and Kubernetes writes.
 Build =weaver-server= with the =kubernetes= feature and run
 =weaver-server reconcile-kubernetes --config weaver.toml= as a separate process.
 The example [[file:../../prod/kubernetes/provideravailability.rbac.yaml][namespaced RBAC]]

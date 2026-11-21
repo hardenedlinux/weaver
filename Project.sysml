@@ -9,6 +9,22 @@ package WeaverProject {
        This structural contract does not grant runtime execution authority. */
 
     part def Directory;
+    requirement def ArchitectureFalsification {
+        doc /* Architecture verification challenges hypotheses, not checker
+           presence or implementation-shaped assertions. State independent
+           safety, observable effects and conditional progress requirements;
+           separate environmental assumptions from those requirements. Quint
+           explores competing owner/read/write/recovery designs under concurrent
+           inputs, restart, withdrawal and partial failure. Runtime properties
+           generate adversarial inputs and schedules against actual Scheme,
+           Rust and Go boundaries with an independent reference or metamorphic
+           oracle. Neither layer copies the implementation into a second one.
+           Counterexamples require design revision or an explicit scope/assumption
+           correction, then a reproducible runtime regression where applicable.
+           A bounded no-violation result is not universal proof; an expected
+           counterexample for an implemented design remains an open defect/gap,
+           not qualification. Mutation controls challenge the tests themselves. */
+    }
     requirement def ArchitectureViewGrammar {
         doc /* Development-only D2 extension profiles live under dev/d2/themes. The shared render Library owns the engine, themes and export; Weaver supplies source-owned declarations and source checks. System,
            routing, flow, sequence, state, data and assurance views select
@@ -51,7 +67,6 @@ package WeaverProject {
     part def File;
     part def ExecutableFile :> File;
     part def IgnoredDirectory;
-    part def Absent;
     part def RuntimeDependency;
     part def ProhibitedExtension;
     part def VerificationSuite;
@@ -74,17 +89,25 @@ package WeaverProject {
     }
     part def SchemeModule {
         doc /* The Scheme Module Interface and its native Contract own role
-           semantics. The native package build qualifies selected products. */
+           semantics. Functional and Build libraries are declared by their
+           actual owner; a Module need not manufacture an empty func role.
+           The native package build qualifies selected products. */
         part 'types.ss' : File;
         part 'objects.ss' : File;
-        part 'func.ss' : File;
         part 'config.ss' : File;
         part 'interface.ss' : File;
-        part 'gerbil.pkg' : Absent;
     }
 
     package SourcePolicy {
+        doc /* Maintained development orchestration and evidence processing reuse
+           the Go owner and native framework entries. Retired scripts are not
+           retained as executable evidence tools. Execution logs, receipts and captured
+           source archives are generated outputs in ignored cache or CI artifacts. */
+        part '.log' : ProhibitedExtension;
         part '.py' : ProhibitedExtension;
+        part '.pyi' : ProhibitedExtension;
+        part '.pyw' : ProhibitedExtension;
+        part '.ipynb' : ProhibitedExtension;
     }
 
     requirement def ProductionAssetBoundary {
@@ -104,7 +127,6 @@ package WeaverProject {
         part 'go/internal/devrunner' : ForbiddenRuntimeRoot;
         part prod : RuntimeAssetRoot;
         part 'go/dev/controlref' : DevelopmentGoEntry;
-        part 'go/cmd/weaver-meter' : RuntimeGoEntry;
         part 'go/cmd/weaver-dev' : DevelopmentGoEntry;
         part 'scheme' : RuntimeSourceRoot;
         part 'proto' : RuntimeSourceRoot;
@@ -172,6 +194,9 @@ package WeaverProject {
         }
         part verificationRuns : VerificationRun {
             doc /* weaver-dev and native suites produce verification outcomes.
+               Run receipts, logs and captured source snapshots are generated
+               outputs under ignored .cache/verification directories or CI
+               artifacts. They must not be committed as proof or spec sources.
                Rust materializes records from those observations under the
                Scheme plan once implemented. Verification::Artifacts declares
                the current local and CI paths. CI retains job attempts for seven days.
@@ -233,6 +258,17 @@ package WeaverProject {
            not completion evidence. Go testing.F exercises protocol corruption;
            transcript checks do not prove SDK execution or final-send safety. */
         part rust : VerificationSuite { part 'check-rust' : VerificationMode; }
+        part consumers : VerificationSuite {
+            part 'check-consumers' : VerificationMode;
+            doc /* Checkout one immutable public Magpie revision using the
+               standard checkout action. Existing prepare-consumers stages
+               build its nogui CLI and the exact Cargo test graph separately,
+               each within eight minutes, then check-consumers explicitly runs
+               the opt-in real Provider test with four workers and 120 seconds.
+               Preparation receipts remain separate from runtime qualification;
+               no scheme dependency reinstall or cold compile belongs to the
+               protocol gate. */
+        }
         part go : VerificationSuite {
             part 'check-go' : VerificationMode;
             doc /* Prepare the ordinary provider and commit-observer images with
@@ -250,9 +286,41 @@ package WeaverProject {
                archive. Bound the Rust tests and Go suite separately. The
                whole-suite watchdog leaves time for these stages and the
                preceding package checks to retain independent results.
-               gerbil deps --install owns dependency resolution, source revisions
-               and native dependency builds from gerbil.pkg declarations.
+               Gerbil's public package APIs own source revisions and dependency
+               builds from gerbil.pkg declarations. Cache restoration supplies
+               candidate products, not version admission. Update installed
+               declared dependencies with pkg-update before pkg-install; read
+               each package's updated declaration before its transitive edges.
+               The native installer retains conflict checks and Make decides
+               incremental reuse. Do not advance the cache format version to
+               conceal an incompatible source tag or delete the package store.
+               A compiler-identity cache miss may recover cached source checkouts
+               from the same OS and architecture. Before native package setup,
+               discard its old lib and bin products; preserve pkg and its Git
+               history. A compiler ABI transition must never admit those old
+               products as prerequisites. Native package management owns the
+               subsequent dependency order and rebuild from those sources.
+               SDK selection is challenged by ASCENT's existing unmodified
+               stack-overflow-undo C regression against the actual published
+               headers: retain the rejected old-release control and require
+               the replacement to pass. Header admission alone cannot qualify
+               Linux execution; the complete consumer suite is still required.
+               TestSchemeToolCachedDependencyUpdate challenges install-only
+               reuse with a changed transitive Git dependency, verifies the
+               actual loaded result and preserves an unchanged package artifact.
+               Its hot replay must emit no compilation events, and contradictory
+               direct/transitive pins must retain the native conflict refusal.
+               This small
+               local-Git scenario has the existing sixty-second fence and four
+               compiler workers; it never installs the real dependency graph.
                Each dependency owns its own Build targets and package tests.
+               A provider package publishes the native public libraries used
+               by explicit imports before a consumer prepares its selected
+               Modules. Public library entries use the existing native import
+               closure; they are not forced into the Module declaration format.
+               Installed historical products cannot qualify a missing provider
+               output. The consumer's native build and source tests must pass
+               against the package outputs actually produced by this revision.
                CI only selects the watchdog and invokes the package manager.
                Native stdout/stderr line buffering exposes package boundaries
                as they occur; buffered batches do not establish phase durations.
@@ -275,6 +343,14 @@ package WeaverProject {
                natural-exit gates. Record worker count, elapsed whole seconds
                and exit code in the job receipt; the independent cap is null.
                Run the selected package Build with a separate two-minute bound.
+               The linked entry acquires selected cleanup once. Its callback
+               delegates to STD without reentering clean-selection; the A/B
+               qualification must continue through hot B and real B use after
+               A cleanup, retaining unrelated products and B's digests.
+               A Module leaf may remain lazy. Count one scope factory when
+               the consumer first demands its actual exports, then zero on
+               repeated export demand with identical retained values. Merely
+               retrieving a leaf is not evidence of scope construction.
                Retain SDK archive milestones and native Go failure events
                with their stage receipts. The provider recovery and natural-exit
                deadlines govern runtime. After a Linux rooted SDK integration
@@ -283,7 +359,13 @@ package WeaverProject {
                executable for this target; reject missing or ambiguous images.
                Do not invoke Cargo after the private build environment retires.
                Pass signals through unchanged and bound stack output. This diagnostic cannot
-               replace the failed suite receipt or qualify recovery deadlines. */
+               replace the failed suite receipt or qualify recovery deadlines.
+               Linux Scheme process crashes retain the original failed stage.
+               Enable native core capture in the private verification scratch
+               directory and read the failed process through ASCENT's existing
+               bounded GDB collector. Do not rerun the test under the debugger.
+               Its native stack is diagnostic job output, not a qualified
+               receipt or a tracked source artifact. */
         }
         part architecture : VerificationSuite { part 'check-architecture' : VerificationMode; }
         part policy : VerificationSuite {
@@ -315,6 +397,11 @@ package WeaverProject {
             part '.cache/verification/latest-bootstrap-scheme.json' : CIReceipt {
                 doc /* Native Gerbil dependency preparation records its exit
                    and elapsed time separately from cold program verification. */
+            }
+            part '.cache/verification/latest-prepare-consumers.json' : CIReceipt {
+                doc /* The existing verification owner records separate CLI and
+                   Cargo preparation outcomes, durations, exits and source
+                   inputs before the unchanged protocol runtime gate. */
             }
             part '.cache/verification/latest-<suite>.json' : CIReceipt {
                 doc /* weaver-dev owns suite receipts. Preserve committed input
@@ -352,6 +439,7 @@ package WeaverProject {
         private import ScalarValues::*;
         doc /* Sole responsibility registry. Documents and diagrams reference
            these owners; they do not create parallel verification designs. */
+        requirement challengeContract : ArchitectureFalsification;
         part def Specification :> VerificationResponsibility {
             attribute displayName : String = "Specify effects";
             attribute responsibility : String = "SysML + Org\nAllocate final-send ownership\nName the required contracts";
@@ -366,6 +454,10 @@ package WeaverProject {
             attribute glyph : String = "decision";
             attribute visualRole : String = "selection";
             doc /* Quint owns concurrent/fault schedules and unsafe counterexamples.
+               Independent requirements are evaluated over observable histories;
+               compare candidate designs instead of copying implementation guards
+               or relying on a manually set unsafe flag. Retain the failed
+               hypothesis and replay the discovered schedule against runtime.
                Extend existing publication/execution models rather than duplicate
                their ledgers. It does not reimplement Cedar evaluation or prove
                arbitrary Scheme/Rust programs. Credential semantics enter as
@@ -393,6 +485,10 @@ package WeaverProject {
                Inherited POO property testing, Proptest and Go testing.F own generation, shrinking, corpora and
                replay. Property contracts, independent oracles and typed command
                models precede Runtime changes; command runners only launch suites.
+               Generated histories, partitioning, fault cuts and substitutions
+               challenge the design's assumptions. Reference behavior and
+               metamorphic/conservation relations are independent of the code
+               under test; current outputs do not define their own oracle.
                They do not turn finite cases into universal theorems. */
         }
         part specification : Specification;
@@ -407,6 +503,34 @@ package WeaverProject {
            A changed design invalidates downstream review decisions. Discussion
            confirms the advantage and scope; production work starts only after
            the complete reviewed design is explicitly confirmed. */
+        enum def ChallengeStatus {
+            enum unexplored;
+            enum refutedHypothesis;
+            enum boundedSupport;
+            enum openGap;
+        }
+        part def DesignChallenge {
+            requirement discipline : ArchitectureFalsification;
+            attribute hypothesis : String;
+            attribute assumptions : String;
+            attribute disturbance : String;
+            attribute independentOracle : String;
+            attribute progressObligation : String;
+            attribute explorationBound : String;
+            attribute modelCampaign : String;
+            attribute runtimeProperty : String;
+            attribute runtimeBudget : String;
+            attribute consequence : String;
+            attribute status : ChallengeStatus default = ChallengeStatus::unexplored;
+            doc /* Traceability to executable challenges, not a duplicate
+               algorithm or a claim that file paths establish coverage. A
+               supported replacement hypothesis does not close a counterexample
+               in current code until actual reproduction and correction pass.
+               Safety simulation does not establish progress: name fairness,
+               stable-environment and resource assumptions separately, and keep
+               unexecuted progress obligations open. Fixed exploration and
+               runtime budgets prevent an endless acceptance workload. */
+        }
         enum def DesignStage {
             enum advantageDiscussion;
             enum sysmlArchitecture;
@@ -482,6 +606,14 @@ package WeaverProject {
         part ledger : WeaverExecution::RustLedger;
         part broker : WeaverExecution::RustFinalBroker;
         part executor : WeaverExecution::HttpsExecutor;
+        part performance : WeaverExecution::RuntimePerformanceAllocation;
+        part agentConnectivity : AgentConnectivity::LocalAgentConnectivity;
+        part terminalUsageIssuer : WeaverExecution::TerminalUsageIssuer;
+        doc /* The embedded model client serves caller-selected endpoints.
+           Its dependency closure excludes the server, ledger, policy and
+           Kubernetes adapter. Gateway dispatch retains the authenticated
+           admission, write seal and output custody. Shared wire contracts
+           qualify both callers before unifying the Gateway's codecs. */
         part telemetry : WeaverExecution::TelemetryService;
     }
 
@@ -541,8 +673,6 @@ package WeaverProject {
         part 'LICENSES/LGPL-2.1-or-later.txt' : File;
         part 'LICENSES/Apache-2.0.txt' : File;
         part 'rust-toolchain.toml' : File;
-        part 'go.work' : Absent;
-        part 'go.work.sum' : Absent;
         part 'go/go.mod' : File;
         part 'go/go.sum' : File;
         part 'gerbil.pkg' : File;
@@ -720,6 +850,10 @@ package WeaverProject {
         part 'crates/broker' : RustPackage {
             part 'weaver-contracts' : RuntimeDependency;
             part 'weaver-ledger' : RuntimeDependency;
+            part 'weaver-llm' : RuntimeDependency;
+            doc /* Reuse only the transport-independent bounded turn codec.
+               The broker retains source admission, consumed send custody and
+               final guarded release; it does not call the SDK network client. */
         }
         part 'crates/server' : RustPackage {
             doc /* An initialized GovernanceWorker may publish its producer
@@ -758,7 +892,6 @@ package WeaverProject {
         part 'go/api/gateway/v1' : GoPackage;
         part 'go/dev/controlref' : GoPackage;
         part 'go/cmd/weaver-dev' : GoPackage;
-        part 'go/cmd/weaver-meter' : GoPackage;
         part 'go/dev' : GoPackage;
         part 'go/internal/config' : GoPackage;
         part 'go/internal/controlplane' : GoPackage;
@@ -772,7 +905,14 @@ package WeaverProject {
         part 'go/internal/devrunner/testdata/fuzzcontrol' : Directory;
 
         part 'scheme/governance' : SchemeModule;
+        part 'scheme/governance/func.ss' : File;
         part 'scheme/policy' : SchemeModule;
+        part 'scheme/policy/func.ss' : File;
+        part 'scheme/c-abi' : SchemeModule;
+        part 'scheme/c-abi/build.ss' : File;
+        part 'scheme/c-abi/roots.ss' : File;
+        part 'scheme/c-abi/gateway.ss' : File;
+        part 'scheme/gateway/func.ss' : File;
         part 'scheme/gateway' : SchemeModule {
             doc /* program.ss owns a sealed Record/Function lifecycle for one
                approved typed-return producer. Install/close are terminal at
@@ -814,6 +954,7 @@ package WeaverProject {
         part 'dev/sysml/WeaverExecution.sysml' : File;
         part 'dev/sysml/ZeroTrustRefinement.sysml' : File;
         part 'dev/sysml/GatewayArchitecture.sysml' : File;
+        part 'dev/sysml/AgentConnectivity.sysml' : File;
         part 'dev/sysml/StoragePersistence.sysml' : File;
         part 'dev/sysml/StreamingExecution.sysml' : File;
         part 'dev/sysml/ProviderRpc.sysml' : File;
@@ -828,20 +969,6 @@ package WeaverProject {
         part target : IgnoredDirectory;
         part '.devenv' : IgnoredDirectory;
 
-        part 'dev/benchmarks' : Absent;
-        part api : Absent;
-        part 'dev/policies' : Absent;
-        part 'dev/fixtures/policies' : Absent;
-        part 'scheme/modules' : Absent;
-        part 'scheme/weaver' : Absent;
-        part 'scheme/gerbil.pkg' : Absent;
-        part 'dev/build.ss' : Absent;
-        part 'dev/gerbil.pkg' : Absent;
-        part 'packages/server' : Absent;
-        part 'packages/control' : Absent;
-        part 'dev/models' : Absent;
-        part 'dev/toolchains/go' : Absent;
-        part '.github/workflows/assurance.yml' : Absent;
     }
 
     allocation governanceCode allocate Architecture::semantics to Layout::'scheme/governance';

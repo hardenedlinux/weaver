@@ -7,4 +7,4 @@ mod rpc;
 mod service;
 
 pub(crate) use service::Gateway;
-pub use service::{ResponseStream, serve_grpc, serve_grpc_with_runtime};
+pub use service::{ResponseStream, serve_grpc, serve_grpc_with_runtime, serve_with_http};

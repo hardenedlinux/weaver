@@ -25,10 +25,10 @@ Decimal under =docs/30-39-assurance/32-key-boundary/=. Executable sources are
 [[file:../../../dev/proofs/quint/KeyBoundaryQueue.qnt][dev/proofs/quint/KeyBoundaryQueue.qnt]] and [[file:../../../dev/proofs/lean/KeyBoundaryQueue.lean][dev/proofs/lean/KeyBoundaryQueue.lean]].
 The requested =qunit= directory contains actual Quint language models.
 
-[[file:../../../dev/proofs/evidence/key-boundary/source-review.json][Eighteen pinned source blobs]] were rehashed at POO Flow
+[[file:../../../.cache/verification/evidence/proofs/key-boundary/source-review.json][Eighteen pinned source blobs]] were rehashed at POO Flow
 =a74fc2fd63437252175b5a67649ee54b886d3bf4= and cedar-poo-spec
 =c8d1a0641120cf65e299e8a98f9fe7666ca96ab5=. Exact hashes match the previous
-registered identities. [[file:../../../dev/proofs/evidence/key-boundary/source-boundary-review.log][Targeted excerpts]] cover payload/arena/lease binding,
+registered identities. [[file:../../../.cache/verification/evidence/proofs/key-boundary/source-boundary-review.log][Targeted excerpts]] cover payload/arena/lease binding,
 consumption under uncertainty, runtime durability ownership and conditional
 fork-free publication. This is source review, not native HSM/driver acceptance.
 
@@ -37,42 +37,45 @@ fork-free publication. This is source review, not native HSM/driver acceptance.
 Run from the workspace root:
 
 #+begin_src sh :eval never
-python3 dev/proofs/check_key_boundary.py
+go -C go run ./cmd/weaver-dev -timeout 28m check-policy
 #+end_src
 
-[[file:../../../dev/proofs/evidence/key-boundary/versions.log][Recorded tools]]: Lean =4.34.1=, arm64 Darwin, Std only; Quint =0.33.0=,
+This runs the maintained registered plan. It does not replay the retired
+per-artifact checks or regenerate the historical observations below.
+
+[[file:../../../.cache/verification/evidence/proofs/key-boundary/versions.log][Recorded tools]]: Lean =4.34.1=, arm64 Darwin, Std only; Quint =0.33.0=,
 TypeScript backend. The runner builds all fifteen Lean modules in a fresh
-isolated proof directory. [[file:../../../dev/proofs/evidence/key-boundary/commands.json][Twenty-four command records]] retain exact arguments,
+isolated proof directory. [[file:../../../.cache/verification/evidence/proofs/key-boundary/commands.json][Twenty-four command records]] retain exact arguments,
 output paths, timings, watchdogs and exits. Compilation/typecheck bounds remain
 20 seconds, deterministic routes 55 seconds and each sampled route 30 seconds.
 No watchdog was widened; checker timing is not gateway/HSM performance evidence.
 
 | Command | Exit | Seconds | Raw output |
 |---------+------+---------+------------|
-| LogicalMessageAuthority | 0 | 0.677 | [[file:../../../dev/proofs/evidence/key-boundary/LogicalMessageAuthority.log][log]] |
-| SharedMessageBudget | 0 | 0.732 | [[file:../../../dev/proofs/evidence/key-boundary/SharedMessageBudget.log][log]] |
-| FiniteDomainMigration | 0 | 0.738 | [[file:../../../dev/proofs/evidence/key-boundary/FiniteDomainMigration.log][log]] |
-| AnchoredRecoveryAndEgress | 0 | 0.769 | [[file:../../../dev/proofs/evidence/key-boundary/AnchoredRecoveryAndEgress.log][log]] |
-| ComposedGatewayLifecycle | 0 | 0.671 | [[file:../../../dev/proofs/evidence/key-boundary/ComposedGatewayLifecycle.log][log]] |
-| FiniteStreamManifest | 0 | 0.948 | [[file:../../../dev/proofs/evidence/key-boundary/FiniteStreamManifest.log][log]] |
-| DriverCompletionRecovery | 0 | 0.564 | [[file:../../../dev/proofs/evidence/key-boundary/DriverCompletionRecovery.log][log]] |
-| WriterSettlementClosure | 0 | 0.777 | [[file:../../../dev/proofs/evidence/key-boundary/WriterSettlementClosure.log][log]] |
-| SettlementAnchorRecovery | 0 | 0.619 | [[file:../../../dev/proofs/evidence/key-boundary/SettlementAnchorRecovery.log][log]] |
-| GateConsumptionPersistence | 0 | 0.766 | [[file:../../../dev/proofs/evidence/key-boundary/GateConsumptionPersistence.log][log]] |
-| AnchorBrokerCommit | 0 | 0.782 | [[file:../../../dev/proofs/evidence/key-boundary/AnchorBrokerCommit.log][log]] |
-| AnchorReconfiguration | 0 | 0.619 | [[file:../../../dev/proofs/evidence/key-boundary/AnchorReconfiguration.log][log]] |
-| QuorumDurablePromises | 0 | 0.664 | [[file:../../../dev/proofs/evidence/key-boundary/QuorumDurablePromises.log][log]] |
-| ProtectedSignerRelease | 0 | 0.671 | [[file:../../../dev/proofs/evidence/key-boundary/ProtectedSignerRelease.log][log]] |
-| KeyBoundaryQueue | 0 | 0.72 | [[file:../../../dev/proofs/evidence/key-boundary/KeyBoundaryQueue.log][log]] |
-| typecheck | 0 | 1.042 | [[file:../../../dev/proofs/evidence/key-boundary/typecheck.log][log]] |
-| tests | 0 | 1.602 | [[file:../../../dev/proofs/evidence/key-boundary/tests.log][log]] |
-| counterexamples | 0 | 1.333 | [[file:../../../dev/proofs/evidence/key-boundary/counterexamples.log][log]] |
-| init | 0 | 1.062 | [[file:../../../dev/proofs/evidence/key-boundary/init.log][log]] |
-| queued | 0 | 1.308 | [[file:../../../dev/proofs/evidence/key-boundary/queued.log][log]] |
-| running | 0 | 1.388 | [[file:../../../dev/proofs/evidence/key-boundary/running.log][log]] |
-| computed | 0 | 1.354 | [[file:../../../dev/proofs/evidence/key-boundary/computed.log][log]] |
-| signed | 0 | 1.967 | [[file:../../../dev/proofs/evidence/key-boundary/signed.log][log]] |
-| inherited-account-replay | 0 | 9.878 | [[file:../../../dev/proofs/evidence/key-boundary/inherited-account-replay.log][log]] |
+| LogicalMessageAuthority | 0 | 0.677 | [[file:../../../.cache/verification/evidence/proofs/key-boundary/LogicalMessageAuthority.log][log]] |
+| SharedMessageBudget | 0 | 0.732 | [[file:../../../.cache/verification/evidence/proofs/key-boundary/SharedMessageBudget.log][log]] |
+| FiniteDomainMigration | 0 | 0.738 | [[file:../../../.cache/verification/evidence/proofs/key-boundary/FiniteDomainMigration.log][log]] |
+| AnchoredRecoveryAndEgress | 0 | 0.769 | [[file:../../../.cache/verification/evidence/proofs/key-boundary/AnchoredRecoveryAndEgress.log][log]] |
+| ComposedGatewayLifecycle | 0 | 0.671 | [[file:../../../.cache/verification/evidence/proofs/key-boundary/ComposedGatewayLifecycle.log][log]] |
+| FiniteStreamManifest | 0 | 0.948 | [[file:../../../.cache/verification/evidence/proofs/key-boundary/FiniteStreamManifest.log][log]] |
+| DriverCompletionRecovery | 0 | 0.564 | [[file:../../../.cache/verification/evidence/proofs/key-boundary/DriverCompletionRecovery.log][log]] |
+| WriterSettlementClosure | 0 | 0.777 | [[file:../../../.cache/verification/evidence/proofs/key-boundary/WriterSettlementClosure.log][log]] |
+| SettlementAnchorRecovery | 0 | 0.619 | [[file:../../../.cache/verification/evidence/proofs/key-boundary/SettlementAnchorRecovery.log][log]] |
+| GateConsumptionPersistence | 0 | 0.766 | [[file:../../../.cache/verification/evidence/proofs/key-boundary/GateConsumptionPersistence.log][log]] |
+| AnchorBrokerCommit | 0 | 0.782 | [[file:../../../.cache/verification/evidence/proofs/key-boundary/AnchorBrokerCommit.log][log]] |
+| AnchorReconfiguration | 0 | 0.619 | [[file:../../../.cache/verification/evidence/proofs/key-boundary/AnchorReconfiguration.log][log]] |
+| QuorumDurablePromises | 0 | 0.664 | [[file:../../../.cache/verification/evidence/proofs/key-boundary/QuorumDurablePromises.log][log]] |
+| ProtectedSignerRelease | 0 | 0.671 | [[file:../../../.cache/verification/evidence/proofs/key-boundary/ProtectedSignerRelease.log][log]] |
+| KeyBoundaryQueue | 0 | 0.72 | [[file:../../../.cache/verification/evidence/proofs/key-boundary/KeyBoundaryQueue.log][log]] |
+| typecheck | 0 | 1.042 | [[file:../../../.cache/verification/evidence/proofs/key-boundary/typecheck.log][log]] |
+| tests | 0 | 1.602 | [[file:../../../.cache/verification/evidence/proofs/key-boundary/tests.log][log]] |
+| counterexamples | 0 | 1.333 | [[file:../../../.cache/verification/evidence/proofs/key-boundary/counterexamples.log][log]] |
+| init | 0 | 1.062 | [[file:../../../.cache/verification/evidence/proofs/key-boundary/init.log][log]] |
+| queued | 0 | 1.308 | [[file:../../../.cache/verification/evidence/proofs/key-boundary/queued.log][log]] |
+| running | 0 | 1.388 | [[file:../../../.cache/verification/evidence/proofs/key-boundary/running.log][log]] |
+| computed | 0 | 1.354 | [[file:../../../.cache/verification/evidence/proofs/key-boundary/computed.log][log]] |
+| signed | 0 | 1.967 | [[file:../../../.cache/verification/evidence/proofs/key-boundary/signed.log][log]] |
+| inherited-account-replay | 0 | 9.878 | [[file:../../../.cache/verification/evidence/proofs/key-boundary/inherited-account-replay.log][log]] |
 
 The deterministic route selects named =Test$= controls, yielding 65 passing
 controls: 30 imported unchanged protected-signer controls and 35 new controls
@@ -88,7 +91,7 @@ native exactly-once result is inferred from that control.
 
 * Decoded counterexamples
 
-[[file:../../../dev/proofs/evidence/key-boundary/counterexample-observations.json][Observed final states]] were checked against all five focused ITFs. The old
+[[file:../../../.cache/verification/evidence/proofs/key-boundary/counterexample-observations.json][Observed final states]] were checked against all five focused ITFs. The old
 raw-handle and digest-substitution traces each contain two actually emitted
 model prefixes for signer 0, choices 1 and 2 at the original position. The old
 handle's ticket epoch does not match the new emission floor. The substituted
@@ -103,11 +106,11 @@ settlement. A signature still needs the full typed protected-commit/root envelop
 
 | Excluded rule / artifact | States | Trace |
 |--------------------------+--------+-------|
-| digestSubstitutionAtDeviceOutputCounterexampleTest-2.itf | 19 | [[file:../../../dev/proofs/evidence/key-boundary/itf/digestSubstitutionAtDeviceOutputCounterexampleTest-2.itf.json][ITF]] |
-| oldRawHSMHandleAfterRestartCounterexampleTest-1.itf | 26 | [[file:../../../dev/proofs/evidence/key-boundary/itf/oldRawHSMHandleAfterRestartCounterexampleTest-1.itf.json][ITF]] |
-| queuedAutomaticReplyAfterRevocationCounterexampleTest-0.itf | 18 | [[file:../../../dev/proofs/evidence/key-boundary/itf/queuedAutomaticReplyAfterRevocationCounterexampleTest-0.itf.json][ITF]] |
-| serviceRestartWithoutKeyFloorCounterexampleTest-4.itf | 18 | [[file:../../../dev/proofs/evidence/key-boundary/itf/serviceRestartWithoutKeyFloorCounterexampleTest-4.itf.json][ITF]] |
-| softwareQueueDrainIsNotIsolationCounterexampleTest-3.itf | 17 | [[file:../../../dev/proofs/evidence/key-boundary/itf/softwareQueueDrainIsNotIsolationCounterexampleTest-3.itf.json][ITF]] |
+| digestSubstitutionAtDeviceOutputCounterexampleTest-2.itf | 19 | [[file:../../../.cache/verification/evidence/proofs/key-boundary/itf/digestSubstitutionAtDeviceOutputCounterexampleTest-2.itf.json][ITF]] |
+| oldRawHSMHandleAfterRestartCounterexampleTest-1.itf | 26 | [[file:../../../.cache/verification/evidence/proofs/key-boundary/itf/oldRawHSMHandleAfterRestartCounterexampleTest-1.itf.json][ITF]] |
+| queuedAutomaticReplyAfterRevocationCounterexampleTest-0.itf | 18 | [[file:../../../.cache/verification/evidence/proofs/key-boundary/itf/queuedAutomaticReplyAfterRevocationCounterexampleTest-0.itf.json][ITF]] |
+| serviceRestartWithoutKeyFloorCounterexampleTest-4.itf | 18 | [[file:../../../.cache/verification/evidence/proofs/key-boundary/itf/serviceRestartWithoutKeyFloorCounterexampleTest-4.itf.json][ITF]] |
+| softwareQueueDrainIsNotIsolationCounterexampleTest-3.itf | 17 | [[file:../../../.cache/verification/evidence/proofs/key-boundary/itf/softwareQueueDrainIsNotIsolationCounterexampleTest-3.itf.json][ITF]] |
 
 Unsafe rules stay outside =step=. =produced=, =exports= and the parent emitted
 history are observation histories used by the checker, not durable databases
@@ -118,7 +121,7 @@ IDs or protected promises.
 
 * Lean properties and remaining physical assumptions
 
-[[file:../../../dev/proofs/evidence/key-boundary/KeyBoundaryQueue.log][Thirteen printed theorem reports]] contain no =sorryAx=, new axioms or final
+[[file:../../../.cache/verification/evidence/proofs/key-boundary/KeyBoundaryQueue.log][Thirteen printed theorem reports]] contain no =sorryAx=, new axioms or final
 compiler errors. Dependencies are none or standard =propext=, =Quot.sound= and
 inherited =Classical.choice=. Checked results include:
 
@@ -177,16 +180,16 @@ The exact-cut floor property is also checked over initialized runs; its final
 Lean addition and all final routes were rechecked. Earlier histories/manifests
 remain unchanged.
 
-[[file:../../../dev/proofs/evidence/key-boundary/document-check.log][English Org/link/source-register checks]],
-[[file:../../../dev/proofs/evidence/key-boundary/org-export.log][Org export without Babel]],
-[[file:../../../dev/proofs/evidence/key-boundary/diagram-validation.json][all core D2 validations]],
-[[file:../../../dev/proofs/evidence/key-boundary/visual-check.log][final SVG inspection]] and
-[[file:../../../dev/proofs/evidence/key-boundary/historical-manifests.log][eight historical manifests]] are separate receipts. The core diagram uses
+[[file:../../../.cache/verification/evidence/proofs/key-boundary/document-check.log][English Org/link/source-register checks]],
+[[file:../../../.cache/verification/evidence/proofs/key-boundary/org-export.log][Org export without Babel]],
+[[file:../../../.cache/verification/evidence/proofs/key-boundary/diagram-validation.json][all core D2 validations]],
+[[file:../../../.cache/verification/evidence/proofs/key-boundary/visual-check.log][final SVG inspection]] and
+[[file:../../../.cache/verification/evidence/proofs/key-boundary/historical-manifests.log][eight historical manifests]] are separate receipts. The core diagram uses
 bundled Go/Kubernetes/Rust assets and has no versions or acceptance evidence.
 Optional missing htmlize syntax-highlighting diagnostics remain in the Org
 export log and do not affect structural export.
 
-[[file:../../../dev/proofs/evidence/key-boundary/SHA256SUMS][The final byte manifest]] binds the new formal sources, runner, formal dependency
+[[file:../../../.cache/verification/evidence/proofs/key-boundary/SHA256SUMS][The final byte manifest]] binds the new formal sources, runner, formal dependency
 sources, Johnny Decimal artifacts and raw evidence. Native HSM/provider/driver
 isolation, protected-floor durability, canonical signed bytes and final broker
 FD acceptance remain pending. No gateway implementation or pin change is claimed.

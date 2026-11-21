@@ -34,30 +34,26 @@ selected native execution and retained failures. Each receipt retains its own
 source/target/scope. Source inspection alone is not a fresh acceptance result.
 No exact-head remote CI, deployment or benchmark result is claimed here.
 
-The local Weaver checkout was =main= at
-=4df1f0233f9a78e5a3ea8a1a0d8aaca983698b8d=. It had environment scaffolding
+The initial local Weaver =main= checkout had environment scaffolding
 and a license but no gateway implementation or architecture documents.
 Existing untracked environment files are outside this change.
 
-| Repository | Inspected identity | Selection reason |
-|------------+--------------------+------------------|
-| agentgateway | =955d56fae09b45f3cb8e85e797dbb1eb06134f77= | Upstream main snapshot fetched for this review |
-| POO Flow | =a74fc2fd63437252175b5a67649ee54b886d3bf4= | Existing local =research/ascent-poo-flow= checkout; inspected paths were clean |
-| cedar-poo-spec | =c8d1a0641120cf65e299e8a98f9fe7666ca96ab5= | Exact Git dependency in POO Flow's Cedar binding manifest and lockfile |
-| POO Flow Core | =80e2e74022c9c4053445475402856c5f369aec48= | Actual inspected core submodule checkout, separate repository |
-| Lambda Aitia | =cbf3f6861ef7cf66d8d02aaf71b1c89630eaf7fc= | Actual inspected submodule; matches the parent gitlink |
+| Repository | Selection reason |
+|------------+------------------|
+| agentgateway | Upstream main snapshot fetched for this review |
+| POO Flow | Existing local =research/ascent-poo-flow= checkout; inspected paths were clean |
+| cedar-poo-spec | Exact Git dependency in POO Flow's Cedar binding manifest and lockfile |
+| POO Flow Core | Actual inspected core submodule checkout, separate repository |
+| Lambda Aitia | Actual inspected submodule; matches the parent gitlink |
 
-Core and Lambda Aitia are separate Git repositories. The root revision pins
-Core at =377761072f2e8e39ae03ee26027d1fa5ad80b018=, while the inspected Core
-checkout is =80e2e74022c9c4053445475402856c5f369aec48=. Core architecture
-claims refer to that actual checkout, not the root gitlink. Links now identify
+Core and Lambda Aitia are separate Git repositories. The inspected Core
+checkout differed from the root gitlink. Core architecture claims refer to
+the inspected source, not an assumed match with that gitlink. Links now identify
 each true owner and commit. This corrects earlier root-relative source links
 and does not establish a reproducible integrated build of these revisions.
 
-The remote cedar-poo-spec default branch was also fetched and identified as
-=cecf0263d707ba545a86778eb32ba45b1c760f63=. Its README and packaging were
-inspected for orientation, but the comparison below uses the pinned
-=c8d1a06= tree. That tree has =rust/Cargo.toml=; newer package paths must
+The remote cedar-poo-spec default branch was also inspected for orientation,
+but the comparison below uses the dependency tree pinned by POO Flow. That tree has =rust/Cargo.toml=; newer package paths must
 not be projected backward onto it.
 
 The subsequent coordination review reused those identities. Agentgateway is
@@ -449,7 +445,7 @@ their authenticity and eventual execution binding to the Host.
 
 | Item | Source observation | Required disposition |
 |------+--------------------+----------------------|
-| Cedar Lean revision | P9 pins =e9fa9c1e6b636f29b0897d8706bd7aa5eaf06f9a=; C7 pins =017c35c3d1f856a0f8b62a66660ee6628870bbcf= | Establish compatible semantics, exports, extensions, and diagnostics; no automatic version substitution |
+| Cedar Lean revision | P9 and C7 pin different revisions in their dependency declarations | Establish compatible semantics, exports, extensions, and diagnostics; no automatic version substitution |
 | Lean toolchain | P9 uses =v4.31.0=; C7 uses =v4.34.1= | Build separately with declared interfaces; no assumed native ABI compatibility |
 | Cedar Rust | POO binding and C6 declare =4.12.0= | Match enabled features, serialization, and lock identity as well as version |
 | Native malformed input | P4 records a truncated-varint panic qualification blocker | Reproduce on the selected artifact and require typed rejection before native acceptance |
@@ -551,7 +547,7 @@ authenticity to the Host. None supplies a protected account gate by itself.
 [[file:25-gate-consumption-persistence.org][The persistence dossier]] rechecks P12/P13/P15 spent-state ordering,
 P17/P22 storage ownership, P18-P20 conditional receipt/execution closure,
 P31/P43 recovery obligations, P33 budgets, P35 publication domains and C8/C10/C11
-actual-input/Policy composition. [[file:../../dev/specs/evidence/gate-consumption-traces/source-review.json][Eighteen committed blobs were reverified]]
+actual-input/Policy composition. [[file:../../.cache/verification/evidence/specs/gate-consumption-traces/source-review.json][Eighteen committed blobs were reverified]]
 without changing source pins. Existing mechanisms supply semantic joins and
 conditional proofs; the independent durable issuance/consumption root, actual
 owner barrier and authentic account-result recovery require native qualification.
@@ -561,7 +557,7 @@ owner barrier and authentic account-result recovery require native qualification
 
 [[file:26-anchor-commit-broker-fencing.org][The commit/broker dossier]] rechecks all eighteen prior committed source blobs,
 including P35's same-generation fork countermodel and explicit fork-free domain
-premise. [[file:../../dev/specs/evidence/anchor-broker-traces/source-review.json][The renewed source review]] retains exact identities and extended excerpts.
+premise. [[file:../../.cache/verification/evidence/specs/anchor-broker-traces/source-review.json][The renewed source review]] retains exact identities and extended excerpts.
 POO Flow supplies original-binding, indeterminate-spend and retained-obligation
 semantics; cedar-poo-spec supplies conditional actual-input/Policy joins. Neither
 supplies native durable quorum publication or all-alias physical writer isolation.
@@ -571,7 +567,7 @@ supplies native durable quorum publication or all-alias physical writer isolatio
 
 [[file:27-anchor-configuration-prefix-inheritance.org][The reconfiguration review]] reverified the eighteen pinned committed blobs,
 including P35's fork-free publication, complete lineage-prefix and domain-binding
-contracts. [[file:../../dev/specs/evidence/reconfiguration-traces/source-review.json][The review evidence]] retains exact identities and added prefix excerpts.
+contracts. [[file:../../.cache/verification/evidence/specs/reconfiguration-traces/source-review.json][The review evidence]] retains exact identities and added prefix excerpts.
 These source contracts support semantic reuse; neither POO Flow nor cedar-poo-spec
 supplies a native dynamic-quorum replication or actual writer-isolation proof.
 

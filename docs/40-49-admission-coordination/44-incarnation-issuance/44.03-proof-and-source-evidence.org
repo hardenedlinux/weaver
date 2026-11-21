@@ -16,8 +16,8 @@ the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21
 
 [[file:44.01-incarnation-issuance.org][44.01]] defines the native protocol. The actual [[file:../../../dev/proofs/lean/LlmIncarnationIssuance.lean][Lean]] and
 [[file:../../../dev/proofs/quint/LlmIncarnationIssuance.qnt][Quint]] models expand category 43's enrollment sequencing without modifying its
-sealed artifacts. [[file:../../../dev/proofs/evidence/llm-incarnation-issuance/source-review.json][Nineteen pinned source receipts]] and
-[[file:../../../dev/proofs/evidence/llm-incarnation-issuance/working-source-check.json][working source identities]] are freshly checked. Eighteen match the reviewed
+sealed artifacts. [[file:../../../.cache/verification/evidence/proofs/llm-incarnation-issuance/source-review.json][Nineteen pinned source receipts]] and
+[[file:../../../.cache/verification/evidence/proofs/llm-incarnation-issuance/working-source-check.json][working source identities]] are freshly checked. Eighteen match the reviewed
 bytes; P17 differs only in the two previously recorded import paths. No upstream
 source or dependency pin is changed; no native ABI qualification is inferred.
 
@@ -173,9 +173,9 @@ typecheck timeout remains a historical failed resource gate; this category does
 not rerun or convert it into a pass and makes no new fast-typecheck/performance
 claim. The installed official pipeline source/hash is checked independently.
 
-See [[file:../../../dev/proofs/evidence/llm-incarnation-issuance/commands.json][current commands]], [[file:../../../dev/proofs/evidence/llm-incarnation-issuance/reused-lean-receipts.json][reused ancestor receipts]],
-[[file:../../../dev/proofs/evidence/llm-incarnation-issuance/closure-certificate.json][closure certificate]], [[file:../../../dev/proofs/evidence/llm-incarnation-issuance/counterexample-observations.json][decoded ITFs]],
-[[file:../../../dev/proofs/evidence/llm-incarnation-issuance/receipt.json][final receipt]] and [[file:../../../dev/proofs/evidence/llm-incarnation-issuance/SHA256SUMS][byte manifest]].
+See [[file:../../../.cache/verification/evidence/proofs/llm-incarnation-issuance/commands.json][current commands]], [[file:../../../.cache/verification/evidence/proofs/llm-incarnation-issuance/reused-lean-receipts.json][reused ancestor receipts]],
+[[file:../../../.cache/verification/evidence/proofs/llm-incarnation-issuance/closure-certificate.json][closure certificate]], [[file:../../../.cache/verification/evidence/proofs/llm-incarnation-issuance/counterexample-observations.json][decoded ITFs]],
+[[file:../../../.cache/verification/evidence/proofs/llm-incarnation-issuance/receipt.json][final receipt]] and [[file:../../../.cache/verification/evidence/proofs/llm-incarnation-issuance/SHA256SUMS][byte manifest]].
 Acceptance also checks twenty-three four-artifact rows, English Org links/export,
 core D2 validation and visual inspection, thirty-nine historical manifests and
 unchanged pins. Finite exploration is not exhaustive model checking. Credential

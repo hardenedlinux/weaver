@@ -7,13 +7,16 @@
         (only-in :std/source this-source-file)
         (only-in :std/error Error? Error-message)
         (only-in :std/io/tempfile call-with-temporary-directory)
-        (only-in :yuanxu/module-system/interface yuanxu-load-modules)
-        (only-in :yuanxu/module-system/source/admission call-with-module-source-read-cache)
+        (only-in :tao3k/yuanxu/module-system/interface yuanxu-load-modules)
+        (only-in :tao3k/yuanxu/module-system/source/admission call-with-module-source-read-cache)
         (only-in :std/misc/ports read-all-as-string)
         (only-in :clan/poo/object .o .get)
-        (only-in :clan/poo/mop TypeError?)
+        (only-in :clan/poo/type TypeError?)
+        (only-in "../../init.ss" hardenedlinux/weaver.init.exports)
         (only-in "../fixtures/control-inputs.ss" control-inputs)
-        (only-in "../fixtures/governed-control.ss" capture-control-fixture prepare-control-fixture))
+        (only-in "../../scheme/gateway/config.ss" gateway-scope)
+        (only-in "../fixtures/governed-control.ss" capture-control-fixture prepare-control-fixture
+                 capture-compiled-control-fixture))
 (export governed-control-test)
 
 (def refusal-cases
@@ -49,7 +52,7 @@
       (call-with-temporary-directory "weaver-control-"
         (lambda (directory)
           (def view (yuanxu-load-modules init))
-          (def (invoke mode (source view))
+          (def (invoke mode (source view) (capture capture-control-fixture))
             (def original-task (car (.get input tasks)))
             (def original-publication (.get input publication))
             (def task (if (equal? mode "task-type")
@@ -64,7 +67,7 @@
               (lambda (port)
                 (display (if (equal? mode "asset-mismatch")
                            "forbid(principal,action,resource);" (.get publication policy)) port)))
-            (capture-control-fixture source mode (list task) plans publication directory))
+            (capture source mode (list task) plans publication directory))
           ;; Reuse the Yuanxu scope for fixed framework sources. Profile data
           ;; and Policy assets still vary, and every capture admits the view.
           ((.get view admit-current))
@@ -103,8 +106,26 @@
                   (def retained ((.get owner derive) query))
                   (check-equal? ((.get owner matches?) query retained) #t)
                   ((.get owner close))
-                  ;; The production path also opens and admits its own view.
+                  ;; Development source capture also opens and admits its view.
                   (check-equal? (.get (invoke "valid" init) governance open_nodes) '("infer" "next"))
+                  ;; Direct source-owner handoff keeps the same admission and
+                  ;; typed handoff as the pathname development entry.
+                  (check-equal? (.get (invoke "valid" hardenedlinux/weaver.init.exports)
+                                     governance open_nodes) '("infer" "next"))
+                  ;; The compiled ABI uses the same published operations, not
+                  ;; an init Build projection. It retains all semantic refusals.
+                  (check-equal? (.get (invoke "valid" (gateway-scope) capture-compiled-control-fixture)
+                                     governance open_nodes) '("infer" "next"))
+                  (for-each
+                    (lambda (row)
+                      (def result
+                        (with-catch
+                          (lambda (failure) (if (Error? failure) (Error-message failure) (raise failure)))
+                          (lambda ()
+                            (invoke (car row) (gateway-scope) capture-compiled-control-fixture) #f)))
+                      (check-equal? (list (car row) (and (string? result) (string-prefix? (cdr row) result)))
+                                    (list (car row) #t)))
+                    refusal-cases)
                   #t)))
             (lambda () ((.get view admit-current))))
           directory)))))

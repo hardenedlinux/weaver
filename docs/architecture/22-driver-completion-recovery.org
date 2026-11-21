@@ -21,7 +21,7 @@ one canonical pending completion per range, immutable durable completion results
 read-only resolution, external isolation and a permanently quarantined failure
 path. [[file:../../dev/specs/lean/DriverCompletionRecovery.lean][The Lean product]] projects every event into the actual initialized finite
 manifest relation. [[file:../../dev/specs/quint/DriverCompletionRecovery.qnt][The Quint extension]] imports the existing manifest fixture,
-with concrete lost-reply, late-receipt and restart schedules. [[file:../../dev/specs/evidence/driver-completion-recovery-2026-10-19.org][The check receipt]]
+with concrete lost-reply, late-receipt and restart schedules. [[file:../../.cache/verification/evidence/specs/driver-completion-recovery-2026-10-19.org][The check receipt]]
 records source identities, executable controls and remaining acceptance work.
 
 The selected profile deliberately sacrifices availability after lost driver

@@ -8,17 +8,19 @@ use tonic::Status;
 use weaver_contracts::{Error, ProviderPlan, ProviderRoute, Task};
 
 pub(crate) fn compilation_status(error: weaver_governance::CatalogError) -> Status {
-    use weaver_governance::{CatalogError, SourceJobError};
+    use weaver_governance::CatalogError;
     match error {
         CatalogError::Denied => Status::permission_denied("producer/source binding rejected"),
         CatalogError::Invalid => Status::failed_precondition("producer catalog invalid"),
-        CatalogError::Schedule(SourceJobError::Busy) => {
-            Status::resource_exhausted("source compilation lane full")
-        }
-        CatalogError::Schedule(SourceJobError::Source(_)) => {
-            Status::failed_precondition("source compiler rejected original")
-        }
-        CatalogError::Schedule(_) => Status::unavailable("source compiler unavailable"),
+        CatalogError::Schedule(error) => source_job_status(error),
+    }
+}
+pub(crate) fn source_job_status(error: weaver_governance::SourceJobError) -> Status {
+    use weaver_governance::SourceJobError;
+    match error {
+        SourceJobError::Busy => Status::resource_exhausted("source owner lane full"),
+        SourceJobError::Source(_) => Status::failed_precondition("source owner rejected input"),
+        _ => Status::unavailable("source owner unavailable"),
     }
 }
 pub(crate) fn publication_receipt(

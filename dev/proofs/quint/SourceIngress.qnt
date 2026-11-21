@@ -33,6 +33,10 @@ module SourceIngress {
   run wrongCredentialCannotPublishTest = source.then(publish({ingress:1,certificate:1,credential:0,method:1}).fail())
   run operatorIngressCannotPublishTest = source.then(publish({ingress:0,certificate:1,credential:1,method:1}).fail())
   run sourceIngressCannotExecuteTest = source.then(execute({ingress:1,certificate:1,credential:1,method:0}).fail())
+  run sourceCertificateCannotExecuteAtOperationIngressTest =
+    full.then(execute({ingress:0,certificate:1,credential:0,method:0}).fail())
+  run sourceBearerCannotExecuteAtOperationIngressTest =
+    full.then(execute({ingress:0,certificate:0,credential:1,method:0}).fail())
   run sourceCapacityCannotBorrowTest = source.then(sourceConnect(0).fail())
   run lostReplyKeepsBindingTest = source.then(publish({ingress:1,certificate:1,credential:1,method:1})).then(lostReply).expect(safe)
   run shutdownRejectsSourceTest = full.then(close).then(sourceConnect(2).fail())

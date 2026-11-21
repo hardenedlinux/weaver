@@ -214,6 +214,10 @@ package ControlActivation {
            grants no publication, reservation release or execution authority.
            JSON PolicySet documents must also be individually valid; multiple
            JSON documents are not merged by textual concatenation. */
+        doc /* The linked Weaver producer may use an operator-owned absolute
+           Cedar directory. Its fixed policy asset must match the original
+           publication bytes, including on the projection after assessment.
+           RPC callers cannot choose or replace the directory. */
         doc /* One Scheme source-bytes owner rejects empty/overlong character
            inputs before UTF-8 allocation and then checks the encoded byte bound
            for each Policy/schema value. Record predicates and actual C

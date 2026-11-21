@@ -6,6 +6,15 @@
 use crate::pb;
 use weaver_contracts::{ProviderPlan, ProviderProfile, ProviderRoute, Publication, Task};
 use weaver_governance::{BoundSource, SourceComposition, SourceData, SourceSelection};
+pub(crate) fn profile(value: &ProviderProfile) -> pb::ProviderProfile {
+    pb::ProviderProfile {
+        id: value.id.clone(),
+        protocol: value.protocol.clone(),
+        max_output_tokens: value.max_output_tokens,
+        max_messages: value.max_messages,
+        max_body_bytes: value.max_body_bytes,
+    }
+}
 pub(crate) fn artifact(bound: &BoundSource) -> pb::SourceArtifact {
     artifact_data(bound.source().data())
 }
@@ -112,22 +121,7 @@ fn task(value: &Task) -> pb::Task {
         family: family.clone(),
         principal: principal.clone(),
         profile: profile.clone(),
-        provider_profile: provider_profile.as_ref().map(|p| {
-            let ProviderProfile {
-                id,
-                protocol,
-                max_output_tokens,
-                max_messages,
-                max_body_bytes,
-            } = p;
-            pb::ProviderProfile {
-                id: id.clone(),
-                protocol: protocol.clone(),
-                max_output_tokens: *max_output_tokens,
-                max_messages: *max_messages,
-                max_body_bytes: *max_body_bytes,
-            }
-        }),
+        provider_profile: provider_profile.as_ref().map(self::profile),
         nodes: nodes.clone(),
         targets: targets.clone(),
         models: models.clone(),
@@ -138,7 +132,7 @@ fn task(value: &Task) -> pb::Task {
         node_cost_bounds: node_cost_bounds.clone().into_iter().collect(),
     }
 }
-fn plan(value: &ProviderPlan) -> pb::ProviderPlan {
+pub(crate) fn plan(value: &ProviderPlan) -> pb::ProviderPlan {
     let ProviderPlan {
         family,
         node,

@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
-//! Native unbuffered socket with one absolute deadline across TLS internal calls.
+//! Socket timeouts during preparation; final effect writers switch to nonblocking mode.
 use std::{
     io::{self, Read, Write},
     net::{Shutdown, SocketAddr, TcpStream},

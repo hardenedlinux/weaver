@@ -15,6 +15,23 @@ use weaver_ledger::FactPreparation;
 type CatalogRead = Result<Option<(String, Vec<u8>)>>;
 
 pub(super) enum Envelope {
+    SessionCatalog {
+        session: String,
+        principal: String,
+        reply: oneshot::Sender<Result<weaver_ledger::ProviderSessionCatalog>>,
+        slot: OwnedSemaphorePermit,
+    },
+    SessionCut {
+        request: weaver_ledger::ProviderSessionRequest,
+        reply: oneshot::Sender<Result<weaver_ledger::ProviderSessionCut>>,
+        slot: OwnedSemaphorePermit,
+    },
+    SessionTurn {
+        observed: Box<weaver_ledger::ProviderSessionCut>,
+        derived: Box<weaver_contracts::ProviderTurnDerivation>,
+        reply: oneshot::Sender<Result<weaver_contracts::ProviderTurnDerivation>>,
+        slot: OwnedSemaphorePermit,
+    },
     Source {
         caller: SourceIdentity,
         command: Box<Command>,
@@ -42,6 +59,11 @@ pub(super) struct SourceDeployment {
 }
 
 pub(super) enum Command {
+    RegisterSession {
+        scope: Box<weaver_contracts::ProviderSessionScope>,
+        reply: oneshot::Sender<Result<()>>,
+        slot: OwnedSemaphorePermit,
+    },
     RegisterOperationSource {
         scope: Box<weaver_contracts::ProviderOperationScope>,
         reply: oneshot::Sender<Result<()>>,

@@ -15,6 +15,7 @@ fn request_encoding(c: &mut Criterion) {
         tool_call_id: None,
         tool_calls: Vec::new(),
         responses_output: None,
+        anthropic_output: None,
     }];
     let request = Request {
         model: "gpt-example",

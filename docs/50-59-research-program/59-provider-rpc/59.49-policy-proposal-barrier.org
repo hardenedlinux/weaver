@@ -124,6 +124,13 @@ The post-repair probe returns no transport call. A separate rejected-birth test
 uses an unrelated allowing image and a positive transport control, preventing
 TLS/credential failure from masquerading as enforcement.
 
+The current source-order and unsupported-registration controls invoke the Rust
+=prepare= command through a real source-only mTLS proxy. They require one
+durable stage before publication-bound registration, count attempts at the raw
+registration and publication RPCs, and probe the direct operation-key ingress
+while the pending barrier is in force. These controls no longer depend on the
+reference Go bootstrap.
+
 An initial test incorrectly expected a NotFound operation lookup. The API returns
 a generic failed-precondition error; that error is not evidence of zero balance
 or no execution. The integration check now rejects a positive receipt, while

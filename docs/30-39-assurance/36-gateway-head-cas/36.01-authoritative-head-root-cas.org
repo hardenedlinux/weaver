@@ -318,7 +318,7 @@ model participates in this proof dependency graph.
 | HC9 Original shared obligations remain | No automatic refund or replay after unknown result | streamReconnectCannotReclaimOriginalTest | unknown_original_reservation_survives; shared_budget_is_bounded; nonce_consumption_once | semantic.unknown |
 | HC10 Code as Policy reaches final admission | Current effect/state and live Policy gate actual offer | policyRevocationBlocksFinalOfferTest | actual_logical_offer_requires_broker_authority; original_claim_and_offer_once | semantic.policy |
 
-[[file:../../../dev/proofs/evidence/gateway-head-cas/four-artifact-check.json][The named correspondence check]] verifies these references across actual Org,
+[[file:../../../.cache/verification/evidence/proofs/gateway-head-cas/four-artifact-check.json][The named correspondence check]] verifies these references across actual Org,
 Quint, Lean and D2. It is a consistency check, not a semantic equivalence or
 runtime extraction proof. Update all four when changing a state, guard or failure
 branch. The core diagram contains no hardware-isolation chain or check metadata.

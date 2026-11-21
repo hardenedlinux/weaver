@@ -54,7 +54,7 @@ no function or macro implementation and keeps all public JSON exports. The first
 narrowing omitted the owner of with-buffered-reader and failed expansion; that
 failure is retained. The corrected candidate explicitly imports the utility owner.
 
-[[file:../../../dev/proofs/evidence/dynamic-gxi-exit/stdlib-import-only.patch][The exact import-only patch]] and [[file:../../../dev/proofs/evidence/dynamic-gxi-exit/stdlib-source-snapshot.json][original/candidate source hashes]] define the
+[[file:../../../.cache/verification/evidence/proofs/dynamic-gxi-exit/stdlib-import-only.patch][The exact import-only patch]] and [[file:../../../.cache/verification/evidence/proofs/dynamic-gxi-exit/stdlib-source-snapshot.json][original/candidate source hashes]] define the
 source boundary. The surrounding eight JSON/parser modules are rebuilt so their
 interfaces and phase bodies resolve coherently. No installed source is edited,
 no runtime cleanup hook changes, and no dependency pin changes.
@@ -105,7 +105,7 @@ unmapping is allowed only when the final reference is closed; a shared image is
 not permission to drop intermediate close operations. A separately loaded C
 canary retains its constructor/destructor and must report LU after natural exit.
 
-The [[file:../../../dev/proofs/evidence/dynamic-gxi-exit/module-cleanup-observer.c][verification-only observer]] calls the real dlopen/dlclose on every intercepted
+The [[file:../../../.cache/verification/evidence/proofs/dynamic-gxi-exit/module-cleanup-observer.c][verification-only observer]] calls the real dlopen/dlclose on every intercepted
 operation, counts successful Scheme-image acquisitions and closes, and reports
 outstanding references and errors at process teardown. Its observed result must
 be positive and balanced; a missing or ignored observer is not a cleanup pass.

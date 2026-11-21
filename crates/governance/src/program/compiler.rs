@@ -24,6 +24,7 @@ pub struct SchemeCompiler {
     packed_node_indices: BTreeMap<String, u8>,
     governor_generation: u64,
     governor_topology: Weak<crate::GovernorTopology>,
+    session_scope: Option<String>,
 }
 impl SchemeCompiler {
     /// Initialize the linked approved graph and require an installed producer.
@@ -46,6 +47,7 @@ impl SchemeCompiler {
             packed_node_indices: BTreeMap::new(),
             governor_generation: 0,
             governor_topology: Weak::new(),
+            session_scope: None,
         })
     }
     /// Compose trusted startup data before sealing its exact original binding.
@@ -62,6 +64,9 @@ impl SchemeCompiler {
     }
     pub fn evaluate(&mut self, input: &crate::Derivation) -> Result<DerivationOutput, SourceError> {
         match input {
+            crate::Derivation::SessionTurn(input) => {
+                self.session_turn(input).map(DerivationOutput::SessionTurn)
+            }
             crate::Derivation::Composition(configuration) => {
                 self.compose(configuration).map(DerivationOutput::Source)
             }
@@ -77,6 +82,27 @@ impl SchemeCompiler {
                 crate::scheme::materialize(output).map(DerivationOutput::Nodes)
             }
         }
+    }
+    fn session_turn(
+        &mut self,
+        input: &crate::SessionTurnInput,
+    ) -> Result<crate::SessionTurnSelection, SourceError> {
+        input.validate()?;
+        let key = input.scope.digest().map_err(|_| SourceError::Contract)?;
+        let result = (|| {
+            let root = crate::scheme_input::records::root_session_turn(
+                &self.runtime,
+                input,
+                self.session_scope.as_ref() != Some(&key),
+            )?;
+            let output =
+                linked::session_turn(&self.runtime, &root).map_err(|_| SourceError::Scheme)?;
+            let selected: crate::SessionTurnSelection = crate::scheme::materialize(output)?;
+            selected.validate_for(input)?;
+            Ok(selected)
+        })();
+        self.session_scope = result.as_ref().ok().map(|_| key);
+        result
     }
     pub fn derive(&mut self, cut: &crate::GovernorCut) -> Result<DerivationOutput, SourceError> {
         let started = crate::host::governor_timing().then(std::time::Instant::now);

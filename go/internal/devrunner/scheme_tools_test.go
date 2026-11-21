@@ -114,10 +114,28 @@ func TestSchemeQualificationStaysWithPreparedSchemeOwner(t *testing.T) {
 	for _, stage := range runtime {
 		if stage.Name == "rust-tests" || stage.Name == "rust-clippy" {
 			args := strings.Join(stage.Args, " ")
-			if strings.Contains(args, "--all-features") || !strings.Contains(args, "weaver-server/arrow,weaver-governance/scheme-vm") {
+			if strings.Contains(args, "--all-features") || !strings.Contains(args, "weaver-server/arrow") || !strings.Contains(args, "weaver-server/magpie") || !strings.Contains(args, "weaver-governance/scheme-vm") {
 				t.Fatal("runtime coverage includes test graph or loses Arrow/converter")
 			}
 		}
+	}
+}
+
+func TestCargoEnvironmentSurvivesGoTestPathPrefix(t *testing.T) {
+	goDirectory := filepath.Join(runtime.GOROOT(), "bin")
+	separator := string(os.PathListSeparator)
+	original := []string{"PATH=" + strings.Join([]string{"/paired/compiler", goDirectory, "/system/tools"}, separator), "GERBIL_GSC=/paired/compiler/gsc"}
+	want := CargoEnvironment(original)
+	for copies := 0; copies <= 3; copies++ {
+		nested := append([]string(nil), original...)
+		nested[0] = "PATH=" + strings.Repeat(goDirectory+separator, copies) + strings.TrimPrefix(original[0], "PATH=")
+		if got := CargoEnvironment(nested); !slices.Equal(got, want) || !slices.Equal(CargoEnvironment(got), want) {
+			t.Fatal("Go test changed the native compiler environment", copies, got, want)
+		}
+	}
+	if original[0] != "PATH="+strings.Join([]string{"/paired/compiler", goDirectory, "/system/tools"}, separator) ||
+		want[1] != original[1] || strings.TrimPrefix(want[0], "PATH="+goDirectory+separator) != "/paired/compiler"+separator+"/system/tools" {
+		t.Fatal("compiler order, paired tool or caller environment changed", original, want)
 	}
 }
 

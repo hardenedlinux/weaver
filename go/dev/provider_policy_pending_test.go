@@ -183,20 +183,28 @@ func TestProviderSourceLateCommitReplyAfterRotationRemainsHistorical(t *testing.
 // Startup transport pin only: deliberately does not change durable authority.
 func restartWithSourceCertificate(t *testing.T, f *fixture, next tls.Certificate) {
 	t.Helper()
+	restartWithSourceIdentity(t, f, next, f.sourceToken)
+}
+
+// Restart the fixture transport with new pins without writing the ledger.
+func restartWithSourceIdentity(t *testing.T, f *fixture, next tls.Certificate, token string) {
+	t.Helper()
 	f.stop(t)
 	f.pki.source = next
-	digest := sha256.Sum256(next.Certificate[0])
-	const key = "WEAVER_GRPC_SOURCE_PEER_SHA256"
-	found := false
+	f.sourceToken = token
+	expected := map[string][32]byte{
+		"WEAVER_GRPC_SOURCE_PEER_SHA256": sha256.Sum256(next.Certificate[0]),
+		"WEAVER_ADMIN_TOKEN_SHA256":      sha256.Sum256([]byte(token)),
+	}
 	for i, value := range f.env {
 		name, _, _ := strings.Cut(value, "=")
-		if name == key {
-			f.env[i] = key + "=" + hex.EncodeToString(digest[:])
-			found = true
+		if digest, ok := expected[name]; ok {
+			f.env[i] = name + "=" + hex.EncodeToString(digest[:])
+			delete(expected, name)
 		}
 	}
-	if !found {
-		t.Fatal("source certificate admission setting missing")
+	if len(expected) != 0 {
+		t.Fatal("source transport admission setting missing")
 	}
 	f.start(t)
 }

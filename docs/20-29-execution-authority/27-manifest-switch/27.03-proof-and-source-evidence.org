@@ -14,7 +14,7 @@ the Go-owned plan; see [[file:../../50-59-research-program/59-provider-rpc/59.21
 
 * Reproduction and evidence scope
 
-Runner (retired Python driver), [[file:../../../dev/proofs/evidence/llm-manifest-switch/commands.json][commands]], [[file:../../../dev/proofs/evidence/llm-manifest-switch/receipt.json][receipt]] and [[file:../../../dev/proofs/evidence/llm-manifest-switch/SHA256SUMS][byte manifest]] record local results.
+Runner (retired Python driver), [[file:../../../.cache/verification/evidence/proofs/llm-manifest-switch/commands.json][commands]], [[file:../../../.cache/verification/evidence/proofs/llm-manifest-switch/receipt.json][receipt]] and [[file:../../../.cache/verification/evidence/proofs/llm-manifest-switch/SHA256SUMS][byte manifest]] record local results.
 [[file:../../../dev/proofs/lean/LlmManifestSwitch.lean][Lean]] imports the actual checkpoint model and its complete preceding chain.
 [[file:../../../dev/proofs/quint/LlmManifestSwitch.qnt][Quint]] imports the actual checkpoint actions, preserving their account/source state.
 The runner compiles 24 Lean modules and prints 12 new declarations without
@@ -112,8 +112,8 @@ IDs, reservation consumption and remaining hold are checked from actual ITF data
 
 * Source-by-source reuse audit
 
-[[file:../../../dev/proofs/evidence/llm-manifest-switch/source-review.json][Nineteen pinned source identities/excerpts]], [[file:../../../dev/proofs/evidence/llm-manifest-switch/source-receipt-check.json][fresh byte checks]], [[file:../../../dev/proofs/evidence/llm-manifest-switch/manifest-source-audit.json][focused storage extract]] and
-[[file:../../../dev/proofs/evidence/llm-manifest-switch/working-source-check.json][current working hashes]] separate reference facts from design extensions.
+[[file:../../../.cache/verification/evidence/proofs/llm-manifest-switch/source-review.json][Nineteen pinned source identities/excerpts]], [[file:../../../.cache/verification/evidence/proofs/llm-manifest-switch/source-receipt-check.json][fresh byte checks]], [[file:../../../.cache/verification/evidence/proofs/llm-manifest-switch/manifest-source-audit.json][focused storage extract]] and
+[[file:../../../.cache/verification/evidence/proofs/llm-manifest-switch/working-source-check.json][current working hashes]] separate reference facts from design extensions.
 
 | Source | Reused fact | Required extension or explicit limit |
 |--------+-------------+--------------------------------------|
@@ -139,7 +139,7 @@ IDs, reservation consumption and remaining hold are checked from actual ITF data
 
 Pinned blobs and every recorded excerpt are freshly checked. Eighteen current
 working files match; P17 differs only in two control-plane import paths captured
-in [[file:../../../dev/proofs/evidence/llm-manifest-switch/P17-working-diff.patch][the working diff]]. This does not qualify the new targets' native ABI. Weaver's
+in [[file:../../../.cache/verification/evidence/proofs/llm-manifest-switch/P17-working-diff.patch][the working diff]]. This does not qualify the new targets' native ABI. Weaver's
 actual Lean chain is compiled; upstream complete proof/runtime builds are not
 claimed. No dependency pin or upstream source changes.
 

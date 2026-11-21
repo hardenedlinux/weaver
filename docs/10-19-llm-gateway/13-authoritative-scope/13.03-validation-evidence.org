@@ -18,7 +18,7 @@ Run the bounded check runner (retired Python driver). The new [[file:../../../de
 semantic/child/root models. The [[file:../../../dev/proofs/quint/LlmAuthoritativeScope.qnt][Quint model]] starts from an admitted-root fixture
 and checks canonical scope derivation, final use, recovery and settlement races.
 The Lean run additionally projects source root setup into GatewayHeadCAS.Run.
-Raw commands are in [[file:../../../dev/proofs/evidence/llm-authoritative-scope/commands.json][commands.json]] and final results in [[file:../../../dev/proofs/evidence/llm-authoritative-scope/receipt.json][receipt.json]].
+Raw commands are in [[file:../../../.cache/verification/evidence/proofs/llm-authoritative-scope/commands.json][commands.json]] and final results in [[file:../../../.cache/verification/evidence/proofs/llm-authoritative-scope/receipt.json][receipt.json]].
 
 The immutable original-key-to-contract mapping, authenticated root ownership and
 canonical source configuration are premises. Root identity cannot be selected
@@ -61,8 +61,8 @@ from preliminary iterations remain distinct from the final successful receipts.
 
 * Source review: reuse versus extension
 
-The [[file:../../../dev/proofs/evidence/llm-authoritative-scope/source-review.json][POO Flow / cedar-poo-spec register]] contains freshly checked pinned
-blobs and exact source excerpts. The [[file:../../../dev/proofs/evidence/llm-authoritative-scope/agentgateway-source-review.json][agentgateway register]] retains the pinned
+The [[file:../../../.cache/verification/evidence/proofs/llm-authoritative-scope/source-review.json][POO Flow / cedar-poo-spec register]] contains freshly checked pinned
+blobs and exact source excerpts. The [[file:../../../.cache/verification/evidence/proofs/llm-authoritative-scope/agentgateway-source-review.json][agentgateway register]] retains the pinned
 provider conversion/routing comparison. These are source snapshots, not claims
 about an uninspected latest checkout or native ABI compatibility.
 
@@ -133,7 +133,7 @@ store interleaving, provider execution, native JSON validation or liveness.
 | Preserve original child spent slot | newScopeReplayScopeCounterexampleTest | Original child call count becomes two |
 | Retain unknown budget | unknownRefundScopeCounterexampleTest | Parent settlement advances while child usage is unknown |
 
-These actions are excluded from =step=. Their [[file:../../../dev/proofs/evidence/llm-authoritative-scope/itf][ITF traces]] are decoded and
+These actions are excluded from =step=. Their [[file:../../../.cache/verification/evidence/proofs/llm-authoritative-scope/itf][ITF traces]] are decoded and
 checked independently. Bounded simulation is not exhaustive model checking;
 Quint uses four finite child slots and two allowed targets. Lean quantifies over
 finite lists/identities under explicit owner/configuration premises.
@@ -152,4 +152,4 @@ record; keep unknown holds and require fresh tool-effect admission.
 Use the existing queue/range/account protocols for transport and settlement
 refinement, with matched native controls. Local model proof does not establish
 native database atomicity, deployed provider behavior or performance. The
-[[file:../../../dev/proofs/evidence/llm-authoritative-scope/SHA256SUMS][manifest]] seals this category and evidence while preserving historical receipts.
+[[file:../../../.cache/verification/evidence/proofs/llm-authoritative-scope/SHA256SUMS][manifest]] seals this category and evidence while preserving historical receipts.

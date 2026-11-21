@@ -23,7 +23,7 @@ their original workloads.
 
 * Failure mechanism and source repair
 
-The [[file:../../../dev/proofs/evidence/release-binding-20261030/verification-current/receipt.json][preceding final unified run]] retained one failed provider-routing fuzz stage:
+The [[file:../../../.cache/verification/evidence/proofs/release-binding-20261030/verification-current/receipt.json][preceding final unified run]] retained one failed provider-routing fuzz stage:
 =context deadline exceeded= at the unchanged three-second fuzz window, without a
 reported property counterexample. An exact-argument retry passed, but neither
 that retry nor the context-ordering probe qualified the failing run.
@@ -102,18 +102,18 @@ count is inserted into the architecture diagram.
 
 * Evidence
 
-The [[file:../../../dev/proofs/evidence/fuzz-coordinator-20261030/unpatched-toolchain-admission.log][unpatched source-admission failure]] is retained. The
-[[file:../../../dev/proofs/evidence/fuzz-coordinator-20261030/nix-build.log][Nix build log]] records the independent development package rebuild. Passing
+The [[file:../../../.cache/verification/evidence/proofs/fuzz-coordinator-20261030/unpatched-toolchain-admission.log][unpatched source-admission failure]] is retained. The
+[[file:../../../.cache/verification/evidence/proofs/fuzz-coordinator-20261030/nix-build.log][Nix build log]] records the independent development package rebuild. Passing
 controls and final unified results must be qualified under that actual package,
 not under a successful retry with the older compiler.
 
 The rebuilt development package is qualified by the
-[[file:../../../dev/proofs/evidence/fuzz-coordinator-20261030/patched-native-controls.log][native controls receipt]] and the separately retained
-[[file:../../../dev/proofs/evidence/fuzz-coordinator-20261030/intentional-property-failure.log][intentional failing-target transcript]]. The latter exits nonzero with its
+[[file:../../../.cache/verification/evidence/proofs/fuzz-coordinator-20261030/patched-native-controls.log][native controls receipt]] and the separately retained
+[[file:../../../.cache/verification/evidence/proofs/fuzz-coordinator-20261030/intentional-property-failure.log][intentional failing-target transcript]]. The latter exits nonzero with its
 original unique property diagnostic, despite containing the deadline text.
-The [[file:../../../dev/proofs/evidence/fuzz-coordinator-20261030/toolchain-source-sha256.log][source hashes]] and [[file:../../../dev/proofs/evidence/fuzz-coordinator-20261030/toolchain-derivation.log][Nix derivation identity]] identify the actual package.
+The [[file:../../../.cache/verification/evidence/proofs/fuzz-coordinator-20261030/toolchain-source-sha256.log][source hashes]] and [[file:../../../.cache/verification/evidence/proofs/fuzz-coordinator-20261030/toolchain-derivation.log][Nix derivation identity]] identify the actual package.
 
-The [[file:../../../dev/proofs/evidence/fuzz-coordinator-20261030/verification-current/receipt.json][final unified run]] passes all thirty-nine stages with 164 unchanged input
+The [[file:../../../.cache/verification/evidence/proofs/fuzz-coordinator-20261030/verification-current/receipt.json][final unified run]] passes all thirty-nine stages with 164 unchanged input
 hashes. It includes fifty-nine Rust tests and all five ASP deny gates, default
 and all-feature compilation, Clippy, Go race tests, all four unchanged three-second
 fuzz stages, real mTLS/provider integration, strict SysML/trace checks, the imported
@@ -122,8 +122,8 @@ thirteen controls; ProviderRpc prints thirty-one Lean declarations without
 sorryAx. The prior thirty-eight-of-thirty-nine receipt is preserved as a failure,
 not overwritten or reclassified by this new run.
 
-The [[file:../../../dev/proofs/evidence/fuzz-coordinator-20261030/benchmark-current/receipt.json][measured baseline]] passes the full Rust/Go benchmark entrypoint with the
-same 164 input hashes. Its [[file:../../../dev/proofs/evidence/fuzz-coordinator-20261030/benchmark-current/benchmark-summary.org][eighteen-case Rust summary]] covers all five packages;
+The [[file:../../../.cache/verification/evidence/proofs/fuzz-coordinator-20261030/benchmark-current/receipt.json][measured baseline]] passes the full Rust/Go benchmark entrypoint with the
+same 164 input hashes. Its [[file:../../../.cache/verification/evidence/proofs/fuzz-coordinator-20261030/benchmark-current/benchmark-summary.org][eighteen-case Rust summary]] covers all five packages;
 three Go RPC benchmark families each retain three two-second runs and allocation
 counters. Twelve Rust cases improve against the local Criterion cache and six
 show no significant change. These are empirical host samples, not a matched

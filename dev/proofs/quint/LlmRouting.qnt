@@ -5,20 +5,22 @@
 // Product-core baseline: filter hard constraints, rank eligible LLM bindings,
 // recheck at final admission. Extra post-dispatch attempts are not enabled.
 module LlmRouting {
-  type View = {catalog:int,policy:int,history:int,endpoint:int}
+  type View = {catalog:int,policy:int,history:int,endpoint:int,intent:int}
+  type Batch = {view:View,input:int}
+  type Completion = {batch:Batch,partition:int}
   type Plan = {root:int,payload:int,target:int,view:View,ranking:int,manifest:int,advised:bool}
   type Dispatch = {plan:Plan,snapshot:View}
-  type Router = {catalog:int,policy:int,history:int,endpoint:int,metrics:int,unavailable:Set[int],
+  type Router = {catalog:int,policy:int,history:int,endpoint:int,intent:int,metrics:int,unavailable:Set[int],
     plans:Set[Plan],dispatches:Set[Dispatch],responses:Set[Plan],unknown:bool,callerTarget:int}
   var r:Router
   pure val root = 0
   pure val payload = 10
   pure val escrow = 10
   pure val candidates = 0.to(6)
-  pure val emptyPlan = {root:-1,payload:-1,target:-1,view:{catalog:-1,policy:-1,history:-1,endpoint:-1},ranking:-1,manifest:-1,advised:false}
-  pure val initial = {catalog:0,policy:0,history:0,endpoint:0,metrics:0,unavailable:Set(),plans:Set(),dispatches:Set(),responses:Set(),unknown:false,callerTarget:0}
+  pure val emptyPlan = {root:-1,payload:-1,target:-1,view:{catalog:-1,policy:-1,history:-1,endpoint:-1,intent:-1},ranking:-1,manifest:-1,advised:false}
+  pure val initial = {catalog:0,policy:0,history:0,endpoint:0,intent:0,metrics:0,unavailable:Set(),plans:Set(),dispatches:Set(),responses:Set(),unknown:false,callerTarget:0}
   action init = r' = initial
-  def currentView = {catalog:r.catalog,policy:r.policy,history:r.history,endpoint:r.endpoint}
+  def currentView = {catalog:r.catalog,policy:r.policy,history:r.history,endpoint:r.endpoint,intent:r.intent}
   pure def cost(m) = if (m==5) 12 else if (m==6) 8 else if (m==0) 6 else 1
   pure def region(m) = if (m==3) 1 else 0
   pure def supportsTools(m) = m!=1
@@ -29,6 +31,24 @@ module LlmRouting {
     permitted(m) and historyAllows(m) and cost(m)<=escrow and not(r.unavailable.contains(m))
   def score(m) = if (m==2) 0 else if (r.metrics>0 and m==6) 1 else if (m==0) 10 else 20
   def best(m) = eligible(m) and candidates.forall(n => eligible(n) implies score(m)<=score(n))
+  // Candidate identity models the deterministic tie-break of the wire digest.
+  def rankScore(m, tie) = if (tie) 0 else score(m)
+  def rankWinners(input, tie) = input.filter(m => eligible(m) and
+    input.forall(n => not(eligible(n)) or rankScore(m,tie)<rankScore(n,tie) or
+      (rankScore(m,tie)==rankScore(n,tie) and m<=n)))
+  def splitRankAgrees(tie) = candidates.powerset().forall(left => {
+    val right = candidates.exclude(left)
+    left.filter(eligible).union(right.filter(eligible)) == candidates.filter(eligible) and
+    rankWinners(rankWinners(left,tie).union(rankWinners(right,tie)),tie) == rankWinners(candidates,tie)
+  })
+  pure def completeBatch(expected: Set[int], batch: Batch, results: List[Completion]): bool =
+    results.length()==expected.size() and expected.forall(part =>
+      results.indices().exists(i => results.nth(i)=={batch:batch,partition:part}))
+  def batchCurrent(batch: Batch, results: List[Completion], cancelled: bool): bool =
+    not(cancelled) and batch.view==currentView and completeBatch(Set(0,1),batch,results)
+  pure val originalBatch = {view:{catalog:0,policy:0,history:0,endpoint:0,intent:0},input:10}
+  pure val firstPartition = {batch:originalBatch,partition:0}
+  pure val secondPartition = {batch:originalBatch,partition:1}
   pure def validWire(p) = p.manifest == 100+p.target and p.payload == payload
   action propose(m,manifest) = {
     val p = {root:root,payload:payload,target:m,view:currentView,ranking:r.metrics,manifest:manifest,advised:false}
@@ -47,6 +67,7 @@ module LlmRouting {
   action publishPolicy = r' = r.with("policy",r.policy+1)
   action restrictHistory = r' = r.with("history",r.history+1)
   action replaceEndpoint = r' = r.with("endpoint",r.endpoint+1)
+  action acceptIntent = r' = r.with("intent",r.intent+1)
   action updateMetrics = r' = r.with("metrics",r.metrics+1)
   action markUnavailable(m) = r' = r.with("unavailable",r.unavailable.union(Set(m)))
   action timeoutOrLostReply = r' = r
@@ -63,11 +84,27 @@ module LlmRouting {
     nondet m = candidates.oneOf()
     nondet p = r.plans.union(Set(emptyPlan)).oneOf()
     any {propose(m,100+m),proposeAdvised(m,100+m),dispatch(p,true),commitResponse(p,true),publishCatalog,publishPolicy,
-      restrictHistory,replaceEndpoint,updateMetrics,markUnavailable(m),mutateCallerTarget(m),timeoutOrLostReply}
+      restrictHistory,replaceEndpoint,acceptIntent,updateMetrics,markUnavailable(m),mutateCallerTarget(m),timeoutOrLostReply}
   }
   action planned = init.then(propose(0,100))
   action dispatched = planned.then(dispatch(planAt(0),true))
   action responded = dispatched.then(commitResponse(planAt(0),true))
+  run parallelRouteMergePreservesWinnerTest = init.expect(splitRankAgrees(false) and splitRankAgrees(true))
+    .then(updateMetrics).expect(splitRankAgrees(false) and rankWinners(candidates,true)==Set(0))
+    .then(publishPolicy).expect(splitRankAgrees(false))
+    .then(markUnavailable(6)).expect(splitRankAgrees(false) and rankWinners(candidates,false)==Set())
+  run parallelBatchRejectsIncompleteOrMixedInputTest = init.expect(
+    batchCurrent(originalBatch,List(secondPartition,firstPartition),false) and
+    not(batchCurrent(originalBatch,List(firstPartition),false)) and
+    not(batchCurrent(originalBatch,List(firstPartition,firstPartition),false)) and
+    not(batchCurrent(originalBatch,List(firstPartition,secondPartition.with("batch",originalBatch.with("input",11))),false)) and
+    not(batchCurrent(originalBatch,List(firstPartition,secondPartition),true)))
+  run parallelBatchRejectsStaleIntentTest = planned.then(acceptIntent).expect(
+    not(batchCurrent(originalBatch,List(firstPartition,secondPartition),false)))
+    .then(dispatch(planAt(0),true).fail())
+  // The input digest is unchanged, while catalog publication advances the cut.
+  run parallelBatchRejectsStaleGenerationTest = init.then(publishCatalog).then(publishCatalog).expect(
+    not(batchCurrent(originalBatch,List(firstPartition,secondPartition),false)))
   run capabilityAndPolicyBeforePriceTest = planned.expect(safety and best(0) and not(eligible(1)) and not(eligible(2)))
   run cheapUnsupportedModelRejectedTest = init.then(propose(1,101).fail())
   run lowScoreDeniedModelRejectedTest = init.then(propose(2,102).fail())

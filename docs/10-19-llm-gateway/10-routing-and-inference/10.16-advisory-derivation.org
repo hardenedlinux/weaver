@@ -1,0 +1,371 @@
+# SPDX-FileCopyrightText: 2026 hardenedlinux Linux Team and Contributors
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
+
+#+title: ASCENT advisory preparation and owner-local source lifecycle
+#+language: en
+#+date: 2026-11-05
+#+property: STATUS bounded-advisory-implementation-with-scoped-evidence
+#+options: toc:2
+
+* Delivered boundary
+
+The next bounded integration from [[file:10.14-object-lifecycle.org][10.14]] and [[file:10.15-architecture-evolution.org][10.15]] is implemented in the
+existing Scheme gateway module. The ordinary =compile= path now runs a fixed
+inherited ASCENT program after Governor/Governance admission. Its result remains
+the same typed GatewayArtifact. The new =prepare= method returns that source and
+a separate advisory report. No field is added to the Rust/Go source wire contract.
+
+An explicitly opened derivation owner retains a public ASCENT session, atomically
+replaces its projected sources, reuses an identical request, and supports explicit
+local invalidation and close. These are application preparation mechanisms, not
+a general source reconciliation service or the modeled durable hard-fact protocol.
+
+| Existing gateway operation | Result / ownership |
+|----------------------------+--------------------|
+| =compile= | Exact original GatewayArtifact, after semantic admission and bounded derivation |
+| =prepare= | GatewayPreparation with =source= and =derivation=, through the same admitted producer |
+| =derive= | Fresh advisory report for a supplied typed GatewayArtifact; no Governance/authenticity claim |
+| =open-derivation= | A sealed owner-local POO object; caller explicitly owns its lifetime |
+
+The public wrapper =prepare-governed-gateway= uses the existing admitted Yuanxu
+view and currentness checks around preparation. Existing emit/capture methods
+continue to accept only the source artifact. The source lane's independent
+SourceExpectation comparison, Cedar checks, reservation/history and actual-effect
+guards are unchanged.
+
+* What the rules establish
+
+[[file:../../../scheme/gateway/derivation.ss][The fixed advisory kernel]] projects seven source relations from the typed original
+and the caller's explicit dependency/change cut: operation, offer, declared node,
+declared target, declared model, dependency and changed subject. It derives:
+
+- Declared candidate triples: offered node/target/model intersect the original
+  task's declared node, target and model sets.
+- Transitive affected subjects, including cyclic dependency graphs.
+- Affected operations among the original plans.
+
+The report includes one explanation per distinct offer, identifying declared-node,
+declared-target and declared-model membership. It also binds the complete source
+and request digests, local generation, fixed rule profile and fixed limit profile.
+All returned reports have =complete=#t= and =execution_authorized=#f= by contract.
+Evaluation, validation and resource failure produce refusal, not a partial report
+whose missing rows could be interpreted as permission or proven absence.
+
+"Candidate" here is deliberately scoped to declared membership. Endpoint
+authorization, capability/quality optimization, current Policy, billing truth and
+source authenticity are not established by this kernel. Caller-supplied changes
+are advisory inputs. Empty candidates never certify no provider execution or a
+refund. =rule_profile= is an application version label, not a cryptographic
+module-closure receipt. Do not admit this report as a complete FactUseContext.
+
+* Ownership, replacement, reuse and invalidation
+
+[[file:../../../scheme/gateway/derivation-types.ss][Specific POO Record/Function contracts]] reject undeclared fields and unsupported
+shapes. Existing capture bounds own request and result data. Before evaluation,
+an ephemeral per-cut dictionary maps strings to integers; ASCENT retains only
+immutable integer rows. No untrusted identifier is interned as a global symbol,
+and nested host objects/procedures do not enter the evaluator.
+
+The kernel has fixed limits of 4096 input facts, 8192 derived facts and 12288
+total output facts, independently of the existing 8 MiB / 16384-node / depth-64
+capture bounds. These qualify this closed, positive, finite rule program. They
+are not wall-clock deadlines, changes to existing task budgets, or guarantees
+for arbitrary user-supplied rules. This increment accepts no rule/provider callback.
+
+Reuse compares the canonical complete request, including exact source body,
+publication, task/profile fields, dependency order and changed subjects. Equal
+derived rows are insufficient. A changed request replaces all seven projected
+relations in one public =gerbil-ascent-session-replace-sources!= batch, so an
+integer dictionary change cannot mix source cuts. The public native engine owns
+incremental dependency maintenance and fresh fallback. No alternate engine,
+package cache or generic rule loader is added.
+
+Prospective output is validated and owned before local delivery state is promoted.
+If evaluation or the local handoff fails, discard the possibly changed engine;
+retain only the last detached accepted report, and start fresh for the next
+changed request. This avoids claiming native rollback/output-delivery atomicity
+from an API success or exception. Identical accepted input can still reuse its
+detached report. No ledger transaction or effect happens in the acceptance callback.
+
+The returned POO object supplies:
+
+| Method | Contract |
+|--------+----------|
+| =derive(request)= | Complete detached report; only the creating Scheme thread may call it |
+| =matches?(request, report)= | Exact local current request/report equality, including generation; no authenticity or external freshness assertion |
+| =invalidate()= | Drop retained engine and local reusable result; advance generation so an A-B-A cut cannot reuse an old report |
+| =close()= | Terminal local close and reference release; later methods refuse |
+
+The owner is sealed, rejects cross-thread use/close and admits no background
+worker or arbitrary callback. Close releases local references; it does not
+acknowledge native VM retirement or clear authority pending state. Module/source
+currentness remains the admitted enclosing view's responsibility. An invalidation
+signal does not authenticate a new source, and matching local data cannot renew
+a withdrawn permission. Generic external feed/observer installation remains work.
+
+* Scheme usage through the existing scope
+
+#+begin_src scheme
+;; Existing arguments retain their original Profile/Governor/source contracts.
+(def prepared
+  (prepare-governed-gateway init governor profile context states tasks plans publication))
+(def original-source (.get prepared source))
+(def explanation (.get prepared derivation))
+;; Emission remains the existing typed source-only operation.
+(capture-gateway-source (lambda () (emit-gateway original-source)))
+
+;; An application can explicitly retain preparation in its admitted Scheme owner.
+;; Dependencies and changed subjects are advisory data, not authenticated facts.
+(def retained (make-gateway-derivation))
+(def query
+  (gateway-derivation-request original-source
+    (list (.o dependent: "infer" dependency: "catalog")) '("catalog")))
+(def report ((.get retained derive) query))
+((.get retained matches?) query report)
+((.get retained invalidate))
+((.get retained close))
+#+end_src
+
+Use ordinary dynamic cleanup around an explicitly retained owner's lifetime.
+The fresh =derive-gateway-source= operation already owns and closes its temporary
+owner. None of these methods changes a frozen model/body/route. Dynamic selection
+still needs the qualified pre-freeze lowering or SPEC successor boundary in 10.14.
+
+* Model and qualification
+
+The existing [[file:../../../dev/sysml/ControllerObjectLifecycle.sysml][lifecycle model]] records preparation, reuse and local invalidation as
+partial ASCENT integration, and adds =BoundedAdvisoryDerivation= with named runtime,
+test and Quint witnesses. ArchitectureEvolution records the bounded incremental
+and explanation submechanisms separately from its remaining full integrations.
+Durable publication, generic readiness and high-order progression retain their
+existing owners and unimplemented joins. The mapped lifecycle/evolution views
+are regenerated through the existing Go/OpenSysML/Library pipeline.
+
+[[file:../../../t/gateway-derivation-test.ss][Eleven Scheme derivation cases]] check exact preservation, declared membership reasons, recursive
+cycles, retraction, retained-versus-fresh equality, caller mutation, equal-row
+source changes, A-B-A, fact refusal, sealing, invalidation, close and cross-thread
+ownership. The existing property-testing framework executes 32 seeded sequences
+of eight source replacements against an independent graph traversal and fresh
+evaluation. Its four distinct complete input cuts are each solved independently
+once; every generated step checks the exact request digest against that fresh
+reference. This avoids repeated identical oracle work without reducing sequences,
+steps or shrink budget. Existing source tests remain in the same package suite.
+
+[[file:../../../t/integration/governed-control-test.ss][The actual Yuanxu/Governance integration]] also exercises scoped =prepare=, =derive=
+and =open-derivation=, while retaining semantic refusals and a subsequent valid
+capture. The isolated standard suite ran 56 cases across six modules and one
+source-integration case with complete harness protocol and natural terminal OK.
+Those preliminary runs precede the final dictionary-shift case and private
+serialization optimization; they do not qualify the final source cohort or the
+Rust-linked/gRPC boundary. Use the subsequent standard pipeline receipt.
+
+[[file:../../../dev/proofs/quint/GatewayProgram.qnt][The existing GatewayProgram model]] now includes inert advice, invalidation and
+reuse transitions. Named cases reject reuse after invalidation/close and retain
+the counterexample where advice is substituted for an already validated original.
+The existing =safe= invariant retains original binding, hold and no-send conditions.
+The same 1000 samples / 60 steps / seed 293 gate applies. This finite abstraction
+does not prove the ASCENT evaluator, native cleanup, arbitrary source programs or
+the complete gateway implementation. Existing Lean/SPEC contracts remain intact.
+
+The ordinary =check-scheme= pipeline provides the acceptance gates for Project/
+SDK/trace, FFI preflight, package build/protocol, native rooted SDK and real gRPC
+integration. Its existing whole-package one-minute test budget is unchanged.
+Actual stage verdicts, failures, source cohorts and hashes are in
+[[file:../../../.cache/verification/evidence/proofs/advisory-derivation-20261105/receipt.json][the implementation receipt]]; a subprocess exit of zero alone is not a Scheme
+harness pass. The focused SDK check uses 61 named requirements after this addition.
+
+The native owner fixture also follows the current mandatory review protocol:
+an independent existing test issuer signs the exact Bootstrap under the original
+no-expansion deployment. Unreviewed Permit publication and expansion review are
+explicitly rejected. The Permit positive control requires an explicit native
+deployment epoch advance and a new source-bound signature. These synthetic
+signatures exercise review custody and binding; they are not SPEC semantic proofs.
+The Scheme compiler and advisory report cannot install that deployment approval.
+The real compiled-control gRPC fixtures likewise register the existing independent
+issuer's exact source-bound review before starting their control process. The
+compiled artifact carries no reviewer key or implicit approval. Source staging,
+final publication, reply-loss counts and all existing assertions remain intact.
+
+* Single-provider startup lifecycle
+
+An embedding with exactly one registered producer can set
+=WEAVER_GOVERNANCE_RETIRE_ON_ACTIVATION=1=. The existing authenticated
+=CompileSource= call prepares one original-bound artifact on the tracked Scheme
+owner and seals it with the observed source authority. The exact committed
+publication receipt from finalization or inspection closes that compiler lane.
+The source RPC waits for native return and VM cleanup before acknowledging
+retirement. The operation service continues to apply the current Rust guards.
+An exact bootstrap retry observes the sealed preparation under the same source
+authority, then reconciles the existing publication identity.
+
+* Remaining lifecycle work
+
+** Ordered local hard fact feed
+
+=WEAVER_HARD_FACT_FEED= admits one availability feed for one immutable task.
+The deployment binds its domain, source certificate/key/credential identity,
+source epoch, root node and bounded dependency graph. This is a ledger-local
+ordered administrative feed. A resolved withdrawal stays in force until an
+authenticated later command replaces it. Rotation away from the admitted
+source epoch closes use for this feed.
+
+=StageHardFact= persists the exact source command and advances the pending
+floor before returning a barrier. =ResolveHardFact= reads the oldest durable
+intent and computes the affected nodes with native ASCENT outside the source
+transaction. The deciding transaction compares the source identity and epoch,
+source revision and predecessor snapshot, floor, and full pending prefix.
+It installs the projection and stores the historical result in the same
+transaction. An appended withdrawal invalidates work prepared against an old
+prefix. Any remaining intent blocks fresh effects for the original family.
+An installed withdrawal denies affected nodes at admission and at actual
+dispatch or output release. A consumed provider permit retains its exact cut.
+Reinstalling an earlier value at a later revision does not renew that permit.
+A replay observes its original result and cannot clear a later barrier.
+
+** Single compiled Governor edge
+
+The local feed can explicitly declare =workflow= with one =predecessor= and
+=successor=. This profile uses the opt-in single compiled provider startup
+mode. The source host requires both exact plans in the sealed Governor
+selection. The trusted provider path materializes a successor proposal from
+the ledger's complete response-release observation, current fact cut and
+original domain stamp. The provider admission transaction compares those
+coordinates and the winner frontier while recording the existing successor
+claim, hold, queued outcome and transition winner together. The actual
+dispatch/release guards still check live facts. Accounting remains a separate
+authority path. General Workflow state machines and remote fact freshness
+remain separate profiles.
+
+No permission check, original comparison, existing deadline/resource limit,
+dependency pin, implicit retry policy or financial settlement rule is weakened.
+The implementation was developed in a temporary source checkout while another
+session committed provider-custody work, then reapplied to the shared checkout.
+That concurrent commit is retained. The final complete pipeline is qualified in
+the stable temporary checkout; the receipt compares its participating sources
+with the shared checkout and retains failures caused by concurrent source changes.
+It does not qualify unrelated concurrent provider work.
+
+** Prepared Session Workflow
+
+An approved Scheme application can place a typed Yuanxu Funflow routine in
+an Agentic AI Lab Session and pass that object into Gateway preparation.
+The Session and routine both name the original family. The Gateway projects
+the linear sequence of external provider tasks after checking the Governor
+selection and exact plans. The =weaver.session-workflow.v1= handoff interprets
+=open_nodes= as an ordered path. The startup catalog must match the independently
+configured =workflow_path= and its adjacent availability dependencies.
+
+The compiler retires after exact activation. An operation request starts the
+root, and durable response completion wakes the Session to reconcile the sealed
+path. Rust joins the predecessor's complete response release, current availability
+and original domains before committing the next transition, claim, shared hold
+and queued outcome. Successor responses pass through the existing guarded
+receiver into the Session, and their receipts remain available through Inspect.
+After restart, existing source bootstrap reactivates the same path. Reconciliation
+resumes a queued claim and stops at an unknown outcome. Pending and resolved
+withdrawals fence queued and unclaimed successors. Resolving a newer available
+revision wakes the Session under the same original and budget.
+
+The =weaver.session-dag.v1= profile seals the Funflow edges alongside the
+ordered nodes and binds them to the deployed availability dependencies.
+Its Scheme owner stays live after activation. The Governor runs ASCENT over
+complete releases and availability from one ledger observation. Independent
+ready branches can dispatch concurrently. A join needs every immediate
+predecessor's release, and the existing admission transaction rechecks every
+release and the observed fact version before recording one winner and hold.
+
+The =weaver.session-choice.v1= profile seals a selector, two ordered arms and
+a join. The broker accumulates at most 512 bytes of selector response text.
+After guarded delivery completes, the ledger stores the strict JSON route
+and response digest with the completed selector. ASCENT checks the selected
+arm and current availability. The first arm admission commits its decision,
+claim and hold together. Recovery reads the same decision, and the join
+requires the chosen arm's complete release. A withdrawal pauses the selected
+route until a newer authenticated available revision is installed.
+
+The =weaver.session-nested.v1= profile seals one selector and two single-node
+entries for each conditional fork. The arms can contain further conditional
+and parallel forks. The Governor derives active and unresolved paths with
+ASCENT. The ledger reconstructs the same frontier from persisted selector
+decisions and rechecks every active incoming release at admission. An inactive
+subtree contributes no join prerequisite. An active parallel fork contributes
+every active incoming release to its join. Selector slots are scoped by original
+origin and selector identity, including when a selector is itself an arm entry.
+
+* Alignment with the current Scheme Module System
+
+The current refactor uses native POO =Type=/=Record= scope descriptors. A Module
+scope descriptor supplies =identity=, =.element?= and =.validate=; the Module
+publication shape deliberately rejects =.classify=, =.obligations= and =.admit=
+hooks on that descriptor. Yuanxu still owns admission evidence and currentness
+through its native value-admission boundary. Module scopes no longer need the
+old =YuanxuContract= adapter. Domain-specific evidence contracts remain distinct.
+
+Core normalizes the linked receiver. Selected Feature refinements and additional
+Feature Contracts must satisfy the same final receiver and preserve its Core
+Contract. Weaver's current Feature sets are empty; this is inherited capability,
+not a claim that a new application Feature or owner-retirement protocol exists.
+
+The earlier failure combined the old installed Core =a8030b1= and POO =a84e76c=
+with new consumer source. It is evidence of that mixed cohort, not evidence that
+the new native Contract architecture is incompatible. The previous isolated pass
+retained old adapters and therefore does not qualify the current refactor. Keep
+both earlier receipts and failures as historical observations.
+
+The follow-up uses Gerbil's existing package links to the current local Core,
+POO and Lab sources in an isolated SDK prefix. =SpecificSourceContracts= now maps
+to the actual native Governance Record and an executable consumer control: all
+three Weaver scope Types are valid Module publication contracts, while adding
+any evidence-protocol hook is rejected; malformed business scopes still refuse.
+No compatibility wrapper or alternate loader is added.
+
+The Cargo build adapter retains its owned =lib= output while binding the selected
+SDK's existing =pkg= source directory into that prefix before creating its tooling
+VM. Gerbil's native =pkg-root-dir= therefore resolves the same declared Lab source
+selection. This is an input mount, not dependency installation, a copied package
+store, a version resolver or a new cache. Native source and occupied-directory
+preservation controls qualify the binding.
+
+The cold-A/B, hot-B, clean-isolation and real-business-use test belongs to a
+separate =scheme-module-selection-integration= phase, using the normal Gerbil
+package directory =t/qualification/module-selection=. The build phase has a
+120-second budget and uses the same source inventory and harness checks as the
+functional unit and source integration phases, which each have 60 seconds.
+The previous mixed unit/build batch exceeded its one-minute budget.
+
+The current native mechanisms map to the existing SysML lifecycle as follows:
+
+| Lifecycle | Existing mechanism to reuse | Remaining application join |
+|-----------+-----------------------------+----------------------------|
+| Prepare | Init-owned source projection; zero business scope factories before build; native Type validation of final scope | Generic owner readiness beyond the existing GatewayProgram installation |
+| Publish | Owned exact GatewayArtifact, source review, predecessor CAS and recorded outcome | Authenticated derived-fact intent/projection protocol |
+| Replace | Protected Feature refinement and Core/Feature validation of one final receiver | Admitted successor handover and actual predecessor retirement |
+| Reuse | Generation-qualified Module scope identity; retained ASCENT full-request comparison | Join local preparation to authenticated freshness at authority-changing use |
+| Invalidate | Module source-currentness refusal; explicit ASCENT owner invalidation | Authenticated change feed to affected query/task recomputation and durable barriers |
+
+Feature refinement is preparation of a candidate receiver, not authority to alter
+an already admitted request. Repeated scope identity is local reuse, not a renewed
+permission. These distinctions preserve Scheme/POO high-order execution while
+keeping the existing Rust/Cedar effect guards authoritative.
+
+Current-cohort source identities, build gates and actual outcomes are recorded in
+[[file:../../../.cache/verification/evidence/proofs/scheme-module-scope-alignment-20261106/receipt.json][the Scheme Module scope alignment receipt]]. Local source qualification is not a published
+release pin or acceptance of every upstream Core scenario.
+
+* Current-cohort validation boundary (2026-11-06)
+
+The native consumer build and Contract controls pass with the current local
+Core/POO/Lab development SDK. Functional Scheme tests pass all 58 cases in six
+modules under 60 seconds. Actual native VM/server/build-host tests pass 55 cases
+with three existing child-server entry points ignored. All 16 selected real
+gRPC control cases pass. Strict SysML analysis maps 62 requirements; both selected
+lifecycle/evolution views pass five browser/capture checks and 527 assertions each.
+These are scoped consumer results, not a published dependency release or complete
+upstream POO/Core acceptance.
+
+The previous 60-second build phase stopped at hot B under the standard 12-core
+setting. The authorized 120-second phase is configured in the standard runner.
+The current pipeline verdict is recorded in the native scope alignment receipt.
+Earlier package setup failures and upstream build timeouts retain their own
+verdicts. Qualification uses the local development SDK prefix.
