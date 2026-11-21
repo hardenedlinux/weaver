@@ -343,6 +343,14 @@ package WeaverProject {
                natural-exit gates. Record worker count, elapsed whole seconds
                and exit code in the job receipt; the independent cap is null.
                Run the selected package Build with a separate two-minute bound.
+               The linked entry acquires selected cleanup once. Its callback
+               delegates to STD without reentering clean-selection; the A/B
+               qualification must continue through hot B and real B use after
+               A cleanup, retaining unrelated products and B's digests.
+               A Module leaf may remain lazy. Count one scope factory when
+               the consumer first demands its actual exports, then zero on
+               repeated export demand with identical retained values. Merely
+               retrieving a leaf is not evidence of scope construction.
                Retain SDK archive milestones and native Go failure events
                with their stage receipts. The provider recovery and natural-exit
                deadlines govern runtime. After a Linux rooted SDK integration

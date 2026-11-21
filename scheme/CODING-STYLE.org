@@ -64,6 +64,11 @@ Keep exact revisions in package declarations and lockfiles. Architecture Org
 describes contracts, decisions and validation limits, not another commit inventory.
 Do not add build roots or repeat file inventories to make a consumer link.
 Gateway Build declares its actual provider and debug qualification programs.
+Keep one command dispatcher and one =.with-link= wrapper in the entrypoint.
+Its clean callback uses STD inside the existing selection lock; it must not
+reenter =.clean-selection=. Cargo observes actual admitted source reads rather
+than a second file inventory. Preserve the exact external application identity
+check when composing SDK staging.
 
 Follow Marlin's ordinary =c-abi= Module: its Build owns targets, autoload groups
 and link options. Keep Scheme roots on the Rust host's C services; do not import
