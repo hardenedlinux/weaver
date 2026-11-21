@@ -57,6 +57,9 @@ An interface value or inferred route never grants execution authority.
 
 Gerbil packages and native imports own the dependency closure. STD owns build
 arguments/Make; Yuanxu owns the admitted source view and source/output guards.
+Weaver's gerbil.pkg declares the package and its dependency, not a replacement
+package prelude. Import the needed POO and Yuanxu bindings explicitly at their
+owning library or entrypoint.
 Keep exact revisions in package declarations and lockfiles. Architecture Org
 describes contracts, decisions and validation limits, not another commit inventory.
 Do not add build roots or repeat file inventories to make a consumer link.

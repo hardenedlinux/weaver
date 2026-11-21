@@ -2,7 +2,8 @@
 ;;;
 ;;; SPDX-License-Identifier: LGPL-2.1-or-later AND Apache-2.0
 
-(import (only-in "./types.ss" GatewayScopeContract)
+(import (only-in :clan/poo/object .def .o)
+        (only-in "./types.ss" GatewayScopeContract)
         (only-in "./config.ss" GatewayScope))
 (export Gateway)
 (.def Gateway
