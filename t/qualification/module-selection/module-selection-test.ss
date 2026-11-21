@@ -11,7 +11,7 @@
         (only-in :tao3k/yuanxu/ops/func run-script)
         (only-in :tao3k/yuanxu/ops/progress execution-progress!)
         (only-in :tao3k/yuanxu/observability/testing-script make-compiler-progress-reader)
-        (only-in :tao3k/yuanxu/module-system/building/products artifact-files current-build-output-directory)
+        (only-in :tao3k/yuanxu/module-system/building/products artifact-files)
         (only-in :tao3k/yuanxu/module-system/source/admission module-source-read call-with-module-source-operation-measurement)
         (only-in "../../../init.ss" hardenedlinux/weaver.init.exports)
         (rename-in (only-in "../../../build.ss" main) (main weaver-build-main)))
@@ -129,19 +129,6 @@
                          '("*** ERROR" "ERROR CASE" "ERROR CHECK" "ERROR HARNESS" "Heap overflow" "Stack overflow"))
               (error "Weaver action reported failure" command))
             output)
-          (def (build-in-state state command)
-            ;; Reuse the guarded init plan. The Build entry still admits the
-            ;; sources and checks its native products on each invocation.
-            (def output
-              (call-with-output-string
-                (lambda (port)
-                  (parameterize ((current-build-output-directory (path-expand "lib" state))
-                                 (current-output-port port)
-                                 (current-directory root))
-                    (weaver-build-main command)))))
-            (display output)
-            (force-output)
-            output)
           (for-each
             (lambda (state)
               (action state (list "gerbil" "pkg" "link" "github.com/tao3k/agentic-ai-lab" provider))
@@ -150,9 +137,9 @@
               (def started (time->seconds (current-time)))
               (displayln "WEAVER-MODULE-COLD environment=" (path-strip-directory state) " state=started")
               (force-output)
-              (def output (if (equal? state a)
-                            (action state '("gxi" "build.ss" "compile"))
-                            (build-in-state state "compile")))
+              ;; Both environments use the public package entry and their own
+              ;; GERBIL_PATH, including the hot and clean invocations below.
+              (def output (action state '("gxi" "build.ss" "compile")))
               (displayln "WEAVER-MODULE-COLD environment=" (path-strip-directory state)
                          " state=completed seconds=" (- (time->seconds (current-time)) started))
               (check-equal? (compile-events output) targets)
@@ -161,10 +148,10 @@
           (def b-products (digests (artifact-files identities b-lib)))
           (def sentinel (path-expand "lib/unrelated.ssi" a))
           (call-with-output-file sentinel (lambda (port) (display "unrelated" port)))
-          (build-in-state a "clean")
+          (action a '("gxi" "build.ss" "clean"))
           (check-equal? (interfaces (path-expand "lib" a)) '("unrelated"))
           (check-equal? (digests (artifact-files identities b-lib)) b-products)
-          (check-equal? (compile-events (build-in-state b "compile")) '())
+          (check-equal? (compile-events (action b '("gxi" "build.ss" "compile"))) '())
           (check-equal? (digests (artifact-files identities b-lib)) b-products)
           (def output (action b '("gxi" "t/qualification/module-selection/use.ss")))
           (check-equal? (and (string-contains output "WEAVER-MODULE-USE-OK") #t) #t)

@@ -340,7 +340,13 @@ package WeaverProject {
                executable for this target; reject missing or ambiguous images.
                Do not invoke Cargo after the private build environment retires.
                Pass signals through unchanged and bound stack output. This diagnostic cannot
-               replace the failed suite receipt or qualify recovery deadlines. */
+               replace the failed suite receipt or qualify recovery deadlines.
+               Linux Scheme process crashes retain the original failed stage.
+               Enable native core capture in the private verification scratch
+               directory and read the failed process through ASCENT's existing
+               bounded GDB collector. Do not rerun the test under the debugger.
+               Its native stack is diagnostic job output, not a qualified
+               receipt or a tracked source artifact. */
         }
         part architecture : VerificationSuite { part 'check-architecture' : VerificationMode; }
         part policy : VerificationSuite {
