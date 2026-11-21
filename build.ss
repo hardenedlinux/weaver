@@ -8,6 +8,7 @@
         (only-in :std/source this-source-file)
         (only-in :std/build-script defbuild-script)
         (only-in :tao3k/yuanxu/module-system/building/products build-output-directory)
+        (only-in :tao3k/yuanxu/module-system/building/source-package call-with-build-input-path)
         (only-in :gerbil/expander import-module expander-context-id)
         (only-in :gerbil/compiler compile-module)
         (only-in :tao3k/yuanxu/module-system/source/observations current-module-source-observer)
@@ -75,5 +76,11 @@
     (else (compile-package args))))
 
 ;;; Core publishes the compiler loader plan and its activation metadata.
-(def main
-  (.call hardenedlinux/weaver.init.exports .with-link (.get Build with-link) dispatch))
+(def (main . args)
+  ;; Admit this package before preparing that plan, including the first build
+  ;; where no installed Weaver interface can supply its public identity.
+  (call-with-build-input-path (build-output-directory)
+    (lambda ()
+      (apply (.call hardenedlinux/weaver.init.exports .with-link (.get Build with-link) dispatch)
+             args))
+    source-roots: (list (path-directory (this-source-file)))))
